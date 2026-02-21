@@ -33,7 +33,12 @@ export default function SidebarBody({
       <OverflowDiv className="gap-3" scrollKey={scrollKey}>
         {children}
       </OverflowDiv>
-      {footer}
+      {footer && (
+        <>
+          <div className="border-t border-border-01" />
+          {footer}
+        </>
+      )}
     </div>
   );
 }

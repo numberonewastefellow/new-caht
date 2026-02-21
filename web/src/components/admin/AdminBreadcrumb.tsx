@@ -21,7 +21,6 @@ export default function AdminBreadcrumb({
   const pathname = usePathname();
 
   // Build breadcrumb segments from pathname
-  // e.g. /admin/configuration/llm -> ["admin", "configuration", "llm"]
   const rawSegments = pathname
     .split("/")
     .filter(Boolean)
@@ -42,22 +41,22 @@ export default function AdminBreadcrumb({
   }
 
   return (
-    <div className="w-full mb-6">
+    <div className="w-full mb-8">
       {/* Breadcrumb trail */}
-      <div className="flex items-center gap-1 mb-1">
+      <nav className="flex items-center gap-1.5 mb-2">
         {crumbs.map((crumb, i) => (
-          <span key={crumb.path} className="flex items-center gap-1">
+          <span key={crumb.path} className="flex items-center gap-1.5">
             {i > 0 && (
-              <SvgChevronRight className="w-3 h-3 stroke-text-03 flex-shrink-0" />
+              <SvgChevronRight className="w-3 h-3 text-text-02 flex-shrink-0" />
             )}
             {crumb.isLast ? (
-              <Text as="span" mainUiBody text02>
+              <Text as="span" secondaryBody className="text-text-04 font-medium">
                 {crumb.label}
               </Text>
             ) : (
               <Link
                 href={crumb.path as any}
-                className="hover:underline"
+                className="hover:underline underline-offset-2"
               >
                 <Text as="span" secondaryBody text03>
                   {crumb.label}
@@ -66,11 +65,11 @@ export default function AdminBreadcrumb({
             )}
           </span>
         ))}
-      </div>
+      </nav>
 
       {/* Page heading + far right element */}
-      <div className="flex items-center justify-between">
-        <Text headingH2 aria-label="admin-page-title">
+      <div className="flex items-center justify-between gap-4">
+        <Text headingH2 className="text-text-05" aria-label="admin-page-title">
           {typeof title === "string" || title
             ? title
             : lastCrumb?.label ?? "Admin"}

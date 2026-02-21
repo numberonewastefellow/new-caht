@@ -33,16 +33,19 @@ import SourceTile from "@/components/SourceTile";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import Text from "@/refresh-components/texts/Text";
 import { SvgUploadCloud } from "@opal/icons";
+
 function SourceTileTooltipWrapper({
   sourceMetadata,
   preSelect,
   federatedConnectors,
   slackCredentials,
+  featured,
 }: {
   sourceMetadata: SourceMetadata;
   preSelect?: boolean;
   federatedConnectors?: FederatedConnectorDetail[];
   slackCredentials?: Credential<any>[];
+  featured?: boolean;
 }) {
   // Check if there's already a federated connector for this source
   const existingFederatedConnector = useMemo(() => {
@@ -88,6 +91,7 @@ function SourceTileTooltipWrapper({
         preSelect={preSelect}
         navigationUrl={navigationUrl}
         hasExistingSlackCredentials={!!hasExistingSlackCredentials}
+        featured={featured}
       />
     );
   }
@@ -102,6 +106,7 @@ function SourceTileTooltipWrapper({
               preSelect={preSelect}
               navigationUrl={navigationUrl}
               hasExistingSlackCredentials={!!hasExistingSlackCredentials}
+              featured={featured}
             />
           </div>
         </TooltipTrigger>
@@ -251,30 +256,35 @@ export default function Page() {
     <>
       <AdminPageTitle
         icon={SvgUploadCloud}
-        title="Add Connector"
+        title="Add Data Source"
         farRightElement={
           <Button href="/admin/indexing/status" primary>
-            See Connectors
+            View Connected
           </Button>
         }
       />
 
-      <InputTypeIn
-        type="text"
-        placeholder="Search Connectors"
-        ref={searchInputRef}
-        value={rawSearchTerm} // keep the input bound to immediate state
-        onChange={(event) => setSearchTerm(event.target.value)}
-        onKeyDown={handleKeyPress}
-        className="w-96 flex-none"
-      />
+      {/* Centered search bar with search icon */}
+      <div className="flex justify-center mb-2">
+        <InputTypeIn
+          type="text"
+          placeholder="Search data sources..."
+          ref={searchInputRef}
+          leftSearchIcon
+          value={rawSearchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+          onKeyDown={handleKeyPress}
+          className="w-full max-w-xl focus-within:ring-2 focus-within:ring-virtualai-accent focus-within:ring-opacity-40 rounded-08 transition-shadow"
+        />
+      </div>
 
+      {/* Popular sources — featured cards in responsive grid */}
       {dedupedPopular.length > 0 && (
-        <div className="pt-8">
+        <div className="pt-6">
           <Text as="p" headingH3>
             Popular
           </Text>
-          <div className="flex flex-wrap gap-4 p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-3">
             {dedupedPopular.map((source) => (
               <SourceTileTooltipWrapper
                 preSelect={false}
@@ -282,20 +292,25 @@ export default function Page() {
                 sourceMetadata={source}
                 federatedConnectors={federatedConnectors}
                 slackCredentials={slackCredentials}
+                featured
               />
             ))}
           </div>
         </div>
       )}
 
+      {/* Category sections with accent-colored left border */}
       {Object.entries(categorizedSources)
         .filter(([_, sources]) => sources.length > 0)
         .map(([category, sources], categoryInd) => (
           <div key={category} className="pt-8">
-            <Text as="p" headingH3>
-              {category}
-            </Text>
-            <div className="flex flex-wrap gap-4 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-1 h-5 rounded-full bg-virtualai-accent" />
+              <Text as="p" headingH3>
+                {category}
+              </Text>
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
               {sources.map((source, sourceInd) => (
                 <SourceTileTooltipWrapper
                   preSelect={

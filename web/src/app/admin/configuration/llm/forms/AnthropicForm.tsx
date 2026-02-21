@@ -24,12 +24,18 @@ const DEFAULT_DEFAULT_MODEL_NAME = "claude-sonnet-4-5";
 export function AnthropicForm({
   existingLlmProvider,
   shouldMarkAsDefault,
+  renderless,
+  isOpen,
+  onOpenChange,
 }: LLMProviderFormProps) {
   return (
     <ProviderFormEntrypointWrapper
       providerName="Anthropic"
       providerEndpoint={ANTHROPIC_PROVIDER_NAME}
       existingLlmProvider={existingLlmProvider}
+      renderless={renderless}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
     >
       {({
         onClose,

@@ -7,7 +7,74 @@ import Popover from "@/refresh-components/Popover";
 import { cn } from "@/lib/utils";
 import { SvgChevronDown } from "@opal/icons";
 import Text from "@/refresh-components/texts/Text";
-import type { AdminNavGroup, AdminNavItem } from "./adminNavItems";
+import type { AdminNavGroup, AdminNavItem, NavGroupColor } from "./adminNavItems";
+
+/** Map group color to Tailwind classes for various elements.
+ * All classes are full static strings so Tailwind can detect them at build time. */
+const colorMap: Record<
+  NavGroupColor,
+  {
+    activeBg: string;
+    activeText: string;
+    hoverBg: string;
+    iconBg: string;
+    iconText: string;
+    groupHoverIconBg: string;
+    groupHoverIconText: string;
+    accentBorder: string;
+  }
+> = {
+  green: {
+    activeBg: "bg-theme-green-01",
+    activeText: "text-theme-green-05",
+    hoverBg: "hover:bg-theme-green-01",
+    iconBg: "bg-theme-green-01",
+    iconText: "text-theme-green-05",
+    groupHoverIconBg: "group-hover:bg-theme-green-01",
+    groupHoverIconText: "group-hover:text-theme-green-05",
+    accentBorder: "border-l-theme-green-05",
+  },
+  purple: {
+    activeBg: "bg-theme-purple-01",
+    activeText: "text-theme-purple-05",
+    hoverBg: "hover:bg-theme-purple-01",
+    iconBg: "bg-theme-purple-01",
+    iconText: "text-theme-purple-05",
+    groupHoverIconBg: "group-hover:bg-theme-purple-01",
+    groupHoverIconText: "group-hover:text-theme-purple-05",
+    accentBorder: "border-l-theme-purple-05",
+  },
+  blue: {
+    activeBg: "bg-theme-blue-01",
+    activeText: "text-theme-blue-05",
+    hoverBg: "hover:bg-theme-blue-01",
+    iconBg: "bg-theme-blue-01",
+    iconText: "text-theme-blue-05",
+    groupHoverIconBg: "group-hover:bg-theme-blue-01",
+    groupHoverIconText: "group-hover:text-theme-blue-05",
+    accentBorder: "border-l-theme-blue-05",
+  },
+  orange: {
+    activeBg: "bg-theme-orange-01",
+    activeText: "text-theme-orange-05",
+    hoverBg: "hover:bg-theme-orange-01",
+    iconBg: "bg-theme-orange-01",
+    iconText: "text-theme-orange-05",
+    groupHoverIconBg: "group-hover:bg-theme-orange-01",
+    groupHoverIconText: "group-hover:text-theme-orange-05",
+    accentBorder: "border-l-theme-orange-05",
+  },
+  cyan: {
+    activeBg: "bg-theme-cyan-01",
+    activeText: "text-theme-cyan-05",
+    hoverBg: "hover:bg-theme-cyan-01",
+    iconBg: "bg-theme-cyan-01",
+    iconText: "text-theme-cyan-05",
+    groupHoverIconBg: "group-hover:bg-theme-cyan-01",
+    groupHoverIconText: "group-hover:text-theme-cyan-05",
+    accentBorder: "border-l-theme-cyan-05",
+  },
+};
 
 interface AdminNavTabProps {
   group: AdminNavGroup;
@@ -16,6 +83,7 @@ interface AdminNavTabProps {
 export default function AdminNavTab({ group }: AdminNavTabProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const colors = colorMap[group.color];
 
   // Check if any item in this group matches the current route
   const isActive = group.items.some((item) => pathname.startsWith(item.link));
@@ -28,14 +96,14 @@ export default function AdminNavTab({ group }: AdminNavTabProps) {
         <button
           title={group.oldName ? `was: ${group.oldName}` : undefined}
           className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-08 text-sm font-medium transition-colors cursor-pointer select-none",
-            "hover:bg-background-neutral-02",
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-08 text-sm font-medium transition-all cursor-pointer select-none",
             isActive
-              ? "bg-background-neutral-02 text-text-01"
-              : "text-text-03 hover:text-text-01"
+              ? cn(colors.activeBg, colors.activeText)
+              : cn("text-text-03 hover:text-text-05", colors.hoverBg),
+            open && cn(colors.activeBg, colors.activeText)
           )}
         >
-          <GroupIcon className="w-4 h-4" />
+          <GroupIcon className={cn("w-4 h-4", (isActive || open) && colors.iconText)} />
           <span className="hidden md:inline">{group.name}</span>
           <SvgChevronDown
             className={cn(
@@ -51,12 +119,30 @@ export default function AdminNavTab({ group }: AdminNavTabProps) {
         sideOffset={8}
         width="fit"
       >
-        <div className="p-2 min-w-[16rem] max-w-[28rem]">
+        <div className="p-2 min-w-[18rem] max-w-[32rem]">
+          {/* Group header inside dropdown */}
+          <div className="flex items-center gap-2 px-2.5 py-1.5 mb-1">
+            <div className={cn("w-6 h-6 rounded-04 flex items-center justify-center", colors.iconBg)}>
+              <GroupIcon className={cn("w-3.5 h-3.5", colors.iconText)} />
+            </div>
+            <Text as="span" mainUiBody className={cn("font-semibold", colors.activeText)}>
+              {group.name}
+            </Text>
+            {group.oldName && (
+              <Text as="span" secondaryBody text03 className="text-[10px] ml-auto">
+                was: {group.oldName}
+              </Text>
+            )}
+          </div>
+
+          <div className="w-full h-px bg-border-01 mb-1" />
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-0.5">
             {group.items.map((item) => (
               <NavDropdownItem
                 key={item.link}
                 item={item}
+                groupColor={group.color}
                 isActive={pathname.startsWith(item.link)}
                 onNavigate={() => setOpen(false)}
               />
@@ -70,51 +156,59 @@ export default function AdminNavTab({ group }: AdminNavTabProps) {
 
 interface NavDropdownItemProps {
   item: AdminNavItem;
+  groupColor: NavGroupColor;
   isActive: boolean;
   onNavigate: () => void;
 }
 
-function NavDropdownItem({ item, isActive, onNavigate }: NavDropdownItemProps) {
+function NavDropdownItem({ item, groupColor, isActive, onNavigate }: NavDropdownItemProps) {
   const Icon = item.icon;
+  const colors = colorMap[groupColor];
 
-  const linkContent = (
+  return (
     <Link
       href={item.link as any}
       onClick={onNavigate}
       className={cn(
-        "flex items-center gap-2.5 px-2.5 py-2 rounded-08 transition-colors group",
-        "hover:bg-background-neutral-02",
-        isActive && "bg-background-neutral-02",
-        item.isAiRelated && "border-l-2 border-l-blue-500 dark:border-l-blue-400"
+        "flex items-center gap-2.5 px-2.5 py-2 rounded-08 transition-all group",
+        colors.hoverBg,
+        isActive && cn(colors.activeBg, "border-l-2", colors.accentBorder)
       )}
     >
-      <Icon
+      {/* Colorful icon badge */}
+      <div
         className={cn(
-          "w-4 h-4 flex-shrink-0",
-          isActive ? "stroke-text-01" : "stroke-text-03 group-hover:stroke-text-01"
+          "w-7 h-7 rounded-08 flex items-center justify-center flex-shrink-0 transition-colors",
+          isActive ? colors.iconBg : cn("bg-background-neutral-02", colors.groupHoverIconBg)
         )}
-      />
+      >
+        <Icon
+          className={cn(
+            "w-3.5 h-3.5 flex-shrink-0 transition-colors",
+            isActive ? colors.iconText : cn("text-text-03", colors.groupHoverIconText)
+          )}
+        />
+      </div>
       <div className="flex flex-col min-w-0">
         <Text
           as="span"
           mainUiBody
           className={cn(
-            isActive ? "text-text-01" : "text-text-03 group-hover:text-text-01"
+            "transition-colors",
+            isActive ? "text-text-05 font-medium" : "text-text-04 group-hover:text-text-05"
           )}
         >
           {item.name}
         </Text>
         {item.oldName && item.oldName !== item.name && (
-          <Text as="span" secondaryBody text04 className="text-[10px]">
+          <Text as="span" secondaryBody text02 className="text-[10px]">
             was: {item.oldName}
           </Text>
         )}
       </div>
       {item.error && (
-        <span className="w-1.5 h-1.5 rounded-full bg-status-error-strong flex-shrink-0" />
+        <span className="w-2 h-2 rounded-full bg-status-error-05 flex-shrink-0 animate-pulse" />
       )}
     </Link>
   );
-
-  return linkContent;
 }

@@ -57,12 +57,12 @@ import UserAvatarPopover from "@/sections/sidebar/UserAvatarPopover";
 
 const connectors_items = () => [
   {
-    name: "Existing Connectors",
+    name: "Connected Sources",
     icon: NotebookIconSkeleton,
     link: "/admin/indexing/status",
   },
   {
-    name: "Add Connector",
+    name: "Data Sources",
     icon: SvgUploadCloud,
     link: "/admin/add-connector",
   },

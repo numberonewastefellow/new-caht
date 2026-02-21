@@ -41,6 +41,9 @@ function customConfigProcessing(customConfigsList: [string, string][]) {
 export function CustomForm({
   existingLlmProvider,
   shouldMarkAsDefault,
+  renderless,
+  isOpen,
+  onOpenChange,
 }: LLMProviderFormProps) {
   return (
     <ProviderFormEntrypointWrapper
@@ -48,6 +51,9 @@ export function CustomForm({
       existingLlmProvider={existingLlmProvider}
       buttonMode={!existingLlmProvider}
       buttonText="Add Custom LLM Provider"
+      renderless={renderless}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
     >
       {({
         onClose,

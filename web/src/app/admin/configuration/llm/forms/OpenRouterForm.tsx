@@ -93,6 +93,9 @@ async function fetchOpenRouterModels(params: {
 export function OpenRouterForm({
   existingLlmProvider,
   shouldMarkAsDefault,
+  renderless,
+  isOpen,
+  onOpenChange,
 }: LLMProviderFormProps) {
   const [fetchedModels, setFetchedModels] = useState<ModelConfiguration[]>([]);
 
@@ -101,6 +104,9 @@ export function OpenRouterForm({
       providerName={OPENROUTER_DISPLAY_NAME}
       providerEndpoint={OPENROUTER_PROVIDER_NAME}
       existingLlmProvider={existingLlmProvider}
+      renderless={renderless}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
     >
       {({
         onClose,

@@ -105,6 +105,12 @@ export interface BedrockModelResponse {
 export interface LLMProviderFormProps {
   existingLlmProvider?: LLMProviderView;
   shouldMarkAsDefault?: boolean;
+  /** When true, renders no card/button UI — only the modal. Parent controls visibility. */
+  renderless?: boolean;
+  /** Controlled modal open state (used with renderless) */
+  isOpen?: boolean;
+  /** Callback when the modal requests close */
+  onOpenChange?: (open: boolean) => void;
 }
 
 // Param types for model fetching functions - use snake_case to match API structure

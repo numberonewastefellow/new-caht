@@ -35,6 +35,12 @@ interface ProviderFormEntrypointWrapperProps {
   buttonMode?: boolean;
   /** Custom button text for buttonMode (defaults to "Add {providerName}") */
   buttonText?: string;
+  /** When true, renders no card/button UI — only the modal. Parent controls visibility. */
+  renderless?: boolean;
+  /** Controlled modal open state (used with renderless) */
+  isOpen?: boolean;
+  /** Callback when the modal requests close */
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function ProviderFormEntrypointWrapper({
@@ -44,6 +50,9 @@ export function ProviderFormEntrypointWrapper({
   existingLlmProvider,
   buttonMode,
   buttonText,
+  renderless,
+  isOpen,
+  onOpenChange,
 }: ProviderFormEntrypointWrapperProps) {
   const [formIsVisible, setFormIsVisible] = useState(false);
 
@@ -62,7 +71,16 @@ export function ProviderFormEntrypointWrapper({
     errorHandlingFetcher
   );
 
-  const onClose = () => setFormIsVisible(false);
+  const onClose = () => {
+    if (renderless && onOpenChange) {
+      onOpenChange(false);
+    } else {
+      setFormIsVisible(false);
+    }
+  };
+
+  // Determine effective visibility
+  const isFormVisible = renderless ? (isOpen ?? false) : formIsVisible;
 
   async function handleSetAsDefault(): Promise<void> {
     if (!existingLlmProvider) return;
@@ -93,6 +111,26 @@ export function ProviderFormEntrypointWrapper({
     wellKnownLLMProvider,
   };
 
+  // Renderless mode: no card/button UI, modal controlled by parent
+  if (renderless) {
+    return isFormVisible ? (
+      <Modal open onOpenChange={onClose}>
+        <Modal.Content>
+          <Modal.Header
+            icon={SvgSettings}
+            title={`${existingLlmProvider ? "Configure" : "Setup"} ${
+              existingLlmProvider?.name
+                ? `"${existingLlmProvider.name}"`
+                : providerName
+            }`}
+            onClose={onClose}
+          />
+          <Modal.Body>{children(context)}</Modal.Body>
+        </Modal.Content>
+      </Modal>
+    ) : null;
+  }
+
   // Button mode: simple button that opens a modal
   if (buttonMode && !existingLlmProvider) {
     return (
@@ -101,7 +139,7 @@ export function ProviderFormEntrypointWrapper({
           {buttonText ?? `Add ${providerName}`}
         </Button>
 
-        {formIsVisible && (
+        {isFormVisible && (
           <Modal open onOpenChange={onClose}>
             <Modal.Content>
               <Modal.Header
@@ -182,7 +220,7 @@ export function ProviderFormEntrypointWrapper({
         )}
       </div>
 
-      {formIsVisible && (
+      {isFormVisible && (
         <Modal open onOpenChange={onClose}>
           <Modal.Content>
             <Modal.Header

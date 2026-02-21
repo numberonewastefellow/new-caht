@@ -44,12 +44,16 @@ export interface AdminNavItem {
   error?: boolean;
 }
 
+/** Color identity for each nav group — maps to the design system theme tokens */
+export type NavGroupColor = "blue" | "purple" | "green" | "orange" | "cyan";
+
 export interface AdminNavGroup {
   id: string;
   name: string;
   /** Old group name shown as tooltip for reference (will be removed later) */
   oldName?: string;
   icon: React.FunctionComponent<IconProps>;
+  color: NavGroupColor;
   items: AdminNavItem[];
 }
 
@@ -88,15 +92,16 @@ export function getAdminNavGroups(opts: {
       name: "Knowledge",
       oldName: "Data",
       icon: SvgUploadCloud,
+      color: "green",
       items: [
         {
-          name: "Active Sources",
+          name: "Connected Sources",
           oldName: "Existing Connectors",
           icon: NotebookIconSkeleton,
           link: "/admin/indexing/status",
         },
         {
-          name: "Connect Source",
+          name: "Data Sources",
           oldName: "Add Connector",
           icon: SvgUploadCloud,
           link: "/admin/add-connector",
@@ -180,6 +185,7 @@ export function getAdminNavGroups(opts: {
     name: "Agents",
     oldName: "Custom Assistants",
     icon: SvgOnyxOctagon,
+    color: "purple",
     items: agentItems,
   });
 
@@ -249,6 +255,7 @@ export function getAdminNavGroups(opts: {
       name: "AI Models",
       oldName: "Configuration",
       icon: SvgCpu,
+      color: "blue",
       items: modelItems,
     });
   }
@@ -304,6 +311,7 @@ export function getAdminNavGroups(opts: {
       name: "Governance",
       oldName: "User Management",
       icon: SvgUsers,
+      color: "orange",
       items: governanceItems,
     });
   }
@@ -379,6 +387,7 @@ export function getAdminNavGroups(opts: {
       name: "Workspace",
       oldName: "Settings",
       icon: SvgSettings,
+      color: "cyan",
       items: workspaceItems,
     });
   }
@@ -400,8 +409,8 @@ export function flattenNavItems(groups: AdminNavGroup[]): AdminNavItem[] {
 export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   admin: "Admin",
   indexing: "Indexing",
-  status: "Active Sources",
-  "add-connector": "Connect Source",
+  status: "Connected Sources",
+  "add-connector": "Data Sources",
   documents: "Knowledge",
   sets: "Collections",
   explorer: "Knowledge Explorer",

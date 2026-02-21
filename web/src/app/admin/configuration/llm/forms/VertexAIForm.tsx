@@ -35,12 +35,18 @@ interface VertexAIFormValues extends BaseLLMFormValues {
 export function VertexAIForm({
   existingLlmProvider,
   shouldMarkAsDefault,
+  renderless,
+  isOpen,
+  onOpenChange,
 }: LLMProviderFormProps) {
   return (
     <ProviderFormEntrypointWrapper
       providerName={VERTEXAI_DISPLAY_NAME}
       providerEndpoint={VERTEXAI_PROVIDER_NAME}
       existingLlmProvider={existingLlmProvider}
+      renderless={renderless}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
     >
       {({
         onClose,

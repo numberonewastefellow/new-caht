@@ -50,12 +50,18 @@ const buildTargetUri = (existingLlmProvider?: LLMProviderView): string => {
 export function AzureForm({
   existingLlmProvider,
   shouldMarkAsDefault,
+  renderless,
+  isOpen,
+  onOpenChange,
 }: LLMProviderFormProps) {
   return (
     <ProviderFormEntrypointWrapper
       providerName={AZURE_DISPLAY_NAME}
       providerEndpoint={AZURE_PROVIDER_NAME}
       existingLlmProvider={existingLlmProvider}
+      renderless={renderless}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
     >
       {({
         onClose,

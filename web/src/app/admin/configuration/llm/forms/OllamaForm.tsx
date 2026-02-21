@@ -134,6 +134,9 @@ function OllamaFormContent({
 export function OllamaForm({
   existingLlmProvider,
   shouldMarkAsDefault,
+  renderless,
+  isOpen,
+  onOpenChange,
 }: LLMProviderFormProps) {
   const [fetchedModels, setFetchedModels] = useState<ModelConfiguration[]>([]);
 
@@ -141,6 +144,9 @@ export function OllamaForm({
     <ProviderFormEntrypointWrapper
       providerName="Ollama"
       existingLlmProvider={existingLlmProvider}
+      renderless={renderless}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
     >
       {({
         onClose,

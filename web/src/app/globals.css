@@ -176,13 +176,30 @@
 
   /* VirtualAI Input Focus Glow */
   .virtualai-input-glow {
-    transition: box-shadow 0.2s ease;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
   }
   .virtualai-input-glow:focus-within {
     box-shadow:
-      0px 2px 12px 0px var(--shadow-02),
-      0px 0px 4px 1px var(--shadow-02),
-      0 0 0 3px var(--virtualai-accent-glow, transparent);
+      0px 2px 16px 0px var(--shadow-02),
+      0px 0px 6px 1px var(--shadow-02),
+      0 0 0 2px var(--virtualai-accent-glow, transparent);
+    border-color: var(--border-02);
+  }
+
+  /* VirtualAI User Message Bubble — subtle accent tint */
+  .virtualai-user-bubble {
+    background: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 8%, var(--background-tint-02) 92%);
+    border-color: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 15%, var(--border-01) 85%);
+  }
+
+  /* Subtle background gradient for empty state */
+  .virtualai-bg-gradient {
+    background:
+      radial-gradient(
+        ellipse at 50% 0%,
+        color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 3%, transparent 97%) 0%,
+        transparent 70%
+      );
   }
 }
 

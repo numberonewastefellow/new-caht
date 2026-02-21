@@ -53,7 +53,7 @@ export function SearchAndFilterControls({
   return (
     <div className="flex items-center gap-x-2">
       <InputTypeIn
-        placeholder="Search Connectors"
+        placeholder="Search sources..."
         type="text"
         value={localSearchValue}
         onChange={(event) => setLocalSearchValue(event.target.value)}

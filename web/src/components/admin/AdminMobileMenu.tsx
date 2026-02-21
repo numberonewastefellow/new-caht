@@ -4,11 +4,19 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { SvgMenu, SvgX, SvgChevronDown } from "@opal/icons";
+import { SvgMenu, SvgX, SvgChevronDown, SvgArrowUpRight } from "@opal/icons";
 import { Button } from "@opal/components";
 import { cn } from "@/lib/utils";
 import Text from "@/refresh-components/texts/Text";
-import type { AdminNavGroup } from "./adminNavItems";
+import type { AdminNavGroup, NavGroupColor } from "./adminNavItems";
+
+const colorMap: Record<NavGroupColor, { iconBg: string; iconText: string; activeBg: string; activeText: string }> = {
+  green:  { iconBg: "bg-theme-green-01",  iconText: "text-theme-green-05",  activeBg: "bg-theme-green-01",  activeText: "text-theme-green-05"  },
+  purple: { iconBg: "bg-theme-purple-01", iconText: "text-theme-purple-05", activeBg: "bg-theme-purple-01", activeText: "text-theme-purple-05" },
+  blue:   { iconBg: "bg-theme-blue-01",   iconText: "text-theme-blue-05",   activeBg: "bg-theme-blue-01",   activeText: "text-theme-blue-05"   },
+  orange: { iconBg: "bg-theme-orange-01", iconText: "text-theme-orange-05", activeBg: "bg-theme-orange-01", activeText: "text-theme-orange-05" },
+  cyan:   { iconBg: "bg-theme-cyan-01",   iconText: "text-theme-cyan-05",   activeBg: "bg-theme-cyan-01",   activeText: "text-theme-cyan-05"   },
+};
 
 interface AdminMobileMenuProps {
   groups: AdminNavGroup[];
@@ -42,7 +50,7 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
           <DialogPrimitive.Title className="sr-only">
             Navigation Menu
           </DialogPrimitive.Title>
-          <div className="p-3 flex flex-col gap-1">
+          <div className="p-3 flex flex-col gap-0.5">
             {/* Close button */}
             <div className="flex justify-end mb-1">
               <DialogPrimitive.Close asChild>
@@ -57,6 +65,7 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
 
             {groups.map((group) => {
               const GroupIcon = group.icon;
+              const colors = colorMap[group.color];
               const isExpanded = expandedGroup === group.id;
               const hasActiveItem = group.items.some((item) =>
                 pathname.startsWith(item.link)
@@ -67,32 +76,35 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
                   <button
                     onClick={() => toggleGroup(group.id)}
                     className={cn(
-                      "flex items-center gap-2 w-full px-3 py-2.5 rounded-08 text-left transition-colors cursor-pointer",
-                      "hover:bg-background-neutral-02",
-                      hasActiveItem && "text-text-01 font-medium"
+                      "flex items-center gap-2.5 w-full px-3 py-2.5 rounded-08 text-left transition-all cursor-pointer",
+                      hasActiveItem
+                        ? cn(colors.activeBg, colors.activeText, "font-medium")
+                        : "hover:bg-background-neutral-02"
                     )}
                   >
-                    <GroupIcon className="w-4 h-4 flex-shrink-0" />
+                    <div className={cn("w-7 h-7 rounded-08 flex items-center justify-center flex-shrink-0", colors.iconBg)}>
+                      <GroupIcon className={cn("w-3.5 h-3.5", colors.iconText)} />
+                    </div>
                     <div className="flex flex-col flex-1 min-w-0">
                       <Text as="span" mainUiBody>
                         {group.name}
                       </Text>
                       {group.oldName && (
-                        <Text as="span" secondaryBody text04 className="text-[10px]">
+                        <Text as="span" secondaryBody text02 className="text-[10px]">
                           was: {group.oldName}
                         </Text>
                       )}
                     </div>
                     <SvgChevronDown
                       className={cn(
-                        "w-4 h-4 transition-transform",
+                        "w-4 h-4 transition-transform text-text-03",
                         isExpanded && "rotate-180"
                       )}
                     />
                   </button>
 
                   {isExpanded && (
-                    <div className="ml-4 mt-0.5 flex flex-col gap-0.5">
+                    <div className="ml-5 mt-0.5 flex flex-col gap-0.5 border-l-2 border-border-01 pl-3">
                       {group.items.map((item) => {
                         const ItemIcon = item.icon;
                         const isActive = pathname.startsWith(item.link);
@@ -103,29 +115,28 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
                             href={item.link as any}
                             onClick={() => setOpen(false)}
                             className={cn(
-                              "flex items-center gap-2 px-3 py-2 rounded-08 transition-colors",
-                              "hover:bg-background-neutral-02",
-                              isActive && "bg-background-neutral-02"
+                              "flex items-center gap-2.5 px-2.5 py-2 rounded-08 transition-all",
+                              isActive
+                                ? cn(colors.activeBg, "border-l-2", "border-l-current", colors.activeText)
+                                : "hover:bg-background-neutral-02"
                             )}
                           >
-                            <ItemIcon
-                              className={cn(
-                                "w-4 h-4 flex-shrink-0",
-                                isActive
-                                  ? "stroke-text-01"
-                                  : "stroke-text-03"
-                              )}
-                            />
+                            <div className={cn(
+                              "w-6 h-6 rounded-04 flex items-center justify-center flex-shrink-0",
+                              isActive ? colors.iconBg : "bg-background-neutral-02"
+                            )}>
+                              <ItemIcon className={cn("w-3 h-3", isActive ? colors.iconText : "text-text-03")} />
+                            </div>
                             <div className="flex flex-col min-w-0">
                               <Text
                                 as="span"
                                 secondaryBody
-                                className={isActive ? "text-text-01" : "text-text-03"}
+                                className={isActive ? "text-text-05 font-medium" : "text-text-04"}
                               >
                                 {item.name}
                               </Text>
                               {item.oldName && item.oldName !== item.name && (
-                                <Text as="span" secondaryBody text04 className="text-[10px]">
+                                <Text as="span" secondaryBody text02 className="text-[10px]">
                                   was: {item.oldName}
                                 </Text>
                               )}
@@ -140,12 +151,13 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
             })}
 
             {/* Exit Admin link */}
-            <div className="mt-2 pt-2 border-t">
+            <div className="mt-2 pt-2 border-t border-border-01">
               <Link
                 href={"/app" as any}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2 px-3 py-2 rounded-08 hover:bg-background-neutral-02 transition-colors"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-08 hover:bg-background-neutral-02 transition-colors"
               >
+                <SvgArrowUpRight className="w-4 h-4 text-text-03" />
                 <Text as="span" mainUiBody text03>
                   Exit Admin
                 </Text>

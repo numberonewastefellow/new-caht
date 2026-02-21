@@ -183,7 +183,7 @@ function Main() {
         <Text className="mt-12">
           It looks like you don&apos;t have any connectors setup yet. Visit the{" "}
           <Link className="text-link" href="/admin/add-connector">
-            Add Connector
+            Add Data Source
           </Link>{" "}
           page to get started!
         </Text>
@@ -216,9 +216,9 @@ export default function Status() {
     <>
       <AdminPageTitle
         icon={<NotebookIcon size={32} />}
-        title="Existing Connectors"
+        title="Connected Sources"
         farRightElement={
-          <Button href="/admin/add-connector">Add Connector</Button>
+          <Button href="/admin/add-connector">Add Data Source</Button>
         }
       />
 

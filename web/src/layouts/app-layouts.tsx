@@ -583,7 +583,7 @@ function Root({ children, enableBackground }: AppRootProps) {
       <div className="z-app-layout">
         {!appFocus.isSharedChat() && <Header />}
       </div>
-      <div className="z-app-layout flex-1 overflow-auto h-full w-full">
+      <div className={cn("z-app-layout flex-1 overflow-auto h-full w-full", !showBackground && "virtualai-bg-gradient")}>
         {children}
       </div>
       <div className="z-app-layout">

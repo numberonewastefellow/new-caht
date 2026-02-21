@@ -1,4 +1,4 @@
-import { LLMProviderName, LLMProviderView } from "../interfaces";
+import { LLMProviderFormProps, LLMProviderName, LLMProviderView } from "../interfaces";
 import { AnthropicForm } from "./AnthropicForm";
 import { OpenAIForm } from "./OpenAIForm";
 import { OllamaForm } from "./OllamaForm";
@@ -7,6 +7,7 @@ import { VertexAIForm } from "./VertexAIForm";
 import { OpenRouterForm } from "./OpenRouterForm";
 import { CustomForm } from "./CustomForm";
 import { BedrockForm } from "./BedrockForm";
+import { ComponentType } from "react";
 
 export function detectIfRealOpenAIProvider(provider: LLMProviderView) {
   return (
@@ -15,6 +16,30 @@ export function detectIfRealOpenAIProvider(provider: LLMProviderView) {
     !provider.api_base &&
     Object.keys(provider.custom_config || {}).length === 0
   );
+}
+
+/** Returns the form **component** (not JSX) for an existing provider. */
+export function getFormComponentForProvider(
+  provider: LLMProviderView
+): ComponentType<LLMProviderFormProps> {
+  switch (provider.provider) {
+    case LLMProviderName.OPENAI:
+      return detectIfRealOpenAIProvider(provider) ? OpenAIForm : CustomForm;
+    case LLMProviderName.ANTHROPIC:
+      return AnthropicForm;
+    case LLMProviderName.OLLAMA_CHAT:
+      return OllamaForm;
+    case LLMProviderName.AZURE:
+      return AzureForm;
+    case LLMProviderName.VERTEX_AI:
+      return VertexAIForm;
+    case LLMProviderName.BEDROCK:
+      return BedrockForm;
+    case LLMProviderName.OPENROUTER:
+      return OpenRouterForm;
+    default:
+      return CustomForm;
+  }
 }
 
 export const getFormForExistingProvider = (provider: LLMProviderView) => {

@@ -66,11 +66,11 @@ export function ClientLayout({
     pathname.startsWith("/admin/embeddings");
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden">
+    <div className="h-screen w-screen flex flex-col overflow-hidden bg-background-tint-00">
       {/* Payment reminder banner */}
       {settings.settings.application_status ===
         ApplicationStatus.PAYMENT_REMINDER && (
-        <div className="fixed top-16 left-1/2 transform -translate-x-1/2 bg-amber-400 dark:bg-amber-500 text-gray-900 dark:text-gray-100 p-4 rounded-lg shadow-lg z-50 max-w-md text-center">
+        <div className="fixed top-16 left-1/2 transform -translate-x-1/2 bg-theme-amber-02 text-text-05 p-4 rounded-12 shadow-lg z-50 max-w-md text-center border border-theme-amber-05">
           <strong className="font-bold">Warning:</strong> Your trial ends in
           less than 5 days and no payment method has been added.
           <div className="mt-2">
@@ -100,8 +100,10 @@ export function ClientLayout({
           {children}
         </div>
       ) : (
-        <div className="flex-1 min-w-0 min-h-0 overflow-y-auto pt-6 px-4 md:px-12 pb-12">
-          <div className="max-w-6xl mx-auto w-full">{children}</div>
+        <div className="flex-1 min-w-0 min-h-0 overflow-y-auto">
+          <div className="max-w-6xl mx-auto w-full pt-8 px-6 md:px-12 pb-16">
+            {children}
+          </div>
         </div>
       )}
     </div>

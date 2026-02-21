@@ -56,6 +56,8 @@ import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import { useQueryController } from "@/providers/QueryControllerProvider";
 import { Section } from "@/layouts/general-layouts";
 import Spacer from "@/refresh-components/Spacer";
+import useAgentPreferences from "@/hooks/useAgentPreferences";
+import QuickActionChips from "@/sections/input/QuickActionChips";
 
 const LINE_HEIGHT = 24;
 const MIN_INPUT_HEIGHT = 44;
@@ -176,9 +178,18 @@ const AppInputBar = React.memo(
       (appFocus.isNewSession() && appMode === "search") ||
       classification === "search";
 
-    const { forcedToolIds, setForcedToolIds } = useForcedTools();
+    const { forcedToolIds, setForcedToolIds, toggleForcedTool } =
+      useForcedTools();
+    const { assistantPreferences } = useAgentPreferences();
     const { currentMessageFiles, setCurrentMessageFiles } =
       useProjectsContext();
+
+    const disabledToolIds = useMemo(() => {
+      if (!selectedAssistant || !assistantPreferences) return [];
+      return (
+        assistantPreferences[selectedAssistant.id]?.disabled_tool_ids || []
+      );
+    }, [selectedAssistant, assistantPreferences]);
 
     const currentIndexingFiles = useMemo(() => {
       return currentMessageFiles.filter(
@@ -443,7 +454,7 @@ const AppInputBar = React.memo(
           ref={containerRef}
           id="onyx-chat-input"
           className={cn(
-            "w-full flex flex-col shadow-01 bg-background-neutral-00 rounded-16 virtualai-input-glow"
+            "w-full flex flex-col shadow-01 bg-background-neutral-00 rounded-16 border border-border-01 virtualai-input-glow"
             // # Note (from @raunakab):
             //
             // `shadow-01` extends ~14px below the element (2px offset + 12px blur).
@@ -510,13 +521,13 @@ const AppInputBar = React.memo(
                         ]
                   )}
                   autoFocus
-                  style={{ scrollbarWidth: "thin" }}
+                  style={{ scrollbarWidth: "thin", transition: "height 0.1s ease" }}
                   role="textarea"
                   aria-multiline
                   placeholder={
                     isSearchMode
                       ? "Search connected sources"
-                      : "How can I help you today"
+                      : "Message VertualAI..."
                   }
                   value={message}
                   onKeyDown={(event) => {
@@ -700,6 +711,18 @@ const AppInputBar = React.memo(
                     controlsLoading && "invisible"
                   )}
                 >
+                  {/* Quick action chips for common tools */}
+                  {selectedAssistant && selectedAssistant.tools.length > 0 && (
+                    <QuickActionChips
+                      tools={selectedAssistant.tools}
+                      forcedToolIds={forcedToolIds}
+                      disabledToolIds={disabledToolIds}
+                      onToggleForce={toggleForcedTool}
+                      disabled={disabled}
+                    />
+                  )}
+
+                  {/* More tools popover */}
                   {selectedAssistant && selectedAssistant.tools.length > 0 && (
                     <ActionsPopover
                       selectedAssistant={selectedAssistant}
@@ -721,32 +744,49 @@ const AppInputBar = React.memo(
                     </Button>
                   )}
 
+                  {/* Show forced tool pills only for non-quick-chip tools (MCP, OpenAPI, etc.) */}
                   {selectedAssistant &&
                     forcedToolIds.length > 0 &&
-                    forcedToolIds.map((toolId) => {
-                      const tool = selectedAssistant.tools.find(
-                        (tool) => tool.id === toolId
-                      );
-                      if (!tool) {
-                        return null;
-                      }
-                      return (
-                        <Button
-                          key={toolId}
-                          icon={getIconForAction(tool)}
-                          onClick={() => {
-                            setForcedToolIds(
-                              forcedToolIds.filter((id) => id !== toolId)
-                            );
-                          }}
-                          variant="select"
-                          selected
-                          disabled={disabled}
-                        >
-                          {tool.display_name}
-                        </Button>
-                      );
-                    })}
+                    forcedToolIds
+                      .filter((toolId) => {
+                        // Skip tools already shown in QuickActionChips
+                        const tool = selectedAssistant.tools.find(
+                          (t) => t.id === toolId
+                        );
+                        if (!tool) return false;
+                        const quickIds = [
+                          "SearchTool",
+                          "WebSearchTool",
+                          "ImageGenerationTool",
+                        ];
+                        return !quickIds.includes(
+                          tool.in_code_tool_id || ""
+                        );
+                      })
+                      .map((toolId) => {
+                        const tool = selectedAssistant.tools.find(
+                          (tool) => tool.id === toolId
+                        );
+                        if (!tool) {
+                          return null;
+                        }
+                        return (
+                          <Button
+                            key={toolId}
+                            icon={getIconForAction(tool)}
+                            onClick={() => {
+                              setForcedToolIds(
+                                forcedToolIds.filter((id) => id !== toolId)
+                              );
+                            }}
+                            variant="select"
+                            selected
+                            disabled={disabled}
+                          >
+                            {tool.display_name}
+                          </Button>
+                        );
+                      })}
                 </div>
               </div>
 

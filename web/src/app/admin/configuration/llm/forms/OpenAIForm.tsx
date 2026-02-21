@@ -22,12 +22,18 @@ const DEFAULT_DEFAULT_MODEL_NAME = "gpt-5.2";
 export function OpenAIForm({
   existingLlmProvider,
   shouldMarkAsDefault,
+  renderless,
+  isOpen,
+  onOpenChange,
 }: LLMProviderFormProps) {
   return (
     <ProviderFormEntrypointWrapper
       providerName="OpenAI"
       providerEndpoint={OPENAI_PROVIDER_NAME}
       existingLlmProvider={existingLlmProvider}
+      renderless={renderless}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
     >
       {({
         onClose,

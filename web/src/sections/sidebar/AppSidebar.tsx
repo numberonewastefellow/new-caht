@@ -59,8 +59,10 @@ import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import { useModalContext } from "@/components/context/ModalContext";
 import useScreenSize from "@/hooks/useScreenSize";
 import {
+  SvgClock,
   SvgDevKit,
   SvgEditBig,
+  SvgFolder,
   SvgFolderPlus,
   SvgMoreHorizontal,
   SvgOnyxOctagon,
@@ -122,7 +124,7 @@ function RecentsSection({ chatSessions }: RecentsSectionProps) {
         isOver && "bg-background-tint-03"
       )}
     >
-      <SidebarSection title="Recents">
+      <SidebarSection title="Recents" icon={SvgClock} divider>
         {chatSessions.length === 0 ? (
           <Text as="p" text01 className="px-3">
             Try sending a message! Your chat history will appear here.
@@ -657,7 +659,7 @@ const MemoizedAppSidebarInner = memo(
                   collisionDetection={closestCenter}
                   onDragEnd={handleAgentDragEnd}
                 >
-                  <SidebarSection title="Agents">
+                  <SidebarSection title="Agents" icon={SvgOnyxOctagon}>
                     <SortableContext
                       items={visibleAgentIds}
                       strategy={verticalListSortingStrategy}
@@ -686,6 +688,8 @@ const MemoizedAppSidebarInner = memo(
                   {/* Projects */}
                   <SidebarSection
                     title="Projects"
+                    icon={SvgFolder}
+                    divider
                     action={
                       <OpalButton
                         icon={SvgFolderPlus}

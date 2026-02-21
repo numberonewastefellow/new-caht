@@ -171,7 +171,7 @@ const HumanMessage = React.memo(function HumanMessage({
   return (
     <div
       id="onyx-human-message"
-      className="group flex flex-col justify-end pt-5 pb-1 w-full -mr-6 relative"
+      className="group flex flex-col justify-end pt-6 pb-2 w-full -mr-6 relative"
     >
       <FileDisplay alignBubble files={files || []} />
       <div className="flex flex-wrap justify-end break-words">
@@ -195,7 +195,7 @@ const HumanMessage = React.memo(function HumanMessage({
             <div className="md:max-w-[37.5rem] flex basis-[100%] md:basis-auto justify-end md:order-1">
               <div
                 className={
-                  "max-w-[30rem] md:max-w-[37.5rem] whitespace-break-spaces rounded-16 bg-background-tint-02 py-2 px-3 border border-border-01"
+                  "max-w-[30rem] md:max-w-[37.5rem] whitespace-break-spaces rounded-16 virtualai-user-bubble py-2 px-3 border"
                 }
                 onCopy={(e) => {
                   const selection = window.getSelection();

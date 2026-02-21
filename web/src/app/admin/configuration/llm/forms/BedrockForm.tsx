@@ -261,6 +261,9 @@ function BedrockFormInternals({
 export function BedrockForm({
   existingLlmProvider,
   shouldMarkAsDefault,
+  renderless,
+  isOpen,
+  onOpenChange,
 }: LLMProviderFormProps) {
   const [fetchedModels, setFetchedModels] = useState<ModelConfiguration[]>([]);
 
@@ -268,6 +271,9 @@ export function BedrockForm({
     <ProviderFormEntrypointWrapper
       providerName={BEDROCK_DISPLAY_NAME}
       existingLlmProvider={existingLlmProvider}
+      renderless={renderless}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
     >
       {({
         onClose,

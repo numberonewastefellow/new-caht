@@ -11,6 +11,7 @@ import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import { useState, useEffect } from "react";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import FrostedDiv from "@/refresh-components/FrostedDiv";
+import { motion } from "motion/react";
 
 export interface WelcomeMessageProps {
   agent?: MinimalPersonaSnapshot;
@@ -39,26 +40,41 @@ export default function WelcomeMessage({
 
   if (isDefaultAgent) {
     content = (
-      <div data-testid="onyx-logo" className="flex flex-row items-center gap-4">
-        <Logo folded size={32} />
-        <Text as="p" headingH2 className="virtualai-gradient-text">
+      <motion.div
+        data-testid="onyx-logo"
+        className="flex flex-col items-center gap-3"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+      >
+        <Logo folded size={56} />
+        <Text as="p" headingH1 className="virtualai-gradient-text text-center">
           {greeting}
         </Text>
-      </div>
+        <Text as="p" mainContentMuted text03 className="text-center">
+          Ask anything. I&apos;m here to help.
+        </Text>
+      </motion.div>
     );
   } else if (agent) {
     content = (
-      <>
-        <div
-          data-testid="assistant-name-display"
-          className="flex flex-row items-center gap-3"
-        >
-          <AgentAvatar agent={agent} size={36} />
-          <Text as="p" headingH2>
-            {agent.name}
+      <motion.div
+        data-testid="assistant-name-display"
+        className="flex flex-col items-center gap-3"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+      >
+        <AgentAvatar agent={agent} size={48} />
+        <Text as="p" headingH2 className="text-center">
+          {agent.name}
+        </Text>
+        {agent.description && (
+          <Text as="p" mainContentMuted text03 className="text-center max-w-md">
+            {agent.description}
           </Text>
-        </div>
-      </>
+        )}
+      </motion.div>
     );
   }
 
@@ -69,7 +85,7 @@ export default function WelcomeMessage({
   return (
     <FrostedDiv
       data-testid="chat-intro"
-      className="flex flex-col items-center justify-center gap-3 w-full max-w-[var(--app-page-main-content-width)]"
+      className="flex flex-col items-center justify-center gap-4 w-full max-w-[var(--app-page-main-content-width)]"
     >
       {content}
     </FrostedDiv>
