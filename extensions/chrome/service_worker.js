@@ -62,7 +62,7 @@ async function sendToOnyx(info, tab) {
       pageUrl: tab.url,
     });
   } catch (error) {
-    console.error("Error sending to Onyx:", error);
+    console.error("Error sending to VertualAI:", error);
   }
 }
 
@@ -80,7 +80,7 @@ async function toggleNewTabOverride() {
     chrome.notifications.create({
       type: "basic",
       iconUrl: "icon.png",
-      title: "Onyx New Tab",
+      title: "VertualAI New Tab",
       message: `New Tab Override ${newValue ? "enabled" : "disabled"}`,
     });
 
@@ -119,7 +119,7 @@ chrome.commands.onCommand.addListener(async (command) => {
         sendToOnyx({ selectionText: selectedText }, tab);
       }
     } catch (error) {
-      console.error("Error sending to Onyx:", error);
+      console.error("Error sending to VertualAI:", error);
     }
   } else if (command === ACTIONS.TOGGLE_NEW_TAB_OVERRIDE) {
     toggleNewTabOverride();
@@ -211,14 +211,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             })
             .catch((error) => {
               console.error(
-                "[Onyx SW] Error opening side panel with text:",
+                "[VertualAI SW] Error opening side panel with text:",
                 error,
               );
             });
         },
       );
     } else {
-      console.error("[Onyx SW] Missing tabId or windowId");
+      console.error("[VertualAI SW] Missing tabId or windowId");
     }
     return true;
   }
@@ -244,7 +244,7 @@ chrome.windows.onRemoved.addListener((windowId) => {
 });
 
 chrome.omnibox.setDefaultSuggestion({
-  description: 'Search Onyx for "%s"',
+  description: 'Search VertualAI for "%s"',
 });
 
 chrome.omnibox.onInputEntered.addListener(async (text) => {
@@ -267,7 +267,7 @@ chrome.omnibox.onInputChanged.addListener((text, suggest) => {
     suggest([
       {
         content: text,
-        description: `Search Onyx for "<match>${text}</match>"`,
+        description: `Search VertualAI for "<match>${text}</match>"`,
       },
     ]);
   }

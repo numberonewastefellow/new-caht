@@ -62,6 +62,10 @@ import { SvgCheck } from "@opal/icons";
 import { cn } from "@/lib/utils";
 import { Interactive } from "@opal/core";
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import {
+  useVirtualAITheme,
+  VirtualAIAccent,
+} from "@/providers/VirtualAIThemeProvider";
 
 interface PAT {
   id: number;
@@ -185,6 +189,7 @@ function GeneralSettings() {
     updateUserChatBackground,
   } = useUser();
   const { theme, setTheme, systemTheme } = useTheme();
+  const { accent, setAccent } = useVirtualAITheme();
   const { refreshChatSessions } = useChatSessions();
   const router = useRouter();
   const pathname = usePathname();
@@ -364,6 +369,98 @@ function GeneralSettings() {
                 </InputSelect.Content>
               </InputSelect>
             </InputLayouts.Horizontal>
+            <InputLayouts.Vertical title="Accent Theme">
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    {
+                      id: "none" as VirtualAIAccent,
+                      label: "Default",
+                      color: undefined,
+                    },
+                    {
+                      id: "ocean" as VirtualAIAccent,
+                      label: "Ocean",
+                      color: "#3b82f6",
+                    },
+                    {
+                      id: "emerald" as VirtualAIAccent,
+                      label: "Emerald",
+                      color: "#059669",
+                    },
+                    {
+                      id: "violet" as VirtualAIAccent,
+                      label: "Violet",
+                      color: "#7c3aed",
+                    },
+                  ] as const
+                ).map((accentOption) => {
+                  const isSelected = accent === accentOption.id;
+                  return (
+                    <button
+                      key={accentOption.id}
+                      onClick={() => setAccent(accentOption.id)}
+                      className="relative overflow-hidden rounded-lg transition-all w-[90px] h-[68px] cursor-pointer border-none p-0 bg-transparent group"
+                      title={accentOption.label}
+                      aria-label={`${accentOption.label} accent theme${
+                        isSelected ? " (selected)" : ""
+                      }`}
+                    >
+                      {accentOption.color ? (
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            background: `linear-gradient(135deg, ${accentOption.color}22 0%, ${accentOption.color}66 100%)`,
+                          }}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-background flex items-center justify-center">
+                          <span className="text-xs text-text-02">Default</span>
+                        </div>
+                      )}
+                      {accentOption.color && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xs font-medium text-text-05">
+                            {accentOption.label}
+                          </span>
+                        </div>
+                      )}
+                      <div
+                        className={cn(
+                          "absolute inset-0 transition-all rounded-lg",
+                          isSelected
+                            ? "ring-2 ring-inset"
+                            : "ring-1 ring-inset ring-border-02 group-hover:ring-border-03"
+                        )}
+                        style={
+                          isSelected && accentOption.color
+                            ? {
+                                boxShadow: `inset 0 0 0 2px ${accentOption.color}`,
+                              }
+                            : isSelected
+                              ? {
+                                  boxShadow:
+                                    "inset 0 0 0 2px var(--theme-primary-05)",
+                                }
+                              : undefined
+                        }
+                      />
+                      {isSelected && (
+                        <div
+                          className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
+                          style={{
+                            backgroundColor:
+                              accentOption.color || "var(--theme-primary-05)",
+                          }}
+                        >
+                          <SvgCheck className="w-2.5 h-2.5 stroke-text-inverted-05" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </InputLayouts.Vertical>
             <InputLayouts.Vertical title="Chat Background">
               <div className="flex flex-wrap gap-2">
                 {CHAT_BACKGROUND_OPTIONS.map((bg) => {
@@ -780,7 +877,7 @@ function ChatPreferencesSettings() {
         <Card>
           <InputLayouts.Horizontal
             title="Default Model"
-            description="This model will be used by Onyx by default in your chats."
+            description="This model will be used by VertualAI by default in your chats."
           >
             <LLMPopover
               llmManager={llmManager}
@@ -849,7 +946,7 @@ function ChatPreferencesSettings() {
         <Card>
           <InputLayouts.Horizontal
             title="Reference Stored Memories"
-            description="Let Onyx reference stored memories in chats."
+            description="Let VertualAI reference stored memories in chats."
           >
             <Switch
               checked={personalizationValues.use_memories}
@@ -861,7 +958,7 @@ function ChatPreferencesSettings() {
           </InputLayouts.Horizontal>
           <InputLayouts.Horizontal
             title="Update Memories"
-            description="Let Onyx generate and update stored memories."
+            description="Let VertualAI generate and update stored memories."
           >
             <Switch
               checked={personalizationValues.enable_memory_tool}
@@ -1100,7 +1197,7 @@ function AccountsAccessSettings() {
               Any application using the token{" "}
               <Text className="!font-bold">{tokenToDelete.name}</Text>{" "}
               <Text secondaryMono>({tokenToDelete.token_display})</Text> will
-              lose access to Onyx. This action cannot be undone.
+              lose access to VertualAI. This action cannot be undone.
             </Text>
             <Text>Are you sure you want to revoke this token?</Text>
           </Section>
@@ -1410,7 +1507,7 @@ function FederatedConnectorCard({
         >
           <Section gap={0.5} alignItems="start">
             <Text>
-              Onyx will no longer be able to access or search content from your{" "}
+              VertualAI will no longer be able to access or search content from your{" "}
               <Text className="!font-bold">{sourceMetadata.displayName}</Text>{" "}
               account.
             </Text>

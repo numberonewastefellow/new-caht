@@ -1,5 +1,5 @@
 /**
- * Onyx Chat Widget - Entry Point
+ * VertualAI Chat Widget - Entry Point
  * Exports the main web component
  */
 

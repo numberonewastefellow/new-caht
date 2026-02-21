@@ -355,11 +355,11 @@ def log_http_error(request: Request, exc: Exception) -> JSONResponse:
 
 def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     application = FastAPI(
-        title="Onyx Backend",
+        title="VertualAI Backend",
         version=__version__,
-        description="Onyx API for AI-powered chat with search, document indexing, agents, actions, and more",
+        description="VertualAI API for AI-powered chat with search, document indexing, agents, actions, and more",
         servers=[
-            {"url": f"{WEB_DOMAIN.rstrip('/')}/api", "description": "Onyx API Server"}
+            {"url": f"{WEB_DOMAIN.rstrip('/')}/api", "description": "VertualAI API Server"}
         ],
         lifespan=lifespan_override or lifespan,
     )

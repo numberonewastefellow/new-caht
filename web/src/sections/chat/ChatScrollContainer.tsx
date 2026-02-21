@@ -15,9 +15,9 @@ const DEFAULT_ANCHOR_OFFSET_PX = 16; // 1rem
 const DEFAULT_FADE_THRESHOLD_PX = 80; // 5rem
 const DEFAULT_BUTTON_THRESHOLD_PX = 32; // 2rem
 
-// Fade configuration
-const TOP_FADE_HEIGHT = "1rem";
-const BOTTOM_FADE_HEIGHT = "1rem";
+// Fade configuration — subtler fade for a cleaner look
+const TOP_FADE_HEIGHT = "0.5rem";
+const BOTTOM_FADE_HEIGHT = "0.5rem";
 
 export interface ScrollState {
   isAtBottom: boolean;

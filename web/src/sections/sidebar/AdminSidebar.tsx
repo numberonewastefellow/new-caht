@@ -130,7 +130,7 @@ const custom_assistants_items = (
     items.push({
       name: "Standard Answers",
       icon: ClipboardIcon,
-      link: "/admin/standard-answer",
+      link: "/ee/admin/standard-answer",
     });
   }
 
@@ -177,7 +177,7 @@ const collections = (
               {
                 name: "Groups",
                 icon: SvgUsers,
-                link: "/admin/groups",
+                link: "/ee/admin/groups",
               },
             ],
           },
@@ -247,7 +247,7 @@ const collections = (
                     {
                       name: "Groups",
                       icon: SvgUsers,
-                      link: "/admin/groups",
+                      link: "/ee/admin/groups",
                     },
                   ]
                 : []),
@@ -271,14 +271,14 @@ const collections = (
                     {
                       name: "Usage Statistics",
                       icon: SvgActivity,
-                      link: "/admin/performance/usage",
+                      link: "/ee/admin/performance/usage",
                     },
                     ...(settings?.settings.query_history_type !== "disabled"
                       ? [
                           {
                             name: "Query History",
                             icon: SvgServer,
-                            link: "/admin/performance/query-history",
+                            link: "/ee/admin/performance/query-history",
                           },
                         ]
                       : []),
@@ -287,7 +287,7 @@ const collections = (
                           {
                             name: "Custom Analytics",
                             icon: SvgBarChart,
-                            link: "/admin/performance/custom-analytics",
+                            link: "/ee/admin/performance/custom-analytics",
                           },
                         ]
                       : []),
@@ -308,7 +308,7 @@ const collections = (
                     {
                       name: "Appearance & Theming",
                       icon: SvgPaintBrush,
-                      link: "/admin/theme",
+                      link: "/ee/admin/theme",
                     },
                   ]
                 : []),
@@ -396,7 +396,7 @@ export default function AdminSidebar({
           <div className="flex flex-col gap-2">
             {settings.webVersion && (
               <Text as="p" text02 secondaryBody className="px-2">
-                {`Onyx version: ${settings.webVersion}`}
+                {`VertualAI version: ${settings.webVersion}`}
               </Text>
             )}
             <UserAvatarPopover />

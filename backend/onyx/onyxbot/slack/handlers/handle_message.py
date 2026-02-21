@@ -203,7 +203,7 @@ def handle_message(
                 client=client,
                 channel=channel,
                 receiver_ids=[sender_id],
-                text="The OnyxBot slash command is not enabled for this channel",
+                text="The VertualAI Bot slash command is not enabled for this channel",
                 thread_ts=None,
             )
 
@@ -238,7 +238,7 @@ def handle_message(
                             "has reached its user seat limit. Since this is your "
                             "first time interacting with the bot, a new account "
                             "could not be created for you. Please contact your "
-                            "Onyx administrator to add more seats."
+                            "VertualAI administrator to add more seats."
                         ),
                     )
                     return False

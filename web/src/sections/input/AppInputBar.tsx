@@ -443,7 +443,7 @@ const AppInputBar = React.memo(
           ref={containerRef}
           id="onyx-chat-input"
           className={cn(
-            "w-full flex flex-col shadow-01 bg-background-neutral-00 rounded-16"
+            "w-full flex flex-col shadow-01 bg-background-neutral-00 rounded-16 virtualai-input-glow"
             // # Note (from @raunakab):
             //
             // `shadow-01` extends ~14px below the element (2px offset + 12px blur).

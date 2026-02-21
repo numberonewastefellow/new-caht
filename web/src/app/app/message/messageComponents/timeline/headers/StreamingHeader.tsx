@@ -3,9 +3,12 @@
 import React from "react";
 import { SvgFold, SvgExpand } from "@opal/icons";
 import { Button } from "@opal/components";
-import Text from "@/refresh-components/texts/Text";
 import { useStreamingDuration } from "../hooks/useStreamingDuration";
 import { formatDurationSeconds } from "@/lib/time";
+import {
+  SpinnerRing,
+  WaveDots,
+} from "@/app/app/message/ThinkingIndicator";
 
 export interface StreamingHeaderProps {
   headerText: string;
@@ -18,7 +21,7 @@ export interface StreamingHeaderProps {
   toolProcessingDuration?: number;
 }
 
-/** Header during streaming - shimmer text with current activity */
+/** Header during streaming — spinner ring + status text + wave dots */
 export const StreamingHeader = React.memo(function StreamingHeader({
   headerText,
   collapsible,
@@ -34,20 +37,21 @@ export const StreamingHeader = React.memo(function StreamingHeader({
     streamingStartTime,
     toolProcessingDuration
   );
-  const showElapsedTime =
-    isExpanded && streamingStartTime && elapsedSeconds > 0;
+  const showElapsedTime = streamingStartTime && elapsedSeconds > 0;
 
   return (
     <>
-      <div className="px-[var(--timeline-header-text-padding-x)] py-[var(--timeline-header-text-padding-y)]">
-        <Text
-          as="p"
-          mainUiAction
-          text03
-          className="animate-shimmer bg-[length:200%_100%] bg-[linear-gradient(90deg,var(--shimmer-base)_10%,var(--shimmer-highlight)_40%,var(--shimmer-base)_70%)] bg-clip-text text-transparent"
-        >
+      <div className="px-[var(--timeline-header-text-padding-x)] py-[var(--timeline-header-text-padding-y)] flex items-center gap-2">
+        <SpinnerRing size={14} />
+        <span className="font-main-ui-action text-text-04">
           {headerText}
-        </Text>
+        </span>
+        {showElapsedTime && (
+          <span className="font-secondary-body text-text-02">
+            {formatDurationSeconds(elapsedSeconds)}
+          </span>
+        )}
+        <WaveDots />
       </div>
 
       {collapsible &&
@@ -60,17 +64,6 @@ export const StreamingHeader = React.memo(function StreamingHeader({
             aria-expanded={isExpanded}
           >
             {buttonTitle}
-          </Button>
-        ) : showElapsedTime ? (
-          <Button
-            prominence="tertiary"
-            size="md"
-            onClick={onToggle}
-            rightIcon={SvgFold}
-            aria-label="Collapse timeline"
-            aria-expanded={true}
-          >
-            {formatDurationSeconds(elapsedSeconds)}
           </Button>
         ) : (
           <Button

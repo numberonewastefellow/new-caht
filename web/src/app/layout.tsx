@@ -27,6 +27,7 @@ import Script from "next/script";
 import { Hanken_Grotesk } from "next/font/google";
 import { WebVitals } from "./web-vitals";
 import { ThemeProvider } from "next-themes";
+import { VirtualAIThemeProvider } from "@/providers/VirtualAIThemeProvider";
 import CloudError from "@/components/errorPages/CloudErrorPage";
 import Error from "@/components/errorPages/ErrorPage";
 import GatedContentWrapper from "@/components/GatedContentWrapper";
@@ -49,16 +50,21 @@ const hankenGrotesk = Hanken_Grotesk({
 export async function generateMetadata(): Promise<Metadata> {
   let logoLocation = buildClientUrl("/onyx.ico");
   let enterpriseSettings: EnterpriseSettings | null = null;
-  if (SERVER_SIDE_ONLY__PAID_ENTERPRISE_FEATURES_ENABLED) {
-    enterpriseSettings = await (await fetchEnterpriseSettingsSS()).json();
-    logoLocation =
-      enterpriseSettings && enterpriseSettings.use_custom_logo
-        ? "/api/enterprise-settings/logo"
-        : buildClientUrl("/onyx.ico");
+  try {
+    const res = await fetchEnterpriseSettingsSS();
+    if (res.ok) {
+      enterpriseSettings = await res.json();
+      logoLocation =
+        enterpriseSettings && enterpriseSettings.use_custom_logo
+          ? "/api/enterprise-settings/logo"
+          : buildClientUrl("/onyx.ico");
+    }
+  } catch (e) {
+    // Fall through with defaults
   }
 
   return {
-    title: enterpriseSettings?.application_name || "Onyx",
+    title: enterpriseSettings?.application_name || "VertualAI",
     description: "Question answering for your documents",
     icons: {
       icon: logoLocation,
@@ -129,11 +135,13 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="text-text min-h-screen bg-background">
-            <TooltipProvider>
-              <PHProvider>{content}</PHProvider>
-            </TooltipProvider>
-          </div>
+          <VirtualAIThemeProvider>
+            <div className="text-text min-h-screen bg-background">
+              <TooltipProvider>
+                <PHProvider>{content}</PHProvider>
+              </TooltipProvider>
+            </div>
+          </VirtualAIThemeProvider>
         </ThemeProvider>
       </body>
     </html>

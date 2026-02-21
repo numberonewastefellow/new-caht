@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2.0.0",
-  "productName": "Onyx",
+  "productName": "VertualAI",
   "version": "0.0.0-dev",
   "identifier": "app.onyx.desktop",
   "build": {
@@ -12,7 +12,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "Onyx",
+        "title": "VertualAI",
         "label": "main",
         "url": "index.html",
         "width": 1200,
@@ -46,8 +46,8 @@
       "icons/icon.ico"
     ],
     "category": "Productivity",
-    "shortDescription": "Onyx Cloud Desktop App",
-    "longDescription": "A lightweight desktop wrapper for Onyx Cloud - your AI-powered knowledge assistant.",
+    "shortDescription": "VertualAI Cloud Desktop App",
+    "longDescription": "A lightweight desktop wrapper for VertualAI Cloud - your AI-powered knowledge assistant.",
     "macOS": {
       "entitlements": null,
       "exceptionDomain": "cloud.onyx.app",

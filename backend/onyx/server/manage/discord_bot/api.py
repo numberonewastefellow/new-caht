@@ -49,7 +49,7 @@ def _check_bot_config_api_access() -> None:
     if AUTH_TYPE == AuthType.CLOUD:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Discord bot configuration is managed by Onyx on Cloud.",
+            detail="Discord bot configuration is managed by VertualAI on Cloud.",
         )
     if DISCORD_BOT_TOKEN:
         raise HTTPException(

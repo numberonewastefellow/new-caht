@@ -31,11 +31,10 @@ export async function fetchCustomAnalyticsScriptSS() {
 
 export async function fetchSettingsSS(): Promise<CombinedSettings | null> {
   const tasks = [fetchStandardSettingsSS()];
-  if (SERVER_SIDE_ONLY__PAID_ENTERPRISE_FEATURES_ENABLED) {
-    tasks.push(fetchEnterpriseSettingsSS());
-    if (CUSTOM_ANALYTICS_ENABLED) {
-      tasks.push(fetchCustomAnalyticsScriptSS());
-    }
+  // Always fetch enterprise settings regardless of EE flag
+  tasks.push(fetchEnterpriseSettingsSS());
+  if (SERVER_SIDE_ONLY__PAID_ENTERPRISE_FEATURES_ENABLED && CUSTOM_ANALYTICS_ENABLED) {
+    tasks.push(fetchCustomAnalyticsScriptSS());
   }
 
   try {
@@ -82,7 +81,11 @@ export async function fetchSettingsSS(): Promise<CombinedSettings | null> {
       }
 
       if (!result_1.ok) {
-        if (result_1.status !== 403 && result_1.status !== 401) {
+        if (
+          result_1.status !== 403 &&
+          result_1.status !== 401 &&
+          result_1.status !== 404
+        ) {
           throw new Error(
             `fetchEnterpriseSettingsSS failed: status=${
               result_1.status

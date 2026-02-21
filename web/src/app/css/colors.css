@@ -666,3 +666,79 @@
   /* Frost Overlay (for FrostedDiv component) - darker in dark mode */
   --frost-overlay: var(--alpha-grey-100-10);
 }
+
+/* ========================================
+   VirtualAI Accent Themes
+   These are additive theme layers that override
+   only accent/primary colors. They work on top of
+   both light (.virtualai-ocean) and dark (.dark.virtualai-ocean) modes.
+   ======================================== */
+
+/* --- VirtualAI Ocean Theme (Light) --- */
+.virtualai-ocean {
+  --theme-primary-06: #0f172a;
+  --theme-primary-05: #1e40af;
+  --theme-primary-04: #3b82f6;
+  --theme-gradient-05: #1e40af;
+  --theme-gradient-00: #3b82f6;
+  --virtualai-accent-glow: rgba(59, 130, 246, 0.15);
+  --virtualai-accent: #3b82f6;
+}
+
+/* --- VirtualAI Ocean Theme (Dark) --- */
+.dark.virtualai-ocean,
+.dark .virtualai-ocean {
+  --theme-primary-06: #93c5fd;
+  --theme-primary-05: #60a5fa;
+  --theme-primary-04: #3b82f6;
+  --theme-gradient-05: #1e3a5f;
+  --theme-gradient-00: #60a5fa;
+  --virtualai-accent-glow: rgba(59, 130, 246, 0.25);
+  --virtualai-accent: #60a5fa;
+}
+
+/* --- VirtualAI Emerald Theme (Light) --- */
+.virtualai-emerald {
+  --theme-primary-06: #064e3b;
+  --theme-primary-05: #059669;
+  --theme-primary-04: #34d399;
+  --theme-gradient-05: #059669;
+  --theme-gradient-00: #34d399;
+  --virtualai-accent-glow: rgba(52, 211, 153, 0.15);
+  --virtualai-accent: #059669;
+}
+
+/* --- VirtualAI Emerald Theme (Dark) --- */
+.dark.virtualai-emerald,
+.dark .virtualai-emerald {
+  --theme-primary-06: #6ee7b7;
+  --theme-primary-05: #34d399;
+  --theme-primary-04: #059669;
+  --theme-gradient-05: #064e3b;
+  --theme-gradient-00: #34d399;
+  --virtualai-accent-glow: rgba(52, 211, 153, 0.25);
+  --virtualai-accent: #34d399;
+}
+
+/* --- VirtualAI Violet Theme (Light) --- */
+.virtualai-violet {
+  --theme-primary-06: #2e1065;
+  --theme-primary-05: #7c3aed;
+  --theme-primary-04: #a78bfa;
+  --theme-gradient-05: #7c3aed;
+  --theme-gradient-00: #a78bfa;
+  --virtualai-accent-glow: rgba(167, 139, 250, 0.15);
+  --virtualai-accent: #7c3aed;
+}
+
+/* --- VirtualAI Violet Theme (Dark) --- */
+.dark.virtualai-violet,
+.dark .virtualai-violet {
+  --theme-primary-06: #c4b5fd;
+  --theme-primary-05: #a78bfa;
+  --theme-primary-04: #7c3aed;
+  --theme-gradient-05: #2e1065;
+  --theme-gradient-00: #a78bfa;
+  --virtualai-accent-glow: rgba(167, 139, 250, 0.25);
+  --virtualai-accent: #a78bfa;
+}

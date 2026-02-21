@@ -833,7 +833,7 @@ DISABLE_TELEMETRY = os.environ.get("DISABLE_TELEMETRY", "").lower() == "true"
 # Braintrust Configuration
 #####
 # Braintrust project name
-BRAINTRUST_PROJECT = os.environ.get("BRAINTRUST_PROJECT", "Onyx")
+BRAINTRUST_PROJECT = os.environ.get("BRAINTRUST_PROJECT", "VertualAI")
 # Braintrust API key - if provided, Braintrust tracing will be enabled
 BRAINTRUST_API_KEY = os.environ.get("BRAINTRUST_API_KEY") or ""
 # Maximum concurrency for Braintrust evaluations
@@ -913,7 +913,7 @@ AUTO_LLM_UPDATE_INTERVAL_SECONDS = int(
 # founders@onyx.app OR message Chris Weaver or Yuhong Sun in the Onyx
 # Discord community https://discord.gg/4NA5SbzrWb
 ENTERPRISE_EDITION_ENABLED = (
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() == "true"
+    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "true").lower() == "true"
 )
 
 #####

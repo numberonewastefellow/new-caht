@@ -77,7 +77,7 @@ class OnyxWebCrawler(WebContentProvider):
             )
         except Exception as exc:  # pragma: no cover - network failures vary
             logger.warning(
-                "Onyx crawler failed to fetch %s (%s)",
+                "VertualAI crawler failed to fetch %s (%s)",
                 url,
                 exc.__class__.__name__,
             )
@@ -90,7 +90,7 @@ class OnyxWebCrawler(WebContentProvider):
             )
 
         if response.status_code >= 400:
-            logger.warning("Onyx crawler received %s for %s", response.status_code, url)
+            logger.warning("VertualAI crawler received %s for %s", response.status_code, url)
             return WebContent(
                 title="",
                 link=url,
@@ -158,7 +158,7 @@ class OnyxWebCrawler(WebContentProvider):
             title = parsed.title or ""
         except Exception as exc:
             logger.warning(
-                "Onyx crawler failed to parse %s (%s)", url, exc.__class__.__name__
+                "VertualAI crawler failed to parse %s (%s)", url, exc.__class__.__name__
             )
             text_content = ""
             title = ""

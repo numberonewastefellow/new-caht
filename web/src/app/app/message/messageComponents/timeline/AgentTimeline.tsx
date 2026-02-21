@@ -25,6 +25,10 @@ import { StreamingHeader } from "@/app/app/message/messageComponents/timeline/he
 import { CompletedHeader } from "@/app/app/message/messageComponents/timeline/headers/CompletedHeader";
 import { StoppedHeader } from "@/app/app/message/messageComponents/timeline/headers/StoppedHeader";
 import { ParallelStreamingHeader } from "@/app/app/message/messageComponents/timeline/headers/ParallelStreamingHeader";
+import {
+  SpinnerRing,
+  WaveDots,
+} from "@/app/app/message/ThinkingIndicator";
 import { useStreamingStartTime } from "@/app/app/stores/useChatSessionStore";
 import { ExpandedTimelineContent } from "./ExpandedTimelineContent";
 import { CollapsedStreamingContent } from "./CollapsedStreamingContent";
@@ -345,15 +349,12 @@ export const AgentTimeline = React.memo(function AgentTimeline({
       <TimelineContainer
         agent={chatState.assistant}
         headerContent={
-          <div className="flex w-full h-full items-center pl-[var(--timeline-header-padding-left)] pr-[var(--timeline-header-padding-right)]">
-            <Text
-              as="p"
-              mainUiAction
-              text03
-              className="animate-shimmer bg-[length:200%_100%] bg-[linear-gradient(90deg,var(--shimmer-base)_10%,var(--shimmer-highlight)_40%,var(--shimmer-base)_70%)] bg-clip-text text-transparent"
-            >
+          <div className="flex w-full h-full items-center gap-2 pl-[var(--timeline-header-padding-left)] pr-[var(--timeline-header-padding-right)]">
+            <SpinnerRing size={14} />
+            <span className="font-main-ui-action text-text-04">
               {headerText}
-            </Text>
+            </span>
+            <WaveDots />
           </div>
         }
       />

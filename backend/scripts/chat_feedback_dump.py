@@ -220,15 +220,15 @@ if __name__ == "__main__":
         "--url",
         type=str,
         default="http://localhost:8080",
-        help="Onyx URL, should point to Onyx nginx.",
+        help="VertualAI URL, should point to VertualAI nginx.",
     )
 
     # Not needed if Auth is disabled?
-    # Or for Onyx MIT Edition API key must be replaced with session cookie
+    # Or for VertualAI MIT Edition API key must be replaced with session cookie
     parser.add_argument(
         "--api-key",
         type=str,
-        help="Onyx Admin Level API key",
+        help="VertualAI Admin Level API key",
     )
 
     args = parser.parse_args()

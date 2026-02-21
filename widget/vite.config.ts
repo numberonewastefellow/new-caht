@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
     build: {
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
-        name: "OnyxWidget",
+        name: "VertualAIWidget",
         fileName: "onyx-widget",
         formats: ["es"],
       },

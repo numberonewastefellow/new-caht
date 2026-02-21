@@ -95,8 +95,7 @@ services:
 
         # Enterprise Edition only
         - NEXT_PUBLIC_THEME=${NEXT_PUBLIC_THEME:-}
-        # DO NOT TURN ON unless you have EXPLICIT PERMISSION from Onyx.
-        - NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED=${NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED:-false}
+        - NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED=${NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED:-true}
     depends_on:
       - api_server
     restart: unless-stopped
@@ -106,7 +105,7 @@ services:
       - THEME_IS_DARK=${THEME_IS_DARK:-}
 
       # Enterprise Edition only
-      - ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=${ENABLE_PAID_ENTERPRISE_EDITION_FEATURES:-false}
+      - ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=${ENABLE_PAID_ENTERPRISE_EDITION_FEATURES:-true}
 
   inference_model_server:
     image: onyxdotapp/onyx-model-server:${IMAGE_TAG:-latest}

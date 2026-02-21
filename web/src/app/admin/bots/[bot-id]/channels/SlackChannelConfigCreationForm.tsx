@@ -221,7 +221,7 @@ export const SlackChannelConfigCreationForm = ({
             toast.error(
               `Error ${
                 isUpdate ? "updating" : "creating"
-              } OnyxBot config - ${errorMsg}`
+              } VertualAI Bot config - ${errorMsg}`
             );
           }
         }}

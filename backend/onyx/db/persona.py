@@ -240,7 +240,7 @@ def update_persona_access(
         ).delete(synchronize_session="fetch")
 
         if group_ids:
-            raise NotImplementedError("Onyx MIT does not support group-based sharing")
+            raise NotImplementedError("VertualAI MIT does not support group-based sharing")
 
 
 def create_update_persona(

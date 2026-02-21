@@ -13,7 +13,7 @@ logger = setup_logger()
 # IMPORTANT DO NOT DELETE, THIS IS USED BY fetch_versioned_implementation
 def _encrypt_string(input_str: str) -> bytes:
     if ENCRYPTION_KEY_SECRET:
-        logger.warning("MIT version of Onyx does not support encryption of secrets.")
+        logger.warning("MIT version of VertualAI does not support encryption of secrets.")
     return input_str.encode()
 
 

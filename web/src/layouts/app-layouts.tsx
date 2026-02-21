@@ -448,7 +448,7 @@ function Footer() {
 
   const customFooterContent =
     settings?.enterpriseSettings?.custom_lower_disclaimer_content ||
-    `[Onyx ${
+    `[VertualAI ${
       settings?.webVersion || "dev"
     }](https://www.onyx.app/) - Open Source AI Platform`;
 

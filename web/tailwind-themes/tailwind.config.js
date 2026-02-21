@@ -265,6 +265,11 @@ module.exports = {
         "shimmer-base": "var(--shimmer-base)",
         "shimmer-highlight": "var(--shimmer-highlight)",
 
+        // VirtualAI accent theme colors
+        "virtualai-accent": "var(--virtualai-accent, var(--theme-primary-05))",
+        "virtualai-accent-glow":
+          "var(--virtualai-accent-glow, transparent)",
+
         // Tailwind defaults
         background: "var(--background-tint-01)",
         foreground: "var(--background-tint-inverted-01)",

@@ -28,7 +28,7 @@ import {
         await chrome.storage.session.remove("pendingInput");
       }
     } catch (error) {
-      console.error("[Onyx Panel] Error checking pending input:", error);
+      console.error("[VertualAI Panel] Error checking pending input:", error);
     }
     return false;
   }

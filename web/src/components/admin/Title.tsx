@@ -1,10 +1,8 @@
 "use client";
 
 import { JSX } from "react";
-import { HealthCheckBanner } from "../health/healthcheck";
-import Separator from "@/refresh-components/Separator";
 import type { IconProps } from "@opal/types";
-import Text from "@/refresh-components/texts/Text";
+import AdminBreadcrumb from "./AdminBreadcrumb";
 
 export interface AdminPageTitleProps {
   icon: React.FunctionComponent<IconProps> | React.ReactNode;
@@ -13,31 +11,26 @@ export interface AdminPageTitleProps {
   includeDivider?: boolean;
 }
 
+/**
+ * AdminPageTitle — backward-compatible wrapper that now renders breadcrumbs.
+ *
+ * The `icon` prop is accepted for API compatibility but no longer rendered
+ * (icons are shown in the top bar navigation instead).
+ * The `title` prop is used as the page heading and last breadcrumb segment.
+ * The `includeDivider` prop is accepted but ignored (breadcrumbs handle spacing).
+ */
 export function AdminPageTitle({
-  icon: Icon,
+  icon: _icon,
   title,
   farRightElement,
-  includeDivider = true,
+  includeDivider: _includeDivider,
 }: AdminPageTitleProps) {
+  const titleStr = typeof title === "string" ? title : undefined;
+
   return (
-    <div className="w-full">
-      <div className="mb-4">
-        <HealthCheckBanner />
-      </div>
-      <div className="w-full flex flex-row justify-between">
-        <div className="flex flex-row gap-2">
-          {typeof Icon === "function" ? (
-            <Icon className="stroke-text-04 h-8 w-8" />
-          ) : (
-            Icon
-          )}
-          <Text headingH2 aria-label="admin-page-title">
-            {title}
-          </Text>
-        </div>
-        {farRightElement}
-      </div>
-      {includeDivider ? <Separator /> : <div className="mb-6" />}
-    </div>
+    <AdminBreadcrumb
+      title={titleStr ?? title}
+      farRightElement={farRightElement}
+    />
   );
 }

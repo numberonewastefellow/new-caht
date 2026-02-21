@@ -1,4 +1,4 @@
-"""Onyx Database tool"""
+"""VertualAI Database tool"""
 
 import os
 

@@ -1,7 +1,7 @@
 {
   "name": "onyx-chat-widget",
   "version": "1.0.0",
-  "description": "Embeddable chat widget for Onyx",
+  "description": "Embeddable chat widget for VertualAI",
   "type": "module",
   "main": "dist/onyx-widget.js",
   "types": "dist/types/index.d.ts",

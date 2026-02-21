@@ -1142,7 +1142,7 @@ def _check_tenant_gated(client: TenantSocketModeClient, req: SocketModeRequest) 
                 thread_ts=thread_ts,
                 text=(
                     "Your organization's subscription has expired. "
-                    "Please contact your Onyx administrator to restore access."
+                    "Please contact your VertualAI administrator to restore access."
                 ),
             )
     logger.info(f"Blocked Slack request for gated tenant {get_current_tenant_id()}")

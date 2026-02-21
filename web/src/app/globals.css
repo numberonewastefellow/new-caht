@@ -173,6 +173,17 @@
   .dbg-green {
     border: 1px solid green;
   }
+
+  /* VirtualAI Input Focus Glow */
+  .virtualai-input-glow {
+    transition: box-shadow 0.2s ease;
+  }
+  .virtualai-input-glow:focus-within {
+    box-shadow:
+      0px 2px 12px 0px var(--shadow-02),
+      0px 0px 4px 1px var(--shadow-02),
+      0 0 0 3px var(--virtualai-accent-glow, transparent);
+  }
 }
 
 /* TYPOGRAPHY SYSTEM - Imported from Figma Design System */
@@ -354,21 +365,21 @@
 }
 
 .default-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--background-neutral-01);
 }
 
 .default-scrollbar::-webkit-scrollbar-thumb {
-  background: #888;
+  background: var(--border-02);
   border-radius: 4px;
 }
 
 .default-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--border-03);
 }
 
 .default-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #888 transparent;
+  scrollbar-color: var(--border-02) transparent;
   overflow: overlay;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -536,6 +547,83 @@ textarea {
 
 .prevent-scroll {
   overscroll-behavior-y: none;
+}
+
+/* VirtualAI Gradient Text */
+
+.virtualai-gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--theme-gradient-00) 0%,
+    var(--theme-gradient-05) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* VirtualAI Thinking Animations */
+
+/* Pulsing ring — accent-colored ring that breathes */
+@keyframes virtualai-pulse-ring {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--virtualai-accent, var(--theme-primary-05));
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 0 4px transparent;
+    opacity: 0.6;
+  }
+}
+
+.virtualai-pulse-ring {
+  animation: virtualai-pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Spinning ring for status indicator */
+@keyframes virtualai-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.virtualai-spinner {
+  animation: virtualai-spin 1.2s linear infinite;
+}
+
+/* Typing cursor blink */
+@keyframes virtualai-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.virtualai-typing-cursor {
+  animation: virtualai-cursor-blink 0.8s step-end infinite;
+}
+
+/* Wave dots — 3 dots that bounce with stagger */
+@keyframes virtualai-wave {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+.virtualai-wave-dot {
+  animation: virtualai-wave 1.2s ease-in-out infinite;
+}
+.virtualai-wave-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.virtualai-wave-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Smooth text fade-in for streaming text */
+@keyframes virtualai-text-appear {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.virtualai-text-appear {
+  animation: virtualai-text-appear 0.3s ease-out forwards;
 }
 
 /* CUSTOM ANIMATIONS */

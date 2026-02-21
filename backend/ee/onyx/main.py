@@ -152,12 +152,9 @@ def get_application() -> FastAPI:
     # License management
     include_router_with_global_prefix_prepended(application, license_router)
 
-    # Unified billing API - available when license system is enabled
+    # Unified billing API - always registered so frontend doesn't get 404
     # Works for both self-hosted and cloud deployments
-    # TODO(ENG-3533): Once frontend migrates to /admin/billing/*, this becomes the
-    # primary billing API and /tenants/* billing endpoints can be removed
-    if LICENSE_ENFORCEMENT_ENABLED:
-        include_router_with_global_prefix_prepended(application, billing_router)
+    include_router_with_global_prefix_prepended(application, billing_router)
 
     if MULTI_TENANT:
         # Tenant management

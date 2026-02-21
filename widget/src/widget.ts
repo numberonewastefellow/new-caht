@@ -1,5 +1,5 @@
 /**
- * Onyx Chat Widget - Main Component
+ * VertualAI Chat Widget - Main Component
  * Orchestrates launcher/inline modes and manages widget lifecycle
  */
 
@@ -545,7 +545,7 @@ export class OnyxChatWidget extends LitElement {
             target="_blank"
             rel="noopener noreferrer"
             style="text-decoration: underline;"
-            >Onyx</a
+            >VertualAI</a
           >
         </div>
       </div>

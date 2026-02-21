@@ -41,7 +41,7 @@ export default function WelcomeMessage({
     content = (
       <div data-testid="onyx-logo" className="flex flex-row items-center gap-4">
         <Logo folded size={32} />
-        <Text as="p" headingH2>
+        <Text as="p" headingH2 className="virtualai-gradient-text">
           {greeting}
         </Text>
       </div>

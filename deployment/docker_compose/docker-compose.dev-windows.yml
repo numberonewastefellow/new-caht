@@ -1,0 +1,117 @@
+# Docker Compose Override for Windows Development
+# This file exposes service ports and maps volumes to E:/temp/vert
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml up -d --build --wait
+#
+# Or set COMPOSE_FILE environment variable:
+#   export COMPOSE_FILE=docker-compose.yml:docker-compose.dev-windows.yml
+#   docker compose up -d --build --wait
+
+services:
+  api_server:
+    ports:
+      - "8080:8080"
+    environment:
+      # Disable telemetry and error reporting
+      - DISABLE_TELEMETRY=true
+      - SENTRY_DSN=
+      # Disable enterprise/payment/license
+      - ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true
+      - STRIPE_SECRET_KEY=
+      - STRIPE_PUBLISHABLE_KEY=
+      - LICENSE_ENFORCEMENT_ENABLED=false
+    volumes:
+      - E:/temp/vert/api_server_logs:/var/log/onyx
+      - E:/temp/vert/file-system:/app/file-system
+
+  background:
+    depends_on:
+      - api_server
+    # Fix CRLF line endings in scripts when built on Windows
+    command: >
+      /bin/sh -c "
+      sed -i 's/\r$//' /app/scripts/*.sh &&
+      if [ -f /app/scripts/setup_craft_templates.sh ]; then
+        /app/scripts/setup_craft_templates.sh;
+      fi &&
+      if [ -f /etc/ssl/certs/custom-ca.crt ]; then
+        update-ca-certificates;
+      fi &&
+      /app/scripts/supervisord_entrypoint.sh"
+    environment:
+      # Disable telemetry and error reporting
+      - DISABLE_TELEMETRY=true
+      - SENTRY_DSN=
+      # Disable enterprise/payment/license
+      - ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true
+      - STRIPE_SECRET_KEY=
+      - STRIPE_PUBLISHABLE_KEY=
+      - LICENSE_ENFORCEMENT_ENABLED=false
+    volumes:
+      - E:/temp/vert/background_logs:/var/log/onyx
+      - E:/temp/vert/file-system:/app/file-system
+
+  web_server:
+    environment:
+      - NEXT_PUBLIC_SENTRY_DSN=
+      - SENTRY_AUTH_TOKEN=
+      - NEXT_PUBLIC_POSTHOG_KEY=
+      - NEXT_PUBLIC_POSTHOG_HOST=
+
+  # Uncomment the block below to enable the MCP server for Onyx.
+  # mcp_server:
+  #   ports:
+  #     - "8090:8090"
+
+  relational_db:
+    ports:
+      - "5432:5432"
+    volumes:
+      - E:/temp/vert/db:/var/lib/postgresql/data
+
+  index:
+    ports:
+      - "19071:19071"
+      - "8081:8081"
+    healthcheck:
+      # We use 19071 because the application server at 8010 is not ready until
+      # it is activated/configured by the application.
+      test: ["CMD-SHELL", "curl -sf http://localhost:19071/state/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - E:/temp/vert/vespa:/opt/vespa/var
+
+  inference_model_server:
+    ports:
+      - "9000:9000"
+    environment:
+      - DISABLE_TELEMETRY=true
+      - SENTRY_DSN=
+    volumes:
+      - E:/temp/vert/model_cache_huggingface:/app/.cache/huggingface/
+      - E:/temp/vert/inference_model_server_logs:/var/log/onyx
+
+  indexing_model_server:
+    volumes:
+      - E:/temp/vert/indexing_huggingface_model_cache:/app/.cache/huggingface/
+      - E:/temp/vert/indexing_model_server_logs:/var/log/onyx
+
+  cache:
+    ports:
+      - "6379:6379"
+
+  minio:
+    # use different ports to avoid conflicts with model servers
+    ports:
+      - "9004:9000"
+      - "9005:9001"
+    volumes:
+      - E:/temp/vert/minio_data:/data
+
+  code-interpreter:
+    ports:
+      - "8000:8000"

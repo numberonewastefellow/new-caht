@@ -371,7 +371,7 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
             rightIcon={SvgExternalLink}
             onClick={handleOpenInOnyx}
           >
-            Open in Onyx
+            Open in VertualAI
           </Button>
         </header>
       )}
@@ -510,8 +510,8 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
             <Modal.Content width="sm">
               <Modal.Header
                 icon={SvgAlertTriangle}
-                title="Turn off Onyx new tab page?"
-                description="You'll see your browser's default new tab page instead. You can turn it back on anytime in your Onyx settings."
+                title="Turn off VertualAI new tab page?"
+                description="You'll see your browser's default new tab page instead. You can turn it back on anytime in your VertualAI settings."
                 onClose={() => setShowTurnOffModal(false)}
               />
               <Modal.Footer>
@@ -530,7 +530,7 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
       {!user && (
         <Modal open onOpenChange={() => {}}>
           <Modal.Content width="sm" height="sm">
-            <Modal.Header icon={SvgUser} title="Welcome to Onyx" />
+            <Modal.Header icon={SvgUser} title="Welcome to VertualAI" />
             <Modal.Body>
               {authTypeMetadata.authType === AuthType.BASIC ? (
                 <LoginPage

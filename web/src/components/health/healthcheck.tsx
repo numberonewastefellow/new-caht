@@ -12,9 +12,22 @@ import Button from "@/refresh-components/buttons/Button";
 import { logout } from "@/lib/user";
 import { usePathname, useRouter } from "next/navigation";
 import { SvgLogOut } from "@opal/icons";
+const DISMISSED_KEY = "healthcheck-overlay-dismissed";
+
 export const HealthCheckBanner = () => {
   const router = useRouter();
-  const { error } = useSWR("/api/health", errorHandlingFetcher);
+  const [dismissedOverlay, setDismissedOverlay] = useState(() => {
+    try {
+      return sessionStorage.getItem(DISMISSED_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
+  const { error } = useSWR("/api/health", errorHandlingFetcher, {
+    // Only poll frequently when there's an error so auto-recovery works;
+    // when healthy, fall back to default SWR revalidation (no polling).
+    refreshInterval: (data: unknown) => (data ? 0 : 10000),
+  });
   const [expired, setExpired] = useState(false);
   const [showLoggedOutModal, setShowLoggedOutModal] = useState(false);
   const pathname = usePathname();
@@ -181,6 +194,18 @@ export const HealthCheckBanner = () => {
     }
   }, [user, setupExpirationTimeout, mutateUser]);
 
+  // Reset dismissed state when backend recovers
+  useEffect(() => {
+    if (!error) {
+      setDismissedOverlay(false);
+      try {
+        sessionStorage.removeItem(DISMISSED_KEY);
+      } catch {
+        // sessionStorage may be unavailable
+      }
+    }
+  }, [error]);
+
   // Logged out modal
   if (showLoggedOutModal) {
     return (
@@ -209,18 +234,65 @@ export const HealthCheckBanner = () => {
       setShowLoggedOutModal(true);
     }
     return null;
-  } else {
-    return (
-      <div className="fixed top-0 left-0 z-[101] w-full text-xs mx-auto bg-gradient-to-r from-red-900 to-red-700 p-2 rounded-sm border-hidden text-neutral-50 dark:text-neutral-100">
-        <p className="font-bold pb-1">The backend is currently unavailable.</p>
-
-        <p className="px-1">
-          If this is your initial setup or you just updated your Onyx
-          deployment, this is likely because the backend is still starting up.
-          Give it a minute or two, and then refresh the page. If that does not
-          work, make sure the backend is setup and/or contact an administrator.
-        </p>
-      </div>
-    );
   }
+
+  // Backend unavailable — full-screen overlay
+  if (dismissedOverlay) {
+    return null;
+  }
+
+  return (
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="mx-4 w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-2xl dark:bg-neutral-900">
+        {/* Maintenance icon */}
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-8 w-8 text-red-600 dark:text-red-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+
+        <h2 className="mb-2 text-xl font-bold text-neutral-900 dark:text-neutral-100">
+          Service Unavailable
+        </h2>
+        <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
+          The backend is currently unavailable or under maintenance. If
+          this is your initial setup, the backend may still be starting
+          up. Please wait a moment — this overlay will automatically
+          dismiss once the service is back online.
+        </p>
+
+        {/* Polling indicator */}
+        <div className="mb-6 flex items-center justify-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-red-500" />
+          Checking connection...
+        </div>
+
+        <button
+          onClick={() => {
+            setDismissedOverlay(true);
+            try {
+              sessionStorage.setItem(DISMISSED_KEY, "true");
+            } catch {
+              // sessionStorage may be unavailable
+            }
+            router.push("/auth/login");
+          }}
+          className="w-full rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+        >
+          Close &amp; Go to Login
+        </button>
+      </div>
+    </div>
+  );
 };

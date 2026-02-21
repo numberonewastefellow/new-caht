@@ -21,11 +21,11 @@ import {
   mutedTextMarkdownComponents,
   collapsedMarkdownComponents,
 } from "@/app/app/message/messageComponents/timeline/renderers/sharedMarkdownComponents";
-import { SvgCircle } from "@opal/icons";
+import { SvgSparkle } from "@opal/icons";
 
 const THINKING_MIN_DURATION_MS = 500; // 0.5 second minimum for "Thinking" state
 
-const THINKING_STATUS = "Thinking";
+const THINKING_STATUS = "Reasoning";
 
 function extractFirstParagraph(content: string): {
   title: string | null;
@@ -169,7 +169,7 @@ export const ReasoningRenderer: MessageRenderer<
   );
 
   if (!hasStart && !hasEnd && content.length === 0) {
-    return children([{ icon: SvgCircle, status: null, content: <></> }]);
+    return children([{ icon: SvgSparkle, status: null, content: <></> }]);
   }
 
   const reasoningContent = (
@@ -186,7 +186,7 @@ export const ReasoningRenderer: MessageRenderer<
 
   return children([
     {
-      icon: SvgCircle,
+      icon: SvgSparkle,
       status: displayStatus,
       content: reasoningContent,
       expandedText: reasoningContent,
