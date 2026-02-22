@@ -11,8 +11,9 @@ export default async function Page(props: {
   return (
     <>
       <AdminPageTitle
-        icon={<SvgZoomIn className="stroke-text-04 h-8 w-8" />}
-        title="Document Explorer"
+        icon={<SvgZoomIn size={32} />}
+        title="Knowledge Explorer"
+        description="Search and inspect indexed documents, manage visibility, and tune relevance scores."
       />
 
       <Explorer

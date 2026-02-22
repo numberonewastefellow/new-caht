@@ -65,9 +65,11 @@ export const CodeBlock = memo(function CodeBlock({
         className={cn(
           "font-mono",
           "text-text-05",
-          "bg-background-tint-00",
+          "bg-background-tint-02",
+          "border",
+          "border-border-01",
           "rounded",
-          "text-xs",
+          "text-[0.8125rem]",
           "inline",
           "whitespace-pre-wrap",
           "break-words",

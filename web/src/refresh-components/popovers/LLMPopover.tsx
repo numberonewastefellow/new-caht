@@ -35,6 +35,10 @@ export interface LLMPopoverProps {
   llmManager: LlmManager;
   requiresImageInput?: boolean;
   folded?: boolean;
+  /** Custom icon when folded. Defaults to SvgRefreshCw. */
+  foldedIcon?: React.FunctionComponent<{ className?: string; size?: number }>;
+  /** Tooltip for the folded button. */
+  foldedTooltip?: string;
   onSelect?: (value: string) => void;
   currentModelName?: string;
   disabled?: boolean;
@@ -142,6 +146,8 @@ export default function LLMPopover({
   llmManager,
   requiresImageInput,
   folded,
+  foldedIcon,
+  foldedTooltip,
   onSelect,
   currentModelName,
   disabled = false,
@@ -358,7 +364,7 @@ export default function LLMPopover({
           <OpenButton
             icon={
               folded
-                ? SvgRefreshCw
+                ? (foldedIcon ?? SvgRefreshCw)
                 : getProviderIcon(
                     llmManager.currentLlm.provider,
                     llmManager.currentLlm.modelName
@@ -366,6 +372,7 @@ export default function LLMPopover({
             }
             foldable={folded}
             disabled={disabled}
+            tooltip={folded ? foldedTooltip : undefined}
           >
             {currentLlmDisplayName}
           </OpenButton>

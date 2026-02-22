@@ -1,7 +1,7 @@
 "use client";
 
 import { AdminPageTitle } from "@/components/admin/Title";
-import { BookmarkIcon } from "@/components/icons/icons";
+import { SvgFolder } from "@opal/icons";
 import { DocumentSetCreationForm } from "../DocumentSetCreationForm";
 import { useConnectorStatus, useUserGroups } from "@/lib/hooks";
 import { ThreeDotsLoader } from "@/components/Loading";
@@ -62,8 +62,9 @@ const Page = () => {
       <BackButton />
 
       <AdminPageTitle
-        icon={<BookmarkIcon size={32} />}
-        title="New Document Set"
+        icon={SvgFolder}
+        title="New Collection"
+        description="Create a new collection of knowledge sources for scoped AI retrieval."
       />
 
       <Main />

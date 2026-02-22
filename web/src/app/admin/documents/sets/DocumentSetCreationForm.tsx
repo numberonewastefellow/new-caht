@@ -72,7 +72,7 @@ export const DocumentSetCreationForm = ({
         }}
         validationSchema={Yup.object()
           .shape({
-            name: Yup.string().required("Please enter a name for the set"),
+            name: Yup.string().required("Please enter a name for the collection"),
             description: Yup.string().optional(),
             cc_pair_ids: Yup.array().of(Yup.number().required()),
             federated_connectors: Yup.array().of(
@@ -84,7 +84,7 @@ export const DocumentSetCreationForm = ({
           })
           .test(
             "at-least-one-connector",
-            "Please select at least one connector (regular or federated)",
+            "Please select at least one source (regular or federated)",
             function (values) {
               const hasRegularConnectors =
                 values.cc_pair_ids && values.cc_pair_ids.length > 0;
@@ -96,7 +96,7 @@ export const DocumentSetCreationForm = ({
           )}
         onSubmit={async (values, formikHelpers) => {
           formikHelpers.setSubmitting(true);
-          // If the document set is public, then we don't want to send any groups
+          // If the collection is public, then we don't want to send any groups
           const processedValues = {
             ...values,
             groups: values.is_public ? [] : values.groups,
@@ -116,16 +116,16 @@ export const DocumentSetCreationForm = ({
           if (response.ok) {
             toast.success(
               isUpdate
-                ? "Successfully updated document set!"
-                : "Successfully created document set!"
+                ? "Successfully updated collection!"
+                : "Successfully created collection!"
             );
             onClose();
           } else {
             const errorMsg = await response.text();
             toast.error(
               isUpdate
-                ? `Error updating document set - ${errorMsg}`
-                : `Error creating document set - ${errorMsg}`
+                ? `Error updating collection - ${errorMsg}`
+                : `Error creating collection - ${errorMsg}`
             );
           }
         }}
@@ -173,19 +173,19 @@ export const DocumentSetCreationForm = ({
                 <TextFormField
                   name="name"
                   label="Name:"
-                  placeholder="A name for the document set"
+                  placeholder="A name for the collection"
                 />
                 <TextFormField
                   name="description"
                   label="Description:"
-                  placeholder="Describe what the document set represents"
+                  placeholder="Describe what the collection represents"
                   optional={true}
                 />
 
                 {isPaidEnterpriseFeaturesEnabled && (
                   <IsPublicGroupSelector
                     formikProps={props}
-                    objectName="document set"
+                    objectName="collection"
                   />
                 )}
               </div>
@@ -219,7 +219,7 @@ export const DocumentSetCreationForm = ({
                             } you have selected`
                           : "group you curate"
                       }`}
-                      description="Only connectors that are directly assigned to the group you are trying to add the document set to will be available."
+                      description="Only connectors that are directly assigned to the group you are trying to add the collection to will be available."
                     />
                   </>
                 ) : (

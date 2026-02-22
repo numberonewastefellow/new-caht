@@ -3,7 +3,8 @@
     "allow": [
       "Bash(./node_modules/.bin/tsc:*)",
       "Bash(node_modules/typescript/bin/tsc:*)",
-      "Bash(npm run types:check:*)"
+      "Bash(npm run types:check:*)",
+      "Bash(PGPASSWORD=password psql:*)"
     ]
   }
 }

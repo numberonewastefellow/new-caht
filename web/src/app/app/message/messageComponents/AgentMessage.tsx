@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useRef, RefObject, useMemo } from "react";
-import { Packet, StopReason } from "@/app/app/services/streamingModels";
+import React, { useRef, RefObject, useMemo, useCallback, useState, Dispatch, SetStateAction } from "react";
+import { Packet, StreamingCitation, StopReason } from "@/app/app/services/streamingModels";
 import { FullChatState } from "@/app/app/message/messageComponents/interfaces";
 import { FeedbackType } from "@/app/app/interfaces";
+import { MinimalOnyxDocument, OnyxDocument } from "@/lib/search/interfaces";
 import { handleCopy } from "@/app/app/message/copyingUtils";
 import { useMessageSwitching } from "@/app/app/message/messageComponents/hooks/useMessageSwitching";
 import { RendererComponent } from "@/app/app/message/messageComponents/renderMessageComponent";
@@ -14,6 +15,11 @@ import { LlmDescriptor, LlmManager } from "@/lib/hooks";
 import { Message } from "@/app/app/interfaces";
 import Text from "@/refresh-components/texts/Text";
 import { AgentTimeline } from "@/app/app/message/messageComponents/timeline/AgentTimeline";
+import { citationsToSourceInfoArray } from "@/refresh-components/buttons/source-tag/sourceTagUtils";
+import { SvgBookOpen } from "@opal/icons";
+import { cn } from "@/lib/utils";
+import { removeDuplicateDocs } from "@/lib/documentUtils";
+import CitedSourcesModal from "@/sections/document-sidebar/CitedSourcesModal";
 
 // Type for the regeneration factory function passed from ChatUI
 export type RegenerationFactory = (regenerationRequest: {
@@ -39,6 +45,91 @@ export interface AgentMessageProps {
   // Duration in seconds for processing this message (assistant messages only)
   processingDurationSeconds?: number;
 }
+
+/** Pill-shaped references button that opens a modal with cited sources. */
+const ReferencesStrip = React.memo(function ReferencesStrip({
+  citations,
+  documentMap,
+  allDocs,
+  setPresentingDocument,
+}: {
+  citations: StreamingCitation[];
+  documentMap: Map<string, OnyxDocument>;
+  allDocs: OnyxDocument[];
+  setPresentingDocument: Dispatch<SetStateAction<MinimalOnyxDocument | null>>;
+}) {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const sources = useMemo(
+    () => citationsToSourceInfoArray(citations, documentMap),
+    [citations, documentMap]
+  );
+
+  // Build cited vs other document lists for the modal
+  const { citedDocuments, otherDocuments } = useMemo(() => {
+    const citedDocIds = new Set(citations.map((c) => c.document_id));
+    const deduped = removeDuplicateDocs(allDocs);
+
+    const cited = deduped
+      .filter((doc) => citedDocIds.has(doc.document_id))
+      .sort((a, b) => {
+        const idxA = citations.findIndex((c) => c.document_id === a.document_id);
+        const idxB = citations.findIndex((c) => c.document_id === b.document_id);
+        return idxA - idxB;
+      });
+
+    const other = deduped.filter((doc) => !citedDocIds.has(doc.document_id));
+
+    return { citedDocuments: cited, otherDocuments: other };
+  }, [citations, allDocs]);
+
+  if (sources.length === 0) return null;
+
+  return (
+    <div className="px-3">
+      <button
+        type="button"
+        onClick={() => setModalOpen(true)}
+        className={cn(
+          "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full",
+          "text-sm font-medium transition-all duration-150",
+          "border cursor-pointer",
+          modalOpen
+            ? "text-white border-transparent"
+            : "bg-background-tint-02 text-text-04 border-border-02 hover:text-white hover:border-transparent"
+        )}
+        style={
+          modalOpen
+            ? { backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }
+            : undefined
+        }
+        onMouseEnter={(e) => {
+          if (!modalOpen) {
+            e.currentTarget.style.backgroundColor = "var(--virtualai-accent, var(--theme-primary-05))";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!modalOpen) {
+            e.currentTarget.style.backgroundColor = "";
+          }
+        }}
+      >
+        <SvgBookOpen className="w-4 h-4" />
+        <span>
+          {sources.length} {sources.length === 1 ? "Reference" : "References"}
+        </span>
+      </button>
+
+      <CitedSourcesModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        citedDocuments={citedDocuments}
+        otherDocuments={otherDocuments}
+        setPresentingDocument={setPresentingDocument}
+      />
+    </div>
+  );
+});
 
 // TODO: Consider more robust comparisons:
 // - `chatState.docs`, `chatState.citations`, and `otherMessagesCanSwitchTo` use
@@ -226,7 +317,19 @@ const AgentMessage = React.memo(function AgentMessage({
           )}
       </div>
 
-      {/* Feedback buttons - only show when streaming and rendering complete */}
+      {/* References — between content and action buttons */}
+      {isComplete && (citations.length > 0 || documentMap.size > 0) && (
+        <ReferencesStrip
+          citations={citations}
+          documentMap={documentMap}
+          allDocs={chatState.docs ?? []}
+          setPresentingDocument={
+            (chatState.setPresentingDocument ?? (() => {})) as Dispatch<SetStateAction<MinimalOnyxDocument | null>>
+          }
+        />
+      )}
+
+      {/* Action buttons — only show when streaming and rendering complete */}
       {isComplete && (
         <MessageToolbar
           nodeId={nodeId}
@@ -244,8 +347,6 @@ const AgentMessage = React.memo(function AgentMessage({
           parentMessage={parentMessage}
           llmManager={llmManager}
           currentModelName={chatState.overriddenModel}
-          citations={citations}
-          documentMap={documentMap}
         />
       )}
     </div>

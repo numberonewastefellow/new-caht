@@ -1,27 +1,19 @@
 "use client";
 
-import React, { RefObject, useState, useCallback, useMemo } from "react";
-import { Packet, StreamingCitation } from "@/app/app/services/streamingModels";
+import { RefObject, useState, useCallback } from "react";
+import { Packet } from "@/app/app/services/streamingModels";
 import { FeedbackType } from "@/app/app/interfaces";
-import { OnyxDocument } from "@/lib/search/interfaces";
 import { TooltipGroup } from "@/components/tooltip/CustomTooltip";
-import {
-  useChatSessionStore,
-  useDocumentSidebarVisible,
-  useSelectedNodeForDocDisplay,
-} from "@/app/app/stores/useChatSessionStore";
 import { convertMarkdownTablesToTsv } from "@/app/app/message/copyingUtils";
 import { getTextContent } from "@/app/app/services/packetUtils";
 import { removeThinkingTokens } from "@/app/app/services/thinkingTokens";
 import MessageSwitcher from "@/app/app/message/MessageSwitcher";
-import SourceTag from "@/refresh-components/buttons/source-tag/SourceTag";
-import { citationsToSourceInfoArray } from "@/refresh-components/buttons/source-tag/sourceTagUtils";
 import CopyIconButton from "@/refresh-components/buttons/CopyIconButton";
 import LLMPopover from "@/refresh-components/popovers/LLMPopover";
 import { parseLlmDescriptor } from "@/lib/llm/utils";
 import { LlmManager } from "@/lib/hooks";
 import { Message } from "@/app/app/interfaces";
-import { SvgThumbsDown, SvgThumbsUp } from "@opal/icons";
+import { SvgSparkle, SvgThumbsDown, SvgThumbsUp } from "@opal/icons";
 import { RegenerationFactory } from "./AgentMessage";
 import useFeedbackController from "@/hooks/useFeedbackController";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
@@ -29,60 +21,6 @@ import FeedbackModal, {
   FeedbackModalProps,
 } from "@/sections/modals/FeedbackModal";
 import { Button } from "@opal/components";
-
-// Wrapper component for SourceTag in toolbar to handle memoization
-const SourcesTagWrapper = React.memo(function SourcesTagWrapper({
-  citations,
-  documentMap,
-  nodeId,
-  selectedMessageForDocDisplay,
-  documentSidebarVisible,
-  updateCurrentDocumentSidebarVisible,
-  updateCurrentSelectedNodeForDocDisplay,
-}: {
-  citations: StreamingCitation[];
-  documentMap: Map<string, OnyxDocument>;
-  nodeId: number;
-  selectedMessageForDocDisplay: number | null;
-  documentSidebarVisible: boolean;
-  updateCurrentDocumentSidebarVisible: (visible: boolean) => void;
-  updateCurrentSelectedNodeForDocDisplay: (nodeId: number | null) => void;
-}) {
-  // Convert citations to SourceInfo array
-  const sources = useMemo(
-    () => citationsToSourceInfoArray(citations, documentMap),
-    [citations, documentMap]
-  );
-
-  // Handle click to toggle sidebar
-  const handleSourceClick = useCallback(() => {
-    if (selectedMessageForDocDisplay === nodeId && documentSidebarVisible) {
-      updateCurrentDocumentSidebarVisible(false);
-      updateCurrentSelectedNodeForDocDisplay(null);
-    } else {
-      updateCurrentSelectedNodeForDocDisplay(nodeId);
-      updateCurrentDocumentSidebarVisible(true);
-    }
-  }, [
-    nodeId,
-    selectedMessageForDocDisplay,
-    documentSidebarVisible,
-    updateCurrentDocumentSidebarVisible,
-    updateCurrentSelectedNodeForDocDisplay,
-  ]);
-
-  if (sources.length === 0) return null;
-
-  return (
-    <SourceTag
-      variant="button"
-      displayName="Sources"
-      sources={sources}
-      onSourceClick={handleSourceClick}
-      toggleSource
-    />
-  );
-});
 
 export interface MessageToolbarProps {
   // Message identification
@@ -109,10 +47,6 @@ export interface MessageToolbarProps {
   parentMessage?: Message | null;
   llmManager: LlmManager | null;
   currentModelName?: string;
-
-  // Citations
-  citations: StreamingCitation[];
-  documentMap: Map<string, OnyxDocument>;
 }
 
 export default function MessageToolbar({
@@ -131,19 +65,7 @@ export default function MessageToolbar({
   parentMessage,
   llmManager,
   currentModelName,
-  citations,
-  documentMap,
 }: MessageToolbarProps) {
-  // Document sidebar state - managed internally to reduce prop drilling
-  const documentSidebarVisible = useDocumentSidebarVisible();
-  const selectedMessageForDocDisplay = useSelectedNodeForDocDisplay();
-  const updateCurrentDocumentSidebarVisible = useChatSessionStore(
-    (state) => state.updateCurrentDocumentSidebarVisible
-  );
-  const updateCurrentSelectedNodeForDocDisplay = useChatSessionStore(
-    (state) => state.updateCurrentSelectedNodeForDocDisplay
-  );
-
   // Feedback modal state and handlers
   const { handleFeedbackChange } = useFeedbackController();
   const modal = useCreateModal();
@@ -237,74 +159,74 @@ export default function MessageToolbar({
               </div>
             )}
 
-            <CopyIconButton
-              getCopyText={() =>
-                convertMarkdownTablesToTsv(
-                  removeThinkingTokens(getTextContent(rawPackets)) as string
-                )
-              }
-              getHtmlContent={() => finalAnswerRef.current?.innerHTML || ""}
-              data-testid="AgentMessage/copy-button"
-            />
-            <Button
-              icon={SvgThumbsUp}
-              onClick={() => handleFeedbackClick("like")}
-              variant="select"
-              selected={isFeedbackTransient("like")}
-              tooltip={
-                currentFeedback === "like" ? "Remove Like" : "Good Response"
-              }
-              data-testid="AgentMessage/like-button"
-            />
-            <Button
-              icon={SvgThumbsDown}
-              onClick={() => handleFeedbackClick("dislike")}
-              variant="select"
-              selected={isFeedbackTransient("dislike")}
-              tooltip={
-                currentFeedback === "dislike"
-                  ? "Remove Dislike"
-                  : "Bad Response"
-              }
-              data-testid="AgentMessage/dislike-button"
-            />
+            <span className="[&_svg]:text-theme-blue-05">
+              <CopyIconButton
+                getCopyText={() =>
+                  convertMarkdownTablesToTsv(
+                    removeThinkingTokens(getTextContent(rawPackets)) as string
+                  )
+                }
+                getHtmlContent={() => finalAnswerRef.current?.innerHTML || ""}
+                data-testid="AgentMessage/copy-button"
+              />
+            </span>
+            <span className="[&_svg]:text-theme-green-05">
+              <Button
+                icon={SvgThumbsUp}
+                onClick={() => handleFeedbackClick("like")}
+                variant="select"
+                selected={isFeedbackTransient("like")}
+                tooltip={
+                  currentFeedback === "like" ? "Remove Like" : "Good Response"
+                }
+                data-testid="AgentMessage/like-button"
+              />
+            </span>
+            <span className="[&_svg]:text-theme-red-05">
+              <Button
+                icon={SvgThumbsDown}
+                onClick={() => handleFeedbackClick("dislike")}
+                variant="select"
+                selected={isFeedbackTransient("dislike")}
+                tooltip={
+                  currentFeedback === "dislike"
+                    ? "Remove Dislike"
+                    : "Bad Response"
+                }
+                data-testid="AgentMessage/dislike-button"
+              />
+            </span>
 
+            {/* Separator between feedback and regenerate */}
             {onRegenerate &&
               messageId !== undefined &&
               parentMessage &&
               llmManager && (
-                <div data-testid="AgentMessage/regenerate">
-                  <LLMPopover
-                    llmManager={llmManager}
-                    currentModelName={currentModelName}
-                    onSelect={(modelName) => {
-                      const llmDescriptor = parseLlmDescriptor(modelName);
-                      const regenerator = onRegenerate({
-                        messageId,
-                        parentMessage,
-                      });
-                      regenerator(llmDescriptor);
-                    }}
-                    folded
-                  />
-                </div>
+                <>
+                  <span className="mx-1 text-text-02 select-none" aria-hidden>
+                    ·
+                  </span>
+                  <span className="[&_svg]:text-theme-purple-05">
+                    <div data-testid="AgentMessage/regenerate">
+                      <LLMPopover
+                        llmManager={llmManager}
+                        currentModelName={currentModelName}
+                        onSelect={(modelName) => {
+                          const llmDescriptor = parseLlmDescriptor(modelName);
+                          const regenerator = onRegenerate({
+                            messageId,
+                            parentMessage,
+                          });
+                          regenerator(llmDescriptor);
+                        }}
+                        folded
+                        foldedIcon={SvgSparkle}
+                        foldedTooltip="Retry"
+                      />
+                    </div>
+                  </span>
+                </>
               )}
-
-            {nodeId && (citations.length > 0 || documentMap.size > 0) && (
-              <SourcesTagWrapper
-                citations={citations}
-                documentMap={documentMap}
-                nodeId={nodeId}
-                selectedMessageForDocDisplay={selectedMessageForDocDisplay}
-                documentSidebarVisible={documentSidebarVisible}
-                updateCurrentDocumentSidebarVisible={
-                  updateCurrentDocumentSidebarVisible
-                }
-                updateCurrentSelectedNodeForDocDisplay={
-                  updateCurrentSelectedNodeForDocDisplay
-                }
-              />
-            )}
           </div>
         </TooltipGroup>
       </div>

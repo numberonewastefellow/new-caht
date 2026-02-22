@@ -58,27 +58,33 @@ function QueryHistoryTableRow({
   return (
     <TableRow
       key={chatSessionMinimal.id}
-      className="hover:bg-accent-background cursor-pointer relative select-none"
+      className="hover:bg-background-tint-02 cursor-pointer relative select-none transition-colors"
     >
       <TableCell>
-        <Text className="whitespace-normal line-clamp-5">
+        <Text className="whitespace-normal line-clamp-3 text-text-05">
           {chatSessionMinimal.first_user_message ||
             chatSessionMinimal.name ||
             "-"}
         </Text>
       </TableCell>
       <TableCell>
-        <Text className="whitespace-normal line-clamp-5">
+        <Text className="whitespace-normal line-clamp-3 text-text-03">
           {chatSessionMinimal.first_ai_message || "-"}
         </Text>
       </TableCell>
       <TableCell>
         <FeedbackBadge feedback={chatSessionMinimal.feedback_type} />
       </TableCell>
-      <TableCell>{chatSessionMinimal.user_email || "-"}</TableCell>
-      <TableCell>{chatSessionMinimal.assistant_name || "Unknown"}</TableCell>
       <TableCell>
-        {timestampToReadableDate(chatSessionMinimal.time_created)}
+        <span className="text-text-04">{chatSessionMinimal.user_email || "-"}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-text-04">{chatSessionMinimal.assistant_name || "Unknown"}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-text-03 text-xs">
+          {timestampToReadableDate(chatSessionMinimal.time_created)}
+        </span>
       </TableCell>
       {/* Wrapping in <td> to avoid console warnings */}
       <td className="w-0 p-0">
@@ -181,7 +187,7 @@ function PreviousQueryHistoryExportsModal({
       <Modal.Content width="lg" height="full">
         <Modal.Header
           icon={SvgFileText}
-          title="Previous Query History Exports"
+          title="Previous Log Exports"
           onClose={() => setShowModal(false)}
         />
         <Modal.Body>
@@ -299,46 +305,44 @@ export function QueryHistoryTable() {
 
   return (
     <>
-      <CardSection className="mt-8">
-        <div className="flex">
-          <div className="gap-y-3 flex flex-col">
-            <SelectFeedbackType
-              value={filters.feedback_type || "all"}
-              onValueChange={(value) => {
-                setFilters((prev) => {
-                  const newFilters = { ...prev };
-                  if (value === "all") {
-                    delete newFilters.feedback_type;
-                  } else {
-                    newFilters.feedback_type = value;
-                  }
-                  return newFilters;
-                });
-              }}
-            />
+      <CardSection>
+        <div className="flex flex-wrap items-end gap-4 mb-6">
+          <SelectFeedbackType
+            value={filters.feedback_type || "all"}
+            onValueChange={(value) => {
+              setFilters((prev) => {
+                const newFilters = { ...prev };
+                if (value === "all") {
+                  delete newFilters.feedback_type;
+                } else {
+                  newFilters.feedback_type = value;
+                }
+                return newFilters;
+              });
+            }}
+          />
 
-            <AdminDateRangeSelector
-              value={dateRange}
-              onValueChange={onTimeRangeChange}
-            />
-          </div>
-          <div className="flex flex-row w-full items-center gap-x-2">
+          <AdminDateRangeSelector
+            value={dateRange}
+            onValueChange={onTimeRangeChange}
+          />
+
+          <div className="flex items-center gap-2 ml-auto">
             <KickoffCSVExport dateRange={dateRange} />
             <Button secondary onClick={() => setShowModal(true)}>
               {PREVIOUS_CSV_TASK_BUTTON_NAME}
             </Button>
           </div>
         </div>
-        <Separator />
-        <Table className="mt-5">
+        <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>First User Message</TableHead>
-              <TableHead>First AI Response</TableHead>
+              <TableHead>User Query</TableHead>
+              <TableHead>AI Response</TableHead>
               <TableHead>Feedback</TableHead>
-              <TableHead>User</TableHead>
-              <TableHead>Persona</TableHead>
-              <TableHead>Date</TableHead>
+              <TableHead>Member</TableHead>
+              <TableHead>Agent</TableHead>
+              <TableHead>Timestamp</TableHead>
             </TableRow>
           </TableHeader>
           {isLoading ? (

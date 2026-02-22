@@ -6,7 +6,11 @@ import { SvgServer } from "@opal/icons";
 export default function QueryHistoryPage() {
   return (
     <>
-      <AdminPageTitle title="Query History" icon={SvgServer} />
+      <AdminPageTitle
+        title="Query Logs"
+        icon={SvgServer}
+        description="Review AI interactions, user feedback, and export conversation data for analysis."
+      />
 
       <QueryHistoryTable />
     </>

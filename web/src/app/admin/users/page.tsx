@@ -82,7 +82,7 @@ const UsersTables = ({
       window.URL.revokeObjectURL(url);
       document.body.removeChild(anchor_tag);
     } catch (error) {
-      toast.error(`Failed to download all users - ${error}`);
+      toast.error(`Failed to download member list - ${error}`);
     } finally {
       //Ensure spinner is visible for at least 1 second
       //This is to avoid the spinner disappearing too quickly
@@ -140,12 +140,12 @@ const UsersTables = ({
 
   const tabs = SimpleTabs.generateTabs({
     current: {
-      name: "Current Users",
+      name: "Active Members",
       content: (
         <Card className="w-full">
           <CardHeader>
             <div className="flex justify-between items-center gap-1">
-              <CardTitle>Current Users</CardTitle>
+              <CardTitle>Active Members</CardTitle>
               <Button
                 leftIcon={SvgDownloadCloud}
                 disabled={isDownloadingUsers}
@@ -162,7 +162,7 @@ const UsersTables = ({
               invitedUsersMutate={invitedUsersMutate}
               countDisplay={
                 <CountDisplay
-                  label="Total users"
+                  label="Total members"
                   value={currentUsersCount}
                   isLoading={currentUsersLoading}
                 />
@@ -180,12 +180,12 @@ const UsersTables = ({
       ),
     },
     invited: {
-      name: "Invited Users",
+      name: "Invited Members",
       content: (
         <Card className="w-full">
           <CardHeader>
             <div className="flex justify-between items-center gap-1">
-              <CardTitle>Invited Users</CardTitle>
+              <CardTitle>Invited Members</CardTitle>
               <CountDisplay
                 label="Total invited"
                 value={invitedUsersCount}
@@ -207,12 +207,12 @@ const UsersTables = ({
     },
     ...(NEXT_PUBLIC_CLOUD_ENABLED && {
       pending: {
-        name: "Pending Users",
+        name: "Pending Requests",
         content: (
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center gap-1">
-                <CardTitle>Pending Users</CardTitle>
+                <CardTitle>Pending Requests</CardTitle>
                 <CountDisplay
                   label="Total pending"
                   value={pendingUsersCount}
@@ -243,23 +243,21 @@ const SearchableTables = () => {
   const [isDownloadingUsers, setIsDownloadingUsers] = useState(false);
 
   return (
-    <div>
+    <div className="space-y-4">
       {isDownloadingUsers && <Spinner />}
-      <div className="flex flex-col gap-y-4">
-        <div className="flex flex-row items-center gap-2">
-          <InputTypeIn
-            placeholder="Search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-          <AddUserButton />
-        </div>
-        <UsersTables
-          q={query}
-          isDownloadingUsers={isDownloadingUsers}
-          setIsDownloadingUsers={setIsDownloadingUsers}
+      <div className="flex flex-row items-center gap-3">
+        <InputTypeIn
+          placeholder="Search members by name or email..."
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
         />
+        <AddUserButton />
       </div>
+      <UsersTables
+        q={query}
+        isDownloadingUsers={isDownloadingUsers}
+        setIsDownloadingUsers={setIsDownloadingUsers}
+      />
     </div>
   );
 };
@@ -272,12 +270,12 @@ function AddUserButton() {
       (key) => typeof key === "string" && key.startsWith("/api/manage/users")
     );
     setBulkAddUsersModal(false);
-    toast.success("Users invited!");
+    toast.success("Team members invited!");
   };
 
   const onFailure = async (res: Response) => {
     const error = (await res.json()).detail;
-    toast.error(`Failed to invite users - ${error}`);
+    toast.error(`Failed to invite members - ${error}`);
   };
 
   const handleInviteClick = () => {
@@ -287,7 +285,7 @@ function AddUserButton() {
   return (
     <>
       <CreateButton primary onClick={handleInviteClick}>
-        Invite Users
+        Invite Members
       </CreateButton>
 
       {bulkAddUsersModal && (
@@ -295,15 +293,14 @@ function AddUserButton() {
           <Modal.Content>
             <Modal.Header
               icon={SvgUserPlus}
-              title="Bulk Add Users"
+              title="Invite Team Members"
               onClose={() => setBulkAddUsersModal(false)}
             />
             <Modal.Body>
               <div className="flex flex-col gap-2">
                 <Text as="p">
-                  Add the email addresses to import, separated by whitespaces.
-                  Invited users will be able to login to this domain with their
-                  email address.
+                  Enter email addresses separated by whitespace. Invited
+                  members will be able to sign in with their email.
                 </Text>
                 <BulkAdd onSuccess={onSuccess} onFailure={onFailure} />
               </div>
@@ -318,7 +315,11 @@ function AddUserButton() {
 const Page = () => {
   return (
     <>
-      <AdminPageTitle title="Manage Users" icon={SvgUser} />
+      <AdminPageTitle
+        title="Team Members"
+        icon={SvgUser}
+        description="Manage team access, roles, and invitations across your workspace."
+      />
       <SearchableTables />
     </>
   );

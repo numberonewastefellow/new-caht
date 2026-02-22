@@ -31,27 +31,27 @@ const DocumentDisplay = ({
   return (
     <div
       key={document.document_id}
-      className="text-sm border-b border-border mb-3"
+      className="text-sm border border-border-01 rounded-12 p-4 bg-background-neutral-00 transition-shadow hover:shadow-sm"
     >
-      <div className="flex relative">
+      <div className="flex items-center">
         <a
           className={
-            "rounded-lg flex font-bold " +
-            (document.link ? "" : "pointer-events-none")
+            "rounded-08 flex items-center font-semibold text-text-05 " +
+            (document.link ? "hover:underline underline-offset-2" : "pointer-events-none")
           }
           href={document.link}
           target="_blank"
           rel="noopener noreferrer"
         >
-          <SourceIcon sourceType={document.source_type} iconSize={22} />
-          <p className="truncate break-all ml-2 my-auto text-base">
+          <SourceIcon sourceType={document.source_type} iconSize={20} />
+          <p className="truncate break-all ml-2 my-auto text-sm">
             {document.semantic_identifier || document.document_id}
           </p>
         </a>
       </div>
-      <div className="flex flex-wrap gap-x-2 mt-1 text-xs">
-        <div className="px-1 py-0.5 bg-accent-background-hovered rounded flex">
-          <p className="mr-1 my-auto">Boost:</p>
+      <div className="flex flex-wrap gap-2 mt-2.5 text-xs">
+        <div className="px-2 py-1 bg-background-tint-02 rounded-08 flex items-center gap-1.5">
+          <span className="text-text-03 font-medium">Relevance:</span>
           <ScoreSection
             documentId={document.document_id}
             initialScore={document.boost}
@@ -73,26 +73,22 @@ const DocumentDisplay = ({
               );
             }
           }}
-          className="px-1 py-0.5 bg-accent-background-hovered hover:bg-accent-background rounded flex cursor-pointer select-none"
+          className="px-2 py-1 bg-background-tint-02 hover:bg-background-tint-03 rounded-08 flex items-center gap-1.5 cursor-pointer select-none transition-colors"
         >
-          <div className="my-auto">
+          <span className="my-auto">
             {document.hidden ? (
-              <div className="text-error">Hidden</div>
+              <span className="text-error font-medium">Excluded</span>
             ) : (
-              "Visible"
+              <span className="text-text-04 font-medium">Indexed</span>
             )}
-          </div>
-          <div className="ml-1 my-auto">
-            <Checkbox checked={!document.hidden} />
-          </div>
+          </span>
+          <Checkbox checked={!document.hidden} />
         </div>
-      </div>
-      {document.updated_at && (
-        <div className="mt-2">
+        {document.updated_at && (
           <DocumentUpdatedAtBadge updatedAt={document.updated_at} />
-        </div>
-      )}
-      <p className="pl-1 pt-2 pb-3 break-words">
+        )}
+      </div>
+      <p className="pt-2.5 break-words text-text-03 leading-relaxed">
         {buildDocumentSummaryDisplay(document.match_highlights, document.blurb)}
       </p>
     </div>
@@ -162,10 +158,10 @@ export function Explorer({
   ]);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col justify-center gap-2">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col justify-center gap-3">
         <InputTypeIn
-          placeholder="Find documents based on title / content..."
+          placeholder="Search knowledge base by title or content..."
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -192,22 +188,34 @@ export function Explorer({
           filtersUntoggled={false}
           tagsOnLeft={true}
         />
-        <div className="border-b" />
       </div>
-      {results.length > 0 && (
-        <div className="mt-3">
-          {results.map((document) => {
-            return (
-              <DocumentDisplay
-                key={document.document_id}
-                document={document}
-                refresh={() => onSearch(query)}
-              />
-            );
-          })}
+
+      {isLoading && (
+        <div className="flex justify-center py-8">
+          <ThreeDotsLoader />
         </div>
       )}
-      {isLoading && <ThreeDotsLoader />}
+
+      {!isLoading && results.length > 0 && (
+        <div className="space-y-3">
+          {results.map((document) => (
+            <DocumentDisplay
+              key={document.document_id}
+              document={document}
+              refresh={() => onSearch(query)}
+            />
+          ))}
+        </div>
+      )}
+
+      {!isLoading && query && results.length === 0 && (
+        <div className="text-center py-12">
+          <MagnifyingGlass className="w-10 h-10 mx-auto mb-3 text-text-02" />
+          <p className="text-text-03 text-sm">
+            No documents found matching your search.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { refreshDocumentSets, useDocumentSets } from "../hooks";
 import { useConnectorStatus, useUserGroups } from "@/lib/hooks";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { AdminPageTitle } from "@/components/admin/Title";
-import { BookmarkIcon } from "@/components/icons/icons";
+import { SvgFolder } from "@opal/icons";
 import BackButton from "@/refresh-components/buttons/BackButton";
 import CardSection from "@/components/admin/CardSection";
 import { DocumentSetCreationForm } from "../DocumentSetCreationForm";
@@ -41,7 +41,7 @@ function Main({ documentSetId }: { documentSetId: number }) {
   if (documentSetsError || !documentSets) {
     return (
       <ErrorCallout
-        errorTitle="Failed to fetch document sets"
+        errorTitle="Failed to fetch collections"
         errorMsg={documentSetsError}
       />
     );
@@ -62,8 +62,8 @@ function Main({ documentSetId }: { documentSetId: number }) {
   if (!documentSet) {
     return (
       <ErrorCallout
-        errorTitle="Document set not found"
-        errorMsg={`Document set with id ${documentSetId} not found`}
+        errorTitle="Collection not found"
+        errorMsg={`Collection with id ${documentSetId} not found`}
       />
     );
   }
@@ -71,8 +71,9 @@ function Main({ documentSetId }: { documentSetId: number }) {
   return (
     <div>
       <AdminPageTitle
-        icon={<BookmarkIcon size={32} />}
+        icon={SvgFolder}
         title={documentSet.name}
+        description="Edit this collection's name, description, and connected sources."
       />
 
       <CardSection>

@@ -74,7 +74,7 @@
     /* Make paragraphs inline to reduce vertical space */
   }
 
-  /* Reduce spacing for markdown elements in chat */
+  /* Heading hierarchy — distinct visual weight per level */
   .prose h1,
   .prose h2,
   .prose h3,
@@ -83,6 +83,34 @@
   .prose h6 {
     margin-top: 0.75em;
     margin-bottom: 0.5em;
+  }
+
+  .prose h1 {
+    font-size: 1.5em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+
+  .prose h2 {
+    font-size: 1.25em;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border-01);
+  }
+
+  .prose h3 {
+    font-size: 1.125em;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .prose h4 {
+    font-size: 1em;
+    font-weight: 600;
+    line-height: 1.45;
   }
 
   .prose ul,
@@ -110,8 +138,64 @@
   }
 
   .prose hr {
-    margin-top: 1.25em;
-    margin-bottom: 1em;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    border: none;
+    border-top: 1px solid var(--border-01);
+  }
+
+  /* Blockquotes — themed left border with subtle tinted background */
+  .prose blockquote {
+    border-left: 3px solid var(--theme-primary-05);
+    background-color: var(--background-tint-01);
+    border-radius: 0 0.5rem 0.5rem 0;
+    padding: 0.625rem 1rem;
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
+    font-style: normal;
+    color: var(--text-04);
+  }
+
+  .prose blockquote p:first-child {
+    margin-top: 0;
+  }
+
+  .prose blockquote p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Tables — header styling and alternating row stripes */
+  .prose table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.875em;
+  }
+
+  .prose thead {
+    background-color: var(--background-tint-02);
+  }
+
+  .prose thead th {
+    font-weight: 600;
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 2px solid var(--border-02);
+    color: var(--text-05);
+    white-space: nowrap;
+  }
+
+  .prose tbody td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border-01);
+    color: var(--text-04);
+  }
+
+  .prose tbody tr:nth-child(even) {
+    background-color: var(--background-tint-00);
+  }
+
+  .prose tbody tr:hover {
+    background-color: var(--background-tint-02);
   }
 
   .prose p {
