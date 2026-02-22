@@ -38,7 +38,7 @@ import MCPLineItem, {
   MCPServer,
 } from "@/refresh-components/popovers/ActionsPopover/MCPLineItem";
 import { useProjectsContext } from "@/providers/ProjectsContext";
-import { SvgActions, SvgChevronRight, SvgKey, SvgSliders } from "@opal/icons";
+import { SvgActions, SvgCheck, SvgChevronRight, SvgHourglass, SvgKey, SvgPlus } from "@opal/icons";
 import { Button } from "@opal/components";
 
 const UNAVAILABLE_TOOL_TOOLTIP_FALLBACK =
@@ -136,6 +136,12 @@ export interface ActionsPopoverProps {
   filterManager: FilterManager;
   availableSources?: ValidSources[];
   disabled?: boolean;
+  /** Whether deep research is available for the current assistant */
+  showDeepResearch?: boolean;
+  /** Whether deep research is currently enabled */
+  deepResearchEnabled?: boolean;
+  /** Callback to toggle deep research on/off */
+  toggleDeepResearch?: () => void;
 }
 
 export default function ActionsPopover({
@@ -143,6 +149,9 @@ export default function ActionsPopover({
   filterManager,
   availableSources = [],
   disabled = false,
+  showDeepResearch,
+  deepResearchEnabled,
+  toggleDeepResearch,
 }: ActionsPopoverProps) {
   const [open, setOpen] = useState(false);
   const [secondaryView, setSecondaryView] = useState<SecondaryViewState | null>(
@@ -853,19 +862,62 @@ export default function ActionsPopover({
   ).length;
   const totalSourceCount = accessibleConfiguredSources.length;
 
+  const totalMenuItems = displayTools.length + mcpServers.length;
+  const showSearch = totalMenuItems > 5;
+
   const primaryView = (
     <PopoverMenu>
       {[
-        <InputTypeIn
-          key="search"
-          placeholder="Search Actions"
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          autoFocus
-          variant="internal"
-        />,
+        // Search — only when there are many items
+        showSearch && (
+          <InputTypeIn
+            key="search"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            autoFocus
+            variant="internal"
+            leftSearchIcon
+          />
+        ),
 
-        // Actions
+        // Deep Research toggle — prominent first position
+        showDeepResearch && toggleDeepResearch && (
+          <LineItem
+            key="deep-research"
+            icon={SvgHourglass}
+            onClick={() => {
+              toggleDeepResearch();
+              setOpen(false);
+            }}
+            selected={deepResearchEnabled}
+            emphasized={deepResearchEnabled}
+            rightChildren={
+              deepResearchEnabled ? (
+                <span className="flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-virtualai-accent text-white">
+                  <SvgCheck className="w-3 h-3" />
+                  ON
+                </span>
+              ) : undefined
+            }
+          >
+            Deep Research
+          </LineItem>
+        ),
+
+        // Separator between deep research and tools
+        (showDeepResearch && toggleDeepResearch) ? null : undefined,
+
+        // Section header — Tools
+        filteredTools.length > 0 && (
+          <div key="tools-header" className="px-2.5 pt-1 pb-0">
+            <span className="text-[10px] font-semibold text-text-02 uppercase tracking-wider">
+              Tools
+            </span>
+          </div>
+        ),
+
+        // Tool actions
         ...filteredTools.map((tool) =>
           (() => {
             const isToolAvailable = availableToolIdSet.has(tool.id);
@@ -918,6 +970,18 @@ export default function ActionsPopover({
           })()
         ),
 
+        // Separator before integrations
+        filteredMCPServers.length > 0 ? null : undefined,
+
+        // Section header — Integrations
+        filteredMCPServers.length > 0 && (
+          <div key="mcp-header" className="px-2.5 pt-1 pb-0">
+            <span className="text-[10px] font-semibold text-text-02 uppercase tracking-wider">
+              Integrations
+            </span>
+          </div>
+        ),
+
         // MCP Servers
         ...filteredMCPServers.map((server) => {
           const serverData = mcpServerData[server.id] || {
@@ -926,7 +990,6 @@ export default function ActionsPopover({
             isLoading: false,
           };
 
-          // Tools for this server come from assistant.tools
           const serverTools = selectedAssistant.tools.filter(
             (t) => t.mcp_server_id === Number(server.id)
           );
@@ -956,9 +1019,10 @@ export default function ActionsPopover({
 
         null,
 
+        // Footer — admin link
         (isAdmin || isCurator) && (
-          <LineItem href="/admin/actions" icon={SvgActions} key="more-actions">
-            More Actions
+          <LineItem href="/admin/actions" icon={SvgActions} key="more-actions" muted>
+            Manage Actions
           </LineItem>
         ),
       ]}
@@ -999,14 +1063,17 @@ export default function ActionsPopover({
     <>
       <Popover open={open} onOpenChange={handleOpenChange}>
         <Popover.Trigger asChild>
-          <div data-testid="action-management-toggle">
+          <div data-testid="action-management-toggle" className="relative">
             <Button
-              icon={SvgSliders}
+              icon={SvgPlus}
               transient={open}
               prominence="tertiary"
-              tooltip="Manage Actions"
+              tooltip="Actions"
               disabled={disabled}
             />
+            {deepResearchEnabled && (
+              <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-virtualai-accent ring-2 ring-background-neutral-00" />
+            )}
           </div>
         </Popover.Trigger>
         <Popover.Content side="bottom" align="start" width="lg">

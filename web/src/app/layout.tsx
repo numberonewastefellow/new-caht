@@ -48,7 +48,7 @@ const hankenGrotesk = Hanken_Grotesk({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  let logoLocation = buildClientUrl("/onyx.ico");
+  let logoLocation = buildClientUrl("/vertuelai-favicon.svg");
   let enterpriseSettings: EnterpriseSettings | null = null;
   try {
     const res = await fetchEnterpriseSettingsSS();
@@ -57,7 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
       logoLocation =
         enterpriseSettings && enterpriseSettings.use_custom_logo
           ? "/api/enterprise-settings/logo"
-          : buildClientUrl("/onyx.ico");
+          : buildClientUrl("/vertuelai-favicon.svg");
     }
   } catch (e) {
     // Fall through with defaults

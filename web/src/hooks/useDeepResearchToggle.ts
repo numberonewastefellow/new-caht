@@ -44,8 +44,8 @@ export default function useDeepResearchToggle({
   }, [assistantId]);
 
   const toggleDeepResearch = useCallback(() => {
-    setDeepResearchEnabled(!deepResearchEnabled);
-  }, [deepResearchEnabled]);
+    setDeepResearchEnabled((prev) => !prev);
+  }, []);
 
   return {
     deepResearchEnabled,

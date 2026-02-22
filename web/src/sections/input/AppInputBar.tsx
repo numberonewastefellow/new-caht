@@ -43,7 +43,6 @@ import {
   SvgCalendar,
   SvgFiles,
   SvgFileText,
-  SvgHourglass,
   SvgPlus,
   SvgPaperclip,
   SvgSearch,
@@ -490,6 +489,21 @@ const AppInputBar = React.memo(
               isSearchMode && "p-1"
             )}
           >
+            {/* (+) Actions button — left of textarea, ChatGPT style */}
+            {!isSearchMode && selectedAssistant && selectedAssistant.tools.length > 0 && (
+              <div className={cn("flex-shrink-0 pl-1", controlsLoading && "invisible")}>
+                <ActionsPopover
+                  selectedAssistant={selectedAssistant}
+                  filterManager={filterManager}
+                  availableSources={memoizedAvailableSources}
+                  disabled={disabled}
+                  showDeepResearch={showDeepResearch}
+                  deepResearchEnabled={deepResearchEnabled}
+                  toggleDeepResearch={toggleDeepResearch}
+                />
+              </div>
+            )}
+
             <Popover
               open={user?.preferences?.shortcut_enabled && showPrompts}
               onOpenChange={setShowPrompts}
@@ -671,7 +685,7 @@ const AppInputBar = React.memo(
             <div className="flex justify-between items-center w-full p-1 min-h-[40px]">
               {/* Bottom left controls */}
               <div className="flex flex-row items-center">
-                {/* (+) button - always visible */}
+                {/* Attach button */}
                 <FilePickerPopover
                   onFileClick={handleFileClick}
                   onPickRecent={(file: ProjectFile) => {
@@ -733,28 +747,6 @@ const AppInputBar = React.memo(
                       onToggleForce={toggleForcedTool}
                       disabled={disabled}
                     />
-                  )}
-
-                  {/* More tools popover */}
-                  {selectedAssistant && selectedAssistant.tools.length > 0 && (
-                    <ActionsPopover
-                      selectedAssistant={selectedAssistant}
-                      filterManager={filterManager}
-                      availableSources={memoizedAvailableSources}
-                      disabled={disabled}
-                    />
-                  )}
-                  {showDeepResearch && (
-                    <Button
-                      icon={SvgHourglass}
-                      onClick={toggleDeepResearch}
-                      variant="select"
-                      selected={deepResearchEnabled}
-                      foldable={!deepResearchEnabled}
-                      disabled={disabled}
-                    >
-                      Deep Research
-                    </Button>
                   )}
 
                   {/* Show forced tool pills only for non-quick-chip tools (MCP, OpenAPI, etc.) */}

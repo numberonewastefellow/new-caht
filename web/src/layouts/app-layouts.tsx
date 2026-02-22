@@ -450,7 +450,7 @@ function Footer() {
     settings?.enterpriseSettings?.custom_lower_disclaimer_content ||
     `[VertualAI ${
       settings?.webVersion || "dev"
-    }](https://www.onyx.app/) - Open Source AI Platform`;
+    }](https://www.onyx.app/) - Enterprise AI Platform`;
 
   return (
     <footer
