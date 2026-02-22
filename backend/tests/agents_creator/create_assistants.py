@@ -1,7 +1,7 @@
 """
-Bulk Assistant Creator for Onyx
-================================
-Creates assistants from JSON files via the Onyx API.
+Bulk Assistant Creator for VirtualAI
+======================================
+Creates assistants from JSON files via the VirtualAI API.
 
 Usage:
     python create_assistants.py                          # Create from assistants/ folder
@@ -10,7 +10,7 @@ Usage:
     python create_assistants.py --delete 5               # Delete assistant by ID
     python create_assistants.py --export out.json        # Export all assistants to JSON
 
-API key is read from apikey.txt, .env, or ONYX_API_KEY env var.
+API key is read from apikey.txt, .env, or VIRTUALAI_API_KEY env var.
 """
 
 import argparse
@@ -172,7 +172,7 @@ def bulk_create(source: str | None, skip_existing: bool = True):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Bulk create/manage Onyx assistants from JSON files",
+        description="Bulk create/manage VirtualAI assistants from JSON files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

@@ -1,11 +1,11 @@
 """
-Shared configuration and API client for Onyx agent tools.
+Shared configuration and API client for VirtualAI agent tools.
 
 API key resolution order:
     1. --key CLI argument
     2. apikey.txt file in this folder
-    3. .env file in this folder (ONYX_API_KEY=...)
-    4. ONYX_API_KEY environment variable
+    3. .env file in this folder (VIRTUALAI_API_KEY=...)
+    4. VIRTUALAI_API_KEY environment variable
 """
 
 import os
@@ -48,7 +48,7 @@ DEFAULTS = {
     "document_ids": [],
 }
 
-# ── Tool ID mapping (adjust per your Onyx instance) ───────────────────────
+# ── Tool ID mapping (adjust per your VirtualAI instance) ──────────────────
 TOOL_IDS = {
     "internal_search": 1,
     "image_generation": 2,
@@ -95,22 +95,22 @@ def resolve_api_key() -> str:
     if key:
         return key
 
-    # 3. .env file
+    # 3. .env file (check VIRTUALAI_API_KEY first, fallback to ONYX_API_KEY)
     env = _load_env_file()
-    key = env.get("ONYX_API_KEY", "")
+    key = env.get("VIRTUALAI_API_KEY", "") or env.get("ONYX_API_KEY", "")
     if key:
         return key
 
     # 4. System environment variable
-    key = os.environ.get("ONYX_API_KEY", "")
+    key = os.environ.get("VIRTUALAI_API_KEY", "") or os.environ.get("ONYX_API_KEY", "")
     if key:
         return key
 
     print("ERROR: No API key found. Provide it via one of:")
     print(f"  1. --key argument")
     print(f"  2. {APIKEY_FILE}")
-    print(f"  3. {ENV_FILE}  (ONYX_API_KEY=...)")
-    print(f"  4. ONYX_API_KEY environment variable")
+    print(f"  3. {ENV_FILE}  (VIRTUALAI_API_KEY=...)")
+    print(f"  4. VIRTUALAI_API_KEY environment variable")
     sys.exit(1)
 
 
@@ -125,7 +125,7 @@ def headers() -> dict:
 
 
 def api(method: str, path: str, data: dict | None = None) -> requests.Response:
-    """Make an API call to Onyx."""
+    """Make an API call to VirtualAI."""
     url = urljoin(CONFIG["base_url"] + "/", f"api/{path.lstrip('/')}")
     return requests.request(method, url, headers=headers(), json=data, timeout=30)
 
@@ -138,7 +138,7 @@ def add_common_args(parser):
     parser.add_argument(
         "--url",
         default=CONFIG["base_url"],
-        help=f"Onyx base URL (default: {CONFIG['base_url']})",
+        help=f"VirtualAI base URL (default: {CONFIG['base_url']})",
     )
     parser.add_argument(
         "--key",

@@ -1,7 +1,7 @@
 """
-Open WebUI → Onyx Assistant Importer
-======================================
-Converts Open WebUI model/assistant exports to Onyx format and creates them.
+Open WebUI → VirtualAI Assistant Importer
+============================================
+Converts Open WebUI model/assistant exports to VirtualAI format and creates them.
 
 Usage:
     python import_open_webui.py                              # Preview all from open_web_ui/
@@ -9,7 +9,7 @@ Usage:
     python import_open_webui.py --save-only                  # Save to assistants/ folder only
     python import_open_webui.py --create                     # Convert and create via API directly
 
-Field Mapping (Open WebUI → Onyx):
+Field Mapping (Open WebUI → VirtualAI):
     name                          → name  (underscores replaced with spaces)
     meta.description              → description
     params.system                 → system_prompt
@@ -17,7 +17,7 @@ Field Mapping (Open WebUI → Onyx):
     meta.tags[]                   → tags line in description
     meta.capabilities.vision      → adds image generation tool
 
-API key is read from apikey.txt, .env, or ONYX_API_KEY env var.
+API key is read from apikey.txt, .env, or VIRTUALAI_API_KEY env var.
 """
 
 import argparse
@@ -78,7 +78,7 @@ def derive_starter_name(content: str) -> str:
 
 
 def convert_one(owui: dict) -> dict:
-    """Convert a single Open WebUI model/assistant to Onyx format."""
+    """Convert a single Open WebUI model/assistant to VirtualAI format."""
     meta = owui.get("meta", {})
     params = owui.get("params", {})
 
@@ -127,7 +127,7 @@ def convert_one(owui: dict) -> dict:
 
 
 def convert_all(models: list[dict]) -> list[dict]:
-    """Convert a list of Open WebUI models to Onyx format."""
+    """Convert a list of Open WebUI models to VirtualAI format."""
     return [convert_one(m) for m in models]
 
 
@@ -193,7 +193,7 @@ def preview(converted: list[dict]):
 
 
 def save_to_folder(converted: list[dict], output_file: str | None = None):
-    """Save converted assistants as Onyx-format JSON."""
+    """Save converted assistants as VirtualAI-format JSON."""
     ASSISTANTS_DIR.mkdir(exist_ok=True)
 
     clean = []
@@ -208,11 +208,11 @@ def save_to_folder(converted: list[dict], output_file: str | None = None):
 
     out.write_text(json.dumps(clean, indent=2), encoding="utf-8")
     print(f"\nSaved {len(clean)} assistant(s) to {out}")
-    print("You can now run: python create_assistants.py to create them.\n")
+    print("Run: python create_assistants.py to create them in VirtualAI.\n")
 
 
 def create_via_api(converted: list[dict], skip_existing: bool = True):
-    """Create assistants directly via the Onyx API."""
+    """Create assistants directly via the VirtualAI API."""
     existing_names = set()
     if skip_existing:
         resp = api("GET", "persona")
@@ -262,7 +262,7 @@ def list_tools():
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Import Open WebUI assistants into Onyx",
+        description="Import Open WebUI assistants into VirtualAI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -272,10 +272,10 @@ Examples:
   python import_open_webui.py --save-only -o my_bots.json      # Save to custom file
   python import_open_webui.py --create                         # Create directly via API
   python import_open_webui.py --create --force                 # Create even if name exists
-  python import_open_webui.py --list-tools                     # Show available Onyx tool IDs
+  python import_open_webui.py --list-tools                     # Show available VirtualAI tool IDs
 
 Field Mapping:
-  Open WebUI                    Onyx
+  Open WebUI                    VirtualAI
   ─────────────────────────     ──────────────────
   name                       →  name (cleaned)
   meta.description           →  description
@@ -286,12 +286,12 @@ Field Mapping:
         """,
     )
     parser.add_argument("--file", "-f", help="Path to a specific Open WebUI JSON file")
-    parser.add_argument("--save-only", "-s", action="store_true", help="Save as Onyx JSON (don't create via API)")
+    parser.add_argument("--save-only", "-s", action="store_true", help="Save as VirtualAI JSON (don't create via API)")
     parser.add_argument("--create", "-c", action="store_true", help="Create assistants via API directly")
     parser.add_argument("--dry-run", action="store_true", help="Preview only (same as default, explicit flag)")
     parser.add_argument("--force", action="store_true", help="Create even if name already exists")
     parser.add_argument("--output", "-o", help="Output file path (used with --save-only)")
-    parser.add_argument("--list-tools", action="store_true", help="List available Onyx tool IDs")
+    parser.add_argument("--list-tools", action="store_true", help="List available VirtualAI tool IDs")
     add_common_args(parser)
 
     args = parser.parse_args()
@@ -312,7 +312,7 @@ Field Mapping:
     elif args.create:
         create_via_api(converted, skip_existing=not args.force)
     else:
-        print("Use --save-only to save as Onyx JSON, or --create to push to API directly.\n")
+        print("Use --save-only to save to save as JSON, or --create to push to VirtualAI API directly.\n")
 
 
 if __name__ == "__main__":
