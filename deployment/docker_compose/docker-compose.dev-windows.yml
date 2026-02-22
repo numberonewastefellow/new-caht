@@ -28,17 +28,7 @@ services:
   background:
     depends_on:
       - api_server
-    # Fix CRLF line endings in scripts when built on Windows
-    command: >
-      /bin/sh -c "
-      sed -i 's/\r$//' /app/scripts/*.sh &&
-      if [ -f /app/scripts/setup_craft_templates.sh ]; then
-        /app/scripts/setup_craft_templates.sh;
-      fi &&
-      if [ -f /etc/ssl/certs/custom-ca.crt ]; then
-        update-ca-certificates;
-      fi &&
-      /app/scripts/supervisord_entrypoint.sh"
+    # CRLF line endings are now fixed at build time in the Dockerfile
     environment:
       # Disable telemetry and error reporting
       - DISABLE_TELEMETRY=true

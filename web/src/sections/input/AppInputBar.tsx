@@ -45,7 +45,7 @@ import {
   SvgFileText,
   SvgHourglass,
   SvgPlus,
-  SvgPlusCircle,
+  SvgPaperclip,
   SvgSearch,
   SvgStop,
   SvgX,
@@ -693,13 +693,26 @@ const AppInputBar = React.memo(
                   }}
                   handleUploadChange={handleUploadChange}
                   trigger={(open) => (
-                    <Button
-                      icon={SvgPlusCircle}
-                      tooltip="Attach Files"
-                      transient={open}
+                    <button
+                      type="button"
                       disabled={disabled}
-                      prominence="tertiary"
-                    />
+                      className={cn(
+                        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full",
+                        "text-xs font-medium transition-all duration-150",
+                        "cursor-pointer select-none",
+                        open
+                          ? "bg-background-neutral-03 border border-border-03 text-text-05"
+                          : [
+                              "border border-border-02 hover:border-border-03",
+                              "text-text-03 hover:text-text-05",
+                              "hover:bg-background-neutral-02",
+                            ],
+                        disabled && "opacity-50 pointer-events-none"
+                      )}
+                    >
+                      <SvgPaperclip className="w-4 h-4" />
+                      <span>Attach</span>
+                    </button>
                   )}
                   selectedFileIds={currentMessageFiles.map((f) => f.id)}
                 />

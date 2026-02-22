@@ -4,76 +4,21 @@ Bulk Assistant Creator for Onyx
 Creates assistants from JSON files via the Onyx API.
 
 Usage:
-    python create_assistants.py                          # Load from assistants/ folder
-    python create_assistants.py --file my_bots.json      # Load a specific file
+    python create_assistants.py                          # Create from assistants/ folder
+    python create_assistants.py --file my_bots.json      # Create from a specific file
     python create_assistants.py --list                   # List existing assistants
     python create_assistants.py --delete 5               # Delete assistant by ID
     python create_assistants.py --export out.json        # Export all assistants to JSON
 
-Config:
-    Set ONYX_API_KEY env var or edit config below.
-    JSON files go in the assistants/ subfolder by default.
+API key is read from apikey.txt, .env, or ONYX_API_KEY env var.
 """
 
 import argparse
 import json
 import sys
 from pathlib import Path
-from urllib.parse import urljoin
 
-import requests
-
-# ── Config ──────────────────────────────────────────────────────────────────
-CONFIG = {
-    "base_url": "http://localhost:3000",
-    "api_key": "",  # Set here or use ONYX_API_KEY env var
-}
-
-# Default values applied to each assistant if not specified in JSON
-DEFAULTS = {
-    "num_chunks": 10.0,
-    "is_public": True,
-    "recency_bias": "base_decay",
-    "llm_filter_extraction": False,
-    "llm_relevance_filter": False,
-    "replace_base_system_prompt": True,
-    "datetime_aware": True,
-    "task_prompt": "",
-    "document_set_ids": [],
-    "tool_ids": [1],  # 1=Internal Search. Use --list-tools to see available IDs
-    "users": [],
-    "groups": [],
-    "label_ids": [],
-    "user_file_ids": [],
-    "hierarchy_node_ids": [],
-    "document_ids": [],
-}
-
-ASSISTANTS_DIR = Path(__file__).parent / "assistants"
-# ────────────────────────────────────────────────────────────────────────────
-
-
-def get_api_key() -> str:
-    import os
-
-    key = CONFIG["api_key"] or os.environ.get("ONYX_API_KEY", "")
-    if not key:
-        print("ERROR: No API key. Set ONYX_API_KEY env var or edit api_key in CONFIG.")
-        sys.exit(1)
-    return key
-
-
-def headers() -> dict:
-    return {
-        "Authorization": f"Bearer {get_api_key()}",
-        "Content-Type": "application/json",
-    }
-
-
-def api(method: str, path: str, data: dict | None = None) -> requests.Response:
-    url = urljoin(CONFIG["base_url"] + "/", f"api/{path.lstrip('/')}")
-    resp = requests.request(method, url, headers=headers(), json=data, timeout=30)
-    return resp
+from config import ASSISTANTS_DIR, DEFAULTS, add_common_args, api, apply_common_args
 
 
 # ── Core Actions ────────────────────────────────────────────────────────────
@@ -104,9 +49,7 @@ def list_tools():
 
 def create_assistant(payload: dict) -> dict | None:
     """Create a single assistant. Returns the response dict or None on failure."""
-    # Merge defaults with payload (payload overrides defaults)
     body = {**DEFAULTS, **payload}
-
     name = body.get("name", "Unnamed")
     resp = api("POST", "persona", body)
 
@@ -136,16 +79,15 @@ def export_assistants(output_file: str):
     resp.raise_for_status()
     assistants = resp.json()
 
-    # Fetch each assistant individually to get full details (system_prompt etc.)
     exported = []
     for a in assistants:
         if a.get("builtin_persona"):
-            continue  # skip built-in default
+            continue
         detail_resp = api("GET", f"persona/{a['id']}")
         if detail_resp.status_code == 200:
             d = detail_resp.json()
         else:
-            d = a  # fallback to list data
+            d = a
         exported.append({
             "name": d["name"],
             "description": d["description"],
@@ -176,7 +118,6 @@ def load_json_files(source: str | None) -> list[dict]:
         data = json.loads(p.read_text(encoding="utf-8"))
         return data if isinstance(data, list) else [data]
 
-    # Load all .json files from assistants/ folder
     if not ASSISTANTS_DIR.exists():
         print(f"ERROR: Assistants folder not found: {ASSISTANTS_DIR}")
         print("Create it and add JSON files, or use --file to specify a file.")
@@ -203,7 +144,6 @@ def bulk_create(source: str | None, skip_existing: bool = True):
     assistants = load_json_files(source)
     print(f"\nFound {len(assistants)} assistant(s) to create\n")
 
-    # Get existing names to avoid duplicates
     existing_names = set()
     if skip_existing:
         resp = api("GET", "persona")
@@ -251,14 +191,10 @@ Examples:
     parser.add_argument("--delete", "-d", type=int, help="Delete assistant by ID")
     parser.add_argument("--export", "-e", help="Export all assistants to a JSON file")
     parser.add_argument("--force", action="store_true", help="Create even if assistant name already exists")
-    parser.add_argument("--url", default=CONFIG["base_url"], help=f"Onyx base URL (default: {CONFIG['base_url']})")
-    parser.add_argument("--key", help="API key (overrides env var and script config)")
+    add_common_args(parser)
 
     args = parser.parse_args()
-
-    CONFIG["base_url"] = args.url
-    if args.key:
-        CONFIG["api_key"] = args.key
+    apply_common_args(args)
 
     if args.list:
         list_assistants()

@@ -33,7 +33,6 @@ import ButtonRenaming from "@/refresh-components/buttons/ButtonRenaming";
 import useAppFocus from "@/hooks/useAppFocus";
 import LineItem from "@/refresh-components/buttons/LineItem";
 import {
-  SvgBubbleText,
   SvgChevronLeft,
   SvgEdit,
   SvgFolder,
@@ -433,7 +432,6 @@ const ChatButton = memo(
             rightChildren={rightMenu}
             focused={renaming}
             nested={!!project}
-            leftIcon={SvgBubbleText}
           >
             {renaming ? (
               <ButtonRenaming

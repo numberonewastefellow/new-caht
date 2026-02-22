@@ -1,19 +1,20 @@
 /* ========================================
-   Sidebar Tab Styles
-   Accent-aware active states, pill indicator,
-   and smooth transitions for the sidebar.
+   Sidebar Tab Styles — Clean Minimal
+   Subtle accent-aware active state, no glow,
+   no pill. ChatGPT-inspired flat design.
+   All colors from CSS variables (accent theme configurable).
    ======================================== */
 
-/* Base transition for smooth state changes */
+/* Base transition */
 .sidebar-tab-background-defaulted,
 .sidebar-tab-background-lowlight {
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
 /* ── Background classes ── */
 
 .sidebar-tab-background-defaulted[data-state="active"] {
-  background-color: var(--virtualai-accent-glow, var(--background-tint-00));
+  background-color: var(--virtualai-accent-subtle, var(--background-tint-00));
 }
 .sidebar-tab-background-defaulted[data-state="inactive"] {
   background-color: transparent;
@@ -21,12 +22,9 @@
 .sidebar-tab-background-defaulted:hover {
   background-color: var(--background-tint-03);
 }
-.sidebar-tab-background-defaulted[data-state="active"]:hover {
-  background-color: var(--virtualai-accent-glow, var(--background-tint-00));
-}
 
 .sidebar-tab-background-lowlight[data-state="active"] {
-  background-color: var(--virtualai-accent-glow, var(--background-tint-00));
+  background-color: var(--virtualai-accent-subtle, var(--background-tint-00));
 }
 .sidebar-tab-background-lowlight[data-state="inactive"] {
   background-color: transparent;
@@ -34,40 +32,10 @@
 .sidebar-tab-background-lowlight:hover {
   background-color: var(--background-tint-03);
 }
-.sidebar-tab-background-lowlight[data-state="active"]:hover {
-  background-color: var(--virtualai-accent-glow, var(--background-tint-00));
-}
 
 .sidebar-tab-background-focused {
   border: 2px solid var(--background-tint-04);
   background-color: var(--background-neutral-00);
-}
-
-/* ── Left accent pill indicator ── */
-
-.sidebar-tab-background-defaulted[data-state="active"]::before,
-.sidebar-tab-background-lowlight[data-state="active"]::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 25%;
-  bottom: 25%;
-  width: 3px;
-  border-radius: 0 2px 2px 0;
-  background-color: var(--virtualai-accent, var(--theme-primary-05));
-  transition: opacity 0.15s ease;
-}
-
-.sidebar-tab-background-defaulted[data-state="inactive"]::before,
-.sidebar-tab-background-lowlight[data-state="inactive"]::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 25%;
-  bottom: 25%;
-  width: 3px;
-  border-radius: 0 2px 2px 0;
-  background-color: transparent;
 }
 
 /* ── Text classes ── */

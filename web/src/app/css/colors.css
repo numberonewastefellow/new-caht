@@ -682,6 +682,8 @@
   --theme-gradient-05: #1e40af;
   --theme-gradient-00: #3b82f6;
   --virtualai-accent-glow: rgba(59, 130, 246, 0.15);
+  --virtualai-accent-glow-strong: rgba(59, 130, 246, 0.25);
+  --virtualai-accent-subtle: rgba(59, 130, 246, 0.05);
   --virtualai-accent: #3b82f6;
 }
 
@@ -694,6 +696,8 @@
   --theme-gradient-05: #1e3a5f;
   --theme-gradient-00: #60a5fa;
   --virtualai-accent-glow: rgba(59, 130, 246, 0.25);
+  --virtualai-accent-glow-strong: rgba(59, 130, 246, 0.35);
+  --virtualai-accent-subtle: rgba(59, 130, 246, 0.08);
   --virtualai-accent: #60a5fa;
 }
 
@@ -705,6 +709,8 @@
   --theme-gradient-05: #059669;
   --theme-gradient-00: #34d399;
   --virtualai-accent-glow: rgba(52, 211, 153, 0.15);
+  --virtualai-accent-glow-strong: rgba(52, 211, 153, 0.25);
+  --virtualai-accent-subtle: rgba(52, 211, 153, 0.05);
   --virtualai-accent: #059669;
 }
 
@@ -717,6 +723,8 @@
   --theme-gradient-05: #064e3b;
   --theme-gradient-00: #34d399;
   --virtualai-accent-glow: rgba(52, 211, 153, 0.25);
+  --virtualai-accent-glow-strong: rgba(52, 211, 153, 0.35);
+  --virtualai-accent-subtle: rgba(52, 211, 153, 0.08);
   --virtualai-accent: #34d399;
 }
 
@@ -728,6 +736,8 @@
   --theme-gradient-05: #7c3aed;
   --theme-gradient-00: #a78bfa;
   --virtualai-accent-glow: rgba(167, 139, 250, 0.15);
+  --virtualai-accent-glow-strong: rgba(167, 139, 250, 0.25);
+  --virtualai-accent-subtle: rgba(167, 139, 250, 0.05);
   --virtualai-accent: #7c3aed;
 }
 
@@ -740,5 +750,7 @@
   --theme-gradient-05: #2e1065;
   --theme-gradient-00: #a78bfa;
   --virtualai-accent-glow: rgba(167, 139, 250, 0.25);
+  --virtualai-accent-glow-strong: rgba(167, 139, 250, 0.35);
+  --virtualai-accent-subtle: rgba(167, 139, 250, 0.08);
   --virtualai-accent: #a78bfa;
 }

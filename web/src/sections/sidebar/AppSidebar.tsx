@@ -59,10 +59,8 @@ import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import { useModalContext } from "@/components/context/ModalContext";
 import useScreenSize from "@/hooks/useScreenSize";
 import {
-  SvgClock,
   SvgDevKit,
   SvgEditBig,
-  SvgFolder,
   SvgFolderPlus,
   SvgMoreHorizontal,
   SvgOnyxOctagon,
@@ -124,7 +122,7 @@ function RecentsSection({ chatSessions }: RecentsSectionProps) {
         isOver && "bg-background-tint-03"
       )}
     >
-      <SidebarSection title="Recents" icon={SvgClock} divider>
+      <SidebarSection title="Your chats">
         {chatSessions.length === 0 ? (
           <Text as="p" text01 className="px-3">
             Try sending a message! Your chat history will appear here.
@@ -195,6 +193,7 @@ const MemoizedAppSidebarInner = memo(
     >(null);
     const [showMoveCustomAgentModal, setShowMoveCustomAgentModal] =
       useState(false);
+    const [projectsCollapsed, setProjectsCollapsed] = useState(true);
 
     // Fetch notifications for build mode intro
     const { data: notifications, mutate: mutateNotifications } = useSWR<
@@ -659,7 +658,7 @@ const MemoizedAppSidebarInner = memo(
                   collisionDetection={closestCenter}
                   onDragEnd={handleAgentDragEnd}
                 >
-                  <SidebarSection title="Agents" icon={SvgOnyxOctagon}>
+                  <SidebarSection title="Agents">
                     <SortableContext
                       items={visibleAgentIds}
                       strategy={verticalListSortingStrategy}
@@ -688,8 +687,9 @@ const MemoizedAppSidebarInner = memo(
                   {/* Projects */}
                   <SidebarSection
                     title="Projects"
-                    icon={SvgFolder}
-                    divider
+                    collapsible
+                    collapsed={projectsCollapsed}
+                    onToggle={() => setProjectsCollapsed((prev) => !prev)}
                     action={
                       <OpalButton
                         icon={SvgFolderPlus}
