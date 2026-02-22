@@ -471,6 +471,46 @@ export function getSegmentLabel(segment: string): string {
 /**
  * Check if a pathname segment looks like a dynamic route parameter (e.g., a UUID or numeric ID).
  */
+/**
+ * Resolve the nav group color for a given admin pathname.
+ * Uses a static prefix → color map so we don't need runtime feature flags.
+ */
+const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
+  // Knowledge (green)
+  ["/admin/indexing", "green"],
+  ["/admin/add-connector", "green"],
+  ["/admin/documents", "green"],
+  ["/admin/connectors", "green"],
+  ["/admin/embeddings", "green"],
+  // Agents (purple)
+  ["/admin/assistants", "purple"],
+  ["/admin/bots", "purple"],
+  ["/admin/discord-bot", "purple"],
+  ["/admin/actions", "purple"],
+  ["/ee/admin/standard-answer", "purple"],
+  // AI Models (blue)
+  ["/admin/configuration", "blue"],
+  ["/admin/kg", "blue"],
+  // Governance (orange)
+  ["/admin/users", "orange"],
+  ["/ee/admin/groups", "orange"],
+  ["/admin/api-key", "orange"],
+  ["/admin/token-rate-limits", "orange"],
+  // Workspace (cyan)
+  ["/admin/settings", "cyan"],
+  ["/ee/admin/theme", "cyan"],
+  ["/admin/billing", "cyan"],
+  ["/admin/document-index-migration", "cyan"],
+  ["/ee/admin/performance", "cyan"],
+];
+
+export function getGroupColorForPath(pathname: string): NavGroupColor | null {
+  for (const [prefix, color] of PATH_GROUP_COLORS) {
+    if (pathname.startsWith(prefix)) return color;
+  }
+  return null;
+}
+
 export function isDynamicSegment(segment: string): boolean {
   // UUIDs
   if (

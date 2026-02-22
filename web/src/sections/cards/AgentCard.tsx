@@ -105,45 +105,43 @@ export default function AgentCard({ agent, onLabelClick }: AgentCardProps) {
 
           {/* Name + Description + Labels */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <Text as="p" mainContentBody className="truncate font-medium">
-                {agent.name}
-              </Text>
-              {agent.labels && agent.labels.length > 0 && (
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  {agent.labels.slice(0, 3).map((label) => {
-                    const color = getLabelColor(label.id);
-                    return (
-                      <button
-                        key={label.id}
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onLabelClick?.(label.id);
-                        }}
-                        className={cn(
-                          "inline-flex items-center px-2 py-0.5 rounded-full text-xs leading-tight font-medium",
-                          "transition-opacity hover:opacity-80 cursor-pointer",
-                          color.bg,
-                          color.text
-                        )}
-                      >
-                        {label.name}
-                      </button>
-                    );
-                  })}
-                  {agent.labels.length > 3 && (
-                    <span className="text-text-03 text-xs">
-                      +{agent.labels.length - 3}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
+            <Text as="p" mainContentBody className="truncate font-medium">
+              {agent.name}
+            </Text>
             {agent.description && (
               <Text as="p" secondaryBody text03 className="truncate">
                 {agent.description}
               </Text>
+            )}
+            {agent.labels && agent.labels.length > 0 && (
+              <div className="flex items-center gap-1 flex-wrap mt-1">
+                {agent.labels.slice(0, 4).map((label) => {
+                  const color = getLabelColor(label.id);
+                  return (
+                    <button
+                      key={label.id}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onLabelClick?.(label.id);
+                      }}
+                      className={cn(
+                        "inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] leading-tight font-medium",
+                        "transition-opacity hover:opacity-80 cursor-pointer",
+                        color.bg,
+                        color.text
+                      )}
+                    >
+                      {label.name}
+                    </button>
+                  );
+                })}
+                {agent.labels.length > 4 && (
+                  <span className="text-text-03 text-[0.6875rem]">
+                    +{agent.labels.length - 4}
+                  </span>
+                )}
+              </div>
             )}
           </div>
 

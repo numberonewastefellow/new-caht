@@ -6,7 +6,7 @@ import Logo from "@/refresh-components/Logo";
 import SystemHealthDot from "./SystemHealthDot";
 import ThemeToggleButton from "./ThemeToggleButton";
 import AdminNavTab from "./AdminNavTab";
-import { SvgSearch, SvgArrowUpRight } from "@opal/icons";
+import { SvgSearch, SvgArrowLeft } from "@opal/icons";
 import UserAvatarPopover from "@/sections/sidebar/UserAvatarPopover";
 import AdminMobileMenu from "./AdminMobileMenu";
 import type { AdminNavGroup } from "./adminNavItems";
@@ -69,10 +69,11 @@ export default function AdminTopBar({
 
         <Link
           href={"/app" as any}
-          className="hidden md:flex items-center gap-1 px-2 py-1.5 rounded-08 text-xs text-text-03 hover:text-text-05 hover:bg-background-neutral-02 transition-colors"
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-white transition-all hover:opacity-90 hover:shadow-md"
+          style={{ backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }}
         >
-          <SvgArrowUpRight className="w-3 h-3" />
-          <span>Exit Admin</span>
+          <SvgArrowLeft className="w-3 h-3" />
+          <span>Back to App</span>
         </Link>
         <ThemeToggleButton />
         <div className="ml-1">

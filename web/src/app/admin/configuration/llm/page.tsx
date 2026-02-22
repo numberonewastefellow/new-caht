@@ -6,7 +6,11 @@ import { SvgCpu } from "@opal/icons";
 export default function Page() {
   return (
     <>
-      <AdminPageTitle title="Language Models" icon={SvgCpu} />
+      <AdminPageTitle
+        title="Language Models"
+        icon={SvgCpu}
+        description="Configure LLM providers that power your AI agents and features."
+      />
 
       <LLMConfiguration />
     </>

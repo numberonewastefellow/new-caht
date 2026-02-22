@@ -9,27 +9,28 @@ export interface AdminPageTitleProps {
   title: string | JSX.Element;
   farRightElement?: JSX.Element;
   includeDivider?: boolean;
+  /** Optional subtitle text below the title */
+  description?: string;
 }
 
 /**
- * AdminPageTitle — backward-compatible wrapper that now renders breadcrumbs.
- *
- * The `icon` prop is accepted for API compatibility but no longer rendered
- * (icons are shown in the top bar navigation instead).
- * The `title` prop is used as the page heading and last breadcrumb segment.
- * The `includeDivider` prop is accepted but ignored (breadcrumbs handle spacing).
+ * AdminPageTitle — backward-compatible wrapper that now renders breadcrumbs
+ * with a colorful page icon.
  */
 export function AdminPageTitle({
-  icon: _icon,
+  icon,
   title,
   farRightElement,
   includeDivider: _includeDivider,
+  description,
 }: AdminPageTitleProps) {
   const titleStr = typeof title === "string" ? title : undefined;
 
   return (
     <AdminBreadcrumb
       title={titleStr ?? title}
+      icon={icon}
+      description={description}
       farRightElement={farRightElement}
     />
   );

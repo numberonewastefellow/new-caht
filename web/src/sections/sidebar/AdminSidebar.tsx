@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import { useSettingsContext } from "@/providers/SettingsProvider";
-import { CgArrowsExpandUpLeft } from "react-icons/cg";
 import Text from "@/refresh-components/texts/Text";
 import SidebarSection from "@/sections/sidebar/SidebarSection";
 import SidebarWrapper from "@/sections/sidebar/SidebarWrapper";
@@ -28,6 +27,7 @@ import SidebarBody from "@/sections/sidebar/SidebarBody";
 import {
   SvgActions,
   SvgActivity,
+  SvgArrowLeft,
   SvgArrowUpCircle,
   SvgBarChart,
   SvgCpu,
@@ -385,11 +385,11 @@ export default function AdminSidebar({
         actionButtons={
           <SidebarTab
             leftIcon={({ className }) => (
-              <CgArrowsExpandUpLeft className={className} size={16} />
+              <SvgArrowLeft className={className} size={16} />
             )}
             href="/app"
           >
-            Exit Admin
+            Back to App
           </SidebarTab>
         }
         footer={

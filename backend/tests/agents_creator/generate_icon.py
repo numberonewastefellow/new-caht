@@ -132,6 +132,51 @@ DEPARTMENT_COLORS = {
     # Certificates
     "certificates": ("#004D40", "#00897B"),    # Dark teal
     "citizen services": ("#004D40", "#00897B"),
+
+    # Finance & Treasury
+    "finance": ("#1A237E", "#3F51B5"),         # Indigo
+    "budget": ("#1A237E", "#3F51B5"),
+    "treasury": ("#1A237E", "#3F51B5"),
+    "pension": ("#283593", "#5C6BC0"),
+    "salary": ("#283593", "#5C6BC0"),
+    "audit": ("#0D47A1", "#1E88E5"),
+    "cag": ("#0D47A1", "#1E88E5"),
+    "gst": ("#004D40", "#00897B"),
+    "commercial tax": ("#004D40", "#00897B"),
+
+    # Stock Market & Investment
+    "stock market": ("#1B5E20", "#4CAF50"),    # Green (money)
+    "fundamental analysis": ("#1B5E20", "#4CAF50"),
+    "technical analysis": ("#004D40", "#009688"),
+    "trading": ("#004D40", "#009688"),
+    "investment": ("#2E7D32", "#66BB6A"),
+    "mutual funds": ("#00695C", "#26A69A"),
+    "sip": ("#00695C", "#26A69A"),
+    "portfolio": ("#00695C", "#26A69A"),
+    "ipo": ("#1565C0", "#42A5F5"),
+    "primary market": ("#1565C0", "#42A5F5"),
+    "options trading": ("#B71C1C", "#EF5350"),  # Red (risk)
+    "derivatives": ("#B71C1C", "#EF5350"),
+    "f&o": ("#B71C1C", "#EF5350"),
+    "equities": ("#1B5E20", "#4CAF50"),
+
+    # Banking & Insurance
+    "banking": ("#0D47A1", "#1976D2"),         # Blue
+    "loans": ("#0D47A1", "#1976D2"),
+    "cibil": ("#0D47A1", "#1976D2"),
+    "insurance": ("#6A1B9A", "#AB47BC"),       # Purple
+    "health insurance": ("#6A1B9A", "#AB47BC"),
+    "life insurance": ("#6A1B9A", "#AB47BC"),
+
+    # Tax
+    "tax": ("#E65100", "#FF9800"),             # Orange
+    "income tax": ("#E65100", "#FF9800"),
+    "itr filing": ("#E65100", "#FF9800"),
+
+    # Commodities
+    "commodities": ("#F9A825", "#FDD835"),     # Gold/Yellow
+    "gold investment": ("#F9A825", "#FDD835"),
+    "mcx": ("#F9A825", "#FDD835"),
 }
 
 # Emoji/symbol mapping for agent types

@@ -3,14 +3,11 @@
 import { useState, ComponentType } from "react";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import useSWR from "swr";
-import { Callout } from "@/components/ui/callout";
 import Text from "@/refresh-components/texts/Text";
-import Title from "@/components/ui/title";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { LLMProviderView, LLMProviderName, LLMProviderFormProps } from "./interfaces";
 import { LLM_PROVIDERS_ADMIN_URL } from "./constants";
 import { ProviderIcon } from "./ProviderIcon";
-import { Badge } from "@/components/ui/badge";
 import { OpenAIForm } from "./forms/OpenAIForm";
 import { AnthropicForm } from "./forms/AnthropicForm";
 import { OllamaForm } from "./forms/OllamaForm";
@@ -20,8 +17,10 @@ import { VertexAIForm } from "./forms/VertexAIForm";
 import { OpenRouterForm } from "./forms/OpenRouterForm";
 import { CustomForm } from "./forms/CustomForm";
 import { getFormComponentForProvider } from "./forms/getForm";
-import { SvgPlus } from "@opal/icons";
+import { SvgPlus, SvgSettings, SvgStar, SvgCpu } from "@opal/icons";
 import { toast } from "@/hooks/useToast";
+import { cn } from "@/lib/utils";
+import { getProviderColor } from "./providerColors";
 
 interface ProviderTile {
   key: string;
@@ -122,124 +121,233 @@ export function LLMConfiguration() {
   return (
     <>
       {/* Section 1: Active Providers */}
-      <Title className="mb-2">Active Providers</Title>
+      <div className="mb-2 flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-theme-blue-05" />
+        <Text as="p" headingH3 className="text-text-05">
+          Active Providers
+        </Text>
+      </div>
 
       {sortedProviders.length > 0 ? (
         <>
-          <Text as="p" className="mb-4">
-            If multiple LLM providers are enabled, the default provider will be
-            used for all &quot;Default&quot; Assistants. For user-created
-            Assistants, you can select the LLM provider/model that best fits the
-            use case!
+          <Text as="p" secondaryBody text03 className="mb-4">
+            The default provider powers all standard agents. Custom agents can use any enabled provider.
           </Text>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sortedProviders.map((provider) => (
-              <div
-                key={provider.id}
-                className="border border-border rounded-lg p-4 bg-background-neutral-01 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-0.5">
-                    <ProviderIcon
-                      provider={provider.provider}
-                      modelName={provider.default_model_name}
-                      size={28}
-                      className=""
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <Text
-                        as="p"
-                        headingH3
-                        className="truncate"
-                      >
-                        {provider.name}
-                      </Text>
-                      {provider.is_default_provider ? (
-                        <Badge variant="agent">Default</Badge>
-                      ) : (
-                        <Badge variant="success">Enabled</Badge>
-                      )}
-                    </div>
-                    <Text as="p" secondaryBody text03 className="mt-0.5">
-                      {provider.model_configurations.filter((m) => m.is_visible).length}{" "}
-                      model{provider.model_configurations.filter((m) => m.is_visible).length !== 1 ? "s" : ""}{" "}
-                      available
-                    </Text>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
-                  {!provider.is_default_provider && (
-                    <button
-                      className="text-sm text-action-link-05 hover:underline cursor-pointer"
-                      onClick={() => handleSetAsDefault(provider)}
-                    >
-                      Set as default
-                    </button>
+            {sortedProviders.map((provider) => {
+              const colors = getProviderColor(provider.provider);
+              const modelCount = provider.model_configurations.filter((m) => m.is_visible).length;
+              return (
+                <div
+                  key={provider.id}
+                  className={cn(
+                    "relative overflow-hidden rounded-12 border bg-background-neutral-00 transition-all hover:shadow-md group cursor-pointer",
+                    provider.is_default_provider
+                      ? cn("border-l-[3px]", colors.border)
+                      : "border-border-01 border-l-[3px]"
                   )}
-                  <button
-                    className="ml-auto text-sm px-3 py-1.5 rounded-md border border-border hover:bg-background-neutral-02 transition-colors cursor-pointer"
-                    onClick={() => setActiveModal(`existing-${provider.id}`)}
-                  >
-                    Configure
-                  </button>
+                  onClick={() => setActiveModal(`existing-${provider.id}`)}
+                >
+                  {/* Card body */}
+                  <div className="p-4">
+                    <div className="flex items-start gap-3">
+                      {/* Provider icon in tinted circle */}
+                      <div className={cn(
+                        "flex-shrink-0 w-10 h-10 rounded-12 flex items-center justify-center",
+                        colors.bg
+                      )}>
+                        <ProviderIcon
+                          provider={provider.provider}
+                          modelName={provider.default_model_name}
+                          size={22}
+                          className=""
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <Text as="p" mainUiAction className="truncate font-semibold text-text-05">
+                          {provider.name}
+                        </Text>
+                        <div className="flex items-center gap-2 mt-1">
+                          {/* Status dot + label */}
+                          {provider.is_default_provider ? (
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }} />
+                              <Text as="span" secondaryBody className="text-xs font-medium" style={{ color: "var(--virtualai-accent, var(--theme-primary-05))" }}>
+                                Primary
+                              </Text>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-2 h-2 rounded-full bg-status-success-05" />
+                              <Text as="span" secondaryBody text03 className="text-xs">
+                                Active
+                              </Text>
+                            </div>
+                          )}
+                          {/* Model count pill */}
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[0.625rem] font-medium bg-background-neutral-02 text-text-03">
+                            {modelCount} model{modelCount !== 1 ? "s" : ""}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card footer */}
+                  <div className="flex items-center gap-2 px-4 py-2.5 border-t border-border-01 bg-background-neutral-01/50">
+                    {!provider.is_default_provider && (
+                      <button
+                        className="flex items-center gap-1 text-xs font-medium text-text-03 hover:text-text-05 cursor-pointer transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSetAsDefault(provider);
+                        }}
+                      >
+                        <SvgStar className="w-3 h-3" />
+                        Set as primary
+                      </button>
+                    )}
+                    {provider.is_default_provider && (
+                      <Text as="span" secondaryBody text03 className="text-xs">
+                        Default for all agents
+                      </Text>
+                    )}
+                    <button
+                      className={cn(
+                        "ml-auto flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-08",
+                        "border transition-all",
+                        colors.text, colors.border,
+                        "hover:opacity-80"
+                      )}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveModal(`existing-${provider.id}`);
+                      }}
+                    >
+                      <SvgSettings className="w-3 h-3" />
+                      Configure
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       ) : (
-        <Callout type="warning" title="No LLM providers configured yet">
-          Please set one up below in order to start using VertualAI!
-        </Callout>
+        /* Empty state — illustrated */
+        <div className="flex flex-col items-center justify-center py-12 px-6 rounded-12 border border-dashed border-border-01 bg-background-neutral-01/50">
+          <div className="w-14 h-14 rounded-16 bg-theme-blue-01 flex items-center justify-center mb-4">
+            <SvgCpu className="w-7 h-7 text-theme-blue-05" />
+          </div>
+          <Text as="p" mainUiAction className="text-text-05 font-semibold mb-1">
+            No providers connected yet
+          </Text>
+          <Text as="p" secondaryBody text03 className="text-center max-w-sm">
+            Connect your first LLM provider below to start using AI features across VertualAI.
+          </Text>
+        </div>
       )}
 
-      {/* Section 2: Add Provider */}
-      <Title className="mb-2 mt-8">Add Provider</Title>
-      <Text as="p" className="mb-4">
-        Select a provider to configure, or add a custom LLM provider.
+      {/* Section 2: Connect a Provider */}
+      <div className="mb-2 mt-8 flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-theme-blue-05" />
+        <Text as="p" headingH3 className="text-text-05">
+          Connect a Provider
+        </Text>
+      </div>
+      <Text as="p" secondaryBody text03 className="mb-4">
+        Choose a model provider to get started, or connect a custom endpoint.
       </Text>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {unconfiguredTiles.map((tile) => (
-          <button
-            key={tile.key}
-            className="flex items-center gap-3 p-3 rounded-lg border border-border bg-background hover:bg-background-neutral-01 hover:shadow-sm transition-all cursor-pointer text-left"
-            onClick={() => setActiveModal(tile.key)}
-          >
-            <ProviderIcon
-              provider={tile.providerName}
-              size={22}
-              className=""
-            />
-            <div className="flex-1 min-w-0">
-              <Text as="p" mainUiAction className="truncate">
-                {tile.displayName}
-              </Text>
-              <Text as="p" secondaryBody text03 className="text-xs">
-                Set up &rarr;
-              </Text>
-            </div>
-          </button>
-        ))}
+        {unconfiguredTiles.map((tile) => {
+          const colors = getProviderColor(tile.providerName);
+          return (
+            <button
+              key={tile.key}
+              className={cn(
+                "relative flex flex-col items-center gap-3 p-4 rounded-12 border border-border-01 bg-background-neutral-00",
+                "hover:shadow-md hover:scale-[1.02] transition-all cursor-pointer text-center overflow-hidden group"
+              )}
+              onClick={() => setActiveModal(tile.key)}
+            >
+              {/* Brand gradient bar at top */}
+              <div className={cn("absolute top-0 left-0 right-0 h-1 bg-gradient-to-r", colors.gradient)} />
 
-        {/* Custom provider tile — always visible */}
+              {/* Provider icon in tinted circle */}
+              <div className={cn(
+                "w-12 h-12 rounded-16 flex items-center justify-center mt-1",
+                colors.bg
+              )}>
+                <ProviderIcon
+                  provider={tile.providerName}
+                  size={24}
+                  className=""
+                />
+              </div>
+
+              <div className="flex flex-col items-center gap-0.5">
+                <Text as="p" mainUiAction className="font-semibold text-text-05">
+                  {tile.displayName}
+                </Text>
+                <Text as="p" secondaryBody text03 className="text-xs">
+                  {colors.tagline}
+                </Text>
+              </div>
+
+              {/* Connect button */}
+              <span className={cn(
+                "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white transition-opacity",
+                "opacity-70 group-hover:opacity-100",
+                colors.solid
+              )}>
+                Connect
+              </span>
+            </button>
+          );
+        })}
+
+        {/* Custom provider tile */}
         <button
-          className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-border bg-background hover:bg-background-neutral-01 hover:shadow-sm transition-all cursor-pointer text-left"
+          className={cn(
+            "relative flex flex-col items-center gap-3 p-4 rounded-12 border border-dashed border-border-01 bg-background-neutral-00",
+            "hover:shadow-md hover:scale-[1.02] transition-all cursor-pointer text-center overflow-hidden group"
+          )}
           onClick={() => setActiveModal("custom")}
         >
-          <SvgPlus className="w-5 h-5 text-text-03" />
-          <div className="flex-1 min-w-0">
-            <Text as="p" mainUiAction className="truncate">
+          {/* Accent gradient bar at top */}
+          <div
+            className="absolute top-0 left-0 right-0 h-1"
+            style={{
+              background: "linear-gradient(to right, var(--virtualai-accent, var(--theme-primary-05)), var(--virtualai-accent, var(--theme-primary-04)))"
+            }}
+          />
+
+          {/* Plus icon in accent circle */}
+          <div
+            className="w-12 h-12 rounded-16 flex items-center justify-center mt-1 opacity-15"
+            style={{ backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }}
+          />
+          <div className="absolute top-[1.6rem]">
+            <SvgPlus className="w-6 h-6" style={{ color: "var(--virtualai-accent, var(--theme-primary-05))" }} />
+          </div>
+
+          <div className="flex flex-col items-center gap-0.5">
+            <Text as="p" mainUiAction className="font-semibold text-text-05">
               Custom LLM
             </Text>
             <Text as="p" secondaryBody text03 className="text-xs">
-              Set up &rarr;
+              OpenAI-compatible endpoint
             </Text>
           </div>
+
+          <span
+            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white transition-opacity opacity-70 group-hover:opacity-100"
+            style={{ backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }}
+          >
+            Connect
+          </span>
         </button>
       </div>
 

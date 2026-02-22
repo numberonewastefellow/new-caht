@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { SvgMenu, SvgX, SvgChevronDown, SvgArrowUpRight } from "@opal/icons";
+import { SvgMenu, SvgX, SvgChevronDown, SvgArrowLeft } from "@opal/icons";
 import { Button } from "@opal/components";
 import { cn } from "@/lib/utils";
 import Text from "@/refresh-components/texts/Text";
@@ -150,16 +150,17 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
               );
             })}
 
-            {/* Exit Admin link */}
+            {/* Back to App link */}
             <div className="mt-2 pt-2 border-t border-border-01">
               <Link
                 href={"/app" as any}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-08 hover:bg-background-neutral-02 transition-colors"
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-full mx-2 text-white font-medium transition-all hover:opacity-90"
+                style={{ backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }}
               >
-                <SvgArrowUpRight className="w-4 h-4 text-text-03" />
-                <Text as="span" mainUiBody text03>
-                  Exit Admin
+                <SvgArrowLeft className="w-4 h-4" />
+                <Text as="span" mainUiBody className="text-white">
+                  Back to App
                 </Text>
               </Link>
             </div>

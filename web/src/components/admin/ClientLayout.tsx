@@ -100,8 +100,15 @@ export function ClientLayout({
           {children}
         </div>
       ) : (
-        <div className="flex-1 min-w-0 min-h-0 overflow-y-auto">
-          <div className="max-w-6xl mx-auto w-full pt-8 px-6 md:px-12 pb-16">
+        <div className="flex-1 min-w-0 min-h-0 overflow-y-auto relative">
+          {/* Subtle accent gradient at top of content area */}
+          <div
+            className="absolute top-0 left-0 right-0 h-64 pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse 80% 50% at 50% 0%, color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 3%, transparent), transparent)",
+            }}
+          />
+          <div className="relative max-w-6xl mx-auto w-full pt-8 px-6 md:px-12 pb-16">
             {children}
           </div>
         </div>

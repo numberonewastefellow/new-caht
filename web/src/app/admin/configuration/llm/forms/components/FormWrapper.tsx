@@ -15,6 +15,8 @@ import { SvgSettings } from "@opal/icons";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LLM_PROVIDERS_ADMIN_URL } from "../../constants";
+import { getProviderIcon } from "../../utils";
+import { getProviderColor } from "../../providerColors";
 
 export interface ProviderFormContext {
   onClose: () => void;
@@ -111,18 +113,28 @@ export function ProviderFormEntrypointWrapper({
     wellKnownLLMProvider,
   };
 
+  // Resolve provider icon and colors for the modal header
+  const providerIcon = providerEndpoint
+    ? getProviderIcon(providerEndpoint)
+    : SvgSettings;
+  const providerColors = providerEndpoint
+    ? getProviderColor(providerEndpoint)
+    : null;
+
+  const modalTitle = existingLlmProvider
+    ? `${existingLlmProvider.name ?? providerName} Settings`
+    : `Connect ${providerName}`;
+  const modalDescription = providerColors?.tagline;
+
   // Renderless mode: no card/button UI, modal controlled by parent
   if (renderless) {
     return isFormVisible ? (
       <Modal open onOpenChange={onClose}>
         <Modal.Content>
           <Modal.Header
-            icon={SvgSettings}
-            title={`${existingLlmProvider ? "Configure" : "Setup"} ${
-              existingLlmProvider?.name
-                ? `"${existingLlmProvider.name}"`
-                : providerName
-            }`}
+            icon={providerIcon}
+            title={modalTitle}
+            description={modalDescription}
             onClose={onClose}
           />
           <Modal.Body>{children(context)}</Modal.Body>
@@ -143,8 +155,9 @@ export function ProviderFormEntrypointWrapper({
           <Modal open onOpenChange={onClose}>
             <Modal.Content>
               <Modal.Header
-                icon={SvgSettings}
-                title={`Setup ${providerName}`}
+                icon={providerIcon}
+                title={`Connect ${providerName}`}
+                description={modalDescription}
                 onClose={onClose}
               />
               <Modal.Body>{children(context)}</Modal.Body>
@@ -224,12 +237,9 @@ export function ProviderFormEntrypointWrapper({
         <Modal open onOpenChange={onClose}>
           <Modal.Content>
             <Modal.Header
-              icon={SvgSettings}
-              title={`${existingLlmProvider ? "Configure" : "Setup"} ${
-                existingLlmProvider?.name
-                  ? `"${existingLlmProvider.name}"`
-                  : providerName
-              }`}
+              icon={providerIcon}
+              title={modalTitle}
+              description={modalDescription}
               onClose={onClose}
             />
             <Modal.Body>{children(context)}</Modal.Body>

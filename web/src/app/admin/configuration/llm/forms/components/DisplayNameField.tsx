@@ -9,8 +9,8 @@ export function DisplayNameField({ disabled = false }: DisplayNameFieldProps) {
     <TextFormField
       name="name"
       label="Display Name"
-      subtext="A name which you can use to identify this provider when selecting it in the UI."
-      placeholder="Display Name"
+      subtext="How this provider appears to your team across the app."
+      placeholder="e.g. Production OpenAI"
       disabled={disabled}
     />
   );

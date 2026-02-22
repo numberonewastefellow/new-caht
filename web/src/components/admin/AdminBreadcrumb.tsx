@@ -3,19 +3,50 @@
 import { JSX } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getSegmentLabel, isDynamicSegment } from "./adminNavItems";
+import { getSegmentLabel, isDynamicSegment, getGroupColorForPath } from "./adminNavItems";
+import type { NavGroupColor } from "./adminNavItems";
 import { SvgChevronRight } from "@opal/icons";
 import Text from "@/refresh-components/texts/Text";
+import type { IconProps } from "@opal/types";
+import { cn } from "@/lib/utils";
+
+/** Map group color to Tailwind icon badge classes */
+const iconColorMap: Record<NavGroupColor, { bg: string; text: string }> = {
+  green:  { bg: "bg-theme-green-01",  text: "text-theme-green-05"  },
+  purple: { bg: "bg-theme-purple-01", text: "text-theme-purple-05" },
+  blue:   { bg: "bg-theme-blue-01",   text: "text-theme-blue-05"   },
+  orange: { bg: "bg-theme-orange-01", text: "text-theme-orange-05" },
+  cyan:   { bg: "bg-theme-cyan-01",   text: "text-theme-cyan-05"   },
+};
+
+const defaultIconColor = { bg: "bg-theme-blue-01", text: "text-theme-blue-05" };
+
+function PageIcon({ Icon, colors }: { Icon: React.FunctionComponent<IconProps>; colors: { bg: string; text: string } }) {
+  return (
+    <div className={cn(
+      "w-10 h-10 rounded-12 flex items-center justify-center flex-shrink-0",
+      colors.bg
+    )}>
+      <Icon className={cn("w-5 h-5", colors.text)} size={20} />
+    </div>
+  );
+}
 
 export interface AdminBreadcrumbProps {
   /** Override for the page title (last breadcrumb segment) */
   title?: string | JSX.Element;
+  /** Optional page icon (FunctionComponent or ReactNode) */
+  icon?: React.FunctionComponent<IconProps> | React.ReactNode;
+  /** Optional subtitle description */
+  description?: string;
   /** Optional element rendered at the far right (e.g., action buttons) */
   farRightElement?: JSX.Element;
 }
 
 export default function AdminBreadcrumb({
   title,
+  icon,
+  description,
   farRightElement,
 }: AdminBreadcrumbProps) {
   const pathname = usePathname();
@@ -39,6 +70,13 @@ export default function AdminBreadcrumb({
   if (lastCrumb && title && typeof title === "string") {
     lastCrumb.label = title;
   }
+
+  // Resolve icon color from the group color for this pathname
+  const groupColor = getGroupColorForPath(pathname);
+  const iconColors = groupColor ? iconColorMap[groupColor] : defaultIconColor;
+
+  // Determine if icon is a FunctionComponent (SVG) vs ReactNode
+  const isIconComponent = typeof icon === "function";
 
   return (
     <div className="w-full mb-8">
@@ -67,13 +105,25 @@ export default function AdminBreadcrumb({
         ))}
       </nav>
 
-      {/* Page heading + far right element */}
+      {/* Page heading with icon + far right element */}
       <div className="flex items-center justify-between gap-4">
-        <Text headingH2 className="text-text-05" aria-label="admin-page-title">
-          {typeof title === "string" || title
-            ? title
-            : lastCrumb?.label ?? "Admin"}
-        </Text>
+        <div className="flex items-center gap-3">
+          {icon && isIconComponent && (
+            <PageIcon Icon={icon as React.FunctionComponent<IconProps>} colors={iconColors} />
+          )}
+          <div>
+            <Text headingH2 className="text-text-05" aria-label="admin-page-title">
+              {typeof title === "string" || title
+                ? title
+                : lastCrumb?.label ?? "Admin"}
+            </Text>
+            {description && (
+              <Text as="p" secondaryBody text03 className="mt-0.5">
+                {description}
+              </Text>
+            )}
+          </div>
+        </div>
         {farRightElement}
       </div>
     </div>

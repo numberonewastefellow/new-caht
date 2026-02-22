@@ -539,7 +539,7 @@ export default function AgentsNavigationPage() {
     >
       {/* Custom compact header — ChatGPT apps style */}
       <div className="w-full bg-background-tint-01 sticky top-0 z-settings-header">
-        <div className="flex flex-col gap-4 px-4 md:pt-10 pt-4">
+        <div className="flex flex-col gap-3 px-4 md:pt-5 pt-3">
           {/* Row 1: Title + Search + New Agent */}
           <div className="flex flex-row items-center justify-between gap-4">
             <div className="flex flex-col">
@@ -547,7 +547,7 @@ export default function AgentsNavigationPage() {
                 Agents & Assistants
               </Text>
               <Text as="p" secondaryBody text03>
-                Customize AI behavior and knowledge for you and your team&apos;s use cases.
+                {agents.length} agents ready to help you and your team be more productive.
               </Text>
             </div>
             <div className="flex flex-row items-center gap-2 flex-shrink-0">
