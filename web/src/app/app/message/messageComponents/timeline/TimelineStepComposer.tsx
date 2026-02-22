@@ -64,6 +64,7 @@ export function TimelineStepComposer({
             }
             noPaddingRight={noPaddingRight}
             isHover={result.isHover}
+            accent={result.accent}
           >
             {result.content}
           </StepContainer>

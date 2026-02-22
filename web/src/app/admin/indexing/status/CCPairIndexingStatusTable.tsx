@@ -1,12 +1,4 @@
 import React from "react";
-import {
-  Table,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableHeader,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CCPairStatus } from "@/components/Status";
 import { timeAgo } from "@/lib/time";
@@ -35,6 +27,9 @@ import { PageSelector } from "@/components/PageSelector";
 import { ConnectorStaggeredSkeleton } from "./ConnectorRowSkeleton";
 import { Button } from "@opal/components";
 import { SvgSettings } from "@opal/icons";
+import Text from "@/refresh-components/texts/Text";
+import { cn } from "@/lib/utils";
+import { getSourceColor } from "@/lib/sourceColors";
 
 // Helper to handle navigation with cmd/ctrl+click support
 // NOTE: using this rather than Next/Link (or similar) since shadcn
@@ -60,7 +55,34 @@ function isFederatedConnectorStatus(
 }
 
 const NUMBER_OF_ROWS_PER_PAGE = 10;
-const NUMBER_OF_COLUMNS = 6;
+
+/** Metric pill shown in SummaryRow */
+function MetricPill({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string | number;
+  accent?: boolean;
+}) {
+  return (
+    <div className="flex flex-col items-center px-3 lg:px-4">
+      <Text as="span" secondaryBody text03 className="text-[11px] uppercase tracking-wide mb-0.5">
+        {label}
+      </Text>
+      <Text
+        as="span"
+        className={cn(
+          "text-lg font-semibold tabular-nums",
+          accent ? "text-text-05" : "text-text-04"
+        )}
+      >
+        {value}
+      </Text>
+    </div>
+  );
+}
 
 function SummaryRow({
   source,
@@ -74,64 +96,125 @@ function SummaryRow({
   onToggle: () => void;
 }) {
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
+  const colors = getSourceColor(source);
+
+  const activeRatio = summary.total_connectors > 0
+    ? summary.active_connectors / summary.total_connectors
+    : 0;
 
   return (
-    <TableRow
+    <div
       onClick={onToggle}
-      className="border-border dark:hover:bg-neutral-800 dark:border-neutral-700 group hover:bg-background-settings-hover/20 bg-background-sidebar py-4 rounded-sm !border cursor-pointer"
+      className={cn(
+        "group flex items-center justify-between gap-4 rounded-12 border cursor-pointer transition-all overflow-hidden virtualai-card-hover",
+        isOpen
+          ? "border-border-02 shadow-sm"
+          : "border-border-01 hover:border-border-02 hover:shadow-sm"
+      )}
     >
-      <TableCell>
-        <div className="text-xl flex items-center truncate ellipsis gap-x-2 font-semibold">
-          <div className="cursor-pointer">
+      {/* Colored accent bar on the left */}
+      <div className="flex items-center gap-0 flex-1 min-w-0">
+        <div className={cn("w-1 self-stretch flex-shrink-0 rounded-l-12", colors.solid)} />
+
+        <div className="flex items-center gap-3 px-4 py-4 flex-1 min-w-0">
+          {/* Chevron */}
+          <div className="flex-shrink-0 text-text-03 group-hover:text-text-04 transition-colors">
             {isOpen ? (
-              <FiChevronDown size={20} />
+              <FiChevronDown size={16} />
             ) : (
-              <FiChevronRight size={20} />
+              <FiChevronRight size={16} />
             )}
           </div>
-          <SourceIcon iconSize={20} sourceType={source} />
-          {getSourceDisplayName(source)}
-        </div>
-      </TableCell>
 
-      <TableCell>
-        <div className="text-sm text-neutral-500 dark:text-neutral-300">
-          Total Connectors
-        </div>
-        <div className="text-xl font-semibold">{summary.total_connectors}</div>
-      </TableCell>
-
-      <TableCell>
-        <div className="text-sm text-neutral-500 dark:text-neutral-300">
-          Active Connectors
-        </div>
-        <p className="flex text-xl mx-auto font-semibold items-center text-lg mt-1">
-          {summary.active_connectors}/{summary.total_connectors}
-        </p>
-      </TableCell>
-
-      {isPaidEnterpriseFeaturesEnabled && (
-        <TableCell>
-          <div className="text-sm text-neutral-500 dark:text-neutral-300">
-            Public Connectors
+          {/* Color-tinted icon badge */}
+          <div className={cn(
+            "w-10 h-10 rounded-08 flex items-center justify-center flex-shrink-0",
+            colors.bg
+          )}>
+            <SourceIcon iconSize={22} sourceType={source} />
           </div>
-          <p className="flex text-xl mx-auto font-semibold items-center text-lg mt-1">
-            {summary.public_connectors}/{summary.total_connectors}
-          </p>
-        </TableCell>
+
+          {/* Source name */}
+          <Text as="span" className="text-text-05 font-semibold text-base truncate">
+            {getSourceDisplayName(source)}
+          </Text>
+        </div>
+      </div>
+
+      {/* Right: metrics */}
+      <div className="flex items-center gap-1 flex-shrink-0 pr-4">
+        <MetricPill label="Total" value={summary.total_connectors} accent />
+        <div className="w-px h-8 bg-border-01" />
+        <MetricPill
+          label="Active"
+          value={`${summary.active_connectors}/${summary.total_connectors}`}
+        />
+        {isPaidEnterpriseFeaturesEnabled && (
+          <>
+            <div className="w-px h-8 bg-border-01" />
+            <MetricPill
+              label="Public"
+              value={`${summary.public_connectors}/${summary.total_connectors}`}
+            />
+          </>
+        )}
+        <div className="w-px h-8 bg-border-01" />
+        <MetricPill
+          label="Docs"
+          value={summary.total_docs_indexed.toLocaleString()}
+          accent
+        />
+
+        {/* Health indicator dot */}
+        <div className="ml-3 flex-shrink-0">
+          <SimpleTooltip
+            tooltip={
+              activeRatio >= 1
+                ? "All connectors active"
+                : activeRatio > 0
+                  ? "Some connectors inactive"
+                  : "No active connectors"
+            }
+          >
+            <div
+              className={cn(
+                "w-2.5 h-2.5 rounded-full ring-2",
+                activeRatio >= 1
+                  ? "bg-status-success-05 ring-status-success-05/20"
+                  : activeRatio > 0
+                    ? "bg-status-warning-05 ring-status-warning-05/20"
+                    : "bg-status-error-05 ring-status-error-05/20"
+              )}
+            />
+          </SimpleTooltip>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Column header row for expanded source */
+function ColumnHeaders({
+  isPaidEnterpriseFeaturesEnabled,
+}: {
+  isPaidEnterpriseFeaturesEnabled: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "grid items-center px-5 py-2.5 text-[11px] uppercase tracking-wider text-text-03 font-medium border-b border-border-01 bg-background-neutral-01/50",
+        isPaidEnterpriseFeaturesEnabled
+          ? "grid-cols-[1fr_120px_140px_160px_100px_48px]"
+          : "grid-cols-[1fr_120px_140px_100px_48px]"
       )}
-
-      <TableCell>
-        <div className="text-sm text-neutral-500 dark:text-neutral-300">
-          Total Docs Indexed
-        </div>
-        <div className="text-xl font-semibold">
-          {summary.total_docs_indexed.toLocaleString()}
-        </div>
-      </TableCell>
-
-      <TableCell />
-    </TableRow>
+    >
+      <span>Name</span>
+      <span>Last Indexed</span>
+      <span>Status</span>
+      {isPaidEnterpriseFeaturesEnabled && <span>Access</span>}
+      <span>Docs</span>
+      <span />
+    </div>
   );
 }
 
@@ -153,26 +236,30 @@ function ConnectorRow({
     navigateWithModifier(e, connectorUrl, router);
   };
 
+  if (invisible) return null;
+
   return (
-    <TableRow
-      className={`
-  border border-border dark:border-neutral-700
-          hover:bg-accent-background ${
-            invisible
-              ? "invisible !h-0 !-mb-10 !border-none"
-              : "!border border-border dark:border-neutral-700"
-          }  w-full cursor-pointer relative `}
+    <div
+      className={cn(
+        "grid items-center px-5 py-3 border-b border-border-01 cursor-pointer transition-colors virtualai-card-hover",
+        "group",
+        isPaidEnterpriseFeaturesEnabled
+          ? "grid-cols-[1fr_120px_140px_160px_100px_48px]"
+          : "grid-cols-[1fr_120px_140px_100px_48px]"
+      )}
       onClick={handleRowClick}
     >
-      <TableCell className="">
-        <p className="lg:w-[200px] xl:w-[400px] inline-block ellipsis truncate">
+      <div className="min-w-0">
+        <Text as="p" secondaryBody className="text-text-05 truncate">
           {ccPairsIndexingStatus.name}
-        </p>
-      </TableCell>
-      <TableCell>
-        {timeAgo(ccPairsIndexingStatus?.last_success) || "-"}
-      </TableCell>
-      <TableCell>
+        </Text>
+      </div>
+      <div>
+        <Text as="span" secondaryBody text03>
+          {timeAgo(ccPairsIndexingStatus?.last_success) || "-"}
+        </Text>
+      </div>
+      <div>
         <CCPairStatus
           ccPairStatus={
             ccPairsIndexingStatus.last_finished_status !== null
@@ -184,37 +271,40 @@ function ConnectorRow({
           inRepeatedErrorState={ccPairsIndexingStatus.in_repeated_error_state}
           lastIndexAttemptStatus={ccPairsIndexingStatus.last_status}
         />
-      </TableCell>
+      </div>
       {isPaidEnterpriseFeaturesEnabled && (
-        <TableCell>
+        <div>
           {ccPairsIndexingStatus.access_type === "public" ? (
             <Badge variant={isEditable ? "success" : "default"} icon={FiUnlock}>
-              Organization Public
+              Public
             </Badge>
           ) : ccPairsIndexingStatus.access_type === "sync" ? (
             <Badge
               variant={isEditable ? "auto-sync" : "default"}
               icon={FiRefreshCw}
             >
-              Inherited from{" "}
-              {getSourceDisplayName(ccPairsIndexingStatus.source)}
+              Sync
             </Badge>
           ) : (
             <Badge variant={isEditable ? "private" : "default"} icon={FiLock}>
               Private
             </Badge>
           )}
-        </TableCell>
+        </div>
       )}
-      <TableCell>{ccPairsIndexingStatus.docs_indexed}</TableCell>
-      <TableCell>
+      <div>
+        <Text as="span" secondaryBody className="text-text-04 tabular-nums">
+          {ccPairsIndexingStatus.docs_indexed.toLocaleString()}
+        </Text>
+      </div>
+      <div className="flex justify-center">
         {isEditable && (
           <SimpleTooltip tooltip="Manage Connector">
             <Button icon={SvgSettings} prominence="tertiary" />
           </SimpleTooltip>
         )}
-      </TableCell>
-    </TableRow>
+      </div>
+    </div>
   );
 }
 
@@ -234,35 +324,45 @@ function FederatedConnectorRow({
     navigateWithModifier(e, federatedUrl, router);
   };
 
+  if (invisible) return null;
+
   return (
-    <TableRow
-      className={`
-  border border-border dark:border-neutral-700
-          hover:bg-accent-background ${
-            invisible
-              ? "invisible !h-0 !-mb-10 !border-none"
-              : "!border border-border dark:border-neutral-700"
-          }  w-full cursor-pointer relative `}
+    <div
+      className={cn(
+        "grid items-center px-5 py-3 border-b border-border-01 cursor-pointer transition-colors virtualai-card-hover",
+        "group",
+        isPaidEnterpriseFeaturesEnabled
+          ? "grid-cols-[1fr_120px_140px_160px_100px_48px]"
+          : "grid-cols-[1fr_120px_140px_100px_48px]"
+      )}
       onClick={handleRowClick}
     >
-      <TableCell className="">
-        <p className="lg:w-[200px] xl:w-[400px] inline-block ellipsis truncate">
+      <div className="min-w-0">
+        <Text as="p" secondaryBody className="text-text-05 truncate">
           {federatedConnector.name}
-        </p>
-      </TableCell>
-      <TableCell>N/A</TableCell>
-      <TableCell>
+        </Text>
+      </div>
+      <div>
+        <Text as="span" secondaryBody text03>
+          N/A
+        </Text>
+      </div>
+      <div>
         <Badge variant="success">Indexed</Badge>
-      </TableCell>
+      </div>
       {isPaidEnterpriseFeaturesEnabled && (
-        <TableCell>
+        <div>
           <Badge variant="secondary" icon={FiRefreshCw}>
-            Federated Access
+            Federated
           </Badge>
-        </TableCell>
+        </div>
       )}
-      <TableCell>N/A</TableCell>
-      <TableCell>
+      <div>
+        <Text as="span" secondaryBody text03>
+          N/A
+        </Text>
+      </div>
+      <div className="flex justify-center">
         <Button
           icon={SvgSettings}
           prominence="tertiary"
@@ -272,8 +372,8 @@ function FederatedConnectorRow({
           }}
           tooltip="Manage Federated Connector"
         />
-      </TableCell>
-    </TableRow>
+      </div>
+    </div>
   );
 }
 
@@ -293,64 +393,38 @@ export function CCPairIndexingStatusTable({
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
 
   return (
-    <Table className="-mt-8">
-      <TableHeader>
-        <ConnectorRow
-          invisible
-          ccPairsIndexingStatus={{
-            cc_pair_id: 1,
-            name: "Sample File Connector",
-            cc_pair_status: ConnectorCredentialPairStatus.ACTIVE,
-            last_status: "success",
-            source: ValidSources.File,
-            access_type: "public",
-            docs_indexed: 1000,
-            last_success: "2023-07-01T12:00:00Z",
-            last_finished_status: "success",
-            is_editable: false,
-            in_repeated_error_state: false,
-            in_progress: false,
-            latest_index_attempt_docs_indexed: 0,
-          }}
-          isEditable={false}
-        />
-      </TableHeader>
-      <TableBody>
-        {ccPairsIndexingStatuses.map((ccPairStatus) => (
-          <React.Fragment key={ccPairStatus.source}>
-            <TableRow className="border-none">
-              <TableCell
-                colSpan={
-                  isPaidEnterpriseFeaturesEnabled
-                    ? NUMBER_OF_COLUMNS
-                    : NUMBER_OF_COLUMNS - 1
-                }
-                className="h-4 p-0"
-              />
-            </TableRow>
+    <div className="flex flex-col gap-3 mt-2">
+      {ccPairsIndexingStatuses.map((ccPairStatus) => {
+        const colors = getSourceColor(ccPairStatus.source);
+
+        return (
+          <div key={ccPairStatus.source}>
+            {/* Source group header card */}
             <SummaryRow
               source={ccPairStatus.source}
               summary={ccPairStatus.summary}
               isOpen={connectorsToggled[ccPairStatus.source] || false}
               onToggle={() => toggleSource(ccPairStatus.source)}
             />
+
+            {/* Expanded connector list */}
             {connectorsToggled[ccPairStatus.source] && (
-              <>
-                {sourceLoadingStates[ccPairStatus.source] && (
-                  <ConnectorStaggeredSkeleton rowCount={8} height="h-[79px]" />
-                )}
-                {!sourceLoadingStates[ccPairStatus.source] && (
+              <div className={cn(
+                "ml-6 mt-1 border rounded-08 overflow-hidden bg-background-tint-00 virtualai-accent-border-top",
+                colors.border
+              )}>
+                {sourceLoadingStates[ccPairStatus.source] ? (
+                  <div className="py-4">
+                    <ConnectorStaggeredSkeleton rowCount={4} standalone={true} />
+                  </div>
+                ) : (
                   <>
-                    <TableRow className="border border-border dark:border-neutral-700">
-                      <TableHead>Name</TableHead>
-                      <TableHead>Last Indexed</TableHead>
-                      <TableHead>Status</TableHead>
-                      {isPaidEnterpriseFeaturesEnabled && (
-                        <TableHead>Permissions / Access</TableHead>
-                      )}
-                      <TableHead>Total Docs</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
+                    {/* Column headers */}
+                    <ColumnHeaders
+                      isPaidEnterpriseFeaturesEnabled={isPaidEnterpriseFeaturesEnabled}
+                    />
+
+                    {/* Connector rows */}
                     {ccPairStatus.indexing_statuses.map((indexingStatus) => {
                       if (isFederatedConnectorStatus(indexingStatus)) {
                         const status =
@@ -373,94 +447,37 @@ export function CCPairIndexingStatusTable({
                         );
                       }
                     })}
-                    {/* Add dummy rows to reach 10 total rows for cleaner UI */}
+
+                    {/* "All caught up" message when fewer rows than page size with pagination */}
                     {ccPairStatus.indexing_statuses.length <
                       NUMBER_OF_ROWS_PER_PAGE &&
-                      ccPairStatus.total_pages > 1 &&
-                      Array.from({
-                        length:
-                          NUMBER_OF_ROWS_PER_PAGE -
-                          ccPairStatus.indexing_statuses.length,
-                      }).map((_, index) => {
-                        const isLastDummyRow =
-                          index ===
-                          NUMBER_OF_ROWS_PER_PAGE -
-                            ccPairStatus.indexing_statuses.length -
-                            1;
-                        return (
-                          <TableRow
-                            key={`dummy-${ccPairStatus.source}-${index}`}
-                            className={
-                              isLastDummyRow
-                                ? "border-l border-r border-b border-border dark:border-neutral-700"
-                                : "border-l border-r border-t-0 border-b-0 border-border dark:border-neutral-700"
-                            }
-                            style={
-                              isLastDummyRow
-                                ? {
-                                    borderBottom: "1px solid var(--border)",
-                                    borderRight: "1px solid var(--border)",
-                                    borderLeft: "1px solid var(--border)",
-                                  }
-                                : {}
-                            }
-                          >
-                            {isLastDummyRow ? (
-                              <TableCell
-                                colSpan={
-                                  isPaidEnterpriseFeaturesEnabled
-                                    ? NUMBER_OF_COLUMNS
-                                    : NUMBER_OF_COLUMNS - 1
-                                }
-                                className="h-[56px] text-center text-sm text-gray-400 dark:text-gray-500 border-b border-r border-l border-border dark:border-neutral-700"
-                              >
-                                <span className="italic">
-                                  All caught up! No more connectors to show
-                                </span>
-                              </TableCell>
-                            ) : (
-                              <>
-                                <TableCell className="h-[56px]"></TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                                {isPaidEnterpriseFeaturesEnabled && (
-                                  <TableCell></TableCell>
-                                )}
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                              </>
-                            )}
-                          </TableRow>
-                        );
-                      })}
+                      ccPairStatus.total_pages > 1 && (
+                        <div className="px-5 py-4 text-center">
+                          <Text as="span" secondaryBody text03 className="italic">
+                            All caught up! No more connectors to show
+                          </Text>
+                        </div>
+                      )}
                   </>
                 )}
+
+                {/* Pagination */}
                 {ccPairStatus.total_pages > 1 && (
-                  <TableRow className="border-l border-r border-b border-border dark:border-neutral-700">
-                    <TableCell
-                      colSpan={
-                        isPaidEnterpriseFeaturesEnabled
-                          ? NUMBER_OF_COLUMNS
-                          : NUMBER_OF_COLUMNS - 1
+                  <div className="flex justify-center py-3 border-t border-border-01">
+                    <PageSelector
+                      currentPage={ccPairStatus.current_page}
+                      totalPages={ccPairStatus.total_pages}
+                      onPageChange={(newPage) =>
+                        onPageChange(ccPairStatus.source, newPage)
                       }
-                    >
-                      <div className="flex justify-center">
-                        <PageSelector
-                          currentPage={ccPairStatus.current_page}
-                          totalPages={ccPairStatus.total_pages}
-                          onPageChange={(newPage) =>
-                            onPageChange(ccPairStatus.source, newPage)
-                          }
-                        />
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                    />
+                  </div>
                 )}
-              </>
+              </div>
             )}
-          </React.Fragment>
-        ))}
-      </TableBody>
-    </Table>
+          </div>
+        );
+      })}
+    </div>
   );
 }

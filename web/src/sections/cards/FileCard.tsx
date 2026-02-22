@@ -9,6 +9,7 @@ import { SvgFileText, SvgX } from "@opal/icons";
 import { Interactive } from "@opal/core";
 import { AttachmentItemLayout } from "@/layouts/general-layouts";
 import Spacer from "@/refresh-components/Spacer";
+import { getColorfulFileIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
 
 interface RemovableProps {
   onRemove?: () => void;
@@ -167,6 +168,8 @@ export function FileCard({
     );
   }
 
+  const ColorfulIcon = getColorfulFileIcon(file.name);
+
   return (
     <Removable
       onRemove={
@@ -176,7 +179,7 @@ export function FileCard({
       <div className="max-w-[12rem]">
         <Interactive.Container border heightVariant="fit">
           <AttachmentItemLayout
-            icon={isProcessing ? SimpleLoader : SvgFileText}
+            icon={isProcessing ? SimpleLoader : ColorfulIcon}
             title={file.name}
             description={
               isProcessing

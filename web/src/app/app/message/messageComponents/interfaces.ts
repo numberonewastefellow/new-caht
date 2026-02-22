@@ -35,6 +35,9 @@ export interface FullChatState {
   researchType?: string | null;
 }
 
+/** Color accent for timeline step - controls left border, icon bg, and surface tint */
+export type TimelineAccent = "purple" | "blue" | "green";
+
 export interface RendererResult {
   icon: IconType | OnyxIconType | null;
   status: string | JSX.Element | null;
@@ -49,6 +52,8 @@ export interface RendererResult {
   supportsCollapsible?: boolean;
   /** Whether the result should be wrapped by timeline UI or rendered as-is */
   timelineLayout?: TimelineLayout;
+  /** Optional color accent for the step (left border + tinted background) */
+  accent?: TimelineAccent;
 }
 
 // All renderers return an array of results (even single-step renderers return a 1-element array)

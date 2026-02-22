@@ -1,19 +1,17 @@
 "use client";
 
 import { PersonasTable } from "./PersonaTable";
-import Text from "@/components/ui/text";
-import Title from "@/components/ui/title";
-import Separator from "@/refresh-components/Separator";
 import { AdminPageTitle } from "@/components/admin/Title";
-import { SubLabel } from "@/components/Field";
-import CreateButton from "@/refresh-components/buttons/CreateButton";
 import { useAdminPersonas } from "@/hooks/useAdminPersonas";
-import { Persona } from "./interfaces";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { ErrorCallout } from "@/components/ErrorCallout";
-import { SvgOnyxOctagon } from "@opal/icons";
-import { useState, useEffect } from "react";
+import { SvgOnyxOctagon, SvgPlus } from "@opal/icons";
+import { useState, useEffect, useMemo } from "react";
 import Pagination from "@/refresh-components/Pagination";
+import Text from "@/refresh-components/texts/Text";
+import Button from "@/refresh-components/buttons/Button";
+import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { Persona } from "./interfaces";
 
 const PAGE_SIZE = 20;
 
@@ -30,103 +28,93 @@ function MainContent({
   onPageChange: (page: number) => void;
   refreshPersonas: () => void;
 }) {
-  // Filter out default/unified assistants.
-  // NOTE: The backend should already exclude them if includeDefault = false is
-  // provided. That change was made with the introduction of pagination; we keep
-  // this filter here for now for backwards compatibility.
   const customPersonas = personas.filter((persona) => !persona.builtin_persona);
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Clamp currentPage when totalItems shrinks (e.g., deleting the last item on a page)
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
       onPageChange(totalPages);
     }
   }, [currentPage, totalPages, onPageChange]);
 
+  const filteredPersonas = useMemo(() => {
+    if (!searchQuery) return customPersonas;
+    const q = searchQuery.toLowerCase();
+    return customPersonas.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q)
+    );
+  }, [customPersonas, searchQuery]);
+
   return (
-    <div>
-      <Text className="mb-2">
-        Assistants are a way to build custom search/question-answering
-        experiences for different use cases.
-      </Text>
-      <Text className="mt-2">They allow you to customize:</Text>
-      <div className="text-sm">
-        <ul className="list-disc mt-2 ml-4">
-          <li>
-            The prompt used by your LLM of choice to respond to the user query
-          </li>
-          <li>The documents that are used as context</li>
-        </ul>
-      </div>
-
-      <div>
-        <Separator />
-
-        <Title>Create an Assistant</Title>
-        <CreateButton href="/app/agents/create?admin=true">
-          New Assistant
-        </CreateButton>
-
-        <Separator />
-
-        <Title>Existing Assistants</Title>
-        {totalItems > 0 ? (
-          <>
-            <SubLabel>
-              Assistants will be displayed as options on the Chat / Search
-              interfaces in the order they are displayed below. Assistants
-              marked as hidden will not be displayed. Editable assistants are
-              shown at the top.
-            </SubLabel>
-            <PersonasTable
-              personas={customPersonas}
-              refreshPersonas={refreshPersonas}
-              currentPage={currentPage}
-              pageSize={PAGE_SIZE}
-            />
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
+    <div className="flex flex-col gap-4">
+      {/* Compact header */}
+      <div className="flex flex-row items-center justify-between gap-4">
+        <div className="flex flex-col">
+          <Text as="p" secondaryBody text03>
+            {totalItems} {totalItems === 1 ? "assistant" : "assistants"} managed by your organization.
+          </Text>
+        </div>
+        <div className="flex flex-row items-center gap-2 flex-shrink-0">
+          {totalItems > 6 && (
+            <div className="w-[14rem]">
+              <InputTypeIn
+                placeholder="Search assistants..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                leftSearchIcon
               />
-            )}
-          </>
-        ) : (
-          <div className="mt-6 p-8 border border-border rounded-lg bg-background-weak text-center">
-            <Text className="text-lg font-medium mb-2">
-              No custom assistants yet
-            </Text>
-            <Text className="text-subtle mb-3">
-              Create your first assistant to:
-            </Text>
-            <ul className="text-subtle text-sm list-disc text-left inline-block mb-3">
-              <li>Build department-specific knowledge bases</li>
-              <li>Create specialized research assistants</li>
-              <li>Set up compliance and policy advisors</li>
-            </ul>
-            <Text className="text-subtle text-sm mb-4">
-              ...and so much more!
-            </Text>
-            <CreateButton href="/app/agents/create?admin=true">
-              Create Your First Assistant
-            </CreateButton>
-            <div className="mt-6 pt-6 border-t border-border">
-              <Text className="text-subtle text-sm">
-                OR go{" "}
-                <a
-                  href="/admin/configuration/default-assistant"
-                  className="text-link underline"
-                >
-                  here
-                </a>{" "}
-                to adjust the Default Assistant
-              </Text>
             </div>
-          </div>
-        )}
+          )}
+          <Button href="/app/agents/create?admin=true" leftIcon={SvgPlus}>
+            New Assistant
+          </Button>
+        </div>
       </div>
+
+      {/* Card grid */}
+      {filteredPersonas.length > 0 ? (
+        <>
+          <PersonasTable
+            personas={filteredPersonas}
+            refreshPersonas={refreshPersonas}
+            currentPage={currentPage}
+            pageSize={PAGE_SIZE}
+          />
+          {!searchQuery && totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={onPageChange}
+            />
+          )}
+        </>
+      ) : totalItems === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 gap-4">
+          <div className="w-16 h-16 rounded-full bg-background-neutral-02 flex items-center justify-center">
+            <SvgOnyxOctagon className="w-8 h-8 text-text-03" />
+          </div>
+          <div className="text-center">
+            <Text as="p" mainContentBody className="font-medium mb-1">
+              No assistants yet
+            </Text>
+            <Text as="p" secondaryBody text03>
+              Create your first assistant to build custom AI experiences.
+            </Text>
+          </div>
+          <Button href="/app/agents/create?admin=true" leftIcon={SvgPlus}>
+            Create Your First Assistant
+          </Button>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12">
+          <Text as="p" secondaryBody text03>
+            No assistants match &ldquo;{searchQuery}&rdquo;
+          </Text>
+        </div>
+      )}
     </div>
   );
 }
@@ -134,7 +122,7 @@ function MainContent({
 export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const { personas, totalItems, isLoading, error, refresh } = useAdminPersonas({
-    pageNum: currentPage - 1, // Backend uses 0-indexed pages
+    pageNum: currentPage - 1,
     pageSize: PAGE_SIZE,
   });
 

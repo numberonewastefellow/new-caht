@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { cn } from "@/lib/utils";
 import { IconProps } from "@opal/types";
+import type { TimelineAccent } from "@/app/app/message/messageComponents/interfaces";
 import { TimelineRow } from "@/app/app/message/messageComponents/timeline/primitives/TimelineRow";
 import { TimelineSurface } from "@/app/app/message/messageComponents/timeline/primitives/TimelineSurface";
 import { TimelineStepContent } from "@/app/app/message/messageComponents/timeline/primitives/TimelineStepContent";
@@ -36,6 +37,8 @@ export interface StepContainerProps {
   noPaddingRight?: boolean;
   /** Render without rail (for nested/parallel content) */
   withRail?: boolean;
+  /** Optional color accent for tinted background, left border, and icon circle */
+  accent?: TimelineAccent;
 }
 
 /** Visual wrapper for timeline steps - icon, connector line, header, and content */
@@ -55,6 +58,7 @@ export function StepContainer({
   collapsedIcon: CollapsedIconComponent,
   noPaddingRight = false,
   withRail = true,
+  accent,
 }: StepContainerProps) {
   const iconNode = StepIconComponent ? (
     <StepIconComponent
@@ -70,6 +74,7 @@ export function StepContainer({
       className="flex-1 flex flex-col"
       isHover={isHover}
       roundedBottom={isLastStep}
+      accent={accent}
     >
       <TimelineStepContent
         header={header}
@@ -100,6 +105,7 @@ export function StepContainer({
       isFirst={isFirstStep}
       isLast={isLastStep}
       isHover={isHover}
+      accent={accent}
     >
       {content}
     </TimelineRow>

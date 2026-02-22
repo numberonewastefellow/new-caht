@@ -169,7 +169,7 @@ export const ReasoningRenderer: MessageRenderer<
   );
 
   if (!hasStart && !hasEnd && content.length === 0) {
-    return children([{ icon: SvgSparkle, status: null, content: <></> }]);
+    return children([{ icon: SvgSparkle, status: null, content: <></>, accent: "purple" }]);
   }
 
   const reasoningContent = (
@@ -190,6 +190,7 @@ export const ReasoningRenderer: MessageRenderer<
       status: displayStatus,
       content: reasoningContent,
       expandedText: reasoningContent,
+      accent: "purple",
     },
   ]);
 };

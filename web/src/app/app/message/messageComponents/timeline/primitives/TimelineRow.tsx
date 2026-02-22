@@ -1,5 +1,6 @@
 import React from "react";
 import { TimelineIconColumn, TimelineRailVariant } from "./TimelineIconColumn";
+import type { TimelineAccent } from "@/app/app/message/messageComponents/interfaces";
 
 /**
  * TimelineRowRailVariant controls how the left column is rendered.
@@ -22,6 +23,8 @@ export interface TimelineRowProps {
   isFirst?: boolean;
   isLast?: boolean;
   isHover?: boolean;
+  /** Optional color accent for the step icon background */
+  accent?: TimelineAccent;
   children?: React.ReactNode;
 }
 
@@ -38,6 +41,7 @@ export function TimelineRow({
   isFirst = false,
   isLast = false,
   isHover = false,
+  accent,
   children,
 }: TimelineRowProps) {
   return (
@@ -52,6 +56,7 @@ export function TimelineRow({
           isFirst={isFirst}
           isLast={isLast}
           isHover={isHover}
+          accent={accent}
         />
       )}
       <div className="flex-1">{children}</div>

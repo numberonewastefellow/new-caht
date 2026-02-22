@@ -79,6 +79,7 @@ export const InternalSearchToolRenderer: MessageRenderer<
         content: <></>,
         supportsCollapsible: true,
         timelineLayout: "timeline",
+        accent: "blue",
       },
     ]);
   }
@@ -178,6 +179,7 @@ export const InternalSearchToolRenderer: MessageRenderer<
       status: queriesHeader,
       supportsCollapsible: true,
       timelineLayout: "timeline",
+      accent: "blue",
       content: (
         <div className="flex flex-col">
           {!isCompact && (

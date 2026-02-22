@@ -27,7 +27,6 @@ import {
 import SvgMcp from "@opal/icons/mcp";
 import {
   ClipboardIcon,
-  NotebookIconSkeleton,
   SlackIconSkeleton,
   BrainIcon,
 } from "@/components/icons/icons";
@@ -95,13 +94,13 @@ export function getAdminNavGroups(opts: {
       color: "green",
       items: [
         {
-          name: "Connected Sources",
+          name: "Data Sources",
           oldName: "Existing Connectors",
-          icon: NotebookIconSkeleton,
+          icon: SvgFolder,
           link: "/admin/indexing/status",
         },
         {
-          name: "Data Sources",
+          name: "Add Source",
           oldName: "Add Connector",
           icon: SvgUploadCloud,
           link: "/admin/add-connector",
@@ -409,8 +408,8 @@ export function flattenNavItems(groups: AdminNavGroup[]): AdminNavItem[] {
 export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   admin: "Admin",
   indexing: "Indexing",
-  status: "Connected Sources",
-  "add-connector": "Data Sources",
+  status: "Data Sources",
+  "add-connector": "Add Source",
   documents: "Knowledge",
   sets: "Collections",
   explorer: "Knowledge Explorer",

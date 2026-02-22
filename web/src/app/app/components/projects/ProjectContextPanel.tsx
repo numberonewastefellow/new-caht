@@ -11,14 +11,13 @@ import Button from "@/refresh-components/buttons/Button";
 import UserFilesModal from "@/components/modals/UserFilesModal";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import Text from "@/refresh-components/texts/Text";
-import CreateButton from "@/refresh-components/buttons/CreateButton";
 import { FileCard, FileCardSkeleton } from "@/sections/cards/FileCard";
 import { cn, hasNonImageFiles } from "@/lib/utils";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import ButtonRenaming from "@/refresh-components/buttons/ButtonRenaming";
 import { UserFileStatus } from "../../projects/projectsService";
 import InputTextArea from "@/refresh-components/inputs/InputTextArea";
-import { SvgEdit, SvgFiles } from "@opal/icons";
+import { SvgEdit, SvgFiles, SvgPaperclip } from "@opal/icons";
 
 /* ── Chevron helper ── */
 function Chevron({ expanded }: { expanded: boolean }) {
@@ -302,13 +301,19 @@ export default function ProjectContextPanel({
 
               <FilePickerPopover
                 trigger={(open) => (
-                  <CreateButton
-                    secondary={undefined}
-                    tertiary
-                    transient={open}
+                  <button
+                    type="button"
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-3 py-1 rounded-full",
+                      "text-[13px] font-medium transition-all duration-150",
+                      "border border-border-02 text-text-03",
+                      "hover:bg-background-tint-02 hover:text-text-04 hover:border-border-03",
+                      open && "bg-background-tint-02 text-text-04 border-border-03"
+                    )}
                   >
-                    Add Files
-                  </CreateButton>
+                    <SvgPaperclip className="w-3.5 h-3.5" />
+                    Attach
+                  </button>
                 )}
                 onFileClick={handleOnView}
                 onPickRecent={async (file) => {
@@ -334,7 +339,7 @@ export default function ProjectContextPanel({
 
             {/* Files content (shown when expanded) */}
             {filesExpanded && (
-              <div className="ml-5 mt-2">
+              <div className="ml-5 mt-2 animate-in fade-in slide-in-from-top-1 duration-150">
                 {isLoadingProjectDetails && !currentProjectDetails ? (
                   <>
                     <div className="sm:hidden">
@@ -419,20 +424,28 @@ export default function ProjectContextPanel({
                   </>
                 ) : (
                   <div
-                    className={`h-12 rounded-lg border border-dashed ${
+                    className={cn(
+                      "h-14 rounded-12 border border-dashed flex items-center gap-2.5 px-3 transition-all duration-200",
                       isDragActive
-                        ? "bg-action-link-01 border-action-link-05"
-                        : "border-border-01"
-                    } flex items-center pl-2`}
+                        ? "bg-action-link-01 border-action-link-05 scale-[1.01]"
+                        : "border-border-02 hover:border-border-03"
+                    )}
                   >
-                    <p
-                      className={`font-secondary-body ${
+                    <SvgPaperclip
+                      className={cn(
+                        "w-4 h-4 flex-shrink-0 transition-colors",
                         isDragActive ? "text-action-link-05" : "text-text-02"
-                      }`}
+                      )}
+                    />
+                    <p
+                      className={cn(
+                        "text-[13px] transition-colors",
+                        isDragActive ? "text-action-link-05 font-medium" : "text-text-02"
+                      )}
                     >
                       {isDragActive
                         ? "Drop files here to add to this project"
-                        : "Add documents, texts, or images. Drag & drop supported."}
+                        : "Attach documents, texts, or images. Drag & drop supported."}
                     </p>
                   </div>
                 )}

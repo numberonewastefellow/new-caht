@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Button from "@/refresh-components/buttons/Button";
 import { Badge } from "@/components/ui/badge";
 import { FilterComponent, FilterOptions } from "./FilterComponent";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { Button } from "@opal/components";
+import { SvgChevronDown, SvgChevronUp } from "@opal/icons";
 
 interface SearchAndFilterControlsProps {
   searchQuery: string;
@@ -51,69 +52,76 @@ export function SearchAndFilterControls({
   }, [searchQuery]);
 
   return (
-    <div className="flex items-center gap-x-2">
-      <InputTypeIn
-        placeholder="Search sources..."
-        type="text"
-        value={localSearchValue}
-        onChange={(event) => setLocalSearchValue(event.target.value)}
-        className="w-96"
-      />
-
-      <Button onClick={hasExpandedSources ? onCollapseAll : onExpandAll}>
-        {hasExpandedSources ? "Collapse All" : "Expand All"}
-      </Button>
-
+    <div className="flex flex-col gap-3 mb-4">
+      {/* Search bar + actions row */}
       <div className="flex items-center gap-2">
+        <div className="flex-1 max-w-md">
+          <InputTypeIn
+            placeholder="Search data sources..."
+            type="text"
+            value={localSearchValue}
+            onChange={(event) => setLocalSearchValue(event.target.value)}
+          />
+        </div>
+
+        <Button
+          icon={hasExpandedSources ? SvgChevronUp : SvgChevronDown}
+          prominence="secondary"
+          onClick={hasExpandedSources ? onCollapseAll : onExpandAll}
+        >
+          {hasExpandedSources ? "Collapse All" : "Expand All"}
+        </Button>
+
         <FilterComponent
           onFilterChange={onFilterChange}
           ref={filterComponentRef}
         />
-
-        {hasActiveFilters && (
-          <div className="flex flex-none items-center gap-1 ml-2 max-w-[500px]">
-            {filterOptions.accessType &&
-              filterOptions.accessType.length > 0 && (
-                <Badge variant="secondary" className="px-2 py-0.5 text-xs">
-                  Access: {filterOptions.accessType.join(", ")}
-                </Badge>
-              )}
-
-            {filterOptions.lastStatus &&
-              filterOptions.lastStatus.length > 0 && (
-                <Badge variant="secondary" className="px-2 py-0.5 text-xs">
-                  Status:{" "}
-                  {filterOptions.lastStatus
-                    .map((s) => s.replace(/_/g, " "))
-                    .join(", ")}
-                </Badge>
-              )}
-
-            {filterOptions.docsCountFilter.operator &&
-              filterOptions.docsCountFilter.value !== null && (
-                <Badge variant="secondary" className="px-2 py-0.5 text-xs">
-                  Docs {filterOptions.docsCountFilter.operator}{" "}
-                  {filterOptions.docsCountFilter.value}
-                </Badge>
-              )}
-
-            {filterOptions.docsCountFilter.operator &&
-              filterOptions.docsCountFilter.value === null && (
-                <Badge variant="secondary" className="px-2 py-0.5 text-xs">
-                  Docs {filterOptions.docsCountFilter.operator} any
-                </Badge>
-              )}
-
-            <Badge
-              variant="outline"
-              className="px-2 py-0.5 text-xs border-red-400  bg-red-100 hover:border-red-600 cursor-pointer hover:bg-red-100 dark:hover:bg-red-900"
-              onClick={onClearFilters}
-            >
-              <span className="text-red-500 dark:text-red-400">Clear</span>
-            </Badge>
-          </div>
-        )}
       </div>
+
+      {/* Active filter badges */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {filterOptions.accessType &&
+            filterOptions.accessType.length > 0 && (
+              <Badge variant="secondary" className="px-2.5 py-1 text-xs rounded-full">
+                Access: {filterOptions.accessType.join(", ")}
+              </Badge>
+            )}
+
+          {filterOptions.lastStatus &&
+            filterOptions.lastStatus.length > 0 && (
+              <Badge variant="secondary" className="px-2.5 py-1 text-xs rounded-full">
+                Status:{" "}
+                {filterOptions.lastStatus
+                  .map((s) => s.replace(/_/g, " "))
+                  .join(", ")}
+              </Badge>
+            )}
+
+          {filterOptions.docsCountFilter.operator &&
+            filterOptions.docsCountFilter.value !== null && (
+              <Badge variant="secondary" className="px-2.5 py-1 text-xs rounded-full">
+                Docs {filterOptions.docsCountFilter.operator}{" "}
+                {filterOptions.docsCountFilter.value}
+              </Badge>
+            )}
+
+          {filterOptions.docsCountFilter.operator &&
+            filterOptions.docsCountFilter.value === null && (
+              <Badge variant="secondary" className="px-2.5 py-1 text-xs rounded-full">
+                Docs {filterOptions.docsCountFilter.operator} any
+              </Badge>
+            )}
+
+          <Badge
+            variant="outline"
+            className="px-2.5 py-1 text-xs rounded-full border-status-error-03 bg-status-error-01 hover:bg-status-error-02 cursor-pointer transition-colors"
+            onClick={onClearFilters}
+          >
+            <span className="text-status-error-05">Clear filters</span>
+          </Badge>
+        </div>
+      )}
     </div>
   );
 }

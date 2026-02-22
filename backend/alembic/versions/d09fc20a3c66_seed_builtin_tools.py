@@ -22,7 +22,7 @@ depends_on = None
 BUILT_IN_TOOLS = [
     {
         "name": "SearchTool",
-        "display_name": "Internal Search",
+        "display_name": "Knowledge Search",
         "description": "The Search Action allows the Assistant to search through connected knowledge to help build an answer.",
         "in_code_tool_id": "SearchTool",
     },

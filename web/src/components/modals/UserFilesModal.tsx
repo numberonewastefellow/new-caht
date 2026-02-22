@@ -6,9 +6,8 @@ import { ProjectFile } from "@/providers/ProjectsContext";
 import { formatRelativeTime } from "@/app/app/components/projects/project_utils";
 import Text from "@/refresh-components/texts/Text";
 import type { IconProps } from "@opal/types";
-import { getFileExtension, isImageExtension } from "@/lib/utils";
+import { getFileExtension } from "@/lib/utils";
 import { UserFileStatus } from "@/app/app/projects/projectsService";
-import CreateButton from "@/refresh-components/buttons/CreateButton";
 import Button from "@/refresh-components/buttons/Button";
 import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import AttachmentButton from "@/refresh-components/buttons/AttachmentButton";
@@ -18,11 +17,11 @@ import TextSeparator from "@/refresh-components/TextSeparator";
 import {
   SvgEye,
   SvgFiles,
-  SvgFileText,
-  SvgImage,
   SvgTrash,
+  SvgUploadCloud,
   SvgXCircle,
 } from "@opal/icons";
+import { getColorfulFileIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
 import { Section } from "@/layouts/general-layouts";
 import useFilter from "@/hooks/useFilter";
 import { Button as OpalButton } from "@opal/components";
@@ -33,9 +32,7 @@ function getIcon(
   isProcessing: boolean
 ): React.FunctionComponent<IconProps> {
   if (isProcessing) return SimpleLoader;
-  const ext = getFileExtension(file.name).toLowerCase();
-  if (isImageExtension(ext)) return SvgImage;
-  return SvgFileText;
+  return getColorfulFileIcon(file.name);
 }
 
 function getDescription(file: ProjectFile): string {
@@ -193,13 +190,13 @@ export default function UserFilesModal({
                 }}
               />
               {handleUploadChange && (
-                <CreateButton
+                <Button
+                  secondary
                   onClick={triggerUploadPicker}
-                  secondary={false}
-                  internal
                 >
-                  Add Files
-                </CreateButton>
+                  <SvgUploadCloud className="w-4 h-4 mr-1.5" />
+                  Upload
+                </Button>
               )}
             </Section>
           </Modal.Header>

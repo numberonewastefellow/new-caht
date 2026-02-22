@@ -9,10 +9,10 @@ import { SvgChevronDownSmall, SvgX } from "@opal/icons";
 const buttonClasses = (transient?: boolean) =>
   ({
     active: [
-      "bg-background-tint-inverted-03",
-      "hover:bg-background-tint-inverted-04",
-      transient && "bg-background-tint-inverted-04",
-      "active:bg-background-tint-inverted-02",
+      "bg-[var(--theme-primary-05)]",
+      "hover:bg-[var(--theme-primary-06)]",
+      transient && "bg-[var(--theme-primary-06)]",
+      "active:bg-[var(--theme-primary-04)]",
     ],
     inactive: [
       "bg-background-tint-01",
@@ -23,22 +23,22 @@ const buttonClasses = (transient?: boolean) =>
   }) as const;
 
 const textClasses = (transient?: boolean) => ({
-  active: ["text-text-inverted-05"],
+  active: ["text-text-light-05 dark:text-text-dark-05"],
   inactive: [
-    "text-text-03",
-    "group-hover/FilterButton:text-text-04",
-    transient && "text-text-04",
+    "text-text-04",
+    "group-hover/FilterButton:text-text-05",
+    transient && "text-text-05",
     "group-active/FilterButton:text-text-05",
   ],
 });
 
 const iconClasses = (transient?: boolean) =>
   ({
-    active: ["stroke-text-inverted-05"],
+    active: ["stroke-text-light-05 dark:stroke-text-dark-05"],
     inactive: [
-      "stroke-text-03",
-      "group-hover/FilterButton:stroke-text-04",
-      transient && "stroke-text-04",
+      "stroke-text-04",
+      "group-hover/FilterButton:stroke-text-05",
+      transient && "stroke-text-05",
       "group-active/FilterButton:stroke-text-05",
     ],
   }) as const;
@@ -72,7 +72,7 @@ export default function FilterButton({
   return (
     <button
       className={cn(
-        "p-2 h-fit rounded-12 group/FilterButton flex flex-row items-center justify-center gap-1 w-fit",
+        "p-2 h-fit rounded-12 group/FilterButton flex flex-row items-center justify-center gap-1 w-fit transition-colors duration-200",
         buttonClasses(transient)[state],
         className
       )}
@@ -85,7 +85,7 @@ export default function FilterButton({
         />
       </div>
 
-      <Text as="p" nowrap className={cn(textClasses(transient)[state])}>
+      <Text as="p" mainUiAction nowrap className={cn(textClasses(transient)[state])}>
         {children}
       </Text>
       <div className="pl-0">
@@ -94,7 +94,8 @@ export default function FilterButton({
             icon={SvgX}
             onClick={noProp(onClear)}
             secondary
-            className="!p-0 !rounded-04"
+            className="!p-0 !rounded-04 !bg-transparent"
+            iconClassName="!stroke-text-light-05 dark:!stroke-text-dark-05"
           />
         ) : (
           <div className="w-[1rem] h-[1rem]">

@@ -192,6 +192,21 @@
     border-color: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 15%, var(--border-01) 85%);
   }
 
+  /* Accent-aware hover for data source cards */
+  .virtualai-card-hover:hover {
+    background: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 4%, var(--background-tint-00) 96%);
+  }
+
+  /* Accent-tinted icon badge (empty state, etc.) */
+  .virtualai-accent-icon-badge {
+    background: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 10%, var(--background-neutral-01) 90%);
+  }
+
+  /* Accent-tinted top border for expanded sections */
+  .virtualai-accent-border-top {
+    border-top: 2px solid color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 25%, var(--border-01) 75%);
+  }
+
   /* Subtle background gradient for empty state */
   .virtualai-bg-gradient {
     background:

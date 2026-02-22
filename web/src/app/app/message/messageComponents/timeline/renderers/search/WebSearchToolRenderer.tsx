@@ -57,6 +57,7 @@ export const WebSearchToolRenderer: MessageRenderer<SearchToolPacket, {}> = ({
         content: <div />,
         supportsCollapsible: false,
         timelineLayout: "timeline",
+        accent: "blue",
       },
     ]);
   }
@@ -133,6 +134,7 @@ export const WebSearchToolRenderer: MessageRenderer<SearchToolPacket, {}> = ({
       ),
       supportsCollapsible: false,
       timelineLayout: "timeline",
+      accent: "blue",
     },
   ]);
 };

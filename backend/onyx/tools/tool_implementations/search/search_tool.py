@@ -218,7 +218,7 @@ def _trim_sections_by_tokens(
 
 class SearchTool(Tool[SearchToolOverrideKwargs]):
     NAME = "internal_search"
-    DISPLAY_NAME = "Internal Search"
+    DISPLAY_NAME = "Knowledge Search"
     DESCRIPTION = "Search connected applications for information."
 
     def __init__(

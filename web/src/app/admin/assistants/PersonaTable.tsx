@@ -3,44 +3,204 @@
 import Text from "@/refresh-components/texts/Text";
 import { Persona } from "./interfaces";
 import { useRouter } from "next/navigation";
-import Checkbox from "@/refresh-components/inputs/Checkbox";
 import { toast } from "@/hooks/useToast";
 import { useState, useMemo, useEffect } from "react";
-import { UniqueIdentifier } from "@dnd-kit/core";
-import { DraggableTable } from "@/components/table/DraggableTable";
 import {
   deletePersona,
   personaComparator,
   togglePersonaDefault,
   togglePersonaVisibility,
 } from "./lib";
-import { FiEdit2 } from "react-icons/fi";
-import { useUser } from "@/providers/UserProvider";
-import { Button as OpalButton } from "@opal/components";
 import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
 import Button from "@/refresh-components/buttons/Button";
-import { SvgAlertCircle, SvgTrash } from "@opal/icons";
+import IconButton from "@/refresh-components/buttons/IconButton";
+import {
+  SvgAlertCircle,
+  SvgEdit,
+  SvgEye,
+  SvgEyeClosed,
+  SvgGlobe,
+  SvgMoreHorizontal,
+  SvgStar,
+  SvgTrash,
+  SvgUser,
+  SvgUsers,
+} from "@opal/icons";
+import Popover, { PopoverMenu } from "@/refresh-components/Popover";
+import LineItem from "@/refresh-components/buttons/LineItem";
+import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
+import { cn } from "@/lib/utils";
 import type { Route } from "next";
 
-function PersonaTypeDisplay({ persona }: { persona: Persona }) {
+/** Status badge colors */
+function TypeBadge({ persona }: { persona: Persona }) {
   if (persona.builtin_persona) {
-    return <Text as="p">Built-In</Text>;
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-slate-100 text-slate-600">
+        Built-In
+      </span>
+    );
   }
-
-  if (persona.is_default_persona) {
-    return <Text as="p">Default</Text>;
-  }
-
   if (persona.is_public) {
-    return <Text as="p">Public</Text>;
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-blue-100 text-blue-700">
+        <SvgGlobe className="w-3 h-3" />
+        Public
+      </span>
+    );
   }
-
   if (persona.groups.length > 0 || persona.users.length > 0) {
-    return <Text as="p">Shared</Text>;
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-violet-100 text-violet-700">
+        <SvgUsers className="w-3 h-3" />
+        Shared
+      </span>
+    );
   }
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-gray-100 text-gray-600">
+      <SvgUser className="w-3 h-3" />
+      Personal
+    </span>
+  );
+}
+
+function FeaturedBadge() {
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-amber-100 text-amber-700">
+      <SvgStar className="w-3 h-3" />
+      Featured
+    </span>
+  );
+}
+
+function HiddenBadge() {
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-red-100 text-red-600">
+      <SvgEyeClosed className="w-3 h-3" />
+      Hidden
+    </span>
+  );
+}
+
+function PersonaCard({
+  persona,
+  isEditable,
+  onEdit,
+  onToggleDefault,
+  onToggleVisibility,
+  onDelete,
+}: {
+  persona: Persona;
+  isEditable: boolean;
+  onEdit: () => void;
+  onToggleDefault: () => void;
+  onToggleVisibility: () => void;
+  onDelete: () => void;
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <Text as="p">Personal {persona.owner && <>({persona.owner.email})</>}</Text>
+    <div
+      className={cn(
+        "group/card relative flex flex-col gap-3 p-4 rounded-xl border",
+        "border-border-02 bg-background-tint-01",
+        "hover:border-border-03 hover:shadow-sm",
+        "transition-all duration-150"
+      )}
+    >
+      {/* Top row: Avatar + Name + Menu */}
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 mt-0.5">
+          <AgentAvatar agent={persona} size={40} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <Text as="p" mainContentBody className="font-semibold truncate">
+            {persona.name}
+          </Text>
+          {persona.owner && (
+            <Text as="p" className="text-[0.6875rem] text-text-03 truncate">
+              by {persona.owner.email}
+            </Text>
+          )}
+        </div>
+
+        {/* Actions — visible on hover + when menu is open */}
+        <div className={cn(
+          "flex items-center gap-1 flex-shrink-0",
+          "opacity-0 group-hover/card:opacity-100 transition-opacity",
+          menuOpen && "opacity-100"
+        )}>
+          {isEditable && (
+            <IconButton
+              icon={SvgEdit}
+              tertiary
+              onClick={onEdit}
+              tooltip="Edit"
+            />
+          )}
+          <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+            <Popover.Trigger asChild>
+              <IconButton
+                icon={SvgMoreHorizontal}
+                tertiary
+                tooltip="More actions"
+              />
+            </Popover.Trigger>
+            <Popover.Content align="end">
+              <PopoverMenu>
+                {[
+                  isEditable && (
+                    <LineItem
+                      key="edit"
+                      icon={SvgEdit}
+                      onClick={() => { onEdit(); setMenuOpen(false); }}
+                    >
+                      Edit Assistant
+                    </LineItem>
+                  ),
+                  <LineItem
+                    key="featured"
+                    icon={SvgStar}
+                    onClick={() => { onToggleDefault(); setMenuOpen(false); }}
+                  >
+                    {persona.is_default_persona ? "Remove Featured" : "Set as Featured"}
+                  </LineItem>,
+                  <LineItem
+                    key="visibility"
+                    icon={persona.is_visible ? SvgEyeClosed : SvgEye}
+                    onClick={() => { onToggleVisibility(); setMenuOpen(false); }}
+                  >
+                    {persona.is_visible ? "Hide Assistant" : "Show Assistant"}
+                  </LineItem>,
+                  isEditable && (
+                    <LineItem
+                      key="delete"
+                      icon={SvgTrash}
+                      onClick={() => { onDelete(); setMenuOpen(false); }}
+                    >
+                      Delete
+                    </LineItem>
+                  ),
+                ].filter(Boolean)}
+              </PopoverMenu>
+            </Popover.Content>
+          </Popover>
+        </div>
+      </div>
+
+      {/* Description */}
+      <Text as="p" secondaryBody text03 className="line-clamp-2 min-h-[2.5rem]">
+        {persona.description || "No description"}
+      </Text>
+
+      {/* Badges */}
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <TypeBadge persona={persona} />
+        {persona.is_default_persona && <FeaturedBadge />}
+        {!persona.is_visible && <HiddenBadge />}
+      </div>
+    </div>
   );
 }
 
@@ -56,7 +216,6 @@ export function PersonasTable({
   pageSize: number;
 }) {
   const router = useRouter();
-  const { refreshUser, isAdmin } = useUser();
 
   const editablePersonas = useMemo(() => {
     return personas.filter((p) => !p.builtin_persona);
@@ -74,49 +233,12 @@ export function PersonasTable({
     useState<Persona | null>(null);
 
   useEffect(() => {
-    const editable = editablePersonas.sort(personaComparator);
+    const editable = [...editablePersonas].sort(personaComparator);
     const nonEditable = personas
       .filter((p) => !editablePersonaIds.has(p.id.toString()))
       .sort(personaComparator);
     setFinalPersonas([...editable, ...nonEditable]);
   }, [editablePersonas, personas, editablePersonaIds]);
-
-  const updatePersonaOrder = async (orderedPersonaIds: UniqueIdentifier[]) => {
-    const reorderedPersonas = orderedPersonaIds.map(
-      (id) => personas.find((persona) => persona.id.toString() === id)!
-    );
-
-    setFinalPersonas(reorderedPersonas);
-
-    // Calculate display_priority based on current page.
-    // Page 1 (items 0-9): priorities 0-9
-    // Page 2 (items 10-19): priorities 10-19, etc.
-    const pageStartIndex = (currentPage - 1) * pageSize;
-    const displayPriorityMap = new Map<UniqueIdentifier, number>();
-    orderedPersonaIds.forEach((personaId, ind) => {
-      displayPriorityMap.set(personaId, pageStartIndex + ind);
-    });
-
-    const response = await fetch("/api/admin/agents/display-priorities", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        display_priority_map: Object.fromEntries(displayPriorityMap),
-      }),
-    });
-
-    if (!response.ok) {
-      toast.error(`Failed to update persona order - ${await response.text()}`);
-      setFinalPersonas(personas);
-      await refreshPersonas();
-      return;
-    }
-
-    await refreshPersonas();
-    await refreshUser();
-  };
 
   const openDeleteModal = (persona: Persona) => {
     setPersonaToDelete(persona);
@@ -165,8 +287,21 @@ export function PersonasTable({
     }
   };
 
+  const handleToggleVisibility = async (persona: Persona) => {
+    const response = await togglePersonaVisibility(
+      persona.id,
+      persona.is_visible
+    );
+    if (response.ok) {
+      refreshPersonas();
+    } else {
+      toast.error(`Failed to update persona - ${await response.text()}`);
+    }
+  };
+
   return (
     <div>
+      {/* Delete confirmation modal */}
       {deleteModalOpen && personaToDelete && (
         <ConfirmationModalLayout
           icon={SvgAlertCircle}
@@ -177,11 +312,12 @@ export function PersonasTable({
           {`Are you sure you want to delete ${personaToDelete.name}?`}
         </ConfirmationModalLayout>
       )}
+
+      {/* Featured confirmation modal */}
       {defaultModalOpen &&
         personaToToggleDefault &&
         (() => {
           const isDefault = personaToToggleDefault.is_default_persona;
-
           const title = isDefault
             ? "Remove Featured Assistant"
             : "Set Featured Assistant";
@@ -212,110 +348,27 @@ export function PersonasTable({
           );
         })()}
 
-      <DraggableTable
-        headers={[
-          "Name",
-          "Description",
-          "Type",
-          "Featured Assistant",
-          "Is Visible",
-          "Delete",
-        ]}
-        isAdmin={isAdmin}
-        rows={finalPersonas.map((persona) => {
+      {/* Card grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {finalPersonas.map((persona) => {
           const isEditable = editablePersonas.includes(persona);
-          return {
-            id: persona.id.toString(),
-            cells: [
-              <div key="name" className="flex">
-                {!persona.builtin_persona && (
-                  <FiEdit2
-                    className="mr-1 my-auto cursor-pointer"
-                    onClick={() =>
-                      router.push(
-                        `/app/agents/edit/${
-                          persona.id
-                        }?u=${Date.now()}&admin=true` as Route
-                      )
-                    }
-                  />
-                )}
-                <p className="text font-medium whitespace-normal break-none">
-                  {persona.name}
-                </p>
-              </div>,
-              <p
-                key="description"
-                className="whitespace-normal break-all max-w-2xl"
-              >
-                {persona.description}
-              </p>,
-              <PersonaTypeDisplay key={persona.id} persona={persona} />,
-              <div
-                key="is_default_persona"
-                onClick={() => {
-                  openDefaultModal(persona);
-                }}
-                className={`
-                  px-1 py-0.5 rounded flex hover:bg-accent-background-hovered cursor-pointer select-none w-fit items-center gap-2
-                  `}
-              >
-                <div className="my-auto flex-none w-22">
-                  {!persona.is_default_persona ? (
-                    <div className="text-error">Not Featured</div>
-                  ) : (
-                    "Featured"
-                  )}
-                </div>
-                <Checkbox checked={persona.is_default_persona} />
-              </div>,
-              <div
-                key="is_visible"
-                onClick={async () => {
-                  const response = await togglePersonaVisibility(
-                    persona.id,
-                    persona.is_visible
-                  );
-                  if (response.ok) {
-                    refreshPersonas();
-                  } else {
-                    toast.error(
-                      `Failed to update persona - ${await response.text()}`
-                    );
-                  }
-                }}
-                className={`
-                  px-1 py-0.5 rounded flex hover:bg-accent-background-hovered cursor-pointer select-none w-fit items-center gap-2
-                  `}
-              >
-                <div className="my-auto w-fit">
-                  {!persona.is_visible ? (
-                    <div className="text-error">Hidden</div>
-                  ) : (
-                    "Visible"
-                  )}
-                </div>
-                <Checkbox checked={persona.is_visible} />
-              </div>,
-              <div key="edit" className="flex">
-                <div className="mr-auto my-auto">
-                  {!persona.builtin_persona && isEditable ? (
-                    <OpalButton
-                      icon={SvgTrash}
-                      prominence="tertiary"
-                      onClick={() => openDeleteModal(persona)}
-                    />
-                  ) : (
-                    <Text as="p">-</Text>
-                  )}
-                </div>
-              </div>,
-            ],
-            staticModifiers: [[1, "lg:w-[250px] xl:w-[400px] 2xl:w-[550px]"]],
-          };
+          return (
+            <PersonaCard
+              key={persona.id}
+              persona={persona}
+              isEditable={isEditable}
+              onEdit={() =>
+                router.push(
+                  `/app/agents/edit/${persona.id}?u=${Date.now()}&admin=true` as Route
+                )
+              }
+              onToggleDefault={() => openDefaultModal(persona)}
+              onToggleVisibility={() => handleToggleVisibility(persona)}
+              onDelete={() => openDeleteModal(persona)}
+            />
+          );
         })}
-        setRows={updatePersonaOrder}
-      />
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import type { TimelineAccent } from "@/app/app/message/messageComponents/interfaces";
 
 export type TimelineSurfaceBackground = "tint" | "transparent";
 
@@ -10,7 +11,24 @@ export interface TimelineSurfaceProps {
   roundedTop?: boolean;
   roundedBottom?: boolean;
   background?: TimelineSurfaceBackground;
+  /** Optional color accent — adds a left border and subtle tinted background */
+  accent?: TimelineAccent;
 }
+
+const accentStyles: Record<TimelineAccent, { border: string; bg: string }> = {
+  purple: {
+    border: "border-l-2 border-l-[var(--theme-purple-05)]",
+    bg: "bg-[var(--theme-purple-01)]",
+  },
+  blue: {
+    border: "border-l-2 border-l-[var(--theme-blue-05)]",
+    bg: "bg-[var(--theme-blue-01)]",
+  },
+  green: {
+    border: "border-l-2 border-l-[var(--theme-green-05)]",
+    bg: "bg-[var(--theme-green-01)]",
+  },
+};
 
 /**
  * TimelineSurface provides the shared background + rounded corners for a row.
@@ -23,14 +41,22 @@ export function TimelineSurface({
   roundedTop = false,
   roundedBottom = false,
   background = "tint",
+  accent,
 }: TimelineSurfaceProps) {
   if (React.Children.count(children) === 0) {
     return null;
   }
 
-  const baseBackground = background === "tint" ? "bg-background-tint-00" : "";
+  const accentStyle = accent ? accentStyles[accent] : null;
+  const baseBackground = accentStyle
+    ? accentStyle.bg
+    : background === "tint"
+      ? "bg-background-tint-00"
+      : "";
   const hoverBackground =
-    background === "tint" && isHover ? "bg-background-tint-02" : "";
+    background === "tint" && isHover && !accentStyle
+      ? "bg-background-tint-02"
+      : "";
 
   return (
     <div
@@ -38,6 +64,7 @@ export function TimelineSurface({
         "transition-colors duration-200",
         baseBackground,
         hoverBackground,
+        accentStyle?.border,
         roundedTop && "rounded-t-12",
         roundedBottom && "rounded-b-12",
         className

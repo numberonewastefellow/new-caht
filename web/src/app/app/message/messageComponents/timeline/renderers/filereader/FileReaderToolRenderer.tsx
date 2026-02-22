@@ -91,6 +91,7 @@ export const FileReaderToolRenderer: MessageRenderer<
         status: statusText,
         supportsCollapsible: true,
         timelineLayout: "timeline",
+        accent: "green",
         content: <></>,
       },
     ]);
@@ -104,6 +105,7 @@ export const FileReaderToolRenderer: MessageRenderer<
       status: statusText,
       supportsCollapsible: true,
       timelineLayout: "timeline",
+      accent: "green",
       content: (
         <Section gap={0.5} alignItems="start" height="fit">
           {state.fileName ? (

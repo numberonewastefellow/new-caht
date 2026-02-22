@@ -15,15 +15,13 @@ import { toast } from "@/hooks/useToast";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import Text from "@/refresh-components/texts/Text";
 import { MAX_FILES_TO_SHOW } from "@/lib/constants";
-import { isImageFile } from "@/lib/utils";
 import {
   SvgExternalLink,
-  SvgFileText,
-  SvgImage,
   SvgLoader,
   SvgMoreHorizontal,
-  SvgPaperclip,
+  SvgUploadCloud,
 } from "@opal/icons";
+import { getColorfulFileIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
 const getFileExtension = (fileName: string): string => {
   const idx = fileName.lastIndexOf(".");
   if (idx === -1) return "";
@@ -58,6 +56,8 @@ function FileLineItem({
     [projectFile.status]
   );
 
+  const ColorfulIcon = getColorfulFileIcon(projectFile.name);
+
   return (
     <LineItem
       key={projectFile.id}
@@ -67,9 +67,7 @@ function FileLineItem({
           ? ({ className }) => (
               <SvgLoader className={cn(className, "animate-spin")} />
             )
-          : isImageFile(projectFile.name)
-            ? SvgImage
-            : SvgFileText
+          : ColorfulIcon
       }
       rightChildren={
         <div className="h-[1rem] flex flex-col justify-center">
@@ -124,11 +122,11 @@ function FilePickerPopoverContents({
         // Action button to upload more files
         <LineItem
           key="upload-files"
-          icon={SvgPaperclip}
-          description="Upload a file from your device"
+          icon={SvgUploadCloud}
+          description="Browse and attach files from your device"
           onClick={triggerUploadPicker}
         >
-          Upload Files
+          Upload from Device
         </LineItem>,
 
         // Separator

@@ -17,7 +17,6 @@ import {
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import {
   ClipboardIcon,
-  NotebookIconSkeleton,
   SlackIconSkeleton,
   BrainIcon,
 } from "@/components/icons/icons";
@@ -57,12 +56,12 @@ import UserAvatarPopover from "@/sections/sidebar/UserAvatarPopover";
 
 const connectors_items = () => [
   {
-    name: "Connected Sources",
-    icon: NotebookIconSkeleton,
+    name: "Data Sources",
+    icon: SvgFolder,
     link: "/admin/indexing/status",
   },
   {
-    name: "Data Sources",
+    name: "Add Source",
     icon: SvgUploadCloud,
     link: "/admin/add-connector",
   },

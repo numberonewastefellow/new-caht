@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import type { TimelineAccent } from "@/app/app/message/messageComponents/interfaces";
 
 /**
  * TimelineRailVariant controls whether a row shows the rail or only reserves width.
@@ -7,6 +8,12 @@ import { cn } from "@/lib/utils";
  * - spacer: keeps column width for alignment, but no rail.
  */
 export type TimelineRailVariant = "rail" | "spacer";
+
+const accentIconBg: Record<TimelineAccent, string> = {
+  purple: "bg-[var(--theme-purple-01)] rounded-full",
+  blue: "bg-[var(--theme-blue-01)] rounded-full",
+  green: "bg-[var(--theme-green-01)] rounded-full",
+};
 
 export interface TimelineIconColumnProps {
   variant?: TimelineRailVariant;
@@ -22,6 +29,8 @@ export interface TimelineIconColumnProps {
    * - compact: uses first-step spacer height for hidden headers.
    */
   iconRowVariant?: "default" | "compact";
+  /** Optional accent color for a colored circle behind the icon */
+  accent?: TimelineAccent;
 }
 
 /**
@@ -39,6 +48,7 @@ export function TimelineIconColumn({
   icon,
   showIcon = true,
   iconRowVariant = "default",
+  accent,
 }: TimelineIconColumnProps) {
   if (variant === "spacer") {
     return <div className="w-[var(--timeline-rail-width)]" />;
@@ -67,7 +77,7 @@ export function TimelineIconColumn({
                 !isFirst && topConnectorColorClass
               )}
             />
-            <div className="h-[var(--timeline-branch-icon-wrapper-size)] w-[var(--timeline-branch-icon-wrapper-size)] shrink-0 flex items-center justify-center">
+            <div className={cn("h-[var(--timeline-branch-icon-wrapper-size)] w-[var(--timeline-branch-icon-wrapper-size)] shrink-0 flex items-center justify-center", accent && accentIconBg[accent])}>
               {showIcon && icon}
             </div>
             <div className={cn("w-px flex-1", connectorColorClass)} />

@@ -9,7 +9,13 @@ import {
   PYTHON_TOOL_ID,
   FILE_READER_TOOL_ID,
 } from "@/app/app/components/tools/constants";
-import { cn } from "@/lib/utils";
+import { cn, getFileExtension, isImageFile, isCodeFile } from "@/lib/utils";
+import {
+  SvgFileText,
+  SvgImage,
+  SvgFileBraces,
+  SvgFileChartPie,
+} from "@opal/icons";
 
 /**
  * Color map — each tool type gets a distinctive background color.
@@ -88,6 +94,67 @@ export function makeAccentColorfulIcon(
       <span
         className="inline-flex items-center justify-center rounded-[5px] w-5 h-5 flex-shrink-0"
         style={{ backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }}
+      >
+        <BaseIcon className="w-3 h-3 text-white" />
+      </span>
+    );
+  };
+}
+
+/**
+ * File-type color map — maps file categories to distinctive background colors.
+ */
+const FILE_TYPE_COLORS = {
+  pdf: "bg-rose-500",
+  doc: "bg-blue-500",
+  docx: "bg-blue-500",
+  xls: "bg-emerald-500",
+  xlsx: "bg-emerald-500",
+  csv: "bg-emerald-500",
+  ppt: "bg-orange-500",
+  pptx: "bg-orange-500",
+  image: "bg-violet-500",
+  code: "bg-amber-500",
+  default: "bg-slate-400",
+} as const;
+
+const FILE_TYPE_LOOKUP: Record<string, string> = FILE_TYPE_COLORS;
+
+/**
+ * Returns a bg color class for a given filename based on its extension.
+ */
+export function getFileTypeColor(fileName: string | null | undefined): string {
+  if (!fileName) return FILE_TYPE_COLORS.default;
+  if (isImageFile(fileName)) return FILE_TYPE_COLORS.image;
+  if (isCodeFile(fileName)) return FILE_TYPE_COLORS.code;
+  const ext = getFileExtension(fileName).toLowerCase();
+  return FILE_TYPE_LOOKUP[ext] ?? FILE_TYPE_COLORS.default;
+}
+
+/**
+ * Returns a colorful file icon component — the base file icon wrapped
+ * in a colored rounded square whose color depends on the file extension.
+ */
+export function getColorfulFileIcon(
+  fileName: string | null | undefined
+): React.FunctionComponent<IconProps> {
+  const bg = getFileTypeColor(fileName);
+
+  let BaseIcon: React.FunctionComponent<IconProps> = SvgFileText;
+  if (fileName) {
+    if (isImageFile(fileName)) BaseIcon = SvgImage;
+    else if (/\.pptx?$/i.test(fileName)) BaseIcon = SvgFileChartPie;
+    else if (isCodeFile(fileName)) BaseIcon = SvgFileBraces;
+  }
+
+  return function ColorfulFileIcon() {
+    return (
+      <span
+        className={cn(
+          "inline-flex items-center justify-center rounded-[5px]",
+          "w-5 h-5 flex-shrink-0",
+          bg
+        )}
       >
         <BaseIcon className="w-3 h-3 text-white" />
       </span>

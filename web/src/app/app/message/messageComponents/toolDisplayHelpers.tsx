@@ -85,7 +85,7 @@ export function getToolName(packets: Packet[]): string {
       const searchState = constructCurrentSearchState(
         packets as SearchToolPacket[]
       );
-      return searchState.isInternetSearch ? "Web Search" : "Internal Search";
+      return searchState.isInternetSearch ? "Web Search" : "Knowledge Search";
     }
     case PacketType.PYTHON_TOOL_START:
       return "Code Interpreter";

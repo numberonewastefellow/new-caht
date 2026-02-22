@@ -164,7 +164,7 @@ export function ToolSelector({
           popupContent={
             <div className="text-xs space-y-2 max-w-xs bg-background-neutral-dark-03 text-text-light-05">
               <div>
-                <span className="font-semibold">Internal Search:</span> Requires
+                <span className="font-semibold">Knowledge Search:</span> Requires
                 at least one connector to be configured to search your
                 organization&apos;s knowledge base.
               </div>

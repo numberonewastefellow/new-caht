@@ -1,11 +1,9 @@
 "use client";
 
-import { NotebookIcon } from "@/components/icons/icons";
 import { CCPairIndexingStatusTable } from "./CCPairIndexingStatusTable";
 import { SearchAndFilterControls } from "./SearchAndFilterControls";
 import { AdminPageTitle } from "@/components/admin/Title";
-import Link from "next/link";
-import Text from "@/components/ui/text";
+import Text from "@/refresh-components/texts/Text";
 import { useConnectorIndexingStatusWithPagination } from "@/lib/hooks";
 import { useToastFromQuery } from "@/hooks/useToast";
 import Button from "@/refresh-components/buttons/Button";
@@ -16,6 +14,7 @@ import Cookies from "js-cookie";
 import { TOGGLED_CONNECTORS_COOKIE_NAME } from "@/lib/constants";
 import { ConnectorStaggeredSkeleton } from "./ConnectorRowSkeleton";
 import { IndexingStatusRequest } from "@/lib/types";
+import { SvgFolder, SvgUploadCloud } from "@opal/icons";
 
 function Main() {
   // State for filter management
@@ -176,17 +175,25 @@ function Main() {
 
       {/* Table component */}
       {isLoadingCcPairsIndexingStatuses ? (
-        <div className="mt-12">
+        <div className="mt-8">
           <ConnectorStaggeredSkeleton rowCount={8} standalone={true} />
         </div>
       ) : !ccPairsIndexingStatuses || ccPairsIndexingStatuses.length === 0 ? (
-        <Text className="mt-12">
-          It looks like you don&apos;t have any connectors setup yet. Visit the{" "}
-          <Link className="text-link" href="/admin/add-connector">
+        <div className="mt-16 flex flex-col items-center text-center">
+          <div className="w-16 h-16 rounded-16 virtualai-accent-icon-badge flex items-center justify-center mb-4">
+            <SvgUploadCloud className="w-8 h-8" style={{ color: "var(--virtualai-accent, var(--theme-primary-05))" }} />
+          </div>
+          <Text headingH3 className="text-text-05 mb-2">
+            No data sources connected
+          </Text>
+          <Text secondaryBody text03 className="mb-6 max-w-sm">
+            Connect your first data source to start indexing documents
+            and powering your AI agents.
+          </Text>
+          <Button href="/admin/add-connector">
             Add Data Source
-          </Link>{" "}
-          page to get started!
-        </Text>
+          </Button>
+        </div>
       ) : (
         <CCPairIndexingStatusTable
           ccPairsIndexingStatuses={ccPairsIndexingStatuses}
@@ -215,8 +222,9 @@ export default function Status() {
   return (
     <>
       <AdminPageTitle
-        icon={<NotebookIcon size={32} />}
-        title="Connected Sources"
+        icon={SvgFolder}
+        title="Data Sources"
+        description="Manage your connected data sources and monitor indexing status."
         farRightElement={
           <Button href="/admin/add-connector">Add Data Source</Button>
         }

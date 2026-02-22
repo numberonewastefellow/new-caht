@@ -177,6 +177,103 @@ DEPARTMENT_COLORS = {
     "commodities": ("#F9A825", "#FDD835"),     # Gold/Yellow
     "gold investment": ("#F9A825", "#FDD835"),
     "mcx": ("#F9A825", "#FDD835"),
+
+    # Entertainment
+    "entertainment": ("#AD1457", "#EC407A"),    # Magenta/Pink
+    "screenwriting": ("#AD1457", "#EC407A"),
+    "film": ("#880E4F", "#E91E63"),
+    "music": ("#6A1B9A", "#CE93D8"),           # Purple
+    "music theory": ("#6A1B9A", "#CE93D8"),
+    "composition": ("#6A1B9A", "#CE93D8"),
+    "comedy": ("#FF6F00", "#FFB74D"),          # Amber
+    "standup": ("#FF6F00", "#FFB74D"),
+    "game design": ("#1565C0", "#64B5F6"),     # Blue
+    "gaming": ("#1565C0", "#64B5F6"),
+    "game development": ("#1565C0", "#64B5F6"),
+    "podcast": ("#00695C", "#4DB6AC"),         # Teal
+    "audio production": ("#00695C", "#4DB6AC"),
+    "content strategy": ("#00695C", "#4DB6AC"),
+    "youtube": ("#D32F2F", "#EF5350"),         # YouTube red
+    "content creation": ("#D32F2F", "#EF5350"),
+    "video seo": ("#D32F2F", "#EF5350"),
+    "tabletop rpg": ("#4E342E", "#8D6E63"),    # Brown
+    "game master": ("#4E342E", "#8D6E63"),
+    "worldbuilding": ("#4E342E", "#8D6E63"),
+    "photography": ("#37474F", "#78909C"),     # Blue grey
+    "visual arts": ("#37474F", "#78909C"),
+    "post-processing": ("#37474F", "#78909C"),
+    "anime": ("#E91E63", "#F48FB1"),           # Pink
+    "manga": ("#E91E63", "#F48FB1"),
+    "animation": ("#E91E63", "#F48FB1"),
+    "event planning": ("#FF6F00", "#FFAB40"),  # Orange
+    "production": ("#FF6F00", "#FFAB40"),
+    "weddings": ("#FF6F00", "#FFAB40"),
+    "fiction writing": ("#5D4037", "#A1887F"),  # Warm brown
+    "publishing": ("#5D4037", "#A1887F"),
+    "creative writing": ("#AD1457", "#EC407A"),
+
+    # Education (additional labels)
+    "competitive exams": ("#1565C0", "#42A5F5"),  # Blue
+    "upsc": ("#1A237E", "#3F51B5"),               # Deep blue
+    "government jobs": ("#1A237E", "#3F51B5"),
+    "stem": ("#0D47A1", "#1E88E5"),
+    "jee/neet": ("#0D47A1", "#1E88E5"),
+    "problem solving": ("#0D47A1", "#1E88E5"),
+    "research": ("#4A148C", "#7B1FA2"),           # Deep purple
+    "academic writing": ("#4A148C", "#7B1FA2"),
+    "special education": ("#00838F", "#26C6DA"),  # Cyan
+    "inclusive learning": ("#00838F", "#26C6DA"),
+    "learning disabilities": ("#00838F", "#26C6DA"),
+    "language learning": ("#2E7D32", "#66BB6A"),  # Green
+    "linguistics": ("#2E7D32", "#66BB6A"),
+    "ielts/toefl": ("#2E7D32", "#66BB6A"),
+    "career guidance": ("#E65100", "#FF9800"),     # Orange
+    "skills": ("#E65100", "#FF9800"),
+    "placements": ("#E65100", "#FF9800"),
+    "early childhood": ("#F06292", "#F8BBD0"),    # Light pink
+    "parenting": ("#F06292", "#F8BBD0"),
+    "child development": ("#F06292", "#F8BBD0"),
+    "coding": ("#212121", "#616161"),             # Dark grey (terminal)
+    "web development": ("#212121", "#616161"),
+    "tech career": ("#212121", "#616161"),
+    "nep 2020": ("#1565C0", "#42A5F5"),
+    "school administration": ("#1565C0", "#42A5F5"),
+    "policy": ("#1A237E", "#3F51B5"),
+    "study abroad": ("#00695C", "#26A69A"),       # Teal
+    "higher education": ("#00695C", "#26A69A"),
+
+    # Science
+    "science": ("#0277BD", "#29B6F6"),            # Light blue
+    "space": ("#1A237E", "#5C6BC0"),              # Deep indigo
+    "astrophysics": ("#1A237E", "#5C6BC0"),
+    "isro": ("#1A237E", "#5C6BC0"),
+    "biotechnology": ("#2E7D32", "#66BB6A"),      # Green
+    "genetics": ("#2E7D32", "#66BB6A"),
+    "molecular biology": ("#2E7D32", "#66BB6A"),
+    "climate": ("#00695C", "#26A69A"),            # Teal
+    "environment": ("#00695C", "#26A69A"),
+    "sustainability": ("#00695C", "#26A69A"),
+    "neuroscience": ("#6A1B9A", "#AB47BC"),       # Purple
+    "brain": ("#6A1B9A", "#AB47BC"),
+    "cognitive science": ("#6A1B9A", "#AB47BC"),
+    "quantum computing": ("#283593", "#7986CB"),  # Indigo
+    "physics": ("#283593", "#7986CB"),
+    "materials science": ("#455A64", "#90A4AE"),  # Blue grey
+    "nanotechnology": ("#455A64", "#90A4AE"),
+    "engineering": ("#455A64", "#90A4AE"),
+    "ecology": ("#33691E", "#8BC34A"),            # Light green
+    "conservation": ("#33691E", "#8BC34A"),
+    "biodiversity": ("#33691E", "#8BC34A"),
+    "forensic science": ("#37474F", "#78909C"),   # Dark grey
+    "criminal investigation": ("#37474F", "#78909C"),
+    "dna analysis": ("#37474F", "#78909C"),
+    "robotics": ("#0D47A1", "#42A5F5"),           # Blue
+    "mechatronics": ("#0D47A1", "#42A5F5"),
+    "automation": ("#0D47A1", "#42A5F5"),
+    "artificial intelligence": ("#311B92", "#7C4DFF"),  # Deep purple
+    "machine learning": ("#311B92", "#7C4DFF"),
+    "deep learning": ("#311B92", "#7C4DFF"),
+    "technology": ("#283593", "#7986CB"),
 }
 
 # Emoji/symbol mapping for agent types
