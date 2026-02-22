@@ -242,56 +242,70 @@ export const HealthCheckBanner = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="mx-4 w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-2xl dark:bg-neutral-900">
-        {/* Maintenance icon */}
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-red-600 dark:text-red-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-mask-03 backdrop-blur-03">
+      <div className="mx-4 w-full max-w-[26rem] overflow-hidden rounded-16 border bg-background-tint-00 shadow-2xl">
+        {/* Top accent bar */}
+        <div className="h-1 w-full bg-gradient-to-r from-[var(--theme-orange-05)] via-[var(--theme-amber-04)] to-[var(--theme-orange-05)]" />
+
+        <div className="px-8 pb-8 pt-7">
+          {/* Icon */}
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-12 bg-[var(--status-warning-01)]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-[var(--status-text-warning-05)]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.75}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+              />
+            </svg>
+          </div>
+
+          {/* Title */}
+          <h2 className="mb-2 text-center text-lg font-semibold text-text-05">
+            Service Unavailable
+          </h2>
+
+          {/* Description */}
+          <p className="mb-6 text-center text-sm leading-relaxed text-text-03">
+            The backend is currently unavailable or under maintenance.
+            {" "}If this is your initial setup, the backend may still be
+            starting up. This will automatically dismiss once the
+            service is back online.
+          </p>
+
+          {/* Connection status */}
+          <div className="mb-6 flex items-center justify-center gap-2.5 rounded-08 bg-background-tint-01 px-4 py-2.5">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--theme-orange-05)] opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--theme-orange-05)]" />
+            </span>
+            <span className="text-xs font-medium text-text-03">
+              Attempting to reconnect...
+            </span>
+          </div>
+
+          {/* Action button */}
+          <button
+            onClick={() => {
+              setDismissedOverlay(true);
+              try {
+                sessionStorage.setItem(DISMISSED_KEY, "true");
+              } catch {
+                // sessionStorage may be unavailable
+              }
+              router.push("/auth/login");
+            }}
+            className="w-full rounded-08 bg-[var(--theme-primary-05)] px-4 py-2.5 text-sm font-medium text-[var(--text-inverted-05)] transition-colors hover:bg-[var(--theme-primary-04)]"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+            Close & Go to Login
+          </button>
         </div>
-
-        <h2 className="mb-2 text-xl font-bold text-neutral-900 dark:text-neutral-100">
-          Service Unavailable
-        </h2>
-        <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
-          The backend is currently unavailable or under maintenance. If
-          this is your initial setup, the backend may still be starting
-          up. Please wait a moment — this overlay will automatically
-          dismiss once the service is back online.
-        </p>
-
-        {/* Polling indicator */}
-        <div className="mb-6 flex items-center justify-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-red-500" />
-          Checking connection...
-        </div>
-
-        <button
-          onClick={() => {
-            setDismissedOverlay(true);
-            try {
-              sessionStorage.setItem(DISMISSED_KEY, "true");
-            } catch {
-              // sessionStorage may be unavailable
-            }
-            router.push("/auth/login");
-          }}
-          className="w-full rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
-        >
-          Close &amp; Go to Login
-        </button>
       </div>
     </div>
   );

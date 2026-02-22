@@ -11,25 +11,26 @@
 }
 
 /* ── Background classes ── */
+/* ChatGPT-style: neutral gray active/hover, no accent tint */
 
 .sidebar-tab-background-defaulted[data-state="active"] {
-  background-color: var(--virtualai-accent-subtle, var(--background-tint-00));
+  background-color: var(--sidebar-active-bg);
 }
 .sidebar-tab-background-defaulted[data-state="inactive"] {
   background-color: transparent;
 }
 .sidebar-tab-background-defaulted:hover {
-  background-color: var(--background-tint-03);
+  background-color: var(--sidebar-hover-bg);
 }
 
 .sidebar-tab-background-lowlight[data-state="active"] {
-  background-color: var(--virtualai-accent-subtle, var(--background-tint-00));
+  background-color: var(--sidebar-active-bg);
 }
 .sidebar-tab-background-lowlight[data-state="inactive"] {
   background-color: transparent;
 }
 .sidebar-tab-background-lowlight:hover {
-  background-color: var(--background-tint-03);
+  background-color: var(--sidebar-hover-bg);
 }
 
 .sidebar-tab-background-focused {
@@ -38,12 +39,15 @@
 }
 
 /* ── Text classes ── */
+/* ChatGPT-style: font-weight 400 (regular), neutral colors */
 
 .sidebar-tab-text-defaulted[data-state="active"] {
-  color: var(--virtualai-accent, var(--text-05));
+  color: var(--text-05);
+  font-weight: 400;
 }
 .sidebar-tab-text-defaulted[data-state="inactive"] {
   color: var(--text-04);
+  font-weight: 400;
 }
 .group\/SidebarTab:hover .sidebar-tab-text-defaulted {
   color: var(--text-05);
@@ -51,9 +55,11 @@
 
 .sidebar-tab-text-lowlight[data-state="active"] {
   color: var(--text-04);
+  font-weight: 400;
 }
 .sidebar-tab-text-lowlight[data-state="inactive"] {
   color: var(--text-03);
+  font-weight: 400;
 }
 .group\/SidebarTab:hover .sidebar-tab-text-lowlight {
   color: var(--text-04);
@@ -61,12 +67,14 @@
 
 .sidebar-tab-text-focused {
   color: var(--text-04);
+  font-weight: 400;
 }
 
 /* ── Icon classes ── */
+/* ChatGPT-style: neutral white icons, no accent color */
 
 .sidebar-tab-icon-defaulted[data-state="active"] {
-  stroke: var(--virtualai-accent, var(--text-05));
+  stroke: var(--text-05);
 }
 .sidebar-tab-icon-defaulted[data-state="inactive"] {
   stroke: var(--text-04);

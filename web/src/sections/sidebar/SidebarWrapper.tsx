@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@opal/components";
 import Logo from "@/refresh-components/Logo";
-import { SvgSidebar } from "@opal/icons";
+import { SvgPanelLeftClose, SvgPanelLeftOpen } from "@opal/icons";
 
 interface LogoSectionProps {
   folded?: boolean;
@@ -13,17 +13,6 @@ function LogoSection({ folded, onFoldClick }: LogoSectionProps) {
   const logo = useCallback(
     (className?: string) => <Logo folded={folded} className={className} />,
     [folded]
-  );
-  const closeButton = useCallback(
-    (shouldFold: boolean) => (
-      <Button
-        icon={SvgSidebar}
-        prominence="tertiary"
-        tooltip="Close Sidebar"
-        onClick={onFoldClick}
-      />
-    ),
-    [onFoldClick]
   );
 
   return (
@@ -45,13 +34,23 @@ function LogoSection({ folded, onFoldClick }: LogoSectionProps) {
         <>
           <div className="group-hover/SidebarWrapper:hidden">{logo()}</div>
           <div className="w-full justify-center hidden group-hover/SidebarWrapper:flex">
-            {closeButton(false)}
+            <Button
+              icon={SvgPanelLeftOpen}
+              prominence="tertiary"
+              tooltip="Open Sidebar"
+              onClick={onFoldClick}
+            />
           </div>
         </>
       ) : (
         <>
           {logo()}
-          {closeButton(true)}
+          <Button
+            icon={SvgPanelLeftClose}
+            prominence="tertiary"
+            tooltip="Close Sidebar"
+            onClick={onFoldClick}
+          />
         </>
       )}
     </div>
@@ -75,7 +74,7 @@ export default function SidebarWrapper({
     <div>
       <div
         className={cn(
-          "h-screen flex flex-col bg-background-tint-02 py-2 gap-4 group/SidebarWrapper transition-width duration-200 ease-in-out",
+          "h-screen flex flex-col bg-sidebar py-2 gap-4 group/SidebarWrapper transition-width duration-200 ease-in-out",
 
           // @HERE (size of sidebar)
           //

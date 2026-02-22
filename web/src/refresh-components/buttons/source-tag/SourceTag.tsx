@@ -245,7 +245,7 @@ const QueryText = ({
     <TooltipProvider delayDuration={300}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span ref={textRef} className="max-w-[10rem] truncate block">
+          <span ref={textRef} className="max-w-full truncate block">
             <Text
               as="span"
               {...textStyleProps}
@@ -454,6 +454,7 @@ const SourceTagInner = ({
         styles.container,
         isQuery && "gap-0",
         isQuery && expanded && "w-fit",
+        isQuery && !expanded && "w-full",
         cursorClass,
         className
       )}
@@ -473,7 +474,8 @@ const SourceTagInner = ({
         className={cn(
           "flex items-baseline",
           !inlineCitation && "pr-0.5",
-          isQuery && expanded && "w-fit"
+          isQuery && expanded && "w-fit",
+          isQuery && !expanded && "flex-1 min-w-0"
         )}
       >
         {isQuery ? (

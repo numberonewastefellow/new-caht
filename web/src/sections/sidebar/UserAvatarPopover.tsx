@@ -199,10 +199,11 @@ export default function UserAvatarPopover({
             leftIcon={({ className }) => (
               <InputAvatar
                 className={cn(
-                  "flex items-center justify-center bg-background-neutral-inverted-00",
+                  "flex items-center justify-center border-0",
                   className,
                   "w-5 h-5"
                 )}
+                style={{ backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }}
               >
                 <Text as="p" inverted secondaryBody>
                   {displayName[0]?.toUpperCase()}

@@ -7,7 +7,7 @@ import {
   SEARCH_TOOL_ID,
   WEB_SEARCH_TOOL_ID,
 } from "@/app/app/components/tools/constants";
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import SwitchList, {
   SwitchListItem,
@@ -40,6 +40,8 @@ import MCPLineItem, {
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import { SvgActions, SvgCheck, SvgChevronRight, SvgHourglass, SvgKey, SvgPlus } from "@opal/icons";
 import { Button } from "@opal/components";
+import { getIconForAction } from "@/app/app/services/actionUtils";
+import { makeColorfulIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
 
 const UNAVAILABLE_TOOL_TOOLTIP_FALLBACK =
   "This action is not configured yet. Ask an admin to enable it.";
@@ -865,6 +867,27 @@ export default function ActionsPopover({
   const totalMenuItems = displayTools.length + mcpServers.length;
   const showSearch = totalMenuItems > 5;
 
+  // Build colorful icon map — memoized so we don't recreate on every render
+  const colorfulIconMap = useMemo(() => {
+    const map = new Map<number, React.FunctionComponent<any>>();
+    displayTools.forEach((tool) => {
+      const baseIcon = getIconForAction(tool);
+      const colorKey = tool.in_code_tool_id ?? "default";
+      map.set(tool.id, makeColorfulIcon(baseIcon, colorKey));
+    });
+    return map;
+  }, [displayTools]);
+
+  // Colorful icons for standalone items
+  const ColorfulDeepResearchIcon = useMemo(
+    () => makeColorfulIcon(SvgHourglass, "deep_research"),
+    []
+  );
+  const ColorfulManageIcon = useMemo(
+    () => makeColorfulIcon(SvgActions, "manage_actions"),
+    []
+  );
+
   const primaryView = (
     <PopoverMenu>
       {[
@@ -885,7 +908,7 @@ export default function ActionsPopover({
         showDeepResearch && toggleDeepResearch && (
           <LineItem
             key="deep-research"
-            icon={SvgHourglass}
+            icon={ColorfulDeepResearchIcon}
             onClick={() => {
               toggleDeepResearch();
               setOpen(false);
@@ -932,6 +955,7 @@ export default function ActionsPopover({
               <ActionLineItem
                 key={tool.id}
                 tool={tool}
+                colorfulIcon={colorfulIconMap.get(tool.id)}
                 disabled={disabledToolIds.includes(tool.id)}
                 isForced={forcedToolIds.includes(tool.id)}
                 isUnavailable={isUnavailable}
@@ -1021,7 +1045,7 @@ export default function ActionsPopover({
 
         // Footer — admin link
         (isAdmin || isCurator) && (
-          <LineItem href="/admin/actions" icon={SvgActions} key="more-actions" muted>
+          <LineItem href="/admin/actions" icon={ColorfulManageIcon} key="more-actions" muted>
             Manage Actions
           </LineItem>
         ),

@@ -21,6 +21,8 @@ import { Section } from "@/layouts/general-layouts";
 export interface ActionItemProps {
   tool?: ToolSnapshot;
   Icon?: React.FunctionComponent<IconProps>;
+  /** Override the default icon with a colorful variant */
+  colorfulIcon?: React.FunctionComponent<IconProps>;
   label?: string;
   disabled: boolean;
   isForced: boolean;
@@ -44,6 +46,7 @@ export interface ActionItemProps {
 export default function ActionLineItem({
   tool,
   Icon: ProvidedIcon,
+  colorfulIcon: ColorfulIcon,
   label: providedLabel,
   disabled,
   isForced,
@@ -65,7 +68,7 @@ export default function ActionLineItem({
   const router = useRouter();
   const { currentProjectId } = useProjectsContext();
 
-  const Icon = tool ? getIconForAction(tool) : ProvidedIcon!;
+  const Icon = ColorfulIcon ?? (tool ? getIconForAction(tool) : ProvidedIcon!);
   const toolName = tool?.name || providedLabel || "";
 
   let label = tool ? tool.display_name || tool.name : providedLabel!;

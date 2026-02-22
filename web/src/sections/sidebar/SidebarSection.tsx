@@ -33,13 +33,13 @@ export default function SidebarSection({
     <div className={cn("flex flex-col group/SidebarSection", className)}>
       <div
         className={cn(
-          "pl-2 pr-1.5 py-1 sticky top-[0rem] bg-background-tint-02 z-10 flex flex-row items-center justify-between min-h-[2rem]",
+          "pl-2 pr-1.5 py-1 sticky top-[0rem] bg-sidebar z-10 flex flex-row items-center justify-between min-h-[2rem]",
           collapsible && "cursor-pointer"
         )}
         onClick={collapsible ? onToggle : undefined}
       >
         <div className="flex flex-row items-center gap-1">
-          <Text as="p" secondaryBody text02>
+          <Text as="p" secondaryBody text03>
             {title}
           </Text>
           {collapsible && (
@@ -51,7 +51,7 @@ export default function SidebarSection({
                 "transition-transform duration-150",
                 collapsed ? "" : "rotate-90"
               )}
-              style={{ stroke: "var(--text-02)", fill: "none", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" }}
+              style={{ stroke: "var(--text-03)", fill: "none", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" }}
             >
               <polyline points="4,2 8,6 4,10" />
             </svg>

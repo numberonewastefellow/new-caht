@@ -1,0 +1,135 @@
+# =============================================================================
+# MCP TOOLS - Free MCP Servers for Onyx
+# =============================================================================
+# This overlay adds free MCP tool servers that enhance AI chat and deep research.
+# Most community MCP servers use STDIO transport, so we use bridge containers
+# (supergateway for Node.js servers, mcp-proxy for Python servers) to expose
+# them as SSE endpoints that Onyx can connect to.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.mcp-tools.yml up -d
+#
+# Or with the dev override:
+#   docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml -f docker-compose.mcp-tools.yml up -d
+#
+# After starting, register each MCP server in Admin > Actions > MCP tab:
+#   - DuckDuckGo Search: http://mcp-duckduckgo:8000/sse (SSE, no auth)
+#   - Fetch (URL reader): http://mcp-fetch:8000/sse (SSE, no auth)
+#   - Brave Search:       http://mcp-brave-search:3000/sse (SSE, no auth - key is in env)
+#   - ArXiv Papers:       http://mcp-arxiv:8000/sse (SSE, no auth)
+#   - Sequential Think:   http://mcp-sequential-thinking:8000/sse (SSE, no auth)
+#   - Filesystem:         http://mcp-filesystem:8000/sse (SSE, no auth)
+#
+# Then click "Discover Tools" for each server to list and enable tools.
+# =============================================================================
+
+name: onyx
+
+services:
+  # ---------------------------------------------------------------------------
+  # DuckDuckGo Search - Free web search, no API key, no rate limits
+  # Tools: duckduckgo_search, duckduckgo_fetch_page
+  # Bridge: mcp-proxy (Python-based, has uv for Python STDIO servers)
+  # ---------------------------------------------------------------------------
+  mcp-duckduckgo:
+    image: ghcr.io/sparfenyuk/mcp-proxy:latest
+    command: --transport sse --port 8000 -- uvx duckduckgo-mcp-server
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/sse || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # Fetch - Fetches any URL and converts HTML to markdown for LLM consumption
+  # Tools: fetch
+  # Bridge: supergateway (Node.js-based, for npm STDIO servers)
+  # ---------------------------------------------------------------------------
+  mcp-fetch:
+    image: supercorp/supergateway
+    command: --stdio "npx -y @modelcontextprotocol/server-fetch" --port 8000 --transport sse
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/sse || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ---------------------------------------------------------------------------
+  # Brave Search - High quality web search (free tier: 2000 queries/month)
+  # Tools: brave_web_search, brave_local_search
+  # Native SSE - no bridge needed
+  # Sign up at https://api.search.brave.com for free API key
+  # Set BRAVE_API_KEY in .env (optional - omit to skip this service)
+  # ---------------------------------------------------------------------------
+  mcp-brave-search:
+    image: shoofio/brave-search-mcp-sse:latest
+    environment:
+      - BRAVE_API_KEY=${BRAVE_API_KEY:-}
+      - PORT=3000
+    restart: unless-stopped
+    profiles:
+      - brave-search
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:3000/sse || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # ArXiv - Search and retrieve academic papers (completely free)
+  # Tools: search_papers, get_paper, download_paper, list_papers
+  # Bridge: mcp-proxy (Python-based)
+  # ---------------------------------------------------------------------------
+  mcp-arxiv:
+    image: ghcr.io/sparfenyuk/mcp-proxy:latest
+    command: --transport sse --port 8000 -- uvx arxiv-mcp-server
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/sse || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # Sequential Thinking - Structured step-by-step reasoning tool
+  # Tools: sequentialthinking
+  # Bridge: supergateway (Node.js-based)
+  # ---------------------------------------------------------------------------
+  mcp-sequential-thinking:
+    image: supercorp/supergateway
+    command: --stdio "npx -y @modelcontextprotocol/server-sequentialthinking" --port 8000 --transport sse
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/sse || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ---------------------------------------------------------------------------
+  # Filesystem - Secure file operations in a shared volume
+  # Tools: read_file, write_file, list_directory, search_files, get_file_info
+  # Bridge: supergateway (Node.js-based)
+  # The /data directory is a shared volume accessible to this service
+  # ---------------------------------------------------------------------------
+  mcp-filesystem:
+    image: supercorp/supergateway
+    command: --stdio "npx -y @modelcontextprotocol/server-filesystem /data" --port 8000 --transport sse
+    volumes:
+      - mcp_shared_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/sse || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  mcp_shared_data:

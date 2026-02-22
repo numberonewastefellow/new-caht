@@ -67,6 +67,16 @@ import {
   SvgSearchMenu,
   SvgSettings,
 } from "@opal/icons";
+import { makeColorfulIcon, makeAccentColorfulIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
+
+// Colorful sidebar icons — colored rounded squares with white icons
+const ColorfulNewSession = makeColorfulIcon(SvgEditBig, "sidebar_new_session");
+const ColorfulSearchChats = makeColorfulIcon(SvgSearchMenu, "sidebar_search");
+const ColorfulCraft = makeColorfulIcon(SvgDevKit, "sidebar_craft");
+const ColorfulExploreAgents = makeColorfulIcon(SvgOnyxOctagon, "sidebar_agents");
+const ColorfulMoreAgents = makeColorfulIcon(SvgMoreHorizontal, "sidebar_agents");
+const ColorfulNewProject = makeColorfulIcon(SvgFolderPlus, "sidebar_projects");
+const ColorfulSettings = makeAccentColorfulIcon(SvgSettings);
 import BuildModeIntroBackground from "@/app/craft/components/IntroBackground";
 import BuildModeIntroContent from "@/app/craft/components/IntroContent";
 import { CRAFT_PATH } from "@/app/craft/v1/constants";
@@ -444,7 +454,7 @@ const MemoizedAppSidebarInner = memo(
       return (
         <div data-testid="AppSidebar/new-session">
           <SidebarTab
-            leftIcon={SvgEditBig}
+            leftIcon={ColorfulNewSession}
             folded={folded}
             href={href}
             transient={activeSidebarTab.isNewSession()}
@@ -470,7 +480,7 @@ const MemoizedAppSidebarInner = memo(
       () => (
         <div data-testid="AppSidebar/build">
           <SidebarTab
-            leftIcon={SvgDevKit}
+            leftIcon={ColorfulCraft}
             folded={folded}
             href={CRAFT_PATH}
             onClick={() => posthog?.capture("clicked_craft_in_sidebar")}
@@ -486,7 +496,7 @@ const MemoizedAppSidebarInner = memo(
       () => (
         <ChatSearchCommandMenu
           trigger={
-            <SidebarTab leftIcon={SvgSearchMenu} folded={folded}>
+            <SidebarTab leftIcon={ColorfulSearchChats} folded={folded}>
               Search Chats
             </SidebarTab>
           }
@@ -500,8 +510,8 @@ const MemoizedAppSidebarInner = memo(
           <SidebarTab
             leftIcon={
               folded || visibleAgents.length === 0
-                ? SvgOnyxOctagon
-                : SvgMoreHorizontal
+                ? ColorfulExploreAgents
+                : ColorfulMoreAgents
             }
             href="/app/agents"
             folded={folded}
@@ -517,7 +527,7 @@ const MemoizedAppSidebarInner = memo(
     const newProjectButton = useMemo(
       () => (
         <SidebarTab
-          leftIcon={SvgFolderPlus}
+          leftIcon={ColorfulNewProject}
           onClick={() => createProjectModal.toggle(true)}
           transient={createProjectModal.isOpen}
           folded={folded}
@@ -544,7 +554,7 @@ const MemoizedAppSidebarInner = memo(
           {(isAdmin || isCurator) && (
             <SidebarTab
               href={adminDefaultHref}
-              leftIcon={SvgSettings}
+              leftIcon={ColorfulSettings}
               folded={folded}
             >
               {isAdmin ? "Admin Panel" : "Curator Panel"}

@@ -271,10 +271,10 @@
   --shimmer-base: #a3a3a3;
   --shimmer-highlight: #000000;
 
-  /* Text */
+  /* Text — tuned to match ChatGPT contrast levels */
   --text-05: var(--alpha-grey-100-90);
-  --text-04: var(--alpha-grey-100-75);
-  --text-03: var(--alpha-grey-100-55);
+  --text-04: var(--alpha-grey-100-85);
+  --text-03: var(--alpha-grey-100-60);
   --text-02: var(--alpha-grey-100-45);
   --text-01: var(--alpha-grey-100-20);
   --text-inverted-01: var(--alpha-grey-00-20);
@@ -462,6 +462,11 @@
   --mask-02: var(--alpha-grey-100-20);
   --mask-03: var(--alpha-grey-100-40);
 
+  /* Sidebar — ChatGPT-style neutral colors */
+  --sidebar-bg: var(--grey-04);
+  --sidebar-hover-bg: var(--alpha-grey-100-05);
+  --sidebar-active-bg: var(--alpha-grey-100-10);
+
   /* Frost Overlay (for FrostedDiv component) - lighter in light mode */
   --frost-overlay: var(--alpha-grey-00-10);
 }
@@ -472,11 +477,11 @@
   --shimmer-base: #5c5c5c;
   --shimmer-highlight: #ffffff;
 
-  /* Text */
+  /* Text — tuned to match ChatGPT contrast levels */
   --text-05: var(--alpha-grey-00-95);
-  --text-04: var(--alpha-grey-00-85);
-  --text-03: var(--alpha-grey-00-60);
-  --text-02: var(--alpha-grey-00-45);
+  --text-04: var(--alpha-grey-00-90);
+  --text-03: var(--alpha-grey-00-70);
+  --text-02: var(--alpha-grey-00-50);
   --text-01: var(--alpha-grey-00-20);
   --text-inverted-01: var(--alpha-grey-100-20);
   --text-inverted-02: var(--alpha-grey-100-45);
@@ -662,6 +667,11 @@
   --mask-01: var(--alpha-grey-00-10);
   --mask-02: var(--alpha-grey-100-20);
   --mask-03: var(--alpha-grey-100-40);
+
+  /* Sidebar — ChatGPT-style: #171717 bg, subtle gray hover/active */
+  --sidebar-bg: #171717;
+  --sidebar-hover-bg: var(--alpha-grey-00-05);
+  --sidebar-active-bg: var(--alpha-grey-00-10);
 
   /* Frost Overlay (for FrostedDiv component) - darker in dark mode */
   --frost-overlay: var(--alpha-grey-100-10);

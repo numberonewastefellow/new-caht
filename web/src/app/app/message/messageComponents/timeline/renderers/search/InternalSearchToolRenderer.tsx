@@ -196,7 +196,7 @@ export const InternalSearchToolRenderer: MessageRenderer<
           {(results.length > 0 || queries.length > 0) && (
             <>
               {!isCompact && (
-                <Text as="p" mainUiMuted text04>
+                <Text as="p" mainUiMuted text04 className="mt-2">
                   Reading
                 </Text>
               )}

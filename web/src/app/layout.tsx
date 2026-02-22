@@ -24,7 +24,6 @@ import { getAuthTypeMetadataSS, getCurrentUserSS } from "@/lib/userSS";
 import { Suspense } from "react";
 import PostHogPageView from "./PostHogPageView";
 import Script from "next/script";
-import { Hanken_Grotesk } from "next/font/google";
 import { WebVitals } from "./web-vitals";
 import { ThemeProvider } from "next-themes";
 import { VirtualAIThemeProvider } from "@/providers/VirtualAIThemeProvider";
@@ -38,12 +37,6 @@ import StatsOverlayLoader from "@/components/dev/StatsOverlayLoader";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-  display: "swap",
-});
-
-const hankenGrotesk = Hanken_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-hanken-grotesk",
   display: "swap",
 });
 
@@ -93,7 +86,7 @@ export default async function RootLayout({
   const getPageContent = async (content: React.ReactNode) => (
     <html
       lang="en"
-      className={`${inter.variable} ${hankenGrotesk.variable}`}
+      className={inter.variable}
       suppressHydrationWarning
     >
       <head>
@@ -128,7 +121,7 @@ export default async function RootLayout({
         )}
       </head>
 
-      <body className={`relative ${inter.variable} font-hanken`}>
+      <body className={`relative ${inter.variable} ${inter.className}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

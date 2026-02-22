@@ -18,7 +18,7 @@ import IconButton from "@/refresh-components/buttons/IconButton";
 import ButtonRenaming from "@/refresh-components/buttons/ButtonRenaming";
 import { UserFileStatus } from "../../projects/projectsService";
 import InputTextArea from "@/refresh-components/inputs/InputTextArea";
-import { SvgEdit, SvgFiles, SvgFolderOpen } from "@opal/icons";
+import { SvgEdit, SvgFiles } from "@opal/icons";
 
 /* ── Chevron helper ── */
 function Chevron({ expanded }: { expanded: boolean }) {
@@ -41,6 +41,30 @@ function Chevron({ expanded }: { expanded: boolean }) {
     >
       <polyline points="4,2 8,6 4,10" />
     </svg>
+  );
+}
+
+/* ── Colorful project icon — emerald rounded square with grid ── */
+function ProjectIcon({ size = 20 }: { size?: number }) {
+  const innerSize = Math.round(size * 0.6);
+  return (
+    <span
+      className="inline-flex items-center justify-center rounded-[5px] flex-shrink-0 bg-emerald-500"
+      style={{ width: size, height: size }}
+    >
+      <svg
+        width={innerSize}
+        height={innerSize}
+        viewBox="0 0 16 16"
+        fill="none"
+        className="text-white"
+      >
+        <rect x="1.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="9.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="1.5" y="9.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="9.5" y="9.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    </span>
   );
 }
 
@@ -178,7 +202,7 @@ export default function ProjectContextPanel({
         <div className="bg-background-tint-01 rounded-xl border border-border-01 p-5 flex flex-col gap-0">
           {/* Row 1: Project identity */}
           <div className="group flex items-center gap-2.5">
-            <SvgFolderOpen className="h-6 w-6 text-text-03 flex-shrink-0" />
+            <ProjectIcon size={20} />
             {isEditingName ? (
               <ButtonRenaming
                 initialName={projectName}
@@ -188,13 +212,13 @@ export default function ProjectContextPanel({
                   }
                 }}
                 onClose={() => setIsEditingName(false)}
-                className="font-heading-h3 text-text-04"
+                className="text-[15px] font-medium text-text-04"
               />
             ) : (
               <>
-                <Text as="p" headingH3 text04 className="truncate">
+                <span className="text-[15px] font-medium text-text-04 truncate">
                   {projectName}
-                </Text>
+                </span>
                 <IconButton
                   icon={SvgEdit}
                   internal
@@ -214,9 +238,9 @@ export default function ProjectContextPanel({
               className="flex items-center gap-1.5 w-full text-left group/guidelines"
             >
               <Chevron expanded={guidelinesExpanded} />
-              <Text as="span" secondaryAction text03>
+              <span className="text-[13px] font-medium text-text-03">
                 Project Guidelines
-              </Text>
+              </span>
             </button>
 
             {/* Collapsed: show preview */}
@@ -225,13 +249,13 @@ export default function ProjectContextPanel({
                 {isLoadingProjectDetails && !currentProjectDetails ? (
                   <div className="h-4 w-3/4 rounded bg-background-tint-02 animate-pulse" />
                 ) : currentInstructions ? (
-                  <Text as="p" text02 secondaryBody className="truncate">
+                  <p className="text-[13px] text-text-02 truncate">
                     {currentInstructions}
-                  </Text>
+                  </p>
                 ) : (
-                  <Text as="p" text02 secondaryBody className="italic">
+                  <p className="text-[13px] text-text-02 italic">
                     No guidelines set. Click to add.
-                  </Text>
+                  </p>
                 )}
               </div>
             )}
@@ -271,9 +295,9 @@ export default function ProjectContextPanel({
                 className="flex items-center gap-1.5 text-left"
               >
                 <Chevron expanded={filesExpanded} />
-                <Text as="span" secondaryAction text03>
+                <span className="text-[13px] font-medium text-text-03">
                   Files{totalFiles > 0 ? ` (${displayFileCount})` : ""}
-                </Text>
+                </span>
               </button>
 
               <FilePickerPopover

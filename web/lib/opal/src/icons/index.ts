@@ -110,6 +110,8 @@ export { default as SvgOpenai } from "@opal/icons/openai";
 export { default as SvgOpenrouter } from "@opal/icons/openrouter";
 export { default as SvgOrganization } from "@opal/icons/organization";
 export { default as SvgPaintBrush } from "@opal/icons/paint-brush";
+export { default as SvgPanelLeftClose } from "@opal/icons/panel-left-close";
+export { default as SvgPanelLeftOpen } from "@opal/icons/panel-left-open";
 export { default as SvgPaperclip } from "@opal/icons/paperclip";
 export { default as SvgPauseCircle } from "@opal/icons/pause-circle";
 export { default as SvgPenSmall } from "@opal/icons/pen-small";

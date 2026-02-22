@@ -130,6 +130,42 @@ def api(method: str, path: str, data: dict | None = None) -> requests.Response:
     return requests.request(method, url, headers=headers(), json=data, timeout=30)
 
 
+# ── Label / Tag Helpers ────────────────────────────────────────────────────
+
+# Cache label name → id to avoid repeated lookups
+_label_cache: dict[str, int] = {}
+
+
+def get_or_create_labels(label_names: list[str]) -> list[int]:
+    """Resolve label names to IDs, creating any that don't exist yet."""
+    if not label_names:
+        return []
+
+    # Populate cache once
+    if not _label_cache:
+        resp = api("GET", "persona/labels")
+        if resp.status_code == 200:
+            for lbl in resp.json():
+                _label_cache[lbl["name"].lower()] = lbl["id"]
+
+    ids = []
+    for name in label_names:
+        key = name.strip().lower()
+        if key in _label_cache:
+            ids.append(_label_cache[key])
+        else:
+            # Create the label
+            resp = api("POST", "persona/labels", {"name": name.strip()})
+            if resp.status_code == 200:
+                lbl = resp.json()
+                _label_cache[key] = lbl["id"]
+                ids.append(lbl["id"])
+                print(f"  [TAG]  Created label: {name.strip()} (ID={lbl['id']})")
+            else:
+                print(f"  [WARN] Could not create label '{name}': {resp.status_code}")
+    return ids
+
+
 # ── Common CLI args ─────────────────────────────────────────────────────────
 
 

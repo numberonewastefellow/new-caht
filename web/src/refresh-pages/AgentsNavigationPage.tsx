@@ -7,9 +7,9 @@ import { checkUserOwnsAssistant as checkUserOwnsAgent } from "@/lib/agents";
 import { useAgents } from "@/hooks/useAgents";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import Text from "@/refresh-components/texts/Text";
+import { cn } from "@/lib/utils";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
-import Tabs from "@/refresh-components/Tabs";
 import FilterButton from "@/refresh-components/buttons/FilterButton";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import LineItem from "@/refresh-components/buttons/LineItem";
@@ -25,11 +25,13 @@ import {
 import {
   SvgActions,
   SvgCheck,
-  SvgOnyxOctagon,
   SvgPlus,
+  SvgTag,
   SvgUser,
+  SvgX,
 } from "@opal/icons";
 import useOnMount from "@/hooks/useOnMount";
+import { getLabelColor } from "@/lib/labelColors";
 
 const PAGE_SIZE = 24;
 
@@ -38,6 +40,7 @@ interface AgentsSectionProps {
   description?: string;
   agents: MinimalPersonaSnapshot[];
   visibleCount: number;
+  onLabelClick?: (labelId: number) => void;
 }
 
 function AgentsSection({
@@ -45,6 +48,7 @@ function AgentsSection({
   description,
   agents,
   visibleCount,
+  onLabelClick,
 }: AgentsSectionProps) {
   const sorted = useMemo(
     () => [...agents].sort((a, b) => b.id - a.id),
@@ -55,20 +59,13 @@ function AgentsSection({
   if (agents.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-3">
-      <div>
-        <Text as="p" headingH3>
-          {title}
-        </Text>
-        {description && (
-          <Text as="p" secondaryBody text03>
-            {description}
-          </Text>
-        )}
-      </div>
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+    <div className="flex flex-col gap-2">
+      <Text as="p" headingH3>
+        {title}
+      </Text>
+      <div className="w-full grid grid-cols-1 md:grid-cols-2">
         {visible.map((agent) => (
-          <AgentCard key={agent.id} agent={agent} />
+          <AgentCard key={agent.id} agent={agent} onLabelClick={onLabelClick} />
         ))}
       </div>
     </div>
@@ -79,6 +76,8 @@ export default function AgentsNavigationPage() {
   const { agents } = useAgents();
   const [creatorFilterOpen, setCreatorFilterOpen] = useState(false);
   const [actionsFilterOpen, setActionsFilterOpen] = useState(false);
+  const [labelsFilterOpen, setLabelsFilterOpen] = useState(false);
+  const [ownerFilterOpen, setOwnerFilterOpen] = useState(false);
   const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "your">("all");
@@ -91,12 +90,29 @@ export default function AgentsNavigationPage() {
   const [selectedMcpServerIds, setSelectedMcpServerIds] = useState<
     Set<number>
   >(new Set());
+  const [selectedLabelIds, setSelectedLabelIds] = useState<Set<number>>(
+    new Set()
+  );
   const [creatorSearchQuery, setCreatorSearchQuery] = useState("");
   const [actionsSearchQuery, setActionsSearchQuery] = useState("");
+  const [labelsSearchQuery, setLabelsSearchQuery] = useState("");
   const [mcpServersMap, setMcpServersMap] = useState<
     Map<number, { id: number; name: string }>
   >(new Map());
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Callback for clicking a label pill on an AgentCard
+  const handleLabelClick = useCallback((labelId: number) => {
+    setSelectedLabelIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(labelId)) {
+        newSet.delete(labelId);
+      } else {
+        newSet.add(labelId);
+      }
+      return newSet;
+    });
+  }, []);
 
   // Pagination: how many agents to show
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -194,6 +210,37 @@ export default function AgentsNavigationPage() {
       creator.email.toLowerCase().includes(creatorSearchQuery.toLowerCase())
     );
   }, [uniqueCreators, creatorSearchQuery]);
+
+  // Extract unique labels from all agents
+  const uniqueLabels = useMemo(() => {
+    const labelsMap = new Map<number, { id: number; name: string }>();
+    agents.forEach((agent) => {
+      agent.labels?.forEach((label) => {
+        labelsMap.set(label.id, { id: label.id, name: label.name });
+      });
+    });
+    return Array.from(labelsMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+  }, [agents]);
+
+  // Count agents per label
+  const labelCounts = useMemo(() => {
+    const counts = new Map<number, number>();
+    agents.forEach((agent) => {
+      agent.labels?.forEach((label) => {
+        counts.set(label.id, (counts.get(label.id) ?? 0) + 1);
+      });
+    });
+    return counts;
+  }, [agents]);
+
+  const filteredLabels = useMemo(() => {
+    if (!labelsSearchQuery) return uniqueLabels;
+    return uniqueLabels.filter((label) =>
+      label.name.toLowerCase().includes(labelsSearchQuery.toLowerCase())
+    );
+  }, [uniqueLabels, labelsSearchQuery]);
 
   const uniqueActions = useMemo(() => {
     const actionsMap = new Map<
@@ -354,12 +401,17 @@ export default function AgentsNavigationPage() {
               selectedMcpServerIds.has(tool.mcp_server_id))
         );
 
+      const labelsFilter =
+        selectedLabelIds.size === 0 ||
+        agent.labels?.some((label) => selectedLabelIds.has(label.id));
+
       return (
         (nameMatches || labelMatches) &&
         mineFilter &&
         isNotUnifiedAgent &&
         creatorFilter &&
-        actionsFilter
+        actionsFilter &&
+        labelsFilter
       );
     });
   }, [
@@ -370,6 +422,7 @@ export default function AgentsNavigationPage() {
     selectedCreatorIds,
     selectedActionIds,
     selectedMcpServerIds,
+    selectedLabelIds,
   ]);
 
   // Reset pagination when filters change
@@ -381,6 +434,7 @@ export default function AgentsNavigationPage() {
     selectedCreatorIds,
     selectedActionIds,
     selectedMcpServerIds,
+    selectedLabelIds,
   ]);
 
   const featuredAgents = useMemo(
@@ -451,6 +505,28 @@ export default function AgentsNavigationPage() {
     }
   }, [selectedActionIds, selectedMcpServerIds, uniqueActions]);
 
+  const labelsFilterButtonText = useMemo(() => {
+    if (selectedLabelIds.size === 0) {
+      return "All Labels";
+    } else if (selectedLabelIds.size === 1) {
+      const selectedId = Array.from(selectedLabelIds)[0];
+      const label = uniqueLabels.find((l) => l.id === selectedId);
+      return label?.name ?? "All Labels";
+    } else {
+      return `${selectedLabelIds.size} labels`;
+    }
+  }, [selectedLabelIds, uniqueLabels]);
+
+  const ownerFilterButtonText = activeTab === "your" ? "Your Agents" : "All Agents";
+
+  // Check if any filters are active (for showing the active filters chip row)
+  const hasActiveFilters =
+    selectedLabelIds.size > 0 ||
+    selectedCreatorIds.size > 0 ||
+    selectedActionIds.size > 0 ||
+    selectedMcpServerIds.size > 0 ||
+    activeTab === "your";
+
   // Compute how many from each section to show given visibleCount
   const featuredVisible = Math.min(featuredAgents.length, visibleCount);
   const allVisible = Math.max(0, visibleCount - featuredAgents.length);
@@ -461,44 +537,148 @@ export default function AgentsNavigationPage() {
       data-testid="AgentsPage/container"
       aria-label="Agents Page"
     >
-      <SettingsLayouts.Header
-        icon={SvgOnyxOctagon}
-        title="Agents & Assistants"
-        description="Customize AI behavior and knowledge for you and your team's use cases."
-        rightChildren={
-          <div data-testid="AgentsPage/new-agent-button">
-            <Button href="/app/agents/create" leftIcon={SvgPlus}>
-              New Agent
-            </Button>
-          </div>
-        }
-      >
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-row items-center gap-2">
-            <div className="flex-[2]">
-              <InputTypeIn
-                ref={searchInputRef}
-                placeholder="Search agents..."
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                leftSearchIcon
-              />
+      {/* Custom compact header — ChatGPT apps style */}
+      <div className="w-full bg-background-tint-01 sticky top-0 z-settings-header">
+        <div className="flex flex-col gap-4 px-4 md:pt-10 pt-4">
+          {/* Row 1: Title + Search + New Agent */}
+          <div className="flex flex-row items-center justify-between gap-4">
+            <div className="flex flex-col">
+              <Text as="p" headingH2>
+                Agents & Assistants
+              </Text>
+              <Text as="p" secondaryBody text03>
+                Customize AI behavior and knowledge for you and your team&apos;s use cases.
+              </Text>
             </div>
-            <div className="flex-1">
-              <Tabs
-                value={activeTab}
-                onValueChange={(value) =>
-                  setActiveTab(value as "all" | "your")
-                }
+            <div className="flex flex-row items-center gap-2 flex-shrink-0">
+              <div className="w-[14rem]">
+                <InputTypeIn
+                  ref={searchInputRef}
+                  placeholder="Search agents..."
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  leftSearchIcon
+                />
+              </div>
+              <div data-testid="AgentsPage/new-agent-button">
+                <Button href="/app/agents/create" leftIcon={SvgPlus}>
+                  New Agent
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: Unified filter bar */}
+          <div className="flex flex-row items-center gap-2 flex-wrap pb-1">
+            {/* All / Your Agents toggle */}
+            <Popover
+              open={ownerFilterOpen}
+              onOpenChange={setOwnerFilterOpen}
+            >
+              <Popover.Trigger asChild>
+                <FilterButton
+                  leftIcon={SvgUser}
+                  active={activeTab === "your"}
+                  transient={ownerFilterOpen}
+                  onClear={() => setActiveTab("all")}
+                >
+                  {ownerFilterButtonText}
+                </FilterButton>
+              </Popover.Trigger>
+              <Popover.Content align="start">
+                <PopoverMenu>
+                  {[
+                    <LineItem
+                      key="all"
+                      icon={activeTab === "all" ? SvgCheck : () => null}
+                      selected={activeTab === "all"}
+                      emphasized
+                      onClick={() => { setActiveTab("all"); setOwnerFilterOpen(false); }}
+                    >
+                      All Agents
+                    </LineItem>,
+                    <LineItem
+                      key="your"
+                      icon={activeTab === "your" ? SvgCheck : () => null}
+                      selected={activeTab === "your"}
+                      emphasized
+                      onClick={() => { setActiveTab("your"); setOwnerFilterOpen(false); }}
+                    >
+                      Your Agents
+                    </LineItem>,
+                  ]}
+                </PopoverMenu>
+              </Popover.Content>
+            </Popover>
+
+            {/* Labels filter */}
+            {uniqueLabels.length > 0 && (
+              <Popover
+                open={labelsFilterOpen}
+                onOpenChange={setLabelsFilterOpen}
               >
-                <Tabs.List>
-                  <Tabs.Trigger value="all">All Agents</Tabs.Trigger>
-                  <Tabs.Trigger value="your">Your Agents</Tabs.Trigger>
-                </Tabs.List>
-              </Tabs>
-            </div>
-          </div>
-          <div className="flex flex-row gap-2">
+                <Popover.Trigger asChild>
+                  <FilterButton
+                    leftIcon={SvgTag}
+                    active={selectedLabelIds.size > 0}
+                    transient={labelsFilterOpen}
+                    onClear={() => setSelectedLabelIds(new Set())}
+                  >
+                    {labelsFilterButtonText}
+                  </FilterButton>
+                </Popover.Trigger>
+                <Popover.Content align="start">
+                  <PopoverMenu>
+                    {[
+                      <InputTypeIn
+                        key="labels-search"
+                        placeholder="Search labels..."
+                        variant="internal"
+                        leftSearchIcon
+                        value={labelsSearchQuery}
+                        onChange={(e) => setLabelsSearchQuery(e.target.value)}
+                      />,
+                      ...filteredLabels.map((label) => {
+                        const isSelected = selectedLabelIds.has(label.id);
+                        const color = getLabelColor(label.id);
+                        const count = labelCounts.get(label.id) ?? 0;
+                        return (
+                          <LineItem
+                            key={label.id}
+                            icon={isSelected ? SvgCheck : () => null}
+                            selected={isSelected}
+                            emphasized
+                            onClick={() => {
+                              setSelectedLabelIds((prev) => {
+                                const newSet = new Set(prev);
+                                if (newSet.has(label.id)) {
+                                  newSet.delete(label.id);
+                                } else {
+                                  newSet.add(label.id);
+                                }
+                                return newSet;
+                              });
+                            }}
+                            rightChildren={
+                              <span className={cn(
+                                "inline-flex items-center px-1.5 py-0.5 rounded-full text-[0.625rem] font-medium",
+                                color.bg, color.text
+                              )}>
+                                {count}
+                              </span>
+                            }
+                          >
+                            {label.name}
+                          </LineItem>
+                        );
+                      }),
+                    ]}
+                  </PopoverMenu>
+                </Popover.Content>
+              </Popover>
+            )}
+
+            {/* Creator filter */}
             <Popover
               open={creatorFilterOpen}
               onOpenChange={setCreatorFilterOpen}
@@ -570,6 +750,8 @@ export default function AgentsNavigationPage() {
                 </PopoverMenu>
               </Popover.Content>
             </Popover>
+
+            {/* Actions filter */}
             <Popover
               open={actionsFilterOpen}
               onOpenChange={setActionsFilterOpen}
@@ -680,8 +862,92 @@ export default function AgentsNavigationPage() {
               </Popover.Content>
             </Popover>
           </div>
+
+          {/* Row 3: Active filter chips — removable colored pills */}
+          {hasActiveFilters && (
+            <div className="flex flex-row items-center gap-2 flex-wrap pb-2">
+              {activeTab === "your" && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("all")}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-text-05 text-background-tint-01 cursor-pointer transition-opacity hover:opacity-80"
+                >
+                  Your Agents
+                  <SvgX className="w-3 h-3" />
+                </button>
+              )}
+              {Array.from(selectedLabelIds).map((labelId) => {
+                const label = uniqueLabels.find((l) => l.id === labelId);
+                if (!label) return null;
+                const color = getLabelColor(label.id);
+                return (
+                  <button
+                    key={`label-${label.id}`}
+                    type="button"
+                    onClick={() => handleLabelClick(label.id)}
+                    className={cn(
+                      "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium",
+                      "cursor-pointer transition-opacity hover:opacity-80",
+                      color.selectedBg, "text-white"
+                    )}
+                  >
+                    {label.name}
+                    <SvgX className="w-3 h-3" />
+                  </button>
+                );
+              })}
+              {Array.from(selectedCreatorIds).map((creatorId) => {
+                const creator = uniqueCreators.find((c) => c.id === creatorId);
+                if (!creator) return null;
+                return (
+                  <button
+                    key={`creator-${creatorId}`}
+                    type="button"
+                    onClick={() => {
+                      setSelectedCreatorIds((prev) => {
+                        const newSet = new Set(prev);
+                        newSet.delete(creatorId);
+                        return newSet;
+                      });
+                    }}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-text-05 text-background-tint-01 cursor-pointer transition-opacity hover:opacity-80"
+                  >
+                    {creator.email}
+                    <SvgX className="w-3 h-3" />
+                  </button>
+                );
+              })}
+              {(selectedActionIds.size > 0 || selectedMcpServerIds.size > 0) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedActionIds(new Set());
+                    setSelectedMcpServerIds(new Set());
+                  }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-text-05 text-background-tint-01 cursor-pointer transition-opacity hover:opacity-80"
+                >
+                  {actionsFilterButtonText}
+                  <SvgX className="w-3 h-3" />
+                </button>
+              )}
+              {/* Clear all */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("all");
+                  setSelectedLabelIds(new Set());
+                  setSelectedCreatorIds(new Set());
+                  setSelectedActionIds(new Set());
+                  setSelectedMcpServerIds(new Set());
+                }}
+                className="text-xs text-text-03 hover:text-text-05 cursor-pointer ml-1 transition-colors"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
         </div>
-      </SettingsLayouts.Header>
+      </div>
 
       {/* Agents List */}
       <SettingsLayouts.Body>
@@ -700,11 +966,13 @@ export default function AgentsNavigationPage() {
               description="Curated by your team"
               agents={featuredAgents}
               visibleCount={featuredVisible}
+              onLabelClick={handleLabelClick}
             />
             <AgentsSection
               title="All Agents"
               agents={allAgents}
               visibleCount={allVisible}
+              onLabelClick={handleLabelClick}
             />
 
             {/* Result count + Show More */}

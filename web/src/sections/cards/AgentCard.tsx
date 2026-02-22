@@ -3,8 +3,6 @@
 import React, { useMemo, useCallback } from "react";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
-import Button from "@/refresh-components/buttons/Button";
-import { useAppRouter } from "@/hooks/appNavigation";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import { usePinnedAgents, useAgent } from "@/hooks/useAgents";
 import { cn, noProp } from "@/lib/utils";
@@ -15,28 +13,26 @@ import { checkUserOwnsAssistant, updateAgentSharedStatus } from "@/lib/agents";
 import { useUser } from "@/providers/UserProvider";
 import Text from "@/refresh-components/texts/Text";
 import {
-  SvgActions,
   SvgBarChart,
-  SvgBubbleText,
+  SvgChevronRight,
   SvgEdit,
   SvgPin,
   SvgPinned,
   SvgShare,
-  SvgUser,
 } from "@opal/icons";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import ShareAgentModal from "@/sections/modals/ShareAgentModal";
 import AgentViewerModal from "@/sections/modals/AgentViewerModal";
 import { toast } from "@/hooks/useToast";
 import { Interactive } from "@opal/core";
-import { Card } from "@/refresh-components/cards";
+import { getLabelColor } from "@/lib/labelColors";
 
 export interface AgentCardProps {
   agent: MinimalPersonaSnapshot;
+  onLabelClick?: (labelId: number) => void;
 }
 
-export default function AgentCard({ agent }: AgentCardProps) {
-  const route = useAppRouter();
+export default function AgentCard({ agent, onLabelClick }: AgentCardProps) {
   const router = useRouter();
   const { pinnedAgents, togglePinnedAgent } = usePinnedAgents();
   const pinned = useMemo(
@@ -50,14 +46,6 @@ export default function AgentCard({ agent }: AgentCardProps) {
   const shareAgentModal = useCreateModal();
   const agentViewerModal = useCreateModal();
   const { agent: fullAgent, refresh: refreshAgent } = useAgent(agent.id);
-
-  // Start chat and auto-pin unpinned agents to the sidebar
-  const handleStartChat = useCallback(() => {
-    if (!pinned) {
-      togglePinnedAgent(agent, true);
-    }
-    route({ agentId: agent.id });
-  }, [pinned, togglePinnedAgent, agent, route]);
 
   // Handle sharing agent
   const handleShare = useCallback(
@@ -73,16 +61,12 @@ export default function AgentCard({ agent }: AgentCardProps) {
       if (error) {
         toast.error(`Failed to share agent: ${error}`);
       } else {
-        // Revalidate the agent data to reflect the changes
         refreshAgent();
         shareAgentModal.toggle(false);
       }
     },
     [agent.id, isPaidEnterpriseFeaturesEnabled, refreshAgent]
   );
-
-  const toolCount = agent.tools.length;
-  const creatorLabel = agent.owner?.email || "VertualAI";
 
   return (
     <>
@@ -107,107 +91,114 @@ export default function AgentCard({ agent }: AgentCardProps) {
         onMouseLeave={() => setHovered(false)}
         variant="none"
       >
-        <Card padding={0} gap={0} height="full">
-          <div className="flex flex-col p-3 gap-2.5 w-full">
-            {/* Top row: Avatar + Name + Action buttons */}
-            <div className="flex flex-row items-start gap-2.5">
-              <div className="flex-shrink-0 mt-0.5">
-                <AgentAvatar agent={agent} size={32} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-row items-center justify-between gap-1">
-                  <Text as="p" mainContentBody className="truncate font-medium">
-                    {agent.name}
-                  </Text>
-                  {/* Hover action buttons */}
-                  <div className="flex flex-row items-center flex-shrink-0">
-                    {isOwnedByUser && isPaidEnterpriseFeaturesEnabled && (
-                      <IconButton
-                        icon={SvgBarChart}
-                        tertiary
-                        onClick={noProp(() =>
-                          router.push(`/ee/assistants/stats/${agent.id}` as Route)
+        <div
+          className={cn(
+            "flex flex-row items-center gap-3 px-3 py-3 rounded-12",
+            "transition-colors duration-150 cursor-pointer",
+            "hover:bg-background-neutral-02"
+          )}
+        >
+          {/* Avatar */}
+          <div className="flex-shrink-0">
+            <AgentAvatar agent={agent} size={36} />
+          </div>
+
+          {/* Name + Description + Labels */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <Text as="p" mainContentBody className="truncate font-medium">
+                {agent.name}
+              </Text>
+              {agent.labels && agent.labels.length > 0 && (
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {agent.labels.slice(0, 3).map((label) => {
+                    const color = getLabelColor(label.id);
+                    return (
+                      <button
+                        key={label.id}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onLabelClick?.(label.id);
+                        }}
+                        className={cn(
+                          "inline-flex items-center px-2 py-0.5 rounded-full text-xs leading-tight font-medium",
+                          "transition-opacity hover:opacity-80 cursor-pointer",
+                          color.bg,
+                          color.text
                         )}
-                        tooltip="View Agent Stats"
-                        className="hidden group-hover/AgentCard:flex"
-                      />
-                    )}
-                    {isOwnedByUser && (
-                      <IconButton
-                        icon={SvgEdit}
-                        tertiary
-                        onClick={noProp(() =>
-                          router.push(`/app/agents/edit/${agent.id}` as Route)
-                        )}
-                        tooltip="Edit Agent"
-                        className="hidden group-hover/AgentCard:flex"
-                      />
-                    )}
-                    {isOwnedByUser && (
-                      <IconButton
-                        icon={SvgShare}
-                        tertiary
-                        onClick={noProp(() => shareAgentModal.toggle(true))}
-                        tooltip="Share Agent"
-                        className="hidden group-hover/AgentCard:flex"
-                      />
-                    )}
-                    <IconButton
-                      icon={pinned ? SvgPinned : SvgPin}
-                      tertiary
-                      onClick={noProp(() => togglePinnedAgent(agent, !pinned))}
-                      tooltip={pinned ? "Unpin from Sidebar" : "Pin to Sidebar"}
-                      transient={hovered && pinned}
-                      className={cn(
-                        !pinned && "hidden group-hover/AgentCard:flex"
-                      )}
-                    />
-                  </div>
+                      >
+                        {label.name}
+                      </button>
+                    );
+                  })}
+                  {agent.labels.length > 3 && (
+                    <span className="text-text-03 text-xs">
+                      +{agent.labels.length - 3}
+                    </span>
+                  )}
                 </div>
-                {/* Description — 2 lines max */}
-                {agent.description && (
-                  <Text
-                    as="p"
-                    secondaryBody
-                    text03
-                    className="line-clamp-2 mt-0.5"
-                  >
-                    {agent.description}
-                  </Text>
-                )}
-              </div>
+              )}
+            </div>
+            {agent.description && (
+              <Text as="p" secondaryBody text03 className="truncate">
+                {agent.description}
+              </Text>
+            )}
+          </div>
+
+          {/* Hover actions — replace chevron on hover */}
+          <div className="flex flex-row items-center flex-shrink-0">
+            {/* Action buttons — visible on hover */}
+            <div className="hidden group-hover/AgentCard:flex flex-row items-center">
+              {isOwnedByUser && isPaidEnterpriseFeaturesEnabled && (
+                <IconButton
+                  icon={SvgBarChart}
+                  tertiary
+                  onClick={noProp(() =>
+                    router.push(
+                      `/ee/assistants/stats/${agent.id}` as Route
+                    )
+                  )}
+                  tooltip="View Agent Stats"
+                />
+              )}
+              {isOwnedByUser && (
+                <IconButton
+                  icon={SvgEdit}
+                  tertiary
+                  onClick={noProp(() =>
+                    router.push(`/app/agents/edit/${agent.id}` as Route)
+                  )}
+                  tooltip="Edit Agent"
+                />
+              )}
+              {isOwnedByUser && (
+                <IconButton
+                  icon={SvgShare}
+                  tertiary
+                  onClick={noProp(() => shareAgentModal.toggle(true))}
+                  tooltip="Share Agent"
+                />
+              )}
+              <IconButton
+                icon={pinned ? SvgPinned : SvgPin}
+                tertiary
+                onClick={noProp(() => togglePinnedAgent(agent, !pinned))}
+                tooltip={pinned ? "Unpin from Sidebar" : "Pin to Sidebar"}
+                transient={hovered && pinned}
+              />
             </div>
 
-            {/* Bottom row: metadata + Start Chat */}
-            <div className="flex flex-row items-center justify-between gap-2">
-              <div className="flex flex-row items-center gap-3 min-w-0">
-                <div className="flex flex-row items-center gap-1 min-w-0">
-                  <SvgUser className="w-3 h-3 flex-shrink-0 text-text-02" />
-                  <Text as="span" secondaryBody text02 className="truncate">
-                    {creatorLabel}
-                  </Text>
-                </div>
-                {toolCount > 0 && (
-                  <div className="flex flex-row items-center gap-1 flex-shrink-0">
-                    <SvgActions className="w-3 h-3 text-text-02" />
-                    <Text as="span" secondaryBody text02>
-                      {toolCount}
-                    </Text>
-                  </div>
-                )}
-              </div>
-              <div className="flex-shrink-0 opacity-0 group-hover/AgentCard:opacity-100 transition-opacity">
-                <Button
-                  tertiary
-                  rightIcon={SvgBubbleText}
-                  onClick={noProp(handleStartChat)}
-                >
-                  Start Chat
-                </Button>
-              </div>
-            </div>
+            {/* Chevron — hidden on hover */}
+            <SvgChevronRight
+              className={cn(
+                "w-5 h-5 text-text-02 transition-opacity",
+                "group-hover/AgentCard:hidden"
+              )}
+            />
           </div>
-        </Card>
+        </div>
       </Interactive.Base>
     </>
   );

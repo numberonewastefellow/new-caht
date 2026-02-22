@@ -75,8 +75,7 @@ module.exports = {
         "very-short": { raw: "(max-height: 600px)" },
       },
       fontFamily: {
-        sans: ["Hanken Grotesk", "var(--font-inter)", "sans-serif"],
-        hanken: ["Hanken Grotesk", "sans-serif"],
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       width: {
         "message-xs": "450px",
@@ -275,6 +274,7 @@ module.exports = {
         foreground: "var(--background-tint-inverted-01)",
         border: "var(--border-01)",
         text: "var(--text-04)",
+        sidebar: "var(--sidebar-bg)",
       },
       borderRadius: {
         "02": "var(--border-radius-02)",

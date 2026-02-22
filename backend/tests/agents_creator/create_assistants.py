@@ -18,7 +18,7 @@ import json
 import sys
 from pathlib import Path
 
-from config import ASSISTANTS_DIR, DEFAULTS, add_common_args, api, apply_common_args
+from config import ASSISTANTS_DIR, DEFAULTS, add_common_args, api, apply_common_args, get_or_create_labels
 
 
 # ── Core Actions ────────────────────────────────────────────────────────────
@@ -28,11 +28,12 @@ def list_assistants():
     resp = api("GET", "persona")
     resp.raise_for_status()
     assistants = resp.json()
-    print(f"\n{'ID':<6} {'Name':<30} {'Public':<8} {'Visible':<8} {'Tools'}")
-    print("-" * 80)
+    print(f"\n{'ID':<6} {'Name':<30} {'Labels':<25} {'Tools'}")
+    print("-" * 90)
     for a in assistants:
         tools = ", ".join(t["display_name"] for t in a.get("tools", []))
-        print(f"{a['id']:<6} {a['name']:<30} {a['is_public']!s:<8} {a['is_visible']!s:<8} {tools}")
+        labels = ", ".join(l["name"] for l in a.get("labels", []))
+        print(f"{a['id']:<6} {a['name']:<30} {labels:<25} {tools}")
     print(f"\nTotal: {len(assistants)} assistants\n")
 
 
@@ -51,6 +52,12 @@ def create_assistant(payload: dict) -> dict | None:
     """Create a single assistant. Returns the response dict or None on failure."""
     body = {**DEFAULTS, **payload}
     name = body.get("name", "Unnamed")
+
+    # Resolve label names → IDs if "labels" field present
+    label_names = body.pop("labels", None)
+    if label_names and isinstance(label_names, list):
+        body["label_ids"] = get_or_create_labels(label_names)
+
     resp = api("POST", "persona", body)
 
     if resp.status_code == 200:
@@ -88,6 +95,7 @@ def export_assistants(output_file: str):
             d = detail_resp.json()
         else:
             d = a
+        labels = [l["name"] for l in d.get("labels", [])]
         exported.append({
             "name": d["name"],
             "description": d["description"],
@@ -97,6 +105,7 @@ def export_assistants(output_file: str):
             "is_public": d["is_public"],
             "starter_messages": d.get("starter_messages") or [],
             "num_chunks": d.get("num_chunks", 10.0),
+            "labels": labels,
         })
         print(f"  Exported: {d['name']}")
 

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap");
+/* Inter is loaded via next/font in layout.tsx */
 @import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&display=swap");
 
 @import "css/attachment-button.css";
@@ -209,7 +209,7 @@
 
 /* Font Family Variables */
 :root {
-  --font-hanken-grotesk: "Hanken Grotesk", -apple-system, BlinkMacSystemFont,
+  --font-hanken-grotesk: var(--font-inter), -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, sans-serif;
   --font-dm-mono: "DM Mono", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono",
     Consolas, "Courier New", monospace;

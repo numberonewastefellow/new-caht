@@ -55,9 +55,9 @@ import {
   SvgBubbleText,
   SvgFolderIn,
   SvgMoreHorizontal,
+  SvgPanelLeftOpen,
   SvgSearchMenu,
   SvgShare,
-  SvgSidebar,
   SvgTrash,
 } from "@opal/icons";
 import MinimalMarkdown from "@/components/chat/MinimalMarkdown";
@@ -308,7 +308,7 @@ function Header() {
         <div className="flex-1 flex flex-row items-center gap-2 h-[3.3rem]">
           {isMobile && (
             <IconButton
-              icon={SvgSidebar}
+              icon={SvgPanelLeftOpen}
               onClick={() => setFolded(false)}
               internal
             />

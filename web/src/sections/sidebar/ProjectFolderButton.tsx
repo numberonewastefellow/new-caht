@@ -19,12 +19,48 @@ import type { IconProps } from "@opal/types";
 import useAppFocus from "@/hooks/useAppFocus";
 import {
   SvgEdit,
-  SvgFolder,
-  SvgFolderOpen,
-  SvgFolderPartialOpen,
   SvgMoreHorizontal,
   SvgTrash,
 } from "@opal/icons";
+
+/* ── Colorful project icon — colored rounded square with grid inside ── */
+const ColorfulProjectIcon: React.FunctionComponent<IconProps> = () => (
+  <span
+    className="inline-flex items-center justify-center rounded-[5px] w-5 h-5 flex-shrink-0 bg-emerald-500"
+  >
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      fill="none"
+      className="text-white"
+    >
+      <rect x="1.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="9.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="1.5" y="9.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="9.5" y="9.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  </span>
+);
+
+const ColorfulProjectIconOpen: React.FunctionComponent<IconProps> = () => (
+  <span
+    className="inline-flex items-center justify-center rounded-[5px] w-5 h-5 flex-shrink-0 bg-emerald-600"
+  >
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      fill="none"
+      className="text-white"
+    >
+      <rect x="1.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="9.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="1.5" y="9.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="9.5" y="9.5" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" fill="currentColor" opacity="0.3" />
+    </svg>
+  </span>
+);
 
 export interface ProjectFolderButtonProps {
   project: Project;
@@ -54,11 +90,11 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
 
   function getFolderIcon(): React.FunctionComponent<IconProps> {
     if (open) {
-      return SvgFolderOpen;
+      return ColorfulProjectIconOpen;
     } else {
       return isHoveringIcon && allowHoverEffect
-        ? SvgFolderPartialOpen
-        : SvgFolder;
+        ? ColorfulProjectIconOpen
+        : ColorfulProjectIcon;
     }
   }
 

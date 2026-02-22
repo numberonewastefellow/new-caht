@@ -76,7 +76,14 @@ export function SearchChipList<T>({
   let newItemCounter = 0;
 
   return (
-    <div className={cn("flex flex-wrap gap-x-2 gap-y-2", className)}>
+    <div
+      className={cn(
+        isQuery
+          ? "flex flex-col gap-1"
+          : "flex flex-wrap gap-x-2 gap-y-2",
+        className
+      )}
+    >
       {displayList.map((entry) => {
         const key = getEntryKey(entry);
         const isNew = !animatedKeysRef.current.has(key);
@@ -86,7 +93,9 @@ export function SearchChipList<T>({
           <div
             key={key}
             className={cn("text-xs", {
-              "animate-in fade-in slide-in-from-left-2 duration-150": isNew,
+              "animate-in fade-in duration-150": isNew && isQuery,
+              "animate-in fade-in slide-in-from-left-2 duration-150":
+                isNew && !isQuery,
             })}
             style={
               isNew

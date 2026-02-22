@@ -36,7 +36,7 @@ import ConnectorBannersRow from "@/app/craft/components/ConnectorBannersRow";
 import SandboxStatusIndicator from "@/app/craft/components/SandboxStatusIndicator";
 import UpgradePlanModal from "@/app/craft/components/UpgradePlanModal";
 import IconButton from "@/refresh-components/buttons/IconButton";
-import { SvgSidebar, SvgChevronDown } from "@opal/icons";
+import { SvgPanelLeftOpen, SvgChevronDown } from "@opal/icons";
 import { Button as OpalButton } from "@opal/components";
 import { useBuildContext } from "@/app/craft/contexts/BuildContext";
 import useScreenSize from "@/hooks/useScreenSize";
@@ -391,7 +391,7 @@ export default function BuildChatPanel({
             {/* Mobile sidebar toggle - only show on mobile when sidebar is folded */}
             {isMobile && leftSidebarFolded && (
               <OpalButton
-                icon={SvgSidebar}
+                icon={SvgPanelLeftOpen}
                 onClick={() => setLeftSidebarFolded(false)}
                 prominence="tertiary"
                 size="sm"
@@ -402,7 +402,7 @@ export default function BuildChatPanel({
           {/* Output panel toggle - only show when panel is fully closed (after animation) */}
           {isOutputPanelFullyClosed && (
             <IconButton
-              icon={SvgSidebar}
+              icon={SvgPanelLeftOpen}
               onClick={toggleOutputPanel}
               tooltip="Open output panel"
               tertiary
