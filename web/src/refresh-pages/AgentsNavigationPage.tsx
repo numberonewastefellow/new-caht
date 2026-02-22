@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import AgentCard from "@/sections/cards/AgentCard";
 import { useUser } from "@/providers/UserProvider";
 import { checkUserOwnsAssistant as checkUserOwnsAgent } from "@/lib/agents";
@@ -9,7 +9,6 @@ import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import Text from "@/refresh-components/texts/Text";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
-import TextSeparator from "@/refresh-components/TextSeparator";
 import Tabs from "@/refresh-components/Tabs";
 import FilterButton from "@/refresh-components/buttons/FilterButton";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
@@ -32,31 +31,45 @@ import {
 } from "@opal/icons";
 import useOnMount from "@/hooks/useOnMount";
 
+const PAGE_SIZE = 24;
+
 interface AgentsSectionProps {
   title: string;
   description?: string;
   agents: MinimalPersonaSnapshot[];
+  visibleCount: number;
 }
 
-function AgentsSection({ title, description, agents }: AgentsSectionProps) {
+function AgentsSection({
+  title,
+  description,
+  agents,
+  visibleCount,
+}: AgentsSectionProps) {
+  const sorted = useMemo(
+    () => [...agents].sort((a, b) => b.id - a.id),
+    [agents]
+  );
+  const visible = sorted.slice(0, visibleCount);
+
   if (agents.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <div>
         <Text as="p" headingH3>
           {title}
         </Text>
-        <Text as="p" secondaryBody text03>
-          {description}
-        </Text>
+        {description && (
+          <Text as="p" secondaryBody text03>
+            {description}
+          </Text>
+        )}
       </div>
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-2">
-        {agents
-          .sort((a, b) => b.id - a.id)
-          .map((agent) => (
-            <AgentCard key={agent.id} agent={agent} />
-          ))}
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+        {visible.map((agent) => (
+          <AgentCard key={agent.id} agent={agent} />
+        ))}
       </div>
     </div>
   );
@@ -75,9 +88,9 @@ export default function AgentsNavigationPage() {
   const [selectedActionIds, setSelectedActionIds] = useState<Set<number>>(
     new Set()
   );
-  const [selectedMcpServerIds, setSelectedMcpServerIds] = useState<Set<number>>(
-    new Set()
-  );
+  const [selectedMcpServerIds, setSelectedMcpServerIds] = useState<
+    Set<number>
+  >(new Set());
   const [creatorSearchQuery, setCreatorSearchQuery] = useState("");
   const [actionsSearchQuery, setActionsSearchQuery] = useState("");
   const [mcpServersMap, setMcpServersMap] = useState<
@@ -85,8 +98,10 @@ export default function AgentsNavigationPage() {
   >(new Map());
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Pagination: how many agents to show
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
   useOnMount(() => {
-    // Focus the search input when the page loads
     searchInputRef.current?.focus();
   });
 
@@ -96,7 +111,10 @@ export default function AgentsNavigationPage() {
       const serverIds = new Set<number>();
       agents.forEach((agent) => {
         agent.tools.forEach((tool) => {
-          if (tool.mcp_server_id !== null && tool.mcp_server_id !== undefined) {
+          if (
+            tool.mcp_server_id !== null &&
+            tool.mcp_server_id !== undefined
+          ) {
             serverIds.add(tool.mcp_server_id);
           }
         });
@@ -106,10 +124,8 @@ export default function AgentsNavigationPage() {
 
       const serversMap = new Map<number, { id: number; name: string }>();
 
-      // Fetch server data for each unique server ID
       for (const serverId of Array.from(serverIds)) {
         try {
-          // We need to fetch from an agent that has this server
           const agentWithServer = agents.find((agent) =>
             agent.tools.some((tool) => tool.mcp_server_id === serverId)
           );
@@ -124,7 +140,10 @@ export default function AgentsNavigationPage() {
                 (s: any) => s.id === serverId
               );
               if (server) {
-                serversMap.set(serverId, { id: server.id, name: server.name });
+                serversMap.set(serverId, {
+                  id: server.id,
+                  name: server.name,
+                });
               }
             }
           }
@@ -151,14 +170,12 @@ export default function AgentsNavigationPage() {
       a.email.localeCompare(b.email)
     );
 
-    // Add current user if not in the list, and put them first
     if (user) {
       const hasCurrentUser = creators.some((c) => c.id === user.id);
 
       if (!hasCurrentUser) {
         creators = [{ id: user.id, email: user.email }, ...creators];
       } else {
-        // Sort to put current user first
         creators = creators.sort((a, b) => {
           if (a.id === user.id) return -1;
           if (b.id === user.id) return 1;
@@ -220,16 +237,13 @@ export default function AgentsNavigationPage() {
       (action) => !systemToolIds.includes(action.name)
     );
 
-    // Sort each group by display name
     systemTools.sort((a, b) => a.display_name.localeCompare(b.display_name));
     otherTools.sort((a, b) => a.display_name.localeCompare(b.display_name));
 
-    // Group ALL tools by mcp_server_id (both system and other)
     const mcpGroupsMap = new Map<number, typeof allActions>();
     const nonMcpSystemTools: typeof systemTools = [];
     const nonMcpOtherTools: typeof otherTools = [];
 
-    // Group system tools by MCP server
     systemTools.forEach((tool) => {
       if (tool.mcp_server_id !== null && tool.mcp_server_id !== undefined) {
         const group = mcpGroupsMap.get(tool.mcp_server_id) || [];
@@ -240,7 +254,6 @@ export default function AgentsNavigationPage() {
       }
     });
 
-    // Group other tools by MCP server
     otherTools.forEach((tool) => {
       if (tool.mcp_server_id !== null && tool.mcp_server_id !== undefined) {
         const group = mcpGroupsMap.get(tool.mcp_server_id) || [];
@@ -251,7 +264,6 @@ export default function AgentsNavigationPage() {
       }
     });
 
-    // Create grouped action items
     type ActionItem =
       | {
           type: "tool";
@@ -267,31 +279,32 @@ export default function AgentsNavigationPage() {
           tools: Array<{ id: number; name: string; display_name: string }>;
         };
 
-    const mcpGroupItems: ActionItem[] = Array.from(mcpGroupsMap.entries()).map(
-      ([serverId, tools]) => {
-        const serverInfo = mcpServersMap.get(serverId);
-        return {
-          type: "mcp_group" as const,
-          mcp_server_id: serverId,
-          server_name: serverInfo?.name || `MCP Server ${serverId}`,
-          tools: tools.map((t) => ({
-            id: t.id,
-            name: t.name,
-            display_name: t.display_name,
-          })),
-        };
-      }
-    );
+    const mcpGroupItems: ActionItem[] = Array.from(
+      mcpGroupsMap.entries()
+    ).map(([serverId, tools]) => {
+      const serverInfo = mcpServersMap.get(serverId);
+      return {
+        type: "mcp_group" as const,
+        mcp_server_id: serverId,
+        server_name: serverInfo?.name || `MCP Server ${serverId}`,
+        tools: tools.map((t) => ({
+          id: t.id,
+          name: t.name,
+          display_name: t.display_name,
+        })),
+      };
+    });
 
     const nonMcpSystemToolItems: ActionItem[] = nonMcpSystemTools.map(
       (tool) => ({ type: "tool" as const, ...tool })
     );
-    const nonMcpOtherToolItems: ActionItem[] = nonMcpOtherTools.map((tool) => ({
-      type: "tool" as const,
-      ...tool,
-    }));
+    const nonMcpOtherToolItems: ActionItem[] = nonMcpOtherTools.map(
+      (tool) => ({
+        type: "tool" as const,
+        ...tool,
+      })
+    );
 
-    // Return non-MCP system tools first, then MCP groups, then non-MCP other tools
     return [
       ...nonMcpSystemToolItems,
       ...mcpGroupItems,
@@ -307,7 +320,6 @@ export default function AgentsNavigationPage() {
       if (action.type === "tool") {
         return action.display_name.toLowerCase().includes(query);
       } else {
-        // For MCP groups, search through all tool names in the group
         return action.tools.some((tool) =>
           tool.display_name.toLowerCase().includes(query)
         );
@@ -360,16 +372,39 @@ export default function AgentsNavigationPage() {
     selectedMcpServerIds,
   ]);
 
-  const featuredAgents = [
-    ...memoizedCurrentlyVisibleAgents.filter(
-      (agent) => agent.is_default_persona
-    ),
-  ];
-  const allAgents = memoizedCurrentlyVisibleAgents.filter(
-    (agent) => !agent.is_default_persona
+  // Reset pagination when filters change
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [
+    searchQuery,
+    activeTab,
+    selectedCreatorIds,
+    selectedActionIds,
+    selectedMcpServerIds,
+  ]);
+
+  const featuredAgents = useMemo(
+    () =>
+      memoizedCurrentlyVisibleAgents.filter(
+        (agent) => agent.is_default_persona
+      ),
+    [memoizedCurrentlyVisibleAgents]
+  );
+  const allAgents = useMemo(
+    () =>
+      memoizedCurrentlyVisibleAgents.filter(
+        (agent) => !agent.is_default_persona
+      ),
+    [memoizedCurrentlyVisibleAgents]
   );
 
   const agentCount = featuredAgents.length + allAgents.length;
+  const hasMore =
+    featuredAgents.length + allAgents.length > visibleCount;
+
+  const handleShowMore = useCallback(() => {
+    setVisibleCount((prev) => prev + PAGE_SIZE);
+  }, []);
 
   const creatorFilterButtonText = useMemo(() => {
     if (selectedCreatorIds.size === 0) {
@@ -389,7 +424,6 @@ export default function AgentsNavigationPage() {
     if (totalSelected === 0) {
       return "All Actions";
     } else if (totalSelected === 1) {
-      // Check if it's a single tool
       if (selectedActionIds.size === 1) {
         const selectedId = Array.from(selectedActionIds)[0];
         for (const action of uniqueActions) {
@@ -399,7 +433,6 @@ export default function AgentsNavigationPage() {
         }
       }
 
-      // Check if it's a single MCP server
       if (selectedMcpServerIds.size === 1) {
         const selectedServerId = Array.from(selectedMcpServerIds)[0];
         for (const action of uniqueActions) {
@@ -418,8 +451,13 @@ export default function AgentsNavigationPage() {
     }
   }, [selectedActionIds, selectedMcpServerIds, uniqueActions]);
 
+  // Compute how many from each section to show given visibleCount
+  const featuredVisible = Math.min(featuredAgents.length, visibleCount);
+  const allVisible = Math.max(0, visibleCount - featuredAgents.length);
+
   return (
     <SettingsLayouts.Root
+      width="lg"
       data-testid="AgentsPage/container"
       aria-label="Agents Page"
     >
@@ -449,7 +487,9 @@ export default function AgentsNavigationPage() {
             <div className="flex-1">
               <Tabs
                 value={activeTab}
-                onValueChange={(value) => setActiveTab(value as "all" | "your")}
+                onValueChange={(value) =>
+                  setActiveTab(value as "all" | "your")
+                }
               >
                 <Tabs.List>
                   <Tabs.Trigger value="all">All Agents</Tabs.Trigger>
@@ -482,20 +522,20 @@ export default function AgentsNavigationPage() {
                       variant="internal"
                       leftSearchIcon
                       value={creatorSearchQuery}
-                      onChange={(e) => setCreatorSearchQuery(e.target.value)}
+                      onChange={(e) =>
+                        setCreatorSearchQuery(e.target.value)
+                      }
                     />,
                     ...filteredCreators.flatMap((creator, index) => {
                       const isSelected = selectedCreatorIds.has(creator.id);
                       const isCurrentUser = user && creator.id === user.id;
 
-                      // Check if we need to add a separator after this item
                       const nextCreator = filteredCreators[index + 1];
                       const nextIsCurrentUser =
                         user && nextCreator && nextCreator.id === user.id;
                       const needsSeparator =
                         isCurrentUser && nextCreator && !nextIsCurrentUser;
 
-                      // Determine icon: Check if selected, User icon if current user, otherwise no icon
                       const icon = isCurrentUser
                         ? SvgUser
                         : isSelected
@@ -524,7 +564,6 @@ export default function AgentsNavigationPage() {
                         </LineItem>
                       );
 
-                      // Return the line item, and optionally a separator
                       return needsSeparator ? [lineItem, null] : [lineItem];
                     }),
                   ]}
@@ -540,7 +579,8 @@ export default function AgentsNavigationPage() {
                   leftIcon={SvgActions}
                   transient={actionsFilterOpen}
                   active={
-                    selectedActionIds.size > 0 || selectedMcpServerIds.size > 0
+                    selectedActionIds.size > 0 ||
+                    selectedMcpServerIds.size > 0
                   }
                   onClear={() => {
                     setSelectedActionIds(new Set());
@@ -559,7 +599,9 @@ export default function AgentsNavigationPage() {
                       variant="internal"
                       leftSearchIcon
                       value={actionsSearchQuery}
-                      onChange={(e) => setActionsSearchQuery(e.target.value)}
+                      onChange={(e) =>
+                        setActionsSearchQuery(e.target.value)
+                      }
                     />,
                     ...filteredActions.flatMap((action, index) => {
                       if (action.type === "tool") {
@@ -567,7 +609,6 @@ export default function AgentsNavigationPage() {
                         const systemIcon = SYSTEM_TOOL_ICONS[action.name];
                         const isSystemTool = !!systemIcon;
 
-                        // Check if we need to add a separator after this item
                         const nextAction = filteredActions[index + 1];
                         const nextIsSystemTool =
                           nextAction && nextAction.type === "tool"
@@ -576,7 +617,6 @@ export default function AgentsNavigationPage() {
                         const needsSeparator =
                           isSystemTool && nextAction && !nextIsSystemTool;
 
-                        // Determine icon: system icon if available, otherwise Actions icon
                         const icon = systemIcon ? systemIcon : SvgActions;
 
                         const lineItem = (
@@ -601,9 +641,10 @@ export default function AgentsNavigationPage() {
                           </LineItem>
                         );
 
-                        return needsSeparator ? [lineItem, null] : [lineItem];
+                        return needsSeparator
+                          ? [lineItem, null]
+                          : [lineItem];
                       } else {
-                        // MCP Group - render only the server name, not individual tools
                         const groupKey = `mcp-group-${action.mcp_server_id}`;
                         const isSelected = selectedMcpServerIds.has(
                           action.mcp_server_id
@@ -653,18 +694,33 @@ export default function AgentsNavigationPage() {
             No Agents found
           </Text>
         ) : (
-          <>
+          <div className="flex flex-col gap-8">
             <AgentsSection
               title="Featured Agents"
               description="Curated by your team"
               agents={featuredAgents}
+              visibleCount={featuredVisible}
             />
-            <AgentsSection title="All Agents" agents={allAgents} />
-            <TextSeparator
-              count={agentCount}
-              text={agentCount === 1 ? "Agent" : "Agents"}
+            <AgentsSection
+              title="All Agents"
+              agents={allAgents}
+              visibleCount={allVisible}
             />
-          </>
+
+            {/* Result count + Show More */}
+            <div className="flex flex-col items-center gap-3 py-2">
+              {hasMore && (
+                <Button tertiary onClick={handleShowMore}>
+                  Show more agents
+                </Button>
+              )}
+              <Text as="p" secondaryBody text02>
+                Showing{" "}
+                {Math.min(visibleCount, agentCount)} of {agentCount}{" "}
+                {agentCount === 1 ? "agent" : "agents"}
+              </Text>
+            </div>
+          </div>
         )}
       </SettingsLayouts.Body>
     </SettingsLayouts.Root>

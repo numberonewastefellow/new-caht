@@ -25,6 +25,7 @@ from onyx.configs.constants import MessageType
 from onyx.db.tools import get_tool_by_name
 from onyx.deep_research.dr_mock_tools import get_clarification_tool_definitions
 from onyx.deep_research.dr_mock_tools import get_orchestrator_tools
+from onyx.deep_research.dr_mock_tools import RESEARCH_AGENT_TASK_KEY
 from onyx.deep_research.dr_mock_tools import RESEARCH_AGENT_TOOL_NAME
 from onyx.deep_research.dr_mock_tools import THINK_TOOL_RESPONSE_MESSAGE
 from onyx.deep_research.dr_mock_tools import THINK_TOOL_RESPONSE_TOKEN_COUNT
@@ -627,6 +628,15 @@ def run_deep_research_llm_loop(
                         if tool_call.tool_name != RESEARCH_AGENT_TOOL_NAME:
                             logger.warning(
                                 f"Unexpected tool call: {tool_call.tool_name}"
+                            )
+                            continue
+
+                        if not tool_call.tool_args.get(
+                            RESEARCH_AGENT_TASK_KEY
+                        ):
+                            logger.warning(
+                                f"Research agent tool call missing '{RESEARCH_AGENT_TASK_KEY}' "
+                                f"in tool_args: {tool_call.tool_args}. Skipping."
                             )
                             continue
 

@@ -13,6 +13,7 @@ import type { Route } from "next";
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import { checkUserOwnsAssistant, updateAgentSharedStatus } from "@/lib/agents";
 import { useUser } from "@/providers/UserProvider";
+import Text from "@/refresh-components/texts/Text";
 import {
   SvgActions,
   SvgBarChart,
@@ -27,7 +28,6 @@ import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import ShareAgentModal from "@/sections/modals/ShareAgentModal";
 import AgentViewerModal from "@/sections/modals/AgentViewerModal";
 import { toast } from "@/hooks/useToast";
-import { LineItemLayout, CardItemLayout } from "@/layouts/general-layouts";
 import { Interactive } from "@opal/core";
 import { Card } from "@/refresh-components/cards";
 
@@ -81,6 +81,9 @@ export default function AgentCard({ agent }: AgentCardProps) {
     [agent.id, isPaidEnterpriseFeaturesEnabled, refreshAgent]
   );
 
+  const toolCount = agent.tools.length;
+  const creatorLabel = agent.owner?.email || "VertualAI";
+
   return (
     <>
       <shareAgentModal.Provider>
@@ -105,90 +108,103 @@ export default function AgentCard({ agent }: AgentCardProps) {
         variant="none"
       >
         <Card padding={0} gap={0} height="full">
-          <div className="flex self-stretch h-[6rem]">
-            <CardItemLayout
-              icon={(props) => <AgentAvatar agent={agent} {...props} />}
-              title={agent.name}
-              description={agent.description}
-              rightChildren={
-                <>
-                  {isOwnedByUser && isPaidEnterpriseFeaturesEnabled && (
-                    <IconButton
-                      icon={SvgBarChart}
-                      tertiary
-                      onClick={noProp(() =>
-                        router.push(`/ee/assistants/stats/${agent.id}` as Route)
-                      )}
-                      tooltip="View Agent Stats"
-                      className="hidden group-hover/AgentCard:flex"
-                    />
-                  )}
-                  {isOwnedByUser && (
-                    <IconButton
-                      icon={SvgEdit}
-                      tertiary
-                      onClick={noProp(() =>
-                        router.push(`/app/agents/edit/${agent.id}` as Route)
-                      )}
-                      tooltip="Edit Agent"
-                      className="hidden group-hover/AgentCard:flex"
-                    />
-                  )}
-                  {isOwnedByUser && (
-                    <IconButton
-                      icon={SvgShare}
-                      tertiary
-                      onClick={noProp(() => shareAgentModal.toggle(true))}
-                      tooltip="Share Agent"
-                      className="hidden group-hover/AgentCard:flex"
-                    />
-                  )}
-                  <IconButton
-                    icon={pinned ? SvgPinned : SvgPin}
-                    tertiary
-                    onClick={noProp(() => togglePinnedAgent(agent, !pinned))}
-                    tooltip={pinned ? "Unpin from Sidebar" : "Pin to Sidebar"}
-                    transient={hovered && pinned}
-                    className={cn(
-                      !pinned && "hidden group-hover/AgentCard:flex"
+          <div className="flex flex-col p-3 gap-2.5 w-full">
+            {/* Top row: Avatar + Name + Action buttons */}
+            <div className="flex flex-row items-start gap-2.5">
+              <div className="flex-shrink-0 mt-0.5">
+                <AgentAvatar agent={agent} size={32} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-row items-center justify-between gap-1">
+                  <Text as="p" mainContentBody className="truncate font-medium">
+                    {agent.name}
+                  </Text>
+                  {/* Hover action buttons */}
+                  <div className="flex flex-row items-center flex-shrink-0">
+                    {isOwnedByUser && isPaidEnterpriseFeaturesEnabled && (
+                      <IconButton
+                        icon={SvgBarChart}
+                        tertiary
+                        onClick={noProp(() =>
+                          router.push(`/ee/assistants/stats/${agent.id}` as Route)
+                        )}
+                        tooltip="View Agent Stats"
+                        className="hidden group-hover/AgentCard:flex"
+                      />
                     )}
-                  />
-                </>
-              }
-            />
-          </div>
-
-          {/* Footer section - bg-background-tint-01 */}
-          <div className="bg-background-tint-01 p-1 flex flex-row items-end justify-between w-full">
-            {/* Left side - creator and actions */}
-            <div className="flex flex-col gap-1 py-1 px-2">
-              <LineItemLayout
-                icon={SvgUser}
-                title={agent.owner?.email || "VertualAI"}
-                variant="mini"
-              />
-              <LineItemLayout
-                icon={SvgActions}
-                title={
-                  agent.tools.length > 0
-                    ? `${agent.tools.length} Action${
-                        agent.tools.length > 1 ? "s" : ""
-                      }`
-                    : "No Actions"
-                }
-                variant="mini"
-              />
+                    {isOwnedByUser && (
+                      <IconButton
+                        icon={SvgEdit}
+                        tertiary
+                        onClick={noProp(() =>
+                          router.push(`/app/agents/edit/${agent.id}` as Route)
+                        )}
+                        tooltip="Edit Agent"
+                        className="hidden group-hover/AgentCard:flex"
+                      />
+                    )}
+                    {isOwnedByUser && (
+                      <IconButton
+                        icon={SvgShare}
+                        tertiary
+                        onClick={noProp(() => shareAgentModal.toggle(true))}
+                        tooltip="Share Agent"
+                        className="hidden group-hover/AgentCard:flex"
+                      />
+                    )}
+                    <IconButton
+                      icon={pinned ? SvgPinned : SvgPin}
+                      tertiary
+                      onClick={noProp(() => togglePinnedAgent(agent, !pinned))}
+                      tooltip={pinned ? "Unpin from Sidebar" : "Pin to Sidebar"}
+                      transient={hovered && pinned}
+                      className={cn(
+                        !pinned && "hidden group-hover/AgentCard:flex"
+                      )}
+                    />
+                  </div>
+                </div>
+                {/* Description — 2 lines max */}
+                {agent.description && (
+                  <Text
+                    as="p"
+                    secondaryBody
+                    text03
+                    className="line-clamp-2 mt-0.5"
+                  >
+                    {agent.description}
+                  </Text>
+                )}
+              </div>
             </div>
 
-            {/* Right side - Start Chat button */}
-            <div className="p-0.5">
-              <Button
-                tertiary
-                rightIcon={SvgBubbleText}
-                onClick={noProp(handleStartChat)}
-              >
-                Start Chat
-              </Button>
+            {/* Bottom row: metadata + Start Chat */}
+            <div className="flex flex-row items-center justify-between gap-2">
+              <div className="flex flex-row items-center gap-3 min-w-0">
+                <div className="flex flex-row items-center gap-1 min-w-0">
+                  <SvgUser className="w-3 h-3 flex-shrink-0 text-text-02" />
+                  <Text as="span" secondaryBody text02 className="truncate">
+                    {creatorLabel}
+                  </Text>
+                </div>
+                {toolCount > 0 && (
+                  <div className="flex flex-row items-center gap-1 flex-shrink-0">
+                    <SvgActions className="w-3 h-3 text-text-02" />
+                    <Text as="span" secondaryBody text02>
+                      {toolCount}
+                    </Text>
+                  </div>
+                )}
+              </div>
+              <div className="flex-shrink-0 opacity-0 group-hover/AgentCard:opacity-100 transition-opacity">
+                <Button
+                  tertiary
+                  rightIcon={SvgBubbleText}
+                  onClick={noProp(handleStartChat)}
+                >
+                  Start Chat
+                </Button>
+              </div>
             </div>
           </div>
         </Card>

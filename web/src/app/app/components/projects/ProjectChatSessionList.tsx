@@ -40,8 +40,8 @@ export default function ProjectChatSessionList() {
   return (
     <div className="flex flex-col gap-2 px-2 w-full mx-auto mt-4">
       <div className="flex items-center pl-2">
-        <Text as="p" text02 secondaryBody>
-          Recent Chats
+        <Text as="p" text03 secondaryAction>
+          Chats
         </Text>
       </div>
 

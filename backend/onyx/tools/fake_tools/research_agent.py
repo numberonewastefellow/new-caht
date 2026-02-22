@@ -235,8 +235,18 @@ def run_research_agent_call(
             reasoning_cycles = 0
             just_ran_web_search = False
 
-            # If this fails to parse, we can't run the loop anyway, let this one fail in that case
-            research_topic = research_agent_call.tool_args[RESEARCH_AGENT_TASK_KEY]
+            research_topic = research_agent_call.tool_args.get(
+                RESEARCH_AGENT_TASK_KEY
+            )
+            if not research_topic:
+                logger.error(
+                    f"Research agent tool call missing required '{RESEARCH_AGENT_TASK_KEY}' parameter. "
+                    f"Received tool_args: {research_agent_call.tool_args}"
+                )
+                raise ValueError(
+                    f"Research agent tool call missing required '{RESEARCH_AGENT_TASK_KEY}' parameter. "
+                    f"The LLM may have returned malformed tool arguments."
+                )
 
             emitter.emit(
                 Packet(
