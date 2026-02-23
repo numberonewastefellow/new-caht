@@ -13,7 +13,7 @@ import Text from "@/refresh-components/texts/Text";
 import { ErrorTextLayout } from "@/layouts/input-layouts";
 
 // App domain should not be hardcoded
-const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN || "onyx.app";
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN || "vertualai.com";
 
 export interface NewTenantModalProps {
   tenantInfo: NewTenantInfo;

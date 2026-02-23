@@ -40,7 +40,7 @@ interface ViewConfig {
 // FooterLinks (inlined)
 // ----------------------------------------------------------------------------
 
-const SUPPORT_EMAIL = "support@onyx.app";
+const SUPPORT_EMAIL = "support@vertualai.com";
 
 function FooterLinks({
   hasSubscription,

@@ -32,7 +32,7 @@ export function mockedRefreshToken(): CustomRefreshTokenResponse {
       givenName: "Mock name",
       fullName: "Mock name",
       userId: "Mock User ID",
-      email: "email@onyx.app",
+      email: "email@vertualai.com",
     },
   };
   return data;

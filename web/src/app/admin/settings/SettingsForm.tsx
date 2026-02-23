@@ -469,6 +469,43 @@ export function SettingsForm() {
           </div>
         </div>
       </CardSection>
+
+      {/* Sandbox & Code Execution Section */}
+      <CardSection>
+        <Title className="mb-4">Sandbox & Code Execution</Title>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm">
+            <span
+              className={`inline-block w-2 h-2 rounded-full ${
+                settings.onyx_craft_enabled
+                  ? "bg-green-500"
+                  : "bg-red-400"
+              }`}
+            />
+            <span className="font-medium text-text-05">Onyx Craft (Sandbox)</span>
+            <span className="text-text-02">
+              {settings.onyx_craft_enabled ? "Enabled" : "Disabled"}
+            </span>
+          </div>
+          <p className="text-xs text-text-02 ml-4">
+            {settings.onyx_craft_enabled
+              ? "AI-powered app builder is active. Access it via the \"Craft\" button in the sidebar or at /craft/v1."
+              : "Set ENABLE_CRAFT=true in your .env file and rebuild the backend image to enable. See SANDBOX_AND_CODE_EXECUTION.md for details."}
+          </p>
+
+          <div className="flex items-center gap-2 text-sm pt-2">
+            <span className="inline-block w-2 h-2 rounded-full bg-text-02" />
+            <span className="font-medium text-text-05">Code Interpreter</span>
+            <span className="text-text-02">
+              Per-agent tool
+            </span>
+          </div>
+          <p className="text-xs text-text-02 ml-4">
+            Enable per-agent in the Agent Editor under Tools. Requires CODE_INTERPRETER_BETA_ENABLED=true
+            and CODE_INTERPRETER_BASE_URL set in .env. See SANDBOX_AND_CODE_EXECUTION.md for details.
+          </p>
+        </div>
+      </CardSection>
     </div>
   );
 }

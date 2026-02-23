@@ -1,11 +1,11 @@
 FROM node:20-alpine AS base
 
-LABEL com.onyx.maintainer="founders@onyx.app"
-LABEL com.onyx.description="This image is the web/frontend container of Onyx which \
-contains code for both the Community and Enterprise editions of Onyx. If you do not \
-have a contract or agreement with DanswerAI, you are not permitted to use the Enterprise \
+LABEL com.vertualai.maintainer="founders@vertualai.com"
+LABEL com.vertualai.description="This image is the web/frontend container of VertualAI which \
+contains code for both the Community and Enterprise editions of VertualAI. If you do not \
+have a contract or agreement with VertualAI, you are not permitted to use the Enterprise \
 Edition features outside of personal development or testing purposes. Please reach out to \
-founders@onyx.app for more information. Please visit https://github.com/onyx-dot-app/onyx"
+founders@vertualai.com for more information. Please visit https://github.com/vertualai/vertualai"
 
 # Step 1. Install dependencies + rebuild the source code only when needed
 FROM base AS builder

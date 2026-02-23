@@ -69,8 +69,11 @@ export default function AdminTopBar({
 
         <Link
           href={"/app" as any}
-          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-white transition-all hover:opacity-90 hover:shadow-md"
-          style={{ backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }}
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:opacity-90 hover:shadow-md"
+          style={{
+            backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))",
+            color: "var(--text-light-05, #fff)",
+          }}
         >
           <SvgArrowLeft className="w-3 h-3" />
           <span>Back to App</span>

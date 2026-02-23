@@ -104,6 +104,7 @@ export default async function Page(props: PageProps) {
       <AuthFlowContainer
         authState="login"
         footerContent={ssoLoginFooterContent}
+        variant="split"
       >
         <div className="absolute top-10x w-full">
           <HealthCheckBanner />

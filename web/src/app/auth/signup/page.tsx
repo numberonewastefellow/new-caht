@@ -62,7 +62,7 @@ const Page = async (props: {
   }
 
   return (
-    <AuthFlowContainer authState="signup">
+    <AuthFlowContainer authState="signup" variant="split">
       <HealthCheckBanner />
       <AuthErrorDisplay searchParams={searchParams} />
 

@@ -17,11 +17,11 @@ export function WebResultIcon({
   try {
     hostname = new URL(url).hostname;
   } catch (e) {
-    hostname = "onyx.app";
+    hostname = "vertualai.com";
   }
   return (
     <>
-      {hostname.includes("onyx.app") ? (
+      {hostname.includes("vertualai.com") ? (
         <OnyxIcon size={size} className="dark:text-[#fff] text-[#000]" />
       ) : !error ? (
         <img

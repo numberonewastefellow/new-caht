@@ -151,7 +151,7 @@ export const connectorConfigs: Record<
     values: [
       {
         type: "text",
-        query: "Enter the website URL to scrape e.g. https://docs.onyx.app/:",
+        query: "Enter the website URL to scrape e.g. https://docs.vertualai.com/:",
         label: "Base URL",
         name: "base_url",
         optional: false,

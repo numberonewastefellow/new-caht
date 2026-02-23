@@ -64,8 +64,7 @@ export default function AdminCommandPalette({
           {groups.map((group) => {
             const filteredItems = group.items.filter((item) =>
               lowerQuery
-                ? item.name.toLowerCase().includes(lowerQuery) ||
-                  (item.oldName?.toLowerCase().includes(lowerQuery) ?? false)
+                ? item.name.toLowerCase().includes(lowerQuery)
                 : true
             );
 
@@ -86,13 +85,6 @@ export default function AdminCommandPalette({
                     value={item.link}
                     icon={item.icon}
                     onSelect={() => handleNavigate(item.link)}
-                    rightContent={
-                      item.oldName && item.oldName !== item.name ? (
-                        <Text as="span" secondaryBody text04 className="text-[10px] whitespace-nowrap">
-                          was: {item.oldName}
-                        </Text>
-                      ) : undefined
-                    }
                   >
                     {item.name}
                   </CommandMenu.Item>

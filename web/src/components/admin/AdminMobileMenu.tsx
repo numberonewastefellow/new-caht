@@ -89,11 +89,6 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
                       <Text as="span" mainUiBody>
                         {group.name}
                       </Text>
-                      {group.oldName && (
-                        <Text as="span" secondaryBody text02 className="text-[10px]">
-                          was: {group.oldName}
-                        </Text>
-                      )}
                     </div>
                     <SvgChevronDown
                       className={cn(
@@ -135,11 +130,6 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
                               >
                                 {item.name}
                               </Text>
-                              {item.oldName && item.oldName !== item.name && (
-                                <Text as="span" secondaryBody text02 className="text-[10px]">
-                                  was: {item.oldName}
-                                </Text>
-                              )}
                             </div>
                           </Link>
                         );
@@ -155,11 +145,14 @@ export default function AdminMobileMenu({ groups }: AdminMobileMenuProps) {
               <Link
                 href={"/app" as any}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-full mx-2 text-white font-medium transition-all hover:opacity-90"
-                style={{ backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }}
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-full mx-2 font-medium transition-all hover:opacity-90"
+                style={{
+                  backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))",
+                  color: "var(--text-light-05, #fff)",
+                }}
               >
                 <SvgArrowLeft className="w-4 h-4" />
-                <Text as="span" mainUiBody className="text-white">
+                <Text as="span" mainUiBody className="!text-inherit">
                   Back to App
                 </Text>
               </Link>

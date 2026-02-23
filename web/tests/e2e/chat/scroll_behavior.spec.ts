@@ -70,7 +70,7 @@ test.describe("Chat Scroll Behavior", () => {
     ]);
   });
 
-  // TODO(Nik): https://linear.app/onyx-app/issue/ENG-3422/playwright-tests-for-scroll-behavior
+  // TODO(Nik): https://linear.app/vertualai/issue/ENG-3422/playwright-tests-for-scroll-behavior
   test.skip("Opening existing conversation positions correctly", async ({
     page,
   }) => {

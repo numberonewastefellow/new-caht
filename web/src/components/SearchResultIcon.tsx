@@ -50,7 +50,7 @@ export function SearchResultIcon({ url }: { url: string }) {
   if (!faviconUrl) {
     return <SourceIcon sourceType={ValidSources.Web} iconSize={18} />;
   }
-  if (url.includes("onyx.app")) {
+  if (url.includes("vertualai.com")) {
     return <OnyxIcon size={18} className="dark:text-[#fff] text-[#000]" />;
   }
 

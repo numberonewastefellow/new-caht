@@ -113,7 +113,7 @@ export const SOURCE_METADATA_MAP: SourceMap = {
     icon: CodaIcon,
     displayName: "Coda",
     category: SourceCategory.Wiki,
-    docs: "https://docs.onyx.app/connectors/coda",
+    docs: "https://docs.vertualai.com/connectors/coda",
   },
   notion: {
     icon: NotionIcon,

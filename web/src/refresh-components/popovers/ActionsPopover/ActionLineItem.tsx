@@ -8,10 +8,11 @@ import { ToolAuthStatus } from "@/lib/hooks/useToolOAuthStatus";
 import LineItem from "@/refresh-components/buttons/LineItem";
 import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import IconButton from "@/refresh-components/buttons/IconButton";
+import Switch from "@/refresh-components/inputs/Switch";
 import { Button } from "@opal/components";
 import { cn, noProp } from "@/lib/utils";
 import type { IconProps } from "@opal/types";
-import { SvgChevronRight, SvgKey, SvgSettings, SvgSlash } from "@opal/icons";
+import { SvgChevronRight, SvgKey, SvgSettings } from "@opal/icons";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
@@ -155,18 +156,15 @@ export default function ActionLineItem({
                 />
               )}
 
-              {!isSearchToolWithNoConnectors && !isUnavailable && (
-                <IconButton
-                  icon={SvgSlash}
-                  onClick={noProp(onToggle)}
-                  internal
-                  className={cn(
-                    !disabled && "invisible group-hover/LineItem:visible",
-                    // Hide when showing source count (it has its own hover behavior)
-                    shouldShowSourceCount && "!hidden"
-                  )}
-                  tooltip={disabled ? "Enable" : "Disable"}
-                />
+              {!isSearchToolWithNoConnectors && !isUnavailable && !shouldShowSourceCount && (
+                <SimpleTooltip tooltip={disabled ? "Enable tool" : "Disable tool"}>
+                  <span onClick={noProp(() => {})} className="flex items-center">
+                    <Switch
+                      checked={!disabled}
+                      onCheckedChange={() => onToggle()}
+                    />
+                  </span>
+                </SimpleTooltip>
               )}
 
               {isUnavailable && showAdminConfigure && adminConfigureHref && (
@@ -182,25 +180,21 @@ export default function ActionLineItem({
                 />
               )}
 
-              {/* Source count for internal search - show when some but not all sources selected AND tool is pinned */}
+              {/* Source count + toggle for internal search */}
               {shouldShowSourceCount && (
-                <span className="relative flex items-center whitespace-nowrap">
-                  {/* Show count normally, disable icon on hover - both in same space */}
-                  <span className="group-hover/LineItem:invisible">
-                    <EnabledCount
-                      enabledCount={sourceCounts.enabled}
-                      totalCount={sourceCounts.total}
-                    />
-                  </span>
-                  <span className="absolute inset-0 flex items-center justify-center invisible group-hover/LineItem:visible">
-                    <Button
-                      icon={SvgSlash}
-                      onClick={noProp(onToggle)}
-                      prominence="tertiary"
-                      size="sm"
-                      tooltip={disabled ? "Enable" : "Disable"}
-                    />
-                  </span>
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <EnabledCount
+                    enabledCount={sourceCounts.enabled}
+                    totalCount={sourceCounts.total}
+                  />
+                  <SimpleTooltip tooltip={disabled ? "Enable tool" : "Disable tool"}>
+                    <span onClick={noProp(() => {})} className="flex items-center">
+                      <Switch
+                        checked={!disabled}
+                        onCheckedChange={() => onToggle()}
+                      />
+                    </span>
+                  </SimpleTooltip>
                 </span>
               )}
 

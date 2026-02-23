@@ -120,7 +120,7 @@ function SettingsPopover({
             icon={SvgExternalLink}
             onClick={() =>
               window.open(
-                "https://docs.onyx.app",
+                "https://docs.vertualai.com",
                 "_blank",
                 "noopener,noreferrer"
               )

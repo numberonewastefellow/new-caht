@@ -21,6 +21,8 @@ services:
       - STRIPE_SECRET_KEY=
       - STRIPE_PUBLISHABLE_KEY=
       - LICENSE_ENFORCEMENT_ENABLED=false
+      # Code Interpreter: tell api_server where the service lives
+      - CODE_INTERPRETER_BASE_URL=${CODE_INTERPRETER_BASE_URL:-http://code-interpreter:8000}
     volumes:
       - E:/temp/vert/api_server_logs:/var/log/onyx
       - E:/temp/vert/file-system:/app/file-system

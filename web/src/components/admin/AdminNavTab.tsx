@@ -94,7 +94,6 @@ export default function AdminNavTab({ group }: AdminNavTabProps) {
     <Popover open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <button
-          title={group.oldName ? `was: ${group.oldName}` : undefined}
           className={cn(
             "flex items-center gap-1.5 px-3 py-1.5 rounded-08 text-sm font-medium transition-all cursor-pointer select-none",
             isActive
@@ -128,11 +127,6 @@ export default function AdminNavTab({ group }: AdminNavTabProps) {
             <Text as="span" mainUiBody className={cn("font-semibold", colors.activeText)}>
               {group.name}
             </Text>
-            {group.oldName && (
-              <Text as="span" secondaryBody text03 className="text-[10px] ml-auto">
-                was: {group.oldName}
-              </Text>
-            )}
           </div>
 
           <div className="w-full h-px bg-border-01 mb-1" />
@@ -200,11 +194,6 @@ function NavDropdownItem({ item, groupColor, isActive, onNavigate }: NavDropdown
         >
           {item.name}
         </Text>
-        {item.oldName && item.oldName !== item.name && (
-          <Text as="span" secondaryBody text02 className="text-[10px]">
-            was: {item.oldName}
-          </Text>
-        )}
       </div>
       {item.error && (
         <span className="w-2 h-2 rounded-full bg-status-error-05 flex-shrink-0 animate-pulse" />

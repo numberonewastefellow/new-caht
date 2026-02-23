@@ -274,6 +274,51 @@ DEPARTMENT_COLORS = {
     "machine learning": ("#311B92", "#7C4DFF"),
     "deep learning": ("#311B92", "#7C4DFF"),
     "technology": ("#283593", "#7986CB"),
+
+    # Technology - Web Development & Coding
+    "web development": ("#1565C0", "#42A5F5"),     # Blue
+    "full stack": ("#0D47A1", "#1E88E5"),          # Deep blue
+    "coding": ("#212121", "#616161"),              # Dark grey (terminal)
+    "sql": ("#E65100", "#FF9800"),                 # Oracle orange
+    "database": ("#E65100", "#FFA726"),            # Orange
+    "performance tuning": ("#BF360C", "#FF7043"),  # Deep orange
+
+    # Technology - Networking & Infrastructure
+    "networking": ("#00695C", "#26A69A"),           # Teal
+    "cisco": ("#0D47A1", "#1976D2"),               # Cisco blue
+    "infrastructure": ("#455A64", "#78909C"),       # Blue grey
+
+    # Technology - System Administration
+    "linux": ("#1B5E20", "#43A047"),               # Green (Linux terminal)
+    "system administration": ("#33691E", "#689F38"), # Olive green
+    "shell scripting": ("#2E7D32", "#66BB6A"),     # Green
+    "windows": ("#0078D4", "#4FC3F7"),             # Windows blue
+    "active directory": ("#01579B", "#0288D1"),    # Azure AD blue
+    "powershell": ("#012456", "#5C6BC0"),          # PowerShell navy
+
+    # Technology - Mobile Development
+    "mobile development": ("#00796B", "#4DB6AC"),  # Teal
+    "android": ("#3DDC84", "#00C853"),             # Android green
+    "ios": ("#333333", "#757575"),                 # Apple grey
+    "flutter": ("#027DFD", "#42A5F5"),             # Flutter blue
+
+    # Technology - Security
+    "ethical hacking": ("#B71C1C", "#E53935"),     # Red
+    "cybersecurity": ("#C62828", "#EF5350"),       # Red
+    "penetration testing": ("#880E4F", "#D81B60"), # Dark pink
+    "soc": ("#4A148C", "#7B1FA2"),                 # Deep purple
+    "incident response": ("#D32F2F", "#EF5350"),   # Red
+    "siem": ("#6A1B9A", "#AB47BC"),                # Purple
+
+    # Technology - DevOps & Cloud
+    "devops": ("#0277BD", "#29B6F6"),              # Light blue
+    "docker": ("#0DB7ED", "#4FC3F7"),              # Docker blue
+    "kubernetes": ("#326CE5", "#5C6BC0"),           # K8s blue
+    "ci/cd": ("#2E7D32", "#66BB6A"),               # Green (pipeline)
+    "cloud computing": ("#FF6F00", "#FFA726"),      # AWS orange
+    "aws": ("#FF9900", "#FFB74D"),                 # AWS orange
+    "azure": ("#0078D4", "#42A5F5"),               # Azure blue
+    "gcp": ("#4285F4", "#64B5F6"),                 # Google blue
 }
 
 # Emoji/symbol mapping for agent types

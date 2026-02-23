@@ -528,7 +528,7 @@ for (const theme of THEMES) {
         {
           document_id: "web-doc-1",
           semantic_identifier: "Onyx Documentation - Getting Started",
-          link: "https://docs.onyx.app/getting-started",
+          link: "https://docs.vertualai.com/getting-started",
           source_type: "web",
           blurb:
             "Onyx is an open-source enterprise search and AI platform. Deploy in minutes with Docker Compose.",
@@ -537,7 +537,7 @@ for (const theme of THEMES) {
         {
           document_id: "web-doc-2",
           semantic_identifier: "Onyx GitHub Repository",
-          link: "https://github.com/onyx-dot-app/onyx",
+          link: "https://github.com/vertualai/vertualai",
           source_type: "web",
           blurb:
             "Open-source Gen-AI platform with 30+ connectors. MIT licensed community edition.",
@@ -556,15 +556,15 @@ for (const theme of THEMES) {
 
       const WEB_SEARCH_RESPONSE = `Based on my web search, here's what I found about Onyx:
 
-Onyx is an open-source enterprise search and AI platform that can be deployed in minutes using Docker Compose [[D1]](https://docs.onyx.app/getting-started). The project is hosted on GitHub and is MIT licensed for the community edition, with over 30 connectors available [[D2]](https://github.com/onyx-dot-app/onyx).
+Onyx is an open-source enterprise search and AI platform that can be deployed in minutes using Docker Compose [[D1]](https://docs.vertualai.com/getting-started). The project is hosted on GitHub and is MIT licensed for the community edition, with over 30 connectors available [[D2]](https://github.com/vertualai/vertualai).
 
 In comparisons with other enterprise search platforms, Onyx stands out for its open-source nature and self-hosted deployment option [[D3]](https://example.com/enterprise-search-comparison). Unlike proprietary alternatives, you maintain full control over your data and infrastructure.
 
 Key advantages include:
 
 - **Self-hosted**: Deploy on your own infrastructure
-- **Open source**: Full visibility into the codebase [[D2]](https://github.com/onyx-dot-app/onyx)
-- **Quick setup**: Get running in under 5 minutes [[D1]](https://docs.onyx.app/getting-started)
+- **Open source**: Full visibility into the codebase [[D2]](https://github.com/vertualai/vertualai)
+- **Quick setup**: Get running in under 5 minutes [[D1]](https://docs.vertualai.com/getting-started)
 - **Extensible**: 30+ pre-built connectors with custom connector support`;
 
       test("web search response with citations renders correctly", async ({

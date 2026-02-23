@@ -35,8 +35,6 @@ import type { IconProps } from "@opal/types";
 
 export interface AdminNavItem {
   name: string;
-  /** Old name shown as tooltip for reference (will be removed later) */
-  oldName?: string;
   icon: React.FunctionComponent<IconProps>;
   link: string;
   isAiRelated?: boolean;
@@ -49,8 +47,6 @@ export type NavGroupColor = "blue" | "purple" | "green" | "orange" | "cyan";
 export interface AdminNavGroup {
   id: string;
   name: string;
-  /** Old group name shown as tooltip for reference (will be removed later) */
-  oldName?: string;
   icon: React.FunctionComponent<IconProps>;
   color: NavGroupColor;
   items: AdminNavItem[];
@@ -89,37 +85,31 @@ export function getAdminNavGroups(opts: {
     groups.push({
       id: "knowledge",
       name: "Knowledge",
-      oldName: "Data",
       icon: SvgUploadCloud,
       color: "green",
       items: [
         {
           name: "Data Sources",
-          oldName: "Existing Connectors",
           icon: SvgFolder,
           link: "/admin/indexing/status",
         },
         {
           name: "Add Source",
-          oldName: "Add Connector",
           icon: SvgUploadCloud,
           link: "/admin/add-connector",
         },
         {
           name: "Collections",
-          oldName: "Document Sets",
           icon: SvgFolder,
           link: "/admin/documents/sets",
         },
         {
           name: "Knowledge Explorer",
-          oldName: "Explorer",
           icon: SvgZoomIn,
           link: "/admin/documents/explorer",
         },
         {
           name: "Quality Signals",
-          oldName: "Feedback",
           icon: SvgThumbsUp,
           link: "/admin/documents/feedback",
         },
@@ -131,7 +121,6 @@ export function getAdminNavGroups(opts: {
   const agentItems: AdminNavItem[] = [
     {
       name: "AI Agents",
-      oldName: "Assistants",
       icon: SvgOnyxOctagon,
       link: "/admin/assistants",
       isAiRelated: true,
@@ -142,13 +131,11 @@ export function getAdminNavGroups(opts: {
     agentItems.push(
       {
         name: "Slack Agents",
-        oldName: "Slack Bots",
         icon: SlackIconSkeleton,
         link: "/admin/bots",
       },
       {
         name: "Discord Agents",
-        oldName: "Discord Bots",
         icon: SvgDiscordMono,
         link: "/admin/discord-bot",
       }
@@ -158,13 +145,11 @@ export function getAdminNavGroups(opts: {
   agentItems.push(
     {
       name: "MCP Tools",
-      oldName: "MCP Actions",
       icon: SvgMcp,
       link: "/admin/actions/mcp",
     },
     {
       name: "API Tools",
-      oldName: "OpenAPI Actions",
       icon: SvgActions,
       link: "/admin/actions/open-api",
     }
@@ -173,7 +158,6 @@ export function getAdminNavGroups(opts: {
   if (enableEnterprise) {
     agentItems.push({
       name: "Curated Responses",
-      oldName: "Standard Answers",
       icon: ClipboardIcon,
       link: "/ee/admin/standard-answer",
     });
@@ -182,7 +166,6 @@ export function getAdminNavGroups(opts: {
   groups.push({
     id: "agents",
     name: "Agents",
-    oldName: "Custom Assistants",
     icon: SvgOnyxOctagon,
     color: "purple",
     items: agentItems,
@@ -193,28 +176,24 @@ export function getAdminNavGroups(opts: {
     const modelItems: AdminNavItem[] = [
       {
         name: "Default Agent",
-        oldName: "Default Assistant",
         icon: SvgOnyxLogo,
         link: "/admin/configuration/default-assistant",
         isAiRelated: true,
       },
       {
         name: "Language Models",
-        oldName: "LLM",
         icon: SvgCpu,
         link: "/admin/configuration/llm",
         isAiRelated: true,
       },
       {
         name: "Web Grounding",
-        oldName: "Web Search",
         icon: SvgGlobe,
         link: "/admin/configuration/web-search",
         isAiRelated: true,
       },
       {
         name: "Vision Models",
-        oldName: "Image Generation",
         icon: SvgImage,
         link: "/admin/configuration/image-generation",
         isAiRelated: true,
@@ -224,7 +203,6 @@ export function getAdminNavGroups(opts: {
     if (!enableCloud && vectorDbEnabled) {
       modelItems.push({
         name: "Retrieval Tuning",
-        oldName: "Search Settings",
         icon: SvgSearch,
         link: "/admin/configuration/search",
         isAiRelated: true,
@@ -234,7 +212,6 @@ export function getAdminNavGroups(opts: {
 
     modelItems.push({
       name: "Ingestion Pipeline",
-      oldName: "Document Processing",
       icon: SvgFileText,
       link: "/admin/configuration/document-processing",
     });
@@ -242,7 +219,6 @@ export function getAdminNavGroups(opts: {
     if (kgExposed) {
       modelItems.push({
         name: "Knowledge Graph",
-        oldName: "Knowledge Graph",
         icon: BrainIcon,
         link: "/admin/kg",
         isAiRelated: true,
@@ -252,7 +228,6 @@ export function getAdminNavGroups(opts: {
     groups.push({
       id: "models",
       name: "AI Models",
-      oldName: "Configuration",
       icon: SvgCpu,
       color: "blue",
       items: modelItems,
@@ -265,7 +240,6 @@ export function getAdminNavGroups(opts: {
   if (isCurator && enableEnterprise) {
     governanceItems.push({
       name: "Access Groups",
-      oldName: "Groups",
       icon: SvgUsers,
       link: "/ee/admin/groups",
     });
@@ -275,7 +249,6 @@ export function getAdminNavGroups(opts: {
     governanceItems.push(
       {
         name: "Team Members",
-        oldName: "Users",
         icon: SvgUser,
         link: "/admin/users",
       },
@@ -283,7 +256,6 @@ export function getAdminNavGroups(opts: {
         ? [
             {
               name: "Access Groups",
-              oldName: "Groups",
               icon: SvgUsers,
               link: "/ee/admin/groups",
             },
@@ -291,13 +263,11 @@ export function getAdminNavGroups(opts: {
         : []),
       {
         name: "API Credentials",
-        oldName: "API Keys",
         icon: SvgKey,
         link: "/admin/api-key",
       },
       {
         name: "Usage Limits",
-        oldName: "Token Rate Limits",
         icon: SvgShield,
         link: "/admin/token-rate-limits",
       }
@@ -308,7 +278,6 @@ export function getAdminNavGroups(opts: {
     groups.push({
       id: "governance",
       name: "Governance",
-      oldName: "User Management",
       icon: SvgUsers,
       color: "orange",
       items: governanceItems,
@@ -320,7 +289,6 @@ export function getAdminNavGroups(opts: {
     const workspaceItems: AdminNavItem[] = [
       {
         name: "General",
-        oldName: "Workspace Settings",
         icon: SvgSettings,
         link: "/admin/settings",
       },
@@ -329,7 +297,6 @@ export function getAdminNavGroups(opts: {
     if (enableEnterprise) {
       workspaceItems.push({
         name: "Branding",
-        oldName: "Appearance & Theming",
         icon: SvgPaintBrush,
         link: "/ee/admin/theme",
       });
@@ -338,7 +305,6 @@ export function getAdminNavGroups(opts: {
     if (hasSubscription) {
       workspaceItems.push({
         name: "Plan & Billing",
-        oldName: "Plans & Billing",
         icon: SvgWallet,
         link: "/admin/billing",
       });
@@ -347,7 +313,6 @@ export function getAdminNavGroups(opts: {
     if (settings?.settings.opensearch_indexing_enabled) {
       workspaceItems.push({
         name: "Index Migration",
-        oldName: "Document Index Migration",
         icon: SvgArrowExchange,
         link: "/admin/document-index-migration",
       });
@@ -357,7 +322,6 @@ export function getAdminNavGroups(opts: {
     if (enableEnterprise) {
       workspaceItems.push({
         name: "Analytics",
-        oldName: "Usage Statistics",
         icon: SvgActivity,
         link: "/ee/admin/performance/usage",
       });
@@ -365,7 +329,6 @@ export function getAdminNavGroups(opts: {
       if (settings?.settings.query_history_type !== "disabled") {
         workspaceItems.push({
           name: "Query Logs",
-          oldName: "Query History",
           icon: SvgServer,
           link: "/ee/admin/performance/query-history",
         });
@@ -374,7 +337,6 @@ export function getAdminNavGroups(opts: {
       if (!enableCloud && customAnalyticsEnabled) {
         workspaceItems.push({
           name: "Custom Reports",
-          oldName: "Custom Analytics",
           icon: SvgBarChart,
           link: "/ee/admin/performance/custom-analytics",
         });
@@ -384,7 +346,6 @@ export function getAdminNavGroups(opts: {
     groups.push({
       id: "workspace",
       name: "Workspace",
-      oldName: "Settings",
       icon: SvgSettings,
       color: "cyan",
       items: workspaceItems,

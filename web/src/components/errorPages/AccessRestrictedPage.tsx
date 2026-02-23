@@ -123,8 +123,8 @@ export default function AccessRestricted() {
             </Link>{" "}
             page to {hasLicenseLapsed ? "renew" : "activate"} your license, sign
             up through Stripe or reach out to{" "}
-            <a className={linkClassName} href="mailto:support@onyx.app">
-              support@onyx.app
+            <a className={linkClassName} href="mailto:support@vertualai.com">
+              support@vertualai.com
             </a>
             for billing assistance.
           </Text>

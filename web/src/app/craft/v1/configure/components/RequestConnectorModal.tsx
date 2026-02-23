@@ -181,10 +181,10 @@ export default function RequestConnectorModal({
                   <Text mainUiBody text04 className="text-center">
                     Email your request to{" "}
                     <a
-                      href="mailto:hello@onyx.app?subject=VertualAI Craft Connector Request"
+                      href="mailto:hello@vertualai.com?subject=VertualAI Craft Connector Request"
                       className="text-blue-600 dark:text-blue-400 hover:underline"
                     >
-                      hello@onyx.app
+                      hello@vertualai.com
                     </a>
                   </Text>
                 </div>

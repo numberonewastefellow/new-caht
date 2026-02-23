@@ -36,25 +36,25 @@ export function ModelPreview({
       </div>
 
       {showDetails && (
-        <div className="pt-4 border-t border-border space-y-3">
+        <div className="pt-4 border-t border-border-01 space-y-3">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="font-semibold text-text-700">Dimensions:</span>
-              <div className="text-text-600">
+              <span className="font-semibold text-text-04">Dimensions:</span>
+              <div className="text-text-03">
                 {model.model_dim.toLocaleString()}
               </div>
             </div>
 
             <div>
-              <span className="font-semibold text-text-700">Provider:</span>
-              <div className="text-text-600">
+              <span className="font-semibold text-text-04">Provider:</span>
+              <div className="text-text-03">
                 {getFormattedProviderName(model.provider_type)}
               </div>
             </div>
 
             <div>
-              <span className="font-semibold text-text-700">Normalized:</span>
-              <div className="text-text-600">
+              <span className="font-semibold text-text-04">Normalized:</span>
+              <div className="text-text-03">
                 {model.normalize ? "Yes" : "No"}
               </div>
             </div>
@@ -62,10 +62,10 @@ export function ModelPreview({
             {"embedding_precision" in model &&
               (model as any).embedding_precision && (
                 <div>
-                  <span className="font-semibold text-text-700">
+                  <span className="font-semibold text-text-04">
                     Precision:
                   </span>
-                  <div className="text-text-600">
+                  <div className="text-text-03">
                     {(model as any).embedding_precision}
                   </div>
                 </div>
@@ -74,17 +74,17 @@ export function ModelPreview({
             {"isDefault" in model &&
               (model as HostedEmbeddingModel).isDefault && (
                 <div>
-                  <span className="font-semibold text-text-700">Type:</span>
-                  <div className="text-text-600">Default</div>
+                  <span className="font-semibold text-text-04">Type:</span>
+                  <div className="text-text-03">Default</div>
                 </div>
               )}
 
             {"pricePerMillion" in model && (
               <div>
-                <span className="font-semibold text-text-700">
+                <span className="font-semibold text-text-04">
                   Price/Million:
                 </span>
-                <div className="text-text-600">
+                <div className="text-text-03">
                   ${(model as CloudEmbeddingModel).pricePerMillion}
                 </div>
               </div>
@@ -95,10 +95,10 @@ export function ModelPreview({
             <div className="space-y-2">
               {model.query_prefix && (
                 <div>
-                  <span className="font-semibold text-text-700">
+                  <span className="font-semibold text-text-04">
                     Query Prefix:
                   </span>
-                  <div className="text-text-600 font-mono text-xs p-2 rounded">
+                  <div className="text-text-03 font-mono text-xs p-2 rounded">
                     &quot;{model.query_prefix}&quot;
                   </div>
                 </div>
@@ -106,10 +106,10 @@ export function ModelPreview({
 
               {model.passage_prefix && (
                 <div>
-                  <span className="font-semibold text-text-700">
+                  <span className="font-semibold text-text-04">
                     Passage Prefix:
                   </span>
-                  <div className="text-text-600 font-mono text-xs p-2 rounded">
+                  <div className="text-text-03 font-mono text-xs p-2 rounded">
                     &quot;{model.passage_prefix}&quot;
                   </div>
                 </div>
@@ -119,8 +119,8 @@ export function ModelPreview({
 
           {model.api_url && (
             <div>
-              <span className="font-semibold text-text-700">API URL:</span>
-              <div className="text-text-600 font-mono text-xs bg-background p-2 rounded break-all">
+              <span className="font-semibold text-text-04">API URL:</span>
+              <div className="text-text-03 font-mono text-xs bg-background-neutral-02 p-2 rounded-04 break-all">
                 {model.api_url}
               </div>
             </div>
@@ -128,15 +128,15 @@ export function ModelPreview({
 
           {model.api_version && (
             <div>
-              <span className="font-semibold text-text-700">API Version:</span>
-              <div className="text-text-600">{model.api_version}</div>
+              <span className="font-semibold text-text-04">API Version:</span>
+              <div className="text-text-03">{model.api_version}</div>
             </div>
           )}
 
           {model.deployment_name && (
             <div>
-              <span className="font-semibold text-text-700">Deployment:</span>
-              <div className="text-text-600">{model.deployment_name}</div>
+              <span className="font-semibold text-text-04">Deployment:</span>
+              <div className="text-text-03">{model.deployment_name}</div>
             </div>
           )}
 
@@ -146,7 +146,7 @@ export function ModelPreview({
                 href={(model as HostedEmbeddingModel).link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center text-blue-500 hover:text-blue-700 transition-colors duration-200 text-sm"
+                className="inline-flex items-center text-action-link-05 hover:text-action-link-06 transition-colors duration-200 text-sm"
               >
                 <span>View Documentation</span>
                 <FiExternalLink className="ml-1" size={14} />
@@ -174,8 +174,8 @@ export function ModelOption({
     <div
       className={`p-4 w-96 border rounded-lg transition-all duration-200 ${
         selected
-          ? "border-blue-800 bg-blue-50 dark:bg-blue-950 dark:border-blue-700 shadow-md"
-          : "border-background-200 hover:border-blue-300 hover:shadow-sm"
+          ? "border-action-link-05 bg-action-link-01 shadow-md"
+          : "border-border-01 hover:border-action-link-03 hover:shadow-sm"
       }`}
     >
       <div className="flex items-center justify-between mb-3">
@@ -187,27 +187,27 @@ export function ModelOption({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
+            className="text-action-link-05 hover:text-action-link-06 transition-colors duration-200"
           >
             <FiExternalLink size={18} />
           </a>
         )}
       </div>
-      <p className="text-sm k text-text-600 dark:text-neutral-400 text-left mb-2">
+      <p className="text-sm text-text-03 text-left mb-2">
         {model.description ||
           currentModelCopy?.description ||
           "Custom model—no description is available."}
       </p>
-      <div className="text-xs text-text-500">
+      <div className="text-xs text-text-02">
         {model.isDefault ? "Default" : "Self-hosted"}
       </div>
       {onSelect && (
         <div className="mt-3">
           <button
-            className={`w-full p-2 rounded-lg text-sm ${
+            className={`w-full p-2 rounded-08 text-sm ${
               selected
-                ? "bg-background-125 border border-border cursor-not-allowed"
-                : "bg-background border border-border hover:bg-accent-background-hovered cursor-pointer"
+                ? "bg-background-neutral-02 border border-border-01 text-text-02 cursor-not-allowed"
+                : "bg-background-neutral-00 border border-border-01 text-text-05 hover:bg-background-neutral-02 cursor-pointer"
             }`}
             onClick={(e) => {
               e.stopPropagation();

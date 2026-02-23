@@ -6,14 +6,17 @@ import Text from "@/refresh-components/texts/Text";
 
 export default function LoginText() {
   const settings = useContext(SettingsContext);
+  const appName =
+    (settings && settings?.enterpriseSettings?.application_name) || "VertualAI";
+
   return (
-    <div className="w-full flex flex-col ">
+    <div className="w-full flex flex-col gap-1 animate-fadeIn">
       <Text as="p" headingH2 text05>
         Welcome to{" "}
-        {(settings && settings?.enterpriseSettings?.application_name) || "VertualAI"}
+        <span className="virtualai-gradient-text">{appName}</span>
       </Text>
       <Text as="p" text03 mainUiMuted>
-        Your open source AI platform for work
+        Sign in to your AI platform for work
       </Text>
     </div>
   );
