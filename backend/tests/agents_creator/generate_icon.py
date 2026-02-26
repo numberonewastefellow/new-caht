@@ -26,299 +26,70 @@ from config import api, CONFIG, resolve_api_key
 
 # Color palettes by department/label (warm, professional colors)
 DEPARTMENT_COLORS = {
-    # Police & Law
-    "police": ("#1B3A5C", "#4A90D9"),        # Navy blue
-    "law & order": ("#1B3A5C", "#4A90D9"),
-    "fir": ("#1B3A5C", "#4A90D9"),
+    # Government & Administration
+    "police & law": ("#1B3A5C", "#4A90D9"),           # Navy blue
+    "district administration": ("#4A0E4E", "#9B59B6"), # Purple
+    "village & panchayat": ("#33691E", "#7CB342"),     # Green
+    "municipal services": ("#00695C", "#26A69A"),      # Teal
+    "government": ("#1A237E", "#3F51B5"),              # Indigo
+    "legal": ("#263238", "#546E7A"),                   # Dark grey
+    "disaster management": ("#E65100", "#FF9800"),     # Orange
+    "water & irrigation": ("#01579B", "#039BE5"),      # Deep blue
 
-    # Revenue & Land
-    "revenue": ("#8B4513", "#D4A04A"),        # Brown/gold
-    "land records": ("#8B4513", "#D4A04A"),
-    "land protection": ("#8B4513", "#D4A04A"),
+    # Social Sector
+    "healthcare": ("#C0392B", "#E74C3C"),              # Red
+    "education": ("#1565C0", "#42A5F5"),               # Blue
+    "competitive exams": ("#0D47A1", "#1E88E5"),       # Deep blue
+    "sports & youth": ("#F57F17", "#FFEE58"),          # Yellow
+    "welfare": ("#1B5E20", "#43A047"),                 # Green
 
-    # Collector Office
-    "collector office": ("#4A0E4E", "#9B59B6"),  # Purple
-    "administration": ("#4A0E4E", "#9B59B6"),
-    "grievance redressal": ("#4A0E4E", "#9B59B6"),
+    # Infrastructure & Industry
+    "infrastructure": ("#455A64", "#78909C"),          # Blue grey
+    "transport": ("#37474F", "#78909C"),               # Blue-grey
+    "labour & industry": ("#BF360C", "#FF7043"),       # Deep orange
+    "permits & licenses": ("#880E4F", "#EC407A"),      # Dark pink
+    "environment": ("#00695C", "#26A69A"),             # Teal
 
-    # Health
-    "health": ("#C0392B", "#E74C3C"),          # Red
-    "disease surveillance": ("#C0392B", "#E74C3C"),
-    "maternal & child health": ("#E91E63", "#F48FB1"),
+    # Religious
+    "religious affairs": ("#FF6F00", "#FFA726"),        # Amber
 
-    # Disaster Management
-    "disaster management": ("#E65100", "#FF9800"),  # Orange
-    "fire safety": ("#E65100", "#FF9800"),
-    "flood management": ("#0277BD", "#4FC3F7"),
+    # Finance & Markets
+    "finance & tax": ("#1A237E", "#3F51B5"),           # Indigo
+    "stock market": ("#1B5E20", "#4CAF50"),            # Green (money)
+    "investment": ("#2E7D32", "#66BB6A"),              # Green
+    "banking & loans": ("#0D47A1", "#1976D2"),         # Blue
+    "insurance": ("#6A1B9A", "#AB47BC"),               # Purple
+    "personal finance": ("#00695C", "#26A69A"),        # Teal
+    "crypto & forex": ("#F9A825", "#FDD835"),          # Gold/Yellow
+    "startups & business": ("#6A1B9A", "#AB47BC"),     # Purple
 
-    # Education
-    "education": ("#1565C0", "#42A5F5"),       # Blue
-    "schools": ("#1565C0", "#42A5F5"),
-    "scholarships": ("#1565C0", "#42A5F5"),
+    # Real Estate
+    "real estate": ("#5D4037", "#8D6E63"),             # Brown (earth)
+    "interior & renovation": ("#AD1457", "#EC407A"),   # Pink/magenta
 
-    # Municipality
-    "municipality": ("#00695C", "#26A69A"),    # Teal
-    "sanitation": ("#2E7D32", "#66BB6A"),
-    "water supply": ("#0288D1", "#4FC3F7"),
-    "civil registration": ("#00695C", "#26A69A"),
-    "property tax": ("#00695C", "#26A69A"),
-    "building permissions": ("#5D4037", "#8D6E63"),
-    "town planning": ("#5D4037", "#8D6E63"),
-
-    # Irrigation
-    "irrigation": ("#01579B", "#039BE5"),      # Deep blue
-    "dam safety": ("#01579B", "#039BE5"),
-    "canal operations": ("#01579B", "#039BE5"),
-    "micro irrigation": ("#0097A7", "#4DD0E1"),
-    "water conservation": ("#0097A7", "#4DD0E1"),
-    "water users association": ("#01579B", "#039BE5"),
-
-    # Registration / Sub-Registrar
-    "registration": ("#4E342E", "#8D6E63"),    # Dark brown
-    "sub-registrar": ("#4E342E", "#8D6E63"),
-    "stamp duty": ("#4E342E", "#8D6E63"),
-    "encumbrance": ("#4E342E", "#8D6E63"),
-    "property": ("#4E342E", "#8D6E63"),
-    "legal drafting": ("#4E342E", "#8D6E63"),
-
-    # Transport / RTO
-    "transport": ("#37474F", "#78909C"),       # Blue-grey
-    "rto": ("#37474F", "#78909C"),
-    "vehicle registration": ("#37474F", "#78909C"),
-
-    # Labour
-    "labour": ("#BF360C", "#FF7043"),          # Deep orange
-    "factory inspection": ("#BF360C", "#FF7043"),
-    "industrial safety": ("#BF360C", "#FF7043"),
-
-    # Excise
-    "excise": ("#880E4F", "#EC407A"),          # Dark pink
-    "liquor licensing": ("#880E4F", "#EC407A"),
-
-    # Mining
-    "mining": ("#3E2723", "#795548"),          # Dark brown
-    "sand permits": ("#3E2723", "#795548"),
-
-    # Endowments
-    "endowments": ("#FF6F00", "#FFA726"),      # Amber
-    "temple administration": ("#FF6F00", "#FFA726"),
-
-    # Village Administration
-    "village administration": ("#33691E", "#7CB342"),  # Green
-    "panchayat raj": ("#33691E", "#7CB342"),
-    "mgnrega": ("#33691E", "#7CB342"),
-    "gram sachivalayam": ("#33691E", "#7CB342"),
-
-    # Sports & Youth
-    "sports & youth": ("#F57F17", "#FFEE58"),  # Yellow
-    "events": ("#F57F17", "#FFEE58"),
-    "skill development": ("#F57F17", "#FFEE58"),
-
-    # Elections
-    "elections": ("#311B92", "#7C4DFF"),       # Deep purple
-
-    # RTI
-    "rti": ("#006064", "#00ACC1"),             # Cyan
-
-    # Cross-Department / Legal
-    "legal": ("#263238", "#546E7A"),           # Dark grey
-    "cross-department": ("#263238", "#546E7A"),
-
-    # Welfare
-    "welfare": ("#1B5E20", "#43A047"),         # Green
-    "food security": ("#1B5E20", "#43A047"),
-    "pds": ("#1B5E20", "#43A047"),
-
-    # Certificates
-    "certificates": ("#004D40", "#00897B"),    # Dark teal
-    "citizen services": ("#004D40", "#00897B"),
-
-    # Finance & Treasury
-    "finance": ("#1A237E", "#3F51B5"),         # Indigo
-    "budget": ("#1A237E", "#3F51B5"),
-    "treasury": ("#1A237E", "#3F51B5"),
-    "pension": ("#283593", "#5C6BC0"),
-    "salary": ("#283593", "#5C6BC0"),
-    "audit": ("#0D47A1", "#1E88E5"),
-    "cag": ("#0D47A1", "#1E88E5"),
-    "gst": ("#004D40", "#00897B"),
-    "commercial tax": ("#004D40", "#00897B"),
-
-    # Stock Market & Investment
-    "stock market": ("#1B5E20", "#4CAF50"),    # Green (money)
-    "fundamental analysis": ("#1B5E20", "#4CAF50"),
-    "technical analysis": ("#004D40", "#009688"),
-    "trading": ("#004D40", "#009688"),
-    "investment": ("#2E7D32", "#66BB6A"),
-    "mutual funds": ("#00695C", "#26A69A"),
-    "sip": ("#00695C", "#26A69A"),
-    "portfolio": ("#00695C", "#26A69A"),
-    "ipo": ("#1565C0", "#42A5F5"),
-    "primary market": ("#1565C0", "#42A5F5"),
-    "options trading": ("#B71C1C", "#EF5350"),  # Red (risk)
-    "derivatives": ("#B71C1C", "#EF5350"),
-    "f&o": ("#B71C1C", "#EF5350"),
-    "equities": ("#1B5E20", "#4CAF50"),
-
-    # Banking & Insurance
-    "banking": ("#0D47A1", "#1976D2"),         # Blue
-    "loans": ("#0D47A1", "#1976D2"),
-    "cibil": ("#0D47A1", "#1976D2"),
-    "insurance": ("#6A1B9A", "#AB47BC"),       # Purple
-    "health insurance": ("#6A1B9A", "#AB47BC"),
-    "life insurance": ("#6A1B9A", "#AB47BC"),
-
-    # Tax
-    "tax": ("#E65100", "#FF9800"),             # Orange
-    "income tax": ("#E65100", "#FF9800"),
-    "itr filing": ("#E65100", "#FF9800"),
-
-    # Commodities
-    "commodities": ("#F9A825", "#FDD835"),     # Gold/Yellow
-    "gold investment": ("#F9A825", "#FDD835"),
-    "mcx": ("#F9A825", "#FDD835"),
-
-    # Entertainment
-    "entertainment": ("#AD1457", "#EC407A"),    # Magenta/Pink
-    "screenwriting": ("#AD1457", "#EC407A"),
-    "film": ("#880E4F", "#E91E63"),
-    "music": ("#6A1B9A", "#CE93D8"),           # Purple
-    "music theory": ("#6A1B9A", "#CE93D8"),
-    "composition": ("#6A1B9A", "#CE93D8"),
-    "comedy": ("#FF6F00", "#FFB74D"),          # Amber
-    "standup": ("#FF6F00", "#FFB74D"),
-    "game design": ("#1565C0", "#64B5F6"),     # Blue
-    "gaming": ("#1565C0", "#64B5F6"),
-    "game development": ("#1565C0", "#64B5F6"),
-    "podcast": ("#00695C", "#4DB6AC"),         # Teal
-    "audio production": ("#00695C", "#4DB6AC"),
-    "content strategy": ("#00695C", "#4DB6AC"),
-    "youtube": ("#D32F2F", "#EF5350"),         # YouTube red
-    "content creation": ("#D32F2F", "#EF5350"),
-    "video seo": ("#D32F2F", "#EF5350"),
-    "tabletop rpg": ("#4E342E", "#8D6E63"),    # Brown
-    "game master": ("#4E342E", "#8D6E63"),
-    "worldbuilding": ("#4E342E", "#8D6E63"),
-    "photography": ("#37474F", "#78909C"),     # Blue grey
-    "visual arts": ("#37474F", "#78909C"),
-    "post-processing": ("#37474F", "#78909C"),
-    "anime": ("#E91E63", "#F48FB1"),           # Pink
-    "manga": ("#E91E63", "#F48FB1"),
-    "animation": ("#E91E63", "#F48FB1"),
-    "event planning": ("#FF6F00", "#FFAB40"),  # Orange
-    "production": ("#FF6F00", "#FFAB40"),
-    "weddings": ("#FF6F00", "#FFAB40"),
-    "fiction writing": ("#5D4037", "#A1887F"),  # Warm brown
-    "publishing": ("#5D4037", "#A1887F"),
-    "creative writing": ("#AD1457", "#EC407A"),
-
-    # Education (additional labels)
-    "competitive exams": ("#1565C0", "#42A5F5"),  # Blue
-    "upsc": ("#1A237E", "#3F51B5"),               # Deep blue
-    "government jobs": ("#1A237E", "#3F51B5"),
-    "stem": ("#0D47A1", "#1E88E5"),
-    "jee/neet": ("#0D47A1", "#1E88E5"),
-    "problem solving": ("#0D47A1", "#1E88E5"),
-    "research": ("#4A148C", "#7B1FA2"),           # Deep purple
-    "academic writing": ("#4A148C", "#7B1FA2"),
-    "special education": ("#00838F", "#26C6DA"),  # Cyan
-    "inclusive learning": ("#00838F", "#26C6DA"),
-    "learning disabilities": ("#00838F", "#26C6DA"),
-    "language learning": ("#2E7D32", "#66BB6A"),  # Green
-    "linguistics": ("#2E7D32", "#66BB6A"),
-    "ielts/toefl": ("#2E7D32", "#66BB6A"),
-    "career guidance": ("#E65100", "#FF9800"),     # Orange
-    "skills": ("#E65100", "#FF9800"),
-    "placements": ("#E65100", "#FF9800"),
-    "early childhood": ("#F06292", "#F8BBD0"),    # Light pink
-    "parenting": ("#F06292", "#F8BBD0"),
-    "child development": ("#F06292", "#F8BBD0"),
-    "coding": ("#212121", "#616161"),             # Dark grey (terminal)
-    "web development": ("#212121", "#616161"),
-    "tech career": ("#212121", "#616161"),
-    "nep 2020": ("#1565C0", "#42A5F5"),
-    "school administration": ("#1565C0", "#42A5F5"),
-    "policy": ("#1A237E", "#3F51B5"),
-    "study abroad": ("#00695C", "#26A69A"),       # Teal
-    "higher education": ("#00695C", "#26A69A"),
+    # Entertainment & Creative
+    "entertainment": ("#AD1457", "#EC407A"),            # Magenta/Pink
+    "creative writing": ("#5D4037", "#A1887F"),        # Warm brown
+    "gaming": ("#1565C0", "#64B5F6"),                  # Blue
+    "photography & visual arts": ("#37474F", "#78909C"), # Blue grey
 
     # Science
-    "science": ("#0277BD", "#29B6F6"),            # Light blue
-    "space": ("#1A237E", "#5C6BC0"),              # Deep indigo
-    "astrophysics": ("#1A237E", "#5C6BC0"),
-    "isro": ("#1A237E", "#5C6BC0"),
-    "biotechnology": ("#2E7D32", "#66BB6A"),      # Green
-    "genetics": ("#2E7D32", "#66BB6A"),
-    "molecular biology": ("#2E7D32", "#66BB6A"),
-    "climate": ("#00695C", "#26A69A"),            # Teal
-    "environment": ("#00695C", "#26A69A"),
-    "sustainability": ("#00695C", "#26A69A"),
-    "neuroscience": ("#6A1B9A", "#AB47BC"),       # Purple
-    "brain": ("#6A1B9A", "#AB47BC"),
-    "cognitive science": ("#6A1B9A", "#AB47BC"),
-    "quantum computing": ("#283593", "#7986CB"),  # Indigo
-    "physics": ("#283593", "#7986CB"),
-    "materials science": ("#455A64", "#90A4AE"),  # Blue grey
-    "nanotechnology": ("#455A64", "#90A4AE"),
-    "engineering": ("#455A64", "#90A4AE"),
-    "ecology": ("#33691E", "#8BC34A"),            # Light green
-    "conservation": ("#33691E", "#8BC34A"),
-    "biodiversity": ("#33691E", "#8BC34A"),
-    "forensic science": ("#37474F", "#78909C"),   # Dark grey
-    "criminal investigation": ("#37474F", "#78909C"),
-    "dna analysis": ("#37474F", "#78909C"),
-    "robotics": ("#0D47A1", "#42A5F5"),           # Blue
-    "mechatronics": ("#0D47A1", "#42A5F5"),
-    "automation": ("#0D47A1", "#42A5F5"),
-    "artificial intelligence": ("#311B92", "#7C4DFF"),  # Deep purple
-    "machine learning": ("#311B92", "#7C4DFF"),
-    "deep learning": ("#311B92", "#7C4DFF"),
-    "technology": ("#283593", "#7986CB"),
+    "science": ("#0277BD", "#29B6F6"),                 # Light blue
+    "ai & robotics": ("#311B92", "#7C4DFF"),           # Deep purple
 
-    # Technology - Web Development & Coding
-    "web development": ("#1565C0", "#42A5F5"),     # Blue
-    "full stack": ("#0D47A1", "#1E88E5"),          # Deep blue
-    "coding": ("#212121", "#616161"),              # Dark grey (terminal)
-    "sql": ("#E65100", "#FF9800"),                 # Oracle orange
-    "database": ("#E65100", "#FFA726"),            # Orange
-    "performance tuning": ("#BF360C", "#FF7043"),  # Deep orange
+    # Technology
+    "technology": ("#283593", "#7986CB"),              # Indigo
+    "web & mobile dev": ("#1565C0", "#42A5F5"),        # Blue
+    "networking & sysadmin": ("#00695C", "#26A69A"),   # Teal
+    "cybersecurity": ("#C62828", "#EF5350"),            # Red
+    "cloud & devops": ("#0277BD", "#29B6F6"),          # Light blue
 
-    # Technology - Networking & Infrastructure
-    "networking": ("#00695C", "#26A69A"),           # Teal
-    "cisco": ("#0D47A1", "#1976D2"),               # Cisco blue
-    "infrastructure": ("#455A64", "#78909C"),       # Blue grey
-
-    # Technology - System Administration
-    "linux": ("#1B5E20", "#43A047"),               # Green (Linux terminal)
-    "system administration": ("#33691E", "#689F38"), # Olive green
-    "shell scripting": ("#2E7D32", "#66BB6A"),     # Green
-    "windows": ("#0078D4", "#4FC3F7"),             # Windows blue
-    "active directory": ("#01579B", "#0288D1"),    # Azure AD blue
-    "powershell": ("#012456", "#5C6BC0"),          # PowerShell navy
-
-    # Technology - Mobile Development
-    "mobile development": ("#00796B", "#4DB6AC"),  # Teal
-    "android": ("#3DDC84", "#00C853"),             # Android green
-    "ios": ("#333333", "#757575"),                 # Apple grey
-    "flutter": ("#027DFD", "#42A5F5"),             # Flutter blue
-
-    # Technology - Security
-    "ethical hacking": ("#B71C1C", "#E53935"),     # Red
-    "cybersecurity": ("#C62828", "#EF5350"),       # Red
-    "penetration testing": ("#880E4F", "#D81B60"), # Dark pink
-    "soc": ("#4A148C", "#7B1FA2"),                 # Deep purple
-    "incident response": ("#D32F2F", "#EF5350"),   # Red
-    "siem": ("#6A1B9A", "#AB47BC"),                # Purple
-
-    # Technology - DevOps & Cloud
-    "devops": ("#0277BD", "#29B6F6"),              # Light blue
-    "docker": ("#0DB7ED", "#4FC3F7"),              # Docker blue
-    "kubernetes": ("#326CE5", "#5C6BC0"),           # K8s blue
-    "ci/cd": ("#2E7D32", "#66BB6A"),               # Green (pipeline)
-    "cloud computing": ("#FF6F00", "#FFA726"),      # AWS orange
-    "aws": ("#FF9900", "#FFB74D"),                 # AWS orange
-    "azure": ("#0078D4", "#42A5F5"),               # Azure blue
-    "gcp": ("#4285F4", "#64B5F6"),                 # Google blue
+    # Marketing & Content
+    "digital marketing": ("#1565C0", "#42A5F5"),       # Blue
+    "social media": ("#E91E63", "#F48FB1"),            # Pink
+    "content creation": ("#D32F2F", "#EF5350"),        # Red
+    "linkedin": ("#0077B5", "#29B6F6"),                # LinkedIn blue
+    "twitter & instagram": ("#C13584", "#F06292"),     # Instagram gradient
 }
 
 # Emoji/symbol mapping for agent types

@@ -52,5 +52,7 @@ while true; do
   fi
 done
 
-# Start nginx and reload every 6 hours
-while :; do sleep 6h & wait; nginx -s reload; done & nginx -g "daemon off;"
+# Start nginx and reload periodically to pick up container IP changes.
+# Containers that restart get new IPs; nginx caches DNS at startup,
+# so a periodic reload prevents stale-IP 502 errors.
+while :; do sleep 30 & wait; nginx -s reload 2>/dev/null; done & nginx -g "daemon off;"

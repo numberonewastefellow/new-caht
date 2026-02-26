@@ -376,25 +376,35 @@ function GeneralSettings() {
                     {
                       id: "none" as VirtualAIAccent,
                       label: "Default",
-                      color: undefined,
+                      lightColor: undefined,
+                      darkColor: undefined,
                     },
                     {
                       id: "ocean" as VirtualAIAccent,
                       label: "Ocean",
-                      color: "#3b82f6",
+                      lightColor: "#3b82f6",
+                      darkColor: "#60a5fa",
                     },
                     {
                       id: "emerald" as VirtualAIAccent,
                       label: "Emerald",
-                      color: "#059669",
+                      lightColor: "#059669",
+                      darkColor: "#34d399",
                     },
                     {
                       id: "violet" as VirtualAIAccent,
                       label: "Violet",
-                      color: "#7c3aed",
+                      lightColor: "#7c3aed",
+                      darkColor: "#a78bfa",
                     },
                   ] as const
                 ).map((accentOption) => {
+                  const resolvedTheme =
+                    theme === "system" ? systemTheme : theme;
+                  const isDark = resolvedTheme === "dark";
+                  const color = isDark
+                    ? accentOption.darkColor
+                    : accentOption.lightColor;
                   const isSelected = accent === accentOption.id;
                   return (
                     <button
@@ -406,11 +416,11 @@ function GeneralSettings() {
                         isSelected ? " (selected)" : ""
                       }`}
                     >
-                      {accentOption.color ? (
+                      {color ? (
                         <div
                           className="absolute inset-0"
                           style={{
-                            background: `linear-gradient(135deg, ${accentOption.color}22 0%, ${accentOption.color}66 100%)`,
+                            background: `linear-gradient(135deg, ${color}22 0%, ${color}66 100%)`,
                           }}
                         />
                       ) : (
@@ -418,7 +428,7 @@ function GeneralSettings() {
                           <span className="text-xs text-text-02">Default</span>
                         </div>
                       )}
-                      {accentOption.color && (
+                      {color && (
                         <div className="absolute inset-0 flex items-center justify-center">
                           <span className="text-xs font-medium text-text-05">
                             {accentOption.label}
@@ -433,9 +443,9 @@ function GeneralSettings() {
                             : "ring-1 ring-inset ring-border-02 group-hover:ring-border-03"
                         )}
                         style={
-                          isSelected && accentOption.color
+                          isSelected && color
                             ? {
-                                boxShadow: `inset 0 0 0 2px ${accentOption.color}`,
+                                boxShadow: `inset 0 0 0 2px ${color}`,
                               }
                             : isSelected
                               ? {
@@ -450,7 +460,7 @@ function GeneralSettings() {
                           className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
                           style={{
                             backgroundColor:
-                              accentOption.color || "var(--theme-primary-05)",
+                              color || "var(--theme-primary-05)",
                           }}
                         >
                           <SvgCheck className="w-2.5 h-2.5 stroke-text-inverted-05" />

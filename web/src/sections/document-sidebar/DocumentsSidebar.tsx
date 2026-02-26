@@ -167,7 +167,7 @@ const DocumentsSidebar = memo(
         <div className="flex flex-col px-3 gap-6">
           {hasCited && (
             <div>
-              <Header onClose={closeSidebar}>Cited Sources</Header>
+              <Header onClose={closeSidebar}>Reference Documents</Header>
               <ChatDocumentDisplayWrapper>
                 {citedDocuments.map((document) => (
                   <ChatDocumentDisplay
@@ -187,7 +187,7 @@ const DocumentsSidebar = memo(
           {hasOther && (
             <div>
               <Header onClose={closeSidebar}>
-                {citedDocuments.length > 0 ? "More" : "Found Sources"}
+                {citedDocuments.length > 0 ? "Additional Documents" : "Retrieved Documents"}
               </Header>
               <ChatDocumentDisplayWrapper>
                 {otherDocuments.map((document) => (

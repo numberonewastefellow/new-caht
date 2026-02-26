@@ -3,7 +3,7 @@
 import { JSX } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getSegmentLabel, isDynamicSegment, getGroupColorForPath } from "./adminNavItems";
+import { getSegmentLabel, isDynamicSegment, getGroupColorForPath, BREADCRUMB_REDIRECT_MAP } from "./adminNavItems";
 import type { NavGroupColor } from "./adminNavItems";
 import { SvgChevronRight } from "@opal/icons";
 import Text from "@/refresh-components/texts/Text";
@@ -93,7 +93,7 @@ export default function AdminBreadcrumb({
               </Text>
             ) : (
               <Link
-                href={crumb.path as any}
+                href={(BREADCRUMB_REDIRECT_MAP[crumb.path] ?? crumb.path) as any}
                 className="hover:underline underline-offset-2"
               >
                 <Text as="span" secondaryBody text03>

@@ -127,11 +127,11 @@ export default function ActionLineItem({
           }}
           selected={isForced}
           strikethrough={
-            disabled ||
             isSearchToolWithNoConnectors ||
             isSearchToolWithNoKnowledgeSources ||
             isUnavailable
           }
+          muted={disabled && !isUnavailable && !isSearchToolWithNoConnectors && !isSearchToolWithNoKnowledgeSources}
           icon={Icon}
           rightChildren={
             <Section gap={0.25} flexDirection="row">

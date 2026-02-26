@@ -13,7 +13,18 @@ export default function LoginText() {
     <div className="w-full flex flex-col gap-1 animate-fadeIn">
       <Text as="p" headingH2 text05>
         Welcome to{" "}
-        <span className="virtualai-gradient-text">{appName}</span>
+        <span
+          className="font-bold"
+          style={{
+            background:
+              "linear-gradient(135deg, #E8449A 0%, #C026D3 35%, #7C3AED 65%, #4338CA 100%)",
+            backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          {appName}
+        </span>
       </Text>
       <Text as="p" text03 mainUiMuted>
         Sign in to your AI platform for work

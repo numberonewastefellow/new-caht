@@ -540,7 +540,7 @@
   --theme-primary-04: var(--onyx-chrome-20);
 
   /* Theme / Gradient */
-  --theme-gradient-05: var(--grey-100);
+  --theme-gradient-05: var(--grey-50);
   --theme-gradient-00: var(--grey-00);
 
   /* Theme / Red */
@@ -703,8 +703,8 @@
   --theme-primary-06: #93c5fd;
   --theme-primary-05: #60a5fa;
   --theme-primary-04: #3b82f6;
-  --theme-gradient-05: #1e3a5f;
-  --theme-gradient-00: #60a5fa;
+  --theme-gradient-05: #2563eb;
+  --theme-gradient-00: #93c5fd;
   --virtualai-accent-glow: rgba(59, 130, 246, 0.25);
   --virtualai-accent-glow-strong: rgba(59, 130, 246, 0.35);
   --virtualai-accent-subtle: rgba(59, 130, 246, 0.08);
@@ -730,8 +730,8 @@
   --theme-primary-06: #6ee7b7;
   --theme-primary-05: #34d399;
   --theme-primary-04: #059669;
-  --theme-gradient-05: #064e3b;
-  --theme-gradient-00: #34d399;
+  --theme-gradient-05: #059669;
+  --theme-gradient-00: #6ee7b7;
   --virtualai-accent-glow: rgba(52, 211, 153, 0.25);
   --virtualai-accent-glow-strong: rgba(52, 211, 153, 0.35);
   --virtualai-accent-subtle: rgba(52, 211, 153, 0.08);
@@ -757,8 +757,8 @@
   --theme-primary-06: #c4b5fd;
   --theme-primary-05: #a78bfa;
   --theme-primary-04: #7c3aed;
-  --theme-gradient-05: #2e1065;
-  --theme-gradient-00: #a78bfa;
+  --theme-gradient-05: #7c3aed;
+  --theme-gradient-00: #c4b5fd;
   --virtualai-accent-glow: rgba(167, 139, 250, 0.25);
   --virtualai-accent-glow-strong: rgba(167, 139, 250, 0.35);
   --virtualai-accent-subtle: rgba(167, 139, 250, 0.08);

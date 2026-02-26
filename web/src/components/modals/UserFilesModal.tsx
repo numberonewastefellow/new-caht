@@ -208,7 +208,12 @@ export default function UserFilesModal({
           >
             {/* File display section */}
             {filtered.length === 0 ? (
-              <Text text03>No files found</Text>
+              <div className="flex flex-col items-center py-8 gap-2">
+                <SvgFiles className="w-10 h-10 stroke-text-01" />
+                <Text as="p" text02 secondaryBody>
+                  {query.trim() ? "No matching files" : "No files uploaded yet"}
+                </Text>
+              </div>
             ) : (
               <ScrollIndicatorDiv className="p-2 gap-2 max-h-[70vh]">
                 {filtered.map((projectFle) => {
@@ -262,16 +267,32 @@ export default function UserFilesModal({
             {/* Left side: file count and controls */}
             {onPickRecent && (
               <Section flexDirection="row" justifyContent="start" gap={0.5}>
-                <Text as="p" text03>
+                <span
+                  className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full"
+                  style={
+                    selectedCount > 0
+                      ? {
+                          backgroundColor:
+                            "color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 10%, var(--background-neutral-01) 90%)",
+                          color:
+                            "var(--virtualai-accent, var(--theme-primary-05))",
+                        }
+                      : {
+                          backgroundColor: "var(--background-tint-02)",
+                          color: "var(--text-02)",
+                        }
+                  }
+                >
                   {selectedCount} {selectedCount === 1 ? "file" : "files"}{" "}
                   selected
-                </Text>
+                </span>
                 <OpalButton
                   icon={SvgEye}
                   prominence="tertiary"
                   size="sm"
                   onClick={() => setShowOnlySelected(!showOnlySelected)}
                   transient={showOnlySelected}
+                  tooltip={showOnlySelected ? "Show all" : "Show selected only"}
                 />
                 <OpalButton
                   icon={SvgXCircle}
@@ -279,6 +300,7 @@ export default function UserFilesModal({
                   size="sm"
                   onClick={handleDeselectAll}
                   disabled={selectedCount === 0}
+                  tooltip="Deselect all"
                 />
               </Section>
             )}

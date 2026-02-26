@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, Dispatch, SetStateAction } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 import {
   MinimalOnyxDocument,
   OnyxDocument,
@@ -10,13 +10,38 @@ import { WebResultIcon } from "@/components/WebResultIcon";
 import { ValidSources } from "@/lib/types";
 import { openDocument } from "@/lib/search/utils";
 import { buildDocumentSummaryDisplay } from "@/components/search/DocumentDisplay";
-import { DocumentUpdatedAtBadge } from "@/components/search/DocumentUpdatedAtBadge";
-import { MetadataBadge } from "@/components/MetadataBadge";
-import { FiTag } from "react-icons/fi";
+import { timeAgo } from "@/lib/time";
 import Modal from "@/refresh-components/Modal";
-import { SvgBookOpen, SvgChevronDown, SvgExternalLink } from "@opal/icons";
+import {
+  SvgBookOpen,
+  SvgChevronDown,
+  SvgExternalLink,
+} from "@opal/icons";
 import Text from "@/refresh-components/texts/Text";
 import { cn } from "@/lib/utils";
+
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                           */
+/* ------------------------------------------------------------------ */
+
+/** Labels we display with dedicated rows instead of generic badges. */
+const KNOWN_META_KEYS: Record<string, string> = {
+  title: "Title",
+  Title: "Title",
+  author: "Author",
+  Author: "Author",
+  creator: "Creator",
+  Creator: "Creator",
+};
+
+/** Pretty-print a metadata key for display. */
+function formatMetaKey(raw: string): string {
+  return KNOWN_META_KEYS[raw] ?? raw.charAt(0).toUpperCase() + raw.slice(1);
+}
+
+/* ------------------------------------------------------------------ */
+/*  SourceCard                                                        */
+/* ------------------------------------------------------------------ */
 
 interface CitedSourcesModalProps {
   open: boolean;
@@ -42,8 +67,12 @@ function SourceCard({
   const isInternet =
     document.is_internet || document.source_type === ValidSources.Web;
   const title = document.semantic_identifier || document.document_id;
-  const hasMetadata =
-    document.updated_at || Object.keys(document.metadata).length > 0;
+
+  const metaEntries = Object.entries(document.metadata).filter(
+    ([, v]) => v != null && String(v).trim() !== ""
+  );
+  const hasMetadata = document.updated_at || metaEntries.length > 0;
+
   const summary = buildDocumentSummaryDisplay(
     document.match_highlights,
     document.blurb
@@ -76,9 +105,7 @@ function SourceCard({
             backgroundColor: isExpanded
               ? "var(--virtualai-accent, var(--theme-primary-05))"
               : "var(--background-neutral-02)",
-            color: isExpanded
-              ? "white"
-              : "var(--text-03)",
+            color: isExpanded ? "white" : "var(--text-03)",
           }}
         >
           {index + 1}
@@ -93,9 +120,13 @@ function SourceCard({
           )}
         </div>
 
-        {/* Title */}
+        {/* Title + date hint */}
         <div className="flex-1 min-w-0">
-          <Text as="p" secondaryBody className="text-text-05 truncate font-medium">
+          <Text
+            as="p"
+            secondaryBody
+            className="text-text-05 truncate font-medium"
+          >
             {title}
           </Text>
           {!isExpanded && document.updated_at && (
@@ -105,7 +136,7 @@ function SourceCard({
           )}
         </div>
 
-        {/* Expand/collapse chevron */}
+        {/* Expand / collapse chevron */}
         <SvgChevronDown
           className={cn(
             "w-4 h-4 text-text-03 flex-shrink-0 transition-transform duration-200",
@@ -117,34 +148,60 @@ function SourceCard({
       {/* Expanded content */}
       {isExpanded && (
         <div className="px-4 pb-4 border-t border-border-01">
-          {/* Metadata badges */}
+          {/* ── Metadata table ── */}
           {hasMetadata && (
-            <div className="flex items-center gap-1 flex-wrap mt-3 mb-2">
-              {document.updated_at && (
-                <DocumentUpdatedAtBadge updatedAt={document.updated_at} />
-              )}
-              {Object.entries(document.metadata)
-                .slice(0, 3)
-                .map(([key, value], i) => (
-                  <MetadataBadge
-                    key={i}
-                    icon={FiTag}
-                    value={`${key}=${value}`}
-                  />
-                ))}
+            <div className="mt-3 mb-2 rounded-08 border border-border-01 overflow-hidden">
+              <table className="w-full text-xs">
+                <tbody>
+                  {document.updated_at && (
+                    <tr className="border-b border-border-01 last:border-b-0">
+                      <td className="px-3 py-2 text-text-03 font-medium whitespace-nowrap w-[100px] bg-background-neutral-01/40">
+                        Updated
+                      </td>
+                      <td className="px-3 py-2 text-text-05">
+                        {timeAgo(document.updated_at)}
+                        <span className="text-text-03 ml-1.5">
+                          ({new Date(document.updated_at).toLocaleDateString()})
+                        </span>
+                      </td>
+                    </tr>
+                  )}
+                  {metaEntries.map(([key, value]) => (
+                    <tr
+                      key={key}
+                      className="border-b border-border-01 last:border-b-0"
+                    >
+                      <td className="px-3 py-2 text-text-03 font-medium whitespace-nowrap w-[100px] bg-background-neutral-01/40">
+                        {formatMetaKey(key)}
+                      </td>
+                      <td className="px-3 py-2 text-text-05 break-words">
+                        {String(value)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
 
-          {/* Content preview */}
+          {/* ── Content preview ── */}
           {summary && (
             <div className="mt-2 p-3 rounded-08 bg-background-neutral-01/50">
-              <Text as="p" secondaryBody text03 className="line-clamp-6 whitespace-pre-wrap">
+              <Text as="p" className="text-[11px] font-medium text-text-03 uppercase tracking-wider mb-1.5">
+                Relevant Excerpt
+              </Text>
+              <Text
+                as="p"
+                secondaryBody
+                text03
+                className="line-clamp-6 whitespace-pre-wrap"
+              >
                 {summary}
               </Text>
             </div>
           )}
 
-          {/* Action button */}
+          {/* ── Action button ── */}
           <button
             type="button"
             onClick={(e) => {
@@ -153,18 +210,23 @@ function SourceCard({
             }}
             className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer"
             style={{
-              backgroundColor: "color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 10%, var(--background-neutral-01) 90%)",
+              backgroundColor:
+                "color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 10%, var(--background-neutral-01) 90%)",
               color: "var(--virtualai-accent, var(--theme-primary-05))",
             }}
           >
             <SvgExternalLink className="w-3.5 h-3.5" />
-            Open Document
+            View Full Document
           </button>
         </div>
       )}
     </div>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/*  Modal                                                             */
+/* ------------------------------------------------------------------ */
 
 export default function CitedSourcesModal({
   open,
@@ -193,17 +255,17 @@ export default function CitedSourcesModal({
       <Modal.Content width="sm" height="lg">
         <Modal.Header
           icon={SvgBookOpen}
-          title={`Cited Sources (${citedDocuments.length})`}
+          title={`Reference Documents (${citedDocuments.length})`}
           description={
             otherDocuments.length > 0
-              ? `${totalCount} sources found, ${citedDocuments.length} cited in response`
-              : undefined
+              ? `${totalCount} documents retrieved \u00B7 ${citedDocuments.length} cited in response`
+              : `${citedDocuments.length} document${citedDocuments.length !== 1 ? "s" : ""} used to generate this response`
           }
           onClose={onClose}
         />
         <Modal.Body>
           <div className="flex flex-col gap-2">
-            {/* Cited sources */}
+            {/* Cited documents */}
             {citedDocuments.map((doc, index) => (
               <SourceCard
                 key={doc.document_id}
@@ -215,13 +277,18 @@ export default function CitedSourcesModal({
               />
             ))}
 
-            {/* Other retrieved sources */}
+            {/* Other retrieved documents */}
             {otherDocuments.length > 0 && (
               <>
                 <div className="flex items-center gap-2 mt-3 mb-1">
                   <div className="h-px flex-1 bg-border-01" />
-                  <Text as="span" secondaryBody text03 className="text-xs uppercase tracking-wider flex-shrink-0">
-                    Other Sources
+                  <Text
+                    as="span"
+                    secondaryBody
+                    text03
+                    className="text-xs uppercase tracking-wider flex-shrink-0"
+                  >
+                    Additional Retrieved Documents
                   </Text>
                   <div className="h-px flex-1 bg-border-01" />
                 </div>
@@ -241,7 +308,9 @@ export default function CitedSourcesModal({
 
             {citedDocuments.length === 0 && otherDocuments.length === 0 && (
               <div className="py-8 text-center">
-                <Text secondaryBody text03>No sources found for this response.</Text>
+                <Text secondaryBody text03>
+                  No reference documents found for this response.
+                </Text>
               </div>
             )}
           </div>

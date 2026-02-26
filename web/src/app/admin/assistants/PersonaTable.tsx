@@ -36,14 +36,28 @@ import type { Route } from "next";
 function TypeBadge({ persona }: { persona: Persona }) {
   if (persona.builtin_persona) {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-slate-100 text-slate-600">
+      <span
+        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-medium border"
+        style={{
+          backgroundColor: "var(--background-tint-02)",
+          color: "var(--text-03)",
+          borderColor: "var(--border-02)",
+        }}
+      >
         Built-In
       </span>
     );
   }
   if (persona.is_public) {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-blue-100 text-blue-700">
+      <span
+        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-medium border"
+        style={{
+          backgroundColor: "var(--theme-blue-01)",
+          color: "var(--theme-blue-05)",
+          borderColor: "var(--theme-blue-02)",
+        }}
+      >
         <SvgGlobe className="w-3 h-3" />
         Public
       </span>
@@ -51,14 +65,28 @@ function TypeBadge({ persona }: { persona: Persona }) {
   }
   if (persona.groups.length > 0 || persona.users.length > 0) {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-violet-100 text-violet-700">
+      <span
+        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-medium border"
+        style={{
+          backgroundColor: "var(--theme-purple-01)",
+          color: "var(--theme-purple-05)",
+          borderColor: "var(--theme-purple-02)",
+        }}
+      >
         <SvgUsers className="w-3 h-3" />
         Shared
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-gray-100 text-gray-600">
+    <span
+      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-medium border"
+      style={{
+        backgroundColor: "var(--background-tint-02)",
+        color: "var(--text-03)",
+        borderColor: "var(--border-02)",
+      }}
+    >
       <SvgUser className="w-3 h-3" />
       Personal
     </span>
@@ -67,7 +95,14 @@ function TypeBadge({ persona }: { persona: Persona }) {
 
 function FeaturedBadge() {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-amber-100 text-amber-700">
+    <span
+      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-medium border"
+      style={{
+        backgroundColor: "var(--theme-amber-01)",
+        color: "var(--theme-amber-05)",
+        borderColor: "var(--theme-amber-02)",
+      }}
+    >
       <SvgStar className="w-3 h-3" />
       Featured
     </span>
@@ -76,7 +111,14 @@ function FeaturedBadge() {
 
 function HiddenBadge() {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-medium bg-red-100 text-red-600">
+    <span
+      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-medium border"
+      style={{
+        backgroundColor: "var(--theme-red-01)",
+        color: "var(--theme-red-05)",
+        borderColor: "var(--theme-red-02)",
+      }}
+    >
       <SvgEyeClosed className="w-3 h-3" />
       Hidden
     </span>
@@ -100,15 +142,33 @@ function PersonaCard({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Accent color follows the user's accent theme (ocean/emerald/violet)
+  // --virtualai-accent and --theme-primary-04 adapt to the chosen theme
+  const accentColor = persona.is_public
+    ? "var(--virtualai-accent, var(--theme-primary-05))"
+    : persona.groups.length > 0 || persona.users.length > 0
+      ? "var(--theme-primary-04)"
+      : persona.is_default_persona
+        ? "var(--virtualai-accent, var(--theme-primary-05))"
+        : "var(--border-03)";
+
   return (
     <div
       className={cn(
-        "group/card relative flex flex-col gap-3 p-4 rounded-xl border",
+        "group/card relative flex flex-col rounded-xl border overflow-hidden",
         "border-border-02 bg-background-tint-01",
-        "hover:border-border-03 hover:shadow-sm",
-        "transition-all duration-150"
+        "hover:border-border-03 hover:shadow-md hover:-translate-y-1",
+        "transition-all duration-200 ease-out"
       )}
     >
+      {/* Colored accent bar at top */}
+      <div
+        className="h-[3px] w-full flex-shrink-0"
+        style={{ backgroundColor: accentColor }}
+      />
+
+      {/* Card content */}
+      <div className="flex flex-col gap-3 p-4">
       {/* Top row: Avatar + Name + Menu */}
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0 mt-0.5">
@@ -199,6 +259,7 @@ function PersonaCard({
         <TypeBadge persona={persona} />
         {persona.is_default_persona && <FeaturedBadge />}
         {!persona.is_visible && <HiddenBadge />}
+      </div>
       </div>
     </div>
   );
@@ -349,7 +410,7 @@ export function PersonasTable({
         })()}
 
       {/* Card grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {finalPersonas.map((persona) => {
           const isEditable = editablePersonas.includes(persona);
           return (

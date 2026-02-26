@@ -542,12 +542,12 @@ export default function AgentsNavigationPage() {
         <div className="flex flex-col gap-3 px-4 md:pt-5 pt-3">
           {/* Row 1: Title + Search + New Agent */}
           <div className="flex flex-row items-center justify-between gap-4">
-            <div className="flex flex-col">
+            <div className="flex flex-col flex-1 min-w-0">
               <Text as="p" headingH2>
-                Agents & Assistants
+                {user ? `Hi ${user.email.split("@")[0]}` : "Agents & Assistants"}
               </Text>
               <Text as="p" secondaryBody text03>
-                {agents.length} agents ready to help you and your team be more productive.
+                {agents.length} agents across {uniqueLabels.length} categories, ready to help you and your team be more productive.
               </Text>
             </div>
             <div className="flex flex-row items-center gap-2 flex-shrink-0">

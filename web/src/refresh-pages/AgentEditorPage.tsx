@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import * as GeneralLayouts from "@/layouts/general-layouts";
@@ -35,7 +35,6 @@ import {
 } from "@/app/app/components/tools/constants";
 import Text from "@/refresh-components/texts/Text";
 import { Card } from "@/refresh-components/cards";
-import SimpleCollapsible from "@/refresh-components/SimpleCollapsible";
 import SwitchField from "@/refresh-components/form/SwitchField";
 import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import { useDocumentSets } from "@/app/admin/documents/sets/hooks";
@@ -51,14 +50,25 @@ import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import LineItem from "@/refresh-components/buttons/LineItem";
 import {
   SvgActions,
+  SvgArrowLeft,
+  SvgArrowRight,
+  SvgBookOpen,
+  SvgBubbleText,
+  SvgCheck,
   SvgExpand,
   SvgFold,
   SvgImage,
   SvgLock,
   SvgOnyxOctagon,
+  SvgSettings,
+  SvgShield,
   SvgSliders,
+  SvgSparkle,
   SvgTrash,
+  SvgUser,
 } from "@opal/icons";
+import { cn } from "@/lib/utils";
+import { IconProps } from "@opal/types";
 import CustomAgentAvatar, {
   agentAvatarIconMap,
 } from "@/refresh-components/avatars/CustomAgentAvatar";
@@ -87,6 +97,145 @@ import ShareAgentModal from "@/sections/modals/ShareAgentModal";
 import AgentKnowledgePane from "@/sections/knowledge/AgentKnowledgePane";
 import { ValidSources } from "@/lib/types";
 import { useSettingsContext } from "@/providers/SettingsProvider";
+
+// ─── Wizard Step Configuration ───────────────────────────────────────────────
+
+const TOTAL_STEPS = 3;
+
+const STEP_CONFIG = [
+  { label: "Identity", subtitle: "Name & personality", icon: SvgUser, color: "blue" },
+  { label: "Knowledge & Tools", subtitle: "Data & capabilities", icon: SvgBookOpen, color: "purple" },
+  { label: "Configure & Share", subtitle: "Fine-tune & publish", icon: SvgSettings, color: "green" },
+] as const;
+
+// Which Formik field names belong to each step (for per-step validation gating)
+const STEP_FIELDS: string[][] = [
+  ["name", "description", "icon_name", "uploaded_image_id", "remove_image", "instructions", "starter_messages"],
+  [
+    "enable_knowledge", "document_set_ids", "document_ids", "hierarchy_node_ids",
+    "user_file_ids", "selected_sources", "image_generation", "web_search",
+    "open_url", "code_interpreter", "file_reader",
+  ],
+  [
+    "llm_model_provider_override", "llm_model_version_override", "knowledge_cutoff_date",
+    "replace_base_system_prompt", "reminders", "shared_user_ids", "shared_group_ids", "is_public",
+  ],
+];
+
+// CSS variable color mapping per step color name
+const DEFAULT_STEP_COLOR = { bg01: "var(--theme-blue-01)", bg05: "var(--theme-blue-05)", text04: "var(--theme-blue-04)" } as const;
+
+const STEP_COLORS: Record<string, { bg01: string; bg05: string; text04: string }> = {
+  blue:   DEFAULT_STEP_COLOR,
+  purple: { bg01: "var(--theme-purple-01)", bg05: "var(--theme-purple-05)", text04: "var(--theme-purple-04)" },
+  green:  { bg01: "var(--theme-green-01)",  bg05: "var(--theme-green-05)",  text04: "var(--theme-green-04)" },
+};
+
+// ─── Step Indicator Component ────────────────────────────────────────────────
+
+function StepIndicator({ currentStep, onStepClick }: { currentStep: number; onStepClick?: (step: number) => void }) {
+  return (
+    <div className="flex items-center gap-2 px-4 py-5">
+      {STEP_CONFIG.map((step, i) => {
+        const isCurrent = i === currentStep;
+        const isCompleted = i < currentStep;
+        const isFuture = i > currentStep;
+        const colors = STEP_COLORS[step.color] ?? DEFAULT_STEP_COLOR;
+        const StepIcon = step.icon;
+
+        return (
+          <React.Fragment key={i}>
+            <div
+              className={cn(
+                "flex items-center gap-2.5 min-w-0",
+                (isCompleted && onStepClick) && "cursor-pointer"
+              )}
+              onClick={() => isCompleted && onStepClick?.(i)}
+            >
+              {/* Icon circle */}
+              <div
+                className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300"
+                style={{
+                  backgroundColor: isCurrent ? colors.bg05 : isCompleted ? colors.bg01 : "var(--background-tint-03)",
+                }}
+              >
+                {isCompleted ? (
+                  <SvgCheck className="w-4 h-4" style={{ stroke: colors.bg05 }} />
+                ) : (
+                  <StepIcon
+                    className="w-4 h-4"
+                    style={{ stroke: isCurrent ? "var(--background-tint-00)" : "var(--text-02)" }}
+                  />
+                )}
+              </div>
+
+              {/* Label + subtitle */}
+              <div className="flex flex-col min-w-0">
+                <Text
+                  as="span"
+                  mainUiAction
+                  className="truncate"
+                  style={{
+                    color: isCurrent ? colors.bg05 : isFuture ? "var(--text-02)" : "var(--text-04)",
+                  }}
+                >
+                  {step.label}
+                </Text>
+                <Text
+                  as="span"
+                  secondaryBody
+                  className="truncate"
+                  style={{
+                    color: isCurrent ? colors.text04 : "var(--text-02)",
+                  }}
+                >
+                  {step.subtitle}
+                </Text>
+              </div>
+            </div>
+
+            {/* Connector line */}
+            {i < STEP_CONFIG.length - 1 && (
+              <div
+                className="flex-1 h-0.5 rounded-full transition-colors duration-300"
+                style={{
+                  backgroundColor: isCompleted ? colors.bg05 : "var(--background-tint-03)",
+                }}
+              />
+            )}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Section Header Component ────────────────────────────────────────────────
+
+function WizardSectionHeader({ icon: Icon, title, description, color }: {
+  icon: React.FunctionComponent<IconProps>;
+  title: string;
+  description: string;
+  color: string;
+}) {
+  const colors = STEP_COLORS[color] ?? DEFAULT_STEP_COLOR;
+  return (
+    <div className="flex items-start gap-3 mb-1">
+      <div
+        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+        style={{ backgroundColor: colors.bg01 }}
+      >
+        <Icon className="w-4 h-4" style={{ stroke: colors.bg05 }} />
+      </div>
+      <div className="flex flex-col">
+        <Text as="p" mainContentEmphasis>{title}</Text>
+        <Text as="p" secondaryBody text03>{description}</Text>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface AgentIconEditorProps {
   existingAgent?: FullPersona | null;
@@ -452,6 +601,34 @@ export default function AgentEditorPage({
   const deleteAgentModal = useCreateModal();
   const settings = useSettingsContext();
   const vectorDbEnabled = settings?.settings.vector_db_enabled !== false;
+
+  // ─── Wizard step state ───
+  const [currentStep, setCurrentStep] = useState(0);
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    document.getElementById("page-wrapper-scroll-container")?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentStep]);
+
+  // Per-step validation: only block "Next" if the CURRENT step has errors
+  const handleNextStep = useCallback(
+    async (
+      validateForm: () => Promise<Record<string, unknown>>,
+      setFieldTouched: (field: string, touched: boolean) => void
+    ) => {
+      const errors = await validateForm();
+      const stepFields = STEP_FIELDS[currentStep] ?? [];
+      const hasStepErrors = Object.keys(errors).some((errorKey) =>
+        stepFields.some((f) => errorKey === f || errorKey.startsWith(`${f}.`))
+      );
+      if (hasStepErrors) {
+        stepFields.forEach((f) => setFieldTouched(f, true));
+        return;
+      }
+      setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS - 1));
+    },
+    [currentStep]
+  );
 
   // LLM Model Selection
   const getCurrentLlm = useCallback(
@@ -991,7 +1168,7 @@ export default function AgentEditorPage({
           validateOnMount
           initialStatus={{ warnings: {} }}
         >
-          {({ isSubmitting, isValid, dirty, values, setFieldValue }) => {
+          {({ isSubmitting, isValid, dirty, values, setFieldValue, validateForm, setFieldTouched }) => {
             const fileStatusMap = new Map(
               allRecentFiles.map((f) => [f.id, f.status])
             );
@@ -1114,139 +1291,199 @@ export default function AgentEditorPage({
                           >
                             Cancel
                           </Button>
-                          <Button
-                            type="submit"
-                            disabled={
-                              isSubmitting ||
-                              !isValid ||
-                              !dirty ||
-                              hasUploadingFiles
-                            }
-                          >
-                            {existingAgent ? "Save" : "Create"}
-                          </Button>
+                          {currentStep > 0 && (
+                            <Button
+                              type="button"
+                              secondary
+                              leftIcon={SvgArrowLeft}
+                              onClick={() => setCurrentStep((s) => s - 1)}
+                            >
+                              Back
+                            </Button>
+                          )}
+                          {currentStep < TOTAL_STEPS - 1 ? (
+                            <Button
+                              type="button"
+                              rightIcon={SvgArrowRight}
+                              onClick={() => handleNextStep(validateForm, setFieldTouched)}
+                            >
+                              Next
+                            </Button>
+                          ) : (
+                            <Button
+                              type="submit"
+                              leftIcon={existingAgent ? undefined : SvgSparkle}
+                              disabled={
+                                isSubmitting ||
+                                !isValid ||
+                                !dirty ||
+                                hasUploadingFiles
+                              }
+                            >
+                              {existingAgent ? "Save" : "Create"}
+                            </Button>
+                          )}
                         </div>
                       }
                       backButton
                       separator
-                    />
-
-                    {/* Agent Form Content */}
-                    <SettingsLayouts.Body>
-                      <GeneralLayouts.Section
-                        flexDirection="row"
-                        gap={2.5}
-                        alignItems="start"
-                      >
-                        <GeneralLayouts.Section>
-                          <InputLayouts.Vertical name="name" title="Name">
-                            <InputTypeInField
-                              name="name"
-                              placeholder="Name your agent"
-                            />
-                          </InputLayouts.Vertical>
-
-                          <InputLayouts.Vertical
-                            name="description"
-                            title="Description"
-                            optional
-                          >
-                            <InputTextAreaField
-                              name="description"
-                              placeholder="What does this agent do?"
-                            />
-                          </InputLayouts.Vertical>
-                        </GeneralLayouts.Section>
-
-                        <GeneralLayouts.Section width="fit">
-                          <InputLayouts.Vertical
-                            name="agent_avatar"
-                            title="Agent Avatar"
-                            center
-                          >
-                            <AgentIconEditor existingAgent={existingAgent} />
-                          </InputLayouts.Vertical>
-                        </GeneralLayouts.Section>
-                      </GeneralLayouts.Section>
-
-                      <Separator noPadding />
-
-                      <GeneralLayouts.Section>
-                        <InputLayouts.Vertical
-                          name="instructions"
-                          title="Instructions"
-                          optional
-                          description="Add instructions to tailor the response for this agent."
-                        >
-                          <InputTextAreaField
-                            name="instructions"
-                            placeholder="Think step by step and show reasoning for complex problems. Use specific examples. Emphasize action items, and leave blanks for the human to fill in when you have unknown. Use a polite enthusiastic tone."
-                          />
-                        </InputLayouts.Vertical>
-
-                        <InputLayouts.Vertical
-                          name="starter_messages"
-                          title="Conversation Starters"
-                          description="Example messages that help users understand what this agent can do and how to interact with it effectively."
-                          optional
-                        >
-                          <StarterMessages />
-                        </InputLayouts.Vertical>
-                      </GeneralLayouts.Section>
-
-                      <Separator noPadding />
-
-                      <AgentKnowledgePane
-                        enableKnowledge={values.enable_knowledge}
-                        onEnableKnowledgeChange={(enabled) =>
-                          setFieldValue("enable_knowledge", enabled)
-                        }
-                        selectedSources={values.selected_sources}
-                        onSourcesChange={(sources) =>
-                          setFieldValue("selected_sources", sources)
-                        }
-                        documentSets={documentSets ?? []}
-                        selectedDocumentSetIds={values.document_set_ids}
-                        onDocumentSetIdsChange={(ids) =>
-                          setFieldValue("document_set_ids", ids)
-                        }
-                        selectedDocumentIds={values.document_ids}
-                        onDocumentIdsChange={(ids) =>
-                          setFieldValue("document_ids", ids)
-                        }
-                        selectedFolderIds={values.hierarchy_node_ids}
-                        onFolderIdsChange={(ids) =>
-                          setFieldValue("hierarchy_node_ids", ids)
-                        }
-                        selectedFileIds={values.user_file_ids}
-                        onFileIdsChange={(ids) =>
-                          setFieldValue("user_file_ids", ids)
-                        }
-                        allRecentFiles={allRecentFiles}
-                        onFileClick={handleFileClick}
-                        onUploadChange={(e) =>
-                          handleUploadChange(
-                            e,
-                            values.user_file_ids,
-                            setFieldValue
-                          )
-                        }
-                        hasProcessingFiles={hasProcessingFiles}
-                        initialAttachedDocuments={
-                          existingAgent?.attached_documents
-                        }
-                        initialHierarchyNodes={existingAgent?.hierarchy_nodes}
-                        vectorDbEnabled={vectorDbEnabled}
+                    >
+                      <StepIndicator
+                        currentStep={currentStep}
+                        onStepClick={(step) => setCurrentStep(step)}
                       />
+                    </SettingsLayouts.Header>
 
-                      <Separator noPadding />
+                    {/* Agent Form Content — Wizard Steps */}
+                    <SettingsLayouts.Body>
 
-                      <SimpleCollapsible>
-                        <SimpleCollapsible.Header
-                          title="Actions"
-                          description="Tools and capabilities available for this agent to use."
-                        />
-                        <SimpleCollapsible.Content>
+                      {/* ═══════════════════════════════════════════════════
+                          STEP 1: Identity — Name & Personality
+                          ═══════════════════════════════════════════════════ */}
+                      {currentStep === 0 && (
+                        <>
+                          <WizardSectionHeader
+                            icon={SvgUser}
+                            title="Who is your agent?"
+                            description="Give your agent a name, look, and personality."
+                            color="blue"
+                          />
+
+                          <GeneralLayouts.Section
+                            flexDirection="row"
+                            gap={2.5}
+                            alignItems="start"
+                          >
+                            <GeneralLayouts.Section>
+                              <InputLayouts.Vertical name="name" title="Name">
+                                <InputTypeInField
+                                  name="name"
+                                  placeholder="Name your agent"
+                                />
+                              </InputLayouts.Vertical>
+
+                              <InputLayouts.Vertical
+                                name="description"
+                                title="Description"
+                                description="A short summary shown to users when they browse agents."
+                                optional
+                              >
+                                <InputTextAreaField
+                                  name="description"
+                                  placeholder="What does this agent do?"
+                                />
+                              </InputLayouts.Vertical>
+                            </GeneralLayouts.Section>
+
+                            <GeneralLayouts.Section width="fit">
+                              <InputLayouts.Vertical
+                                name="agent_avatar"
+                                title="Agent Avatar"
+                                center
+                              >
+                                <AgentIconEditor existingAgent={existingAgent} />
+                              </InputLayouts.Vertical>
+                            </GeneralLayouts.Section>
+                          </GeneralLayouts.Section>
+
+                          <Separator noPadding />
+
+                          <WizardSectionHeader
+                            icon={SvgBubbleText}
+                            title="How should it respond?"
+                            description="Define the personality and conversation style."
+                            color="blue"
+                          />
+
+                          <GeneralLayouts.Section>
+                            <InputLayouts.Vertical
+                              name="instructions"
+                              title="Instructions"
+                              optional
+                              description="The system prompt tells the AI how to behave — its personality, rules, and expertise. Think of it as a job description for the agent."
+                            >
+                              <InputTextAreaField
+                                name="instructions"
+                                placeholder="Think step by step and show reasoning for complex problems. Use specific examples. Emphasize action items, and leave blanks for the human to fill in when you have unknown. Use a polite enthusiastic tone."
+                              />
+                            </InputLayouts.Vertical>
+
+                            <InputLayouts.Vertical
+                              name="starter_messages"
+                              title="Conversation Starters"
+                              description="Quick-action buttons shown when users open a new chat. Use these to showcase what your agent can do."
+                              optional
+                            >
+                              <StarterMessages />
+                            </InputLayouts.Vertical>
+                          </GeneralLayouts.Section>
+                        </>
+                      )}
+
+                      {/* ═══════════════════════════════════════════════════
+                          STEP 2: Knowledge & Tools
+                          ═══════════════════════════════════════════════════ */}
+                      {currentStep === 1 && (
+                        <>
+                          <WizardSectionHeader
+                            icon={SvgBookOpen}
+                            title="What does your agent know?"
+                            description="Connect knowledge sources so the agent can reference your company's documents when answering."
+                            color="purple"
+                          />
+
+                          <AgentKnowledgePane
+                            enableKnowledge={values.enable_knowledge}
+                            onEnableKnowledgeChange={(enabled) =>
+                              setFieldValue("enable_knowledge", enabled)
+                            }
+                            selectedSources={values.selected_sources}
+                            onSourcesChange={(sources) =>
+                              setFieldValue("selected_sources", sources)
+                            }
+                            documentSets={documentSets ?? []}
+                            selectedDocumentSetIds={values.document_set_ids}
+                            onDocumentSetIdsChange={(ids) =>
+                              setFieldValue("document_set_ids", ids)
+                            }
+                            selectedDocumentIds={values.document_ids}
+                            onDocumentIdsChange={(ids) =>
+                              setFieldValue("document_ids", ids)
+                            }
+                            selectedFolderIds={values.hierarchy_node_ids}
+                            onFolderIdsChange={(ids) =>
+                              setFieldValue("hierarchy_node_ids", ids)
+                            }
+                            selectedFileIds={values.user_file_ids}
+                            onFileIdsChange={(ids) =>
+                              setFieldValue("user_file_ids", ids)
+                            }
+                            allRecentFiles={allRecentFiles}
+                            onFileClick={handleFileClick}
+                            onUploadChange={(e) =>
+                              handleUploadChange(
+                                e,
+                                values.user_file_ids,
+                                setFieldValue
+                              )
+                            }
+                            hasProcessingFiles={hasProcessingFiles}
+                            initialAttachedDocuments={
+                              existingAgent?.attached_documents
+                            }
+                            initialHierarchyNodes={existingAgent?.hierarchy_nodes}
+                            vectorDbEnabled={vectorDbEnabled}
+                          />
+
+                          <Separator noPadding />
+
+                          <WizardSectionHeader
+                            icon={SvgSparkle}
+                            title="What can your agent do?"
+                            description="Enable tools to give your agent superpowers beyond just chatting."
+                            color="purple"
+                          />
+
                           <GeneralLayouts.Section gap={0.5}>
                             <SimpleTooltip
                               tooltip={imageGenerationDisabledTooltip}
@@ -1262,7 +1499,7 @@ export default function AgentEditorPage({
                                 <InputLayouts.Horizontal
                                   name="image_generation"
                                   title="Image Generation"
-                                  description="Generate and manipulate images using AI-powered tools."
+                                  description="Create and edit images using AI. Requires an image generation model to be configured."
                                   disabled={!isImageGenerationAvailable}
                                 >
                                   <SwitchField
@@ -1279,7 +1516,7 @@ export default function AgentEditorPage({
                               <InputLayouts.Horizontal
                                 name="web_search"
                                 title="Web Search"
-                                description="Search the web for real-time information and up-to-date results."
+                                description="Search the internet for real-time information. Best paired with Open URL for full web page reading."
                                 disabled={!webSearchTool}
                               >
                                 <SwitchField
@@ -1295,7 +1532,7 @@ export default function AgentEditorPage({
                               <InputLayouts.Horizontal
                                 name="open_url"
                                 title="Open URL"
-                                description="Fetch and read content from web URLs."
+                                description="Read and extract content from any web page URL. Strongly recommended when Web Search is enabled."
                                 disabled={!openURLTool}
                               >
                                 <SwitchField
@@ -1313,7 +1550,7 @@ export default function AgentEditorPage({
                               <InputLayouts.Horizontal
                                 name="code_interpreter"
                                 title="Code Interpreter"
-                                description="Generate and run code."
+                                description="Write, execute, and debug Python code. Great for data analysis, calculations, and file processing."
                                 disabled={!codeInterpreterTool}
                               >
                                 <SwitchField
@@ -1331,7 +1568,7 @@ export default function AgentEditorPage({
                               <InputLayouts.Horizontal
                                 name="file_reader"
                                 title="File Reader"
-                                description="Read sections of uploaded files. Required for files that exceed the context window."
+                                description="Read and process uploaded files section by section. Essential for large documents that exceed the AI's context window."
                                 disabled={!fileReaderTool}
                               >
                                 <SwitchField
@@ -1341,15 +1578,13 @@ export default function AgentEditorPage({
                               </InputLayouts.Horizontal>
                             </Card>
 
-                            {/* Tools */}
+                            {/* MCP & OpenAPI Tools */}
                             <>
-                              {/* render the separator if there is at least one mcp-server or open-api-tool */}
                               {(mcpServers.length > 0 ||
                                 openApiTools.length > 0) && (
                                 <Separator noPadding className="py-1" />
                               )}
 
-                              {/* MCP tools */}
                               {mcpServersWithTools.length > 0 && (
                                 <GeneralLayouts.Section gap={0.5}>
                                   {mcpServersWithTools.map(
@@ -1365,7 +1600,6 @@ export default function AgentEditorPage({
                                 </GeneralLayouts.Section>
                               )}
 
-                              {/* OpenAPI tools */}
                               {openApiTools.length > 0 && (
                                 <GeneralLayouts.Section gap={0.5}>
                                   {openApiTools.map((tool) => (
@@ -1378,22 +1612,26 @@ export default function AgentEditorPage({
                               )}
                             </>
                           </GeneralLayouts.Section>
-                        </SimpleCollapsible.Content>
-                      </SimpleCollapsible>
+                        </>
+                      )}
 
-                      <Separator noPadding />
+                      {/* ═══════════════════════════════════════════════════
+                          STEP 3: Configure & Share
+                          ═══════════════════════════════════════════════════ */}
+                      {currentStep === 2 && (
+                        <>
+                          <WizardSectionHeader
+                            icon={SvgShield}
+                            title="Who can use this agent?"
+                            description="Control access and visibility."
+                            color="green"
+                          />
 
-                      <SimpleCollapsible>
-                        <SimpleCollapsible.Header
-                          title="Advanced Options"
-                          description="Fine-tune agent prompts and knowledge."
-                        />
-                        <SimpleCollapsible.Content>
                           <GeneralLayouts.Section>
                             <Card>
                               <InputLayouts.Horizontal
                                 title="Share This Agent"
-                                description="Share this agent with other users, groups, or everyone in your organization."
+                                description="Control who can find and use this agent — specific people, teams, or your entire organization."
                                 center
                               >
                                 <Button
@@ -1405,12 +1643,23 @@ export default function AgentEditorPage({
                                 </Button>
                               </InputLayouts.Horizontal>
                             </Card>
+                          </GeneralLayouts.Section>
 
+                          <Separator noPadding />
+
+                          <WizardSectionHeader
+                            icon={SvgSliders}
+                            title="Fine-tune behavior"
+                            description="Advanced settings for power users. Most agents work great with defaults — only change these if needed."
+                            color="green"
+                          />
+
+                          <GeneralLayouts.Section>
                             <Card>
                               <InputLayouts.Horizontal
                                 name="llm_model"
                                 title="Default Model"
-                                description="Select the LLM model to use for this agent. If not set, the user's default model will be used."
+                                description="Override which AI model this agent uses. Leave empty to let each user's preferred model be used."
                               >
                                 <LLMSelector
                                   name="llm_model"
@@ -1427,14 +1676,14 @@ export default function AgentEditorPage({
                               <InputLayouts.Horizontal
                                 name="knowledge_cutoff_date"
                                 title="Knowledge Cutoff Date"
-                                description="Set the knowledge cutoff date for this agent. The agent will only use information up to this date."
+                                description="Only reference documents created before this date. Useful for historical snapshots or compliance."
                               >
                                 <InputDatePickerField name="knowledge_cutoff_date" />
                               </InputLayouts.Horizontal>
                               <InputLayouts.Horizontal
                                 name="replace_base_system_prompt"
                                 title="Overwrite System Prompt"
-                                description='Completely replace the base system prompt. This might affect response quality since it will also overwrite useful system instructions (e.g. "You (the LLM) can provide markdown and it will be rendered").'
+                                description="Replace ALL default system instructions. Warning: this removes helpful built-in behaviors like markdown rendering and citation formatting."
                               >
                                 <SwitchField name="replace_base_system_prompt" />
                               </InputLayouts.Horizontal>
@@ -1444,45 +1693,40 @@ export default function AgentEditorPage({
                               <InputLayouts.Vertical
                                 name="reminders"
                                 title="Reminders"
+                                description="A short note appended to every message in the conversation. Use this if the agent tends to forget certain rules as the chat gets longer. Keep it brief — 1-2 sentences max."
                               >
                                 <InputTextAreaField
                                   name="reminders"
                                   placeholder="Remember, I want you to always format your response as a numbered list."
                                 />
                               </InputLayouts.Vertical>
-                              <Text text03 secondaryBody>
-                                Append a brief reminder to the prompt messages.
-                                Use this to remind the agent if you find that it
-                                tends to forget certain instructions as the chat
-                                progresses. This should be brief and not
-                                interfere with the user messages.
-                              </Text>
                             </GeneralLayouts.Section>
                           </GeneralLayouts.Section>
-                        </SimpleCollapsible.Content>
-                      </SimpleCollapsible>
 
-                      {existingAgent && (
-                        <>
-                          <Separator noPadding />
+                          {existingAgent && (
+                            <>
+                              <Separator noPadding />
 
-                          <Card>
-                            <InputLayouts.Horizontal
-                              title="Delete This Agent"
-                              description="Anyone using this agent will no longer be able to access it."
-                              center
-                            >
-                              <Button
-                                secondary
-                                danger
-                                onClick={() => deleteAgentModal.toggle(true)}
-                              >
-                                Delete Agent
-                              </Button>
-                            </InputLayouts.Horizontal>
-                          </Card>
+                              <Card>
+                                <InputLayouts.Horizontal
+                                  title="Delete This Agent"
+                                  description="Anyone using this agent will no longer be able to access it."
+                                  center
+                                >
+                                  <Button
+                                    secondary
+                                    danger
+                                    onClick={() => deleteAgentModal.toggle(true)}
+                                  >
+                                    Delete Agent
+                                  </Button>
+                                </InputLayouts.Horizontal>
+                              </Card>
+                            </>
+                          )}
                         </>
                       )}
+
                     </SettingsLayouts.Body>
                   </SettingsLayouts.Root>
                 </Form>

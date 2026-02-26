@@ -8,7 +8,8 @@
       "Bash(bash rebrand-urls.sh)",
       "Bash(for id in 119 120 121 122 123 124 125 126 127 128)",
       "Bash(do python generate_icon.py --id $id)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(dev build up:*)"
     ]
   }
 }

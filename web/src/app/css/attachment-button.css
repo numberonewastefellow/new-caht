@@ -11,11 +11,11 @@
 }
 
 .attachment-button:hover {
-  background-color: var(--background-tint-02);
+  background-color: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 4%, var(--background-tint-00) 96%);
 }
 
 .attachment-button[data-state="selected"] {
-  background-color: var(--action-link-01);
+  background-color: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 8%, var(--background-tint-01) 92%);
 }
 
 .attachment-button__content {

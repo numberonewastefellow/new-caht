@@ -95,7 +95,7 @@ export function makeAccentColorfulIcon(
         className="inline-flex items-center justify-center rounded-[5px] w-5 h-5 flex-shrink-0"
         style={{ backgroundColor: "var(--virtualai-accent, var(--theme-primary-05))" }}
       >
-        <BaseIcon className="w-3 h-3 text-white" />
+        <BaseIcon className="w-3 h-3 text-text-inverted-05" />
       </span>
     );
   };

@@ -25,8 +25,8 @@ import {
   SvgSlidersSmall,
   SvgTerminalSmall,
   SvgTextLinesSmall,
-  SvgTwoLineSmall,
 } from "@opal/icons";
+import { OnyxIcon } from "@/components/icons/icons";
 
 interface IconConfig {
   Icon: React.FunctionComponent<IconProps>;
@@ -145,11 +145,11 @@ export default function CustomAgentAvatar({
   }
 
   return (
-    <SvgOctagonWrapper size={size}>
-      <SvgTwoLineSmall
-        className="stroke-text-04"
-        style={{ width: size * 0.8, height: size * 0.8 }}
-      />
-    </SvgOctagonWrapper>
+    <div
+      className="flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
+      <OnyxIcon size={size * 0.85} />
+    </div>
   );
 }

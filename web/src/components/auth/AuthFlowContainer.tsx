@@ -1,64 +1,102 @@
 import Link from "next/link";
 import { OnyxIcon } from "../icons/icons";
 
+/**
+ * Brand gradient from the VertualAI logo: pink → fuchsia → violet → indigo.
+ * Used as accent colors for the branding panel.
+ */
+const BRAND_COLORS = {
+  pink: "#E8449A",
+  fuchsia: "#C026D3",
+  violet: "#7C3AED",
+  indigo: "#4338CA",
+};
+
 function BrandingPanel() {
   return (
     <div
-      className="flex flex-col items-center justify-center h-full w-full relative"
+      className="flex flex-col items-center justify-center h-full w-full relative overflow-hidden"
       style={{
-        background: `linear-gradient(135deg, var(--theme-gradient-00) 0%, var(--theme-gradient-05) 50%, var(--theme-primary-05) 100%)`,
+        background: `linear-gradient(160deg, #120618 0%, #0d0a1f 40%, #0a0e2a 100%)`,
       }}
     >
-      {/* Decorative blurred circles for depth */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Brand-colored decorative blurred circles */}
+      <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute rounded-full opacity-10"
+          className="absolute rounded-full"
+          style={{
+            width: 400,
+            height: 400,
+            top: "-10%",
+            left: "-10%",
+            background: BRAND_COLORS.pink,
+            opacity: 0.08,
+            filter: "blur(80px)",
+          }}
+        />
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: 350,
+            height: 350,
+            top: "30%",
+            right: "-5%",
+            background: BRAND_COLORS.violet,
+            opacity: 0.1,
+            filter: "blur(70px)",
+          }}
+        />
+        <div
+          className="absolute rounded-full"
           style={{
             width: 300,
             height: 300,
-            top: "10%",
-            left: "-5%",
-            background: "var(--theme-primary-04)",
+            bottom: "-5%",
+            left: "20%",
+            background: BRAND_COLORS.indigo,
+            opacity: 0.12,
             filter: "blur(60px)",
           }}
         />
         <div
-          className="absolute rounded-full opacity-10"
+          className="absolute rounded-full"
           style={{
             width: 200,
             height: 200,
-            bottom: "15%",
-            right: "-3%",
-            background: "var(--theme-gradient-05)",
-            filter: "blur(40px)",
+            top: "60%",
+            left: "-5%",
+            background: BRAND_COLORS.fuchsia,
+            opacity: 0.06,
+            filter: "blur(50px)",
           }}
         />
+        {/* Theme-aware accent glow — blends the current theme primary into the panel */}
         <div
-          className="absolute rounded-full opacity-5"
+          className="absolute rounded-full"
           style={{
-            width: 150,
-            height: 150,
-            top: "50%",
-            left: "30%",
-            background: "var(--theme-gradient-00)",
-            filter: "blur(50px)",
+            width: 250,
+            height: 250,
+            top: "15%",
+            right: "15%",
+            background: "var(--theme-primary-05)",
+            opacity: 0.07,
+            filter: "blur(60px)",
           }}
         />
       </div>
 
       {/* Main branding content */}
-      <div className="relative z-10 flex flex-col items-center gap-6 px-12 text-center">
-        {/* Logo with pulse ring effect */}
-        <div className="virtualai-pulse-ring rounded-full p-4 bg-[rgba(255,255,255,0.08)] backdrop-blur-sm">
-          <OnyxIcon size={64} className="text-[var(--text-inverted-05)]" />
+      <div className="relative z-10 flex flex-col items-center gap-8 px-12 text-center">
+        {/* Logo — the original VertualAI dot cluster icon */}
+        <div className="virtualai-pulse-ring rounded-full p-5 bg-white/5 backdrop-blur-sm border border-white/10">
+          <OnyxIcon size={72} className="flex-shrink-0" />
         </div>
 
-        {/* Brand name */}
+        {/* Brand name with the original logo gradient */}
         <h1
-          className="text-4xl font-semibold tracking-tight"
+          className="text-4xl font-bold tracking-tight"
           style={{
-            background:
-              "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)",
+            background: `linear-gradient(135deg, ${BRAND_COLORS.pink} 0%, ${BRAND_COLORS.fuchsia} 35%, ${BRAND_COLORS.violet} 65%, ${BRAND_COLORS.indigo} 100%)`,
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
@@ -68,30 +106,35 @@ function BrandingPanel() {
         </h1>
 
         {/* Tagline */}
-        <p className="text-[var(--text-inverted-03)] text-lg max-w-xs leading-relaxed">
+        <p className="text-white/60 text-lg max-w-xs leading-relaxed">
           Your AI platform for work
         </p>
 
         {/* Decorative separator */}
         <div
-          className="w-12 h-0.5 rounded-full opacity-30"
-          style={{ background: "var(--theme-gradient-00)" }}
+          className="w-16 h-px rounded-full"
+          style={{
+            background: `linear-gradient(90deg, transparent 0%, ${BRAND_COLORS.violet}40 50%, transparent 100%)`,
+          }}
         />
 
         {/* Feature highlights */}
-        <div className="flex flex-col gap-3 text-[var(--text-inverted-03)] text-sm mt-4">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-[var(--text-inverted-03)] opacity-50" />
-            <span>Enterprise-grade AI assistance</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-[var(--text-inverted-03)] opacity-50" />
-            <span>Connect all your knowledge sources</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-[var(--text-inverted-03)] opacity-50" />
-            <span>Secure and private by design</span>
-          </div>
+        <div className="flex flex-col gap-4 text-sm mt-2">
+          {[
+            "Enterprise-grade AI assistance",
+            "Connect all your knowledge sources",
+            "Secure and private by design",
+          ].map((text) => (
+            <div key={text} className="flex items-center gap-3">
+              <div
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND_COLORS.pink}, ${BRAND_COLORS.violet})`,
+                }}
+              />
+              <span className="text-white/50">{text}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -157,17 +200,34 @@ export default function AuthFlowContainer({
         </div>
 
         {/* Right panel — form */}
-        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center min-h-screen bg-background-tint-00 p-6 sm:p-8 lg:p-12">
+        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center min-h-screen bg-background p-6 sm:p-8 lg:p-12 relative">
+          {/* Subtle brand accent glow at top of right panel */}
+          <div
+            className="absolute top-0 left-0 right-0 h-1 pointer-events-none"
+            style={{
+              background: `linear-gradient(90deg, ${BRAND_COLORS.pink}, ${BRAND_COLORS.fuchsia}, ${BRAND_COLORS.violet}, ${BRAND_COLORS.indigo})`,
+              opacity: 0.6,
+            }}
+          />
+
           {/* Mobile-only compact branding header */}
-          <div className="lg:hidden mb-8 flex flex-col items-center gap-2">
-            <OnyxIcon size={36} className="text-theme-primary-05" />
-            <span className="virtualai-gradient-text text-xl font-semibold">
+          <div className="lg:hidden mb-8 flex items-center gap-2">
+            <OnyxIcon size={28} className="flex-shrink-0" />
+            <span
+              className="text-lg font-bold"
+              style={{
+                background: `linear-gradient(135deg, ${BRAND_COLORS.pink} 0%, ${BRAND_COLORS.fuchsia} 35%, ${BRAND_COLORS.violet} 65%, ${BRAND_COLORS.indigo} 100%)`,
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               VertualAI
             </span>
           </div>
 
-          {/* Form content */}
-          <div className="w-full max-w-md animate-fadeIn">
+          {/* Form card */}
+          <div className="w-full max-w-md animate-fadeIn bg-background-tint-00 rounded-16 p-8 shadow-02 border border-border-01">
             {children}
           </div>
 

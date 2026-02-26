@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import { cn, noProp } from "@/lib/utils";
 import UserFilesModal from "@/components/modals/UserFilesModal";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
@@ -9,19 +8,26 @@ import {
   ProjectFile,
   UserFileStatus,
 } from "@/app/app/projects/projectsService";
-import LineItem from "@/refresh-components/buttons/LineItem";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import { toast } from "@/hooks/useToast";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import Text from "@/refresh-components/texts/Text";
-import { MAX_FILES_TO_SHOW } from "@/lib/constants";
+import Modal from "@/refresh-components/Modal";
 import {
   SvgExternalLink,
+  SvgFiles,
   SvgLoader,
-  SvgMoreHorizontal,
+  SvgPaperclip,
   SvgUploadCloud,
 } from "@opal/icons";
 import { getColorfulFileIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
+import { Section } from "@/layouts/general-layouts";
+import Truncated from "@/refresh-components/texts/Truncated";
+import Button from "@/refresh-components/buttons/Button";
+
+/** Max recent files to show in the quick-attach dialog */
+const QUICK_ATTACH_MAX = 6;
+
 const getFileExtension = (fileName: string): string => {
   const idx = fileName.lastIndexOf(".");
   if (idx === -1) return "";
@@ -30,18 +36,16 @@ const getFileExtension = (fileName: string): string => {
   return ext.toUpperCase();
 };
 
-interface FileLineItemProps {
+/* ─── File Row ─── */
+
+interface FileRowProps {
   projectFile: ProjectFile;
-  onPickRecent: (file: ProjectFile) => void;
-  onFileClick: (file: ProjectFile) => void;
+  onPick: (file: ProjectFile) => void;
+  onView: (file: ProjectFile) => void;
 }
 
-function FileLineItem({
-  projectFile,
-  onPickRecent,
-  onFileClick,
-}: FileLineItemProps) {
-  const showLoader = useMemo(
+function FileRow({ projectFile, onPick, onView }: FileRowProps) {
+  const isProcessing = useMemo(
     () =>
       String(projectFile.status) === UserFileStatus.PROCESSING ||
       String(projectFile.status) === UserFileStatus.UPLOADING ||
@@ -49,118 +53,52 @@ function FileLineItem({
     [projectFile.status]
   );
 
-  const disableActionButton = useMemo(
-    () =>
-      String(projectFile.status) === UserFileStatus.UPLOADING ||
-      String(projectFile.status) === UserFileStatus.DELETING,
-    [projectFile.status]
-  );
-
   const ColorfulIcon = getColorfulFileIcon(projectFile.name);
+  const ext = getFileExtension(projectFile.name);
 
   return (
-    <LineItem
-      key={projectFile.id}
-      onClick={noProp(() => onPickRecent(projectFile))}
-      icon={
-        showLoader
-          ? ({ className }) => (
-              <SvgLoader className={cn(className, "animate-spin")} />
-            )
-          : ColorfulIcon
-      }
-      rightChildren={
-        <div className="h-[1rem] flex flex-col justify-center">
-          <IconButton
-            icon={SvgExternalLink}
-            onClick={noProp(() => onFileClick(projectFile))}
-            tooltip="View File"
-            disabled={disableActionButton}
-            internal
-            className="hidden group-hover/LineItem:flex"
-          />
-          <Text
-            as="p"
-            className="flex group-hover/LineItem:hidden"
-            secondaryBody
-            text03
-          >
-            {getFileExtension(projectFile.name)}
-          </Text>
-        </div>
-      }
+    <button
+      type="button"
+      className="flex items-center gap-3 w-full px-3 py-2.5 rounded-08 transition-colors group virtualai-card-hover"
+      onClick={() => onPick(projectFile)}
     >
-      {projectFile.name}
-    </LineItem>
+      {/* File icon */}
+      <div className="flex-shrink-0 w-8 h-8 rounded-08 virtualai-accent-icon-badge flex items-center justify-center">
+        {isProcessing ? (
+          <SvgLoader className="w-4 h-4 animate-spin stroke-text-02" />
+        ) : (
+          <ColorfulIcon className="w-4 h-4" />
+        )}
+      </div>
+
+      {/* File name */}
+      <div className="flex-1 min-w-0 text-left">
+        <Truncated mainUiMuted text04 nowrap>
+          {projectFile.name}
+        </Truncated>
+      </div>
+
+      {/* File type pill */}
+      {ext && (
+        <span className="flex-shrink-0 text-[10px] font-semibold uppercase tracking-wider text-text-02 bg-background-tint-02 px-2 py-0.5 rounded-full group-hover:hidden">
+          {ext}
+        </span>
+      )}
+
+      {/* View button — appears on hover */}
+      <IconButton
+        icon={SvgExternalLink}
+        onClick={noProp(() => onView(projectFile))}
+        tooltip="Open file"
+        disabled={isProcessing}
+        internal
+        className="hidden group-hover:flex flex-shrink-0"
+      />
+    </button>
   );
 }
 
-interface FilePickerPopoverContentsProps {
-  recentFiles: ProjectFile[];
-  onPickRecent: (file: ProjectFile) => void;
-  onFileClick: (file: ProjectFile) => void;
-  triggerUploadPicker: () => void;
-  openRecentFilesModal: () => void;
-}
-
-function FilePickerPopoverContents({
-  recentFiles,
-  onPickRecent,
-  onFileClick,
-  triggerUploadPicker,
-  openRecentFilesModal,
-}: FilePickerPopoverContentsProps) {
-  // These are the "quick" files that we show. Essentially "speed dial", but for files.
-  // The rest of the files will be hidden behind the "All Recent Files" button, should there be more files left to show!
-  const hasFiles = recentFiles.length > 0;
-  const shouldShowMoreFilesButton = recentFiles.length > MAX_FILES_TO_SHOW;
-  const quickAccessFiles = recentFiles.slice(0, MAX_FILES_TO_SHOW);
-
-  return (
-    <PopoverMenu>
-      {[
-        // Action button to upload more files
-        <LineItem
-          key="upload-files"
-          icon={SvgUploadCloud}
-          description="Browse and attach files from your device"
-          onClick={triggerUploadPicker}
-        >
-          Upload from Device
-        </LineItem>,
-
-        // Separator
-        null,
-
-        // Title
-        hasFiles && (
-          <div key="recent-files" className="pt-1">
-            <Text as="p" text02 secondaryBody className="py-1 px-3">
-              Recent Files
-            </Text>
-          </div>
-        ),
-
-        // Quick access files
-        ...quickAccessFiles.map((projectFile) => (
-          <FileLineItem
-            key={projectFile.id}
-            projectFile={projectFile}
-            onPickRecent={onPickRecent}
-            onFileClick={onFileClick}
-          />
-        )),
-
-        // Rest of the files
-        shouldShowMoreFilesButton && (
-          <LineItem icon={SvgMoreHorizontal} onClick={openRecentFilesModal}>
-            All Recent Files
-          </LineItem>
-        ),
-      ]}
-    </PopoverMenu>
-  );
-}
+/* ─── Main Component ─── */
 
 export interface FilePickerPopoverProps {
   onPickRecent?: (file: ProjectFile) => void;
@@ -183,7 +121,6 @@ export default function FilePickerPopover({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const recentFilesModal = useCreateModal();
   const [open, setOpen] = useState(false);
-  // Snapshot of recent files to avoid re-arranging when the modal is open
   const [recentFilesSnapshot, setRecentFilesSnapshot] = useState<ProjectFile[]>(
     []
   );
@@ -237,15 +174,17 @@ export default function FilePickerPopover({
         }
       })
       .catch((error) => {
-        // Revert status and show error if the delete request fails
         setRecentFilesSnapshot((prev) =>
           prev.map((f) => (f.id === file.id ? { ...f, status: lastStatus } : f))
         );
         toast.error("Failed to delete file. Please try again.");
-        // Useful for debugging; safe in client components
         console.error("Failed to delete file", error);
       });
   };
+
+  const quickFiles = recentFilesSnapshot.slice(0, QUICK_ATTACH_MAX);
+  const hasMoreFiles = recentFilesSnapshot.length > QUICK_ATTACH_MAX;
+  const totalCount = recentFilesSnapshot.length;
 
   return (
     <>
@@ -258,6 +197,7 @@ export default function FilePickerPopover({
         accept={"*/*"}
       />
 
+      {/* Full Recent Files Modal (secondary) */}
       <recentFilesModal.Provider>
         <UserFilesModal
           title="Recent Files"
@@ -276,33 +216,133 @@ export default function FilePickerPopover({
         />
       </recentFilesModal.Provider>
 
-      <Popover open={open} onOpenChange={setOpen}>
-        <Popover.Trigger asChild>
-          {typeof trigger === "function" ? trigger(open) : trigger}
-        </Popover.Trigger>
-        <Popover.Content align="start" side="bottom" width="lg">
-          <FilePickerPopoverContents
-            recentFiles={recentFilesSnapshot}
-            onPickRecent={(file) => {
-              onPickRecent && onPickRecent(file);
-              setOpen(false);
-            }}
-            onFileClick={(file) => {
-              onFileClick && onFileClick(file);
-              setOpen(false);
-            }}
-            triggerUploadPicker={() => {
-              triggerUploadPicker();
-              setOpen(false);
-            }}
-            openRecentFilesModal={() => {
-              recentFilesModal.toggle(true);
-              // Close the small popover when opening the dialog
-              setOpen(false);
-            }}
+      {/* Trigger button */}
+      <span
+        onClick={() => setOpen(true)}
+        style={{ display: "contents" }}
+      >
+        {typeof trigger === "function" ? trigger(open) : trigger}
+      </span>
+
+      {/* Quick Attach Dialog */}
+      <Modal open={open} onOpenChange={setOpen}>
+        <Modal.Content
+          width="sm"
+          height="fit"
+          preventAccidentalClose={false}
+        >
+          <Modal.Header
+            icon={SvgPaperclip}
+            title="Attach Files"
+            description="Select a recent file or upload from your device"
           />
-        </Popover.Content>
-      </Popover>
+
+          <Modal.Body twoTone padding={0.75} gap={0.5}>
+            {/* Upload zone */}
+            <button
+              type="button"
+              onClick={() => {
+                triggerUploadPicker();
+                setOpen(false);
+              }}
+              className={cn(
+                "w-full flex items-center gap-3 p-3 rounded-12",
+                "border border-dashed border-border-02",
+                "transition-colors cursor-pointer",
+                "hover:border-[var(--virtualai-accent,var(--theme-primary-05))]",
+                "hover:bg-[color-mix(in_srgb,var(--virtualai-accent,var(--theme-primary-05))_4%,var(--background-tint-01)_96%)]"
+              )}
+            >
+              <div className="w-9 h-9 rounded-08 flex items-center justify-center flex-shrink-0 virtualai-accent-icon-badge">
+                <span style={{ color: "var(--virtualai-accent, var(--theme-primary-05))" }}>
+                  <SvgUploadCloud className="w-5 h-5 stroke-current" />
+                </span>
+              </div>
+              <div className="text-left">
+                <Text as="p" mainUiMuted text04>
+                  Upload from Device
+                </Text>
+                <Text as="p" secondaryBody text02>
+                  Browse and attach files from your computer
+                </Text>
+              </div>
+            </button>
+
+            {/* Recent Files Section */}
+            {quickFiles.length > 0 && (
+              <Section gap={0.25} alignItems="start" padding={0}>
+                <Text
+                  as="p"
+                  secondaryBody
+                  text02
+                  className="px-1 pt-2 pb-1 uppercase tracking-wider text-[10px] font-semibold"
+                >
+                  Recent Files
+                </Text>
+
+                <div className="w-full flex flex-col">
+                  {quickFiles.map((file) => (
+                    <FileRow
+                      key={file.id}
+                      projectFile={file}
+                      onPick={(f) => {
+                        onPickRecent && onPickRecent(f);
+                        setOpen(false);
+                      }}
+                      onView={(f) => {
+                        onFileClick && onFileClick(f);
+                        setOpen(false);
+                      }}
+                    />
+                  ))}
+                </div>
+              </Section>
+            )}
+
+            {/* Empty state */}
+            {quickFiles.length === 0 && (
+              <div className="flex flex-col items-center py-6 gap-2">
+                <SvgFiles className="w-10 h-10 stroke-text-01" />
+                <Text as="p" text02 secondaryBody>
+                  No recent files
+                </Text>
+              </div>
+            )}
+          </Modal.Body>
+
+          {/* Footer */}
+          <Modal.Footer justifyContent="between">
+            {totalCount > 0 && (
+              <Text as="p" text02 secondaryBody>
+                {totalCount} {totalCount === 1 ? "file" : "files"} available
+              </Text>
+            )}
+            {hasMoreFiles ? (
+              <Button
+                secondary
+                onClick={() => {
+                  setOpen(false);
+                  recentFilesModal.toggle(true);
+                }}
+              >
+                <SvgFiles className="w-4 h-4 mr-1.5" />
+                Browse All Files
+              </Button>
+            ) : totalCount > 0 ? (
+              <Button
+                secondary
+                onClick={() => {
+                  setOpen(false);
+                  recentFilesModal.toggle(true);
+                }}
+              >
+                <SvgFiles className="w-4 h-4 mr-1.5" />
+                Manage Files
+              </Button>
+            ) : null}
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
     </>
   );
 }
