@@ -12,6 +12,7 @@ import Separator from "@/refresh-components/Separator";
 import InputTypeInField from "@/refresh-components/form/InputTypeInField";
 import InputTextAreaField from "@/refresh-components/form/InputTextAreaField";
 import SwitchField from "@/refresh-components/form/SwitchField";
+import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import { Formik, Form, FieldArray, useFormikContext } from "formik";
 import * as Yup from "yup";
 import { useAgents } from "@/hooks/useAgents";
@@ -30,6 +31,7 @@ import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationMo
 import {
   SvgArrowLeft,
   SvgArrowRight,
+  SvgInfoSmall,
   SvgSettings,
   SvgSliders,
   SvgSparkle,
@@ -37,6 +39,26 @@ import {
   SvgOnyxOctagon,
 } from "@opal/icons";
 import { cn } from "@/lib/utils";
+
+// ─── Info Tooltip ────────────────────────────────────────────────────────
+
+function InfoTip({ children }: { children: string }) {
+  return (
+    <SimpleTooltip
+      tooltip={
+        <div className="max-w-xs text-xs leading-relaxed">
+          {children}
+        </div>
+      }
+      side="top"
+      delayDuration={200}
+    >
+      <span className="inline-flex items-center cursor-help ml-1">
+        <SvgInfoSmall className="w-3.5 h-3.5 stroke-text-03 hover:stroke-text-05 transition-colors" />
+      </span>
+    </SimpleTooltip>
+  );
+}
 
 // ─── Step Indicator ─────────────────────────────────────────────────────
 
@@ -123,8 +145,10 @@ function WorkflowStepRow({
   onMoveUp,
   onMoveDown,
 }: WorkflowStepRowProps) {
-  const { values, setFieldValue } = useFormikContext<any>();
+  const { values, setFieldValue, errors, touched } = useFormikContext<any>();
   const currentPersonaId = values.steps?.[index]?.persona_id ?? 0;
+  const stepErrors = (errors.steps as any)?.[index];
+  const stepTouched = (touched.steps as any)?.[index];
 
   return (
     <Card padding={1}>
@@ -142,24 +166,46 @@ function WorkflowStepRow({
         <div className="flex-1 space-y-3">
           <div className="flex gap-3">
             <div className="flex-1">
-              <InputLayouts.Vertical name={`steps.${index}.step_name`} title="Step Name">
+              <InputLayouts.Vertical
+                name={`steps.${index}.step_name`}
+                title="Step Name"
+                description="A short label for this step shown during execution."
+              >
                 <InputTypeInField
                   name={`steps.${index}.step_name`}
-                  placeholder="e.g. Research, Summarize, Translate..."
+                  placeholder="e.g. Research, Summarize, Find Flights..."
                 />
               </InputLayouts.Vertical>
             </div>
             <div className="flex-1">
-              <InputLayouts.Vertical name={`steps.${index}.persona_id`} title="Agent">
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center gap-1">
+                  <Text mainContentEmphasis text04>Agent</Text>
+                  <Text text03 mainContentMuted className="text-status-error-05">*</Text>
+                  <InfoTip>
+                    Select which agent (persona) handles this step. The agent&apos;s own LLM, tools, and system prompt will be used. Create agents first in the Agents page.
+                  </InfoTip>
+                </div>
                 <select
                   name={`steps.${index}.persona_id`}
                   value={currentPersonaId}
-                  className="w-full h-10 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm"
+                  className={cn(
+                    "w-full h-10 px-3 rounded-8 border bg-background-tint-00 text-text-05 text-sm",
+                    stepTouched?.persona_id && stepErrors?.persona_id
+                      ? "border-status-error-05"
+                      : "border-border"
+                  )}
                   onChange={(e) => {
                     setFieldValue(
                       `steps.${index}.persona_id`,
                       parseInt(e.target.value) || 0
                     );
+                  }}
+                  onBlur={() => {
+                    // Trigger touched state for validation display
+                    const touchedArr = Array.isArray(touched.steps) ? touched.steps : [];
+                    const touchedSteps = [...touchedArr];
+                    touchedSteps[index] = { ...touchedSteps[index], persona_id: true };
                   }}
                 >
                   <option value={0}>-- Select Agent --</option>
@@ -169,67 +215,92 @@ function WorkflowStepRow({
                     </option>
                   ))}
                 </select>
-              </InputLayouts.Vertical>
+                {stepTouched?.persona_id && stepErrors?.persona_id && (
+                  <Text secondaryBody className="text-status-error-05 text-xs mt-0.5">
+                    {stepErrors.persona_id}
+                  </Text>
+                )}
+              </div>
             </div>
           </div>
 
-          <InputLayouts.Vertical name={`steps.${index}.step_description`} title="Description" optional>
+          <InputLayouts.Vertical
+            name={`steps.${index}.step_description`}
+            title="Step Description"
+            optional
+            description="What this step should accomplish. Helps the orchestrator decide when to use it."
+          >
             <InputTextAreaField
               name={`steps.${index}.step_description`}
-              placeholder="What should this step accomplish?"
+              placeholder="e.g. Collect travel details like destination, dates, budget, and number of travelers from the user's message."
             />
           </InputLayouts.Vertical>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-start">
             <div className="flex-1">
-              <InputLayouts.Vertical name={`steps.${index}.output_key`} title="Output Key">
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center">
+                  <Text mainContentEmphasis text04>Output Key</Text>
+                  <InfoTip>
+                    A unique variable name to store this step&apos;s output (e.g. &quot;travel_details&quot;, &quot;flights&quot;, &quot;summary&quot;). Other steps can reference this output. Use lowercase with underscores, no spaces.
+                  </InfoTip>
+                </div>
                 <InputTypeInField
                   name={`steps.${index}.output_key`}
-                  placeholder="output"
+                  placeholder="e.g. research_results"
                 />
-              </InputLayouts.Vertical>
+              </div>
             </div>
             <div className="flex items-end gap-1 pb-0.5">
-              <InputLayouts.Vertical name={`steps.${index}.is_terminal`} title="Terminal Step">
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center">
+                  <Text mainContentEmphasis text04>Terminal Step</Text>
+                  <InfoTip>
+                    When enabled, the workflow stops after this step completes and returns its output as the final answer. When disabled (default), the workflow continues to the next step. Use this for the last step in a sequence, or for early-exit conditions.
+                  </InfoTip>
+                </div>
                 <SwitchField name={`steps.${index}.is_terminal`} />
-              </InputLayouts.Vertical>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Reorder + Remove buttons */}
         <div className="flex flex-col gap-1 mt-1">
-          <button
-            type="button"
-            className="p-1 rounded hover:bg-background-tint-03 disabled:opacity-30"
-            disabled={!canMoveUp}
-            onClick={onMoveUp}
-            title="Move up"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 15l-6-6-6 6" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            className="p-1 rounded hover:bg-background-tint-03 disabled:opacity-30"
-            disabled={!canMoveDown}
-            onClick={onMoveDown}
-            title="Move down"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 9l6 6 6-6" />
-            </svg>
-          </button>
-          {canRemove && (
+          <SimpleTooltip tooltip="Move step up" side="left">
             <button
               type="button"
-              className="p-1 rounded hover:bg-theme-red-01 text-text-02 hover:text-theme-red-05"
-              onClick={onRemove}
-              title="Remove step"
+              className="p-1 rounded hover:bg-background-tint-03 disabled:opacity-30"
+              disabled={!canMoveUp}
+              onClick={onMoveUp}
             >
-              <SvgTrash className="w-4 h-4" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 15l-6-6-6 6" />
+              </svg>
             </button>
+          </SimpleTooltip>
+          <SimpleTooltip tooltip="Move step down" side="left">
+            <button
+              type="button"
+              className="p-1 rounded hover:bg-background-tint-03 disabled:opacity-30"
+              disabled={!canMoveDown}
+              onClick={onMoveDown}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+          </SimpleTooltip>
+          {canRemove && (
+            <SimpleTooltip tooltip="Remove this step" side="left">
+              <button
+                type="button"
+                className="p-1 rounded hover:bg-theme-red-01 text-text-02 hover:text-theme-red-05"
+                onClick={onRemove}
+              >
+                <SvgTrash className="w-4 h-4" />
+              </button>
+            </SimpleTooltip>
           )}
         </div>
       </div>
@@ -303,6 +374,7 @@ export default function WorkflowEditorPage({
     orchestrator_llm_provider: existingWorkflow?.orchestrator_llm_provider ?? null,
     orchestrator_llm_model: existingWorkflow?.orchestrator_llm_model ?? null,
     max_steps: existingWorkflow?.max_steps ?? 10,
+    max_calls_per_agent: existingWorkflow?.max_calls_per_agent ?? 2,
     timeout_seconds: existingWorkflow?.timeout_seconds ?? 1800,
     is_public: existingWorkflow?.is_public ?? true,
     steps: existingWorkflow?.steps?.map((s) => ({
@@ -329,20 +401,39 @@ export default function WorkflowEditorPage({
     description: Yup.string().optional(),
     orchestration_mode: Yup.string().oneOf(["sequential", "llm_decision"]).required(),
     orchestrator_prompt: Yup.string().optional(),
-    max_steps: Yup.number().min(1).max(50).required(),
-    timeout_seconds: Yup.number().min(30).max(7200).required(),
+    max_steps: Yup.number().min(1, "Must be at least 1").max(50, "Maximum 50 steps").required("Required"),
+    max_calls_per_agent: Yup.number().min(1, "Must be at least 1").max(20, "Maximum 20").required("Required"),
+    timeout_seconds: Yup.number().min(30, "Minimum 30 seconds").max(7200, "Maximum 2 hours").required("Required"),
     steps: Yup.array()
       .of(
         Yup.object().shape({
-          persona_id: Yup.number().min(1, "Select an agent").required("Agent is required"),
+          persona_id: Yup.number().min(1, "Please select an agent").required("Agent is required"),
           step_name: Yup.string().required("Step name is required"),
           step_description: Yup.string().optional(),
-          output_key: Yup.string().required("Output key is required"),
+          output_key: Yup.string()
+            .matches(/^[a-z][a-z0-9_]*$/, "Use lowercase letters, numbers, and underscores only (e.g. research_output)")
+            .required("Output key is required"),
           is_terminal: Yup.boolean(),
         })
       )
       .min(1, "Add at least one step"),
   });
+
+  // Validate current step before allowing navigation forward
+  function validateCurrentStep(values: typeof initialValues, step: number): string | null {
+    if (step === 0) {
+      if (!values.name.trim()) return "Please enter a workflow name before proceeding.";
+    }
+    if (step === 1) {
+      for (let i = 0; i < values.steps.length; i++) {
+        const s = values.steps[i];
+        if (!s) continue;
+        if (!s.step_name?.trim()) return `Step ${i + 1}: Please enter a step name.`;
+        if (!s.persona_id || s.persona_id === 0) return `Step ${i + 1}: Please select an agent.`;
+      }
+    }
+    return null;
+  }
 
   async function handleSubmit(values: typeof initialValues) {
     try {
@@ -363,6 +454,7 @@ export default function WorkflowEditorPage({
         orchestrator_llm_provider: values.orchestrator_llm_provider || null,
         orchestrator_llm_model: values.orchestrator_llm_model || null,
         max_steps: values.max_steps,
+        max_calls_per_agent: values.max_calls_per_agent,
         timeout_seconds: values.timeout_seconds,
         is_public: values.is_public,
         steps,
@@ -419,7 +511,7 @@ export default function WorkflowEditorPage({
           validateOnChange
           validateOnBlur
         >
-          {({ isSubmitting, isValid, dirty, values, setFieldValue, errors }) => (
+          {({ isSubmitting, isValid, dirty, values, setFieldValue, errors, setTouched, touched }) => (
             <>
               <deleteModal.Provider>
                 {deleteModal.isOpen && (
@@ -457,7 +549,18 @@ export default function WorkflowEditorPage({
                           </Button>
                         )}
                         {currentStep < TOTAL_STEPS - 1 ? (
-                          <Button type="button" rightIcon={SvgArrowRight} onClick={() => setCurrentStep(currentStep + 1)}>
+                          <Button
+                            type="button"
+                            rightIcon={SvgArrowRight}
+                            onClick={() => {
+                              const error = validateCurrentStep(values, currentStep);
+                              if (error) {
+                                toast.error(error);
+                                return;
+                              }
+                              setCurrentStep(currentStep + 1);
+                            }}
+                          >
                             Next
                           </Button>
                         ) : (
@@ -482,14 +585,23 @@ export default function WorkflowEditorPage({
                     {currentStep === 0 && (
                       <>
                         <GeneralLayouts.Section gap={1}>
-                          <InputLayouts.Vertical name="name" title="Workflow Name">
-                            <InputTypeInField name="name" placeholder="e.g. Research & Summarize Pipeline" />
+                          <InputLayouts.Vertical
+                            name="name"
+                            title="Workflow Name"
+                            description="A clear, descriptive name that users will see when selecting this workflow."
+                          >
+                            <InputTypeInField name="name" placeholder="e.g. Travel Planner, Research & Summarize, Content Pipeline" />
                           </InputLayouts.Vertical>
 
-                          <InputLayouts.Vertical name="description" title="Description" optional>
+                          <InputLayouts.Vertical
+                            name="description"
+                            title="Description"
+                            optional
+                            description="Explain what this workflow does for end users. This is displayed in the workflow list and helps users understand when to use it."
+                          >
                             <InputTextAreaField
                               name="description"
-                              placeholder="What does this workflow do?"
+                              placeholder="e.g. Plans a complete trip by coordinating specialist agents for flights, hotels, activities, and itinerary building. Just tell it where you want to go!"
                             />
                           </InputLayouts.Vertical>
                         </GeneralLayouts.Section>
@@ -498,7 +610,11 @@ export default function WorkflowEditorPage({
 
                         <GeneralLayouts.Section gap={0.5}>
                           <Card>
-                            <InputLayouts.Horizontal name="is_public" title="Public" description="Make this workflow accessible to all users.">
+                            <InputLayouts.Horizontal
+                              name="is_public"
+                              title="Public"
+                              description="When enabled, all users can see and use this workflow. When disabled, only you (the creator) can access it."
+                            >
                               <SwitchField name="is_public" />
                             </InputLayouts.Horizontal>
                           </Card>
@@ -519,15 +635,32 @@ export default function WorkflowEditorPage({
                           <div className="flex flex-col">
                             <Text as="p" mainContentEmphasis>Agent Steps</Text>
                             <Text as="p" secondaryBody text03>
-                              Add agents in the order they should execute. Each agent's output becomes available to the next.
+                              Define the agents that participate in this workflow and their execution order. Each step runs a specific agent
+                              (persona) with its own LLM and tools. In LLM Decision mode, the orchestrator dynamically chooses which agent
+                              to call next. In Sequential mode, agents run top-to-bottom in order.
                             </Text>
                           </div>
                         </div>
 
+                        {/* Quick help card */}
+                        <Card variant="secondary">
+                          <div className="flex items-start gap-2">
+                            <SvgInfoSmall className="w-4 h-4 stroke-text-03 flex-shrink-0 mt-0.5" />
+                            <div className="flex flex-col gap-1">
+                              <Text secondaryBody text03 className="text-xs font-medium">How agent steps work</Text>
+                              <Text secondaryBody text03 className="text-xs">
+                                Each step maps to an agent you&apos;ve created in the Agents page. The agent&apos;s system prompt, tools, and LLM
+                                configuration are used when the step runs. For example, a Travel Planner workflow might have: Details Collector
+                                (step 1) &rarr; Flight Finder (step 2) &rarr; Hotel Finder (step 3) &rarr; Itinerary Builder (step 4).
+                              </Text>
+                            </div>
+                          </div>
+                        </Card>
+
                         <FieldArray name="steps">
                           {(arrayHelpers) => (
                             <GeneralLayouts.Section gap={0.5}>
-                              {values.steps.map((step, index) => (
+                              {values.steps.map((_step, index) => (
                                 <WorkflowStepRow
                                   key={index}
                                   index={index}
@@ -577,7 +710,7 @@ export default function WorkflowEditorPage({
                           <div className="flex flex-col">
                             <Text as="p" mainContentEmphasis>Orchestration Mode</Text>
                             <Text as="p" secondaryBody text03>
-                              Choose how agents are coordinated.
+                              Controls how agents are coordinated during execution. This is the most important architectural decision for your workflow.
                             </Text>
                           </div>
                         </div>
@@ -597,7 +730,9 @@ export default function WorkflowEditorPage({
                               <div>
                                 <Text mainContentEmphasis>LLM Decision (Recommended)</Text>
                                 <Text secondaryBody text03>
-                                  An orchestrator LLM decides which agent to call and when. Most flexible — similar to LangFlow.
+                                  An orchestrator LLM dynamically decides which agent to call next based on the conversation context.
+                                  Best for workflows where the order may vary or agents need to loop back for missing information.
+                                  Uses an additional LLM call between each step for routing decisions.
                                 </Text>
                               </div>
                             </div>
@@ -617,7 +752,9 @@ export default function WorkflowEditorPage({
                               <div>
                                 <Text mainContentEmphasis>Sequential</Text>
                                 <Text secondaryBody text03>
-                                  Agents run in fixed order. Each output feeds into the next. Cheaper — no orchestrator LLM needed.
+                                  Agents run in the fixed order defined in Step 2. Each agent&apos;s output feeds into the next.
+                                  Faster and cheaper since no orchestrator LLM is needed. Best for pipelines with a known, fixed order
+                                  (e.g. Research &rarr; Summarize &rarr; Translate).
                                 </Text>
                               </div>
                             </div>
@@ -633,19 +770,23 @@ export default function WorkflowEditorPage({
                                 name="orchestrator_prompt"
                                 title="Orchestrator Instructions"
                                 optional
-                                description="Custom instructions for the orchestrator LLM that decides agent routing."
+                                description="System prompt for the orchestrator LLM that decides agent routing. Tell it the preferred order, rules, and when to stop."
                               >
                                 <InputTextAreaField
                                   name="orchestrator_prompt"
-                                  placeholder="e.g. Always start with the Research agent before calling the Summarizer..."
+                                  placeholder={"e.g. You are a travel planning orchestrator. Follow this order:\n1. Call Details Collector first to gather travel info\n2. Then call Flight Finder and Hotel Finder\n3. Finally call Itinerary Builder to create the plan\n4. After all agents respond, write a short final summary"}
                                 />
+                                <Text secondaryBody text03 className="text-xs mt-1">
+                                  This is an LLM system prompt, not a user-facing description. Write it as instructions for the AI orchestrator.
+                                  Include the expected agent order, any rules (e.g. &quot;call each agent exactly once&quot;), and when to finish.
+                                </Text>
                               </InputLayouts.Vertical>
 
                               <Card>
                                 <InputLayouts.Horizontal
                                   name="orchestrator_llm"
                                   title="Orchestrator Model"
-                                  description="Override which LLM orchestrates the workflow. Leave empty for default."
+                                  description="The LLM that handles routing decisions between agents. Use a fast, cheap model here (e.g. GPT-4.1) since it only makes routing decisions, not content. Leave empty to use the system default."
                                 >
                                   <LLMSelector
                                     name="orchestrator_llm"
@@ -671,14 +812,18 @@ export default function WorkflowEditorPage({
                           <div className="flex flex-col">
                             <Text as="p" mainContentEmphasis>Safety Limits</Text>
                             <Text as="p" secondaryBody text03>
-                              Prevent runaway workflows.
+                              Guard rails to prevent runaway workflows. These limits stop execution if something goes wrong (e.g. an agent loops indefinitely).
                             </Text>
                           </div>
                         </div>
 
                         <GeneralLayouts.Section gap={0.5}>
                           <Card>
-                            <InputLayouts.Horizontal name="max_steps" title="Max Steps" description="Maximum number of agent calls before stopping.">
+                            <InputLayouts.Horizontal
+                              name="max_steps"
+                              title="Max Total Steps"
+                              description="The maximum number of total agent calls in one workflow run. If the orchestrator tries to make more calls than this, the workflow stops. For a 6-agent workflow, set this to at least 8-10 to allow some buffer."
+                            >
                               <input
                                 type="number"
                                 value={values.max_steps}
@@ -688,7 +833,25 @@ export default function WorkflowEditorPage({
                                 className="w-20 h-10 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm text-center"
                               />
                             </InputLayouts.Horizontal>
-                            <InputLayouts.Horizontal name="timeout_seconds" title="Timeout (seconds)" description="Maximum total execution time.">
+                            <InputLayouts.Horizontal
+                              name="max_calls_per_agent"
+                              title="Max Calls per Agent"
+                              description="How many times the orchestrator can call the same agent. Set to 1 if each agent should run exactly once (e.g. Travel Planner). Set to 2-3 if agents may need to loop back for additional information from the user."
+                            >
+                              <input
+                                type="number"
+                                value={values.max_calls_per_agent}
+                                onChange={(e) => setFieldValue("max_calls_per_agent", parseInt(e.target.value) || 2)}
+                                min={1}
+                                max={20}
+                                className="w-20 h-10 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm text-center"
+                              />
+                            </InputLayouts.Horizontal>
+                            <InputLayouts.Horizontal
+                              name="timeout_seconds"
+                              title="Timeout"
+                              description="Maximum wall-clock time (in seconds) before the workflow is forcefully stopped. Default: 1800s (30 min). For simple 2-3 agent workflows, 300-600s is usually enough."
+                            >
                               <input
                                 type="number"
                                 value={values.timeout_seconds}
@@ -707,7 +870,7 @@ export default function WorkflowEditorPage({
                             <Card>
                               <InputLayouts.Horizontal
                                 title="Delete This Workflow"
-                                description="This action cannot be undone."
+                                description="Permanently removes this workflow and all its configuration. This action cannot be undone."
                                 center
                               >
                                 <Button secondary danger onClick={() => deleteModal.toggle(true)}>

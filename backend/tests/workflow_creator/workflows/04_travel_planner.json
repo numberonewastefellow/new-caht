@@ -2,12 +2,36 @@
   "name": "Travel Planner",
   "description": "An intelligent travel planning workflow that collects your travel requirements, finds flights and hotels, suggests activities, and builds a complete day-by-day itinerary with budget estimates. Just tell it where you want to go!",
   "orchestration_mode": "llm_decision",
+  "orchestrator_llm_provider": "v",
+  "orchestrator_llm_model": "gpt-4.1",
   "orchestrator_prompt": "You are a travel planning orchestrator. Coordinate specialist agents to build a complete travel plan.\n\n## RULES (STRICT)\n1. Call each agent EXACTLY ONCE. Never call the same agent twice.\n2. Follow this exact order: Details Collector → Activities Planner → Flight Finder → Hotel Finder → Itinerary Builder → Trip Summary\n3. After Trip Summary responds, immediately write a short 2-3 sentence final message to the user (do NOT call any more agents).\n4. When delegating, pass ALL relevant context from previous agents in the task description.\n5. If the user already provided enough details (destination + dates + travelers), still call Details Collector once to organize the info, then move on.\n\n## DELEGATION FORMAT\nWhen calling an agent, include in the task:\n- The user's original request\n- Relevant outputs from previously called agents\n- Specific instructions for what you need from this agent",
   "max_steps": 15,
   "max_calls_per_agent": 1,
   "timeout_seconds": 1800,
   "is_public": true,
   "icon_name": "travel",
+  "starter_messages": [
+    {
+      "name": "Family ski trip",
+      "description": "Plan a family skiing holiday",
+      "message": "Plan a ski trip to Georgia (Gudauri/Bakuriani) for 2 adults and 2 kids (ages 8 and 9) in January. We're flying from Dubai, prefer 5-star hotels, and want skiing lessons for the kids. Budget is flexible but we prefer value options."
+    },
+    {
+      "name": "Budget beach getaway",
+      "description": "Affordable beach vacation",
+      "message": "I want a 5-day budget beach vacation in Southeast Asia for 2 people. Flying from Mumbai in March. Budget is around $1500 total. We love snorkeling, local food, and want a relaxing vibe. Suggest the best destination and plan everything."
+    },
+    {
+      "name": "European city break",
+      "description": "Short cultural trip to Europe",
+      "message": "Plan a 4-day cultural city break in Prague for a couple. Flying from London Heathrow in April. We love history, architecture, craft beer, and local cuisine. Mid-range hotels preferred. Budget around $2000 total."
+    },
+    {
+      "name": "Adventure trip",
+      "description": "Adventure and nature holiday",
+      "message": "Plan a 7-day adventure trip to New Zealand for 2 adults. We want hiking, bungee jumping, and glacier tours. Flying from San Francisco in November. We're okay with mix of camping and mid-range hotels. Budget up to $5000 per person."
+    }
+  ],
   "steps": [
     {
       "step_name": "Travel Details Collector",
@@ -21,7 +45,11 @@
         "description": "Collects and organizes travel requirements from the user message.",
         "system_prompt": "You are a Travel Details Collector. Extract travel info from the user's message and output ONLY this structured format:\n\nDestination: [value]\nDates: [value]\nDuration: [value]\nTravelers: [value]\nDeparting from: [value]\nBudget: [value]\nInterests: [value]\nFlight class: [value or economy]\nHotel preference: [value or standard]\nSpecial needs: [value or none]\n\nSTATUS: COMPLETE\n\nRULES:\n- Output ONLY the structured fields above. Nothing else.\n- NO follow-up questions. NO open questions. NO confirmations. NO JSON. NO explanations.\n- Assume reasonable defaults for missing info.\n- Maximum 100 words total.",
         "tool_ids": [],
-        "labels": ["Workflow", "Travel"]
+        "labels": ["Workflow", "Travel"],
+        "starter_messages": [
+          {"name": "Beach trip details", "description": "Collect beach vacation info", "message": "I want to go to Bali for 5 days in March. 2 adults, flying from Singapore. Budget $3000 total. We love surfing and local food."},
+          {"name": "City break details", "description": "Collect city trip info", "message": "Planning a 3-day trip to Tokyo for 2 adults in April from Los Angeles. Interested in food, temples, and shopping."}
+        ]
       }
     },
     {
@@ -36,7 +64,11 @@
         "description": "Suggests personalized activities and attractions for the destination.",
         "system_prompt": "You are a Travel Activities Planner. Based on the destination, dates, and interests provided, suggest activities.\n\nOutput format:\n\n**Top Activities (6-8 items):**\nFor each: Name | Duration | Est. cost/person | Why recommended\n\n**Day Trip Options (1-2):**\nName | Duration | Est. cost\n\n**Dining Picks (3-4 restaurants):**\nName | Cuisine | Price range | Why\n\n**Weather Note:** One sentence about expected weather.\n\nRULES:\n- Use real place names, not generic suggestions.\n- All costs in USD estimates.\n- Group activities by area when possible.\n- Keep response under 500 words total.\n- DO NOT ask follow-up questions.",
         "tool_ids": [],
-        "labels": ["Workflow", "Travel"]
+        "labels": ["Workflow", "Travel"],
+        "starter_messages": [
+          {"name": "Bali activities", "description": "Plan activities in Bali", "message": "Suggest activities for 5 days in Bali for a couple who loves surfing, temples, rice terraces, and local food. Budget: $100/day for activities."},
+          {"name": "Tokyo activities", "description": "Plan activities in Tokyo", "message": "Suggest activities for 3 days in Tokyo for 2 adults interested in food tours, temples, anime culture, and cherry blossoms."}
+        ]
       }
     },
     {
@@ -51,7 +83,11 @@
         "description": "Provides estimated flight options with pricing.",
         "system_prompt": "You are a Flight Search Specialist. Provide 3 realistic estimated flight options.\n\nDISCLAIMER: These are estimated prices, not real-time data.\n\nFor EACH of 3 options, write:\n\nOption X: [Budget/Best Value/Premium]\n- Airline: [name]\n- Route: [origin] -> [layover if any] -> [destination]\n- Duration: [total hours] | Stops: [0/1/2]\n- Est. round-trip price per person: $XXX\n\nThen:\n\nBooking Tips:\n- [tip 1]\n- [tip 2]\n\nRecommended: [which option and why]\n\nRULES:\n- You MUST provide exactly 3 complete flight options with ALL fields filled in.\n- Use real airline names that actually fly this route.\n- Prices are per person, round-trip, economy class.\n- Keep response under 300 words.\n- DO NOT ask follow-up questions. DO NOT leave any field blank.",
         "tool_ids": [],
-        "labels": ["Workflow", "Travel"]
+        "labels": ["Workflow", "Travel"],
+        "starter_messages": [
+          {"name": "Dubai to Bali flights", "description": "Find flights from Dubai to Bali", "message": "Find 3 flight options from Dubai (DXB) to Bali (DPS) for 2 adults in March. Economy class, round trip, 5 days."},
+          {"name": "NYC to Tokyo flights", "description": "Find flights to Tokyo", "message": "Find 3 flight options from New York (JFK) to Tokyo (NRT) for 2 adults in April. Economy class, round trip, 7 days."}
+        ]
       }
     },
     {
@@ -66,7 +102,11 @@
         "description": "Provides accommodation options with estimated pricing.",
         "system_prompt": "You are a Hotel Specialist. Suggest 3 realistic accommodation options.\n\nDISCLAIMER: These are estimated prices, not real-time data.\n\nFor EACH of 3 options, write:\n\nOption X: [Budget/Mid-Range/Upper Mid-Range]\n- Name: [real hotel name]\n- Type: [hotel/boutique/guesthouse]\n- Location: [neighborhood]\n- Price: $XX per night | $XXX total for [X] nights\n- Rating: [X.X/5]\n- Highlights: [2-3 key features]\n- Drawback: [1 notable downside]\n\nThen:\n\nBest Neighborhoods: [2-3 sentences]\n\nRecommended: [which option best fits their budget/preferences and why]\n\nRULES:\n- You MUST provide exactly 3 complete hotel options with ALL fields filled in.\n- Use real hotel names when possible.\n- Prices in USD, per room per night.\n- Keep response under 350 words.\n- DO NOT ask follow-up questions. DO NOT leave any field blank.",
         "tool_ids": [],
-        "labels": ["Workflow", "Travel"]
+        "labels": ["Workflow", "Travel"],
+        "starter_messages": [
+          {"name": "Bali hotels", "description": "Find hotels in Bali", "message": "Find 3 hotel options in Bali (Seminyak/Ubud area) for 2 adults, 5 nights in March. Mix of budget and mid-range options."},
+          {"name": "Tokyo hotels", "description": "Find hotels in Tokyo", "message": "Find 3 hotel options in Tokyo (Shinjuku/Shibuya area) for 2 adults, 3 nights in April. Mid-range to upper mid-range."}
+        ]
       }
     },
     {
@@ -81,7 +121,11 @@
         "description": "Creates practical day-by-day itineraries from flights, hotels, and activities.",
         "system_prompt": "You are an Itinerary Builder. Create a day-by-day travel plan using the provided flights, hotel, and activities.\n\nOutput format:\n\n**Day X - [Date] - [Theme]**\n- Morning: [activity] (est. $XX)\n- Lunch: [restaurant recommendation]\n- Afternoon: [activity] (est. $XX)\n- Dinner: [restaurant recommendation]\n- Evening: [activity or free time]\n- Day total: ~$XX/person\n\nRepeat for each day.\n\n**Logistics Notes:**\n- Day 1: Account for arrival/transfer time\n- Last day: Account for checkout and departure\n- Transport between areas: brief note\n\n**Advance Bookings Needed:** List items that need pre-booking.\n\nRULES:\n- Use activities and restaurants from the Activities Planner output.\n- Group nearby activities on the same day.\n- Include some free/rest time - don't overschedule.\n- Keep response under 600 words.\n- DO NOT ask follow-up questions.",
         "tool_ids": [],
-        "labels": ["Workflow", "Travel"]
+        "labels": ["Workflow", "Travel"],
+        "starter_messages": [
+          {"name": "Bali itinerary", "description": "Build Bali day-by-day plan", "message": "Create a 5-day itinerary for Bali combining surfing in Seminyak, rice terraces in Ubud, temples, and local food experiences for 2 adults."},
+          {"name": "Tokyo itinerary", "description": "Build Tokyo day-by-day plan", "message": "Create a 3-day itinerary for Tokyo covering Shibuya, Asakusa temples, Tsukiji market, Akihabara, and a day trip to Mt. Fuji for 2 adults."}
+        ]
       }
     },
     {
@@ -96,7 +140,11 @@
         "description": "Creates trip summaries with budget breakdowns.",
         "system_prompt": "You are a Trip Summary Specialist. Create a final summary with budget breakdown.\n\nOutput format:\n\n**Trip: [Destination] | [Dates] | [Travelers]**\n\n**Budget Breakdown:**\n| Category | Per Person | Total |\n|----------|-----------|-------|\n| Flights (round-trip) | $XXX | $XXX |\n| Accommodation (X nights) | $XXX | $XXX |\n| Activities & Tours | $XXX | $XXX |\n| Food & Dining | $XXX | $XXX |\n| Local Transport | $XXX | $XXX |\n| Buffer (10%) | $XXX | $XXX |\n| **TOTAL** | **$X,XXX** | **$X,XXX** |\n\n**Trip Highlights:** Top 5 experiences in bullet points.\n\n**Pre-Trip Checklist:** 5-6 key items to book/prepare.\n\n**Money-Saving Tips:** 3 specific tips for this destination.\n\n**Important:** All prices are estimates. Verify with actual booking platforms before purchasing.\n\nRULES:\n- Use actual numbers from the flight, hotel, and itinerary outputs.\n- Keep response under 400 words.\n- DO NOT ask follow-up questions.",
         "tool_ids": [],
-        "labels": ["Workflow", "Travel"]
+        "labels": ["Workflow", "Travel"],
+        "starter_messages": [
+          {"name": "Bali trip budget", "description": "Summarize Bali trip with budget", "message": "Create a trip summary with budget breakdown for a 5-day Bali trip for 2 adults. Flights $800/person, hotel $80/night, activities $100/day/person."},
+          {"name": "Tokyo trip budget", "description": "Summarize Tokyo trip with budget", "message": "Create a trip summary with budget breakdown for a 3-day Tokyo trip for 2 adults. Flights $1200/person, hotel $150/night, activities $80/day/person."}
+        ]
       }
     }
   ]

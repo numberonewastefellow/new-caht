@@ -66,9 +66,9 @@ def get_workflow_by_id(
         .where(AgentWorkflow.id == workflow_id)
         .where(AgentWorkflow.deleted.is_(False))
         .options(
-            selectinload(AgentWorkflow.steps).selectinload(
-                AgentWorkflowStep.persona
-            )
+            selectinload(AgentWorkflow.steps)
+            .selectinload(AgentWorkflowStep.persona)
+            .selectinload(Persona.tools)
         )
     ).scalar_one_or_none()
 
@@ -83,9 +83,9 @@ def list_workflows(
         .where(AgentWorkflow.deleted.is_(False))
         .where(AgentWorkflow.is_visible.is_(True))
         .options(
-            selectinload(AgentWorkflow.steps).selectinload(
-                AgentWorkflowStep.persona
-            )
+            selectinload(AgentWorkflow.steps)
+            .selectinload(AgentWorkflowStep.persona)
+            .selectinload(Persona.tools)
         )
         .order_by(AgentWorkflow.created_at.desc())
     )

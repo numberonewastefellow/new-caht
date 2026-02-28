@@ -51,6 +51,46 @@ def list_workflows():
     print(f"\nTotal: {len(workflows)} workflows\n")
 
 
+def _update_persona_starter_messages(persona_id: int, starter_messages: list[dict]) -> None:
+    """Update an existing persona's starter_messages via PATCH."""
+    # First fetch the current persona to preserve existing fields
+    resp = api("GET", f"persona/{persona_id}")
+    if resp.status_code != 200:
+        print(f"  [WARN] Could not fetch persona {persona_id} for starter messages")
+        return
+
+    p = resp.json()
+    patch_body = {
+        "name": p["name"],
+        "description": p.get("description") or "",
+        "system_prompt": p.get("system_prompt") or "",
+        "task_prompt": p.get("task_prompt") or "",
+        "num_chunks": p.get("num_chunks", 0),
+        "is_public": p.get("is_public", True),
+        "recency_bias": p.get("recency_bias", "base_decay"),
+        "llm_filter_extraction": p.get("llm_filter_extraction", False),
+        "llm_relevance_filter": p.get("llm_relevance_filter", False),
+        "replace_base_system_prompt": p.get("replace_base_system_prompt", True),
+        "datetime_aware": p.get("datetime_aware", True),
+        "document_set_ids": p.get("document_set_ids", []),
+        "tool_ids": [t["id"] for t in p.get("tools", [])],
+        "label_ids": [l["id"] for l in p.get("labels", [])],
+        "starter_messages": starter_messages,
+        "users": [], "groups": [], "hierarchy_node_ids": [],
+        "document_ids": [], "user_file_ids": [],
+    }
+
+    resp = api("PATCH", f"persona/{persona_id}", patch_body)
+    if resp.status_code == 200:
+        print(f"  [OK]  Starter messages set for {p['name']} (ID={persona_id})")
+    else:
+        try:
+            err = resp.json()
+        except Exception:
+            err = resp.text
+        print(f"  [WARN] Failed to set starter messages for {p['name']}: {resp.status_code} {err}")
+
+
 def _resolve_steps(raw_steps: list[dict]) -> list[dict]:
     """Resolve persona references in step definitions.
 
@@ -66,6 +106,12 @@ def _resolve_steps(raw_steps: list[dict]) -> list[dict]:
             print(f"  [SKIP] Step '{step.get('step_name', '?')}': no persona resolved")
             continue
 
+        # Update starter_messages on the sub-agent persona if defined
+        persona_def = step.get("persona_def", {})
+        sub_starter = persona_def.get("starter_messages")
+        if sub_starter and persona_id:
+            _update_persona_starter_messages(persona_id, sub_starter)
+
         resolved.append({
             "persona_id": persona_id,
             "step_order": step.get("step_order", len(resolved)),
@@ -79,10 +125,73 @@ def _resolve_steps(raw_steps: list[dict]) -> list[dict]:
     return resolved
 
 
+def _update_wrapper_persona_starter_messages(
+    workflow_name: str,
+    starter_messages: list[dict],
+) -> None:
+    """Update the wrapper persona's starter_messages after workflow creation.
+
+    The backend auto-creates a wrapper persona with the same name as the
+    workflow. This function finds it and PATCHes the starter_messages.
+    """
+    # Find the wrapper persona by name
+    resp = api("GET", "admin/persona")
+    if resp.status_code != 200:
+        print(f"  [WARN] Could not fetch personas to set starter messages")
+        return
+
+    wrapper = None
+    for p in resp.json():
+        if p["name"] == workflow_name:
+            wrapper = p
+            break
+
+    if wrapper is None:
+        print(f"  [WARN] Wrapper persona '{workflow_name}' not found for starter messages")
+        return
+
+    # Build PATCH body preserving existing fields
+    patch_body = {
+        "name": wrapper["name"],
+        "description": wrapper.get("description", ""),
+        "system_prompt": wrapper.get("system_prompt") or "",
+        "task_prompt": wrapper.get("task_prompt") or "",
+        "num_chunks": wrapper.get("num_chunks", 0),
+        "is_public": wrapper.get("is_public", True),
+        "recency_bias": wrapper.get("recency_bias", "base_decay"),
+        "llm_filter_extraction": wrapper.get("llm_filter_extraction", False),
+        "llm_relevance_filter": wrapper.get("llm_relevance_filter", False),
+        "replace_base_system_prompt": wrapper.get("replace_base_system_prompt", True),
+        "datetime_aware": wrapper.get("datetime_aware", True),
+        "document_set_ids": wrapper.get("document_set_ids", []),
+        "tool_ids": [t["id"] for t in wrapper.get("tools", [])],
+        "label_ids": [l["id"] for l in wrapper.get("labels", [])],
+        "starter_messages": starter_messages,
+        "users": [],
+        "groups": [],
+        "hierarchy_node_ids": [],
+        "document_ids": [],
+        "user_file_ids": [],
+    }
+
+    resp = api("PATCH", f"persona/{wrapper['id']}", patch_body)
+    if resp.status_code == 200:
+        print(f"  [OK]  Starter messages set for wrapper persona ID={wrapper['id']}")
+    else:
+        try:
+            err_detail = resp.json()
+        except Exception:
+            err_detail = resp.text
+        print(f"  [WARN] Failed to set starter messages: {resp.status_code} {err_detail}")
+
+
 def create_workflow(payload: dict) -> dict | None:
     """Create a single workflow. Returns the response dict or None on failure."""
     body = {**WORKFLOW_DEFAULTS, **payload}
     name = body.get("name", "Unnamed")
+
+    # Extract wrapper starter_messages before sending to workflow API
+    wrapper_starter_messages = body.pop("starter_messages", None)
 
     # Resolve step persona references
     raw_steps = body.pop("steps", [])
@@ -98,6 +207,11 @@ def create_workflow(payload: dict) -> dict | None:
         result = resp.json()
         step_count = len(result.get("steps", []))
         print(f"  [OK]  ID={result['id']}  {name}  ({step_count} steps)")
+
+        # Set starter messages on the wrapper persona
+        if wrapper_starter_messages:
+            _update_wrapper_persona_starter_messages(name, wrapper_starter_messages)
+
         return result
     else:
         try:
@@ -237,13 +351,18 @@ def run_workflow_cli(workflow_id: int, message: str):
                 content = obj.get("content", "")
                 _safe_print(f"\n[Orchestrator] {content}")
 
-            elif ptype == "agent_response_start":
+            # AgentResponseStart serializes as "message_start"
+            elif ptype == "message_start":
                 print("\n[Final Answer]")
                 print("-" * 50)
 
-            elif ptype == "agent_response_delta" or ptype == "message_delta":
+            # AgentResponseDelta serializes as "message_delta"
+            elif ptype == "message_delta":
                 content = obj.get("content", obj.get("delta", ""))
                 _safe_print(content, end="", flush=True)
+
+            elif ptype == "message_end":
+                pass  # End of message stream
 
             elif ptype == "stop":
                 print("\n\n--- Workflow Complete ---")
@@ -254,9 +373,8 @@ def run_workflow_cli(workflow_id: int, message: str):
             elif ptype in (
                 "reasoning_start", "reasoning_delta", "reasoning_end",
                 "reasoning_done",
-                "message_start", "message_end",
             ):
-                pass  # Internal LLM packets — suppress
+                pass  # Internal LLM reasoning packets — suppress
 
             else:
                 # Print raw for debugging

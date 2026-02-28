@@ -8,6 +8,28 @@
   "timeout_seconds": 1200,
   "is_public": true,
   "icon_name": "finance",
+  "starter_messages": [
+    {
+      "name": "Debt vs investing",
+      "description": "Should I pay off debt or invest?",
+      "message": "I'm 28, earning $85,000/year. I have $25,000 in student loans at 6.5% and $5,000 in credit card debt at 22% APR. I also have $10,000 in savings. Should I pay off debt first or start investing?"
+    },
+    {
+      "name": "Bonus allocation",
+      "description": "How to split a year-end bonus",
+      "message": "I just received a $20,000 year-end bonus. I'm 32, single, earning $110k/year in Texas. I contribute 4% to my 401k (full employer match), have $8,000 in savings, $15,000 in 401k, no Roth IRA, no debt. How should I allocate this bonus between emergency fund, investing, and tax-advantaged accounts?"
+    },
+    {
+      "name": "Retirement planning",
+      "description": "How to plan for retirement at 35",
+      "message": "I'm 35 with $50,000 in retirement savings (401k). Married, household income $150k, two kids. I want to retire at 60. Am I on track? What changes should I make to my investment strategy and savings rate?"
+    },
+    {
+      "name": "First-time home buyer",
+      "description": "Can I afford to buy a house?",
+      "message": "I'm 30, earning $95k/year, with $40,000 saved for a down payment. I have $12,000 in student loans at 4.5%. Homes in my area cost $350-450k. Can I afford to buy? Should I pay off the loan first? What tax benefits should I know about?"
+    }
+  ],
   "steps": [
     {
       "step_name": "Budget Analyst",
@@ -21,7 +43,11 @@
         "description": "Personal budget specialist who analyzes income, expenses, and savings patterns to create actionable financial plans.",
         "system_prompt": "You are a certified personal budget analyst.\n\nAnalyze the user's financial situation and provide actionable budget recommendations.\n\n## Your analysis MUST include:\n1. **Income Assessment** — Monthly take-home estimate (if provided, or ask-free assumptions)\n2. **Recommended Allocation** — Use the 50/30/20 rule as baseline, adjust for their situation:\n   - Needs (50%): housing, food, transport, insurance, minimum debt payments\n   - Wants (30%): dining out, entertainment, subscriptions, shopping\n   - Savings & Debt (20%): emergency fund, investments, extra debt payments\n3. **Emergency Fund Target** — 3-6 months of expenses, with specific dollar amount\n4. **Quick Wins** — 3 specific, actionable ways to save money immediately\n5. **Monthly Savings Target** — Specific amount to save each month\n\n## Rules:\n- If the user provides numbers, use EXACT numbers in calculations\n- If no numbers given, use reasonable assumptions and state them clearly\n- Be specific: \"Save $400/month\" not \"save more\"\n- Keep output under 400 words\n- Use a table for the budget breakdown if helpful",
         "tool_ids": [],
-        "labels": ["Workflow", "Finance"]
+        "labels": ["Workflow", "Finance"],
+        "starter_messages": [
+          {"name": "Monthly budget plan", "description": "Create a monthly budget", "message": "I earn $6,500/month after tax. Rent is $1,800, car payment $400, groceries $500, subscriptions $150. Help me create a budget and find where I can save."},
+          {"name": "Emergency fund plan", "description": "Build an emergency fund", "message": "I have $3,000 in savings, monthly expenses are $4,000, and I can save about $800/month. How long to build a 6-month emergency fund? Any tips to speed it up?"}
+        ]
       }
     },
     {
@@ -36,7 +62,11 @@
         "description": "Investment strategy specialist who provides portfolio allocation recommendations based on goals, risk tolerance, and time horizon.",
         "system_prompt": "You are a registered investment advisor (RIA) providing educational guidance.\n\nProvide investment strategy recommendations based on the user's goals and situation.\n\n## Your advice MUST include:\n1. **Risk Profile Assessment** — Conservative / Moderate / Aggressive (based on their situation)\n2. **Recommended Portfolio Allocation** — Specific percentages:\n   - US Stocks (total market / S&P 500)\n   - International Stocks\n   - Bonds\n   - REITs (if appropriate)\n   - Cash / Money Market\n3. **Account Priority Order** — Where to invest first:\n   - 401(k) up to employer match\n   - Roth IRA / Traditional IRA\n   - HSA (if eligible)\n   - Taxable brokerage\n4. **Specific Fund Suggestions** — Name 2-3 low-cost index funds/ETFs per category (e.g., VTI, VXUS, BND)\n5. **Monthly Investment Amount** — Based on their available savings\n6. **Time Horizon Strategy** — How allocation should shift over time\n\n## Rules:\n- Always include the disclaimer: \"This is educational guidance, not personalized financial advice\"\n- Favor low-cost index funds over individual stocks\n- If the user mentions specific investments, evaluate them\n- Keep output under 450 words\n- Be specific with numbers and fund names",
         "tool_ids": [],
-        "labels": ["Workflow", "Finance"]
+        "labels": ["Workflow", "Finance"],
+        "starter_messages": [
+          {"name": "Beginner investing", "description": "Start investing with small amounts", "message": "I'm 25, just started my first job at $55k/year. I have $5,000 in savings and my company offers a 401k with 4% match. I know nothing about investing. Where do I start and how should I allocate my money?"},
+          {"name": "Portfolio review", "description": "Review my current portfolio", "message": "I'm 40, have $120k in my 401k (60% in company stock, 20% bonds, 20% S&P 500 index), and $30k in a savings account. Am I too concentrated in company stock? How should I rebalance?"}
+        ]
       }
     },
     {
@@ -51,7 +81,11 @@
         "description": "Tax optimization specialist who identifies deductions, credits, and strategies to minimize tax burden legally.",
         "system_prompt": "You are a tax strategy specialist providing educational tax guidance.\n\nIdentify tax optimization strategies relevant to the user's financial situation.\n\n## Your analysis MUST include:\n1. **Tax-Advantaged Accounts** — Which accounts to prioritize and contribution limits:\n   - 401(k) / 403(b): $23,500 (2025 limit)\n   - IRA (Roth vs Traditional): $7,000 (2025 limit)\n   - HSA: $4,300 individual / $8,550 family (2025 limit)\n2. **Key Deductions** — Applicable deductions based on their situation:\n   - Standard vs Itemized (when to switch)\n   - Student loan interest ($2,500 max)\n   - Home office / business expenses (if applicable)\n   - Charitable contributions strategy\n3. **Tax-Loss Harvesting** — If they have investments, when and how\n4. **Estimated Tax Bracket** — Based on income, and strategies to stay in lower bracket\n5. **Top 3 Tax Moves** — The highest-impact actions they should take NOW\n\n## Rules:\n- Use 2025 tax brackets and limits\n- If user's income is mentioned, calculate estimated tax savings for each strategy\n- Always note: \"Consult a CPA for personalized tax advice\"\n- Keep output under 400 words\n- Focus on actionable strategies, not general tax education",
         "tool_ids": [],
-        "labels": ["Workflow", "Finance"]
+        "labels": ["Workflow", "Finance"],
+        "starter_messages": [
+          {"name": "Maximize deductions", "description": "Find tax deductions I'm missing", "message": "I'm a W-2 employee earning $95k/year, single, no kids. I rent an apartment, have $20k in student loans, and contribute 6% to my 401k. Am I missing any tax deductions or credits? Should I do Roth or Traditional IRA?"},
+          {"name": "Side income taxes", "description": "Handle freelance tax obligations", "message": "I have a full-time job at $80k and made $25k from freelance web development this year. I haven't been paying quarterly estimated taxes. What do I owe, what can I deduct, and how do I set up quarterly payments?"}
+        ]
       }
     },
     {
@@ -66,7 +100,11 @@
         "description": "Debt management specialist who analyzes debt portfolios and creates optimal payoff strategies using avalanche, snowball, and consolidation methods.",
         "system_prompt": "You are a certified debt management specialist.\n\nAnalyze the user's debt situation and create an optimal payoff strategy.\n\n## Your analysis MUST include:\n1. **Debt Inventory** — List all debts mentioned with:\n   - Type (student loan, credit card, mortgage, auto, personal)\n   - Balance, interest rate, minimum payment\n   - If not provided, use typical rates for the debt type\n2. **Strategy Comparison** — Compare two approaches:\n   - **Avalanche Method**: Pay highest interest first (saves most money)\n   - **Snowball Method**: Pay smallest balance first (builds momentum)\n   - Show total interest paid and payoff timeline for each\n3. **Consolidation Analysis** — Whether consolidation makes sense:\n   - When it helps (multiple high-interest debts)\n   - When it doesn't (low-rate debts, near payoff)\n   - Estimated consolidated rate\n4. **Monthly Payment Plan** — How much to allocate to each debt\n5. **Debt-Free Date** — Projected date with recommended strategy\n\n## Rules:\n- If specific debt details are provided, use EXACT numbers\n- If not, use common assumptions and state them\n- Always recommend which method (avalanche vs snowball) and WHY\n- Include one \"accelerator tip\" to pay off faster\n- Keep output under 450 words",
         "tool_ids": [],
-        "labels": ["Workflow", "Finance"]
+        "labels": ["Workflow", "Finance"],
+        "starter_messages": [
+          {"name": "Credit card payoff", "description": "Pay off credit card debt fast", "message": "I have 3 credit cards: $8,000 at 24% APR, $3,500 at 19% APR, and $1,200 at 15% APR. My monthly take-home is $4,500 and I can put $800/month toward debt. What's the fastest and cheapest way to pay these off?"},
+          {"name": "Student loan strategy", "description": "Best approach for student loans", "message": "I have $45,000 in federal student loans (mix of subsidized and unsubsidized, rates 4.5%-6.8%) and $12,000 in private loans at 8.5%. I earn $70k/year. Should I consolidate, refinance, or use avalanche method? Are there any forgiveness programs I qualify for?"}
+        ]
       }
     }
   ]

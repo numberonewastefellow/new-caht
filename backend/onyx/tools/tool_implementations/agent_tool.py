@@ -7,6 +7,7 @@ but generalized to support any Persona as a sub-agent.
 import json
 import re
 from typing import Any
+from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Session
 
@@ -17,6 +18,10 @@ from onyx.server.query_and_chat.streaming_models import Packet
 from onyx.server.query_and_chat.streaming_models import SectionEnd
 from onyx.tools.interface import Tool
 from onyx.tools.models import ToolResponse
+
+if TYPE_CHECKING:
+    from onyx.db.models import User
+    from onyx.llm.interfaces import LLM
 
 
 AGENT_TOOL_RESPONSE_ID = "agent_tool_response"
@@ -45,6 +50,9 @@ class AgentTool(Tool[None]):
         step_order: int = 0,
         step_id: int | None = None,
         output_key: str = "output",
+        user: "User | None" = None,
+        llm: "LLM | None" = None,
+        has_tools: bool | None = None,
     ) -> None:
         super().__init__(emitter=emitter)
         self._persona = persona
@@ -53,6 +61,10 @@ class AgentTool(Tool[None]):
         self._step_order = step_order
         self._step_id = step_id
         self._output_key = output_key
+        self._cached_user = user
+        self._cached_llm = llm
+        # Pre-check whether persona has tools (avoids lazy-load in bg thread)
+        self._has_tools = has_tools if has_tools is not None else bool(persona.tools)
 
     @property
     def id(self) -> int:
@@ -139,25 +151,17 @@ class AgentTool(Tool[None]):
         from onyx.configs.constants import MessageType
         from onyx.llm.factory import get_llm_for_persona
         from onyx.llm.models import ToolChoiceOptions
-        from onyx.tools.tool_constructor import construct_tools
-        from onyx.tools.tool_constructor import SearchToolConfig
         from onyx.llm.factory import get_llm_token_counter
 
-        # Get the persona's LLM
-        llm = get_llm_for_persona(self._persona, self._db_session)
-        token_counter = get_llm_token_counter(llm)
-
-        # Build the persona's tools
-        # We need a User object - get it from the persona's owner or use a minimal one
+        # Resolve user (use cached if pre-computed by workflow engine)
         from onyx.db.models import User
 
-        user = self._db_session.get(User, self._persona.user_id)
+        user = self._cached_user
         if user is None:
-            # Fallback: try to get any admin user
+            user = self._db_session.get(User, self._persona.user_id)
+        if user is None:
             from sqlalchemy import select
-
             user = self._db_session.execute(select(User).limit(1)).scalar_one_or_none()
-
         if user is None:
             return ToolResponse(
                 rich_response=None,
@@ -166,17 +170,26 @@ class AgentTool(Tool[None]):
                 ),
             )
 
-        tool_dict = construct_tools(
-            persona=self._persona,
-            db_session=self._db_session,
-            emitter=self.emitter,
-            user=user,
-            llm=llm,
-            search_tool_config=SearchToolConfig(),
-        )
-        tools = []
-        for tool_list in tool_dict.values():
-            tools.extend(tool_list)
+        # Use cached LLM or create one (bug fix: pass user, not db_session)
+        llm = self._cached_llm or get_llm_for_persona(self._persona, user)
+        token_counter = get_llm_token_counter(llm)
+
+        # Build persona's tools — skip entirely if persona has none (Tier 1.1)
+        tools: list = []
+        if self._has_tools:
+            from onyx.tools.tool_constructor import construct_tools
+            from onyx.tools.tool_constructor import SearchToolConfig
+
+            tool_dict = construct_tools(
+                persona=self._persona,
+                db_session=self._db_session,
+                emitter=self.emitter,
+                user=user,
+                llm=llm,
+                search_tool_config=SearchToolConfig(),
+            )
+            for tool_list in tool_dict.values():
+                tools.extend(tool_list)
 
         # Build system prompt from persona
         system_prompt_text = self._persona.system_prompt or ""
@@ -204,6 +217,10 @@ class AgentTool(Tool[None]):
         state_container = ChatStateContainer()
         citation_processor = DynamicCitationProcessor()
 
+        # Pre-compute tool definitions once (they don't change between cycles)
+        tool_defs = [t.tool_definition() for t in tools]
+        tool_choice = ToolChoiceOptions.AUTO if tools else ToolChoiceOptions.NONE
+
         # Run a multi-turn loop (similar to research_agent.py pattern)
         max_cycles = 5  # Sub-agent gets up to 5 tool-call cycles
         final_answer = ""
@@ -216,11 +233,6 @@ class AgentTool(Tool[None]):
                 reminder_message=None,
                 project_files=None,
                 available_tokens=llm.config.max_input_tokens,
-            )
-
-            tool_defs = [t.tool_definition() for t in tools]
-            tool_choice = (
-                ToolChoiceOptions.AUTO if tools else ToolChoiceOptions.NONE
             )
 
             llm_step_result, _ = run_llm_step(

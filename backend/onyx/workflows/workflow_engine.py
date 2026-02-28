@@ -53,6 +53,27 @@ from onyx.workflows.models import WorkflowContext
 
 logger = setup_logger()
 
+# Maximum words in agent output before truncation for orchestrator context.
+# Full output is stored in context.step_outputs; the orchestrator only needs
+# a summary to make routing decisions.  (Tier 2.1 — context summarization)
+_ORCHESTRATOR_CONTEXT_MAX_WORDS = 250
+
+
+def _summarize_for_orchestrator(agent_name: str, output: str) -> str:
+    """Truncate agent output for the orchestrator's context window.
+
+    The orchestrator only needs enough detail to decide the next step.
+    Full output is preserved in context.step_outputs for downstream agents.
+    """
+    words = output.split()
+    if len(words) <= _ORCHESTRATOR_CONTEXT_MAX_WORDS:
+        return output
+    truncated = " ".join(words[:_ORCHESTRATOR_CONTEXT_MAX_WORDS])
+    return (
+        f"[{agent_name}: {len(words)} words, showing first "
+        f"{_ORCHESTRATOR_CONTEXT_MAX_WORDS}]\n{truncated}..."
+    )
+
 
 # Packet types emitted by run_llm_step that the workflow engine may need to
 # suppress to avoid duplicate content in the frontend.
@@ -125,7 +146,7 @@ def _stream_agent_packets(
 
     This mirrors the pattern from run_chat_loop_with_state_containers: the
     agent runs in a background thread emitting packets to emitter.bus, while
-    the main (generator) thread polls the bus every 300ms and yields each
+    the main (generator) thread polls the bus every 50ms and yields each
     packet immediately to the SSE endpoint for real-time streaming.
 
     The ToolResponse and max_turn_index are stored in `result` for the caller.
@@ -146,7 +167,7 @@ def _stream_agent_packets(
     # Poll emitter bus in real-time while agent runs in background
     while True:
         try:
-            pkt = emitter.bus.get(timeout=0.3)
+            pkt = emitter.bus.get(timeout=0.05)
         except Empty:
             # Queue empty — check if thread has finished
             if not thread.is_alive():
@@ -168,7 +189,7 @@ def _stream_agent_packets(
         # Check stop signal periodically even when packets are flowing,
         # matching the pattern from chat_state.py (lines 253-264).
         current_time = time.monotonic()
-        if current_time - last_cancel_check >= 0.3:
+        if current_time - last_cancel_check >= 0.1:
             if is_connected is not None and not is_connected():
                 logger.info("Workflow agent cancelled by user during streaming")
                 cancelled = True
@@ -225,16 +246,33 @@ def _build_agent_tools(
     steps: list[AgentWorkflowStep],
     emitter: Emitter,
     db_session: Session,
+    user: User | None = None,
 ) -> list[AgentTool]:
-    """Build AgentTool instances for each workflow step's persona."""
+    """Build AgentTool instances for each workflow step's persona.
+
+    Performance: pre-resolves user and caches LLM instances to avoid
+    redundant DB lookups per agent call (Tier 1.5).
+    Also checks persona.tools on the main thread to avoid lazy-loading
+    in background agent threads (Tier 1.1).
+    """
     agent_tools = []
+    llm_cache: dict[int, LLM] = {}
+
     for step in steps:
-        persona = db_session.get(Persona, step.persona_id)
+        persona = step.persona if step.persona else db_session.get(Persona, step.persona_id)
         if persona is None or persona.deleted:
             logger.warning(
                 f"Persona {step.persona_id} not found for workflow step {step.id}"
             )
             continue
+
+        # Cache LLM per persona (avoids re-creating for same persona)
+        if persona.id not in llm_cache:
+            llm_cache[persona.id] = get_llm_for_persona(persona, user) if user else get_default_llm()
+
+        # Check has_tools on main thread (eager-loaded, thread-safe)
+        has_tools = bool(persona.tools)
+
         agent_tools.append(
             AgentTool(
                 persona=persona,
@@ -244,6 +282,9 @@ def _build_agent_tools(
                 step_order=step.step_order,
                 step_id=step.id,
                 output_key=step.output_key,
+                user=user,
+                llm=llm_cache[persona.id],
+                has_tools=has_tools,
             )
         )
     return agent_tools
@@ -272,11 +313,12 @@ Your job is to:
 Available agents:
 {agents_description}
 
-IMPORTANT:
-- Call ONE agent at a time with a clear task description
+RULES:
+- You MUST delegate to at least one agent before providing a final answer — never answer the user directly without consulting a specialist first
+- Call ONE agent at a time with a clear, specific task description
 - After receiving an agent's output, decide whether to call another agent or provide the final answer
-- When you have enough information, provide the final answer directly (without calling any more agents)
-- Be specific in your task delegation — tell the agent exactly what you need
+- When you have enough information from the agents, synthesize their outputs into a concise final answer
+- Do NOT ask the user clarifying questions — work with the information provided and make reasonable assumptions
 
 {custom_prompt}"""
 
@@ -334,6 +376,29 @@ def run_workflow_sequential(
     turn_index = 0  # Running counter — incremented based on drained packet turn_indices
     cancelled = False
 
+    # Pre-build agent tools with cached LLMs + user (Tier 1.5 performance)
+    agent_tools_by_step: dict[int, AgentTool] = {}
+    llm_cache: dict[int, LLM] = {}
+    for step in steps:
+        persona = step.persona if step.persona else db_session.get(Persona, step.persona_id)
+        if persona is None or persona.deleted:
+            continue
+        if persona.id not in llm_cache:
+            llm_cache[persona.id] = get_llm_for_persona(persona, user)
+        has_tools = bool(persona.tools)
+        agent_tools_by_step[step.id] = AgentTool(
+            persona=persona,
+            emitter=emitter,
+            db_session=db_session,
+            step_name=step.step_name,
+            step_order=step.step_order,
+            step_id=step.id,
+            output_key=step.output_key,
+            user=user,
+            llm=llm_cache[persona.id],
+            has_tools=has_tools,
+        )
+
     try:
         for step in steps:
             # Check stop signal before starting each step
@@ -342,11 +407,13 @@ def run_workflow_sequential(
                 cancelled = True
                 break
 
-            step_start_time = time.monotonic()
-            persona = db_session.get(Persona, step.persona_id)
-            if persona is None or persona.deleted:
-                logger.warning(f"Skipping step {step.step_name}: persona not found")
+            agent_tool = agent_tools_by_step.get(step.id)
+            if agent_tool is None:
+                logger.warning(f"Skipping step {step.step_name}: no agent tool")
                 continue
+
+            step_start_time = time.monotonic()
+            persona = agent_tool._persona
 
             placement = Placement(turn_index=turn_index)
 
@@ -362,15 +429,6 @@ def run_workflow_sequential(
 
             # Build the task input from context
             task_input = _apply_input_mapping(step.input_mapping, context)
-
-            # Create and run the agent tool with real-time streaming
-            agent_tool = AgentTool(
-                persona=persona,
-                emitter=emitter,
-                db_session=db_session,
-                step_name=step.step_name,
-                step_order=step.step_order,
-            )
 
             streaming_result = _StreamingAgentResult(start_turn_index=turn_index)
             yield from _stream_agent_packets(
@@ -517,8 +575,8 @@ def run_workflow_llm_decision(
         db_session, workflow.id, user.id
     )
 
-    # Build agent tools
-    agent_tools = _build_agent_tools(steps, emitter, db_session)
+    # Build agent tools (with cached LLMs + user — Tier 1.5)
+    agent_tools = _build_agent_tools(steps, emitter, db_session, user=user)
     if not agent_tools:
         raise ValueError("No valid agent tools found for workflow")
 
@@ -533,6 +591,9 @@ def run_workflow_llm_decision(
         token_count=token_counter(system_prompt_text),
         message_type=MessageType.SYSTEM,
     )
+
+    # Pre-compute tool definitions once (they don't change — Tier 1.2)
+    tool_defs = [tool.tool_definition() for tool in agent_tools]
 
     # Initial user message
     user_msg = ChatMessageSimple(
@@ -551,6 +612,7 @@ def run_workflow_llm_decision(
     agent_call_counts: dict[str, int] = {}  # prevent calling same agent too many times
     max_calls_per_agent = workflow.max_calls_per_agent
     cancelled = False
+    final_answer_emitted = False
 
     try:
         for cycle in range(workflow.max_steps):
@@ -580,15 +642,25 @@ def run_workflow_llm_decision(
                 available_tokens=orchestrator_llm.config.max_input_tokens,
             )
 
-            # Call orchestrator LLM
-            tool_defs = [tool.tool_definition() for tool in agent_tools]
+            # Filter tool_defs to exclude agents that have reached their call
+            # limit. This prevents the model from repeatedly selecting a blocked
+            # agent (which smaller models are prone to doing even when given an
+            # error message in the conversation).
+            if max_calls_per_agent:
+                available_defs = [
+                    td for td in tool_defs
+                    if agent_call_counts.get(td["function"]["name"], 0) < max_calls_per_agent
+                ]
+            else:
+                available_defs = tool_defs
+
             tool_choice = ToolChoiceOptions.AUTO
             citation_processor = DynamicCitationProcessor()
 
             llm_step_result, has_reasoned = run_llm_step(
                 emitter=emitter,
                 history=truncated_history,
-                tool_definitions=tool_defs,
+                tool_definitions=available_defs,
                 tool_choice=tool_choice,
                 llm=orchestrator_llm,
                 placement=placement,
@@ -610,6 +682,17 @@ def run_workflow_llm_decision(
             if has_reasoned:
                 turn_index += 1
 
+            # Debug: log orchestrator decision for each cycle
+            logger.info(
+                "Workflow orchestrator cycle %d: answer=%s, tool_calls=%s, "
+                "has_reasoned=%s, drained=%d packets",
+                cycle,
+                repr(llm_step_result.answer[:200] if llm_step_result.answer else None),
+                [tc.tool_name for tc in llm_step_result.tool_calls] if llm_step_result.tool_calls else None,
+                has_reasoned,
+                len(orchestrator_drained),
+            )
+
             # If orchestrator produced a final answer (no tool calls)
             if llm_step_result.answer and not llm_step_result.tool_calls:
                 # Yield the final synthesis answer so the frontend can display it
@@ -624,6 +707,7 @@ def run_workflow_llm_decision(
                 )
                 yield Packet(placement=final_placement, obj=SectionEnd())
                 turn_index += 1
+                final_answer_emitted = True
                 break
 
             # Emit orchestrator thinking if there's text alongside tool calls (H1)
@@ -782,11 +866,15 @@ def run_workflow_llm_decision(
                     )
                     msg_history.append(tool_call_msg)
 
+                    # Summarize agent output for orchestrator context (Tier 2.1)
+                    # Full output is in context.step_outputs for downstream agents.
+                    summarized = _summarize_for_orchestrator(
+                        agent_tool.display_name,
+                        result.llm_facing_response or "",
+                    )
                     tool_response_msg = ChatMessageSimple(
-                        message=result.llm_facing_response or "",
-                        token_count=token_counter(
-                            result.llm_facing_response or ""
-                        ),
+                        message=summarized,
+                        token_count=token_counter(summarized),
                         message_type=MessageType.TOOL_CALL_RESPONSE,
                     )
                     msg_history.append(tool_response_msg)
@@ -831,6 +919,33 @@ def run_workflow_llm_decision(
             error_message=str(e),
         )
         raise
+
+    # Fallback: if the orchestrator loop ended without producing a final
+    # answer (e.g. max_steps exhausted, timeout, or model kept calling
+    # blocked agents), synthesize a basic answer from available outputs
+    # so the user isn't left with nothing.
+    if not cancelled and not final_answer_emitted and context.step_outputs:
+        logger.info(
+            "Workflow loop ended without final answer; "
+            "emitting fallback from %d agent output(s)",
+            len(context.step_outputs),
+        )
+        fallback_parts = []
+        for key, output in context.step_outputs.items():
+            fallback_parts.append(f"**{key}**:\n{output}")
+        fallback_text = "\n\n---\n\n".join(fallback_parts)
+
+        fallback_placement = Placement(turn_index=turn_index)
+        yield Packet(
+            placement=fallback_placement,
+            obj=AgentResponseStart(),
+        )
+        yield Packet(
+            placement=fallback_placement,
+            obj=AgentResponseDelta(content=fallback_text),
+        )
+        yield Packet(placement=fallback_placement, obj=SectionEnd())
+        turn_index += 1
 
     # Emit overall stop
     yield Packet(
