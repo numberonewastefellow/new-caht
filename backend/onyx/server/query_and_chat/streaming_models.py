@@ -53,6 +53,12 @@ class StreamingType(Enum):
     INTERMEDIATE_REPORT_DELTA = "intermediate_report_delta"
     INTERMEDIATE_REPORT_CITED_DOCS = "intermediate_report_cited_docs"
 
+    # Workflow Packets
+    WORKFLOW_STEP_START = "workflow_step_start"
+    WORKFLOW_STEP_DELTA = "workflow_step_delta"
+    WORKFLOW_STEP_END = "workflow_step_end"
+    WORKFLOW_ORCHESTRATOR_THINKING = "workflow_orchestrator_thinking"
+
 
 class BaseObj(BaseModel):
     type: str = ""
@@ -341,6 +347,34 @@ class IntermediateReportCitedDocs(BaseObj):
 
 
 ################################################
+# Workflow Packets
+################################################
+class WorkflowStepStart(BaseObj):
+    type: Literal["workflow_step_start"] = StreamingType.WORKFLOW_STEP_START.value
+    step_name: str
+    persona_name: str
+    step_order: int
+
+
+class WorkflowStepDelta(BaseObj):
+    type: Literal["workflow_step_delta"] = StreamingType.WORKFLOW_STEP_DELTA.value
+    content: str
+
+
+class WorkflowStepEnd(BaseObj):
+    type: Literal["workflow_step_end"] = StreamingType.WORKFLOW_STEP_END.value
+    step_name: str
+    output_key: str
+
+
+class WorkflowOrchestratorThinking(BaseObj):
+    type: Literal["workflow_orchestrator_thinking"] = (
+        StreamingType.WORKFLOW_ORCHESTRATOR_THINKING.value
+    )
+    content: str
+
+
+################################################
 # Packet Object
 ################################################
 # Discriminated union of all possible packet object types
@@ -386,6 +420,11 @@ PacketObj = Union[
     IntermediateReportStart,
     IntermediateReportDelta,
     IntermediateReportCitedDocs,
+    # Workflow Packets
+    WorkflowStepStart,
+    WorkflowStepDelta,
+    WorkflowStepEnd,
+    WorkflowOrchestratorThinking,
 ]
 
 

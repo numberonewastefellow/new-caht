@@ -54,14 +54,13 @@ if [ -d "$WEB_TEMPLATE_PATH" ]; then
         echo "which includes Node.js, or set ENABLE_CRAFT=false to disable Craft." >&2
         exit 1
     fi
-    # Always remove and reinstall to ensure correct architecture binaries
     if [ -d "${WEB_TEMPLATE_PATH}/node_modules" ]; then
-        echo "  Removing existing node_modules..."
-        rm -rf "${WEB_TEMPLATE_PATH}/node_modules"
+        echo "  Web template node_modules already exists, skipping npm install"
+    else
+        echo "  Installing npm packages (this may take 1-2 minutes)..."
+        cd "$WEB_TEMPLATE_PATH" && npm install 2>&1 || { echo "ERROR: npm install failed" >&2; exit 1; }
+        echo "  Web template dependencies installed"
     fi
-    echo "  Installing npm packages (this may take 1-2 minutes)..."
-    cd "$WEB_TEMPLATE_PATH" && npm install 2>&1 || { echo "ERROR: npm install failed" >&2; exit 1; }
-    echo "  Web template dependencies installed"
 fi
 
 echo "Craft template setup complete"

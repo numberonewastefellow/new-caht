@@ -184,6 +184,9 @@ class MinimalPersonaSnapshot(BaseModel):
     # Used to display ownership
     owner: MinimalUserSnapshot | None
 
+    # Multi-agent workflow link — set when this persona is a workflow wrapper
+    workflow_id: int | None = None
+
     @classmethod
     def from_model(cls, persona: Persona) -> "MinimalPersonaSnapshot":
         # Collect unique sources from document sets, hierarchy nodes, and attached documents
@@ -238,6 +241,7 @@ class MinimalPersonaSnapshot(BaseModel):
                 if persona.user
                 else None
             ),
+            workflow_id=persona.workflow_id,
         )
 
 

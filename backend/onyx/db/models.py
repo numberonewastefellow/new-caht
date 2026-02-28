@@ -3384,6 +3384,16 @@ class Persona(Base):
         back_populates="attached_personas",
     )
 
+    # Multi-agent workflow link — when set, this persona is a wrapper for a workflow.
+    # Chat messages sent to this persona are routed to the workflow engine instead
+    # of the standard LLM loop.
+    workflow_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent_workflow.id", ondelete="SET NULL"), nullable=True
+    )
+    workflow: Mapped["AgentWorkflow | None"] = relationship(
+        "AgentWorkflow", foreign_keys=[workflow_id]
+    )
+
     # Default personas loaded via yaml cannot have the same name
     __table_args__ = (
         Index(
@@ -4978,3 +4988,135 @@ class ScimGroupMapping(Base):
     user_group: Mapped[UserGroup] = relationship(
         "UserGroup", foreign_keys=[user_group_id]
     )
+
+
+# ========================
+# Multi-Agent Workflow Models
+# ========================
+
+
+class AgentWorkflow(Base):
+    """Defines a multi-agent workflow that coordinates multiple personas."""
+
+    __tablename__ = "agent_workflow"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    user_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("user.id", ondelete="CASCADE"), nullable=True
+    )
+
+    # Orchestration config
+    orchestration_mode: Mapped[str] = mapped_column(
+        String, nullable=False, default="llm_decision"
+    )
+    orchestrator_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
+    orchestrator_llm_provider: Mapped[str | None] = mapped_column(
+        String, nullable=True
+    )
+    orchestrator_llm_model: Mapped[str | None] = mapped_column(String, nullable=True)
+    max_steps: Mapped[int] = mapped_column(Integer, default=10)
+    timeout_seconds: Mapped[int] = mapped_column(Integer, default=1800)
+
+    # Metadata
+    is_public: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_visible: Mapped[bool] = mapped_column(Boolean, default=True)
+    deleted: Mapped[bool] = mapped_column(Boolean, default=False)
+    icon_name: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    # Relationships
+    user: Mapped[User | None] = relationship("User", foreign_keys=[user_id])
+    steps: Mapped[list["AgentWorkflowStep"]] = relationship(
+        "AgentWorkflowStep",
+        back_populates="workflow",
+        cascade="all, delete-orphan",
+        order_by="AgentWorkflowStep.step_order",
+    )
+
+
+class AgentWorkflowStep(Base):
+    """A single step in a multi-agent workflow, referencing an existing Persona."""
+
+    __tablename__ = "agent_workflow_step"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    workflow_id: Mapped[int] = mapped_column(
+        ForeignKey("agent_workflow.id", ondelete="CASCADE"), nullable=False
+    )
+    persona_id: Mapped[int] = mapped_column(
+        ForeignKey("persona.id", ondelete="CASCADE"), nullable=False
+    )
+
+    step_order: Mapped[int] = mapped_column(Integer, nullable=False)
+    step_name: Mapped[str] = mapped_column(String, nullable=False)
+    step_description: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # How to feed previous step output as input
+    # e.g. {"context": "$step_1.output", "query": "$user_input"}
+    input_mapping: Mapped[dict | None] = mapped_column(PGJSONB, nullable=True)
+    # Name for this step's output in the context dict
+    output_key: Mapped[str] = mapped_column(String, default="output")
+
+    # Optional, for conditional routing
+    # e.g. {"field": "$step_1.output", "contains": "technical", "goto": "step_3"}
+    condition: Mapped[dict | None] = mapped_column(PGJSONB, nullable=True)
+
+    is_terminal: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    __table_args__ = (
+        UniqueConstraint("workflow_id", "step_order", name="uq_workflow_step_order"),
+    )
+
+    # Relationships
+    workflow: Mapped[AgentWorkflow] = relationship(
+        "AgentWorkflow", back_populates="steps"
+    )
+    persona: Mapped[Persona] = relationship("Persona")
+
+
+class WorkflowExecution(Base):
+    """Tracks a single execution of a workflow."""
+
+    __tablename__ = "workflow_execution"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    workflow_id: Mapped[int] = mapped_column(
+        ForeignKey("agent_workflow.id", ondelete="CASCADE"), nullable=False
+    )
+    chat_session_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("chat_session.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    user_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
+
+    status: Mapped[str] = mapped_column(String, default="running")
+    # [{step_id, persona_id, step_name, input, output, duration_ms, tokens_used}]
+    steps_executed: Mapped[list | None] = mapped_column(PGJSONB, nullable=True)
+    total_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    total_duration_ms: Mapped[int] = mapped_column(Integer, default=0)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    started_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    completed_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    # Relationships
+    workflow: Mapped[AgentWorkflow] = relationship("AgentWorkflow")
+    user: Mapped[User | None] = relationship("User", foreign_keys=[user_id])

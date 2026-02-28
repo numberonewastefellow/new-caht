@@ -58,6 +58,9 @@ export interface MinimalPersonaSnapshot {
 
   labels?: PersonaLabel[];
   owner: MinimalUserSnapshot | null;
+
+  // Multi-agent workflow link — set when this agent is a workflow wrapper
+  workflow_id?: number | null;
 }
 
 export interface Persona extends MinimalPersonaSnapshot {

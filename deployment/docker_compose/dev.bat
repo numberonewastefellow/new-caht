@@ -76,13 +76,16 @@ if /i "%~1"=="down-v" (
 if /i "%~1"=="build" (
     if /i "%~2"=="" (
         echo Building all services...
-        %COMPOSE_CMD% up -d --build --wait
+        %COMPOSE_CMD% build
+        %COMPOSE_CMD% up -d --wait
     ) else if /i "%~2"=="infra" (
         echo Building infrastructure services...
-        %COMPOSE_CMD% up -d --build --wait %INFRA%
+        %COMPOSE_CMD% build %INFRA%
+        %COMPOSE_CMD% up -d --wait %INFRA%
     ) else if /i "%~2"=="app" (
         echo Building app services...
-        %COMPOSE_CMD% up -d --build --wait %APP%
+        %COMPOSE_CMD% build %APP%
+        %COMPOSE_CMD% up -d --wait %APP%
     ) else (
         echo Building:!SERVICES!
         %COMPOSE_CMD% build!SERVICES!

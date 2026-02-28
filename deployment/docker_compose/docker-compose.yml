@@ -44,6 +44,7 @@ services:
       dockerfile: Dockerfile
       args:
         - ENABLE_CRAFT=${ENABLE_CRAFT:-false}
+        - PREBAKE_CRAFT_TEMPLATES=${PREBAKE_CRAFT_TEMPLATES:-true}
     command: >
       /bin/sh -c "alembic upgrade head &&
       echo \"Starting Onyx Api Server\" &&
@@ -115,6 +116,8 @@ services:
       - api_server_logs:/var/log/onyx
       # Shared volume for persistent document storage (Craft file-system mode)
       - file-system:/app/file-system
+      # Shared Craft templates volume (venv + npm deps, persisted across restarts)
+      - craft-templates:/app/onyx/server/features/build/sandbox/kubernetes/docker/templates
 
   background:
     image: ${ONYX_BACKEND_IMAGE:-onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}}
@@ -123,6 +126,7 @@ services:
       dockerfile: Dockerfile
       args:
         - ENABLE_CRAFT=${ENABLE_CRAFT:-false}
+        - PREBAKE_CRAFT_TEMPLATES=${PREBAKE_CRAFT_TEMPLATES:-true}
     command: >
       /bin/sh -c "
       if [ -f /app/scripts/setup_craft_templates.sh ]; then
@@ -174,6 +178,8 @@ services:
       - background_logs:/var/log/onyx
       # Shared volume for persistent document storage (Craft file-system mode)
       - file-system:/app/file-system
+      # Shared Craft templates volume (venv + npm deps, persisted across restarts)
+      - craft-templates:/app/onyx/server/features/build/sandbox/kubernetes/docker/templates
     logging:
       driver: json-file
       options:
@@ -534,3 +540,5 @@ volumes:
   indexing_model_server_logs:
   # Shared volume for persistent document storage (Craft file-system mode)
   file-system:
+  # Craft templates (venv + npm deps), shared between api_server and background
+  craft-templates:

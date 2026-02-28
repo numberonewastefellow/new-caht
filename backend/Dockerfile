@@ -10,6 +10,9 @@ founders@onyx.app for more information. Please visit https://github.com/onyx-dot
 # Build argument for Craft support (disabled by default)
 # Use --build-arg ENABLE_CRAFT=true to include Node.js and opencode CLI
 ARG ENABLE_CRAFT=false
+# Set to false to skip the expensive venv/npm template setup at build time.
+# Templates will be created at runtime on first container start instead.
+ARG PREBAKE_CRAFT_TEMPLATES=true
 
 # DO_NOT_TRACK is used to disable telemetry for Unstructured
 ENV DANSWER_RUNNING_IN_DOCKER="true" \
@@ -146,9 +149,10 @@ COPY --chown=onyx:onyx ./scripts/setup_craft_templates.sh /app/scripts/setup_cra
 RUN sed -i 's/\r$//' /app/scripts/*.sh
 RUN chmod +x /app/scripts/supervisord_entrypoint.sh /app/scripts/setup_craft_templates.sh
 
-# Run Craft template setup at build time when ENABLE_CRAFT=true
-# This pre-bakes demo data, Python venv, and npm dependencies into the image
-RUN if [ "$ENABLE_CRAFT" = "true" ]; then \
+# Run Craft template setup at build time when ENABLE_CRAFT=true AND PREBAKE_CRAFT_TEMPLATES=true
+# When PREBAKE_CRAFT_TEMPLATES=false, templates are created at runtime on first container start
+# via setup_craft_templates.sh in the background container's startup command.
+RUN if [ "$ENABLE_CRAFT" = "true" ] && [ "$PREBAKE_CRAFT_TEMPLATES" = "true" ]; then \
         echo "Running Craft template setup at build time..." && \
         ENABLE_CRAFT=true /app/scripts/setup_craft_templates.sh; \
     fi

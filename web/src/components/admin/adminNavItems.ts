@@ -23,6 +23,7 @@ import {
   SvgArrowExchange,
   SvgActions,
   SvgDiscordMono,
+  SvgSliders,
 } from "@opal/icons";
 import SvgMcp from "@opal/icons/mcp";
 import {
@@ -143,6 +144,11 @@ export function getAdminNavGroups(opts: {
   }
 
   agentItems.push(
+    {
+      name: "Workflows",
+      icon: SvgSliders,
+      link: "/admin/workflows",
+    },
     {
       name: "MCP Tools",
       icon: SvgMcp,
@@ -379,6 +385,7 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   bots: "Slack Agents",
   "discord-bot": "Discord Agents",
   actions: "Tools",
+  workflows: "Workflows",
   mcp: "MCP Tools",
   "open-api": "API Tools",
   "standard-answer": "Curated Responses",
@@ -447,6 +454,7 @@ const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
   ["/admin/bots", "purple"],
   ["/admin/discord-bot", "purple"],
   ["/admin/actions", "purple"],
+  ["/admin/workflows", "purple"],
   ["/ee/admin/standard-answer", "purple"],
   // AI Models (blue)
   ["/admin/configuration", "blue"],

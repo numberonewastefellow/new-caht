@@ -94,6 +94,8 @@ from onyx.server.features.tool.api import admin_router as admin_tool_router
 from onyx.server.features.tool.api import router as tool_router
 from onyx.server.features.user_oauth_token.api import router as user_oauth_token_router
 from onyx.server.features.web_search.api import router as web_search_router
+from onyx.server.features.workflow.api import admin_router as admin_workflow_router
+from onyx.server.features.workflow.api import router as workflow_router
 from onyx.server.federated.api import router as federated_router
 from onyx.server.kg.api import admin_router as kg_admin_router
 from onyx.server.manage.administrative import router as admin_router
@@ -439,6 +441,8 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     include_router_with_global_prefix_prepended(application, federated_router)
     include_router_with_global_prefix_prepended(application, mcp_router)
     include_router_with_global_prefix_prepended(application, mcp_admin_router)
+    include_router_with_global_prefix_prepended(application, workflow_router)
+    include_router_with_global_prefix_prepended(application, admin_workflow_router)
 
     include_router_with_global_prefix_prepended(application, pat_router)
 

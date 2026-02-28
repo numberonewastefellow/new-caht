@@ -545,7 +545,7 @@ function DefaultAssistantContent() {
                     />
                   )}
 
-                  {webSearchTool && (
+                  {webSearchTool ? (
                     <Card>
                       <InputLayouts.Horizontal
                         name={`enabled_tools_map.${webSearchTool.id}`}
@@ -563,6 +563,14 @@ function DefaultAssistantContent() {
                         />
                       </InputLayouts.Horizontal>
                     </Card>
+                  ) : (
+                    <BuiltInToolCard
+                      name="_web_search_unavailable"
+                      title="Web Search"
+                      description="Access real-time information and search the web. Requires a web search provider to be configured."
+                      disabled
+                      disabledTooltip="No web search provider configured. Set one up under Configuration → Web Search."
+                    />
                   )}
 
                   {openUrlTool && (

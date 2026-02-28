@@ -10,6 +10,10 @@
 
 services:
   api_server:
+    build:
+      args:
+        # Skip expensive Craft template setup at build time (created at runtime instead)
+        - PREBAKE_CRAFT_TEMPLATES=false
     ports:
       - "8080:8080"
     environment:
@@ -26,8 +30,20 @@ services:
     volumes:
       - E:/temp/vert/api_server_logs:/var/log/onyx
       - E:/temp/vert/file-system:/app/file-system
+      - craft-templates:/app/onyx/server/features/build/sandbox/kubernetes/docker/templates
+      # Dev bind mounts: local source → container (restart to pick up changes, no rebuild needed)
+      # Do NOT bind-mount scripts/ — they need CRLF stripping done at build time
+      - ../../backend/onyx:/app/onyx
+      - ../../backend/ee:/app/ee
+      - ../../backend/shared_configs:/app/shared_configs
+      - ../../backend/alembic:/app/alembic
+      - ../../backend/alembic_tenants:/app/alembic_tenants
 
   background:
+    build:
+      args:
+        # Must match api_server — both share the same image
+        - PREBAKE_CRAFT_TEMPLATES=false
     depends_on:
       - api_server
     # CRLF line endings are now fixed at build time in the Dockerfile
@@ -43,6 +59,13 @@ services:
     volumes:
       - E:/temp/vert/background_logs:/var/log/onyx
       - E:/temp/vert/file-system:/app/file-system
+      - craft-templates:/app/onyx/server/features/build/sandbox/kubernetes/docker/templates
+      # Dev bind mounts: same as api_server
+      - ../../backend/onyx:/app/onyx
+      - ../../backend/ee:/app/ee
+      - ../../backend/shared_configs:/app/shared_configs
+      - ../../backend/alembic:/app/alembic
+      - ../../backend/alembic_tenants:/app/alembic_tenants
 
   web_server:
     environment:
@@ -107,3 +130,6 @@ services:
   code-interpreter:
     ports:
       - "8000:8000"
+
+volumes:
+  craft-templates:

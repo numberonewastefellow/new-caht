@@ -105,9 +105,19 @@ export default function AgentCard({ agent, onLabelClick }: AgentCardProps) {
 
           {/* Name + Description + Labels */}
           <div className="flex-1 min-w-0">
-            <Text as="p" mainContentBody className="truncate font-medium">
-              {agent.name}
-            </Text>
+            <div className="flex items-center gap-1.5">
+              <Text as="p" mainContentBody className="truncate font-medium">
+                {agent.name}
+              </Text>
+              {agent.workflow_id && (
+                <span
+                  className="inline-flex items-center px-1.5 py-0.5 rounded text-[0.625rem] leading-tight font-semibold bg-background-accent-01 text-text-accent whitespace-nowrap"
+                  title="Multi-Agent Workflow"
+                >
+                  Workflow
+                </span>
+              )}
+            </div>
             {agent.description && (
               <Text as="p" secondaryBody text03 className="truncate">
                 {agent.description}
@@ -166,9 +176,13 @@ export default function AgentCard({ agent, onLabelClick }: AgentCardProps) {
                   icon={SvgEdit}
                   tertiary
                   onClick={noProp(() =>
-                    router.push(`/app/agents/edit/${agent.id}` as Route)
+                    router.push(
+                      agent.workflow_id
+                        ? (`/admin/workflows/edit/${agent.workflow_id}` as Route)
+                        : (`/app/agents/edit/${agent.id}` as Route)
+                    )
                   )}
-                  tooltip="Edit Agent"
+                  tooltip={agent.workflow_id ? "Edit Workflow" : "Edit Agent"}
                 />
               )}
               {isOwnedByUser && (

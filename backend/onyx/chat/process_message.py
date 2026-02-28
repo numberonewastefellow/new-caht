@@ -866,7 +866,30 @@ def handle_stream_message_objects(
         # for stop signals. run_llm_loop itself doesn't know about stopping.
         # Note: DB session is not thread safe but nothing else uses it and the
         # reference is passed directly so it's ok.
-        if new_msg_req.deep_research:
+
+        # Multi-agent workflow routing — if the persona is a workflow wrapper,
+        # route to the workflow engine instead of the standard LLM loop.
+        if persona and persona.workflow_id:
+            from onyx.db.workflow import get_workflow_by_id
+            from onyx.workflows.workflow_engine import run_workflow
+
+            workflow = get_workflow_by_id(
+                db_session=db_session, workflow_id=persona.workflow_id
+            )
+            if workflow is None or not workflow.steps:
+                raise ValueError(
+                    f"Workflow {persona.workflow_id} not found or has no steps"
+                )
+
+            yield from run_workflow(
+                workflow=workflow,
+                user_message=message_text,
+                emitter=emitter,
+                db_session=db_session,
+                user=user,
+            )
+
+        elif new_msg_req.deep_research:
             if chat_session.project_id:
                 raise RuntimeError("Deep research is not supported for projects")
 

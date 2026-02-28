@@ -303,3 +303,23 @@ class LLMModelFlowType(str, PyEnum):
     CHAT = "chat"
     VISION = "vision"
     CONTEXTUAL_RAG = "contextual_rag"
+
+
+class OrchestrationMode(str, PyEnum):
+    LLM_DECISION = "llm_decision"
+    SEQUENTIAL = "sequential"
+    CONDITIONAL = "conditional"
+
+
+class WorkflowExecutionStatus(str, PyEnum):
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    TIMEOUT = "timeout"
+
+    def is_terminal(self) -> bool:
+        return self in {
+            WorkflowExecutionStatus.COMPLETED,
+            WorkflowExecutionStatus.FAILED,
+            WorkflowExecutionStatus.TIMEOUT,
+        }
