@@ -34,6 +34,7 @@ class WorkflowCreate(BaseModel):
     orchestrator_llm_provider: str | None = None
     orchestrator_llm_model: str | None = None
     max_steps: int = 10
+    max_calls_per_agent: int = 2
     timeout_seconds: int = 1800
     is_public: bool = True
     icon_name: str | None = None
@@ -48,6 +49,7 @@ class WorkflowUpdate(BaseModel):
     orchestrator_llm_provider: str | None = None
     orchestrator_llm_model: str | None = None
     max_steps: int | None = None
+    max_calls_per_agent: int | None = None
     timeout_seconds: int | None = None
     is_public: bool | None = None
     icon_name: str | None = None
@@ -83,6 +85,7 @@ class WorkflowResponse(BaseModel):
     orchestrator_llm_provider: str | None
     orchestrator_llm_model: str | None
     max_steps: int
+    max_calls_per_agent: int
     timeout_seconds: int
     is_public: bool
     is_visible: bool

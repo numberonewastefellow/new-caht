@@ -5,6 +5,7 @@ import {
   SearchToolPacket,
   StopReason,
   CustomToolStart,
+  WorkflowStepStart,
 } from "@/app/app/services/streamingModels";
 import { constructCurrentSearchState } from "@/app/app/message/messageComponents/timeline/renderers/search/searchStateUtils";
 
@@ -112,6 +113,21 @@ export function useTimelineHeader(
 
     if (packetType === PacketType.RESEARCH_AGENT_START) {
       return { headerText: "Researching", hasPackets, userStopped };
+    }
+
+    if (packetType === PacketType.WORKFLOW_ORCHESTRATOR_THINKING) {
+      return { headerText: "Orchestrating", hasPackets, userStopped };
+    }
+
+    if (packetType === PacketType.WORKFLOW_STEP_START) {
+      const stepStart = firstPacket.obj as WorkflowStepStart;
+      const agentName =
+        stepStart.persona_name || stepStart.step_name || "agent";
+      return {
+        headerText: `Running ${agentName}`,
+        hasPackets,
+        userStopped,
+      };
     }
 
     return { headerText: "Thinking", hasPackets, userStopped };

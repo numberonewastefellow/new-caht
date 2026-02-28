@@ -25,6 +25,8 @@ import { DeepResearchPlanRenderer } from "./timeline/renderers/deepresearch/Deep
 import { ResearchAgentRenderer } from "./timeline/renderers/deepresearch/ResearchAgentRenderer";
 import { WebSearchToolRenderer } from "./timeline/renderers/search/WebSearchToolRenderer";
 import { InternalSearchToolRenderer } from "./timeline/renderers/search/InternalSearchToolRenderer";
+import { WorkflowStepRenderer } from "./timeline/renderers/workflow/WorkflowStepRenderer";
+import { WorkflowOrchestratorRenderer } from "./timeline/renderers/workflow/WorkflowOrchestratorRenderer";
 import { SearchToolStart } from "../../services/streamingModels";
 
 // Different types of chat packets using discriminated unions
@@ -103,6 +105,14 @@ function isResearchAgentPacket(packet: Packet) {
   );
 }
 
+function isWorkflowStepPacket(packet: Packet) {
+  return packet.obj.type === PacketType.WORKFLOW_STEP_START;
+}
+
+function isWorkflowOrchestratorPacket(packet: Packet) {
+  return packet.obj.type === PacketType.WORKFLOW_ORCHESTRATOR_THINKING;
+}
+
 export function findRenderer(
   groupedPackets: GroupedPackets
 ): MessageRenderer<any, any> | null {
@@ -120,6 +130,18 @@ export function findRenderer(
   }
   if (groupedPackets.packets.some((packet) => isResearchAgentPacket(packet))) {
     return ResearchAgentRenderer;
+  }
+
+  // Check for workflow packets - these have priority like deep research
+  if (groupedPackets.packets.some((packet) => isWorkflowStepPacket(packet))) {
+    return WorkflowStepRenderer;
+  }
+  if (
+    groupedPackets.packets.some((packet) =>
+      isWorkflowOrchestratorPacket(packet)
+    )
+  ) {
+    return WorkflowOrchestratorRenderer;
   }
 
   // Standard tool checks

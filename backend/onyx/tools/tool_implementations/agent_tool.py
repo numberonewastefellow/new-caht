@@ -13,6 +13,8 @@ from sqlalchemy.orm import Session
 from onyx.chat.emitter import Emitter
 from onyx.db.models import Persona
 from onyx.server.query_and_chat.placement import Placement  # used by run() signature
+from onyx.server.query_and_chat.streaming_models import Packet
+from onyx.server.query_and_chat.streaming_models import SectionEnd
 from onyx.tools.interface import Tool
 from onyx.tools.models import ToolResponse
 
@@ -275,11 +277,26 @@ class AgentTool(Tool[None]):
                         )
                         continue
 
-                    # Run the tool directly
+                    # Emit tool start (e.g., SearchToolStart) so the
+                    # frontend can identify and render the tool group.
+                    # Use tc.placement which has auto-incremented
+                    # turn_index/tab_index from ToolCallKickoff.
+                    matched_tool.emit_start(placement=tc.placement)
+
+                    # Run the tool with the kickoff's placement
                     tool_response = matched_tool.run(
-                        placement, None, **tc.tool_args
+                        tc.placement, None, **tc.tool_args
                     )
                     tool_response.tool_call = tc
+
+                    # Emit SectionEnd so the frontend marks the tool
+                    # group as complete
+                    self.emitter.emit(
+                        Packet(
+                            placement=tc.placement,
+                            obj=SectionEnd(),
+                        )
+                    )
 
                     # Add assistant message with tool call
                     tool_call_msg = ChatMessageSimple(
@@ -316,10 +333,9 @@ class AgentTool(Tool[None]):
         if not final_answer:
             final_answer = "(Agent did not produce a final answer)"
 
-        # Note: Do NOT emit via self.emitter.emit() here — the emitter bus
-        # Queue is never drained by the workflow engine (which uses generator
-        # yields). The workflow engine yields WorkflowStepDelta directly after
-        # receiving this ToolResponse.
+        # The workflow engine streams emitter.bus via _stream_agent_packets()
+        # in real-time while this method runs in a background thread, capturing
+        # all intermediate packets (search, reasoning, etc.) as they are emitted.
 
         return ToolResponse(
             rich_response=final_answer,

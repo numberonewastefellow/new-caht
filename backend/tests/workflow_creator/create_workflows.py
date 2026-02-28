@@ -241,15 +241,22 @@ def run_workflow_cli(workflow_id: int, message: str):
                 print("\n[Final Answer]")
                 print("-" * 50)
 
-            elif ptype == "agent_response_delta":
-                delta = obj.get("delta", "")
-                _safe_print(delta, end="", flush=True)
+            elif ptype == "agent_response_delta" or ptype == "message_delta":
+                content = obj.get("content", obj.get("delta", ""))
+                _safe_print(content, end="", flush=True)
 
             elif ptype == "stop":
                 print("\n\n--- Workflow Complete ---")
 
             elif ptype == "section_end":
                 pass  # Section separator
+
+            elif ptype in (
+                "reasoning_start", "reasoning_delta", "reasoning_end",
+                "reasoning_done",
+                "message_start", "message_end",
+            ):
+                pass  # Internal LLM packets — suppress
 
             else:
                 # Print raw for debugging

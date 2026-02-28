@@ -5017,6 +5017,7 @@ class AgentWorkflow(Base):
     )
     orchestrator_llm_model: Mapped[str | None] = mapped_column(String, nullable=True)
     max_steps: Mapped[int] = mapped_column(Integer, default=10)
+    max_calls_per_agent: Mapped[int] = mapped_column(Integer, default=2)
     timeout_seconds: Mapped[int] = mapped_column(Integer, default=1800)
 
     # Metadata

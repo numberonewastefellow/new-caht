@@ -74,6 +74,7 @@ def _workflow_to_response(workflow) -> WorkflowResponse:
         orchestrator_llm_provider=workflow.orchestrator_llm_provider,
         orchestrator_llm_model=workflow.orchestrator_llm_model,
         max_steps=workflow.max_steps,
+        max_calls_per_agent=workflow.max_calls_per_agent,
         timeout_seconds=workflow.timeout_seconds,
         is_public=workflow.is_public,
         is_visible=workflow.is_visible,

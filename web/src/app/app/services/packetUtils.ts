@@ -34,6 +34,11 @@ export function isToolPacket(
     PacketType.INTERMEDIATE_REPORT_START,
     PacketType.INTERMEDIATE_REPORT_DELTA,
     PacketType.INTERMEDIATE_REPORT_CITED_DOCS,
+    // Workflow packets
+    PacketType.WORKFLOW_STEP_START,
+    PacketType.WORKFLOW_STEP_DELTA,
+    PacketType.WORKFLOW_STEP_END,
+    PacketType.WORKFLOW_ORCHESTRATOR_THINKING,
   ];
   if (includeSectionEnd) {
     toolPacketTypes.push(PacketType.SECTION_END);
@@ -51,7 +56,8 @@ export function isActualToolCallPacket(packet: Packet): boolean {
   return (
     isToolPacket(packet, false) &&
     packet.obj.type !== PacketType.REASONING_START &&
-    packet.obj.type !== PacketType.REASONING_DELTA
+    packet.obj.type !== PacketType.REASONING_DELTA &&
+    packet.obj.type !== PacketType.WORKFLOW_ORCHESTRATOR_THINKING
   );
 }
 

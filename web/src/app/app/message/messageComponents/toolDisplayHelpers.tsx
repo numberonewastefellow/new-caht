@@ -6,6 +6,7 @@ import {
   Packet,
   PacketType,
   SearchToolPacket,
+  WorkflowStepStart,
 } from "@/app/app/services/streamingModels";
 import { constructCurrentSearchState } from "./timeline/renderers/search/searchStateUtils";
 import {
@@ -17,6 +18,7 @@ import {
   SvgUser,
   SvgCircle,
   SvgBookOpen,
+  SvgWorkflow,
 } from "@opal/icons";
 
 /**
@@ -106,6 +108,12 @@ export function getToolName(packets: Packet[]): string {
     case PacketType.MEMORY_TOOL_START:
     case PacketType.MEMORY_TOOL_NO_ACCESS:
       return "Memory";
+    case PacketType.WORKFLOW_STEP_START: {
+      const ws = firstPacket.obj as WorkflowStepStart;
+      return ws.persona_name || ws.step_name || "Workflow Step";
+    }
+    case PacketType.WORKFLOW_ORCHESTRATOR_THINKING:
+      return "Orchestrating";
     default:
       return "Tool";
   }
@@ -143,6 +151,10 @@ export function getToolIcon(packets: Packet[]): JSX.Element {
     case PacketType.MEMORY_TOOL_START:
     case PacketType.MEMORY_TOOL_NO_ACCESS:
       return <SvgBookOpen className="w-3.5 h-3.5" />;
+    case PacketType.WORKFLOW_STEP_START:
+      return <SvgUser className="w-3.5 h-3.5" />;
+    case PacketType.WORKFLOW_ORCHESTRATOR_THINKING:
+      return <SvgWorkflow className="w-3.5 h-3.5" />;
     default:
       return <SvgCircle className="w-3.5 h-3.5" />;
   }

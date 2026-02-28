@@ -7,7 +7,9 @@ support any number of persona-based sub-agents.
 
 import json
 import time
+from collections.abc import Callable
 from collections.abc import Generator
+from queue import Empty
 from typing import Any
 
 from sqlalchemy.orm import Session
@@ -43,10 +45,157 @@ from onyx.server.query_and_chat.streaming_models import WorkflowStepDelta
 from onyx.server.query_and_chat.streaming_models import WorkflowStepEnd
 from onyx.server.query_and_chat.streaming_models import WorkflowStepStart
 from onyx.tools.tool_implementations.agent_tool import AgentTool
+from onyx.tools.models import ToolResponse
 from onyx.utils.logger import setup_logger
+from onyx.utils.threadpool_concurrency import run_in_background
+from onyx.utils.threadpool_concurrency import wait_on_background
 from onyx.workflows.models import WorkflowContext
 
 logger = setup_logger()
+
+
+# Packet types emitted by run_llm_step that the workflow engine may need to
+# suppress to avoid duplicate content in the frontend.
+_ANSWER_SUPPRESS_TYPES = frozenset({
+    "message_start", "message_delta", "message_end",
+})
+_REASONING_SUPPRESS_TYPES = frozenset({
+    "reasoning_start", "reasoning_delta", "reasoning_done",
+})
+# For sub-agent streaming: suppress both answer text (engine yields its own
+# WorkflowStepDelta) and reasoning (would collide with WorkflowStepStart group).
+_AGENT_SUPPRESS_TYPES = _ANSWER_SUPPRESS_TYPES | _REASONING_SUPPRESS_TYPES
+
+
+def _drain_emitter_to_list(
+    emitter: Emitter,
+    suppress_types: frozenset[str] | None = None,
+) -> list[Packet]:
+    """Non-blocking drain of all pending packets from the emitter queue.
+
+    Returns the packets as a list so callers can inspect placement values
+    (e.g. to track the max turn_index) before yielding.
+
+    Args:
+        emitter: The emitter whose bus to drain.
+        suppress_types: If provided, packet types in this set are dropped
+            to avoid duplicating content that the workflow engine yields
+            separately (e.g. WorkflowStepDelta, WorkflowOrchestratorThinking).
+    """
+    packets: list[Packet] = []
+    while True:
+        try:
+            packet = emitter.bus.get_nowait()
+            if suppress_types and packet.obj.type in suppress_types:
+                continue
+            packets.append(packet)
+        except Empty:
+            break
+    return packets
+
+
+def _max_turn_index(packets: list[Packet], current_max: int) -> int:
+    """Return the highest turn_index seen across packets and current_max."""
+    for pkt in packets:
+        if hasattr(pkt, "placement") and pkt.placement.turn_index > current_max:
+            current_max = pkt.placement.turn_index
+    return current_max
+
+
+class _StreamingAgentResult:
+    """Mutable container to capture ToolResponse + max turn_index from streaming."""
+
+    def __init__(self, start_turn_index: int) -> None:
+        self.response: ToolResponse | None = None
+        self.exception: Exception | None = None
+        self.max_turn_index: int = start_turn_index
+        self.cancelled: bool = False
+
+
+def _stream_agent_packets(
+    agent_tool: AgentTool,
+    placement: Placement,
+    emitter: Emitter,
+    result: _StreamingAgentResult,
+    is_connected: Callable[[], bool] | None = None,
+    suppress_types: frozenset[str] | None = _AGENT_SUPPRESS_TYPES,
+    **agent_kwargs: Any,
+) -> Generator[Packet, None, None]:
+    """Run agent in a background thread, yielding emitter packets in real-time.
+
+    This mirrors the pattern from run_chat_loop_with_state_containers: the
+    agent runs in a background thread emitting packets to emitter.bus, while
+    the main (generator) thread polls the bus every 300ms and yields each
+    packet immediately to the SSE endpoint for real-time streaming.
+
+    The ToolResponse and max_turn_index are stored in `result` for the caller.
+    If is_connected returns False, sets result.cancelled and returns early.
+    """
+
+    def _run_agent() -> None:
+        try:
+            result.response = agent_tool.run(placement, None, **agent_kwargs)
+        except Exception as e:
+            result.exception = e
+
+    thread = run_in_background(_run_agent)
+
+    cancelled = False
+    last_cancel_check = time.monotonic()
+
+    # Poll emitter bus in real-time while agent runs in background
+    while True:
+        try:
+            pkt = emitter.bus.get(timeout=0.3)
+        except Empty:
+            # Queue empty — check if thread has finished
+            if not thread.is_alive():
+                break
+            # Check stop signal during idle polling
+            if is_connected is not None and not is_connected():
+                logger.info("Workflow agent cancelled by user")
+                cancelled = True
+                break
+            last_cancel_check = time.monotonic()
+            continue
+
+        if suppress_types and pkt.obj.type in suppress_types:
+            continue
+        if pkt.placement.turn_index > result.max_turn_index:
+            result.max_turn_index = pkt.placement.turn_index
+        yield pkt
+
+        # Check stop signal periodically even when packets are flowing,
+        # matching the pattern from chat_state.py (lines 253-264).
+        current_time = time.monotonic()
+        if current_time - last_cancel_check >= 0.3:
+            if is_connected is not None and not is_connected():
+                logger.info("Workflow agent cancelled by user during streaming")
+                cancelled = True
+                break
+            last_cancel_check = current_time
+
+    if cancelled:
+        # Don't wait for the background thread — exit fast like chat_state.py
+        result.cancelled = True
+        return
+
+    # Drain any packets that arrived between the last get() and thread exit
+    while True:
+        try:
+            pkt = emitter.bus.get_nowait()
+            if suppress_types and pkt.obj.type in suppress_types:
+                continue
+            if pkt.placement.turn_index > result.max_turn_index:
+                result.max_turn_index = pkt.placement.turn_index
+            yield pkt
+        except Empty:
+            break
+
+    # Propagate any exception from the agent thread
+    wait_on_background(thread)
+    if result.exception:
+        raise result.exception
 
 
 def _get_orchestrator_llm(
@@ -149,9 +298,12 @@ def _apply_input_mapping(
         if isinstance(template, str):
             # Replace $user_input with actual user input
             resolved = template.replace("$user_input", context.user_input)
-            # Replace $step_name.output with actual step output
-            for step_name, output in context.step_outputs.items():
-                resolved = resolved.replace(f"${step_name}.output", output)
+            # Replace step output references — support both $key.output and $key
+            # Do longer pattern first to avoid partial matches
+            for output_key, output in context.step_outputs.items():
+                resolved = resolved.replace(f"${output_key}.output", output)
+            for output_key, output in context.step_outputs.items():
+                resolved = resolved.replace(f"${output_key}", output)
             result_parts.append(f"{key}: {resolved}")
         else:
             result_parts.append(f"{key}: {template}")
@@ -164,6 +316,7 @@ def run_workflow_sequential(
     emitter: Emitter,
     db_session: Session,
     user: User,
+    is_connected: Callable[[], bool] | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in sequential mode — fixed order, no LLM routing.
 
@@ -178,16 +331,24 @@ def run_workflow_sequential(
     steps_executed = []
     total_tokens = 0
     start_time = time.monotonic()
+    turn_index = 0  # Running counter — incremented based on drained packet turn_indices
+    cancelled = False
 
     try:
-        for i, step in enumerate(steps):
+        for step in steps:
+            # Check stop signal before starting each step
+            if is_connected is not None and not is_connected():
+                logger.info("Workflow cancelled by user before step %s", step.step_name)
+                cancelled = True
+                break
+
             step_start_time = time.monotonic()
             persona = db_session.get(Persona, step.persona_id)
             if persona is None or persona.deleted:
                 logger.warning(f"Skipping step {step.step_name}: persona not found")
                 continue
 
-            placement = Placement(turn_index=i)
+            placement = Placement(turn_index=turn_index)
 
             # Emit step start
             yield Packet(
@@ -202,7 +363,7 @@ def run_workflow_sequential(
             # Build the task input from context
             task_input = _apply_input_mapping(step.input_mapping, context)
 
-            # Create and run the agent tool
+            # Create and run the agent tool with real-time streaming
             agent_tool = AgentTool(
                 persona=persona,
                 emitter=emitter,
@@ -211,18 +372,46 @@ def run_workflow_sequential(
                 step_order=step.step_order,
             )
 
-            result = agent_tool.run(
+            streaming_result = _StreamingAgentResult(start_turn_index=turn_index)
+            yield from _stream_agent_packets(
+                agent_tool=agent_tool,
                 placement=placement,
-                override_kwargs=None,
+                emitter=emitter,
+                result=streaming_result,
+                is_connected=is_connected,
                 task=task_input,
             )
 
+            # Check if agent was cancelled mid-execution
+            if streaming_result.cancelled:
+                # Close the open step so the frontend can show it as stopped
+                yield Packet(
+                    placement=placement,
+                    obj=WorkflowStepEnd(
+                        step_name=step.step_name,
+                        output_key=step.output_key,
+                    ),
+                )
+                yield Packet(placement=placement, obj=SectionEnd())
+                cancelled = True
+                turn_index = streaming_result.max_turn_index + 1
+                break
+
+            result = streaming_result.response
+            # Track the highest turn_index from streamed packets so the next
+            # step doesn't collide with internal agent turn_indices.
+            turn_index = streaming_result.max_turn_index
+
             # Extract output from result
             try:
-                result_data = json.loads(result.llm_facing_response)
+                result_data = json.loads(
+                    result.llm_facing_response if result else ""
+                )
                 agent_output = result_data.get("agent_output", "")
             except (json.JSONDecodeError, AttributeError):
-                agent_output = result.llm_facing_response or ""
+                agent_output = (
+                    result.llm_facing_response if result else ""
+                ) or ""
 
             # Yield the agent output as a WorkflowStepDelta (C1 fix)
             yield Packet(
@@ -260,6 +449,9 @@ def run_workflow_sequential(
             )
             yield Packet(placement=placement, obj=SectionEnd())
 
+            # Advance turn_index past all indices used by this step
+            turn_index += 1
+
             # Check timeout
             elapsed = time.monotonic() - start_time
             if elapsed > workflow.timeout_seconds:
@@ -273,7 +465,7 @@ def run_workflow_sequential(
         update_workflow_execution(
             db_session,
             execution.id,
-            status="completed",
+            status="cancelled" if cancelled else "completed",
             steps_executed=steps_executed,
             total_tokens=total_tokens,
             total_duration_ms=total_duration_ms,
@@ -295,8 +487,11 @@ def run_workflow_sequential(
 
     # Emit overall stop
     yield Packet(
-        placement=Placement(turn_index=len(steps)),
-        obj=OverallStop(type="stop"),
+        placement=Placement(turn_index=turn_index),
+        obj=OverallStop(
+            type="stop",
+            stop_reason="user_cancelled" if cancelled else None,
+        ),
     )
 
 
@@ -306,6 +501,7 @@ def run_workflow_llm_decision(
     emitter: Emitter,
     db_session: Session,
     user: User,
+    is_connected: Callable[[], bool] | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in LLM-decision mode — orchestrator LLM decides which agent to call.
 
@@ -352,9 +548,18 @@ def run_workflow_llm_decision(
     tools_by_name = {tool.name: tool for tool in agent_tools}
     state_container = ChatStateContainer()
     turn_index = 0
+    agent_call_counts: dict[str, int] = {}  # prevent calling same agent too many times
+    max_calls_per_agent = workflow.max_calls_per_agent
+    cancelled = False
 
     try:
         for cycle in range(workflow.max_steps):
+            # Check stop signal at the start of each orchestrator cycle
+            if is_connected is not None and not is_connected():
+                logger.info("Workflow orchestrator cancelled by user at cycle %d", cycle)
+                cancelled = True
+                break
+
             # Check timeout
             elapsed = time.monotonic() - start_time
             if elapsed > workflow.timeout_seconds:
@@ -393,6 +598,15 @@ def run_workflow_llm_decision(
                 user_identity=None,
             )
 
+            # Drain emitter: captures orchestrator reasoning/thinking packets.
+            # Suppress answer types — the engine yields them separately as
+            # WorkflowOrchestratorThinking or explicit AgentResponseStart/Delta.
+            orchestrator_drained = _drain_emitter_to_list(
+                emitter, suppress_types=_AGENT_SUPPRESS_TYPES
+            )
+            yield from orchestrator_drained
+            turn_index = _max_turn_index(orchestrator_drained, turn_index)
+
             if has_reasoned:
                 turn_index += 1
 
@@ -413,23 +627,66 @@ def run_workflow_llm_decision(
                 break
 
             # Emit orchestrator thinking if there's text alongside tool calls (H1)
+            # Use current turn_index (after reasoning increment) to avoid
+            # grouping with reasoning packets from the drain.
             if llm_step_result.answer and llm_step_result.tool_calls:
+                orch_placement = Placement(turn_index=turn_index)
                 yield Packet(
-                    placement=placement,
+                    placement=orch_placement,
                     obj=WorkflowOrchestratorThinking(
                         content=llm_step_result.answer,
                     ),
                 )
+                yield Packet(placement=orch_placement, obj=SectionEnd())
+                turn_index += 1
 
             # Process tool calls (agent delegations)
             if llm_step_result.tool_calls:
                 for tool_call in llm_step_result.tool_calls:
+                    # Check stop signal before each agent delegation
+                    if is_connected is not None and not is_connected():
+                        logger.info("Workflow cancelled before agent %s", tool_call.tool_name)
+                        cancelled = True
+                        break
+
                     agent_tool = tools_by_name.get(tool_call.tool_name)
                     if agent_tool is None:
                         logger.warning(
                             f"Unknown agent tool: {tool_call.tool_name}"
                         )
                         continue
+
+                    # Guard: prevent calling the same agent too many times
+                    call_count = agent_call_counts.get(tool_call.tool_name, 0)
+                    if call_count >= max_calls_per_agent:
+                        logger.warning(
+                            f"Agent '{tool_call.tool_name}' already called "
+                            f"{call_count} times, skipping"
+                        )
+                        # Tell the orchestrator to use a different agent
+                        refuse_msg = ChatMessageSimple(
+                            message=json.dumps({
+                                "tool_call_id": tool_call.tool_call_id,
+                                "name": tool_call.tool_name,
+                                "arguments": tool_call.tool_args,
+                            }),
+                            token_count=50,
+                            message_type=MessageType.ASSISTANT,
+                        )
+                        msg_history.append(refuse_msg)
+                        error_response = (
+                            f"ERROR: Agent '{agent_tool.display_name}' has "
+                            f"already been called {call_count} times. "
+                            f"Do NOT call this agent again. "
+                            f"Use a DIFFERENT agent or provide the final answer."
+                        )
+                        msg_history.append(ChatMessageSimple(
+                            message=error_response,
+                            token_count=token_counter(error_response),
+                            message_type=MessageType.TOOL_CALL_RESPONSE,
+                        ))
+                        continue
+                    agent_call_counts[tool_call.tool_name] = call_count + 1
 
                     step_start_time = time.monotonic()
                     turn_index += 1
@@ -445,19 +702,47 @@ def run_workflow_llm_decision(
                         ),
                     )
 
-                    # Run the agent
-                    result = agent_tool.run(
+                    # Run the agent with real-time streaming
+                    streaming_result = _StreamingAgentResult(
+                        start_turn_index=turn_index
+                    )
+                    yield from _stream_agent_packets(
+                        agent_tool=agent_tool,
                         placement=agent_placement,
-                        override_kwargs=None,
+                        emitter=emitter,
+                        result=streaming_result,
+                        is_connected=is_connected,
                         **tool_call.tool_args,
                     )
 
+                    # Check if agent was cancelled mid-execution
+                    if streaming_result.cancelled:
+                        # Close the open step so the frontend shows it as stopped
+                        yield Packet(
+                            placement=agent_placement,
+                            obj=WorkflowStepEnd(
+                                step_name=agent_tool.display_name,
+                                output_key=agent_tool.output_key,
+                            ),
+                        )
+                        yield Packet(placement=agent_placement, obj=SectionEnd())
+                        cancelled = True
+                        turn_index = streaming_result.max_turn_index + 1
+                        break
+
+                    result = streaming_result.response
+                    turn_index = streaming_result.max_turn_index
+
                     # Extract output
                     try:
-                        result_data = json.loads(result.llm_facing_response)
+                        result_data = json.loads(
+                            result.llm_facing_response if result else ""
+                        )
                         agent_output = result_data.get("agent_output", "")
                     except (json.JSONDecodeError, AttributeError):
-                        agent_output = result.llm_facing_response or ""
+                        agent_output = (
+                            result.llm_facing_response if result else ""
+                        ) or ""
 
                     # Yield the agent output as a WorkflowStepDelta (C1 fix)
                     yield Packet(
@@ -515,6 +800,8 @@ def run_workflow_llm_decision(
                     )
                     yield Packet(placement=agent_placement, obj=SectionEnd())
 
+                if cancelled:
+                    break
                 turn_index += 1
             else:
                 # No answer and no tool calls — unusual, break
@@ -525,7 +812,7 @@ def run_workflow_llm_decision(
         update_workflow_execution(
             db_session,
             execution.id,
-            status="completed",
+            status="cancelled" if cancelled else "completed",
             steps_executed=steps_executed,
             total_tokens=total_tokens,
             total_duration_ms=total_duration_ms,
@@ -548,7 +835,10 @@ def run_workflow_llm_decision(
     # Emit overall stop
     yield Packet(
         placement=Placement(turn_index=turn_index + 1),
-        obj=OverallStop(type="stop"),
+        obj=OverallStop(
+            type="stop",
+            stop_reason="user_cancelled" if cancelled else None,
+        ),
     )
 
 
@@ -558,17 +848,20 @@ def run_workflow(
     emitter: Emitter,
     db_session: Session,
     user: User,
+    is_connected: Callable[[], bool] | None = None,
 ) -> Generator[Packet, None, None]:
     """Main entry point — dispatches to the appropriate orchestration mode."""
     mode = workflow.orchestration_mode
 
     if mode == "sequential":
         yield from run_workflow_sequential(
-            workflow, user_message, emitter, db_session, user
+            workflow, user_message, emitter, db_session, user,
+            is_connected=is_connected,
         )
     elif mode == "llm_decision":
         yield from run_workflow_llm_decision(
-            workflow, user_message, emitter, db_session, user
+            workflow, user_message, emitter, db_session, user,
+            is_connected=is_connected,
         )
     else:
         raise ValueError(f"Unsupported orchestration mode: {mode}")

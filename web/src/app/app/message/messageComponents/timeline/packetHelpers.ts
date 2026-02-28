@@ -9,6 +9,8 @@ export const COLLAPSED_STREAMING_PACKET_TYPES = new Set<PacketType>([
   PacketType.RESEARCH_AGENT_START,
   PacketType.REASONING_START,
   PacketType.DEEP_RESEARCH_PLAN_START,
+  PacketType.WORKFLOW_STEP_START,
+  PacketType.WORKFLOW_ORCHESTRATOR_THINKING,
 ]);
 
 // Check if packets belong to a research agent (handles its own Done indicator)
@@ -100,6 +102,16 @@ export const stepHasCollapsedStreamingContent = (
     return true;
   }
 
+  // Workflow step has content when delta arrives
+  if (packetTypes.has(PacketType.WORKFLOW_STEP_DELTA)) {
+    return true;
+  }
+
+  // Workflow orchestrator thinking has content from the start
+  if (packetTypes.has(PacketType.WORKFLOW_ORCHESTRATOR_THINKING)) {
+    return true;
+  }
+
   return false;
 };
 
@@ -113,4 +125,14 @@ export const isMemoryToolPackets = (packets: Packet[]): boolean =>
     (p) =>
       p.obj.type === PacketType.MEMORY_TOOL_START ||
       p.obj.type === PacketType.MEMORY_TOOL_NO_ACCESS
+  );
+
+// Check if packets belong to a workflow step
+export const isWorkflowStepPackets = (packets: Packet[]): boolean =>
+  packets.some((p) => p.obj.type === PacketType.WORKFLOW_STEP_START);
+
+// Check if packets belong to workflow orchestrator thinking
+export const isWorkflowOrchestratorPackets = (packets: Packet[]): boolean =>
+  packets.some(
+    (p) => p.obj.type === PacketType.WORKFLOW_ORCHESTRATOR_THINKING
   );

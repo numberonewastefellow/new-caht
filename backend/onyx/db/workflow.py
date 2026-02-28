@@ -42,6 +42,7 @@ def create_workflow(
         orchestrator_llm_provider=workflow_create.orchestrator_llm_provider,
         orchestrator_llm_model=workflow_create.orchestrator_llm_model,
         max_steps=workflow_create.max_steps,
+        max_calls_per_agent=workflow_create.max_calls_per_agent,
         timeout_seconds=workflow_create.timeout_seconds,
         is_public=workflow_create.is_public,
         icon_name=workflow_create.icon_name,
@@ -122,6 +123,8 @@ def update_workflow(
         workflow.orchestrator_llm_model = workflow_update.orchestrator_llm_model
     if workflow_update.max_steps is not None:
         workflow.max_steps = workflow_update.max_steps
+    if workflow_update.max_calls_per_agent is not None:
+        workflow.max_calls_per_agent = workflow_update.max_calls_per_agent
     if workflow_update.timeout_seconds is not None:
         workflow.timeout_seconds = workflow_update.timeout_seconds
     if workflow_update.is_public is not None:

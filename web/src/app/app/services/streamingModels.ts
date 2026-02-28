@@ -57,6 +57,12 @@ export enum PacketType {
   INTERMEDIATE_REPORT_START = "intermediate_report_start",
   INTERMEDIATE_REPORT_DELTA = "intermediate_report_delta",
   INTERMEDIATE_REPORT_CITED_DOCS = "intermediate_report_cited_docs",
+
+  // Workflow packets
+  WORKFLOW_STEP_START = "workflow_step_start",
+  WORKFLOW_STEP_DELTA = "workflow_step_delta",
+  WORKFLOW_STEP_END = "workflow_step_end",
+  WORKFLOW_ORCHESTRATOR_THINKING = "workflow_orchestrator_thinking",
 }
 
 // Basic Message Packets
@@ -269,6 +275,30 @@ export interface IntermediateReportCitedDocs extends BaseObj {
   cited_docs: OnyxDocument[] | null;
 }
 
+// Workflow Packets
+export interface WorkflowStepStart extends BaseObj {
+  type: "workflow_step_start";
+  step_name: string;
+  persona_name: string;
+  step_order: number;
+}
+
+export interface WorkflowStepDelta extends BaseObj {
+  type: "workflow_step_delta";
+  content: string;
+}
+
+export interface WorkflowStepEnd extends BaseObj {
+  type: "workflow_step_end";
+  step_name: string;
+  output_key: string;
+}
+
+export interface WorkflowOrchestratorThinking extends BaseObj {
+  type: "workflow_orchestrator_thinking";
+  content: string;
+}
+
 export type ChatObj = MessageStart | MessageDelta | MessageEnd;
 
 export type StopObj = Stop;
@@ -352,6 +382,18 @@ export type ResearchAgentObj =
   | IntermediateReportCitedDocs
   | SectionEnd;
 
+export type WorkflowStepObj =
+  | WorkflowStepStart
+  | WorkflowStepDelta
+  | WorkflowStepEnd
+  | SectionEnd
+  | PacketError;
+
+export type WorkflowOrchestratorObj =
+  | WorkflowOrchestratorThinking
+  | SectionEnd
+  | PacketError;
+
 // Union type for all possible streaming objects
 export type ObjTypes =
   | ChatObj
@@ -363,6 +405,8 @@ export type ObjTypes =
   | CitationObj
   | DeepResearchPlanObj
   | ResearchAgentObj
+  | WorkflowStepObj
+  | WorkflowOrchestratorObj
   | PacketErrorObj
   | CitationObj;
 
@@ -452,4 +496,14 @@ export interface DeepResearchPlanPacket {
 export interface ResearchAgentPacket {
   placement: Placement;
   obj: ResearchAgentObj;
+}
+
+export interface WorkflowStepPacket {
+  placement: Placement;
+  obj: WorkflowStepObj;
+}
+
+export interface WorkflowOrchestratorPacket {
+  placement: Placement;
+  obj: WorkflowOrchestratorObj;
 }

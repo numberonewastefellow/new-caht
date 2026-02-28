@@ -6,13 +6,15 @@ from onyx.tools.tool_implementations.open_url.firecrawl import FirecrawlClient
 from onyx.tools.tool_implementations.open_url.models import (
     WebContentProvider,
 )
-from onyx.tools.tool_implementations.open_url.onyx_web_crawler import (
+from onyx.tools.tool_implementations.open_url.virtualai_web_crawler import (
     DEFAULT_MAX_HTML_SIZE_BYTES,
 )
-from onyx.tools.tool_implementations.open_url.onyx_web_crawler import (
+from onyx.tools.tool_implementations.open_url.virtualai_web_crawler import (
     DEFAULT_MAX_PDF_SIZE_BYTES,
 )
-from onyx.tools.tool_implementations.open_url.onyx_web_crawler import OnyxWebCrawler
+from onyx.tools.tool_implementations.open_url.virtualai_web_crawler import (
+    VirtualAIWebCrawler,
+)
 from onyx.tools.tool_implementations.web_search.clients.brave_client import (
     BraveClient,
 )
@@ -150,12 +152,12 @@ def build_content_provider_from_config(
 ) -> WebContentProvider | None:
     if provider_type == WebContentProviderType.ONYX_WEB_CRAWLER:
         if config.timeout_seconds is not None:
-            return OnyxWebCrawler(
+            return VirtualAIWebCrawler(
                 timeout_seconds=config.timeout_seconds,
                 max_pdf_size_bytes=DEFAULT_MAX_PDF_SIZE_BYTES,
                 max_html_size_bytes=DEFAULT_MAX_HTML_SIZE_BYTES,
             )
-        return OnyxWebCrawler(
+        return VirtualAIWebCrawler(
             max_pdf_size_bytes=DEFAULT_MAX_PDF_SIZE_BYTES,
             max_html_size_bytes=DEFAULT_MAX_HTML_SIZE_BYTES,
         )
@@ -199,7 +201,7 @@ def get_default_content_provider() -> WebContentProvider:
             if provider:
                 return provider
 
-    return OnyxWebCrawler(
+    return VirtualAIWebCrawler(
         max_pdf_size_bytes=DEFAULT_MAX_PDF_SIZE_BYTES,
         max_html_size_bytes=DEFAULT_MAX_HTML_SIZE_BYTES,
     )

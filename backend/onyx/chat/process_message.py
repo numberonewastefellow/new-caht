@@ -887,6 +887,7 @@ def handle_stream_message_objects(
                 emitter=emitter,
                 db_session=db_session,
                 user=user,
+                is_connected=check_is_connected,
             )
 
         elif new_msg_req.deep_research:

@@ -19,14 +19,14 @@ from onyx.server.manage.web_search.models import WebSearchProviderView
 from onyx.tools.models import LlmOpenUrlResult
 from onyx.tools.models import LlmWebSearchResult
 from onyx.tools.tool_implementations.open_url.models import WebContentProvider
-from onyx.tools.tool_implementations.open_url.onyx_web_crawler import (
+from onyx.tools.tool_implementations.open_url.virtualai_web_crawler import (
     DEFAULT_MAX_HTML_SIZE_BYTES,
 )
-from onyx.tools.tool_implementations.open_url.onyx_web_crawler import (
+from onyx.tools.tool_implementations.open_url.virtualai_web_crawler import (
     DEFAULT_MAX_PDF_SIZE_BYTES,
 )
-from onyx.tools.tool_implementations.open_url.onyx_web_crawler import (
-    OnyxWebCrawler,
+from onyx.tools.tool_implementations.open_url.virtualai_web_crawler import (
+    VirtualAIWebCrawler,
 )
 from onyx.tools.tool_implementations.open_url.utils import (
     filter_web_contents_with_no_title_or_content,
@@ -100,10 +100,10 @@ def _get_active_content_provider(
 
     if provider_model is None:
         # Default to the built-in crawler if nothing is configured. Always available.
-        # NOTE: the OnyxWebCrawler is not stored in the content provider table,
+        # NOTE: the VirtualAIWebCrawler is not stored in the content provider table,
         # so we need to return it directly.
 
-        return None, OnyxWebCrawler(
+        return None, VirtualAIWebCrawler(
             max_pdf_size_bytes=DEFAULT_MAX_PDF_SIZE_BYTES,
             max_html_size_bytes=DEFAULT_MAX_HTML_SIZE_BYTES,
         )
@@ -183,7 +183,7 @@ def _open_urls(
     urls: list[str],
     db_session: Session,
 ) -> tuple[WebContentProviderType | None, list[LlmOpenUrlResult]]:
-    # SSRF protection is handled inside the content provider (OnyxWebCrawler)
+    # SSRF protection is handled inside the content provider (VirtualAIWebCrawler)
     # which uses ssrf_safe_get() to validate and fetch atomically,
     # preventing DNS rebinding attacks
     provider_view, provider = _get_active_content_provider(db_session)

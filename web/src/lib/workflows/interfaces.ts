@@ -27,6 +27,7 @@ export interface WorkflowSnapshot {
   orchestrator_llm_provider: string | null;
   orchestrator_llm_model: string | null;
   max_steps: number;
+  max_calls_per_agent: number;
   timeout_seconds: number;
   is_public: boolean;
   is_visible: boolean;
@@ -56,6 +57,7 @@ export interface WorkflowCreate {
   orchestrator_llm_provider?: string | null;
   orchestrator_llm_model?: string | null;
   max_steps?: number;
+  max_calls_per_agent?: number;
   timeout_seconds?: number;
   is_public?: boolean;
   icon_name?: string | null;
@@ -70,6 +72,7 @@ export interface WorkflowUpdate {
   orchestrator_llm_provider?: string | null;
   orchestrator_llm_model?: string | null;
   max_steps?: number | null;
+  max_calls_per_agent?: number | null;
   timeout_seconds?: number | null;
   is_public?: boolean | null;
   icon_name?: string | null;
