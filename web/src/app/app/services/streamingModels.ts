@@ -63,6 +63,7 @@ export enum PacketType {
   WORKFLOW_STEP_DELTA = "workflow_step_delta",
   WORKFLOW_STEP_END = "workflow_step_end",
   WORKFLOW_ORCHESTRATOR_THINKING = "workflow_orchestrator_thinking",
+  WORKFLOW_PAUSE_FOR_INPUT = "workflow_pause_for_input",
 }
 
 // Basic Message Packets
@@ -299,6 +300,13 @@ export interface WorkflowOrchestratorThinking extends BaseObj {
   content: string;
 }
 
+export interface WorkflowPauseForInput extends BaseObj {
+  type: "workflow_pause_for_input";
+  step_name: string;
+  persona_name: string;
+  questions: string;
+}
+
 export type ChatObj = MessageStart | MessageDelta | MessageEnd;
 
 export type StopObj = Stop;
@@ -394,6 +402,11 @@ export type WorkflowOrchestratorObj =
   | SectionEnd
   | PacketError;
 
+export type WorkflowPauseObj =
+  | WorkflowPauseForInput
+  | SectionEnd
+  | PacketError;
+
 // Union type for all possible streaming objects
 export type ObjTypes =
   | ChatObj
@@ -407,6 +420,7 @@ export type ObjTypes =
   | ResearchAgentObj
   | WorkflowStepObj
   | WorkflowOrchestratorObj
+  | WorkflowPauseObj
   | PacketErrorObj
   | CitationObj;
 
@@ -506,4 +520,9 @@ export interface WorkflowStepPacket {
 export interface WorkflowOrchestratorPacket {
   placement: Placement;
   obj: WorkflowOrchestratorObj;
+}
+
+export interface WorkflowPausePacket {
+  placement: Placement;
+  obj: WorkflowPauseObj;
 }

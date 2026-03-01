@@ -5,12 +5,14 @@ Mirrors the proven Deep Research pattern from dr_loop.py but generalized to
 support any number of persona-based sub-agents.
 """
 
+import datetime
 import json
 import time
 from collections.abc import Callable
 from collections.abc import Generator
 from queue import Empty
 from typing import Any
+from uuid import UUID
 
 from sqlalchemy.orm import Session
 
@@ -25,7 +27,11 @@ from onyx.db.models import AgentWorkflow
 from onyx.db.models import AgentWorkflowStep
 from onyx.db.models import Persona
 from onyx.db.models import User
+from onyx.db.models import WorkflowExecution
 from onyx.db.workflow import create_workflow_execution
+from onyx.db.workflow import get_paused_execution
+from onyx.db.workflow import load_checkpoint
+from onyx.db.workflow import save_checkpoint
 from onyx.db.workflow import update_workflow_execution
 from onyx.db.llm import fetch_llm_provider_view
 from onyx.llm.factory import get_default_llm
@@ -43,12 +49,14 @@ from onyx.server.query_and_chat.streaming_models import SectionEnd
 from onyx.server.query_and_chat.streaming_models import WorkflowOrchestratorThinking
 from onyx.server.query_and_chat.streaming_models import WorkflowStepDelta
 from onyx.server.query_and_chat.streaming_models import WorkflowStepEnd
+from onyx.server.query_and_chat.streaming_models import WorkflowPauseForInput
 from onyx.server.query_and_chat.streaming_models import WorkflowStepStart
 from onyx.tools.tool_implementations.agent_tool import AgentTool
 from onyx.tools.models import ToolResponse
 from onyx.utils.logger import setup_logger
 from onyx.utils.threadpool_concurrency import run_in_background
 from onyx.utils.threadpool_concurrency import wait_on_background
+from onyx.workflows.models import WorkflowCheckpoint
 from onyx.workflows.models import WorkflowContext
 
 logger = setup_logger()
@@ -86,6 +94,125 @@ _REASONING_SUPPRESS_TYPES = frozenset({
 # For sub-agent streaming: suppress both answer text (engine yields its own
 # WorkflowStepDelta) and reasoning (would collide with WorkflowStepStart group).
 _AGENT_SUPPRESS_TYPES = _ANSWER_SUPPRESS_TYPES | _REASONING_SUPPRESS_TYPES
+
+
+# ========================
+# Detect agent clarification requests
+# ========================
+
+# Deterministic signal: if the agent output starts with this prefix,
+# the engine treats it as an explicit pause request. The prefix is
+# stripped before showing the questions to the user.
+_NEEDS_INPUT_PREFIX = "[NEEDS_INPUT]"
+
+_INPUT_SIGNAL_PATTERNS = [
+    "what", "which", "how many", "when", "where",
+    "could you", "can you", "please provide", "please specify",
+    "i need", "i'll need", "more information", "more details",
+]
+
+
+def _agent_requests_input(output: str) -> bool:
+    """Detect whether the agent is asking the user for information.
+
+    Two detection modes (checked for steps with can_request_input=True):
+    1. Deterministic: output starts with "[NEEDS_INPUT]" prefix.
+    2. Heuristic fallback: 1+ question mark AND 1+ signal pattern.
+       (Lowered from 2+/2+ to catch single-question clarifications like
+       "Could you provide your budget?")
+
+    Only checked for steps with can_request_input=True.
+    """
+    stripped = output.strip()
+
+    # Mode 1: explicit structured signal
+    if stripped.upper().startswith(_NEEDS_INPUT_PREFIX):
+        return True
+
+    # Mode 2: heuristic fallback
+    lower = stripped.lower()
+    question_marks = lower.count("?")
+    signal_count = sum(1 for p in _INPUT_SIGNAL_PATTERNS if p in lower)
+    return question_marks >= 1 and signal_count >= 1
+
+
+def _strip_needs_input_prefix(output: str) -> str:
+    """Strip the [NEEDS_INPUT] prefix if present, returning clean question text."""
+    stripped = output.strip()
+    if stripped.upper().startswith(_NEEDS_INPUT_PREFIX):
+        return stripped[len(_NEEDS_INPUT_PREFIX):].strip()
+    return stripped
+
+
+# Maximum clarification rounds before truncating older entries
+_MAX_CLARIFICATION_ROUNDS = 5
+
+
+def _build_clarification_task(
+    original_task: str,
+    clarification_conversation: list[dict[str, str]],
+) -> str:
+    """Build a structured prompt for an agent resuming from clarification.
+
+    Enterprise pattern (LangGraph/CrewAI): the agent is re-run with accumulated
+    context rather than relying on the orchestrator LLM to re-delegate.
+
+    The agent sees: TASK + CLARIFICATION HISTORY + INSTRUCTIONS.
+    """
+    parts = [f"TASK:\n{original_task}"]
+
+    if clarification_conversation:
+        # Truncate to last N rounds if conversation is very long
+        conv = clarification_conversation
+        if len(conv) > _MAX_CLARIFICATION_ROUNDS * 2:
+            conv = conv[-(_MAX_CLARIFICATION_ROUNDS * 2):]
+
+        conv_lines = []
+        for entry in conv:
+            if entry.get("role") == "agent":
+                conv_lines.append(f"You previously asked:\n{entry['content']}")
+            elif entry.get("role") == "user":
+                conv_lines.append(f"The user responded:\n{entry['content']}")
+        parts.append("CLARIFICATION HISTORY:\n" + "\n\n".join(conv_lines))
+
+    parts.append(
+        "INSTRUCTIONS: You now have the user's responses above. "
+        "If you have all the information you need, produce your complete "
+        "final output. If you still need more details, ask your follow-up "
+        "questions."
+    )
+    return "\n\n".join(parts)
+
+
+def _serialize_history(history: list[ChatMessageSimple]) -> list[dict]:
+    """Serialize msg_history for checkpoint storage."""
+    return [
+        {
+            "message": msg.message,
+            "token_count": msg.token_count,
+            "message_type": msg.message_type.value,
+        }
+        for msg in history
+    ]
+
+
+def _deserialize_history(data: list[dict]) -> list[ChatMessageSimple]:
+    """Restore msg_history from checkpoint.
+
+    Skips entries with invalid/missing fields rather than crashing
+    the entire resume on corrupted checkpoint data.
+    """
+    result = []
+    for d in data:
+        try:
+            result.append(ChatMessageSimple(
+                message=d["message"],
+                token_count=d["token_count"],
+                message_type=MessageType(d["message_type"]),
+            ))
+        except (KeyError, ValueError) as e:
+            logger.warning("Skipping corrupted history entry: %s — %s", d, e)
+    return result
 
 
 def _drain_emitter_to_list(
@@ -359,21 +486,131 @@ def run_workflow_sequential(
     db_session: Session,
     user: User,
     is_connected: Callable[[], bool] | None = None,
+    chat_session_id: UUID | None = None,
+    paused_execution: WorkflowExecution | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in sequential mode — fixed order, no LLM routing.
 
     Each step's output becomes the next step's input.
+    Supports pause/resume via checkpoints (human-in-the-loop).
     """
-    context = WorkflowContext(user_input=user_message)
     steps = sorted(workflow.steps, key=lambda s: s.step_order)
-    execution = create_workflow_execution(
-        db_session, workflow.id, user.id
+    completed_step_ids: set[int] = set()
+
+    logger.info(
+        "[Sequential] Starting with %d steps, resume=%s",
+        len(steps),
+        paused_execution is not None,
     )
 
-    steps_executed = []
+    # Variables for conversation-aware resume (accessible in step loop)
+    resume_task_override: str | None = None
+    resume_conversation: list[dict[str, str]] | None = None
+    paused_step_id: int | None = None
+    checkpoint: WorkflowCheckpoint | None = None
+
+    # Resume from paused execution or start fresh
+    if paused_execution:
+        paused_step_id = paused_execution.paused_at_step_id
+        checkpoint = load_checkpoint(paused_execution)
+        if checkpoint:
+            original_input = checkpoint.shared_data.get(
+                "_original_user_input", user_message
+            )
+
+            # Enterprise conversation-aware resume
+            if (
+                checkpoint.clarification_conversation
+                and checkpoint.paused_agent_original_task
+            ):
+                conversation = list(checkpoint.clarification_conversation)
+                conversation.append({"role": "user", "content": user_message})
+
+                resume_task_override = _build_clarification_task(
+                    checkpoint.paused_agent_original_task,
+                    conversation,
+                )
+                resume_conversation = conversation
+
+                context = WorkflowContext(
+                    user_input=original_input,
+                    step_outputs=checkpoint.step_outputs,
+                    shared_data=checkpoint.shared_data,
+                )
+                logger.info(
+                    "[Sequential] CONVERSATION-AWARE RESUME "
+                    "clarification_rounds=%d",
+                    len(conversation),
+                )
+            else:
+                # Fallback for old checkpoints: flat-string approach
+                prev_clarifications: list[str] = list(
+                    checkpoint.shared_data.get("_clarifications", [])
+                )
+                prev_clarifications.append(user_message)
+                all_user_inputs = [original_input] + prev_clarifications
+                full_context = "\n".join(
+                    f"- {inp}" for inp in all_user_inputs
+                )
+                context = WorkflowContext(
+                    user_input=(
+                        f"Everything the user has said:\n{full_context}"
+                    ),
+                    step_outputs=checkpoint.step_outputs,
+                    shared_data={
+                        **checkpoint.shared_data,
+                        "_clarifications": prev_clarifications,
+                    },
+                )
+                logger.info(
+                    "[Sequential] FALLBACK RESUME (no clarification "
+                    "conversation in checkpoint)"
+                )
+
+            completed_step_ids = set(checkpoint.completed_step_ids)
+            turn_index = checkpoint.turn_index
+            execution = paused_execution
+            execution.status = "running"
+            execution.paused_at_step_id = None
+            db_session.commit()
+            steps_executed = list(execution.steps_executed or [])
+            logger.info(
+                "[Sequential] Resumed execution_id=%d, completed_steps=%s, "
+                "step_outputs_keys=%s direct_resume=%s",
+                execution.id,
+                list(completed_step_ids),
+                list(checkpoint.step_outputs.keys()),
+                resume_task_override is not None,
+            )
+        else:
+            # Checkpoint corrupted — mark old execution as failed
+            logger.warning(
+                "[Sequential] Checkpoint corrupted for execution_id=%d, "
+                "starting fresh",
+                paused_execution.id,
+            )
+            paused_execution.status = "failed"
+            paused_execution.error_message = "Checkpoint data corrupted"
+            paused_execution.completed_at = datetime.datetime.now(
+                datetime.timezone.utc
+            )
+            db_session.commit()
+            context = WorkflowContext(user_input=user_message)
+            execution = create_workflow_execution(
+                db_session, workflow.id, user.id, chat_session_id
+            )
+            steps_executed = []
+            turn_index = 0
+    else:
+        context = WorkflowContext(user_input=user_message)
+        execution = create_workflow_execution(
+            db_session, workflow.id, user.id, chat_session_id
+        )
+        steps_executed = []
+        turn_index = 0
+
     total_tokens = 0
     start_time = time.monotonic()
-    turn_index = 0  # Running counter — incremented based on drained packet turn_indices
     cancelled = False
 
     # Pre-build agent tools with cached LLMs + user (Tier 1.5 performance)
@@ -407,6 +644,14 @@ def run_workflow_sequential(
                 cancelled = True
                 break
 
+            # Skip completed steps on resume
+            if step.id in completed_step_ids:
+                logger.debug(
+                    "[Sequential] Skipping completed step '%s' (id=%d)",
+                    step.step_name, step.id,
+                )
+                continue
+
             agent_tool = agent_tools_by_step.get(step.id)
             if agent_tool is None:
                 logger.warning(f"Skipping step {step.step_name}: no agent tool")
@@ -414,6 +659,15 @@ def run_workflow_sequential(
 
             step_start_time = time.monotonic()
             persona = agent_tool._persona
+            logger.info(
+                "[Sequential] STEP START step=%d/%d name='%s' agent='%s' "
+                "can_request_input=%s",
+                step.step_order + 1,
+                len(steps),
+                step.step_name,
+                persona.name,
+                step.can_request_input,
+            )
 
             placement = Placement(turn_index=turn_index)
 
@@ -427,8 +681,12 @@ def run_workflow_sequential(
                 ),
             )
 
-            # Build the task input from context
-            task_input = _apply_input_mapping(step.input_mapping, context)
+            # Build the task input: use conversation-aware override for
+            # the paused step, normal input mapping for all others
+            if resume_task_override and step.id == paused_step_id:
+                task_input = resume_task_override
+            else:
+                task_input = _apply_input_mapping(step.input_mapping, context)
 
             streaming_result = _StreamingAgentResult(start_turn_index=turn_index)
             yield from _stream_agent_packets(
@@ -471,6 +729,95 @@ def run_workflow_sequential(
                     result.llm_facing_response if result else ""
                 ) or ""
 
+            agent_elapsed = time.monotonic() - step_start_time
+            output_len = len(agent_output)
+            logger.info(
+                "[Sequential] AGENT DONE step='%s' agent='%s' "
+                "llm_time=%.2fs output_len=%d words=%d",
+                step.step_name,
+                persona.name,
+                agent_elapsed,
+                output_len,
+                len(agent_output.split()),
+            )
+
+            # Check if agent is requesting user input (human-in-the-loop)
+            if step.can_request_input and _agent_requests_input(agent_output):
+                logger.info(
+                    "[Sequential] PAUSE DETECTED step='%s' agent='%s' — "
+                    "agent is requesting user input, saving checkpoint",
+                    step.step_name,
+                    persona.name,
+                )
+                # Build accumulated clarification conversation
+                accumulated_conv: list[dict[str, str]] = list(
+                    resume_conversation
+                ) if resume_conversation else []
+                accumulated_conv.append({
+                    "role": "agent",
+                    "content": _strip_needs_input_prefix(agent_output),
+                })
+
+                pause_checkpoint = WorkflowCheckpoint(
+                    step_outputs=dict(context.step_outputs),
+                    shared_data={
+                        **context.shared_data,
+                        "_original_user_input": context.shared_data.get(
+                            "_original_user_input", context.user_input
+                        ),
+                    },
+                    completed_step_ids=[
+                        s.id for s in steps
+                        if s.output_key in context.step_outputs
+                    ],
+                    turn_index=turn_index,
+                    # Enterprise: save original task and conversation
+                    paused_agent_original_task=(
+                        checkpoint.paused_agent_original_task
+                        if (checkpoint and checkpoint.paused_agent_original_task)
+                        else task_input
+                    ),
+                    clarification_conversation=accumulated_conv,
+                )
+                save_checkpoint(
+                    db_session, execution.id, pause_checkpoint,
+                    paused_at_step_id=step.id,
+                )
+                total_duration_ms = int(
+                    (time.monotonic() - start_time) * 1000
+                )
+                update_workflow_execution(
+                    db_session, execution.id,
+                    steps_executed=steps_executed,
+                    total_tokens=total_tokens,
+                    total_duration_ms=total_duration_ms,
+                )
+                # Close the step
+                yield Packet(
+                    placement=placement,
+                    obj=WorkflowStepEnd(
+                        step_name=step.step_name,
+                        output_key=step.output_key,
+                    ),
+                )
+                yield Packet(placement=placement, obj=SectionEnd())
+                # Emit pause packet with questions
+                pause_placement = Placement(turn_index=turn_index + 1)
+                yield Packet(
+                    placement=pause_placement,
+                    obj=WorkflowPauseForInput(
+                        step_name=step.step_name,
+                        persona_name=persona.name,
+                        questions=_strip_needs_input_prefix(agent_output),
+                    ),
+                )
+                yield Packet(placement=pause_placement, obj=SectionEnd())
+                yield Packet(
+                    placement=Placement(turn_index=turn_index + 2),
+                    obj=OverallStop(type="stop"),
+                )
+                return  # Stop execution, free thread
+
             # Yield the agent output as a WorkflowStepDelta (C1 fix)
             yield Packet(
                 placement=placement,
@@ -481,11 +828,40 @@ def run_workflow_sequential(
             context.step_outputs[step.output_key] = agent_output
             context.current_step = step.step_name
 
+            # Save checkpoint after step completion (crash recovery)
+            step_checkpoint = WorkflowCheckpoint(
+                step_outputs=dict(context.step_outputs),
+                shared_data={
+                    **context.shared_data,
+                    "_original_user_input": context.shared_data.get(
+                        "_original_user_input", context.user_input
+                    ),
+                },
+                completed_step_ids=[
+                    s.id for s in steps
+                    if s.output_key in context.step_outputs
+                ],
+                turn_index=turn_index,
+            )
+            save_checkpoint(db_session, execution.id, step_checkpoint)
+
             step_duration_ms = int((time.monotonic() - step_start_time) * 1000)
 
             # Estimate token usage (M1 fix)
             step_tokens = len(task_input.split()) + len(agent_output.split())
             total_tokens += step_tokens
+
+            logger.info(
+                "[Sequential] STEP DONE step=%d/%d name='%s' agent='%s' "
+                "duration=%dms tokens=%d output_words=%d",
+                step.step_order + 1,
+                len(steps),
+                step.step_name,
+                persona.name,
+                step_duration_ms,
+                step_tokens,
+                len(agent_output.split()),
+            )
 
             steps_executed.append({
                 "step_id": step.id,
@@ -520,17 +896,32 @@ def run_workflow_sequential(
                 break
 
         total_duration_ms = int((time.monotonic() - start_time) * 1000)
+        final_status = "cancelled" if cancelled else "completed"
+        logger.info(
+            "[Sequential] COMPLETE execution_id=%d status=%s "
+            "steps_ran=%d total_tokens=%d total_time=%dms "
+            "per_step_times=[%s]",
+            execution.id,
+            final_status,
+            len(steps_executed),
+            total_tokens,
+            total_duration_ms,
+            ", ".join(
+                f"{s['step_name']}={s['duration_ms']}ms"
+                for s in steps_executed
+            ),
+        )
         update_workflow_execution(
             db_session,
             execution.id,
-            status="cancelled" if cancelled else "completed",
+            status=final_status,
             steps_executed=steps_executed,
             total_tokens=total_tokens,
             total_duration_ms=total_duration_ms,
         )
 
     except Exception as e:
-        logger.exception("Workflow execution failed")
+        logger.exception("[Sequential] Workflow execution failed")
         total_duration_ms = int((time.monotonic() - start_time) * 1000)
         update_workflow_execution(
             db_session,
@@ -560,6 +951,8 @@ def run_workflow_llm_decision(
     db_session: Session,
     user: User,
     is_connected: Callable[[], bool] | None = None,
+    chat_session_id: UUID | None = None,
+    paused_execution: WorkflowExecution | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in LLM-decision mode — orchestrator LLM decides which agent to call.
 
@@ -568,11 +961,16 @@ def run_workflow_llm_decision(
     - Decides which agent to call and with what task
     - Collects results and decides next step
     - Generates final answer when done
+
+    Supports pause/resume via checkpoints (human-in-the-loop).
     """
-    context = WorkflowContext(user_input=user_message)
     steps = sorted(workflow.steps, key=lambda s: s.step_order)
-    execution = create_workflow_execution(
-        db_session, workflow.id, user.id
+    steps_by_id = {step.id: step for step in steps}
+
+    logger.info(
+        "[LLM-Decision] Starting with %d steps, resume=%s",
+        len(steps),
+        paused_execution is not None,
     )
 
     # Build agent tools (with cached LLMs + user — Tier 1.5)
@@ -583,6 +981,12 @@ def run_workflow_llm_decision(
     # Get orchestrator LLM
     orchestrator_llm = _get_orchestrator_llm(workflow, db_session)
     token_counter = get_llm_token_counter(orchestrator_llm)
+    logger.info(
+        "[LLM-Decision] Orchestrator LLM: provider=%s model=%s agents=[%s]",
+        workflow.orchestrator_llm_provider or "default",
+        workflow.orchestrator_llm_model or "default",
+        ", ".join(t.display_name for t in agent_tools),
+    )
 
     # Build orchestrator system prompt
     system_prompt_text = _build_orchestrator_system_prompt(workflow, agent_tools)
@@ -594,28 +998,422 @@ def run_workflow_llm_decision(
 
     # Pre-compute tool definitions once (they don't change — Tier 1.2)
     tool_defs = [tool.tool_definition() for tool in agent_tools]
+    tools_by_name = {tool.name: tool for tool in agent_tools}
+    tools_by_step_id = {tool.step_id: tool for tool in agent_tools}
 
-    # Initial user message
-    user_msg = ChatMessageSimple(
-        message=user_message,
-        token_count=token_counter(user_message),
-        message_type=MessageType.USER,
-    )
-    msg_history: list[ChatMessageSimple] = [user_msg]
+    cycle_start = 0
 
-    steps_executed = []
+    # Resume from paused execution or start fresh
+    # These are set during resume and used for direct agent re-call
+    _direct_resume_task: str | None = None
+    _direct_resume_conversation: list[dict[str, str]] | None = None
+    _direct_resume_tool: AgentTool | None = None
+    _direct_resume_step: AgentWorkflowStep | None = None
+    checkpoint: WorkflowCheckpoint | None = None
+
+    if paused_execution:
+        paused_step_id = paused_execution.paused_at_step_id
+        checkpoint = load_checkpoint(paused_execution)
+        if checkpoint:
+            original_input = checkpoint.shared_data.get(
+                "_original_user_input", user_message
+            )
+            context = WorkflowContext(
+                user_input=original_input,
+                step_outputs=checkpoint.step_outputs,
+                shared_data=checkpoint.shared_data,
+            )
+            msg_history = _deserialize_history(
+                checkpoint.orchestrator_history
+            )
+            agent_call_counts = dict(checkpoint.agent_call_counts)
+            # Decrement the paused agent's call count so it can be
+            # re-called within max_calls_per_agent.
+            if paused_step_id:
+                paused_tool = tools_by_step_id.get(paused_step_id)
+                if paused_tool and paused_tool.name in agent_call_counts:
+                    agent_call_counts[paused_tool.name] = max(
+                        0, agent_call_counts[paused_tool.name] - 1
+                    )
+            cycle_start = checkpoint.cycle_count
+            turn_index = checkpoint.turn_index
+            execution = paused_execution
+            execution.status = "running"
+            execution.paused_at_step_id = None
+            db_session.commit()
+            steps_executed = list(execution.steps_executed or [])
+
+            # Enterprise resume: if we have a clarification conversation,
+            # prepare for DIRECT agent re-call (bypass orchestrator)
+            if (
+                checkpoint.clarification_conversation
+                and checkpoint.paused_agent_original_task
+                and paused_step_id
+            ):
+                conversation = list(checkpoint.clarification_conversation)
+                conversation.append({"role": "user", "content": user_message})
+
+                _direct_resume_task = _build_clarification_task(
+                    checkpoint.paused_agent_original_task,
+                    conversation,
+                )
+                _direct_resume_conversation = conversation
+                _direct_resume_tool = tools_by_step_id.get(paused_step_id)
+                _direct_resume_step = steps_by_id.get(paused_step_id)
+
+                logger.info(
+                    "[LLM-Decision] DIRECT RESUME execution_id=%d "
+                    "agent='%s' clarification_rounds=%d",
+                    execution.id,
+                    _direct_resume_tool.display_name if _direct_resume_tool else "?",
+                    len(conversation),
+                )
+            else:
+                # Fallback: no clarification conversation saved (old checkpoint
+                # format or crash recovery). Inject as TOOL_CALL_RESPONSE and
+                # let the orchestrator decide.
+                user_clarification = (
+                    f"The agent requested more information from the user. "
+                    f"The user responded:\n\n{user_message}\n\n"
+                    f"Please call the same agent again with this additional "
+                    f"information included in the task."
+                )
+                msg_history.append(ChatMessageSimple(
+                    message=user_clarification,
+                    token_count=token_counter(user_clarification),
+                    message_type=MessageType.TOOL_CALL_RESPONSE,
+                ))
+                logger.info(
+                    "[LLM-Decision] FALLBACK RESUME execution_id=%d "
+                    "(no clarification_conversation in checkpoint)",
+                    execution.id,
+                )
+
+            logger.info(
+                "[LLM-Decision] Resumed execution_id=%d cycle_start=%d "
+                "history_len=%d agent_call_counts=%s step_outputs=%s "
+                "direct_resume=%s",
+                execution.id,
+                cycle_start,
+                len(msg_history),
+                dict(agent_call_counts),
+                list(checkpoint.step_outputs.keys()),
+                _direct_resume_task is not None,
+            )
+        else:
+            # Checkpoint corrupted — mark old execution as failed
+            logger.warning(
+                "[LLM-Decision] Checkpoint corrupted for execution_id=%d, "
+                "starting fresh",
+                paused_execution.id,
+            )
+            paused_execution.status = "failed"
+            paused_execution.error_message = "Checkpoint data corrupted"
+            paused_execution.completed_at = datetime.datetime.now(
+                datetime.timezone.utc
+            )
+            db_session.commit()
+            context = WorkflowContext(user_input=user_message)
+            user_msg = ChatMessageSimple(
+                message=user_message,
+                token_count=token_counter(user_message),
+                message_type=MessageType.USER,
+            )
+            msg_history = [user_msg]
+            execution = create_workflow_execution(
+                db_session, workflow.id, user.id, chat_session_id
+            )
+            steps_executed = []
+            turn_index = 0
+            agent_call_counts = {}
+    else:
+        context = WorkflowContext(user_input=user_message)
+        user_msg = ChatMessageSimple(
+            message=user_message,
+            token_count=token_counter(user_message),
+            message_type=MessageType.USER,
+        )
+        msg_history = [user_msg]
+        execution = create_workflow_execution(
+            db_session, workflow.id, user.id, chat_session_id
+        )
+        steps_executed = []
+        turn_index = 0
+        agent_call_counts = {}
+
     total_tokens = 0
     start_time = time.monotonic()
-    tools_by_name = {tool.name: tool for tool in agent_tools}
     state_container = ChatStateContainer()
-    turn_index = 0
-    agent_call_counts: dict[str, int] = {}  # prevent calling same agent too many times
     max_calls_per_agent = workflow.max_calls_per_agent
     cancelled = False
     final_answer_emitted = False
 
     try:
-        for cycle in range(workflow.max_steps):
+        # ================================================================
+        # Enterprise Direct Agent Re-call (bypass orchestrator on resume)
+        # ================================================================
+        # If resuming from a clarification pause, run the paused agent
+        # DIRECTLY before entering the orchestrator loop. This is the
+        # enterprise pattern (LangGraph/CrewAI): the orchestrator is
+        # bypassed during resume; it regains control only after the
+        # agent finishes.
+        if _direct_resume_task and _direct_resume_tool and _direct_resume_step:
+            direct_start_time = time.monotonic()
+            turn_index += 1
+            agent_placement = Placement(turn_index=turn_index)
+
+            logger.info(
+                "[LLM-Decision] DIRECT RE-CALL START agent='%s' "
+                "task_len=%d conversation_rounds=%d",
+                _direct_resume_tool.display_name,
+                len(_direct_resume_task),
+                len(_direct_resume_conversation) if _direct_resume_conversation else 0,
+            )
+
+            # Emit step start
+            yield Packet(
+                placement=agent_placement,
+                obj=WorkflowStepStart(
+                    step_name=_direct_resume_tool._step_name,
+                    persona_name=_direct_resume_tool._persona.name,
+                    step_order=_direct_resume_tool._step_order,
+                ),
+            )
+
+            # Run the agent directly with the clarification task
+            streaming_result = _StreamingAgentResult(
+                start_turn_index=turn_index
+            )
+            yield from _stream_agent_packets(
+                agent_tool=_direct_resume_tool,
+                placement=agent_placement,
+                emitter=emitter,
+                result=streaming_result,
+                is_connected=is_connected,
+                task=_direct_resume_task,
+            )
+
+            if streaming_result.cancelled:
+                yield Packet(
+                    placement=agent_placement,
+                    obj=WorkflowStepEnd(
+                        step_name=_direct_resume_tool.display_name,
+                        output_key=_direct_resume_tool.output_key,
+                    ),
+                )
+                yield Packet(placement=agent_placement, obj=SectionEnd())
+                cancelled = True
+                turn_index = streaming_result.max_turn_index + 1
+            else:
+                result = streaming_result.response
+                turn_index = streaming_result.max_turn_index
+
+                # Extract agent output
+                try:
+                    result_data = json.loads(
+                        result.llm_facing_response if result else ""
+                    )
+                    agent_output = result_data.get("agent_output", "")
+                except (json.JSONDecodeError, AttributeError):
+                    agent_output = (
+                        result.llm_facing_response if result else ""
+                    ) or ""
+
+                direct_elapsed_ms = int(
+                    (time.monotonic() - direct_start_time) * 1000
+                )
+                logger.info(
+                    "[LLM-Decision] DIRECT RE-CALL DONE agent='%s' "
+                    "time=%dms output_len=%d words=%d",
+                    _direct_resume_tool.display_name,
+                    direct_elapsed_ms,
+                    len(agent_output),
+                    len(agent_output.split()),
+                )
+
+                # Check if agent STILL needs more input → re-pause
+                if (
+                    _direct_resume_step.can_request_input
+                    and _agent_requests_input(agent_output)
+                ):
+                    logger.info(
+                        "[LLM-Decision] DIRECT RE-CALL RE-PAUSE "
+                        "agent='%s' — still needs user input",
+                        _direct_resume_tool.display_name,
+                    )
+                    conversation = list(
+                        _direct_resume_conversation or []
+                    )
+                    conversation.append({
+                        "role": "agent",
+                        "content": _strip_needs_input_prefix(agent_output),
+                    })
+
+                    # Save tool_call to msg_history for continuity
+                    synthetic_id = (
+                        f"resume_{_direct_resume_step.id}_{cycle_start}"
+                    )
+                    msg_history.append(ChatMessageSimple(
+                        message=json.dumps({
+                            "tool_call_id": synthetic_id,
+                            "name": _direct_resume_tool.name,
+                            "arguments": {"task": _direct_resume_task},
+                        }),
+                        token_count=50,
+                        message_type=MessageType.ASSISTANT,
+                    ))
+
+                    pause_checkpoint = WorkflowCheckpoint(
+                        step_outputs=dict(context.step_outputs),
+                        shared_data={
+                            **context.shared_data,
+                            "_original_user_input": context.shared_data.get(
+                                "_original_user_input", context.user_input
+                            ),
+                        },
+                        completed_step_ids=[
+                            s.id for s in steps
+                            if s.output_key in context.step_outputs
+                        ],
+                        orchestrator_history=_serialize_history(
+                            msg_history
+                        ),
+                        cycle_count=cycle_start,
+                        agent_call_counts=dict(agent_call_counts),
+                        turn_index=turn_index,
+                        paused_agent_original_task=(
+                            checkpoint.paused_agent_original_task
+                            if checkpoint else ""
+                        ),
+                        clarification_conversation=conversation,
+                    )
+                    save_checkpoint(
+                        db_session, execution.id, pause_checkpoint,
+                        paused_at_step_id=_direct_resume_step.id,
+                    )
+                    total_duration_ms = int(
+                        (time.monotonic() - start_time) * 1000
+                    )
+                    update_workflow_execution(
+                        db_session, execution.id,
+                        steps_executed=steps_executed,
+                        total_tokens=total_tokens,
+                        total_duration_ms=total_duration_ms,
+                    )
+
+                    # Close step + emit pause
+                    yield Packet(
+                        placement=agent_placement,
+                        obj=WorkflowStepEnd(
+                            step_name=_direct_resume_tool.display_name,
+                            output_key=_direct_resume_tool.output_key,
+                        ),
+                    )
+                    yield Packet(
+                        placement=agent_placement, obj=SectionEnd()
+                    )
+                    pause_placement = Placement(
+                        turn_index=turn_index + 1
+                    )
+                    yield Packet(
+                        placement=pause_placement,
+                        obj=WorkflowPauseForInput(
+                            step_name=_direct_resume_tool._step_name,
+                            persona_name=_direct_resume_tool._persona.name,
+                            questions=_strip_needs_input_prefix(
+                                agent_output
+                            ),
+                        ),
+                    )
+                    yield Packet(
+                        placement=pause_placement, obj=SectionEnd()
+                    )
+                    yield Packet(
+                        placement=Placement(turn_index=turn_index + 2),
+                        obj=OverallStop(type="stop"),
+                    )
+                    return  # Stop execution — wait for next resume
+
+                # === Agent finished — inject into orchestrator history ===
+                context.step_outputs[
+                    _direct_resume_tool.output_key
+                ] = agent_output
+
+                # Synthesize tool_call + response so orchestrator sees it
+                synthetic_id = (
+                    f"resume_{_direct_resume_step.id}_{cycle_start}"
+                )
+                msg_history.append(ChatMessageSimple(
+                    message=json.dumps({
+                        "tool_call_id": synthetic_id,
+                        "name": _direct_resume_tool.name,
+                        "arguments": {"task": _direct_resume_task},
+                    }),
+                    token_count=50,
+                    message_type=MessageType.ASSISTANT,
+                ))
+                summarized = _summarize_for_orchestrator(
+                    _direct_resume_tool.display_name, agent_output
+                )
+                msg_history.append(ChatMessageSimple(
+                    message=summarized,
+                    token_count=token_counter(summarized),
+                    message_type=MessageType.TOOL_CALL_RESPONSE,
+                ))
+
+                # Track execution
+                step_tokens = (
+                    token_counter(_direct_resume_task)
+                    + token_counter(agent_output)
+                )
+                total_tokens += step_tokens
+                steps_executed.append({
+                    "step_id": _direct_resume_tool.step_id,
+                    "persona_id": _direct_resume_tool.id,
+                    "step_name": _direct_resume_tool.display_name,
+                    "input_text": _direct_resume_task[:500],
+                    "output_text": agent_output[:2000],
+                    "duration_ms": direct_elapsed_ms,
+                    "tokens_used": step_tokens,
+                })
+
+                # Emit step content and close
+                yield Packet(
+                    placement=agent_placement,
+                    obj=WorkflowStepDelta(content=agent_output),
+                )
+                yield Packet(
+                    placement=agent_placement,
+                    obj=WorkflowStepEnd(
+                        step_name=_direct_resume_tool.display_name,
+                        output_key=_direct_resume_tool.output_key,
+                    ),
+                )
+                yield Packet(
+                    placement=agent_placement, obj=SectionEnd()
+                )
+                turn_index += 1
+
+                # Increment call count for the resumed agent
+                agent_call_counts[_direct_resume_tool.name] = (
+                    agent_call_counts.get(_direct_resume_tool.name, 0) + 1
+                )
+
+                logger.info(
+                    "[LLM-Decision] DIRECT RE-CALL COMPLETE — "
+                    "agent='%s' output stored as '%s', "
+                    "falling through to orchestrator loop",
+                    _direct_resume_tool.display_name,
+                    _direct_resume_tool.output_key,
+                )
+
+            # Clear direct resume state
+            _direct_resume_task = None
+            _direct_resume_tool = None
+            _direct_resume_step = None
+            _direct_resume_conversation = None
+
+        for cycle in range(cycle_start, workflow.max_steps):
             # Check stop signal at the start of each orchestrator cycle
             if is_connected is not None and not is_connected():
                 logger.info("Workflow orchestrator cancelled by user at cycle %d", cycle)
@@ -657,6 +1455,7 @@ def run_workflow_llm_decision(
             tool_choice = ToolChoiceOptions.AUTO
             citation_processor = DynamicCitationProcessor()
 
+            orchestrator_call_start = time.monotonic()
             llm_step_result, has_reasoned = run_llm_step(
                 emitter=emitter,
                 history=truncated_history,
@@ -682,15 +1481,25 @@ def run_workflow_llm_decision(
             if has_reasoned:
                 turn_index += 1
 
-            # Debug: log orchestrator decision for each cycle
+            orchestrator_call_ms = int(
+                (time.monotonic() - orchestrator_call_start) * 1000
+            )
+            tool_call_names = (
+                [tc.tool_name for tc in llm_step_result.tool_calls]
+                if llm_step_result.tool_calls else []
+            )
             logger.info(
-                "Workflow orchestrator cycle %d: answer=%s, tool_calls=%s, "
-                "has_reasoned=%s, drained=%d packets",
-                cycle,
-                repr(llm_step_result.answer[:200] if llm_step_result.answer else None),
-                [tc.tool_name for tc in llm_step_result.tool_calls] if llm_step_result.tool_calls else None,
+                "[LLM-Decision] ORCHESTRATOR cycle=%d/%d llm_time=%dms "
+                "tool_calls=%s has_answer=%s has_reasoned=%s "
+                "elapsed=%.1fs agent_calls=%s",
+                cycle + 1,
+                workflow.max_steps,
+                orchestrator_call_ms,
+                tool_call_names or "none",
+                bool(llm_step_result.answer and not llm_step_result.tool_calls),
                 has_reasoned,
-                len(orchestrator_drained),
+                time.monotonic() - start_time,
+                dict(agent_call_counts),
             )
 
             # If orchestrator produced a final answer (no tool calls)
@@ -776,6 +1585,16 @@ def run_workflow_llm_decision(
                     turn_index += 1
                     agent_placement = Placement(turn_index=turn_index)
 
+                    task_preview = str(tool_call.tool_args.get("task", ""))[:100]
+                    logger.info(
+                        "[LLM-Decision] AGENT START agent='%s' call=%d/%d "
+                        "task='%s...'",
+                        agent_tool.display_name,
+                        call_count + 1,
+                        max_calls_per_agent,
+                        task_preview,
+                    )
+
                     # Yield WorkflowStepStart directly (C1 fix — don't rely on emitter bus)
                     yield Packet(
                         placement=agent_placement,
@@ -828,6 +1647,128 @@ def run_workflow_llm_decision(
                             result.llm_facing_response if result else ""
                         ) or ""
 
+                    agent_elapsed_ms = int(
+                        (time.monotonic() - step_start_time) * 1000
+                    )
+                    logger.info(
+                        "[LLM-Decision] AGENT DONE agent='%s' "
+                        "llm_time=%dms output_len=%d words=%d",
+                        agent_tool.display_name,
+                        agent_elapsed_ms,
+                        len(agent_output),
+                        len(agent_output.split()),
+                    )
+
+                    # Check if agent is requesting user input (human-in-the-loop)
+                    step_obj = steps_by_id.get(agent_tool.step_id)
+                    if (
+                        step_obj
+                        and step_obj.can_request_input
+                        and _agent_requests_input(agent_output)
+                    ):
+                        logger.info(
+                            "[LLM-Decision] PAUSE DETECTED agent='%s' — "
+                            "requesting user input, saving checkpoint "
+                            "(cycle=%d, elapsed=%.1fs)",
+                            agent_tool.display_name,
+                            cycle,
+                            time.monotonic() - start_time,
+                        )
+                        # Save the tool_call to msg_history so resume has it
+                        tool_call_msg = ChatMessageSimple(
+                            message=json.dumps({
+                                "tool_call_id": tool_call.tool_call_id,
+                                "name": tool_call.tool_name,
+                                "arguments": tool_call.tool_args,
+                            }),
+                            token_count=50,
+                            message_type=MessageType.ASSISTANT,
+                        )
+                        msg_history.append(tool_call_msg)
+
+                        # Build clarification conversation: if we already
+                        # have one from a previous resume, extend it;
+                        # otherwise start fresh with the agent's questions.
+                        prev_conversation: list[dict[str, str]] = list(
+                            checkpoint.clarification_conversation
+                        ) if (checkpoint and checkpoint.clarification_conversation) else []
+                        prev_conversation.append({
+                            "role": "agent",
+                            "content": _strip_needs_input_prefix(agent_output),
+                        })
+
+                        pause_checkpoint = WorkflowCheckpoint(
+                            step_outputs=dict(context.step_outputs),
+                            shared_data={
+                                **context.shared_data,
+                                "_original_user_input": context.shared_data.get(
+                                    "_original_user_input", context.user_input
+                                ),
+                            },
+                            completed_step_ids=[
+                                s.id for s in steps
+                                if s.output_key in context.step_outputs
+                            ],
+                            orchestrator_history=_serialize_history(
+                                msg_history
+                            ),
+                            cycle_count=cycle + 1,
+                            agent_call_counts=dict(agent_call_counts),
+                            turn_index=turn_index,
+                            # Enterprise pause/resume: save original task
+                            # and accumulated clarification conversation
+                            paused_agent_original_task=(
+                                checkpoint.paused_agent_original_task
+                                if (checkpoint and checkpoint.paused_agent_original_task)
+                                else tool_call.tool_args.get("task", "")
+                            ),
+                            clarification_conversation=prev_conversation,
+                        )
+                        save_checkpoint(
+                            db_session, execution.id, pause_checkpoint,
+                            paused_at_step_id=step_obj.id,
+                        )
+                        total_duration_ms = int(
+                            (time.monotonic() - start_time) * 1000
+                        )
+                        update_workflow_execution(
+                            db_session, execution.id,
+                            steps_executed=steps_executed,
+                            total_tokens=total_tokens,
+                            total_duration_ms=total_duration_ms,
+                        )
+                        # Close the step
+                        yield Packet(
+                            placement=agent_placement,
+                            obj=WorkflowStepEnd(
+                                step_name=agent_tool.display_name,
+                                output_key=agent_tool.output_key,
+                            ),
+                        )
+                        yield Packet(
+                            placement=agent_placement, obj=SectionEnd()
+                        )
+                        # Emit pause packet with questions
+                        pause_placement = Placement(
+                            turn_index=turn_index + 1
+                        )
+                        yield Packet(
+                            placement=pause_placement,
+                            obj=WorkflowPauseForInput(
+                                step_name=agent_tool._step_name,
+                                persona_name=agent_tool._persona.name,
+                                questions=_strip_needs_input_prefix(agent_output),
+                            ),
+                        )
+                        yield Packet(
+                            placement=pause_placement, obj=SectionEnd()
+                        )
+                        yield Packet(
+                            placement=Placement(turn_index=turn_index + 2),
+                            obj=OverallStop(type="stop"),
+                        )
+                        return  # Stop execution, free thread
+
                     # Yield the agent output as a WorkflowStepDelta (C1 fix)
                     yield Packet(
                         placement=agent_placement,
@@ -844,6 +1785,18 @@ def run_workflow_llm_decision(
                     step_duration_ms = int(
                         (time.monotonic() - step_start_time) * 1000
                     )
+
+                    logger.info(
+                        "[LLM-Decision] STEP DONE agent='%s' "
+                        "duration=%dms tokens=%d output_words=%d "
+                        "total_elapsed=%.1fs",
+                        agent_tool.display_name,
+                        step_duration_ms,
+                        step_tokens,
+                        len(agent_output.split()),
+                        time.monotonic() - start_time,
+                    )
+
                     steps_executed.append({
                         "step_id": agent_tool.step_id,
                         "persona_id": agent_tool.id,
@@ -879,6 +1832,30 @@ def run_workflow_llm_decision(
                     )
                     msg_history.append(tool_response_msg)
 
+                    # Save checkpoint after step completion (crash recovery)
+                    step_checkpoint = WorkflowCheckpoint(
+                        step_outputs=dict(context.step_outputs),
+                        shared_data={
+                            **context.shared_data,
+                            "_original_user_input": context.shared_data.get(
+                                "_original_user_input", context.user_input
+                            ),
+                        },
+                        completed_step_ids=[
+                            s.id for s in steps
+                            if s.output_key in context.step_outputs
+                        ],
+                        orchestrator_history=_serialize_history(
+                            msg_history
+                        ),
+                        cycle_count=cycle + 1,
+                        agent_call_counts=dict(agent_call_counts),
+                        turn_index=turn_index,
+                    )
+                    save_checkpoint(
+                        db_session, execution.id, step_checkpoint
+                    )
+
                     yield Packet(
                         placement=agent_placement,
                         obj=WorkflowStepEnd(
@@ -897,17 +1874,32 @@ def run_workflow_llm_decision(
                 break
 
         total_duration_ms = int((time.monotonic() - start_time) * 1000)
+        final_status = "cancelled" if cancelled else "completed"
+        logger.info(
+            "[LLM-Decision] COMPLETE execution_id=%d status=%s "
+            "agents_ran=%d total_tokens=%d total_time=%dms "
+            "per_agent_times=[%s]",
+            execution.id,
+            final_status,
+            len(steps_executed),
+            total_tokens,
+            total_duration_ms,
+            ", ".join(
+                f"{s['step_name']}={s['duration_ms']}ms"
+                for s in steps_executed
+            ),
+        )
         update_workflow_execution(
             db_session,
             execution.id,
-            status="cancelled" if cancelled else "completed",
+            status=final_status,
             steps_executed=steps_executed,
             total_tokens=total_tokens,
             total_duration_ms=total_duration_ms,
         )
 
     except Exception as e:
-        logger.exception("Workflow LLM-decision execution failed")
+        logger.exception("[LLM-Decision] Workflow execution failed")
         total_duration_ms = int((time.monotonic() - start_time) * 1000)
         update_workflow_execution(
             db_session,
@@ -964,19 +1956,68 @@ def run_workflow(
     db_session: Session,
     user: User,
     is_connected: Callable[[], bool] | None = None,
+    chat_session_id: UUID | None = None,
 ) -> Generator[Packet, None, None]:
-    """Main entry point — dispatches to the appropriate orchestration mode."""
+    """Main entry point — dispatches to the appropriate orchestration mode.
+
+    If chat_session_id is provided, checks for a paused execution to resume
+    (human-in-the-loop support).
+    """
     mode = workflow.orchestration_mode
+    step_names = [s.step_name for s in sorted(workflow.steps, key=lambda s: s.step_order)]
+
+    logger.info(
+        "[Workflow] START workflow_id=%d name='%s' mode=%s steps=%s "
+        "max_steps=%d timeout=%ds user=%s message='%s'",
+        workflow.id,
+        workflow.name,
+        mode,
+        step_names,
+        workflow.max_steps,
+        workflow.timeout_seconds,
+        user.email if user else "?",
+        user_message[:100],
+    )
+
+    # Check for a paused execution to resume
+    paused_execution = None
+    if chat_session_id:
+        paused_execution = get_paused_execution(
+            db_session, workflow.id, chat_session_id
+        )
+        if paused_execution:
+            logger.info(
+                "[Workflow] RESUME paused execution_id=%d paused_at_step_id=%s "
+                "checkpoint_keys=%s",
+                paused_execution.id,
+                paused_execution.paused_at_step_id,
+                list(paused_execution.checkpoint_data.keys())
+                if paused_execution.checkpoint_data else "none",
+            )
+
+    workflow_start = time.monotonic()
 
     if mode == "sequential":
         yield from run_workflow_sequential(
             workflow, user_message, emitter, db_session, user,
             is_connected=is_connected,
+            chat_session_id=chat_session_id,
+            paused_execution=paused_execution,
         )
     elif mode == "llm_decision":
         yield from run_workflow_llm_decision(
             workflow, user_message, emitter, db_session, user,
             is_connected=is_connected,
+            chat_session_id=chat_session_id,
+            paused_execution=paused_execution,
         )
     else:
         raise ValueError(f"Unsupported orchestration mode: {mode}")
+
+    total_elapsed = time.monotonic() - workflow_start
+    logger.info(
+        "[Workflow] END workflow_id=%d name='%s' total_time=%.1fs",
+        workflow.id,
+        workflow.name,
+        total_elapsed,
+    )

@@ -564,13 +564,25 @@ function DefaultAssistantContent() {
                       </InputLayouts.Horizontal>
                     </Card>
                   ) : (
-                    <BuiltInToolCard
-                      name="_web_search_unavailable"
-                      title="Web Search"
-                      description="Access real-time information and search the web. Requires a web search provider to be configured."
-                      disabled
-                      disabledTooltip="No web search provider configured. Set one up under Configuration → Web Search."
-                    />
+                    <Card variant="disabled">
+                      <InputLayouts.Horizontal
+                        name="_web_search_unavailable"
+                        title="Web Search"
+                        description="Access real-time information and search the web. Requires a web search provider to be configured."
+                        disabled
+                        center
+                      >
+                        <SwitchField name="_web_search_unavailable" disabled />
+                      </InputLayouts.Horizontal>
+                      <div className="px-4 pb-3 -mt-1">
+                        <Link
+                          href="/admin/configuration/web-search"
+                          className="text-xs text-link hover:underline"
+                        >
+                          Set one up under Configuration → Web Search →
+                        </Link>
+                      </div>
+                    </Card>
                   )}
 
                   {openUrlTool && (

@@ -103,6 +103,8 @@ export interface CompletedHeaderProps {
   memoryOperation?: "add" | "update" | null;
   memoryId?: number | null;
   memoryIndex?: number | null;
+  /** Whether the workflow is paused waiting for user input (HITL) */
+  isPaused?: boolean;
 }
 
 /** Header when completed - handles both collapsed and expanded states */
@@ -118,6 +120,7 @@ export const CompletedHeader = React.memo(function CompletedHeader({
   memoryOperation = null,
   memoryId = null,
   memoryIndex = null,
+  isPaused = false,
 }: CompletedHeaderProps) {
   if (isMemoryOnly) {
     return (
@@ -146,9 +149,11 @@ export const CompletedHeader = React.memo(function CompletedHeader({
     );
   }
 
-  const durationText = processingDurationSeconds
-    ? `Thought for ${formatDurationSeconds(processingDurationSeconds)}`
-    : "Thought for some time";
+  const durationText = isPaused
+    ? "Waiting for input"
+    : processingDurationSeconds
+      ? `Thought for ${formatDurationSeconds(processingDurationSeconds)}`
+      : "Thought for some time";
 
   const imageText =
     generatedImageCount > 0

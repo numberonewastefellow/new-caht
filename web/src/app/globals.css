@@ -300,6 +300,69 @@
         transparent 70%
       );
   }
+
+  /* Selected model row in LLM picker */
+  .virtualai-model-selected {
+    background: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 8%, var(--background-tint-01) 92%);
+  }
+  .virtualai-model-selected:hover {
+    background: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 12%, var(--background-tint-01) 88%);
+  }
+
+  /* Selected model card in LLM modal grid */
+  .virtualai-model-card-selected {
+    background: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 6%, var(--background-neutral-00) 94%);
+    border-color: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 40%, var(--border-01) 60%);
+  }
+  .virtualai-model-card-selected:hover {
+    background: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 10%, var(--background-neutral-00) 90%);
+  }
+
+  /* Capability pill badges (Reasoning, Vision) */
+  .virtualai-capability-pill {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 1px 6px;
+    border-radius: 9999px;
+    line-height: 1.4;
+  }
+  .virtualai-capability-pill--reasoning {
+    background: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 12%, var(--background-neutral-01) 88%);
+    color: var(--virtualai-accent, var(--theme-primary-05));
+  }
+  .virtualai-capability-pill--vision {
+    background: color-mix(in srgb, var(--text-02) 10%, var(--background-neutral-01) 90%);
+    color: var(--text-03);
+  }
+
+  /* Accent-themed slider override — targets Radix Slider internal structure */
+  .virtualai-slider > span:first-child {
+    /* Track */
+    background: var(--background-neutral-03) !important;
+    height: 6px !important;
+  }
+  .virtualai-slider > span:first-child > span {
+    /* Range */
+    background: var(--virtualai-accent, var(--theme-primary-05)) !important;
+  }
+  .virtualai-slider > span[role="slider"] {
+    /* Thumb */
+    width: 14px !important;
+    height: 14px !important;
+    background: var(--background-neutral-00) !important;
+    border: 2px solid var(--virtualai-accent, var(--theme-primary-05)) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+  }
+  .virtualai-slider > span[role="slider"]:hover {
+    border-color: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 80%, black 20%) !important;
+  }
+  .virtualai-slider > span[role="slider"]:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 25%, transparent 75%) !important;
+  }
 }
 
 /* TYPOGRAPHY SYSTEM - Imported from Figma Design System */

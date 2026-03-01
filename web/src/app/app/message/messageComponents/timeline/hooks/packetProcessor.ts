@@ -148,6 +148,7 @@ const CONTENT_PACKET_TYPES_SET = new Set<PacketType>([
   PacketType.RESEARCH_AGENT_START,
   PacketType.WORKFLOW_STEP_START,
   PacketType.WORKFLOW_ORCHESTRATOR_THINKING,
+  PacketType.WORKFLOW_PAUSE_FOR_INPUT,
 ]);
 
 function hasContentPackets(packets: Packet[]): boolean {

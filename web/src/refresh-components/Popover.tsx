@@ -107,12 +107,13 @@ const PopoverClose = PopoverPrimitive.Close;
  * </Popover.Content>
  * ```
  */
-type PopoverWidths = "fit" | "md" | "lg" | "xl";
+type PopoverWidths = "fit" | "md" | "lg" | "xl" | "2xl";
 const widthClasses: Record<PopoverWidths, string> = {
   fit: "w-fit",
   md: "w-[12rem]",
   lg: "w-[15rem]",
   xl: "w-[18rem]",
+  "2xl": "w-[22rem]",
 };
 interface PopoverContentProps
   extends WithoutStyles<

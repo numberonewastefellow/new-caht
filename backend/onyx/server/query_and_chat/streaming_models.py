@@ -58,6 +58,7 @@ class StreamingType(Enum):
     WORKFLOW_STEP_DELTA = "workflow_step_delta"
     WORKFLOW_STEP_END = "workflow_step_end"
     WORKFLOW_ORCHESTRATOR_THINKING = "workflow_orchestrator_thinking"
+    WORKFLOW_PAUSE_FOR_INPUT = "workflow_pause_for_input"
 
 
 class BaseObj(BaseModel):
@@ -374,6 +375,23 @@ class WorkflowOrchestratorThinking(BaseObj):
     content: str
 
 
+class WorkflowPauseForInput(BaseObj):
+    """Emitted when an agent requests user input (human-in-the-loop).
+
+    The workflow engine saves a checkpoint and stops execution.
+    The frontend renders the questions and the user responds
+    via normal chat input. The engine detects the paused execution
+    and resumes from the checkpoint.
+    """
+
+    type: Literal["workflow_pause_for_input"] = (
+        StreamingType.WORKFLOW_PAUSE_FOR_INPUT.value
+    )
+    step_name: str
+    persona_name: str
+    questions: str  # The agent's clarification text
+
+
 ################################################
 # Packet Object
 ################################################
@@ -425,6 +443,7 @@ PacketObj = Union[
     WorkflowStepDelta,
     WorkflowStepEnd,
     WorkflowOrchestratorThinking,
+    WorkflowPauseForInput,
 ]
 
 

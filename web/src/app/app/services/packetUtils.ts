@@ -39,6 +39,7 @@ export function isToolPacket(
     PacketType.WORKFLOW_STEP_DELTA,
     PacketType.WORKFLOW_STEP_END,
     PacketType.WORKFLOW_ORCHESTRATOR_THINKING,
+    PacketType.WORKFLOW_PAUSE_FOR_INPUT,
   ];
   if (includeSectionEnd) {
     toolPacketTypes.push(PacketType.SECTION_END);

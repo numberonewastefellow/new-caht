@@ -17,6 +17,7 @@ import {
 import {
   isResearchAgentPackets,
   isSearchToolPackets,
+  isWorkflowPausePackets,
   stepSupportsCollapsedStreaming,
   stepHasCollapsedStreamingContent,
 } from "@/app/app/message/messageComponents/timeline/packetHelpers";
@@ -161,8 +162,19 @@ export const AgentTimeline = React.memo(function AgentTimeline({
     [lastStep]
   );
 
+  // HITL: detect workflow pause — auto-expand so user sees the questions
+  const lastStepIsPause = useMemo(
+    () => (lastStep ? isWorkflowPausePackets(lastStep.packets) : false),
+    [lastStep]
+  );
+
   const { isExpanded, handleToggle, parallelActiveTab, setParallelActiveTab } =
-    useTimelineExpansion(stopPacketSeen, lastTurnGroup, hasDisplayContent);
+    useTimelineExpansion(
+      stopPacketSeen,
+      lastTurnGroup,
+      hasDisplayContent,
+      lastStepIsPause
+    );
 
   // Streaming duration tracking
   const streamingStartTime = useStreamingStartTime();
@@ -234,6 +246,7 @@ export const AgentTimeline = React.memo(function AgentTimeline({
     parallelActiveStepHasCollapsedContent,
     isGeneratingImage,
     finalAnswerComing,
+    lastStepIsPause,
   });
 
   const headerIsInteractive = useMemo(() => {
@@ -313,6 +326,7 @@ export const AgentTimeline = React.memo(function AgentTimeline({
             memoryOperation={memoryOperation}
             memoryId={memoryId}
             memoryIndex={memoryIndex}
+            isPaused={lastStepIsPause}
           />
         );
 
@@ -341,6 +355,7 @@ export const AgentTimeline = React.memo(function AgentTimeline({
     processingDurationSeconds,
     generatedImageCount,
     toolProcessingDuration,
+    lastStepIsPause,
   ]);
 
   // Empty state: no packets, still streaming, and not stopped

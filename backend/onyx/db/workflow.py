@@ -16,6 +16,7 @@ from onyx.db.models import Persona
 from onyx.db.models import PersonaLabel
 from onyx.db.models import WorkflowExecution
 from onyx.utils.logger import setup_logger
+from onyx.workflows.models import WorkflowCheckpoint
 from onyx.workflows.models import WorkflowCreate
 from onyx.workflows.models import WorkflowStepCreate
 from onyx.workflows.models import WorkflowUpdate
@@ -304,6 +305,7 @@ def _add_step(
         output_key=step_create.output_key,
         condition=step_create.condition,
         is_terminal=step_create.is_terminal,
+        can_request_input=step_create.can_request_input,
     )
     db_session.add(step)
     db_session.flush()
@@ -319,7 +321,7 @@ def create_workflow_execution(
     db_session: Session,
     workflow_id: int,
     user_id: UUID | None = None,
-    chat_session_id: int | None = None,
+    chat_session_id: UUID | None = None,
 ) -> WorkflowExecution:
     execution = WorkflowExecution(
         workflow_id=workflow_id,
@@ -361,6 +363,19 @@ def update_workflow_execution(
 
     if status in ("completed", "failed", "timeout"):
         execution.completed_at = datetime.datetime.now(datetime.timezone.utc)
+        # Free checkpoint JSONB — no longer needed once execution is terminal
+        execution.checkpoint_data = None
+        execution.paused_at_step_id = None
+        logger.info(
+            "[Execution] FINALIZED execution_id=%d status=%s "
+            "duration=%dms tokens=%d steps=%d error=%s",
+            execution_id,
+            status,
+            total_duration_ms or 0,
+            total_tokens or 0,
+            len(steps_executed) if steps_executed else 0,
+            error_message[:100] if error_message else None,
+        )
 
     db_session.commit()
     return execution
@@ -388,3 +403,92 @@ def list_workflow_executions(
         .scalars()
         .all()
     )
+
+
+# ========================
+# Checkpoint / Pause-Resume
+# ========================
+
+
+def save_checkpoint(
+    db_session: Session,
+    execution_id: int,
+    checkpoint: WorkflowCheckpoint,
+    paused_at_step_id: int | None = None,
+) -> None:
+    """Save checkpoint after step completion or on pause.
+
+    Called after every step (crash recovery) and when an agent
+    requests user input (human-in-the-loop pause).
+    """
+    execution = db_session.get(WorkflowExecution, execution_id)
+    if execution is None:
+        logger.warning(
+            "[Checkpoint] Cannot save — execution_id=%d not found",
+            execution_id,
+        )
+        return
+    execution.checkpoint_data = checkpoint.model_dump()
+    execution.paused_at_step_id = paused_at_step_id
+    if paused_at_step_id is not None:
+        execution.status = "paused"
+        logger.info(
+            "[Checkpoint] PAUSED execution_id=%d at step_id=%d "
+            "completed_steps=%s",
+            execution_id,
+            paused_at_step_id,
+            checkpoint.completed_step_ids,
+        )
+    else:
+        logger.debug(
+            "[Checkpoint] Saved execution_id=%d completed_steps=%s",
+            execution_id,
+            checkpoint.completed_step_ids,
+        )
+    db_session.commit()
+
+
+def get_paused_execution(
+    db_session: Session,
+    workflow_id: int,
+    chat_session_id: UUID,
+) -> WorkflowExecution | None:
+    """Find a paused execution for this workflow + chat session."""
+    result = db_session.execute(
+        select(WorkflowExecution)
+        .where(WorkflowExecution.workflow_id == workflow_id)
+        .where(WorkflowExecution.chat_session_id == chat_session_id)
+        .where(WorkflowExecution.status == "paused")
+        .order_by(WorkflowExecution.started_at.desc())
+        .limit(1)
+    ).scalar_one_or_none()
+    if result:
+        logger.info(
+            "[Checkpoint] Found paused execution_id=%d for workflow=%d "
+            "chat_session=%s paused_at_step=%s",
+            result.id,
+            workflow_id,
+            chat_session_id,
+            result.paused_at_step_id,
+        )
+    return result
+
+
+def load_checkpoint(
+    execution: WorkflowExecution,
+) -> WorkflowCheckpoint | None:
+    """Load checkpoint from a paused or crashed execution.
+
+    Returns None (triggering fresh execution) if checkpoint data
+    is missing or corrupted, rather than crashing.
+    """
+    if not execution.checkpoint_data:
+        return None
+    try:
+        return WorkflowCheckpoint(**execution.checkpoint_data)
+    except Exception:
+        logger.warning(
+            "Corrupted checkpoint data for execution %d, falling back to fresh run",
+            execution.id,
+        )
+        return None

@@ -3,6 +3,7 @@
 from datetime import datetime
 from typing import Any
 from typing import Literal
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -24,6 +25,7 @@ class WorkflowStepCreate(BaseModel):
     output_key: str = "output"
     condition: dict[str, Any] | None = None
     is_terminal: bool = False
+    can_request_input: bool = False
 
 
 class WorkflowCreate(BaseModel):
@@ -73,6 +75,7 @@ class WorkflowStepResponse(BaseModel):
     output_key: str
     condition: dict[str, Any] | None = None
     is_terminal: bool
+    can_request_input: bool
 
 
 class WorkflowResponse(BaseModel):
@@ -129,7 +132,7 @@ class WorkflowRunRequest(BaseModel):
     """Request to execute a workflow."""
 
     message: str
-    chat_session_id: int | None = None
+    chat_session_id: UUID | None = None
 
 
 # ========================
@@ -144,3 +147,34 @@ class WorkflowContext(BaseModel):
     step_outputs: dict[str, str] = {}
     current_step: str | None = None
     shared_data: dict[str, Any] = {}
+
+
+# ========================
+# Checkpoint (pause/resume + crash recovery)
+# ========================
+
+
+class WorkflowCheckpoint(BaseModel):
+    """Serialized workflow state for pause/resume and crash recovery.
+
+    Saved to WorkflowExecution.checkpoint_data (JSONB) after each step
+    completes, and on pause when an agent requests user input.
+    """
+
+    step_outputs: dict[str, str] = {}
+    shared_data: dict[str, Any] = {}
+    completed_step_ids: list[int] = []
+    # Serialized orchestrator message history (for llm_decision mode)
+    orchestrator_history: list[dict] = []
+    cycle_count: int = 0
+    agent_call_counts: dict[str, int] = {}
+    turn_index: int = 0
+
+    # --- Clarification conversation (enterprise pause/resume) ---
+    # Accumulated agent-user dialog across multiple pause/resume rounds.
+    # Each entry: {"role": "agent"|"user", "content": "..."}
+    # Grows across rounds; cleared when the agent produces a final output.
+    clarification_conversation: list[dict[str, str]] = []
+    # The original task string given to the paused agent, so we can
+    # reconstruct the exact same context on resume without re-deriving it.
+    paused_agent_original_task: str = ""

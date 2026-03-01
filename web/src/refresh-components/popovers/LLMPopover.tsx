@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import Popover, { PopoverMenu } from "@/refresh-components/Popover";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import Modal from "@/refresh-components/Modal";
+import Tabs from "@/refresh-components/Tabs";
+import ShadowDiv from "@/refresh-components/ShadowDiv";
 import { LlmDescriptor, LlmManager } from "@/lib/hooks";
 import { structureValue } from "@/lib/llm/utils";
 import {
@@ -11,25 +13,17 @@ import {
 import { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
 import { Slider } from "@/components/ui/slider";
 import { useUser } from "@/providers/UserProvider";
-import LineItem from "@/refresh-components/buttons/LineItem";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import Text from "@/refresh-components/texts/Text";
 import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  SvgCheck,
-  SvgChevronDown,
-  SvgChevronRight,
-  SvgRefreshCw,
-} from "@opal/icons";
-import { Section } from "@/layouts/general-layouts";
+import { cn } from "@/lib/utils";
+import { SvgCheck, SvgRefreshCw } from "@opal/icons";
 import { OpenButton } from "@opal/components";
 import { LLMOption, LLMOptionGroup } from "./interfaces";
+
+// ============================================================================
+// Types
+// ============================================================================
 
 export interface LLMPopoverProps {
   llmManager: LlmManager;
@@ -43,6 +37,10 @@ export interface LLMPopoverProps {
   currentModelName?: string;
   disabled?: boolean;
 }
+
+// ============================================================================
+// Helper Functions (exported for tests)
+// ============================================================================
 
 export function buildLlmOptions(
   llmProviders: LLMProviderDescriptor[] | undefined,
@@ -142,6 +140,100 @@ export function groupLlmOptions(
   });
 }
 
+// ============================================================================
+// ModelCard Sub-Component
+// ============================================================================
+
+interface ModelCardProps {
+  option: LLMOption;
+  isSelected: boolean;
+  onSelect: () => void;
+}
+
+const ModelCard = React.forwardRef<HTMLButtonElement, ModelCardProps>(
+  ({ option, isSelected, onSelect }, ref) => {
+    const ProviderIcon = getProviderIcon(option.provider, option.modelName);
+
+    return (
+      <button
+        ref={ref}
+        type="button"
+        onClick={onSelect}
+        className={cn(
+          "flex flex-col items-start gap-1.5 p-3 rounded-12 border transition-colors text-left",
+          "virtualai-card-hover",
+          isSelected
+            ? "virtualai-model-card-selected"
+            : "border-border-01 bg-background-neutral-00"
+        )}
+      >
+        {/* Provider icon + model name */}
+        <div className="flex items-center gap-2 w-full">
+          <div className="size-6 rounded-06 virtualai-accent-icon-badge flex items-center justify-center shrink-0">
+            <ProviderIcon size={14} />
+          </div>
+          <Text
+            as="p"
+            mainUiMuted
+            className={cn(
+              "truncate flex-1",
+              isSelected ? "text-text-05 font-medium" : "text-text-04"
+            )}
+          >
+            {option.displayName}
+          </Text>
+        </div>
+
+        {/* Capability pills */}
+        {(option.supportsReasoning || option.supportsImageInput) && (
+          <div className="flex items-center gap-1 flex-wrap">
+            {option.supportsReasoning && (
+              <span className="virtualai-capability-pill virtualai-capability-pill--reasoning">
+                Reasoning
+              </span>
+            )}
+            {option.supportsImageInput && (
+              <span className="virtualai-capability-pill virtualai-capability-pill--vision">
+                Vision
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Selected indicator */}
+        {isSelected && (
+          <div className="flex items-center gap-1 mt-0.5">
+            <span
+              className="flex items-center justify-center w-4 h-4 rounded-full shrink-0"
+              style={{
+                backgroundColor:
+                  "var(--virtualai-accent, var(--theme-primary-05))",
+              }}
+            >
+              <SvgCheck className="h-2.5 w-2.5 stroke-white shrink-0" />
+            </span>
+            <Text
+              as="span"
+              secondaryBody
+              className="font-medium"
+              style={{
+                color: "var(--virtualai-accent, var(--theme-primary-05))",
+              }}
+            >
+              Selected
+            </Text>
+          </div>
+        )}
+      </button>
+    );
+  }
+);
+ModelCard.displayName = "ModelCard";
+
+// ============================================================================
+// Main Component
+// ============================================================================
+
 export default function LLMPopover({
   llmManager,
   requiresImageInput,
@@ -157,6 +249,7 @@ export default function LLMPopover({
 
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeProviderTab, setActiveProviderTab] = useState("all");
   const { user } = useUser();
 
   const [localTemperature, setLocalTemperature] = useState(
@@ -169,7 +262,7 @@ export default function LLMPopover({
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const selectedItemRef = useRef<HTMLDivElement>(null);
+  const selectedCardRef = useRef<HTMLButtonElement>(null);
 
   const handleGlobalTemperatureChange = useCallback((value: number[]) => {
     const value_0 = value[0];
@@ -211,18 +304,31 @@ export default function LLMPopover({
     return result;
   }, [llmOptions, searchQuery, requiresImageInput]);
 
-  // Group options by provider using backend-provided display names and ordering
-  // For aggregator providers (bedrock, openrouter, vertex_ai), flatten to "Provider/Vendor" format
-  const groupedOptions = useMemo(
-    () => groupLlmOptions(filteredOptions),
-    [filteredOptions]
-  );
+  // Build tab list from grouped options (uses search-filtered, before tab filtering)
+  const providerTabs = useMemo(() => {
+    const groups = groupLlmOptions(filteredOptions);
+    return [
+      { key: "all", displayName: "All" },
+      ...groups.map((g) => ({ key: g.key, displayName: g.displayName })),
+    ];
+  }, [filteredOptions]);
+
+  // Filter by active provider tab
+  const tabFilteredOptions = useMemo(() => {
+    if (activeProviderTab === "all") return filteredOptions;
+    return filteredOptions.filter((opt) => {
+      const provider = opt.provider.toLowerCase();
+      const isAggregator = AGGREGATOR_PROVIDERS.has(provider);
+      const groupKey =
+        isAggregator && opt.vendor
+          ? `${provider}/${opt.vendor.toLowerCase()}`
+          : provider;
+      return groupKey === activeProviderTab;
+    });
+  }, [filteredOptions, activeProviderTab]);
 
   // Get display name for the model to show in the button
-  // Use currentModelName prop if provided (e.g., for regenerate showing the model used),
-  // otherwise fall back to the globally selected model
   const currentLlmDisplayName = useMemo(() => {
-    // Only use currentModelName if it's a non-empty string
     const currentModel =
       currentModelName && currentModelName.trim()
         ? currentModelName
@@ -240,50 +346,19 @@ export default function LLMPopover({
     return currentModel;
   }, [llmProviders, currentModelName, llmManager.currentLlm.modelName]);
 
-  // Determine which group the current model belongs to (for auto-expand)
-  const currentGroupKey = useMemo(() => {
-    const currentModel = llmManager.currentLlm.modelName;
-    const currentProvider = llmManager.currentLlm.provider;
-    // Match by both modelName AND provider to handle same model name across providers
-    const option = llmOptions.find(
-      (o) => o.modelName === currentModel && o.provider === currentProvider
-    );
-    if (!option) return "openai";
-
-    const provider = option.provider.toLowerCase();
-    const isAggregator = AGGREGATOR_PROVIDERS.has(provider);
-
-    if (isAggregator && option.vendor) {
-      return `${provider}/${option.vendor.toLowerCase()}`;
-    }
-    return provider;
-  }, [
-    llmOptions,
-    llmManager.currentLlm.modelName,
-    llmManager.currentLlm.provider,
-  ]);
-
-  // Track expanded groups - initialize with current model's group
-  const [expandedGroups, setExpandedGroups] = useState<string[]>([
-    currentGroupKey,
-  ]);
-
-  // Reset state when popover closes/opens
+  // Reset state when modal closes
   useEffect(() => {
     if (!open) {
       setSearchQuery("");
-    } else {
-      // Reset expanded groups to only show the selected model's group
-      setExpandedGroups([currentGroupKey]);
+      setActiveProviderTab("all");
     }
-  }, [open, currentGroupKey]);
+  }, [open]);
 
-  // Auto-scroll to selected model when popover opens
+  // Auto-scroll to selected card when modal opens
   useEffect(() => {
-    if (open) {
-      // Small delay to let accordion content render
+    if (open && selectedCardRef.current) {
       const timer = setTimeout(() => {
-        selectedItemRef.current?.scrollIntoView({
+        selectedCardRef.current?.scrollIntoView({
           behavior: "instant",
           block: "center",
         });
@@ -293,23 +368,6 @@ export default function LLMPopover({
   }, [open]);
 
   const isSearching = searchQuery.trim().length > 0;
-
-  // Compute final expanded groups
-  const effectiveExpandedGroups = useMemo(() => {
-    if (isSearching) {
-      // Force expand all when searching
-      return groupedOptions.map((g) => g.key);
-    }
-    return expandedGroups;
-  }, [isSearching, groupedOptions, expandedGroups]);
-
-  // Handler for accordion changes
-  const handleAccordionChange = (value: string[]) => {
-    // Only update state when not searching (force-expanding)
-    if (!isSearching) {
-      setExpandedGroups(value);
-    }
-  };
 
   const handleSelectModel = (option: LLMOption) => {
     llmManager.updateCurrentLlm({
@@ -321,189 +379,148 @@ export default function LLMPopover({
     setOpen(false);
   };
 
-  const renderModelItem = (option: LLMOption) => {
-    const isSelected =
-      option.modelName === llmManager.currentLlm.modelName &&
-      option.provider === llmManager.currentLlm.provider;
-
-    const capabilities: string[] = [];
-    if (option.supportsReasoning) {
-      capabilities.push("Reasoning");
-    }
-    if (option.supportsImageInput) {
-      capabilities.push("Vision");
-    }
-    const description =
-      capabilities.length > 0 ? capabilities.join(", ") : undefined;
-
-    return (
-      <div
-        key={`${option.name}-${option.modelName}`}
-        ref={isSelected ? selectedItemRef : undefined}
-      >
-        <LineItem
-          selected={isSelected}
-          description={description}
-          onClick={() => handleSelectModel(option)}
-          rightChildren={
-            isSelected ? (
-              <SvgCheck className="h-4 w-4 stroke-action-link-05 shrink-0" />
-            ) : null
-          }
-        >
-          {option.displayName}
-        </LineItem>
-      </div>
-    );
-  };
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <>
+      {/* Trigger button */}
       <div data-testid="llm-popover-trigger">
-        <Popover.Trigger asChild disabled={disabled}>
-          <OpenButton
-            icon={
-              folded
-                ? (foldedIcon ?? SvgRefreshCw)
-                : getProviderIcon(
-                    llmManager.currentLlm.provider,
-                    llmManager.currentLlm.modelName
-                  )
-            }
-            foldable={folded}
-            disabled={disabled}
-            tooltip={folded ? foldedTooltip : undefined}
-          >
-            {currentLlmDisplayName}
-          </OpenButton>
-        </Popover.Trigger>
+        <OpenButton
+          icon={
+            folded
+              ? (foldedIcon ?? SvgRefreshCw)
+              : getProviderIcon(
+                  llmManager.currentLlm.provider,
+                  llmManager.currentLlm.modelName
+                )
+          }
+          foldable={folded}
+          disabled={disabled}
+          tooltip={folded ? foldedTooltip : undefined}
+          transient={open}
+          onClick={() => !disabled && setOpen(true)}
+        >
+          {currentLlmDisplayName}
+        </OpenButton>
       </div>
 
-      <Popover.Content side="top" align="end" width="xl">
-        <Section gap={0.5}>
-          {/* Search Input */}
-          <InputTypeIn
-            ref={searchInputRef}
-            leftSearchIcon
-            variant="internal"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search models..."
-          />
+      {/* Model Selection Modal */}
+      <Modal open={open} onOpenChange={setOpen}>
+        <Modal.Content
+          width="sm"
+          height="lg"
+          preventAccidentalClose={false}
+          onOpenAutoFocus={(e) => {
+            e.preventDefault();
+            searchInputRef.current?.focus();
+          }}
+        >
+          <Modal.Header title="Choose Model">
+            <InputTypeIn
+              ref={searchInputRef}
+              leftSearchIcon
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search models..."
+              autoComplete="off"
+            />
+          </Modal.Header>
 
-          {/* Model List with Vendor Groups */}
-          <PopoverMenu scrollContainerRef={scrollContainerRef}>
-            {isLoadingProviders
-              ? [
-                  <div key="loading" className="flex items-center gap-2 py-3">
-                    <SimpleLoader />
-                    <Text secondaryBody text03>
-                      Loading models...
-                    </Text>
-                  </div>,
-                ]
-              : groupedOptions.length === 0
-                ? [
-                    <div key="empty" className="py-3">
-                      <Text secondaryBody text03>
-                        No models found
-                      </Text>
-                    </div>,
-                  ]
-                : groupedOptions.length === 1
-                  ? // Single provider - show models directly without accordion
-                    [
-                      <div
-                        key="single-provider"
-                        className="flex flex-col gap-1"
-                      >
-                        {groupedOptions[0]!.options.map(renderModelItem)}
-                      </div>,
-                    ]
-                  : // Multiple providers - show accordion with groups
-                    [
-                      <Accordion
-                        key="accordion"
-                        type="multiple"
-                        value={effectiveExpandedGroups}
-                        onValueChange={handleAccordionChange}
-                        className="w-full flex flex-col"
-                      >
-                        {groupedOptions.map((group) => {
-                          const isExpanded = effectiveExpandedGroups.includes(
-                            group.key
-                          );
-                          return (
-                            <AccordionItem
-                              key={group.key}
-                              value={group.key}
-                              className="border-none pt-1"
-                            >
-                              {/* Group Header */}
-                              <AccordionTrigger className="flex items-center rounded-08 hover:no-underline hover:bg-background-tint-02 group [&>svg]:hidden w-full py-1">
-                                <div className="flex items-center gap-1 shrink-0">
-                                  <div className="flex items-center justify-center size-5 shrink-0">
-                                    <group.Icon size={16} />
-                                  </div>
-                                  <Text
-                                    secondaryBody
-                                    text03
-                                    nowrap
-                                    className="px-0.5"
-                                  >
-                                    {group.displayName}
-                                  </Text>
-                                </div>
-                                <div className="flex-1" />
-                                <div className="flex items-center justify-center size-6 shrink-0">
-                                  {isExpanded ? (
-                                    <SvgChevronDown className="h-4 w-4 stroke-text-04 shrink-0" />
-                                  ) : (
-                                    <SvgChevronRight className="h-4 w-4 stroke-text-04 shrink-0" />
-                                  )}
-                                </div>
-                              </AccordionTrigger>
+          <Modal.Body twoTone padding={0}>
+            {/* Provider Tabs — only when multiple providers exist */}
+            {providerTabs.length > 2 && (
+              <div className="px-4 pt-3 bg-background-tint-00">
+                <Tabs
+                  value={activeProviderTab}
+                  onValueChange={setActiveProviderTab}
+                >
+                  <Tabs.List variant="pill" enableScrollArrows>
+                    {providerTabs.map((tab) => (
+                      <Tabs.Trigger key={tab.key} value={tab.key}>
+                        {tab.displayName}
+                      </Tabs.Trigger>
+                    ))}
+                  </Tabs.List>
+                </Tabs>
+              </div>
+            )}
 
-                              {/* Model Items - full width highlight */}
-                              <AccordionContent className="pb-0 pt-0">
-                                <div className="flex flex-col gap-1">
-                                  {group.options.map(renderModelItem)}
-                                </div>
-                              </AccordionContent>
-                            </AccordionItem>
-                          );
-                        })}
-                      </Accordion>,
-                    ]}
-          </PopoverMenu>
-
-          {/* Global Temperature Slider (shown if enabled in user prefs) */}
-          {user?.preferences?.temperature_override_enabled && (
-            <>
-              <div className="border-t border-border-02 mx-2" />
-              <div className="flex flex-col w-full py-2 gap-2">
-                <Slider
-                  value={[localTemperature]}
-                  max={llmManager.maxTemperature}
-                  min={0}
-                  step={0.01}
-                  onValueChange={handleGlobalTemperatureChange}
-                  onValueCommit={handleGlobalTemperatureCommit}
-                  className="w-full"
-                />
-                <div className="flex flex-row items-center justify-between">
+            {/* Model Card Grid */}
+            <ShadowDiv
+              scrollContainerRef={scrollContainerRef}
+              className="px-4 py-3 max-h-[24rem]"
+            >
+              {isLoadingProviders ? (
+                <div className="flex items-center justify-center gap-2 py-8">
+                  <SimpleLoader />
                   <Text secondaryBody text03>
-                    Temperature (creativity)
-                  </Text>
-                  <Text secondaryBody text03>
-                    {localTemperature.toFixed(1)}
+                    Loading models...
                   </Text>
                 </div>
+              ) : tabFilteredOptions.length === 0 ? (
+                <div className="flex flex-col items-center py-8 gap-1">
+                  <Text as="p" text02 secondaryBody>
+                    No models found
+                  </Text>
+                  {isSearching && (
+                    <Text as="p" text01 secondaryBody>
+                      Try a different search term
+                    </Text>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {tabFilteredOptions.map((option) => {
+                    const isSelected =
+                      option.modelName === llmManager.currentLlm.modelName &&
+                      option.provider === llmManager.currentLlm.provider;
+                    return (
+                      <ModelCard
+                        key={`${option.name}-${option.modelName}`}
+                        ref={isSelected ? selectedCardRef : undefined}
+                        option={option}
+                        isSelected={isSelected}
+                        onSelect={() => handleSelectModel(option)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </ShadowDiv>
+
+            {/* Temperature Slider (shown if enabled in user prefs) */}
+            {user?.preferences?.temperature_override_enabled && (
+              <div className="px-4 py-3 border-t border-border-01">
+                <div className="flex flex-col w-full gap-2">
+                  <div className="flex flex-row items-center justify-between">
+                    <Text as="p" secondaryBody text03>
+                      Temperature
+                    </Text>
+                    <span
+                      className="text-xs font-semibold tabular-nums px-1.5 py-0.5 rounded-full"
+                      style={{
+                        backgroundColor:
+                          "color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 10%, var(--background-neutral-01) 90%)",
+                        color:
+                          "var(--virtualai-accent, var(--theme-primary-05))",
+                      }}
+                    >
+                      {localTemperature.toFixed(1)}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[localTemperature]}
+                    max={llmManager.maxTemperature}
+                    min={0}
+                    step={0.01}
+                    onValueChange={handleGlobalTemperatureChange}
+                    onValueCommit={handleGlobalTemperatureCommit}
+                    className="w-full virtualai-slider"
+                  />
+                </div>
               </div>
-            </>
-          )}
-        </Section>
-      </Popover.Content>
-    </Popover>
+            )}
+          </Modal.Body>
+        </Modal.Content>
+      </Modal>
+    </>
   );
 }

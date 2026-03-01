@@ -262,6 +262,17 @@ function WorkflowStepRow({
                 <SwitchField name={`steps.${index}.is_terminal`} />
               </div>
             </div>
+            <div className="flex items-end gap-1 pb-0.5">
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center">
+                  <Text mainContentEmphasis text04>Can Request Input</Text>
+                  <InfoTip>
+                    When enabled, this agent can pause the workflow and ask the user for more information. The workflow saves its state and resumes when the user responds. Use this for agents that need to clarify details before proceeding.
+                  </InfoTip>
+                </div>
+                <SwitchField name={`steps.${index}.can_request_input`} />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -384,6 +395,7 @@ export default function WorkflowEditorPage({
       step_description: s.step_description ?? "",
       output_key: s.output_key ?? "output",
       is_terminal: s.is_terminal,
+      can_request_input: s.can_request_input ?? false,
     })) ?? [
       {
         persona_id: 0,
@@ -392,6 +404,7 @@ export default function WorkflowEditorPage({
         step_description: "",
         output_key: "output",
         is_terminal: false,
+        can_request_input: false,
       },
     ],
   };
@@ -414,6 +427,7 @@ export default function WorkflowEditorPage({
             .matches(/^[a-z][a-z0-9_]*$/, "Use lowercase letters, numbers, and underscores only (e.g. research_output)")
             .required("Output key is required"),
           is_terminal: Yup.boolean(),
+          can_request_input: Yup.boolean(),
         })
       )
       .min(1, "Add at least one step"),
@@ -444,6 +458,7 @@ export default function WorkflowEditorPage({
         step_description: s.step_description || null,
         output_key: s.output_key || "output",
         is_terminal: s.is_terminal,
+        can_request_input: s.can_request_input ?? false,
       }));
 
       const payload = {
@@ -686,6 +701,7 @@ export default function WorkflowEditorPage({
                                     step_description: "",
                                     output_key: "output",
                                     is_terminal: false,
+                                    can_request_input: false,
                                   })
                                 }
                               >

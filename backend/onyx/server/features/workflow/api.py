@@ -61,6 +61,7 @@ def _workflow_to_response(workflow) -> WorkflowResponse:
                 output_key=step.output_key,
                 condition=step.condition,
                 is_terminal=step.is_terminal,
+                can_request_input=step.can_request_input,
             )
         )
 
@@ -261,6 +262,7 @@ def run_workflow_endpoint(
                 emitter=emitter,
                 db_session=db_session,
                 user=user,
+                chat_session_id=run_request.chat_session_id,
             ):
                 yield get_json_line(packet.model_dump())
         except Exception as e:

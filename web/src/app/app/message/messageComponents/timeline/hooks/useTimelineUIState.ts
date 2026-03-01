@@ -51,6 +51,8 @@ export interface TimelineUIStateInput {
   isGeneratingImage: boolean;
   /** Whether final answer is coming (MESSAGE_START received) */
   finalAnswerComing: boolean;
+  /** Whether the last step is a workflow pause (HITL) */
+  lastStepIsPause?: boolean;
 }
 
 export interface TimelineUIStateResult {
@@ -109,6 +111,7 @@ export function useTimelineUIState(
       parallelActiveStepHasCollapsedContent,
       isGeneratingImage,
       finalAnswerComing,
+      lastStepIsPause = false,
     } = input;
 
     // Derive the primary UI state
@@ -167,21 +170,24 @@ export function useTimelineUIState(
 
     // Done step: shown when expanded and completed (either normally or with display content)
     // Also shown when finalAnswerComing is true (MESSAGE_START received)
+    // HITL: Don't show "Done" when workflow is paused — it's waiting for input, not done
     const showDoneStep =
       (stopPacketSeen || finalAnswerComing) &&
       isExpanded &&
-      (!userStopped || hasDisplayContent);
+      (!userStopped || hasDisplayContent) &&
+      !lastStepIsPause;
 
     // Stopped step: shown when user stopped without display content
     const showStoppedStep =
       stopPacketSeen && isExpanded && userStopped && !hasDisplayContent;
 
-    // For stepIsLast calculation: done indicator present (excludes research agent)
+    // For stepIsLast calculation: done indicator present (excludes research agent and pause)
     const hasDoneIndicator =
       (stopPacketSeen || finalAnswerComing) &&
       isExpanded &&
       !userStopped &&
-      !lastStepIsResearchAgent;
+      !lastStepIsResearchAgent &&
+      !lastStepIsPause;
 
     // Styling flags
     const showTintedBackground = isActivelyExecuting || isExpanded;

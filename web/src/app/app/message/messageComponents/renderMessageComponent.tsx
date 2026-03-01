@@ -27,6 +27,7 @@ import { WebSearchToolRenderer } from "./timeline/renderers/search/WebSearchTool
 import { InternalSearchToolRenderer } from "./timeline/renderers/search/InternalSearchToolRenderer";
 import { WorkflowStepRenderer } from "./timeline/renderers/workflow/WorkflowStepRenderer";
 import { WorkflowOrchestratorRenderer } from "./timeline/renderers/workflow/WorkflowOrchestratorRenderer";
+import { WorkflowPauseRenderer } from "./timeline/renderers/workflow/WorkflowPauseRenderer";
 import { SearchToolStart } from "../../services/streamingModels";
 
 // Different types of chat packets using discriminated unions
@@ -113,6 +114,10 @@ function isWorkflowOrchestratorPacket(packet: Packet) {
   return packet.obj.type === PacketType.WORKFLOW_ORCHESTRATOR_THINKING;
 }
 
+function isWorkflowPausePacket(packet: Packet) {
+  return packet.obj.type === PacketType.WORKFLOW_PAUSE_FOR_INPUT;
+}
+
 export function findRenderer(
   groupedPackets: GroupedPackets
 ): MessageRenderer<any, any> | null {
@@ -142,6 +147,11 @@ export function findRenderer(
     )
   ) {
     return WorkflowOrchestratorRenderer;
+  }
+  if (
+    groupedPackets.packets.some((packet) => isWorkflowPausePacket(packet))
+  ) {
+    return WorkflowPauseRenderer;
   }
 
   // Standard tool checks

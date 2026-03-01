@@ -157,7 +157,13 @@ export function usePacedTurnGroups(
     setRevealTrigger((t) => t + 1);
   }, []);
 
-  // Process incoming turn groups
+  // Process incoming turn groups.
+  //
+  // Architecture: DISCOVER → FLUSH pipeline.
+  // Step discovery ALWAYS runs first so that steps arriving in the same
+  // render cycle as the STOP packet are properly queued before the flush.
+  // This eliminates a class of race conditions where late-arriving steps
+  // (e.g. WorkflowPauseForInput) were permanently lost.
   useEffect(() => {
     // Skip processing when bypassing pacing
     if (shouldBypassPacing) return;
@@ -171,7 +177,47 @@ export function usePacedTurnGroups(
     }
     prevFinalAnswerComingRef.current = finalAnswerComing;
 
-    // Handle STOP packet - flush everything immediately
+    // ── Phase 1: DISCOVER — collect and queue new steps ─────────────
+    const allSteps: TransformedStep[] = [];
+    for (const turnGroup of toolTurnGroups) {
+      for (const step of turnGroup.steps) {
+        allSteps.push(step);
+      }
+    }
+
+    const pendingKeys = new Set(state.pendingSteps.map((s) => s.key));
+    let hasNewSteps = false;
+
+    for (const step of allSteps) {
+      if (!state.revealedStepKeys.has(step.key) && !pendingKeys.has(step.key)) {
+        const stepType = getStepPacketType(step);
+
+        // First step ever — reveal immediately (no delay)
+        if (
+          state.revealedStepKeys.size === 0 &&
+          state.pendingSteps.length === 0
+        ) {
+          state.revealedStepKeys.add(step.key);
+          state.lastRevealedPacketType = stepType;
+          hasNewSteps = true;
+          continue;
+        }
+
+        // Subsequent steps — queue for paced reveal
+        state.pendingSteps.push(step);
+        hasNewSteps = true;
+
+        // Start timer if not already running
+        if (!state.pacingTimer && state.pendingSteps.length === 1) {
+          state.pacingTimer = setTimeout(
+            revealNextPendingStep,
+            PACING_DELAY_MS
+          );
+        }
+      }
+    }
+
+    // ── Phase 2: FLUSH — handle STOP packet after discovery ─────────
     if (stopPacketSeen && !state.stopPacketSeen) {
       state.stopPacketSeen = true;
 
@@ -192,34 +238,16 @@ export function usePacedTurnGroups(
       return;
     }
 
-    // Collect all steps from turn groups
-    const allSteps: TransformedStep[] = [];
-    for (const turnGroup of toolTurnGroups) {
-      for (const step of turnGroup.steps) {
-        allSteps.push(step);
-      }
-    }
-
-    // Find new steps (not yet revealed or pending)
-    const newSteps: TransformedStep[] = [];
-    const pendingKeys = new Set(state.pendingSteps.map((s) => s.key));
-
-    for (const step of allSteps) {
-      if (!state.revealedStepKeys.has(step.key) && !pendingKeys.has(step.key)) {
-        newSteps.push(step);
-      }
-    }
-
-    if (newSteps.length === 0) {
-      // If there are no tool steps at all, mark pacing complete immediately
-      // This allows tool-less responses to render their displayGroups
+    // ── Phase 3: Completion checks ──────────────────────────────────
+    if (!hasNewSteps) {
+      // No tool steps at all — mark pacing complete for tool-less responses
       if (allSteps.length === 0 && !state.toolPacingComplete) {
         state.toolPacingComplete = true;
         setRevealTrigger((t) => t + 1);
         return;
       }
 
-      // Check if all steps are revealed (no pending, no new)
+      // All steps revealed (no pending, no timer)
       if (
         state.pendingSteps.length === 0 &&
         !state.pacingTimer &&
@@ -236,34 +264,12 @@ export function usePacedTurnGroups(
       return;
     }
 
-    // Process new steps
-    for (const step of newSteps) {
-      const stepType = getStepPacketType(step);
-
-      // First step ever - reveal immediately
-      if (
-        state.revealedStepKeys.size === 0 &&
-        state.pendingSteps.length === 0
-      ) {
-        state.revealedStepKeys.add(step.key);
-        state.lastRevealedPacketType = stepType;
-        setRevealTrigger((t) => t + 1);
-        continue;
-      }
-
-      // All subsequent steps - queue for paced reveal
-      state.pendingSteps.push(step);
-
-      // Start timer if not already running
-      if (!state.pacingTimer && state.pendingSteps.length === 1) {
-        state.pacingTimer = setTimeout(revealNextPendingStep, PACING_DELAY_MS);
-      }
-    }
-
-    // Mark pacing incomplete while we have pending steps or timer
+    // New steps found — mark pacing incomplete
     if (state.pendingSteps.length > 0 || state.pacingTimer) {
       state.toolPacingComplete = false;
     }
+
+    setRevealTrigger((t) => t + 1);
   }, [
     toolTurnGroups,
     stopPacketSeen,

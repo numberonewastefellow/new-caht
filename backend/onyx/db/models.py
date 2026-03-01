@@ -5075,6 +5075,9 @@ class AgentWorkflowStep(Base):
 
     is_terminal: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    # Human-in-the-loop: allow this step's agent to pause and ask for user input
+    can_request_input: Mapped[bool] = mapped_column(Boolean, default=False)
+
     __table_args__ = (
         UniqueConstraint("workflow_id", "step_order", name="uq_workflow_step_order"),
     )
@@ -5110,6 +5113,12 @@ class WorkflowExecution(Base):
     total_tokens: Mapped[int] = mapped_column(Integer, default=0)
     total_duration_ms: Mapped[int] = mapped_column(Integer, default=0)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # Checkpoint state for pause/resume and crash recovery
+    paused_at_step_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent_workflow_step.id", ondelete="SET NULL"), nullable=True
+    )
+    checkpoint_data: Mapped[dict | None] = mapped_column(PGJSONB, nullable=True)
 
     started_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

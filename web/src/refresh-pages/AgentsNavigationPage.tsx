@@ -32,6 +32,7 @@ import {
 } from "@opal/icons";
 import useOnMount from "@/hooks/useOnMount";
 import { getLabelColor } from "@/lib/labelColors";
+import Tabs from "@/refresh-components/Tabs";
 
 const PAGE_SIZE = 24;
 
@@ -74,6 +75,7 @@ function AgentsSection({
 
 export default function AgentsNavigationPage() {
   const { agents } = useAgents();
+  const [viewMode, setViewMode] = useState<"agents" | "workflows">("agents");
   const [creatorFilterOpen, setCreatorFilterOpen] = useState(false);
   const [actionsFilterOpen, setActionsFilterOpen] = useState(false);
   const [labelsFilterOpen, setLabelsFilterOpen] = useState(false);
@@ -174,9 +176,28 @@ export default function AgentsNavigationPage() {
     fetchMCPServers();
   }, [agents]);
 
+  // Agents scoped to current viewMode — used for filter menus
+  const baseAgents = useMemo(
+    () =>
+      agents.filter((a) =>
+        viewMode === "agents" ? a.workflow_id == null : a.workflow_id != null
+      ),
+    [agents, viewMode]
+  );
+
+  // Counts for subtitle
+  const agentOnlyCount = useMemo(
+    () => agents.filter((a) => a.id !== 0 && a.workflow_id == null).length,
+    [agents]
+  );
+  const workflowOnlyCount = useMemo(
+    () => agents.filter((a) => a.workflow_id != null).length,
+    [agents]
+  );
+
   const uniqueCreators = useMemo(() => {
     const creatorsMap = new Map<string, { id: string; email: string }>();
-    agents.forEach((agent) => {
+    baseAgents.forEach((agent) => {
       if (agent.owner) {
         creatorsMap.set(agent.owner.id, agent.owner);
       }
@@ -201,7 +222,7 @@ export default function AgentsNavigationPage() {
     }
 
     return creators;
-  }, [agents, user]);
+  }, [baseAgents, user]);
 
   const filteredCreators = useMemo(() => {
     if (!creatorSearchQuery) return uniqueCreators;
@@ -211,10 +232,10 @@ export default function AgentsNavigationPage() {
     );
   }, [uniqueCreators, creatorSearchQuery]);
 
-  // Extract unique labels from all agents
+  // Extract unique labels from agents in current view
   const uniqueLabels = useMemo(() => {
     const labelsMap = new Map<number, { id: number; name: string }>();
-    agents.forEach((agent) => {
+    baseAgents.forEach((agent) => {
       agent.labels?.forEach((label) => {
         labelsMap.set(label.id, { id: label.id, name: label.name });
       });
@@ -222,18 +243,18 @@ export default function AgentsNavigationPage() {
     return Array.from(labelsMap.values()).sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-  }, [agents]);
+  }, [baseAgents]);
 
   // Count agents per label
   const labelCounts = useMemo(() => {
     const counts = new Map<number, number>();
-    agents.forEach((agent) => {
+    baseAgents.forEach((agent) => {
       agent.labels?.forEach((label) => {
         counts.set(label.id, (counts.get(label.id) ?? 0) + 1);
       });
     });
     return counts;
-  }, [agents]);
+  }, [baseAgents]);
 
   const filteredLabels = useMemo(() => {
     if (!labelsSearchQuery) return uniqueLabels;
@@ -252,7 +273,7 @@ export default function AgentsNavigationPage() {
         mcp_server_id?: number | null;
       }
     >();
-    agents.forEach((agent) => {
+    baseAgents.forEach((agent) => {
       agent.tools.forEach((tool) => {
         if (
           tool.in_code_tool_id === OPEN_URL_TOOL_ID ||
@@ -357,7 +378,7 @@ export default function AgentsNavigationPage() {
       ...mcpGroupItems,
       ...nonMcpOtherToolItems,
     ];
-  }, [agents, mcpServersMap]);
+  }, [baseAgents, mcpServersMap]);
 
   const filteredActions = useMemo(() => {
     if (!actionsSearchQuery) return uniqueActions;
@@ -376,6 +397,10 @@ export default function AgentsNavigationPage() {
 
   const memoizedCurrentlyVisibleAgents = useMemo(() => {
     return agents.filter((agent) => {
+      // View mode pre-filter
+      const isWorkflow = agent.workflow_id != null;
+      if (viewMode === "agents" ? isWorkflow : !isWorkflow) return false;
+
       const nameMatches = agent.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
@@ -418,6 +443,7 @@ export default function AgentsNavigationPage() {
     agents,
     searchQuery,
     activeTab,
+    viewMode,
     user,
     selectedCreatorIds,
     selectedActionIds,
@@ -436,6 +462,17 @@ export default function AgentsNavigationPage() {
     selectedMcpServerIds,
     selectedLabelIds,
   ]);
+
+  // Reset all filters when switching between Agents / Workflows tabs
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+    setSearchQuery("");
+    setSelectedLabelIds(new Set());
+    setSelectedCreatorIds(new Set());
+    setSelectedActionIds(new Set());
+    setSelectedMcpServerIds(new Set());
+    setActiveTab("all");
+  }, [viewMode]);
 
   const featuredAgents = useMemo(
     () =>
@@ -517,7 +554,8 @@ export default function AgentsNavigationPage() {
     }
   }, [selectedLabelIds, uniqueLabels]);
 
-  const ownerFilterButtonText = activeTab === "your" ? "Your Agents" : "All Agents";
+  const typeLabel = viewMode === "workflows" ? "Workflows" : "Agents";
+  const ownerFilterButtonText = activeTab === "your" ? `Your ${typeLabel}` : `All ${typeLabel}`;
 
   // Check if any filters are active (for showing the active filters chip row)
   const hasActiveFilters =
@@ -540,30 +578,46 @@ export default function AgentsNavigationPage() {
       {/* Custom compact header — ChatGPT apps style */}
       <div className="w-full bg-background-tint-01 sticky top-0 z-settings-header">
         <div className="flex flex-col gap-3 px-4 md:pt-5 pt-3">
-          {/* Row 1: Title + Search + New Agent */}
+          {/* Row 0: Agents / Workflows toggle */}
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "agents" | "workflows")}>
+            <Tabs.List variant="contained" className="w-fit">
+              <Tabs.Trigger value="agents">Agents</Tabs.Trigger>
+              <Tabs.Trigger value="workflows">Workflows</Tabs.Trigger>
+            </Tabs.List>
+          </Tabs>
+
+          {/* Row 1: Title + Search + New Agent/Workflow */}
           <div className="flex flex-row items-center justify-between gap-4">
             <div className="flex flex-col flex-1 min-w-0">
               <Text as="p" headingH2>
                 {user ? `Hi ${user.email.split("@")[0]}` : "Agents & Assistants"}
               </Text>
               <Text as="p" secondaryBody text03>
-                {agents.length} agents across {uniqueLabels.length} categories, ready to help you and your team be more productive.
+                {viewMode === "agents"
+                  ? `${agentOnlyCount} agents across ${uniqueLabels.length} categories, ready to help you and your team be more productive.`
+                  : `${workflowOnlyCount} multi-agent workflows that coordinate multiple agents working together.`}
               </Text>
             </div>
             <div className="flex flex-row items-center gap-2 flex-shrink-0">
               <div className="w-[14rem]">
                 <InputTypeIn
                   ref={searchInputRef}
-                  placeholder="Search agents..."
+                  placeholder={viewMode === "agents" ? "Search agents..." : "Search workflows..."}
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
                   leftSearchIcon
                 />
               </div>
               <div data-testid="AgentsPage/new-agent-button">
-                <Button href="/app/agents/create" leftIcon={SvgPlus}>
-                  New Agent
-                </Button>
+                {viewMode === "workflows" ? (
+                  <Button href="/admin/workflows/create" leftIcon={SvgPlus}>
+                    New Workflow
+                  </Button>
+                ) : (
+                  <Button href="/app/agents/create" leftIcon={SvgPlus}>
+                    New Agent
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -595,7 +649,7 @@ export default function AgentsNavigationPage() {
                       emphasized
                       onClick={() => { setActiveTab("all"); setOwnerFilterOpen(false); }}
                     >
-                      All Agents
+                      All {typeLabel}
                     </LineItem>,
                     <LineItem
                       key="your"
@@ -604,7 +658,7 @@ export default function AgentsNavigationPage() {
                       emphasized
                       onClick={() => { setActiveTab("your"); setOwnerFilterOpen(false); }}
                     >
-                      Your Agents
+                      Your {typeLabel}
                     </LineItem>,
                   ]}
                 </PopoverMenu>
@@ -872,7 +926,7 @@ export default function AgentsNavigationPage() {
                   onClick={() => setActiveTab("all")}
                   className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-text-05 text-background-tint-01 cursor-pointer transition-opacity hover:opacity-80"
                 >
-                  Your Agents
+                  Your {typeLabel}
                   <SvgX className="w-3 h-3" />
                 </button>
               )}
@@ -949,27 +1003,41 @@ export default function AgentsNavigationPage() {
         </div>
       </div>
 
-      {/* Agents List */}
+      {/* Agents / Workflows List */}
       <SettingsLayouts.Body>
         {agentCount === 0 ? (
-          <Text
-            as="p"
-            className="w-full h-full flex flex-col items-center justify-center py-12"
-            text03
-          >
-            No Agents found
-          </Text>
+          viewMode === "workflows" ? (
+            <div className="w-full flex flex-col items-center justify-center gap-3 py-12">
+              <Text as="p" mainContentEmphasis>
+                No workflows yet
+              </Text>
+              <Text as="p" secondaryBody text03 className="text-center max-w-sm">
+                Create a workflow to coordinate multiple agents working together.
+              </Text>
+              <Button href="/admin/workflows/create" leftIcon={SvgPlus}>
+                Create Your First Workflow
+              </Button>
+            </div>
+          ) : (
+            <Text
+              as="p"
+              className="w-full h-full flex flex-col items-center justify-center py-12"
+              text03
+            >
+              No Agents found
+            </Text>
+          )
         ) : (
           <div className="flex flex-col gap-8">
             <AgentsSection
-              title="Featured Agents"
+              title={viewMode === "workflows" ? "Featured Workflows" : "Featured Agents"}
               description="Curated by your team"
               agents={featuredAgents}
               visibleCount={featuredVisible}
               onLabelClick={handleLabelClick}
             />
             <AgentsSection
-              title="All Agents"
+              title={viewMode === "workflows" ? "All Workflows" : "All Agents"}
               agents={allAgents}
               visibleCount={allVisible}
               onLabelClick={handleLabelClick}
@@ -979,13 +1047,15 @@ export default function AgentsNavigationPage() {
             <div className="flex flex-col items-center gap-3 py-2">
               {hasMore && (
                 <Button tertiary onClick={handleShowMore}>
-                  Show more agents
+                  {viewMode === "workflows" ? "Show more workflows" : "Show more agents"}
                 </Button>
               )}
               <Text as="p" secondaryBody text02>
                 Showing{" "}
                 {Math.min(visibleCount, agentCount)} of {agentCount}{" "}
-                {agentCount === 1 ? "agent" : "agents"}
+                {viewMode === "workflows"
+                  ? (agentCount === 1 ? "workflow" : "workflows")
+                  : (agentCount === 1 ? "agent" : "agents")}
               </Text>
             </div>
           </div>

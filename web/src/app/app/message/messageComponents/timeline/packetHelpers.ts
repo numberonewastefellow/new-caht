@@ -11,6 +11,7 @@ export const COLLAPSED_STREAMING_PACKET_TYPES = new Set<PacketType>([
   PacketType.DEEP_RESEARCH_PLAN_START,
   PacketType.WORKFLOW_STEP_START,
   PacketType.WORKFLOW_ORCHESTRATOR_THINKING,
+  PacketType.WORKFLOW_PAUSE_FOR_INPUT,
 ]);
 
 // Check if packets belong to a research agent (handles its own Done indicator)
@@ -112,6 +113,11 @@ export const stepHasCollapsedStreamingContent = (
     return true;
   }
 
+  // Workflow pause for input has content from the start
+  if (packetTypes.has(PacketType.WORKFLOW_PAUSE_FOR_INPUT)) {
+    return true;
+  }
+
   return false;
 };
 
@@ -136,3 +142,7 @@ export const isWorkflowOrchestratorPackets = (packets: Packet[]): boolean =>
   packets.some(
     (p) => p.obj.type === PacketType.WORKFLOW_ORCHESTRATOR_THINKING
   );
+
+// Check if packets belong to a workflow pause for input
+export const isWorkflowPausePackets = (packets: Packet[]): boolean =>
+  packets.some((p) => p.obj.type === PacketType.WORKFLOW_PAUSE_FOR_INPUT);

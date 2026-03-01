@@ -121,6 +121,7 @@ def _resolve_steps(raw_steps: list[dict]) -> list[dict]:
             "output_key": step.get("output_key", "output"),
             "condition": step.get("condition"),
             "is_terminal": step.get("is_terminal", False),
+            "can_request_input": step.get("can_request_input", False),
         })
     return resolved
 
@@ -283,6 +284,7 @@ def export_workflows(output_file: str):
                     "output_key": s.get("output_key", "output"),
                     "condition": s.get("condition"),
                     "is_terminal": s.get("is_terminal", False),
+                    "can_request_input": s.get("can_request_input", False),
                 }
                 for s in w.get("steps", [])
             ],
@@ -350,6 +352,18 @@ def run_workflow_cli(workflow_id: int, message: str):
             elif ptype == "workflow_orchestrator_thinking":
                 content = obj.get("content", "")
                 _safe_print(f"\n[Orchestrator] {content}")
+
+            elif ptype == "workflow_pause_for_input":
+                step_name = obj.get("step_name", "?")
+                persona = obj.get("persona_name", "?")
+                questions = obj.get("questions", "")
+                _safe_print(f"\n{'='*60}")
+                _safe_print(f"[PAUSED] {persona} ({step_name}) needs more information:")
+                _safe_print(f"{'='*60}")
+                _safe_print(questions)
+                _safe_print(f"{'='*60}")
+                _safe_print("(Reply in the chat to continue the workflow)")
+                _safe_print(f"{'='*60}")
 
             # AgentResponseStart serializes as "message_start"
             elif ptype == "message_start":
