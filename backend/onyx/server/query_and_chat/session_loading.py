@@ -13,6 +13,7 @@ from onyx.context.search.models import SearchDoc
 from onyx.db.chat import get_db_search_doc_by_id
 from onyx.db.chat import translate_db_search_doc_to_saved_search_doc
 from onyx.db.models import ChatMessage
+from onyx.db.models import ToolCall
 from onyx.db.tools import get_tool_by_id
 from onyx.deep_research.dr_mock_tools import RESEARCH_AGENT_IN_CODE_ID
 from onyx.deep_research.dr_mock_tools import RESEARCH_AGENT_TASK_KEY
@@ -55,6 +56,87 @@ from onyx.tools.tool_implementations.web_search.web_search_tool import WebSearch
 from onyx.utils.logger import setup_logger
 
 logger = setup_logger()
+
+# Must match WORKFLOW_STEP_TOOL_ID in process_message.py
+_WORKFLOW_STEP_TOOL_ID = 0
+
+
+def _create_workflow_step_packets(tool_call: ToolCall) -> list[Packet]:
+    """Reconstruct workflow step packets from a saved ToolCall.
+
+    Workflow steps are stored with tool_id=0 and a ``_workflow_step`` marker
+    in ``tool_call_arguments``.  This recreates the ``WorkflowStepStart``,
+    ``WorkflowStepDelta``, ``WorkflowStepEnd`` (and optionally
+    ``WorkflowPauseForInput``) packets so the timeline displays correctly
+    on session reload.
+    """
+    from onyx.server.query_and_chat.streaming_models import (
+        WorkflowPauseForInput,
+        WorkflowStepDelta,
+        WorkflowStepEnd,
+        WorkflowStepStart,
+    )
+
+    args = tool_call.tool_call_arguments or {}
+    turn_idx = tool_call.turn_number
+    tab_idx = tool_call.tab_index
+    step_name = args.get("step_name", tool_call.tool_call_id or "step")
+    persona_name = args.get("persona_name", "Agent")
+    step_order = args.get("step_order", 0)
+    is_pause = args.get("_workflow_pause", False)
+
+    placement = Placement(turn_index=turn_idx, tab_index=tab_idx)
+    packets: list[Packet] = []
+
+    # WorkflowStepStart
+    packets.append(
+        Packet(
+            placement=placement,
+            obj=WorkflowStepStart(
+                step_name=step_name,
+                persona_name=persona_name,
+                step_order=step_order,
+            ),
+        )
+    )
+
+    output = tool_call.tool_call_response or ""
+
+    if is_pause:
+        # For paused steps, emit WorkflowPauseForInput
+        packets.append(
+            Packet(
+                placement=placement,
+                obj=WorkflowPauseForInput(
+                    step_name=step_name,
+                    persona_name=persona_name,
+                    questions=output,
+                ),
+            )
+        )
+    else:
+        # Normal step — emit delta + end
+        if output:
+            packets.append(
+                Packet(
+                    placement=placement,
+                    obj=WorkflowStepDelta(content=output),
+                )
+            )
+        packets.append(
+            Packet(
+                placement=placement,
+                obj=WorkflowStepEnd(
+                    step_name=step_name,
+                    output_key=args.get("output_key", step_name),
+                ),
+            )
+        )
+
+    # Close the section
+    packets.append(Packet(placement=placement, obj=SectionEnd()))
+
+    return packets
 
 
 def create_message_packets(
@@ -485,6 +567,13 @@ def translate_assistant_message_to_packets(
             research_agent_count = 0
             turn_tool_packets: list[Packet] = []
             for tool_call in tool_calls_in_turn:
+                # Workflow step tool calls use sentinel tool_id=0
+                if tool_call.tool_id == _WORKFLOW_STEP_TOOL_ID:
+                    turn_tool_packets.extend(
+                        _create_workflow_step_packets(tool_call)
+                    )
+                    continue
+
                 # Here we do a try because some tools may get deleted before the session is reloaded.
                 try:
                     tool = get_tool_by_id(tool_call.tool_id, db_session)

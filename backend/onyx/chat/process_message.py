@@ -85,6 +85,7 @@ from onyx.server.query_and_chat.streaming_models import AgentResponseDelta
 from onyx.server.query_and_chat.streaming_models import AgentResponseStart
 from onyx.server.query_and_chat.streaming_models import CitationInfo
 from onyx.server.query_and_chat.streaming_models import Packet
+from onyx.server.query_and_chat.streaming_models import StreamingType
 from onyx.server.usage_limits import check_llm_cost_limit_for_provider
 from onyx.tools.constants import SEARCH_TOOL_ID
 from onyx.tools.interface import Tool
@@ -430,6 +431,161 @@ def _get_project_search_availability(
     # Default persona in a project with files, but also the files have not been loaded into the context already.
     return ProjectSearchConfig(
         search_usage=SearchToolUsage.ENABLED, disable_forced_tool=False
+    )
+
+
+# Sentinel tool_id for workflow step ToolCall entries.
+# ToolCall.tool_id is NOT a foreign key, so any integer works.
+# session_loading.py checks for this value to reconstruct workflow packets.
+WORKFLOW_STEP_TOOL_ID = 0
+
+
+def _run_workflow_and_save(
+    workflow: "AgentWorkflow",  # noqa: F821
+    user_message: str,
+    emitter: "Emitter",  # noqa: F821
+    db_session: Session,
+    user: User,
+    is_connected: Callable[[], bool] | None,
+    chat_session_id: UUID | None,
+    assistant_message: ChatMessage,
+) -> AnswerStream:
+    """Run a workflow and persist the assistant message + tool calls to DB.
+
+    Wraps ``run_workflow()`` to intercept yielded packets, accumulate state
+    (answer text, step outputs, orchestrator thinking), then call
+    ``save_chat_turn()`` so the conversation survives page reloads.
+    """
+    from onyx.workflows.workflow_engine import run_workflow
+
+    # Accumulators
+    answer_parts: list[str] = []
+    thinking_parts: list[str] = []
+
+    # Per-step accumulators: list of dicts with step metadata + output
+    step_records: list[dict] = []
+    _cur_step: dict | None = None
+
+    # Pause tracking
+    pause_data: dict | None = None
+
+    for packet in run_workflow(
+        workflow=workflow,
+        user_message=user_message,
+        emitter=emitter,
+        db_session=db_session,
+        user=user,
+        is_connected=is_connected,
+        chat_session_id=chat_session_id,
+    ):
+        yield packet
+
+        ptype = getattr(packet.obj, "type", None)
+
+        # --- Main answer text (promoted output / pause questions) ---
+        if ptype == StreamingType.MESSAGE_DELTA.value:
+            answer_parts.append(getattr(packet.obj, "content", "") or "")
+
+        # --- Orchestrator thinking ---
+        elif ptype == StreamingType.WORKFLOW_ORCHESTRATOR_THINKING.value:
+            thinking_parts.append(getattr(packet.obj, "content", "") or "")
+
+        # --- Workflow step tracking ---
+        elif ptype == StreamingType.WORKFLOW_STEP_START.value:
+            _cur_step = {
+                "step_name": getattr(packet.obj, "step_name", ""),
+                "persona_name": getattr(packet.obj, "persona_name", ""),
+                "step_order": getattr(packet.obj, "step_order", 0),
+                "turn_index": packet.placement.turn_index,
+                "content_parts": [],
+            }
+        elif ptype == StreamingType.WORKFLOW_STEP_DELTA.value:
+            if _cur_step is not None:
+                _cur_step["content_parts"].append(
+                    getattr(packet.obj, "content", "") or ""
+                )
+        elif ptype == StreamingType.WORKFLOW_STEP_END.value:
+            if _cur_step is not None:
+                _cur_step["output"] = "".join(_cur_step.pop("content_parts", []))
+                _cur_step["output_key"] = getattr(packet.obj, "output_key", "")
+                step_records.append(_cur_step)
+                _cur_step = None
+
+        # --- Pause tracking ---
+        elif ptype == StreamingType.WORKFLOW_PAUSE_FOR_INPUT.value:
+            pause_data = {
+                "step_name": getattr(packet.obj, "step_name", ""),
+                "persona_name": getattr(packet.obj, "persona_name", ""),
+                "questions": getattr(packet.obj, "questions", ""),
+            }
+
+    # Flush any unfinished step (e.g., step started but workflow paused before end)
+    if _cur_step is not None:
+        _cur_step["output"] = "".join(_cur_step.pop("content_parts", []))
+        _cur_step["output_key"] = ""
+        step_records.append(_cur_step)
+        _cur_step = None
+
+    # === Persist to DB ===
+    from onyx.tools.models import ToolCallInfo
+
+    final_answer = "".join(answer_parts)
+    reasoning = "".join(thinking_parts) if thinking_parts else None
+
+    # Build ToolCallInfo entries for each completed workflow step
+    tool_calls: list[ToolCallInfo] = []
+    for idx, rec in enumerate(step_records):
+        tool_calls.append(
+            ToolCallInfo(
+                parent_tool_call_id=None,
+                turn_index=rec["turn_index"],
+                tab_index=0,
+                tool_name=rec["step_name"],
+                tool_call_id=f"wf_step_{idx}_{rec['step_name']}",
+                tool_id=WORKFLOW_STEP_TOOL_ID,
+                reasoning_tokens=None,
+                tool_call_arguments={
+                    "_workflow_step": True,
+                    "step_name": rec["step_name"],
+                    "persona_name": rec["persona_name"],
+                    "step_order": rec["step_order"],
+                },
+                tool_call_response=rec.get("output", ""),
+            )
+        )
+
+    # If paused and no step records captured the pause (agent asked within its
+    # first turn), record the pause as a step tool call so the timeline shows it
+    if pause_data and not any(
+        r["step_name"] == pause_data["step_name"] for r in step_records
+    ):
+        tool_calls.append(
+            ToolCallInfo(
+                parent_tool_call_id=None,
+                turn_index=0,
+                tab_index=0,
+                tool_name=pause_data["step_name"],
+                tool_call_id=f"wf_pause_{pause_data['step_name']}",
+                tool_id=WORKFLOW_STEP_TOOL_ID,
+                reasoning_tokens=None,
+                tool_call_arguments={
+                    "_workflow_step": True,
+                    "_workflow_pause": True,
+                    "step_name": pause_data["step_name"],
+                    "persona_name": pause_data["persona_name"],
+                },
+                tool_call_response=pause_data["questions"],
+            )
+        )
+
+    save_chat_turn(
+        message_text=final_answer,
+        reasoning_tokens=reasoning,
+        tool_calls=tool_calls,
+        citation_to_doc={},
+        all_search_docs={},
+        db_session=db_session,
+        assistant_message=assistant_message,
     )
 
 
@@ -881,7 +1037,7 @@ def handle_stream_message_objects(
                     f"Workflow {persona.workflow_id} not found or has no steps"
                 )
 
-            yield from run_workflow(
+            yield from _run_workflow_and_save(
                 workflow=workflow,
                 user_message=message_text,
                 emitter=emitter,
@@ -889,6 +1045,7 @@ def handle_stream_message_objects(
                 user=user,
                 is_connected=check_is_connected,
                 chat_session_id=chat_session.id,
+                assistant_message=assistant_response,
             )
 
         elif new_msg_req.deep_research:
