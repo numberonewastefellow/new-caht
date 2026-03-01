@@ -5078,6 +5078,11 @@ class AgentWorkflowStep(Base):
     # Human-in-the-loop: allow this step's agent to pause and ask for user input
     can_request_input: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    # Output promotion: when True, this step's output is emitted as main
+    # message content (MESSAGE_START/DELTA) instead of staying inside the
+    # collapsible timeline panel (WORKFLOW_STEP_DELTA).
+    promote_output: Mapped[bool] = mapped_column(Boolean, default=False)
+
     __table_args__ = (
         UniqueConstraint("workflow_id", "step_order", name="uq_workflow_step_order"),
     )

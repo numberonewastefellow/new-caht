@@ -16,6 +16,7 @@ export interface WorkflowStepSnapshot {
   condition: Record<string, any> | null;
   is_terminal: boolean;
   can_request_input: boolean;
+  promote_output: boolean;
 }
 
 export interface WorkflowSnapshot {
@@ -49,6 +50,7 @@ export interface WorkflowStepCreate {
   condition?: Record<string, any> | null;
   is_terminal?: boolean;
   can_request_input?: boolean;
+  promote_output?: boolean;
 }
 
 export interface WorkflowCreate {

@@ -306,6 +306,7 @@ def _add_step(
         condition=step_create.condition,
         is_terminal=step_create.is_terminal,
         can_request_input=step_create.can_request_input,
+        promote_output=step_create.promote_output,
     )
     db_session.add(step)
     db_session.flush()

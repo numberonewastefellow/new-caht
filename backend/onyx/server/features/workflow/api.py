@@ -62,6 +62,7 @@ def _workflow_to_response(workflow) -> WorkflowResponse:
                 condition=step.condition,
                 is_terminal=step.is_terminal,
                 can_request_input=step.can_request_input,
+                promote_output=step.promote_output,
             )
         )
 

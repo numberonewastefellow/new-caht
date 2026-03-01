@@ -163,67 +163,66 @@ function WorkflowStepRow({
           </Text>
         </div>
 
-        <div className="flex-1 space-y-3">
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <InputLayouts.Vertical
+        <div className="flex-1 space-y-4">
+          {/* Row 1: Step Name + Agent — side by side */}
+          <div className="grid grid-cols-2 gap-4">
+            <InputLayouts.Vertical
+              name={`steps.${index}.step_name`}
+              title="Step Name"
+              description="A short label for this step shown during execution."
+            >
+              <InputTypeInField
                 name={`steps.${index}.step_name`}
-                title="Step Name"
-                description="A short label for this step shown during execution."
-              >
-                <InputTypeInField
-                  name={`steps.${index}.step_name`}
-                  placeholder="e.g. Research, Summarize, Find Flights..."
-                />
-              </InputLayouts.Vertical>
-            </div>
-            <div className="flex-1">
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center gap-1">
-                  <Text mainContentEmphasis text04>Agent</Text>
-                  <Text text03 mainContentMuted className="text-status-error-05">*</Text>
-                  <InfoTip>
-                    Select which agent (persona) handles this step. The agent&apos;s own LLM, tools, and system prompt will be used. Create agents first in the Agents page.
-                  </InfoTip>
-                </div>
-                <select
-                  name={`steps.${index}.persona_id`}
-                  value={currentPersonaId}
-                  className={cn(
-                    "w-full h-10 px-3 rounded-8 border bg-background-tint-00 text-text-05 text-sm",
-                    stepTouched?.persona_id && stepErrors?.persona_id
-                      ? "border-status-error-05"
-                      : "border-border"
-                  )}
-                  onChange={(e) => {
-                    setFieldValue(
-                      `steps.${index}.persona_id`,
-                      parseInt(e.target.value) || 0
-                    );
-                  }}
-                  onBlur={() => {
-                    // Trigger touched state for validation display
-                    const touchedArr = Array.isArray(touched.steps) ? touched.steps : [];
-                    const touchedSteps = [...touchedArr];
-                    touchedSteps[index] = { ...touchedSteps[index], persona_id: true };
-                  }}
-                >
-                  <option value={0}>-- Select Agent --</option>
-                  {agents.map((agent) => (
-                    <option key={agent.id} value={agent.id}>
-                      {agent.name}
-                    </option>
-                  ))}
-                </select>
-                {stepTouched?.persona_id && stepErrors?.persona_id && (
-                  <Text secondaryBody className="text-status-error-05 text-xs mt-0.5">
-                    {stepErrors.persona_id}
-                  </Text>
-                )}
+                placeholder="e.g. Research, Summarize, Find Flights..."
+              />
+            </InputLayouts.Vertical>
+
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-1">
+                <Text mainContentEmphasis text04>Agent</Text>
+                <Text text03 mainContentMuted className="text-status-error-05">*</Text>
+                <InfoTip>
+                  Select which agent (persona) handles this step. The agent&apos;s own LLM, tools, and system prompt will be used. Create agents first in the Agents page.
+                </InfoTip>
               </div>
+              <select
+                name={`steps.${index}.persona_id`}
+                value={currentPersonaId}
+                className={cn(
+                  "w-full h-10 px-3 rounded-8 border bg-background-tint-00 text-text-05 text-sm",
+                  stepTouched?.persona_id && stepErrors?.persona_id
+                    ? "border-status-error-05"
+                    : "border-border"
+                )}
+                onChange={(e) => {
+                  setFieldValue(
+                    `steps.${index}.persona_id`,
+                    parseInt(e.target.value) || 0
+                  );
+                }}
+                onBlur={() => {
+                  // Trigger touched state for validation display
+                  const touchedArr = Array.isArray(touched.steps) ? touched.steps : [];
+                  const touchedSteps = [...touchedArr];
+                  touchedSteps[index] = { ...touchedSteps[index], persona_id: true };
+                }}
+              >
+                <option value={0}>-- Select Agent --</option>
+                {agents.map((agent) => (
+                  <option key={agent.id} value={agent.id}>
+                    {agent.name}
+                  </option>
+                ))}
+              </select>
+              {stepTouched?.persona_id && stepErrors?.persona_id && (
+                <Text secondaryBody className="text-status-error-05 text-xs mt-0.5">
+                  {stepErrors.persona_id}
+                </Text>
+              )}
             </div>
           </div>
 
+          {/* Row 2: Step Description — full width */}
           <InputLayouts.Vertical
             name={`steps.${index}.step_description`}
             title="Step Description"
@@ -236,41 +235,49 @@ function WorkflowStepRow({
             />
           </InputLayouts.Vertical>
 
-          <div className="flex gap-3 items-start">
-            <div className="flex-1">
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center">
-                  <Text mainContentEmphasis text04>Output Key</Text>
-                  <InfoTip>
-                    A unique variable name to store this step&apos;s output (e.g. &quot;travel_details&quot;, &quot;flights&quot;, &quot;summary&quot;). Other steps can reference this output. Use lowercase with underscores, no spaces.
-                  </InfoTip>
-                </div>
-                <InputTypeInField
-                  name={`steps.${index}.output_key`}
-                  placeholder="e.g. research_results"
-                />
+          {/* Row 3: Output Key — own row */}
+          <div className="max-w-xs">
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center">
+                <Text mainContentEmphasis text04>Output Key</Text>
+                <InfoTip>
+                  A unique variable name to store this step&apos;s output (e.g. &quot;travel_details&quot;, &quot;flights&quot;, &quot;summary&quot;). Other steps can reference this output. Use lowercase with underscores, no spaces.
+                </InfoTip>
+              </div>
+              <InputTypeInField
+                name={`steps.${index}.output_key`}
+                placeholder="e.g. research_results"
+              />
+            </div>
+          </div>
+
+          {/* Row 4: Toggle switches — horizontal with comfortable spacing */}
+          <div className="flex items-center gap-6 pt-1 border-t border-border-01">
+            <div className="flex items-center gap-2">
+              <SwitchField name={`steps.${index}.is_terminal`} />
+              <div className="flex items-center">
+                <Text secondaryBody text04>Terminal Step</Text>
+                <InfoTip>
+                  When enabled, the workflow stops after this step completes and returns its output as the final answer.
+                </InfoTip>
               </div>
             </div>
-            <div className="flex items-end gap-1 pb-0.5">
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center">
-                  <Text mainContentEmphasis text04>Terminal Step</Text>
-                  <InfoTip>
-                    When enabled, the workflow stops after this step completes and returns its output as the final answer. When disabled (default), the workflow continues to the next step. Use this for the last step in a sequence, or for early-exit conditions.
-                  </InfoTip>
-                </div>
-                <SwitchField name={`steps.${index}.is_terminal`} />
+            <div className="flex items-center gap-2">
+              <SwitchField name={`steps.${index}.can_request_input`} />
+              <div className="flex items-center">
+                <Text secondaryBody text04>Can Request Input</Text>
+                <InfoTip>
+                  When enabled, this agent can pause the workflow and ask the user for more information.
+                </InfoTip>
               </div>
             </div>
-            <div className="flex items-end gap-1 pb-0.5">
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center">
-                  <Text mainContentEmphasis text04>Can Request Input</Text>
-                  <InfoTip>
-                    When enabled, this agent can pause the workflow and ask the user for more information. The workflow saves its state and resumes when the user responds. Use this for agents that need to clarify details before proceeding.
-                  </InfoTip>
-                </div>
-                <SwitchField name={`steps.${index}.can_request_input`} />
+            <div className="flex items-center gap-2">
+              <SwitchField name={`steps.${index}.promote_output`} />
+              <div className="flex items-center">
+                <Text secondaryBody text04>Show as Message</Text>
+                <InfoTip>
+                  When enabled, this step&apos;s output is displayed as main message content (outside the thinking panel).
+                </InfoTip>
               </div>
             </div>
           </div>
@@ -396,6 +403,7 @@ export default function WorkflowEditorPage({
       output_key: s.output_key ?? "output",
       is_terminal: s.is_terminal,
       can_request_input: s.can_request_input ?? false,
+      promote_output: s.promote_output ?? false,
     })) ?? [
       {
         persona_id: 0,
@@ -405,6 +413,7 @@ export default function WorkflowEditorPage({
         output_key: "output",
         is_terminal: false,
         can_request_input: false,
+        promote_output: false,
       },
     ],
   };
@@ -428,6 +437,7 @@ export default function WorkflowEditorPage({
             .required("Output key is required"),
           is_terminal: Yup.boolean(),
           can_request_input: Yup.boolean(),
+          promote_output: Yup.boolean(),
         })
       )
       .min(1, "Add at least one step"),
@@ -459,6 +469,7 @@ export default function WorkflowEditorPage({
         output_key: s.output_key || "output",
         is_terminal: s.is_terminal,
         can_request_input: s.can_request_input ?? false,
+        promote_output: s.promote_output ?? false,
       }));
 
       const payload = {
@@ -702,6 +713,7 @@ export default function WorkflowEditorPage({
                                     output_key: "output",
                                     is_terminal: false,
                                     can_request_input: false,
+                                    promote_output: false,
                                   })
                                 }
                               >

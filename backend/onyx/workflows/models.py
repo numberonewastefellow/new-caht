@@ -26,6 +26,7 @@ class WorkflowStepCreate(BaseModel):
     condition: dict[str, Any] | None = None
     is_terminal: bool = False
     can_request_input: bool = False
+    promote_output: bool = False
 
 
 class WorkflowCreate(BaseModel):
@@ -76,6 +77,7 @@ class WorkflowStepResponse(BaseModel):
     condition: dict[str, Any] | None = None
     is_terminal: bool
     can_request_input: bool
+    promote_output: bool
 
 
 class WorkflowResponse(BaseModel):

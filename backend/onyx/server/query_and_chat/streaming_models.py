@@ -355,6 +355,7 @@ class WorkflowStepStart(BaseObj):
     step_name: str
     persona_name: str
     step_order: int
+    promote_output: bool = False
 
 
 class WorkflowStepDelta(BaseObj):

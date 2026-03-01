@@ -412,6 +412,7 @@ def _build_agent_tools(
                 user=user,
                 llm=llm_cache[persona.id],
                 has_tools=has_tools,
+                promote_output=step.promote_output,
             )
         )
     return agent_tools
@@ -634,6 +635,7 @@ def run_workflow_sequential(
             user=user,
             llm=llm_cache[persona.id],
             has_tools=has_tools,
+            promote_output=step.promote_output,
         )
 
     try:
@@ -678,6 +680,7 @@ def run_workflow_sequential(
                     step_name=step.step_name,
                     persona_name=persona.name,
                     step_order=step.step_order,
+                    promote_output=step.promote_output,
                 ),
             )
 
@@ -801,19 +804,34 @@ def run_workflow_sequential(
                     ),
                 )
                 yield Packet(placement=placement, obj=SectionEnd())
-                # Emit pause packet with questions
+                # Emit pause packet with questions (inside timeline)
                 pause_placement = Placement(turn_index=turn_index + 1)
+                pause_questions = _strip_needs_input_prefix(agent_output)
                 yield Packet(
                     placement=pause_placement,
                     obj=WorkflowPauseForInput(
                         step_name=step.step_name,
                         persona_name=persona.name,
-                        questions=_strip_needs_input_prefix(agent_output),
+                        questions=pause_questions,
                     ),
                 )
                 yield Packet(placement=pause_placement, obj=SectionEnd())
+                # Also emit as main message content so the user sees
+                # the questions prominently outside the timeline panel.
+                msg_placement = Placement(turn_index=turn_index + 2)
                 yield Packet(
-                    placement=Placement(turn_index=turn_index + 2),
+                    placement=msg_placement,
+                    obj=AgentResponseStart(),
+                )
+                yield Packet(
+                    placement=msg_placement,
+                    obj=AgentResponseDelta(content=pause_questions),
+                )
+                yield Packet(
+                    placement=msg_placement, obj=SectionEnd(),
+                )
+                yield Packet(
+                    placement=Placement(turn_index=turn_index + 3),
                     obj=OverallStop(type="stop"),
                 )
                 return  # Stop execution, free thread
@@ -823,6 +841,24 @@ def run_workflow_sequential(
                 placement=placement,
                 obj=WorkflowStepDelta(content=agent_output),
             )
+
+            # Output promotion: also emit as MESSAGE packets so the
+            # frontend renders it as main content outside the timeline.
+            if step.promote_output and agent_output:
+                promoted_placement = Placement(turn_index=turn_index + 1)
+                yield Packet(
+                    placement=promoted_placement,
+                    obj=AgentResponseStart(),
+                )
+                yield Packet(
+                    placement=promoted_placement,
+                    obj=AgentResponseDelta(content=agent_output),
+                )
+                yield Packet(
+                    placement=promoted_placement,
+                    obj=SectionEnd(),
+                )
+                turn_index += 1
 
             # Store output in context
             context.step_outputs[step.output_key] = agent_output
@@ -1147,6 +1183,7 @@ def run_workflow_llm_decision(
     max_calls_per_agent = workflow.max_calls_per_agent
     cancelled = False
     final_answer_emitted = False
+    promoted_output_emitted = False
 
     try:
         # ================================================================
@@ -1177,6 +1214,7 @@ def run_workflow_llm_decision(
                     step_name=_direct_resume_tool._step_name,
                     persona_name=_direct_resume_tool._persona.name,
                     step_order=_direct_resume_tool._step_order,
+                    promote_output=_direct_resume_tool.promote_output,
                 ),
             )
 
@@ -1315,21 +1353,39 @@ def run_workflow_llm_decision(
                     pause_placement = Placement(
                         turn_index=turn_index + 1
                     )
+                    pause_questions = _strip_needs_input_prefix(
+                        agent_output
+                    )
                     yield Packet(
                         placement=pause_placement,
                         obj=WorkflowPauseForInput(
                             step_name=_direct_resume_tool._step_name,
                             persona_name=_direct_resume_tool._persona.name,
-                            questions=_strip_needs_input_prefix(
-                                agent_output
-                            ),
+                            questions=pause_questions,
                         ),
                     )
                     yield Packet(
                         placement=pause_placement, obj=SectionEnd()
                     )
+                    # Also emit as main message content
+                    msg_placement = Placement(
+                        turn_index=turn_index + 2
+                    )
                     yield Packet(
-                        placement=Placement(turn_index=turn_index + 2),
+                        placement=msg_placement,
+                        obj=AgentResponseStart(),
+                    )
+                    yield Packet(
+                        placement=msg_placement,
+                        obj=AgentResponseDelta(
+                            content=pause_questions
+                        ),
+                    )
+                    yield Packet(
+                        placement=msg_placement, obj=SectionEnd()
+                    )
+                    yield Packet(
+                        placement=Placement(turn_index=turn_index + 3),
                         obj=OverallStop(type="stop"),
                     )
                     return  # Stop execution — wait for next resume
@@ -1382,6 +1438,27 @@ def run_workflow_llm_decision(
                     placement=agent_placement,
                     obj=WorkflowStepDelta(content=agent_output),
                 )
+
+                # Output promotion for direct resume path
+                if _direct_resume_tool.promote_output and agent_output:
+                    promoted_placement = Placement(
+                        turn_index=turn_index + 1
+                    )
+                    yield Packet(
+                        placement=promoted_placement,
+                        obj=AgentResponseStart(),
+                    )
+                    yield Packet(
+                        placement=promoted_placement,
+                        obj=AgentResponseDelta(content=agent_output),
+                    )
+                    yield Packet(
+                        placement=promoted_placement,
+                        obj=SectionEnd(),
+                    )
+                    turn_index += 1
+                    promoted_output_emitted = True
+
                 yield Packet(
                     placement=agent_placement,
                     obj=WorkflowStepEnd(
@@ -1602,6 +1679,7 @@ def run_workflow_llm_decision(
                             step_name=agent_tool._step_name,
                             persona_name=agent_tool._persona.name,
                             step_order=agent_tool._step_order,
+                            promote_output=agent_tool.promote_output,
                         ),
                     )
 
@@ -1748,23 +1826,41 @@ def run_workflow_llm_decision(
                         yield Packet(
                             placement=agent_placement, obj=SectionEnd()
                         )
-                        # Emit pause packet with questions
+                        # Emit pause packet with questions (inside timeline)
                         pause_placement = Placement(
                             turn_index=turn_index + 1
                         )
+                        pause_questions = _strip_needs_input_prefix(agent_output)
                         yield Packet(
                             placement=pause_placement,
                             obj=WorkflowPauseForInput(
                                 step_name=agent_tool._step_name,
                                 persona_name=agent_tool._persona.name,
-                                questions=_strip_needs_input_prefix(agent_output),
+                                questions=pause_questions,
                             ),
                         )
                         yield Packet(
                             placement=pause_placement, obj=SectionEnd()
                         )
+                        # Also emit as main message content
+                        msg_placement = Placement(
+                            turn_index=turn_index + 2
+                        )
                         yield Packet(
-                            placement=Placement(turn_index=turn_index + 2),
+                            placement=msg_placement,
+                            obj=AgentResponseStart(),
+                        )
+                        yield Packet(
+                            placement=msg_placement,
+                            obj=AgentResponseDelta(
+                                content=pause_questions
+                            ),
+                        )
+                        yield Packet(
+                            placement=msg_placement, obj=SectionEnd()
+                        )
+                        yield Packet(
+                            placement=Placement(turn_index=turn_index + 3),
                             obj=OverallStop(type="stop"),
                         )
                         return  # Stop execution, free thread
@@ -1774,6 +1870,27 @@ def run_workflow_llm_decision(
                         placement=agent_placement,
                         obj=WorkflowStepDelta(content=agent_output),
                     )
+
+                    # Output promotion: also emit as MESSAGE packets so the
+                    # frontend renders it as main content outside the timeline.
+                    if agent_tool.promote_output and agent_output:
+                        promoted_placement = Placement(
+                            turn_index=turn_index + 1
+                        )
+                        yield Packet(
+                            placement=promoted_placement,
+                            obj=AgentResponseStart(),
+                        )
+                        yield Packet(
+                            placement=promoted_placement,
+                            obj=AgentResponseDelta(content=agent_output),
+                        )
+                        yield Packet(
+                            placement=promoted_placement,
+                            obj=SectionEnd(),
+                        )
+                        turn_index += 1
+                        promoted_output_emitted = True
 
                     # Store in context using output_key (M2 fix)
                     context.step_outputs[agent_tool.output_key] = agent_output
@@ -1916,7 +2033,8 @@ def run_workflow_llm_decision(
     # answer (e.g. max_steps exhausted, timeout, or model kept calling
     # blocked agents), synthesize a basic answer from available outputs
     # so the user isn't left with nothing.
-    if not cancelled and not final_answer_emitted and context.step_outputs:
+    # Skip fallback if promoted output was already emitted as main content.
+    if not cancelled and not final_answer_emitted and not promoted_output_emitted and context.step_outputs:
         logger.info(
             "Workflow loop ended without final answer; "
             "emitting fallback from %d agent output(s)",

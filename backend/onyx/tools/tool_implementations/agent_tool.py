@@ -53,6 +53,7 @@ class AgentTool(Tool[None]):
         user: "User | None" = None,
         llm: "LLM | None" = None,
         has_tools: bool | None = None,
+        promote_output: bool = False,
     ) -> None:
         super().__init__(emitter=emitter)
         self._persona = persona
@@ -65,6 +66,7 @@ class AgentTool(Tool[None]):
         self._cached_llm = llm
         # Pre-check whether persona has tools (avoids lazy-load in bg thread)
         self._has_tools = has_tools if has_tools is not None else bool(persona.tools)
+        self._promote_output = promote_output
 
     @property
     def id(self) -> int:
@@ -78,6 +80,10 @@ class AgentTool(Tool[None]):
     @property
     def output_key(self) -> str:
         return self._output_key
+
+    @property
+    def promote_output(self) -> bool:
+        return self._promote_output
 
     @property
     def name(self) -> str:
