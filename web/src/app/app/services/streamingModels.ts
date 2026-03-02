@@ -149,11 +149,17 @@ export interface PythonToolStart extends BaseObj {
   code: string;
 }
 
+export interface PythonToolFile {
+  file_id: string;
+  filename: string;
+}
+
 export interface PythonToolDelta extends BaseObj {
   type: "python_tool_delta";
   stdout: string;
   stderr: string;
   file_ids: string[];
+  files: PythonToolFile[];
 }
 
 export interface FetchToolStart extends BaseObj {

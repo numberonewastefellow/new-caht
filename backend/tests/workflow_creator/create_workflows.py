@@ -122,6 +122,7 @@ def _resolve_steps(raw_steps: list[dict]) -> list[dict]:
             "condition": step.get("condition"),
             "is_terminal": step.get("is_terminal", False),
             "can_request_input": step.get("can_request_input", False),
+            "promote_output": step.get("promote_output", False),
         })
     return resolved
 

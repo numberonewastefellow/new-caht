@@ -4,6 +4,7 @@ import {
   PythonToolPacket,
   PythonToolStart,
   PythonToolDelta,
+  PythonToolFile,
   SectionEnd,
 } from "@/app/app/services/streamingModels";
 import {
@@ -15,6 +16,8 @@ import hljs from "highlight.js/lib/core";
 import python from "highlight.js/lib/languages/python";
 import { SvgTerminal } from "@opal/icons";
 import FadingEdgeContainer from "@/refresh-components/FadingEdgeContainer";
+import { InMessageImage } from "@/app/app/components/files/images/InMessageImage";
+import { buildImgUrl } from "@/app/app/components/files/images/utils";
 
 // Register Python language for highlighting
 hljs.registerLanguage("python", python);
@@ -35,6 +38,20 @@ function HighlightedPythonCode({ code }: { code: string }) {
       className="hljs"
     />
   );
+}
+
+const IMAGE_EXTENSIONS = new Set([
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".gif",
+  ".svg",
+  ".webp",
+]);
+
+function isImageFile(filename: string): boolean {
+  const ext = filename.slice(filename.lastIndexOf(".")).toLowerCase();
+  return IMAGE_EXTENSIONS.has(ext);
 }
 
 // Helper function to construct current Python execution state
@@ -61,6 +78,12 @@ function constructCurrentPythonState(packets: PythonToolPacket[]) {
     .filter((s) => s)
     .join("");
   const fileIds = pythonDeltas.flatMap((delta) => delta?.file_ids || []);
+
+  // Collect enriched file metadata (with fallback to bare file_ids)
+  const files: PythonToolFile[] = pythonDeltas.flatMap(
+    (delta) => delta?.files || []
+  );
+
   const isExecuting = pythonStart && !pythonEnd;
   const isComplete = pythonStart && pythonEnd;
   const hasError = stderr.length > 0;
@@ -70,6 +93,7 @@ function constructCurrentPythonState(packets: PythonToolPacket[]) {
     stdout,
     stderr,
     fileIds,
+    files,
     isExecuting,
     isComplete,
     hasError,
@@ -82,8 +106,28 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
   renderType,
   children,
 }) => {
-  const { code, stdout, stderr, fileIds, isExecuting, isComplete, hasError } =
-    constructCurrentPythonState(packets);
+  const {
+    code,
+    stdout,
+    stderr,
+    fileIds,
+    files,
+    isExecuting,
+    isComplete,
+    hasError,
+  } = constructCurrentPythonState(packets);
+
+  // Separate image files from non-image files
+  const imageFiles = useMemo(
+    () => files.filter((f) => isImageFile(f.filename)),
+    [files]
+  );
+  const nonImageFiles = useMemo(
+    () => files.filter((f) => !isImageFile(f.filename)),
+    [files]
+  );
+  // Fallback: if we have file_ids but no enriched files, show count
+  const hasOnlyBareFileIds = fileIds.length > 0 && files.length === 0;
 
   useEffect(() => {
     if (isComplete) {
@@ -156,15 +200,45 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
         </div>
       )}
 
-      {/* File count */}
-      {fileIds.length > 0 && (
+      {/* Generated images — rendered inline */}
+      {imageFiles.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-1">
+          {imageFiles.map((file) => (
+            <div key={file.file_id} className="transition-all group">
+              <InMessageImage fileId={file.file_id} shape="landscape" />
+              <div className="text-xs text-text-04 mt-1 truncate">
+                {file.filename}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Non-image files — download links */}
+      {nonImageFiles.length > 0 && (
+        <div className="flex flex-col gap-1">
+          {nonImageFiles.map((file) => (
+            <a
+              key={file.file_id}
+              href={buildImgUrl(file.file_id)}
+              download={file.filename}
+              className="text-sm text-theme-primary-05 hover:underline truncate"
+            >
+              {file.filename}
+            </a>
+          ))}
+        </div>
+      )}
+
+      {/* Fallback for bare file_ids without enriched metadata */}
+      {hasOnlyBareFileIds && (
         <div className="text-sm text-text-03">
           Generated {fileIds.length} file{fileIds.length !== 1 ? "s" : ""}
         </div>
       )}
 
       {/* No output fallback - only when complete with no output */}
-      {isComplete && !stdout && !stderr && (
+      {isComplete && !stdout && !stderr && files.length === 0 && (
         <div className="py-2 text-center text-text-04">
           <SvgTerminal className="w-4 h-4 mx-auto mb-1 opacity-50" />
           <p className="text-xs">No output</p>

@@ -239,12 +239,20 @@ class PythonToolStart(BaseObj):
     code: str
 
 
+class PythonToolFile(BaseModel):
+    """Enriched file metadata for PythonTool-generated files (charts, CSVs, etc.)."""
+
+    file_id: str
+    filename: str
+
+
 class PythonToolDelta(BaseObj):
     type: Literal["python_tool_delta"] = StreamingType.PYTHON_TOOL_DELTA.value
 
     stdout: str = ""
     stderr: str = ""
-    file_ids: list[str] = []
+    file_ids: list[str] = []  # Kept for backward compatibility
+    files: list[PythonToolFile] = []  # Enriched file metadata
 
 
 # Custom tool being called, first allocate a placeholder block for it on the UI

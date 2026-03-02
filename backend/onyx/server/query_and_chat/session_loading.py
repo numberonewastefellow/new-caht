@@ -37,6 +37,9 @@ from onyx.server.query_and_chat.streaming_models import OpenUrlStart
 from onyx.server.query_and_chat.streaming_models import OpenUrlUrls
 from onyx.server.query_and_chat.streaming_models import OverallStop
 from onyx.server.query_and_chat.streaming_models import Packet
+from onyx.server.query_and_chat.streaming_models import PythonToolDelta
+from onyx.server.query_and_chat.streaming_models import PythonToolFile
+from onyx.server.query_and_chat.streaming_models import PythonToolStart
 from onyx.server.query_and_chat.streaming_models import ReasoningDelta
 from onyx.server.query_and_chat.streaming_models import ReasoningStart
 from onyx.server.query_and_chat.streaming_models import ResearchAgentStart
@@ -50,6 +53,7 @@ from onyx.tools.tool_implementations.images.image_generation_tool import (
     ImageGenerationTool,
 )
 from onyx.tools.tool_implementations.memory.memory_tool import MemoryTool
+from onyx.tools.tool_implementations.python.python_tool import PythonTool
 from onyx.tools.tool_implementations.open_url.open_url_tool import OpenURLTool
 from onyx.tools.tool_implementations.search.search_tool import SearchTool
 from onyx.tools.tool_implementations.web_search.web_search_tool import WebSearchTool
@@ -240,6 +244,46 @@ def create_image_generation_packets(
             placement=Placement(turn_index=turn_index, tab_index=tab_index),
             obj=ImageGenerationFinal(images=images),
         ),
+    )
+
+    packets.append(
+        Packet(
+            placement=Placement(turn_index=turn_index, tab_index=tab_index),
+            obj=SectionEnd(),
+        )
+    )
+
+    return packets
+
+
+def create_python_tool_packets(
+    code: str,
+    stdout: str,
+    stderr: str,
+    files: list[PythonToolFile],
+    turn_index: int,
+    tab_index: int = 0,
+) -> list[Packet]:
+    """Reconstruct PythonTool packets from stored ToolCall data for history reload."""
+    packets: list[Packet] = []
+
+    packets.append(
+        Packet(
+            placement=Placement(turn_index=turn_index, tab_index=tab_index),
+            obj=PythonToolStart(code=code),
+        )
+    )
+
+    packets.append(
+        Packet(
+            placement=Placement(turn_index=turn_index, tab_index=tab_index),
+            obj=PythonToolDelta(
+                stdout=stdout,
+                stderr=stderr,
+                file_ids=[f.file_id for f in files],
+                files=files,
+            ),
+        )
     )
 
     packets.append(
@@ -674,6 +718,52 @@ def translate_assistant_message_to_packets(
                                     index=memory_data.get("index"),
                                 )
                             )
+
+                    elif tool.in_code_tool_id == PythonTool.__name__:
+                        # Reconstruct PythonTool packets from stored data
+                        code = tool_call.tool_call_arguments.get("code", "")
+                        stdout = ""
+                        stderr = ""
+                        python_files: list[PythonToolFile] = []
+
+                        if tool_call.tool_call_response:
+                            try:
+                                result_data = json.loads(
+                                    tool_call.tool_call_response
+                                )
+                                stdout = result_data.get("stdout", "")
+                                stderr = result_data.get("stderr", "")
+                                # Extract file_ids from file_link URLs
+                                # file_link format: {WEB_DOMAIN}/api/chat/file/{file_id}
+                                for gen_file in result_data.get(
+                                    "generated_files", []
+                                ):
+                                    file_link = gen_file.get("file_link", "")
+                                    filename = gen_file.get("filename", "")
+                                    # Extract file_id from the URL
+                                    file_id = file_link.rsplit("/", 1)[-1]
+                                    if file_id:
+                                        python_files.append(
+                                            PythonToolFile(
+                                                file_id=file_id,
+                                                filename=filename,
+                                            )
+                                        )
+                            except (json.JSONDecodeError, KeyError):
+                                logger.warning(
+                                    f"Failed to parse PythonTool response for tool_call {tool_call.id}"
+                                )
+
+                        turn_tool_packets.extend(
+                            create_python_tool_packets(
+                                code=code,
+                                stdout=stdout,
+                                stderr=stderr,
+                                files=python_files,
+                                turn_index=turn_num,
+                                tab_index=tool_call.tab_index,
+                            )
+                        )
 
                     else:
                         # Custom tool or unknown tool

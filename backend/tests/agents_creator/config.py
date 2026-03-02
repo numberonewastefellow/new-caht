@@ -166,6 +166,35 @@ def get_or_create_labels(label_names: list[str]) -> list[int]:
     return ids
 
 
+# ── Tool Name Resolution ──────────────────────────────────────────────────
+
+_tool_cache: dict[str, int] = {}
+
+
+def resolve_tool_names(tool_names: list[str]) -> list[int]:
+    """Resolve in_code_tool_id names (e.g. 'PythonTool') to DB IDs.
+
+    Queries GET /api/tool once and caches the mapping.
+    Returns list of resolved integer IDs, skipping unknown names.
+    """
+    if not _tool_cache:
+        resp = api("GET", "tool")
+        if resp.status_code == 200:
+            for t in resp.json():
+                code_id = t.get("in_code_tool_id")
+                if code_id:
+                    _tool_cache[code_id.lower()] = t["id"]
+
+    ids: list[int] = []
+    for name in tool_names:
+        tid = _tool_cache.get(name.lower())
+        if tid is not None:
+            ids.append(tid)
+        else:
+            print(f"  [WARN] Tool '{name}' not found on server — skipping")
+    return ids
+
+
 # ── Common CLI args ─────────────────────────────────────────────────────────
 
 

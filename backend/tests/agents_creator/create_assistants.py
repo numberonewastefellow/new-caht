@@ -21,7 +21,7 @@ import json
 import sys
 from pathlib import Path
 
-from config import ASSISTANTS_DIR, DEFAULTS, add_common_args, api, apply_common_args, get_or_create_labels
+from config import ASSISTANTS_DIR, DEFAULTS, add_common_args, api, apply_common_args, get_or_create_labels, resolve_tool_names
 
 
 # ── Core Actions ────────────────────────────────────────────────────────────
@@ -55,6 +55,14 @@ def create_assistant(payload: dict) -> dict | None:
     """Create a single assistant. Returns the response dict or None on failure."""
     body = {**DEFAULTS, **payload}
     name = body.get("name", "Unnamed")
+
+    # Resolve tool names → IDs if "tool_names" field present
+    tool_names = body.pop("tool_names", None)
+    if tool_names and isinstance(tool_names, list):
+        resolved = resolve_tool_names(tool_names)
+        # Merge with any explicit tool_ids already in the payload
+        existing = body.get("tool_ids", [])
+        body["tool_ids"] = list(dict.fromkeys(existing + resolved))  # dedupe, preserve order
 
     # Resolve label names → IDs if "labels" field present
     label_names = body.pop("labels", None)

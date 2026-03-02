@@ -17,6 +17,7 @@ from onyx.file_store.utils import get_default_file_store
 from onyx.server.query_and_chat.placement import Placement
 from onyx.server.query_and_chat.streaming_models import Packet
 from onyx.server.query_and_chat.streaming_models import PythonToolDelta
+from onyx.server.query_and_chat.streaming_models import PythonToolFile
 from onyx.server.query_and_chat.streaming_models import PythonToolStart
 from onyx.tools.interface import Tool
 from onyx.tools.models import LlmPythonExecutionResult
@@ -258,6 +259,15 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                         f"Failed to delete Code Interpreter staged file {file_mapping['file_id']}: {e}"
                     )
 
+            # Build enriched file metadata for frontend rendering
+            python_tool_files = [
+                PythonToolFile(
+                    file_id=file_id,
+                    filename=gen_file.filename,
+                )
+                for file_id, gen_file in zip(generated_file_ids, generated_files)
+            ]
+
             # Emit delta with stdout/stderr and generated files
             self.emitter.emit(
                 Packet(
@@ -266,6 +276,7 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                         stdout=truncated_stdout,
                         stderr=truncated_stderr,
                         file_ids=generated_file_ids,
+                        files=python_tool_files,
                     ),
                 )
             )

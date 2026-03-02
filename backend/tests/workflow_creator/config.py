@@ -81,6 +81,36 @@ def stream_api(method: str, path: str, data: dict | None = None) -> requests.Res
     )
 
 
+# ── Tool Resolution ────────────────────────────────────────────────────────
+
+_tool_cache: dict[str, int] = {}
+
+
+def _load_tool_cache() -> None:
+    """Populate tool cache from the server (in_code_tool_id -> db ID)."""
+    if _tool_cache:
+        return
+    resp = api("GET", "tool")
+    if resp.status_code == 200:
+        for t in resp.json():
+            code_id = t.get("in_code_tool_id")
+            if code_id:
+                _tool_cache[code_id.lower()] = t["id"]
+
+
+def resolve_tool_names(tool_names: list[str]) -> list[int]:
+    """Resolve a list of in_code_tool_id names (e.g. 'PythonTool') to DB IDs."""
+    _load_tool_cache()
+    ids: list[int] = []
+    for name in tool_names:
+        tid = _tool_cache.get(name.lower())
+        if tid is not None:
+            ids.append(tid)
+        else:
+            print(f"  [WARN] Tool '{name}' not found on server — skipping")
+    return ids
+
+
 # ── Persona Resolution ──────────────────────────────────────────────────────
 
 _persona_cache: dict[str, int] = {}
@@ -109,6 +139,11 @@ def create_step_persona(persona_def: dict) -> int | None:
     label_names = body.pop("labels", None)
     if label_names and isinstance(label_names, list):
         body["label_ids"] = get_or_create_labels(label_names)
+
+    # Resolve tool names → IDs if present (e.g. "PythonTool" → db ID)
+    tool_names = body.pop("tool_names", None)
+    if tool_names and isinstance(tool_names, list):
+        body["tool_ids"] = resolve_tool_names(tool_names)
 
     resp = api("POST", "persona", body)
     if resp.status_code == 200:
