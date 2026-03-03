@@ -387,12 +387,18 @@ class ApiKey(Base):
     user_id: Mapped[UUID] = mapped_column(ForeignKey("user.id"), nullable=False)
     # the ID of the user who owns the key
     owner_id: Mapped[UUID | None] = mapped_column(ForeignKey("user.id"), nullable=True)
+    # when True, API key authenticates as the owner (real user) instead of the
+    # synthetic user — only applies to keys explicitly configured via remap script
+    use_owner_identity: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default="false", nullable=False
+    )
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
     # Add this relationship to access the User object via user_id
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id])
+    owner: Mapped["User | None"] = relationship("User", foreign_keys=[owner_id])
 
 
 class PersonalAccessToken(Base):

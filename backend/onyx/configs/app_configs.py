@@ -130,8 +130,8 @@ AUTH_BACKEND = AuthBackend(os.environ.get("AUTH_BACKEND") or AuthBackend.REDIS.v
 SESSION_EXPIRE_TIME_SECONDS = int(
     os.environ.get("SESSION_EXPIRE_TIME_SECONDS")
     or os.environ.get("REDIS_AUTH_EXPIRE_TIME_SECONDS")
-    or 86400 * 7
-)  # 7 days
+    or 86400 * 365
+)  # 365 days
 
 # Default request timeout, mostly used by connectors
 REQUEST_TIMEOUT_SECONDS = int(os.environ.get("REQUEST_TIMEOUT_SECONDS") or 60)
@@ -203,8 +203,8 @@ USER_AUTH_SECRET = os.environ.get("USER_AUTH_SECRET", "")
 # Duration (in seconds) for which the FastAPI Users JWT token remains valid in the user's browser.
 # By default, this is set to match the Redis expiry time for consistency.
 AUTH_COOKIE_EXPIRE_TIME_SECONDS = int(
-    os.environ.get("AUTH_COOKIE_EXPIRE_TIME_SECONDS") or 86400 * 7
-)  # 7 days
+    os.environ.get("AUTH_COOKIE_EXPIRE_TIME_SECONDS") or 86400 * 365
+)  # 365 days
 
 # for basic auth
 REQUIRE_EMAIL_VERIFICATION = (

@@ -206,6 +206,12 @@ class AgentTool(Tool[None]):
                 f"You are {self._persona.name}. {self._persona.description or ''}"
             )
 
+        # Append tool-specific guidance (mirrors prompt_utils.py behaviour)
+        from onyx.tools.tool_implementations.python.python_tool import PythonTool
+        if any(isinstance(t, PythonTool) for t in tools):
+            from onyx.prompts.tool_prompts import PYTHON_TOOL_GUIDANCE
+            system_prompt_text += PYTHON_TOOL_GUIDANCE
+
         system_prompt = ChatMessageSimple(
             message=system_prompt_text,
             token_count=token_counter(system_prompt_text),

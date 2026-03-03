@@ -115,25 +115,35 @@ _INPUT_SIGNAL_PATTERNS = [
 def _agent_requests_input(output: str) -> bool:
     """Detect whether the agent is asking the user for information.
 
-    Two detection modes (checked for steps with can_request_input=True):
-    1. Deterministic: output starts with "[NEEDS_INPUT]" prefix.
-    2. Heuristic fallback: 1+ question mark AND 1+ signal pattern.
-       (Lowered from 2+/2+ to catch single-question clarifications like
-       "Could you provide your budget?")
+    Three detection modes (checked for steps with can_request_input=True):
+    1. Deterministic positive: output starts with "[NEEDS_INPUT]" prefix.
+    2. Deterministic negative: output contains "STATUS: COMPLETE" — agent
+       explicitly signals it has enough info, so never pause.
+    3. Heuristic fallback: at least one line contains BOTH a "?" AND a
+       signal pattern. Per-line scoping avoids false positives where a
+       signal word (e.g. "what") appears in a template field on one line
+       and "?" appears in echoed code on a completely different line.
 
     Only checked for steps with can_request_input=True.
     """
     stripped = output.strip()
 
-    # Mode 1: explicit structured signal
+    # Mode 1: explicit structured signal — agent is asking for input
     if stripped.upper().startswith(_NEEDS_INPUT_PREFIX):
         return True
 
-    # Mode 2: heuristic fallback
-    lower = stripped.lower()
-    question_marks = lower.count("?")
-    signal_count = sum(1 for p in _INPUT_SIGNAL_PATTERNS if p in lower)
-    return question_marks >= 1 and signal_count >= 1
+    # Mode 2: negative signal — agent says it's done, don't pause
+    if "STATUS: COMPLETE" in stripped.upper():
+        return False
+
+    # Mode 3: heuristic — require "?" and signal pattern on the SAME line
+    for line in stripped.split("\n"):
+        lower_line = line.lower()
+        if "?" not in lower_line:
+            continue
+        if any(p in lower_line for p in _INPUT_SIGNAL_PATTERNS):
+            return True
+    return False
 
 
 def _strip_needs_input_prefix(output: str) -> str:
@@ -445,7 +455,9 @@ RULES:
 - You MUST delegate to at least one agent before providing a final answer — never answer the user directly without consulting a specialist first
 - Call ONE agent at a time with a clear, specific task description
 - After receiving an agent's output, decide whether to call another agent or provide the final answer
-- When you have enough information from the agents, synthesize their outputs into a concise final answer
+- Follow the custom instructions below carefully — they specify which agents to call and in what order
+- Do NOT provide a final answer until you have called all agents specified in the custom instructions
+- If the custom instructions specify a sequence of agents, you MUST call EVERY agent in that sequence before providing a final answer
 - Do NOT ask the user clarifying questions — work with the information provided and make reasonable assumptions
 
 {custom_prompt}"""

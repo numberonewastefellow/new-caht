@@ -192,14 +192,12 @@ def _try_fallback_tool_extraction(
     return llm_step_result, True
 
 
-# Hardcoded oppinionated value, might breaks down to something like:
-# Cycle 1: Calls web_search for something
-# Cycle 2: Calls open_url for some results
-# Cycle 3: Calls web_search for some other aspect of the question
-# Cycle 4: Calls open_url for some results
-# Cycle 5: Maybe call open_url for some additional results or because last set failed
-# Cycle 6: No more tools available, forced to answer
-MAX_LLM_CYCLES = 6
+# Maximum number of tool-call cycles per LLM conversation turn.
+# Originally 6 (enough for web-search-only flows). Raised to 20 to support
+# PythonTool-heavy agents that need many iterations (write → execute → debug
+# → fix → re-execute → chart → summarize). LLMs naturally stop calling tools
+# when done; the real guard is per-tool timeout (60s) and request timeout.
+MAX_LLM_CYCLES = 20
 
 
 def _build_project_file_citation_mapping(

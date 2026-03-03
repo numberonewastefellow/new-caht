@@ -64,6 +64,7 @@ Use this to give the user a way to download the file OR to display generated ima
 Internet access for this session is disabled. Do not make external web requests or API calls as they will fail.
 Use `openpyxl` to read and write Excel files. You have access to libraries like numpy, pandas, scipy, matplotlib, and PIL.
 IMPORTANT: each call to this tool is independent. Variables from previous calls will NOT be available in the current call.
+IMPORTANT: When generating charts or plots with matplotlib, you MUST save them as files using `plt.savefig('descriptive_name.png', dpi=150, bbox_inches='tight')` followed by `plt.close()`. NEVER use `plt.show()` — it does not work in this headless environment and will not produce any visible output or files.
 """
 
 GENERATE_IMAGE_GUIDANCE = """

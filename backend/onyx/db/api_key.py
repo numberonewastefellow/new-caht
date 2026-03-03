@@ -49,11 +49,29 @@ async def fetch_user_for_api_key(
     hashed_api_key: str, async_db_session: AsyncSession
 ) -> User | None:
     """NOTE: this is async, since it's used during auth
-    (which is necessarily async due to FastAPI Users)"""
+    (which is necessarily async due to FastAPI Users)
+
+    If the API key has use_owner_identity=True and a valid owner_id,
+    returns the owner (real user) instead of the synthetic API key user.
+    This allows configured API keys to operate as a specific user account.
+    """
+    api_key_row = await async_db_session.scalar(
+        select(ApiKey).where(ApiKey.hashed_api_key == hashed_api_key)
+    )
+    if api_key_row is None:
+        return None
+
+    # If configured to use owner identity, return the real user
+    if api_key_row.use_owner_identity and api_key_row.owner_id:
+        owner = await async_db_session.scalar(
+            select(User).where(User.id == api_key_row.owner_id)
+        )
+        if owner:
+            return owner
+
+    # Default: return the synthetic API key user
     return await async_db_session.scalar(
-        select(User)
-        .join(ApiKey, ApiKey.user_id == User.id)
-        .where(ApiKey.hashed_api_key == hashed_api_key)
+        select(User).where(User.id == api_key_row.user_id)
     )
 
 
@@ -180,5 +198,8 @@ def remove_api_key(db_session: Session, api_key_id: int) -> None:
         )
 
     db_session.delete(existing_api_key)
-    db_session.delete(user_associated_with_key)
+    # Only delete the user if it's a synthetic API key user (not a real user
+    # that was remapped to this API key)
+    if is_api_key_email_address(user_associated_with_key.email):
+        db_session.delete(user_associated_with_key)
     db_session.commit()
