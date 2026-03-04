@@ -197,6 +197,7 @@ class PythonToolOverrideKwargs(BaseModel):
     """Override kwargs for the Python/Code Interpreter tool."""
 
     chat_files: list[ChatFile] = []
+    session_id: str | None = None
 
 
 class SearchToolRunContext(BaseModel):

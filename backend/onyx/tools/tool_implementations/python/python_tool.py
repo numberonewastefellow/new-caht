@@ -2,6 +2,7 @@ import mimetypes
 from io import BytesIO
 from typing import Any
 from typing import cast
+from uuid import UUID
 
 from pydantic import TypeAdapter
 from sqlalchemy.orm import Session
@@ -70,11 +71,21 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
 
     NAME = "python"
     DISPLAY_NAME = "Code Interpreter"
-    DESCRIPTION = "Execute Python code in an isolated sandbox environment."
+    DESCRIPTION = "Execute Python code in a persistent sandbox environment. Variables and files persist across calls within the same conversation."
 
-    def __init__(self, tool_id: int, emitter: Emitter) -> None:
+    def __init__(
+        self,
+        tool_id: int,
+        emitter: Emitter,
+        db_session: Session | None = None,
+        chat_session_id: str | None = None,
+    ) -> None:
         super().__init__(emitter=emitter)
         self._id = tool_id
+        self._db_session = db_session
+        self._chat_session_id = chat_session_id
+        # Cached session_id for reuse across multiple tool calls in the same message
+        self._session_id: str | None = None
 
     @property
     def id(self) -> int:
@@ -117,6 +128,46 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
             },
         }
 
+    def _create_and_persist_session(
+        self, client: CodeInterpreterClient
+    ) -> str | None:
+        """Lazily create a persistent sandbox session and save to ChatSession in DB.
+
+        Returns the new session_id or None if creation fails.
+        """
+        try:
+            new_session_id = client.create_session()
+            self._session_id = new_session_id
+            logger.info(
+                f"Created persistent sandbox session {new_session_id} "
+                f"for chat {self._chat_session_id}"
+            )
+
+            # Persist to DB so subsequent messages reuse this sandbox
+            if self._db_session and self._chat_session_id:
+                try:
+                    from onyx.db.models import ChatSession
+
+                    chat_session_uuid = UUID(self._chat_session_id)
+                    self._db_session.query(ChatSession).filter(
+                        ChatSession.id == chat_session_uuid
+                    ).update({"sandbox_session_id": new_session_id})
+                    self._db_session.commit()
+                    logger.info(
+                        f"Persisted sandbox_session_id={new_session_id} "
+                        f"to chat_session={self._chat_session_id}"
+                    )
+                except Exception:
+                    logger.exception(
+                        "Failed to persist sandbox_session_id to DB"
+                    )
+                    # Non-fatal: the session still works for this message
+
+            return new_session_id
+        except Exception:
+            logger.exception("Failed to create persistent sandbox session")
+            return None
+
     def emit_start(self, placement: Placement) -> None:
         """Emit start packet for this tool. Code will be emitted in run() method."""
         # Note: PythonToolStart requires code, but we don't have it in emit_start
@@ -151,6 +202,12 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
             )
         code = cast(str, llm_kwargs[CODE_FIELD])
         chat_files = override_kwargs.chat_files if override_kwargs else []
+        session_id = override_kwargs.session_id if override_kwargs else None
+
+        # Use cached session_id from a previous call in this message,
+        # falling back to what was passed via override_kwargs
+        if self._session_id:
+            session_id = self._session_id
 
         # Emit start event with the code
         self.emitter.emit(
@@ -162,6 +219,11 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
 
         # Create Code Interpreter client
         client = CodeInterpreterClient()
+
+        # Lazy session creation: if no session yet and we have a chat context,
+        # create a persistent sandbox and save it to the DB
+        if session_id is None and self._chat_session_id:
+            session_id = self._create_and_persist_session(client)
 
         # Stage chat files for execution
         files_to_stage: list[FileInput] = []
@@ -187,6 +249,7 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                 code=code,
                 timeout_ms=CODE_INTERPRETER_DEFAULT_TIMEOUT_MS,
                 files=files_to_stage or None,
+                session_id=session_id,
             )
 
             # Truncate output for LLM consumption
@@ -241,23 +304,24 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                         f"Failed to handle generated file {workspace_file.path}: {e}"
                     )
 
-            # Cleanup Code Interpreter files (generated files)
-            for ci_file_id in file_ids_to_cleanup:
-                try:
-                    client.delete_file(ci_file_id)
-                except Exception as e:
-                    logger.error(
-                        f"Failed to delete Code Interpreter generated file {ci_file_id}: {e}"
-                    )
+            # Cleanup Code Interpreter files (skip when in session mode — files persist)
+            if not session_id:
+                for ci_file_id in file_ids_to_cleanup:
+                    try:
+                        client.delete_file(ci_file_id)
+                    except Exception as e:
+                        logger.error(
+                            f"Failed to delete Code Interpreter generated file {ci_file_id}: {e}"
+                        )
 
-            # Cleanup staged input files
-            for file_mapping in files_to_stage:
-                try:
-                    client.delete_file(file_mapping["file_id"])
-                except Exception as e:
-                    logger.error(
-                        f"Failed to delete Code Interpreter staged file {file_mapping['file_id']}: {e}"
-                    )
+                # Cleanup staged input files
+                for file_mapping in files_to_stage:
+                    try:
+                        client.delete_file(file_mapping["file_id"])
+                    except Exception as e:
+                        logger.error(
+                            f"Failed to delete Code Interpreter staged file {file_mapping['file_id']}: {e}"
+                        )
 
             # Build enriched file metadata for frontend rendering
             python_tool_files = [

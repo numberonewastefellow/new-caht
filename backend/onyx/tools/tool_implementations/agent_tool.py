@@ -56,6 +56,7 @@ class AgentTool(Tool[None]):
         has_tools: bool | None = None,
         promote_output: bool = False,
         chat_files: list[ChatFile] | None = None,
+        sandbox_session_id: str | None = None,
     ) -> None:
         super().__init__(emitter=emitter)
         self._persona = persona
@@ -70,6 +71,7 @@ class AgentTool(Tool[None]):
         self._has_tools = has_tools if has_tools is not None else bool(persona.tools)
         self._promote_output = promote_output
         self._chat_files = chat_files or []
+        self._sandbox_session_id = sandbox_session_id
 
     @property
     def id(self) -> int:
@@ -321,12 +323,13 @@ class AgentTool(Tool[None]):
                     # turn_index/tab_index from ToolCallKickoff.
                     matched_tool.emit_start(placement=tc.placement)
 
-                    # Build override_kwargs for the tool (pass files to PythonTool)
+                    # Build override_kwargs for the tool (pass files + sandbox session to PythonTool)
                     override_kwargs = None
-                    if isinstance(matched_tool, PythonTool) and self._chat_files:
+                    if isinstance(matched_tool, PythonTool):
                         from onyx.tools.models import PythonToolOverrideKwargs
                         override_kwargs = PythonToolOverrideKwargs(
                             chat_files=self._chat_files,
+                            session_id=self._sandbox_session_id,
                         )
 
                     # Run the tool with the kickoff's placement

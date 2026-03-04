@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 
-export type VirtualAIAccent = "none" | "ocean" | "emerald" | "violet";
+export type VirtualAIAccent = "none" | "ocean" | "emerald" | "violet" | "neonai";
 
 const ACCENT_STORAGE_KEY = "virtualai-accent-theme";
 const ACCENT_CLASS_PREFIX = "virtualai-";
@@ -33,7 +33,8 @@ function getStoredAccent(): VirtualAIAccent {
   if (
     stored === "ocean" ||
     stored === "emerald" ||
-    stored === "violet"
+    stored === "violet" ||
+    stored === "neonai"
   ) {
     return stored;
   }

@@ -486,7 +486,10 @@ services:
       retries: 3
 
   code-interpreter:
-    image: onyxdotapp/code-interpreter:${CODE_INTERPRETER_IMAGE_TAG:-latest}
+    build:
+      context: ../../code-interpreter/code-interpreter
+      dockerfile: Dockerfile
+    image: onyxdotapp/code-interpreter:local
     entrypoint: ["/bin/bash", "-c"]
     command: >
       "

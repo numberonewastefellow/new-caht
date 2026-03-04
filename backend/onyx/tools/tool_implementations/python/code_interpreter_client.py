@@ -45,17 +45,35 @@ class CodeInterpreterClient:
         self.base_url = base_url.rstrip("/")
         self.session = requests.Session()
 
+    def create_session(self) -> str:
+        """Create a persistent execution session. Returns session_id."""
+        url = f"{self.base_url}/v1/sessions"
+        response = self.session.post(url, timeout=30)
+        response.raise_for_status()
+        return response.json()["session_id"]
+
+    def delete_session(self, session_id: str) -> None:
+        """Destroy a persistent execution session."""
+        url = f"{self.base_url}/v1/sessions/{session_id}"
+        response = self.session.delete(url, timeout=10)
+        response.raise_for_status()
+
     def execute(
         self,
         code: str,
         stdin: str | None = None,
         timeout_ms: int = 30000,
         files: list[FileInput] | None = None,
+        session_id: str | None = None,
     ) -> ExecuteResponse:
-        """Execute Python code"""
+        """Execute Python code.
+
+        If session_id is provided, executes in a persistent session where
+        variables survive between calls.
+        """
         url = f"{self.base_url}/v1/execute"
 
-        payload = {
+        payload: dict = {
             "code": code,
             "timeout_ms": timeout_ms,
         }
@@ -65,6 +83,9 @@ class CodeInterpreterClient:
 
         if files:
             payload["files"] = files
+
+        if session_id is not None:
+            payload["session_id"] = session_id
 
         response = self.session.post(url, json=payload, timeout=timeout_ms / 1000 + 10)
         response.raise_for_status()

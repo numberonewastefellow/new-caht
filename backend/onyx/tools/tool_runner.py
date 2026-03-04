@@ -235,6 +235,8 @@ def run_tool_calls(
     skip_search_query_expansion: bool = False,
     # Files from the chat session to pass to tools like PythonTool
     chat_files: list[ChatFile] | None = None,
+    # Persistent sandbox session ID for Code Interpreter reuse across messages
+    sandbox_session_id: str | None = None,
     # A map of url -> summary for passing web results to open url tool
     url_snippet_map: dict[str, str] = {},
     # When False, don't pass memory context to search tools for query expansion
@@ -387,6 +389,7 @@ def run_tool_calls(
         elif isinstance(tool, PythonTool):
             override_kwargs = PythonToolOverrideKwargs(
                 chat_files=chat_files or [],
+                session_id=sandbox_session_id,
             )
         elif isinstance(tool, MemoryTool):
             override_kwargs = MemoryToolOverrideKwargs(

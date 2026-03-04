@@ -2457,6 +2457,13 @@ class ChatSession(Base):
         String, nullable=True, default=None
     )
 
+    # Code Interpreter persistent sandbox session ID.
+    # Lazily created on first PythonTool use; reused for all subsequent
+    # messages in this chat so variables/files/DataFrames survive.
+    sandbox_session_id: Mapped[str | None] = mapped_column(
+        String, nullable=True, default=None
+    )
+
     project_id: Mapped[int | None] = mapped_column(
         ForeignKey("user_project.id"), nullable=True
     )

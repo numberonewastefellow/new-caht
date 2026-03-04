@@ -764,3 +764,30 @@
   --virtualai-accent-subtle: rgba(167, 139, 250, 0.08);
   --virtualai-accent: #a78bfa;
 }
+
+/* --- VirtualAI NeonAI Theme (Light) --- */
+.virtualai-neonai {
+  --theme-primary-06: #3b0076;
+  --theme-primary-05: #6706ce;
+  --theme-primary-04: #9333ea;
+  --theme-gradient-05: #6706ce;
+  --theme-gradient-00: #9333ea;
+  --virtualai-accent-glow: rgba(103, 6, 206, 0.15);
+  --virtualai-accent-glow-strong: rgba(103, 6, 206, 0.25);
+  --virtualai-accent-subtle: rgba(103, 6, 206, 0.05);
+  --virtualai-accent: #6706ce;
+}
+
+/* --- VirtualAI NeonAI Theme (Dark) --- */
+.dark.virtualai-neonai,
+.dark .virtualai-neonai {
+  --theme-primary-06: #d8b4fe;
+  --theme-primary-05: #b46efe;
+  --theme-primary-04: #9333ea;
+  --theme-gradient-05: #9333ea;
+  --theme-gradient-00: #d8b4fe;
+  --virtualai-accent-glow: rgba(180, 110, 254, 0.25);
+  --virtualai-accent-glow-strong: rgba(180, 110, 254, 0.35);
+  --virtualai-accent-subtle: rgba(180, 110, 254, 0.08);
+  --virtualai-accent: #b46efe;
+}

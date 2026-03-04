@@ -386,6 +386,7 @@ def _build_agent_tools(
     db_session: Session,
     user: User | None = None,
     chat_files: list[ChatFile] | None = None,
+    sandbox_session_id: str | None = None,
 ) -> list[AgentTool]:
     """Build AgentTool instances for each workflow step's persona.
 
@@ -426,6 +427,7 @@ def _build_agent_tools(
                 has_tools=has_tools,
                 promote_output=step.promote_output,
                 chat_files=chat_files,
+                sandbox_session_id=sandbox_session_id,
             )
         )
     return agent_tools
@@ -505,6 +507,7 @@ def run_workflow_sequential(
     chat_session_id: UUID | None = None,
     paused_execution: WorkflowExecution | None = None,
     chat_files: list[ChatFile] | None = None,
+    sandbox_session_id: str | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in sequential mode — fixed order, no LLM routing.
 
@@ -653,6 +656,7 @@ def run_workflow_sequential(
             has_tools=has_tools,
             promote_output=step.promote_output,
             chat_files=chat_files,
+            sandbox_session_id=sandbox_session_id,
         )
 
     try:
@@ -1007,6 +1011,7 @@ def run_workflow_llm_decision(
     chat_session_id: UUID | None = None,
     paused_execution: WorkflowExecution | None = None,
     chat_files: list[ChatFile] | None = None,
+    sandbox_session_id: str | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in LLM-decision mode — orchestrator LLM decides which agent to call.
 
@@ -1028,7 +1033,7 @@ def run_workflow_llm_decision(
     )
 
     # Build agent tools (with cached LLMs + user — Tier 1.5)
-    agent_tools = _build_agent_tools(steps, emitter, db_session, user=user, chat_files=chat_files)
+    agent_tools = _build_agent_tools(steps, emitter, db_session, user=user, chat_files=chat_files, sandbox_session_id=sandbox_session_id)
     if not agent_tools:
         raise ValueError("No valid agent tools found for workflow")
 
@@ -2094,6 +2099,7 @@ def run_workflow(
     is_connected: Callable[[], bool] | None = None,
     chat_session_id: UUID | None = None,
     chat_files: list[ChatFile] | None = None,
+    sandbox_session_id: str | None = None,
 ) -> Generator[Packet, None, None]:
     """Main entry point — dispatches to the appropriate orchestration mode.
 
@@ -2141,6 +2147,7 @@ def run_workflow(
             chat_session_id=chat_session_id,
             paused_execution=paused_execution,
             chat_files=chat_files,
+            sandbox_session_id=sandbox_session_id,
         )
     elif mode == "llm_decision":
         yield from run_workflow_llm_decision(
@@ -2149,6 +2156,7 @@ def run_workflow(
             chat_session_id=chat_session_id,
             paused_execution=paused_execution,
             chat_files=chat_files,
+            sandbox_session_id=sandbox_session_id,
         )
     else:
         raise ValueError(f"Unsupported orchestration mode: {mode}")

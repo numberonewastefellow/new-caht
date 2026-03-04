@@ -317,6 +317,28 @@ def delete_chat_session(
     if chat_session.deleted and not include_deleted:
         raise ValueError("Cannot delete an already deleted chat session")
 
+    # Cleanup persistent Code Interpreter sandbox if one was created
+    if chat_session.sandbox_session_id:
+        try:
+            from onyx.tools.tool_implementations.python.code_interpreter_client import (
+                CodeInterpreterClient,
+            )
+
+            client = CodeInterpreterClient()
+            client.delete_session(chat_session.sandbox_session_id)
+            logger.info(
+                "Deleted sandbox session %s for chat %s",
+                chat_session.sandbox_session_id,
+                chat_session_id,
+            )
+        except Exception:
+            logger.warning(
+                "Failed to cleanup sandbox session %s for chat %s "
+                "(will be auto-reaped by idle timeout)",
+                chat_session.sandbox_session_id,
+                chat_session_id,
+            )
+
     if hard_delete:
         delete_messages_and_files_from_chat_session(chat_session_id, db_session)
         db_session.execute(delete(ChatSession).where(ChatSession.id == chat_session_id))

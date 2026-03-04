@@ -130,6 +130,9 @@ services:
   code-interpreter:
     ports:
       - "8000:8000"
+    environment:
+      - MEMORY_LIMIT_MB=1024
+      - CPU_TIME_LIMIT_SEC=30
 
 volumes:
   craft-templates:

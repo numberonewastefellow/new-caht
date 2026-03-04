@@ -450,6 +450,7 @@ def _run_workflow_and_save(
     is_connected: Callable[[], bool] | None,
     chat_session_id: UUID | None,
     assistant_message: ChatMessage,
+    sandbox_session_id: str | None = None,
 ) -> AnswerStream:
     """Run a workflow and persist the assistant message + tool calls to DB.
 
@@ -478,6 +479,7 @@ def _run_workflow_and_save(
         user=user,
         is_connected=is_connected,
         chat_session_id=chat_session_id,
+        sandbox_session_id=sandbox_session_id,
     ):
         yield packet
 
@@ -902,6 +904,7 @@ def handle_stream_message_objects(
             ),
             allowed_tool_ids=new_msg_req.allowed_tool_ids,
             search_usage_forcing_setting=project_search_config.search_usage,
+            chat_session_id=str(chat_session.id),
         )
         tools: list[Tool] = []
         for tool_list in tool_dict.values():
@@ -1049,6 +1052,7 @@ def handle_stream_message_objects(
                 is_connected=check_is_connected,
                 chat_session_id=chat_session.id,
                 assistant_message=assistant_response,
+                sandbox_session_id=chat_session.sandbox_session_id,
             )
 
         elif new_msg_req.deep_research:
@@ -1095,6 +1099,7 @@ def handle_stream_message_objects(
                 forced_tool_id=forced_tool_id,
                 user_identity=user_identity,
                 chat_session_id=str(chat_session.id),
+                sandbox_session_id=chat_session.sandbox_session_id,
                 chat_files=chat_files_for_tools,
                 include_citations=new_msg_req.include_citations,
                 all_injected_file_metadata=all_injected_file_metadata,

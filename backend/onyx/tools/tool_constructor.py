@@ -115,6 +115,7 @@ def construct_tools(
     custom_tool_config: CustomToolConfig | None = None,
     file_reader_tool_config: FileReaderToolConfig | None = None,
     allowed_tool_ids: list[int] | None = None,
+    chat_session_id: str | None = None,
     search_usage_forcing_setting: SearchToolUsage = SearchToolUsage.AUTO,
 ) -> dict[int, list[Tool]]:
     """Constructs tools based on persona configuration and available APIs.
@@ -246,7 +247,12 @@ def construct_tools(
             # Handle Python/Code Interpreter Tool
             elif tool_cls.__name__ == PythonTool.__name__:
                 tool_dict[db_tool_model.id] = [
-                    PythonTool(tool_id=db_tool_model.id, emitter=emitter)
+                    PythonTool(
+                        tool_id=db_tool_model.id,
+                        emitter=emitter,
+                        db_session=db_session,
+                        chat_session_id=chat_session_id,
+                    )
                 ]
 
             # Handle File Reader Tool

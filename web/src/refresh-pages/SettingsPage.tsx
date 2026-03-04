@@ -397,6 +397,12 @@ function GeneralSettings() {
                       lightColor: "#7c3aed",
                       darkColor: "#a78bfa",
                     },
+                    {
+                      id: "neonai" as VirtualAIAccent,
+                      label: "NeonAI",
+                      lightColor: "#6706ce",
+                      darkColor: "#b46efe",
+                    },
                   ] as const
                 ).map((accentOption) => {
                   const resolvedTheme =

@@ -57,13 +57,14 @@ You should almost always use open_url after a web_search call. Use this tool whe
 PYTHON_TOOL_GUIDANCE = """
 
 ## python
-Use the `python` tool to execute Python code in an isolated sandbox. The tool will respond with the output of the execution or time out after 60.0 seconds.
+Use the `python` tool to execute Python code in a persistent sandbox. The tool will respond with the output of the execution or time out after 60.0 seconds.
+The sandbox is persistent across messages within this conversation — variables, DataFrames, imported modules, and files you create are preserved between calls. \
+You can define a variable in one message and use it in a later message without re-defining it. Treat the sandbox like a long-running Jupyter notebook session.
 Any files uploaded to the chat will be automatically be available in the execution environment's current directory. \
 The current directory in the file system can be used to save and persist user files. Files written to the current directory will be returned with a `file_link`. \
 Use this to give the user a way to download the file OR to display generated images.
 Internet access for this session is disabled. Do not make external web requests or API calls as they will fail.
 Use `openpyxl` to read and write Excel files. You have access to libraries like numpy, pandas, scipy, matplotlib, and PIL.
-IMPORTANT: each call to this tool is independent. Variables from previous calls will NOT be available in the current call.
 IMPORTANT: When generating charts or plots with matplotlib, you MUST save them as files using `plt.savefig('descriptive_name.png', dpi=150, bbox_inches='tight')` followed by `plt.close()`. NEVER use `plt.show()` — it does not work in this headless environment and will not produce any visible output or files.
 IMPORTANT: NEVER generate synthetic or fake data. User-uploaded files are always available in your working directory. Read them directly with pd.read_csv(), pd.read_excel(), etc. If a file is not found, print the exact error and stop — do NOT create substitute data.
 """
