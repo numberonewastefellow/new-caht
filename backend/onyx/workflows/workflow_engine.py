@@ -52,6 +52,7 @@ from onyx.server.query_and_chat.streaming_models import WorkflowStepEnd
 from onyx.server.query_and_chat.streaming_models import WorkflowPauseForInput
 from onyx.server.query_and_chat.streaming_models import WorkflowStepStart
 from onyx.tools.tool_implementations.agent_tool import AgentTool
+from onyx.tools.models import ChatFile
 from onyx.tools.models import ToolResponse
 from onyx.utils.logger import setup_logger
 from onyx.utils.threadpool_concurrency import run_in_background
@@ -384,6 +385,7 @@ def _build_agent_tools(
     emitter: Emitter,
     db_session: Session,
     user: User | None = None,
+    chat_files: list[ChatFile] | None = None,
 ) -> list[AgentTool]:
     """Build AgentTool instances for each workflow step's persona.
 
@@ -423,6 +425,7 @@ def _build_agent_tools(
                 llm=llm_cache[persona.id],
                 has_tools=has_tools,
                 promote_output=step.promote_output,
+                chat_files=chat_files,
             )
         )
     return agent_tools
@@ -501,6 +504,7 @@ def run_workflow_sequential(
     is_connected: Callable[[], bool] | None = None,
     chat_session_id: UUID | None = None,
     paused_execution: WorkflowExecution | None = None,
+    chat_files: list[ChatFile] | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in sequential mode — fixed order, no LLM routing.
 
@@ -648,6 +652,7 @@ def run_workflow_sequential(
             llm=llm_cache[persona.id],
             has_tools=has_tools,
             promote_output=step.promote_output,
+            chat_files=chat_files,
         )
 
     try:
@@ -1001,6 +1006,7 @@ def run_workflow_llm_decision(
     is_connected: Callable[[], bool] | None = None,
     chat_session_id: UUID | None = None,
     paused_execution: WorkflowExecution | None = None,
+    chat_files: list[ChatFile] | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in LLM-decision mode — orchestrator LLM decides which agent to call.
 
@@ -1022,7 +1028,7 @@ def run_workflow_llm_decision(
     )
 
     # Build agent tools (with cached LLMs + user — Tier 1.5)
-    agent_tools = _build_agent_tools(steps, emitter, db_session, user=user)
+    agent_tools = _build_agent_tools(steps, emitter, db_session, user=user, chat_files=chat_files)
     if not agent_tools:
         raise ValueError("No valid agent tools found for workflow")
 
@@ -2087,6 +2093,7 @@ def run_workflow(
     user: User,
     is_connected: Callable[[], bool] | None = None,
     chat_session_id: UUID | None = None,
+    chat_files: list[ChatFile] | None = None,
 ) -> Generator[Packet, None, None]:
     """Main entry point — dispatches to the appropriate orchestration mode.
 
@@ -2133,6 +2140,7 @@ def run_workflow(
             is_connected=is_connected,
             chat_session_id=chat_session_id,
             paused_execution=paused_execution,
+            chat_files=chat_files,
         )
     elif mode == "llm_decision":
         yield from run_workflow_llm_decision(
@@ -2140,6 +2148,7 @@ def run_workflow(
             is_connected=is_connected,
             chat_session_id=chat_session_id,
             paused_execution=paused_execution,
+            chat_files=chat_files,
         )
     else:
         raise ValueError(f"Unsupported orchestration mode: {mode}")

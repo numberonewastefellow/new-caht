@@ -17,6 +17,7 @@ from onyx.server.query_and_chat.placement import Placement  # used by run() sign
 from onyx.server.query_and_chat.streaming_models import Packet
 from onyx.server.query_and_chat.streaming_models import SectionEnd
 from onyx.tools.interface import Tool
+from onyx.tools.models import ChatFile
 from onyx.tools.models import ToolResponse
 
 if TYPE_CHECKING:
@@ -54,6 +55,7 @@ class AgentTool(Tool[None]):
         llm: "LLM | None" = None,
         has_tools: bool | None = None,
         promote_output: bool = False,
+        chat_files: list[ChatFile] | None = None,
     ) -> None:
         super().__init__(emitter=emitter)
         self._persona = persona
@@ -67,6 +69,7 @@ class AgentTool(Tool[None]):
         # Pre-check whether persona has tools (avoids lazy-load in bg thread)
         self._has_tools = has_tools if has_tools is not None else bool(persona.tools)
         self._promote_output = promote_output
+        self._chat_files = chat_files or []
 
     @property
     def id(self) -> int:
@@ -212,6 +215,17 @@ class AgentTool(Tool[None]):
             from onyx.prompts.tool_prompts import PYTHON_TOOL_GUIDANCE
             system_prompt_text += PYTHON_TOOL_GUIDANCE
 
+        # Tell the agent about pre-loaded files in the sandbox
+        if self._chat_files:
+            file_names = [f.filename for f in self._chat_files]
+            system_prompt_text += (
+                "\n\n## Available Files\n"
+                "The following files are pre-loaded in your working directory and can be "
+                f"read directly (e.g., `pd.read_csv('{file_names[0]}')`):\n"
+                + "\n".join(f"- {name}" for name in file_names)
+                + "\n\nDo NOT generate synthetic data — use these real files instead."
+            )
+
         system_prompt = ChatMessageSimple(
             message=system_prompt_text,
             token_count=token_counter(system_prompt_text),
@@ -307,9 +321,17 @@ class AgentTool(Tool[None]):
                     # turn_index/tab_index from ToolCallKickoff.
                     matched_tool.emit_start(placement=tc.placement)
 
+                    # Build override_kwargs for the tool (pass files to PythonTool)
+                    override_kwargs = None
+                    if isinstance(matched_tool, PythonTool) and self._chat_files:
+                        from onyx.tools.models import PythonToolOverrideKwargs
+                        override_kwargs = PythonToolOverrideKwargs(
+                            chat_files=self._chat_files,
+                        )
+
                     # Run the tool with the kickoff's placement
                     tool_response = matched_tool.run(
-                        tc.placement, None, **tc.tool_args
+                        tc.placement, override_kwargs, **tc.tool_args
                     )
                     tool_response.tool_call = tc
 

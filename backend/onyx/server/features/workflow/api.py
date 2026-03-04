@@ -251,6 +251,21 @@ def run_workflow_endpoint(
             detail="Workflow has no steps configured",
         )
 
+    # Load uploaded files into memory for the code interpreter
+    from onyx.file_store.utils import load_chat_file_by_id
+    from onyx.tools.models import ChatFile
+
+    chat_files: list[ChatFile] = []
+    for fd in run_request.file_descriptors:
+        try:
+            loaded = load_chat_file_by_id(fd["id"])
+            chat_files.append(ChatFile(
+                filename=loaded.filename or f"file_{loaded.file_id}",
+                content=loaded.content,
+            ))
+        except Exception as e:
+            logger.warning(f"Failed to load workflow file {fd.get('id')}: {e}")
+
     from onyx.workflows.workflow_engine import run_workflow
 
     emitter = get_default_emitter()
@@ -264,6 +279,7 @@ def run_workflow_endpoint(
                 db_session=db_session,
                 user=user,
                 chat_session_id=run_request.chat_session_id,
+                chat_files=chat_files or None,
             ):
                 yield get_json_line(packet.model_dump())
         except Exception as e:

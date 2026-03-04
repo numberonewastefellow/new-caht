@@ -77,7 +77,8 @@ export async function fetchWorkflow(
 export async function runWorkflow(
   workflowId: number,
   message: string,
-  chatSessionId?: number | null
+  chatSessionId?: number | null,
+  fileDescriptors?: { id: string; type: string; name?: string | null }[]
 ): Promise<Response> {
   return fetch(`/api/workflow/${workflowId}/run`, {
     method: "POST",
@@ -85,6 +86,7 @@ export async function runWorkflow(
     body: JSON.stringify({
       message,
       chat_session_id: chatSessionId ?? null,
+      file_descriptors: fileDescriptors ?? [],
     }),
   });
 }

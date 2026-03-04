@@ -98,6 +98,7 @@ from onyx.tools.tool_constructor import SearchToolConfig
 from onyx.tools.tool_implementations.file_reader.file_reader_tool import (
     FileReaderTool,
 )
+from onyx.tools.tool_implementations.python.python_tool import PythonTool
 from onyx.utils.logger import setup_logger
 from onyx.utils.telemetry import mt_cloud_telemetry
 from onyx.utils.timing import log_function_time
@@ -933,6 +934,7 @@ def handle_stream_message_objects(
 
         # Check whether the FileReaderTool is among the constructed tools.
         has_file_reader_tool = any(isinstance(t, FileReaderTool) for t in tools)
+        has_python_tool = any(isinstance(t, PythonTool) for t in tools)
 
         # Convert the chat history into a simple format that is free of any DB objects
         # and is easy to parse for the agent loop
@@ -943,6 +945,7 @@ def handle_stream_message_objects(
             additional_context=additional_context,
             token_counter=token_counter,
             tool_id_to_name_map=tool_id_to_name_map,
+            has_python_tool=has_python_tool,
         )
         simple_chat_history = chat_history_result.simple_messages
 

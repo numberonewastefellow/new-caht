@@ -1,3 +1,5 @@
+import csv
+import io
 import re
 from collections.abc import Callable
 from typing import cast
@@ -422,6 +424,70 @@ def convert_chat_history_basic(
     return list(reversed(trimmed_reversed))
 
 
+# Tabular file extensions where metadata-only injection is used
+# when the code interpreter (PythonTool) is available.
+_TABULAR_EXTENSIONS = {".csv", ".tsv", ".xlsx", ".xls", ".parquet", ".parq"}
+
+
+def _is_tabular_file(filename: str | None, file_type: ChatFileType) -> bool:
+    """Check if file is tabular data (CSV, Excel, TSV, Parquet)."""
+    if file_type == ChatFileType.CSV:
+        return True
+    if filename:
+        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+        return f".{ext}" in _TABULAR_EXTENSIONS
+    return False
+
+
+def _extract_tabular_metadata(loaded_file: ChatLoadedFile) -> str | None:
+    """Extract headers + 2-3 sample rows from a tabular file using stdlib.
+
+    Uses ``content_text`` (already extracted by the backend for all text file
+    types) so no pandas or heavy libraries are needed.
+
+    Returns a formatted metadata string, or ``None`` if extraction fails
+    (caller should fall back to full content).
+    """
+    content_text = loaded_file.content_text
+    if not content_text or not content_text.strip():
+        return None
+
+    try:
+        filename = loaded_file.filename or "file"
+        lines = content_text.strip().splitlines()
+        if len(lines) < 1:
+            return None
+
+        # Detect delimiter (tab for .tsv, comma otherwise)
+        ext = (
+            filename.rsplit(".", 1)[-1].lower() if "." in filename else "csv"
+        )
+        delimiter = "\t" if ext == "tsv" else ","
+
+        reader = csv.reader(io.StringIO(lines[0]), delimiter=delimiter)
+        headers = next(reader, None)
+        if not headers:
+            return None
+
+        row_count = len(lines) - 1  # subtract header line
+        # header + up to 3 sample rows
+        sample = "\n".join(lines[: min(4, len(lines))])
+
+        read_func = "pd.read_excel" if ext in ("xlsx", "xls") else "pd.read_csv"
+
+        return (
+            f"File: {filename}\n"
+            f"Type: {ext} | Rows: {row_count} | Columns: {len(headers)}\n"
+            f"Headers: {', '.join(headers)}\n"
+            f"Sample data (header + first rows):\n{sample}\n"
+            f"Read with: {read_func}('{filename}')\n"
+            f"This file is pre-loaded in your working directory. "
+            f"Read it directly — do NOT generate synthetic or fake data."
+        )
+    except Exception:
+        return None
+
+
 def convert_chat_history(
     chat_history: list[ChatMessage],
     files: list[ChatLoadedFile],
@@ -429,6 +495,7 @@ def convert_chat_history(
     additional_context: str | None,
     token_counter: Callable[[str], int],
     tool_id_to_name_map: dict[int, str],
+    has_python_tool: bool = False,
 ) -> ChatHistoryResult:
     """Convert ChatMessage history to ChatMessageSimple format.
 
@@ -479,20 +546,47 @@ def convert_chat_history(
             for text_file in text_files:
                 file_text = text_file.content_text or ""
                 filename = text_file.filename
-                message = (
-                    f"File: {filename}\n{file_text}\nEnd of File"
-                    if filename
-                    else file_text
-                )
+
+                # When PythonTool (code interpreter) is available and the
+                # file is tabular, inject only metadata (headers + sample
+                # rows).  The full file is staged in the sandbox at
+                # /workspace/{filename} by PythonTool.run().
+                if (
+                    has_python_tool
+                    and _is_tabular_file(filename, text_file.file_type)
+                ):
+                    metadata_msg = _extract_tabular_metadata(text_file)
+                    if metadata_msg is not None:
+                        message = metadata_msg
+                        token_count = token_counter(message)
+                    else:
+                        # Extraction failed — fall back to full content
+                        message = (
+                            f"File: {filename}\n{file_text}\nEnd of File"
+                            if filename
+                            else file_text
+                        )
+                        token_count = text_file.token_count
+                else:
+                    # Non-tabular files (.txt, .py, .json, .pdf, .docx)
+                    # — keep full content
+                    message = (
+                        f"File: {filename}\n{file_text}\nEnd of File"
+                        if filename
+                        else file_text
+                    )
+                    token_count = text_file.token_count
+
                 simple_messages.append(
                     ChatMessageSimple(
                         message=message,
-                        token_count=text_file.token_count,
+                        token_count=token_count,
                         message_type=MessageType.USER,
                         image_files=None,
                         file_id=text_file.file_id,
                     )
                 )
+                # Always populate metadata for the forgotten-files system
                 all_injected_file_metadata[text_file.file_id] = FileToolMetadata(
                     file_id=text_file.file_id,
                     filename=filename or "unknown",

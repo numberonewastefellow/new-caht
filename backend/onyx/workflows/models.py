@@ -7,6 +7,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from onyx.file_store.models import FileDescriptor
+
 # Valid orchestration modes
 OrchestrationMode = Literal["sequential", "llm_decision"]
 
@@ -135,6 +137,7 @@ class WorkflowRunRequest(BaseModel):
 
     message: str
     chat_session_id: UUID | None = None
+    file_descriptors: list[FileDescriptor] = []
 
 
 # ========================

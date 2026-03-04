@@ -1,0 +1,63 @@
+curl.exe ^"http://localhost:3000/api/chat/create-chat-session^" ^
+  -X POST ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0^" ^
+  -H ^"Accept: */*^" ^
+  -H ^"Accept-Language: en-US,en;q=0.9^" ^
+  -H ^"Accept-Encoding: gzip, deflate, br, zstd^" ^
+  -H ^"Referer: http://localhost:3000/app?assistantId=303^" ^
+  -H ^"Content-Type: application/json^" ^
+  -H ^"Origin: http://localhost:3000^" ^
+  -H ^"Sec-GPC: 1^" ^
+  -H ^"Connection: keep-alive^" ^
+  -H ^"Cookie: fastapiusersauth=bbo_mRB0OcOtTfiePrD2osHFIRyAV3bMc2yxGf_7DMc^" ^
+  -H ^"Sec-Fetch-Dest: empty^" ^
+  -H ^"Sec-Fetch-Mode: cors^" ^
+  -H ^"Sec-Fetch-Site: same-origin^" ^
+  -H ^"Priority: u=0^" ^
+  --data-raw ^"^{^\^"persona_id^\^":303,^\^"description^\^":null,^\^"project_id^\^":null^}^"
+
+
+
+
+
+  curl.exe ^"http://localhost:3000/api/chat/update-chat-session-model^" ^
+  -X PUT ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0^" ^
+  -H ^"Accept: */*^" ^
+  -H ^"Accept-Language: en-US,en;q=0.9^" ^
+  -H ^"Accept-Encoding: gzip, deflate, br, zstd^" ^
+  -H ^"Referer: http://localhost:3000/app?assistantId=303^" ^
+  -H ^"Content-Type: application/json^" ^
+  -H ^"Origin: http://localhost:3000^" ^
+  -H ^"Sec-GPC: 1^" ^
+  -H ^"Connection: keep-alive^" ^
+  -H ^"Cookie: fastapiusersauth=bbo_mRB0OcOtTfiePrD2osHFIRyAV3bMc2yxGf_7DMc^" ^
+  -H ^"Sec-Fetch-Dest: empty^" ^
+  -H ^"Sec-Fetch-Mode: cors^" ^
+  -H ^"Sec-Fetch-Site: same-origin^" ^
+  -H ^"Priority: u=4^" ^
+  --data-raw ^"^{^\^"chat_session_id^\^":^\^"e53da471-bb69-4738-87c0-adf79543e6c6^\^",^\^"new_alternate_model^\^":^\^"v__openai__gpt-5-mini^\^"^}^"
+
+
+
+  curl.exe ^"http://localhost:3000/api/chat/send-chat-message^" ^
+  -X POST ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0^" ^
+  -H ^"Accept: */*^" ^
+  -H ^"Accept-Language: en-US,en;q=0.9^" ^
+  -H ^"Accept-Encoding: gzip, deflate, br, zstd^" ^
+  -H ^"Referer: http://localhost:3000/app?assistantId=303^" ^
+  -H ^"Content-Type: application/json^" ^
+  -H ^"Origin: http://localhost:3000^" ^
+  -H ^"Sec-GPC: 1^" ^
+  -H ^"Connection: keep-alive^" ^
+  -H ^"Cookie: fastapiusersauth=bbo_mRB0OcOtTfiePrD2osHFIRyAV3bMc2yxGf_7DMc^" ^
+  -H ^"Sec-Fetch-Dest: empty^" ^
+  -H ^"Sec-Fetch-Mode: cors^" ^
+  -H ^"Sec-Fetch-Site: same-origin^" ^
+  -H ^"Priority: u=4^" ^
+  --data-raw ^"^{^\^"message^\^":^\^"Manufacturing quality data: columns batch_id, production_line (A/B/C), shift (Day/Night),^\noperator_id, temperature_celsius (170-186), pressure_bar (3.2-4.5), humidity_pct (42-64),^\ncycle_time_seconds, defect_count, defect_type (None/Cosmetic/Structural/Functional),^\npass_fail (Pass/Fail). 40 batches.^\nAnalysis objectives:^\n1) Defect rate by production line ^— bar chart showing fail ^% per line^\^",^\^"chat_session_id^\^":^\^"e53da471-bb69-4738-87c0-adf79543e6c6^\^",^\^"parent_message_id^\^":null,^\^"file_descriptors^\^":^[^{^\^"id^\^":^\^"1481cfed-8304-4b60-bdac-bb1559815a59^\^",^\^"type^\^":^\^"plain_text^\^",^\^"name^\^":^\^"manufacturing_quality.csv^\^",^\^"user_file_id^\^":^\^"83d91c72-af7e-4f56-9d1c-4b0bb5a6b373^\^"^}^],^\^"internal_search_filters^\^":^{^\^"source_type^\^":^[^\^"file^\^"^],^\^"document_set^\^":null,^\^"time_cutoff^\^":null,^\^"tags^\^":^[^]^},^\^"deep_research^\^":false,^\^"forced_tool_id^\^":6,^\^"llm_override^\^":^{^\^"temperature^\^":0.5,^\^"model_provider^\^":^\^"v^\^",^\^"model_version^\^":^\^"gpt-5-mini^\^"^},^\^"origin^\^":^\^"webapp^\^"^}^"
+
+
+
+  

@@ -65,6 +65,7 @@ Internet access for this session is disabled. Do not make external web requests 
 Use `openpyxl` to read and write Excel files. You have access to libraries like numpy, pandas, scipy, matplotlib, and PIL.
 IMPORTANT: each call to this tool is independent. Variables from previous calls will NOT be available in the current call.
 IMPORTANT: When generating charts or plots with matplotlib, you MUST save them as files using `plt.savefig('descriptive_name.png', dpi=150, bbox_inches='tight')` followed by `plt.close()`. NEVER use `plt.show()` — it does not work in this headless environment and will not produce any visible output or files.
+IMPORTANT: NEVER generate synthetic or fake data. User-uploaded files are always available in your working directory. Read them directly with pd.read_csv(), pd.read_excel(), etc. If a file is not found, print the exact error and stop — do NOT create substitute data.
 """
 
 GENERATE_IMAGE_GUIDANCE = """
