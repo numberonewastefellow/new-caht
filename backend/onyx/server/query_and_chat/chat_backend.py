@@ -39,6 +39,7 @@ from onyx.configs.constants import MilestoneRecordType
 from onyx.configs.constants import PUBLIC_API_TAGS
 from onyx.configs.model_configs import LITELLM_PASS_THROUGH_HEADERS
 from onyx.db.chat import add_chats_to_session_from_slack_thread
+from onyx.db.chat import create_new_chat_message
 from onyx.db.chat import delete_all_chat_sessions_for_user
 from onyx.db.chat import delete_chat_session
 from onyx.db.chat import duplicate_chat_session_for_user_from_slack
@@ -83,6 +84,8 @@ from onyx.server.query_and_chat.models import ChatSessionSummary
 from onyx.server.query_and_chat.models import ChatSessionUpdateRequest
 from onyx.server.query_and_chat.models import MessageOrigin
 from onyx.server.query_and_chat.models import RenameChatSessionResponse
+from onyx.server.query_and_chat.models import ExecuteCodeRequest
+from onyx.server.query_and_chat.models import ExecuteCodeResponse
 from onyx.server.query_and_chat.models import SendMessageRequest
 from onyx.server.query_and_chat.models import UpdateChatSessionTemperatureRequest
 from onyx.server.query_and_chat.models import UpdateChatSessionThreadRequest
@@ -917,3 +920,180 @@ def stop_chat_session(
     """
     set_fence(chat_session_id, redis_client, True)
     return {"message": "Chat session stopped"}
+
+
+@router.post("/execute-code")
+def execute_code_in_chat(
+    request: ExecuteCodeRequest,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> ExecuteCodeResponse:
+    """Execute code from a chat code block and save result as a sibling message.
+
+    This powers the "Run" button on code blocks in the chat UI.
+    The execution result is saved as a new ChatMessage that is a sibling of
+    the original assistant response (same parent_message_id), enabling
+    1/2 ↔ 2/2 navigation in the message switcher.
+    """
+    import mimetypes
+    from io import BytesIO
+
+    from onyx.configs.app_configs import CODE_INTERPRETER_BASE_URL
+    from onyx.configs.constants import FileOrigin
+    from onyx.file_store.models import ChatFileType
+    from onyx.file_store.models import FileDescriptor
+    from onyx.tools.tool_implementations.python.code_interpreter_client import (
+        CodeInterpreterClient,
+    )
+
+    # 1. Validate chat session ownership
+    chat_session = get_chat_session_by_id(
+        chat_session_id=request.chat_session_id,
+        user_id=user.id,
+        db_session=db_session,
+        is_shared=False,
+        include_deleted=False,
+    )
+
+    # 2. Validate parent message exists and belongs to user
+    parent_message = get_chat_message(
+        chat_message_id=request.parent_message_id,
+        user_id=user.id,
+        db_session=db_session,
+    )
+
+    # 3. Initialize code interpreter client
+    if not CODE_INTERPRETER_BASE_URL:
+        raise HTTPException(
+            status_code=400,
+            detail="Code interpreter is not configured",
+        )
+
+    client = CodeInterpreterClient(base_url=CODE_INTERPRETER_BASE_URL)
+
+    # Reuse existing sandbox session or create new one
+    session_id = chat_session.sandbox_session_id
+    if not session_id:
+        try:
+            session_id = client.create_session()
+            chat_session.sandbox_session_id = session_id
+            db_session.commit()
+        except Exception as e:
+            logger.error(f"Failed to create sandbox session: {e}")
+            raise HTTPException(
+                status_code=503,
+                detail="Code interpreter service unavailable",
+            )
+
+    # 4. Execute code
+    try:
+        response = client.execute(
+            code=request.code,
+            timeout_ms=60000,
+            session_id=session_id,
+        )
+    except Exception as first_err:
+        # Retry with fresh session on retriable errors
+        logger.warning(f"Code execution failed: {first_err}. Retrying with fresh session...")
+        try:
+            session_id = client.create_session()
+            chat_session.sandbox_session_id = session_id
+            db_session.commit()
+            response = client.execute(
+                code=request.code,
+                timeout_ms=60000,
+                session_id=session_id,
+            )
+        except Exception as retry_err:
+            logger.error(f"Code execution retry failed: {retry_err}")
+            raise HTTPException(
+                status_code=503,
+                detail="Code execution failed. The interpreter may be unavailable.",
+            )
+
+    # 5. Process generated files (plots, images, etc.)
+    file_store = get_default_file_store()
+    file_descriptors: list[FileDescriptor] = []
+
+    for workspace_file in response.files:
+        if workspace_file.kind != "file" or not workspace_file.file_id:
+            continue
+        try:
+            file_content = client.download_file(workspace_file.file_id)
+            filename = workspace_file.path.split("/")[-1]
+            mime_type, _ = mimetypes.guess_type(filename)
+            mime_type = mime_type or "application/octet-stream"
+
+            onyx_file_id = file_store.save_file(
+                content=BytesIO(file_content),
+                display_name=filename,
+                file_origin=FileOrigin.CHAT_UPLOAD,
+                file_type=mime_type,
+            )
+
+            # Determine ChatFileType based on mime
+            if mime_type.startswith("image/"):
+                chat_file_type = ChatFileType.IMAGE
+            else:
+                chat_file_type = ChatFileType.DOC
+
+            file_descriptors.append(
+                FileDescriptor(
+                    id=onyx_file_id,
+                    type=chat_file_type,
+                    name=filename,
+                )
+            )
+        except Exception as e:
+            logger.error(f"Failed to process file {workspace_file.path}: {e}")
+
+    # 6. Build message content with execution results
+    message_parts = []
+    message_parts.append("**Code Execution Result**\n")
+    message_parts.append(f"```\n{request.code}\n```\n")
+
+    if response.stdout.strip():
+        message_parts.append(f"**Output:**\n```\n{response.stdout.strip()}\n```\n")
+
+    if response.stderr.strip():
+        message_parts.append(f"**Errors:**\n```\n{response.stderr.strip()}\n```\n")
+
+    if response.exit_code is not None and response.exit_code != 0:
+        message_parts.append(f"Exit code: {response.exit_code}\n")
+
+    if response.timed_out:
+        message_parts.append("**Warning:** Execution timed out.\n")
+
+    if file_descriptors:
+        message_parts.append(
+            f"**Generated {len(file_descriptors)} file(s)**\n"
+        )
+
+    message_content = "\n".join(message_parts)
+
+    # 7. Create new ChatMessage as sibling (same parent as the assistant response)
+    new_message = create_new_chat_message(
+        chat_session_id=request.chat_session_id,
+        parent_message=parent_message,
+        message=message_content,
+        token_count=0,
+        message_type=MessageType.ASSISTANT,
+        db_session=db_session,
+        files=file_descriptors or None,
+        commit=True,
+    )
+
+    logger.info(
+        f"Created execution result message {new_message.id} "
+        f"as sibling under parent {parent_message.id} "
+        f"in session {request.chat_session_id}"
+    )
+
+    return ExecuteCodeResponse(
+        message_id=new_message.id,
+        parent_message_id=parent_message.id,
+        stdout=response.stdout,
+        stderr=response.stderr,
+        exit_code=response.exit_code,
+        files=file_descriptors,
+    )

@@ -1,4 +1,4 @@
-# Overview of Onyx Background Jobs
+# Overview of VertualAI Background Jobs
 
 The background jobs take care of:
 1. Pulling/Indexing documents (from connectors)

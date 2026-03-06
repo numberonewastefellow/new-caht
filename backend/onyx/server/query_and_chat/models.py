@@ -256,3 +256,22 @@ class ChatSearchResponse(BaseModel):
     groups: list[ChatSessionGroup]
     has_more: bool
     next_page: int | None = None
+
+
+class ExecuteCodeRequest(BaseModel):
+    """Request to execute code from a chat message code block."""
+
+    chat_session_id: UUID
+    parent_message_id: int  # The user message (parent of the assistant msg with code)
+    code: str
+
+
+class ExecuteCodeResponse(BaseModel):
+    """Response from code execution, saved as a sibling message."""
+
+    message_id: int
+    parent_message_id: int
+    stdout: str
+    stderr: str
+    exit_code: int | None
+    files: list[FileDescriptor]

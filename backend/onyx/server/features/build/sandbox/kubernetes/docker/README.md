@@ -1,6 +1,6 @@
 # Sandbox Container Image
 
-This directory contains the Dockerfile and resources for building the Onyx Craft sandbox container image.
+This directory contains the Dockerfile and resources for building the VertualAI Craft sandbox container image.
 
 ## Directory Structure
 
@@ -24,15 +24,15 @@ The sandbox image must be built for **amd64** architecture since our Kubernetes 
 
 ```bash
 cd backend/onyx/server/features/build/sandbox/kubernetes/docker
-docker build --platform linux/amd64 -t onyxdotapp/sandbox:v0.1.x .
-docker push onyxdotapp/sandbox:v0.1.x
+docker build --platform linux/amd64 -t vertualai/sandbox:v0.1.x .
+docker push vertualai/sandbox:v0.1.x
 ```
 
 ### Build multi-arch (recommended for flexibility)
 
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 \
-  -t onyxdotapp/sandbox:v0.1.x \
+  -t vertualai/sandbox:v0.1.x \
   --push .
 ```
 
@@ -41,16 +41,16 @@ docker buildx build --platform linux/amd64,linux/arm64 \
 After pushing a versioned tag, update `latest`:
 
 ```bash
-docker tag onyxdotapp/sandbox:v0.1.x onyxdotapp/sandbox:latest
-docker push onyxdotapp/sandbox:latest
+docker tag vertualai/sandbox:v0.1.x vertualai/sandbox:latest
+docker push vertualai/sandbox:latest
 ```
 
 Or with buildx:
 
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 \
-  -t onyxdotapp/sandbox:v0.1.x \
-  -t onyxdotapp/sandbox:latest \
+  -t vertualai/sandbox:v0.1.x \
+  -t vertualai/sandbox:latest \
   --push .
 ```
 
@@ -60,7 +60,7 @@ docker buildx build --platform linux/amd64,linux/arm64 \
 
 2. **Update the ConfigMap** in `cloud-deployment-yamls/danswer/configmap/env-configmap.yaml`:
    ```yaml
-   SANDBOX_CONTAINER_IMAGE: "onyxdotapp/sandbox:v0.1.x"
+   SANDBOX_CONTAINER_IMAGE: "vertualai/sandbox:v0.1.x"
    ```
 
 3. **Apply the ConfigMap**:
@@ -114,7 +114,7 @@ When a session is created, the following structure is set up in the pod:
 ### Verify image exists on Docker Hub
 
 ```bash
-curl -s "https://hub.docker.com/v2/repositories/onyxdotapp/sandbox/tags" | jq '.results[].name'
+curl -s "https://hub.docker.com/v2/repositories/vertualai/sandbox/tags" | jq '.results[].name'
 ```
 
 ### Check what image a pod is using

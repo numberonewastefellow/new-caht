@@ -1,8 +1,8 @@
-<!-- ONYX_METADATA={"link": "https://github.com/onyx-dot-app/onyx/blob/main/backend/onyx/connectors/README.md"} -->
+<!-- ONYX_METADATA={"link": "https://github.com/vertualai/vertualai/blob/main/backend/onyx/connectors/README.md"} -->
 
-# Writing a new Onyx Connector
+# Writing a new VertualAI Connector
 
-This README covers how to contribute a new Connector for Onyx. It includes an overview of the design, interfaces,
+This README covers how to contribute a new Connector for VertualAI. It includes an overview of the design, interfaces,
 and required changes.
 
 Thank you for your contribution!
@@ -30,12 +30,12 @@ Connectors come in 3 different flows:
 
 ### Connector Implementation
 
-Refer to [interfaces.py](https://github.com/onyx-dot-app/onyx/blob/main/backend/onyx/connectors/interfaces.py)
+Refer to [interfaces.py](https://github.com/vertualai/vertualai/blob/main/backend/onyx/connectors/interfaces.py)
 and this first contributor created Pull Request for a new connector (Shoutout to Dan Brown):
-[Reference Pull Request](https://github.com/onyx-dot-app/onyx/pull/139)
+[Reference Pull Request](https://github.com/vertualai/vertualai/pull/139)
 
 For implementing a Slim Connector, refer to the comments in this PR:
-[Slim Connector PR](https://github.com/onyx-dot-app/onyx/pull/3303/files)
+[Slim Connector PR](https://github.com/vertualai/vertualai/pull/3303/files)
 
 All new connectors should have tests added to the `backend/tests/daily/connectors` directory. Refer to the above PR for an example of adding tests for a new connector.
 
@@ -81,24 +81,24 @@ if __name__ == "__main__":
 #### Backend Changes
 
 - Add a new type to
-  [DocumentSource](https://github.com/onyx-dot-app/onyx/blob/main/backend/onyx/configs/constants.py)
+  [DocumentSource](https://github.com/vertualai/vertualai/blob/main/backend/onyx/configs/constants.py)
 - Add a mapping from DocumentSource (and optionally connector type) to the right connector class
-  [here](https://github.com/onyx-dot-app/onyx/blob/main/backend/onyx/connectors/factory.py#L33)
+  [here](https://github.com/vertualai/vertualai/blob/main/backend/onyx/connectors/factory.py#L33)
 
 #### Frontend Changes
 
-- Add the new Connector definition to the `SOURCE_METADATA_MAP` [here](https://github.com/onyx-dot-app/onyx/blob/main/web/src/lib/sources.ts#L59).
-- Add the definition for the new Form to the `connectorConfigs` object [here](https://github.com/onyx-dot-app/onyx/blob/main/web/src/lib/connectors/connectors.ts#L79).
+- Add the new Connector definition to the `SOURCE_METADATA_MAP` [here](https://github.com/vertualai/vertualai/blob/main/web/src/lib/sources.ts#L59).
+- Add the definition for the new Form to the `connectorConfigs` object [here](https://github.com/vertualai/vertualai/blob/main/web/src/lib/connectors/connectors.ts#L79).
 
 #### Docs Changes
 
 Create the new connector page (with guiding images!) with how to get the connector credentials and how to set up the
-connector in Onyx. Then create a Pull Request in [https://github.com/onyx-dot-app/documentation](https://github.com/onyx-dot-app/documentation).
+connector in VertualAI. Then create a Pull Request in [https://github.com/vertualai/documentation](https://github.com/vertualai/documentation).
 
 ### Before opening PR
 
 1. Be sure to fully test changes end to end with setting up the connector and updating the index with new docs from the
    new connector. To make it easier to review, please attach a video showing the successful creation of the connector via the UI (starting from the `Add Connector` page).
-2. Add a folder + tests under `backend/tests/daily/connectors` director. For an example, checkout the [test for Confluence](https://github.com/onyx-dot-app/onyx/blob/main/backend/tests/daily/connectors/confluence/test_confluence_basic.py). In the PR description, include a guide on how to setup the new source to pass the test. Before merging, we will re-create the environment and make sure the test(s) pass.
+2. Add a folder + tests under `backend/tests/daily/connectors` director. For an example, checkout the [test for Confluence](https://github.com/vertualai/vertualai/blob/main/backend/tests/daily/connectors/confluence/test_confluence_basic.py). In the PR description, include a guide on how to setup the new source to pass the test. Before merging, we will re-create the environment and make sure the test(s) pass.
 3. Be sure to run the linting/formatting, refer to the formatting and linting section in
-   [CONTRIBUTING.md](https://github.com/onyx-dot-app/onyx/blob/main/CONTRIBUTING.md#formatting-and-linting)
+   [CONTRIBUTING.md](https://github.com/vertualai/vertualai/blob/main/CONTRIBUTING.md#formatting-and-linting)

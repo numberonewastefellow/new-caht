@@ -11,11 +11,15 @@ import AgentMessage from "@/app/app/message/messageComponents/AgentMessage";
 import Spacer from "@/refresh-components/Spacer";
 import DynamicBottomSpacer from "@/components/chat/DynamicBottomSpacer";
 import {
+  useChatSessionStore,
   useCurrentMessageHistory,
   useCurrentMessageTree,
   useLoadingError,
   useUncaughtError,
 } from "@/app/app/stores/useChatSessionStore";
+import { upsertMessages, setMessageAsLatest } from "@/app/app/services/messageTree";
+import { patchMessageToBeLatest } from "@/app/app/services/lib";
+import type { Packet } from "@/app/app/services/streamingModels";
 
 export interface ChatUIProps {
   liveAssistant: MinimalPersonaSnapshot;
@@ -23,6 +27,7 @@ export interface ChatUIProps {
   setPresentingDocument: (doc: MinimalOnyxDocument | null) => void;
   onMessageSelection: (nodeId: number) => void;
   stopGenerating: () => void;
+  chatSessionId: string;
 
   // Submit handlers
   onSubmit: (args: {
@@ -62,6 +67,7 @@ const ChatUI = React.memo(
     currentMessageFiles,
     onResubmit,
     anchorNodeId,
+    chatSessionId,
   }: ChatUIProps) => {
     // Get messages and error state from store
     const messages = useCurrentMessageHistory();
@@ -99,6 +105,79 @@ const ChatUI = React.memo(
         };
       },
       []
+    );
+
+    // Callback for "Run" button: inserts execution result as sibling message
+    const handleCodeExecutionResult = useCallback(
+      (
+        parentNodeId: number,
+        result: {
+          messageId: number;
+          parentMessageId: number;
+          content: string;
+          files: Array<{ id: string; type: string; name?: string }>;
+        }
+      ) => {
+        // Create a new message node for the execution result
+        const newNodeId = -Date.now(); // Unique negative ID for temp node
+        const placement = { turn_index: 0, tab_index: 0, sub_turn_index: null };
+
+        // Build streaming packets so AgentMessage renders as complete (not "Thinking...")
+        const execPackets: Packet[] = [
+          {
+            placement,
+            obj: {
+              type: "message_start" as const,
+              id: `exec-${result.messageId}`,
+              content: "",
+              final_documents: null,
+            },
+          },
+          {
+            placement,
+            obj: {
+              type: "message_delta" as const,
+              content: result.content,
+            },
+          },
+          {
+            placement,
+            obj: {
+              type: "stop" as const,
+              stop_reason: undefined,
+            },
+          },
+        ];
+
+        const newMessage: Message = {
+          messageId: result.messageId,
+          nodeId: newNodeId,
+          message: result.content,
+          type: "assistant",
+          files: result.files.map((f) => ({
+            id: f.id,
+            type: f.type as any,
+            name: f.name,
+          })),
+          toolCall: null,
+          parentNodeId: parentNodeId,
+          childrenNodeIds: [],
+          latestChildNodeId: null,
+          packets: execPackets,
+          packetCount: execPackets.length,
+        };
+
+        // Insert into message tree as a sibling (same parent), make it latest
+        const currentTree = messageTree || new Map();
+        const updatedTree = upsertMessages(currentTree, [newMessage], true);
+        const finalTree = setMessageAsLatest(updatedTree, newNodeId);
+        const { updateSessionMessageTree } = useChatSessionStore.getState();
+        updateSessionMessageTree(chatSessionId, finalTree);
+
+        // Persist to backend
+        patchMessageToBeLatest(result.messageId);
+      },
+      [messageTree, chatSessionId]
     );
 
     const handleEditWithMessageId = useCallback(
@@ -190,6 +269,8 @@ const ChatUI = React.memo(
                   onRegenerate={createRegenerator}
                   parentMessage={previousMessage}
                   processingDurationSeconds={message.processingDurationSeconds}
+                  chatSessionId={chatSessionId}
+                  onCodeExecutionResult={handleCodeExecutionResult}
                 />
               </div>
             );

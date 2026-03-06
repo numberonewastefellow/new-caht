@@ -747,6 +747,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                         stopGenerating={stopGenerating}
                         onResubmit={handleResubmitLastMessage}
                         anchorNodeId={anchorNodeId}
+                        chatSessionId={currentChatSessionId!}
                       />
                     </ChatScrollContainer>
                   </Fade>

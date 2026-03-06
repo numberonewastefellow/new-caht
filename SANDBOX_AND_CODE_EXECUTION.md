@@ -1,8 +1,8 @@
 # Sandbox & Code Execution Setup
 
-This guide covers how to enable and run the two code execution features in Onyx:
+This guide covers how to enable and run the two code execution features in VertualAI:
 
-1. **Onyx Craft (Sandbox)** - AI-powered app builder at `/craft/v1`
+1. **VertualAI Craft (Sandbox)** - AI-powered app builder at `/craft/v1`
 2. **Code Interpreter** - Run Python code snippets during chat
 
 ---
@@ -56,7 +56,7 @@ dev.bat up
 
 ## Feature Details
 
-### Onyx Craft (Sandbox)
+### VertualAI Craft (Sandbox)
 
 | Item | Detail |
 |------|--------|
@@ -90,7 +90,7 @@ dev.bat up
 | Item | Detail |
 |------|--------|
 | **What it does** | Lets the AI run Python code during chat conversations |
-| **Docker image** | `onyxdotapp/code-interpreter:latest` |
+| **Docker image** | `vertualai/code-interpreter:latest` |
 | **Port** | `8000` (exposed in dev compose files) |
 | **Execution model** | Docker-out-of-Docker (mounts host Docker socket) |
 

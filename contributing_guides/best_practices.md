@@ -89,7 +89,7 @@ Add clear comments:
 - Validate objects:
   - on creation, and
   - right before use.
-- Connector code (data → Onyx documents):
+- Connector code (data → VertualAI documents):
   - Any in-memory structure that can grow without bound based on input must be periodically size-checked.
   - If a connector is OOMing (often shows up as “missing celery tasks”), this is a top thing to check retroactively.
 

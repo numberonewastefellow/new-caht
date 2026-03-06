@@ -1,18 +1,18 @@
-# Onyx Developer Script
+# VertualAI Developer Script
 
-[![Deploy Status](https://github.com/onyx-dot-app/onyx/actions/workflows/release-devtools.yml/badge.svg)](https://github.com/onyx-dot-app/onyx/actions/workflows/release-devtools.yml)
+[![Deploy Status](https://github.com/vertualai/vertualai/actions/workflows/release-devtools.yml/badge.svg)](https://github.com/vertualai/vertualai/actions/workflows/release-devtools.yml)
 [![PyPI](https://img.shields.io/pypi/v/onyx-devtools.svg)](https://pypi.org/project/onyx-devtools/)
 
-`ods` is [onyx.app](https://github.com/onyx-dot-app/onyx)'s devtools utility script.
+`ods` is [vertualai.app](https://github.com/vertualai/vertualai)'s devtools utility script.
 It is packaged as a python [wheel](https://packaging.python.org/en/latest/discussions/package-formats/) and available from [PyPI](https://pypi.org/project/onyx-devtools/).
 
 ## Installation
 
-A stable version of `ods` is provided in the default [python venv](https://github.com/onyx-dot-app/onyx/blob/main/CONTRIBUTING.md#backend-python-requirements)
-which is synced automatically if you have [pre-commit](https://github.com/onyx-dot-app/onyx/blob/main/CONTRIBUTING.md#formatting-and-linting)
+A stable version of `ods` is provided in the default [python venv](https://github.com/vertualai/vertualai/blob/main/CONTRIBUTING.md#backend-python-requirements)
+which is synced automatically if you have [pre-commit](https://github.com/vertualai/vertualai/blob/main/CONTRIBUTING.md#formatting-and-linting)
 hooks installed.
 
-While inside the Onyx repository, activate the root project's venv,
+While inside the VertualAI repository, activate the root project's venv,
 
 ```shell
 source .venv/bin/activate
@@ -65,7 +65,7 @@ _Note: bash completion requires the [bash-completion](https://github.com/scop/ba
 
 ### `compose` - Launch Docker Containers
 
-Launch Onyx docker containers using docker compose.
+Launch VertualAI docker containers using docker compose.
 
 ```shell
 ods compose [profile]
@@ -113,7 +113,7 @@ ods compose --tag edge
 
 ### `logs` - View Docker Container Logs
 
-View logs from running Onyx docker containers. Service names are available as
+View logs from running VertualAI docker containers. Service names are available as
 arguments to filter output, with tab-completion support.
 
 ```shell
@@ -148,7 +148,7 @@ ods logs --follow=false
 
 ### `pull` - Pull Docker Images
 
-Pull the latest images for Onyx docker containers.
+Pull the latest images for VertualAI docker containers.
 
 ```shell
 ods pull
@@ -349,7 +349,7 @@ ods cherry-pick abc123 --release 2.5 --dry-run
 
 ## Upgrading
 
-To upgrade the stable version, upgrade it as you would any other [requirement](https://github.com/onyx-dot-app/onyx/tree/main/backend/requirements#readme).
+To upgrade the stable version, upgrade it as you would any other [requirement](https://github.com/vertualai/vertualai/tree/main/backend/requirements#readme).
 
 ## Building from source
 
@@ -368,7 +368,7 @@ while `go install .` will output to your [GOPATH](https://go.dev/wiki/SettingGOP
 ```
 
 _Typically, `GOPATH` is added to your shell's `PATH`, but this may be confused easily during development
-with the pip version of `ods` installed in the Onyx venv._
+with the pip version of `ods` installed in the VertualAI venv._
 
 To build the wheel,
 
@@ -384,7 +384,7 @@ uv pip install .
 
 ## Deploy
 
-Releases are deployed automatically when git tags prefaced with `ods/` are pushed to [GitHub](https://github.com/onyx-dot-app/onyx/tags).
+Releases are deployed automatically when git tags prefaced with `ods/` are pushed to [GitHub](https://github.com/vertualai/vertualai/tags).
 
 The [release-tag](https://pypi.org/project/release-tag/) package can be used to calculate and push the next tag automatically,
 
@@ -392,4 +392,4 @@ The [release-tag](https://pypi.org/project/release-tag/) package can be used to 
 tag --prefix ods
 ```
 
-See also, [`.github/workflows/release-devtools.yml`](https://github.com/onyx-dot-app/onyx/blob/main/.github/workflows/release-devtools.yml).
+See also, [`.github/workflows/release-devtools.yml`](https://github.com/vertualai/vertualai/blob/main/.github/workflows/release-devtools.yml).

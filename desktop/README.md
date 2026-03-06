@@ -1,6 +1,6 @@
-# Onyx Desktop
+# VertualAI Desktop
 
-A lightweight macOS desktop application for [Onyx Cloud](https://cloud.onyx.app).
+A lightweight macOS desktop application for [VertualAI Cloud](https://cloud.vertualai.app).
 
 Built with [Tauri](https://tauri.app) for minimal bundle size (~10MB vs Electron's 150MB+).
 
@@ -10,7 +10,7 @@ Built with [Tauri](https://tauri.app) for minimal bundle size (~10MB vs Electron
 - ⌨️ **Keyboard Shortcuts** - Quick navigation and actions
 - 🪟 **Native Feel** - macOS-style title bar with traffic lights
 - 💾 **Window State** - Remembers size/position between sessions
-- 🔗 **Multi-window** - Open multiple Onyx windows
+- 🔗 **Multi-window** - Open multiple VertualAI windows
 
 ## Keyboard Shortcuts
 
@@ -112,7 +112,7 @@ npm run tauri icon path/to/your-icon.png
 
 ### Self-Hosted / Custom Server URL
 
-The app defaults to `https://cloud.onyx.app` but supports any Onyx instance.
+The app defaults to `https://cloud.vertualai.app` but supports any VertualAI instance.
 
 **Config file location:**
 - macOS: `~/Library/Application Support/app.onyx.desktop/config.json`
@@ -128,7 +128,7 @@ The app defaults to `https://cloud.onyx.app` but supports any Onyx instance.
 ```json
 {
   "server_url": "https://your-onyx-instance.company.com",
-  "window_title": "Onyx"
+  "window_title": "VertualAI"
 }
 ```
 
@@ -172,7 +172,7 @@ Modify the window configuration in `src-tauri/tauri.conf.json`:
 ## Troubleshooting
 
 ### "Unable to resolve host"
-Make sure you have an internet connection. The app loads content from `cloud.onyx.app`.
+Make sure you have an internet connection. The app loads content from `cloud.vertualai.app`.
 
 ### Build fails on M1/M2 Mac
 ```bash
@@ -183,7 +183,7 @@ rustup target add aarch64-apple-darwin
 ### Code signing for distribution
 For distributing outside the App Store, you'll need to:
 1. Get an Apple Developer certificate
-2. Sign the app: `codesign --deep --force --sign "Developer ID" target/release/bundle/macos/Onyx.app`
+2. Sign the app: `codesign --deep --force --sign "Developer ID" target/release/bundle/macos/VertualAI.app`
 3. Notarize with Apple
 
 ## License

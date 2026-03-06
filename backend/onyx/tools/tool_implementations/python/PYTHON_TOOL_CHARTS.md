@@ -5,7 +5,7 @@
 The PythonTool (Code Interpreter) executes Python code in a Docker sandbox. When agents generate matplotlib charts via `plt.savefig()`, the resulting PNG files are:
 
 1. Downloaded from the sandbox
-2. Saved to the Onyx FileStore (S3/Postgres)
+2. Saved to the VertualAI FileStore (S3/Postgres)
 3. Streamed to the frontend as `file_ids` in `PythonToolDelta` packets
 4. **Rendered inline** in the chat UI using the `InMessageImage` component
 5. **Persisted** in chat history via `create_python_tool_packets()` in `session_loading.py`

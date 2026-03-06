@@ -152,11 +152,11 @@ WORKFLOW_DOMAIN_COLORS = {
         "primary care":  ("#66BB6A", "#2E7D32"),   # Green
         "endocrin":      ("#CE93D8", "#6A1B9A"),   # Light purple
         "cardiolog":     ("#EF5350", "#C62828"),   # Bright red
-        "gastro":        ("#FFA726", "#E65100"),    # Orange
-        "rheumatol":     ("#7986CB", "#283593"),   # Indigo
-        "nephrol":       ("#29B6F6", "#0277BD"),   # Blue
+        "gastro":        ("#FFA726", "#E65100"),   # Orange
+        "rheumatol":     ("#42A5F5", "#0D47A1"),   # Vibrant blue (joints)
+        "nephrol":       ("#29B6F6", "#0277BD"),   # Sky blue
         "hematol":       ("#F06292", "#AD1457"),   # Pink
-        "synthe":        ("#78909C", "#37474F"),   # Grey
+        "synthe":        ("#26C6DA", "#00695C"),   # Teal (synthesis/merge)
     },
     "financial": {
         "_base":         ("#5C6BC0", "#1A237E"),   # Indigo
@@ -166,16 +166,16 @@ WORKFLOW_DOMAIN_COLORS = {
         "sanction":      ("#EF5350", "#B71C1C"),   # Red
         "trade":         ("#26C6DA", "#00838F"),   # Cyan
         "crypto":        ("#FFD54F", "#F57F17"),   # Gold
-        "geopolit":      ("#78909C", "#37474F"),   # Grey
-        "forensic":      ("#607D8B", "#263238"),   # Dark grey
-        "sar":           ("#7986CB", "#283593"),   # Indigo
+        "geopolit":      ("#FF7043", "#D84315"),   # Vibrant orange (geopolitics)
+        "forensic":      ("#7C4DFF", "#311B92"),   # Electric purple (forensics)
+        "sar":           ("#EC407A", "#AD1457"),   # Vibrant pink (reports)
     },
     "engineering": {
-        "_base":         ("#78909C", "#37474F"),   # Steel
-        "triage":        ("#90A4AE", "#455A64"),   # Light steel
-        "material":      ("#8D6E63", "#4E342E"),   # Brown
+        "_base":         ("#5C6BC0", "#283593"),   # Vibrant indigo (not grey)
+        "triage":        ("#42A5F5", "#0D47A1"),   # Vibrant blue (triage)
+        "material":      ("#FF7043", "#BF360C"),   # Deep orange (metals/forge)
         "stress":        ("#EF5350", "#C62828"),   # Red
-        "corrosion":     ("#FF7043", "#D84315"),   # Orange
+        "corrosion":     ("#FFA726", "#E65100"),   # Amber-orange
         "weld":          ("#FFB74D", "#E65100"),   # Amber
         "quality":       ("#66BB6A", "#2E7D32"),   # Green
         "thermal":       ("#FF7043", "#BF360C"),   # Deep orange
@@ -184,22 +184,22 @@ WORKFLOW_DOMAIN_COLORS = {
         "corrective":    ("#26C6DA", "#00838F"),   # Cyan
     },
     "cybersecurity": {
-        "_base":         ("#7C4DFF", "#1A1A2E"),   # Purple-dark
+        "_base":         ("#7C4DFF", "#311B92"),   # Electric purple
         "soc":           ("#5C6BC0", "#1A237E"),   # Indigo
         "network":       ("#42A5F5", "#0D47A1"),   # Blue
         "endpoint":      ("#EF5350", "#B71C1C"),   # Red
         "identity":      ("#AB47BC", "#6A1B9A"),   # Purple
         "cloud":         ("#4FC3F7", "#0277BD"),   # Sky blue
         "phish":         ("#FF7043", "#D84315"),   # Orange
-        "threat":        ("#607D8B", "#263238"),   # Dark grey
+        "threat":        ("#EC407A", "#880E4F"),   # Vibrant magenta (threat)
         "data loss":     ("#F06292", "#AD1457"),   # Pink
-        "report":        ("#7986CB", "#283593"),   # Indigo
+        "report":        ("#26C6DA", "#00695C"),   # Teal (reports)
     },
     "insurance": {
         "_base":         ("#42A5F5", "#0D47A1"),   # Blue
         "triage":        ("#5C6BC0", "#283593"),   # Indigo
-        "property":      ("#8D6E63", "#4E342E"),   # Brown
-        "auto":          ("#78909C", "#37474F"),   # Grey
+        "property":      ("#FF7043", "#BF360C"),   # Vibrant orange (property)
+        "auto":          ("#5C6BC0", "#1A237E"),   # Vibrant indigo (vehicles)
         "medical":       ("#EF5350", "#C62828"),   # Red
         "fraud":         ("#FF1744", "#B71C1C"),   # Bright red
         "weather":       ("#29B6F6", "#01579B"),   # Blue
@@ -208,17 +208,17 @@ WORKFLOW_DOMAIN_COLORS = {
         "settlement":    ("#66BB6A", "#2E7D32"),   # Green
     },
     "mna": {
-        "_base":         ("#5C6BC0", "#283593"),   # Indigo
+        "_base":         ("#7C4DFF", "#311B92"),   # Electric purple (M&A brand)
         "deal":          ("#42A5F5", "#0D47A1"),   # Blue
         "financial":     ("#66BB6A", "#2E7D32"),   # Green
         "tax":           ("#AB47BC", "#6A1B9A"),   # Purple
-        "legal":         ("#607D8B", "#37474F"),   # Grey
+        "legal":         ("#5C6BC0", "#1A237E"),   # Vibrant indigo (legal)
         "commercial":    ("#FF7043", "#D84315"),   # Orange
         "technol":       ("#4FC3F7", "#0277BD"),   # Sky blue
         "hr":            ("#F06292", "#AD1457"),   # Pink
-        "operation":     ("#78909C", "#455A64"),   # Steel
+        "operation":     ("#26C6DA", "#00695C"),   # Vibrant teal (operations)
         "esg":           ("#66BB6A", "#1B5E20"),   # Deep green
-        "memo":          ("#7986CB", "#283593"),   # Indigo
+        "memo":          ("#EC407A", "#AD1457"),   # Vibrant pink (memo)
     },
     "drug": {
         "_base":         ("#42A5F5", "#0D47A1"),   # Blue
@@ -226,12 +226,12 @@ WORKFLOW_DOMAIN_COLORS = {
         "chemist":       ("#AB47BC", "#6A1B9A"),   # Purple
         "biostat":       ("#4FC3F7", "#0277BD"),   # Sky blue
         "toxicol":       ("#EF5350", "#B71C1C"),   # Red
-        "regulat":       ("#78909C", "#37474F"),   # Grey
+        "regulat":       ("#FF7043", "#BF360C"),   # Vibrant orange (regulatory)
         "clinical":      ("#66BB6A", "#2E7D32"),   # Green
         "pharmaco":      ("#26C6DA", "#00838F"),   # Teal
-        "patent":        ("#607D8B", "#37474F"),   # Blue grey
-        "manufactur":    ("#FF7043", "#D84315"),   # Orange
-        "stage gate":    ("#7986CB", "#283593"),   # Indigo
+        "patent":        ("#7C4DFF", "#311B92"),   # Electric purple (IP)
+        "manufactur":    ("#FFA726", "#E65100"),   # Amber (factory)
+        "stage gate":    ("#EC407A", "#AD1457"),   # Vibrant pink (gate)
     },
 }
 

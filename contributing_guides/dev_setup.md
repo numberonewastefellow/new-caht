@@ -1,6 +1,6 @@
 ## Get Started 🚀
 
-Onyx being a fully functional app, relies on some external software, specifically:
+VertualAI being a fully functional app, relies on some external software, specifically:
 
 - [Postgres](https://www.postgresql.org/) (Relational DB)
 - [Vespa](https://vespa.ai/) (Vector DB/Search Engine)
@@ -9,8 +9,8 @@ Onyx being a fully functional app, relies on some external software, specificall
 - [Nginx](https://nginx.org/) (Not needed for development flows generally)
 
 > **Note:**
-> This guide provides instructions to build and run Onyx locally from source with Docker containers providing the above external software. We believe this combination is easier for
-> development purposes. If you prefer to use pre-built container images, we provide instructions on running the full Onyx stack within Docker below.
+> This guide provides instructions to build and run VertualAI locally from source with Docker containers providing the above external software. We believe this combination is easier for
+> development purposes. If you prefer to use pre-built container images, we provide instructions on running the full VertualAI stack within Docker below.
 
 ### Local Set Up
 
@@ -56,7 +56,7 @@ uv run playwright install
 
 #### Frontend: Node dependencies
 
-Onyx uses Node v22.20.0. We highly recommend you use [Node Version Manager (nvm)](https://github.com/nvm-sh/nvm)
+VertualAI uses Node v22.20.0. We highly recommend you use [Node Version Manager (nvm)](https://github.com/nvm-sh/nvm)
 to manage your Node installations. Once installed, you can run
 
 ```bash
@@ -83,7 +83,7 @@ uv run pre-commit install
 ```
 
 Additionally, we use `mypy` for static type checking.
-Onyx is fully type-annotated, and we want to keep it that way!
+VertualAI is fully type-annotated, and we want to keep it that way!
 To run the mypy checks manually, run `uv run mypy .` from the `onyx/backend` directory.
 
 ### Web
@@ -116,7 +116,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d index relat
 
 (index refers to Vespa, relational_db refers to Postgres, and cache refers to Redis)
 
-### Running Onyx locally
+### Running VertualAI locally
 
 To start the frontend, navigate to `onyx/web` and run:
 
@@ -137,7 +137,7 @@ _For Windows (for compatibility with both PowerShell and Command Prompt):_
 powershell -Command "uvicorn model_server.main:app --reload --port 9000"
 ```
 
-The first time running Onyx, you will need to run the DB migrations for Postgres.
+The first time running VertualAI, you will need to run the DB migrations for Postgres.
 After the first time, this is no longer required unless the DB models change.
 
 Navigate to `onyx/backend` and with the venv active, run:
@@ -182,13 +182,13 @@ You should now have 4 servers running:
 - Model server
 - Background jobs
 
-Now, visit `http://localhost:3000` in your browser. You should see the Onyx onboarding wizard where you can connect your external LLM provider to Onyx.
+Now, visit `http://localhost:3000` in your browser. You should see the VertualAI onboarding wizard where you can connect your external LLM provider to VertualAI.
 
-You've successfully set up a local Onyx instance! 🏁
+You've successfully set up a local VertualAI instance! 🏁
 
-#### Running the Onyx application in a container
+#### Running the VertualAI application in a container
 
-You can run the full Onyx application stack from pre-built images including all external software dependencies.
+You can run the full VertualAI application stack from pre-built images including all external software dependencies.
 
 Navigate to `onyx/deployment/docker_compose` and run:
 
@@ -196,9 +196,9 @@ Navigate to `onyx/deployment/docker_compose` and run:
 docker compose up -d
 ```
 
-After Docker pulls and starts these containers, navigate to `http://localhost:3000` to use Onyx.
+After Docker pulls and starts these containers, navigate to `http://localhost:3000` to use VertualAI.
 
-If you want to make changes to Onyx and run those changes in Docker, you can also build a local version of the Onyx container images that incorporates your changes like so:
+If you want to make changes to VertualAI and run those changes in Docker, you can also build a local version of the VertualAI container images that incorporates your changes like so:
 
 ```bash
 docker compose up -d --build

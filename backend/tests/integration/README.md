@@ -16,7 +16,7 @@ First install openap-generator
 brew install openapi-generator
 ```
 
-Then, using the VSCode/Cursor debugger, run the `Onyx OpenAPI Schema Generator` task (see `CONTRIBUTING_VSCODE.md` for `launch.json` setup instructions).
+Then, using the VSCode/Cursor debugger, run the `VertualAI OpenAPI Schema Generator` task (see `CONTRIBUTING_VSCODE.md` for `launch.json` setup instructions).
 The task automatically generates the Python client needed for integration tests.
 
 If the client generation fails, try running this command manually:
@@ -26,7 +26,7 @@ openapi-generator generate -i backend/generated/openapi.json -g python -o backen
 
 1. Launch onyx (using Docker or running with a debugger), ensuring the API server is running on port 8080.
    - If you'd like to set environment variables, you can do so by creating a `.env` file in the onyx/backend/tests/integration/ directory.
-   - Onyx MUST be launched with AUTH_TYPE=basic and ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true
+   - VertualAI MUST be launched with AUTH_TYPE=basic and ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true
    - Tests that use `mock_llm_response` (e.g. llm workflow tool call tests) also require `INTEGRATION_TESTS_MODE=true` on the API server process.
 2. Navigate to `onyx/backend`.
 3. Run the following command in the terminal:

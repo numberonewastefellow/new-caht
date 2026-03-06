@@ -1,7 +1,7 @@
-# Onyx AWS modules
+# VertualAI AWS modules
 
 ## Overview
-This directory contains Terraform modules to provision the core AWS infrastructure for Onyx:
+This directory contains Terraform modules to provision the core AWS infrastructure for VertualAI:
 
 - `vpc`: Creates a VPC with public/private subnets sized for EKS
 - `eks`: Provisions an Amazon EKS cluster, essential addons (EBS CSI, metrics server, cluster autoscaler), and optional IRSA for S3 access
@@ -17,7 +17,7 @@ The snippet below shows a minimal working example that:
 - Sets up providers
 - Waits for EKS to be ready
 - Configures `kubernetes` and `helm` providers against the created cluster
-- Provisions the full Onyx AWS stack via the `onyx` module
+- Provisions the full VertualAI AWS stack via the `onyx` module
 
 ```hcl
 locals {
@@ -158,7 +158,7 @@ Key inputs include:
 ### `s3`
 - Creates an S3 bucket for file storage and scopes access to the provided S3 gateway VPC endpoint
 
-## Installing the Onyx Helm chart (after Terraform)
+## Installing the VertualAI Helm chart (after Terraform)
 Once the cluster is active, deploy application workloads via Helm. You can use the chart in `deployment/helm/charts/onyx`.
 
 ```bash

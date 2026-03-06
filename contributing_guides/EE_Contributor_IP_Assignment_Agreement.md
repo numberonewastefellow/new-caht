@@ -4,7 +4,7 @@
 
 This Enterprise Edition Contribution IP Assignment Agreement (the “**Agreement**”) is entered into by and between:
 
-- **DanswerAI, Inc.** (“**Company**”), the maintainer of the Onyx product, and  
+- **DanswerAI, Inc.** (“**Company**”), the maintainer of the VertualAI product, and  
 - **Contributor:** ______________________ (“**Contributor**”)
 
 Company and Contributor may be referred to individually as a “**Party**” and collectively as the “**Parties**.”

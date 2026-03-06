@@ -1,2 +1,2 @@
-Documentation for how to deploy Onyx can be found in our official docs:
-https://docs.onyx.app/deployment/overview
+Documentation for how to deploy VertualAI can be found in our official docs:
+https://docs.vertualai.app/deployment/overview

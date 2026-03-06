@@ -8,6 +8,12 @@ and **insight reports**.
 > **Workflow IDs** are assigned at creation time and may differ on your server.
 > Check your server's `/api/admin/workflow` endpoint for current IDs.
 
+**Related docs:**
+
+- **Agent creation & icon generation:** `backend/tests/agents_creator/README.md`
+- **Workflow patterns (sequential & LLM-decision):** `backend/tests/workflow_creator/README_new_workflows.md`
+- **Universal Problem Solver:** `backend/tests/workflow_creator/UNIVERSAL_SOLVER_README.md`
+
 ---
 
 ## Domain-Specific Multi-Agent Workflows (6 New)

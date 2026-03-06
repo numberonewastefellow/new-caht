@@ -91,7 +91,7 @@ Read operations (`get_tenant`, `get_api_key`) are lock-free since Python dict lo
 
 ### 2. API Client (`backend/onyx/onyxbot/discord/api_client.py`)
 
-The `OnyxAPIClient` is a **stateless async HTTP client** that communicates with Onyx API pods.
+The `OnyxAPIClient` is a **stateless async HTTP client** that communicates with VertualAI API pods.
 
 #### Key Design: Per-Request API Key Injection
 

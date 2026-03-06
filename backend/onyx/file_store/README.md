@@ -1,6 +1,6 @@
-# Onyx File Store
+# VertualAI File Store
 
-The Onyx file store provides a unified interface for storing files and large binary objects in S3-compatible storage systems. It supports AWS S3, MinIO, Azure Blob Storage, Digital Ocean Spaces, and other S3-compatible services.
+The VertualAI file store provides a unified interface for storing files and large binary objects in S3-compatible storage systems. It supports AWS S3, MinIO, Azure Blob Storage, Digital Ocean Spaces, and other S3-compatible services.
 
 ## Architecture
 

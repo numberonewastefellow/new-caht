@@ -170,6 +170,62 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
             logger.exception("Failed to create persistent sandbox session")
             return None
 
+    def _is_retriable_error(self, exc: Exception) -> bool:
+        """Check if an execution error is caused by a dead/stale session or
+        unreachable code-interpreter service (worth retrying with a fresh session)."""
+        if isinstance(exc, requests.exceptions.ConnectionError):
+            return True
+        if isinstance(exc, requests.exceptions.HTTPError):
+            status = getattr(exc.response, "status_code", None)
+            # 404 = session not found / service not found
+            # 502/503/504 = service restarting
+            return status in (404, 502, 503, 504)
+        # Catch generic connection-related errors
+        error_str = str(exc).lower()
+        return any(
+            keyword in error_str
+            for keyword in ("connection", "404", "not found", "502", "503", "504")
+        )
+
+    def _execute_with_retry(
+        self,
+        client: CodeInterpreterClient,
+        code: str,
+        timeout_ms: int,
+        files: list[FileInput] | None,
+        session_id: str | None,
+    ) -> "ExecuteResponse":  # noqa: F821
+        """Execute code, retrying once with a fresh session on retriable failures."""
+        try:
+            return client.execute(
+                code=code,
+                timeout_ms=timeout_ms,
+                files=files,
+                session_id=session_id,
+            )
+        except Exception as first_err:
+            if not self._is_retriable_error(first_err):
+                raise
+
+            logger.warning(
+                f"Code execution failed (retriable): {first_err}. "
+                f"Creating fresh session and retrying..."
+            )
+
+            # Create a fresh session
+            new_session_id = self._create_and_persist_session(client)
+            if not new_session_id:
+                # Could not create session — re-raise the original error
+                raise
+
+            # Retry with the new session
+            return client.execute(
+                code=code,
+                timeout_ms=timeout_ms,
+                files=files,
+                session_id=new_session_id,
+            )
+
     def emit_start(self, placement: Placement) -> None:
         """Emit start packet for this tool. Code will be emitted in run() method."""
         # Note: PythonToolStart requires code, but we don't have it in emit_start
@@ -372,7 +428,16 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
 
         except Exception as e:
             logger.error(f"Python execution failed: {e}")
-            error_msg = str(e)
+
+            # Sanitize error messages — don't expose internal URLs to user/LLM
+            raw_msg = str(e)
+            if self._is_retriable_error(e):
+                error_msg = (
+                    "Code execution failed: the code interpreter service is "
+                    "temporarily unavailable. Please try again in a moment."
+                )
+            else:
+                error_msg = raw_msg
 
             # Emit error delta
             self.emitter.emit(

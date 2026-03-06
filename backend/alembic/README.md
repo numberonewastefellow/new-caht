@@ -1,9 +1,9 @@
-<!-- ONYX_METADATA={"link": "https://github.com/onyx-dot-app/onyx/blob/main/backend/alembic/README.md"} -->
+<!-- ONYX_METADATA={"link": "https://github.com/vertualai/vertualai/blob/main/backend/alembic/README.md"} -->
 
 # Alembic DB Migrations
 
 These files are for creating/updating the tables in the Relational DB (Postgres).
-Onyx migrations use a generic single-database configuration with an async dbapi.
+VertualAI migrations use a generic single-database configuration with an async dbapi.
 
 ## To generate new migrations:
 

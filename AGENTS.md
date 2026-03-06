@@ -9,7 +9,7 @@ This file provides guidance to AI agents when working with code in this reposito
 - To make tests work, check the `.env` file at the root of the project to find an OpenAI key.
 - If using `playwright` to explore the frontend, you can usually log in with username `a@example.com` and password
   `a`. The app can be accessed at `http://localhost:3000`.
-- You should assume that all Onyx services are running. To verify, you can check the `backend/log` directory to
+- You should assume that all VertualAI services are running. To verify, you can check the `backend/log` directory to
   make sure we see logs coming out from the relevant service.
 - To connect to the Postgres database, use: `docker exec -it onyx-relational_db-1 psql -U postgres -c "<SQL>"`
 - When making calls to the backend, always go through the frontend. E.g. make a call to `http://localhost:3000/api/persona` not `http://localhost:8080/api/persona`
@@ -18,11 +18,11 @@ This file provides guidance to AI agents when working with code in this reposito
 
 ## Project Overview
 
-**Onyx** (formerly Danswer) is an open-source Gen-AI and Enterprise Search platform that connects to company documents, apps, and people. It features a modular architecture with both Community Edition (MIT licensed) and Enterprise Edition offerings.
+**VertualAI** (formerly Danswer) is an open-source Gen-AI and Enterprise Search platform that connects to company documents, apps, and people. It features a modular architecture with both Community Edition (MIT licensed) and Enterprise Edition offerings.
 
 ### Background Workers (Celery)
 
-Onyx uses Celery for asynchronous task processing with multiple specialized workers:
+VertualAI uses Celery for asynchronous task processing with multiple specialized workers:
 
 #### Worker Types
 
@@ -88,7 +88,7 @@ Onyx uses Celery for asynchronous task processing with multiple specialized work
 
 #### Worker Deployment Modes
 
-Onyx supports two deployment modes for background workers, controlled by the `USE_LIGHTWEIGHT_BACKGROUND_WORKER` environment variable:
+VertualAI supports two deployment modes for background workers, controlled by the `USE_LIGHTWEIGHT_BACKGROUND_WORKER` environment variable:
 
 **Lightweight Mode** (default, `USE_LIGHTWEIGHT_BACKGROUND_WORKER=true`):
 
@@ -354,7 +354,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 
 **ONLY use icons from the `web/src/icons` directory. Do NOT use icons from `react-icons`, `lucide`, or other external libraries.**
 
-**Reason:** We have a very carefully curated selection of icons that match our Onyx guidelines. We do NOT want to muddy those up with different aesthetic stylings.
+**Reason:** We have a very carefully curated selection of icons that match our VertualAI guidelines. We do NOT want to muddy those up with different aesthetic stylings.
 
 ```typescript
 // ✅ Good
@@ -367,7 +367,7 @@ import { FiSearch } from "react-icons/fi";
 ```
 
 **Missing Icons**: If an icon is needed but doesn't exist in the `web/src/icons` directory, import it from Figma using the Figma MCP tool and add it to the icons directory.
-If you need help with this step, reach out to `raunak@onyx.app`.
+If you need help with this step, reach out to `raunak@vertualai.app`.
 
 ### 9. Text Rendering
 
@@ -407,7 +407,7 @@ function UserCard({ name }: { name: string }) {
 
 **Heavily avoid raw HTML input components. Always use components from the `web/src/refresh-components` or `web/lib/opal/src` directory.**
 
-**Reason:** We've put in a lot of effort to unify the components that are rendered in the Onyx app. Using raw components breaks the entire UI of the application, and leaves it in a muddier state than before.
+**Reason:** We've put in a lot of effort to unify the components that are rendered in the VertualAI app. Using raw components breaks the entire UI of the application, and leaves it in a muddier state than before.
 
 ```typescript
 // ✅ Good
@@ -452,7 +452,7 @@ function ContactForm() {
 - **Theme:** `theme-primary-XX`, `theme-red-XX`, `theme-blue-XX`, etc.
 
 ```typescript
-// ✅ Good - Use custom Onyx color classes
+// ✅ Good - Use custom VertualAI color classes
 <div className="bg-background-neutral-01 border border-border-02" />
 <div className="bg-background-tint-02 border border-border-01" />
 <div className="bg-status-success-01" />
@@ -501,11 +501,11 @@ Write the migration manually and place it in the file that alembic creates when 
 
 First, you must activate the virtual environment with `source .venv/bin/activate`.
 
-There are 4 main types of tests within Onyx:
+There are 4 main types of tests within VertualAI:
 
 ### Unit Tests
 
-These should not assume any Onyx/external services are available to be called.
+These should not assume any VertualAI/external services are available to be called.
 Interactions with the outside world should be mocked using `unittest.mock`. Generally, only
 write these for complex, isolated modules e.g. `citation_processing.py`.
 
@@ -517,10 +517,10 @@ pytest -xv backend/tests/unit
 
 ### External Dependency Unit Tests
 
-These tests assume that all external dependencies of Onyx are available and callable (e.g. Postgres, Redis,
+These tests assume that all external dependencies of VertualAI are available and callable (e.g. Postgres, Redis,
 MinIO/S3, Vespa are running + OpenAI can be called + any request to the internet is fine + etc.).
 
-However, the actual Onyx containers are not running and with these tests we call the function to test directly.
+However, the actual VertualAI containers are not running and with these tests we call the function to test directly.
 We can also mock components/calls at will.
 
 The goal with these tests are to minimize mocking while giving some flexibility to mock things that are flakey,
@@ -537,7 +537,7 @@ python -m dotenv -f .vscode/.env run -- pytest backend/tests/external_dependency
 
 ### Integration Tests
 
-Standard integration tests. Every test in `backend/tests/integration` runs against a real Onyx deployment. We cannot
+Standard integration tests. Every test in `backend/tests/integration` runs against a real VertualAI deployment. We cannot
 mock anything in these tests. Prefer writing integration tests (or External Dependency Unit Tests if mocking/internal
 verification is necessary) over any other type of test.
 
@@ -558,7 +558,7 @@ python -m dotenv -f .vscode/.env run -- pytest backend/tests/integration
 
 ### Playwright (E2E) Tests
 
-These tests are an even more complete version of the Integration Tests mentioned above. Has all services of Onyx
+These tests are an even more complete version of the Integration Tests mentioned above. Has all services of VertualAI
 running, _including_ the Web Server.
 
 Use these tests for anything that requires significant frontend <-> backend coordination.
@@ -574,7 +574,7 @@ npx playwright test <TEST_NAME>
 ## Logs
 
 When (1) writing integration tests or (2) doing live tests (e.g. curl / playwright) you can get access
-to logs via the `backend/log/<service_name>_debug.log` file. All Onyx services (api_server, web_server, celery_X)
+to logs via the `backend/log/<service_name>_debug.log` file. All VertualAI services (api_server, web_server, celery_X)
 will be tailing their logs to this file.
 
 ## Security Considerations

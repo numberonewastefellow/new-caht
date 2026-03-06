@@ -20,6 +20,10 @@ import { SvgBookOpen } from "@opal/icons";
 import { cn } from "@/lib/utils";
 import { removeDuplicateDocs } from "@/lib/documentUtils";
 import CitedSourcesModal from "@/sections/document-sidebar/CitedSourcesModal";
+import {
+  CodeExecutionContext,
+  CodeExecutionContextType,
+} from "@/app/app/message/CodeExecutionContext";
 
 // Type for the regeneration factory function passed from ChatUI
 export type RegenerationFactory = (regenerationRequest: {
@@ -44,6 +48,17 @@ export interface AgentMessageProps {
   parentMessage?: Message | null;
   // Duration in seconds for processing this message (assistant messages only)
   processingDurationSeconds?: number;
+  // For code execution "Run" button
+  chatSessionId?: string;
+  onCodeExecutionResult?: (
+    parentNodeId: number,
+    result: {
+      messageId: number;
+      parentMessageId: number;
+      content: string;
+      files: Array<{ id: string; type: string; name?: string }>;
+    }
+  ) => void;
 }
 
 /** Pill-shaped references button that opens a modal with cited sources. */
@@ -174,6 +189,8 @@ const AgentMessage = React.memo(function AgentMessage({
   onRegenerate,
   parentMessage,
   processingDurationSeconds,
+  chatSessionId,
+  onCodeExecutionResult,
 }: AgentMessageProps) {
   const markdownRef = useRef<HTMLDivElement>(null);
   const finalAnswerRef = useRef<HTMLDivElement>(null);
@@ -249,7 +266,22 @@ const AgentMessage = React.memo(function AgentMessage({
     onMessageSelection,
   });
 
+  // Build code execution context for "Run" button on code blocks
+  const codeExecContext = useMemo<CodeExecutionContextType | null>(() => {
+    if (!chatSessionId || !parentMessage || !onCodeExecutionResult) return null;
+    const parentNodeId = parentMessage.nodeId;
+    return {
+      chatSessionId,
+      parentNodeId,
+      parentMessageId: parentMessage.messageId,
+      onCodeExecutionResult: (result) => {
+        onCodeExecutionResult(parentNodeId, result);
+      },
+    };
+  }, [chatSessionId, parentMessage?.nodeId, parentMessage?.messageId, onCodeExecutionResult]);
+
   return (
+    <CodeExecutionContext.Provider value={codeExecContext}>
     <div
       className="pb-6 md:pt-6 flex flex-col gap-3 pr-1"
       data-testid={isComplete ? "onyx-ai-message" : undefined}
@@ -350,6 +382,7 @@ const AgentMessage = React.memo(function AgentMessage({
         />
       )}
     </div>
+    </CodeExecutionContext.Provider>
   );
 }, arePropsEqual);
 

@@ -1,6 +1,6 @@
-# Onyx Sandbox System
+# VertualAI Sandbox System
 
-This directory contains the implementation of Onyx's sandbox system for running OpenCode agents in isolated environments.
+This directory contains the implementation of VertualAI's sandbox system for running OpenCode agents in isolated environments.
 
 ## Overview
 
@@ -52,11 +52,11 @@ The sandbox system provides isolated execution environments where OpenCode agent
 ```bash
 # Build backend image (includes both templates)
 cd backend
-docker build -f Dockerfile.sandbox-templates -t onyxdotapp/backend:latest .
+docker build -f Dockerfile.sandbox-templates -t vertualai/backend:latest .
 
 # Build sandbox container (lightweight runner)
 cd onyx/server/features/build/sandbox/kubernetes/docker
-docker build -t onyxdotapp/sandbox:latest .
+docker build -t vertualai/sandbox:latest .
 
 # Deploy with docker-compose or kubectl - sandboxes work immediately!
 ```
@@ -71,7 +71,7 @@ docker build -t onyxdotapp/sandbox:latest .
 
 ### Running Backend Directly (Without Docker)
 
-**Only needed if you're running the Onyx backend outside of Docker.** Most developers use Docker and can skip this section.
+**Only needed if you're running the VertualAI backend outside of Docker.** Most developers use Docker and can skip this section.
 
 If you're running the backend Python process directly on your machine, you need templates at `/templates/`:
 
@@ -194,7 +194,7 @@ OPENCODE_DISABLED_TOOLS=question          # Comma-separated list, default: quest
 SANDBOX_NAMESPACE=onyx-sandboxes          # Default: onyx-sandboxes
 
 # Container image
-SANDBOX_CONTAINER_IMAGE=onyxdotapp/sandbox:latest
+SANDBOX_CONTAINER_IMAGE=vertualai/sandbox:latest
 
 # S3 bucket for snapshots and files
 SANDBOX_S3_BUCKET=onyx-sandbox-files      # Default: onyx-sandbox-files
@@ -358,7 +358,7 @@ The lightweight Next.js template (`backend/onyx/server/features/build/templates/
 - **Charts**: Recharts for data visualization
 - **Size**: ~2MB (excluding node_modules, which are installed fresh per sandbox)
 
-This template provides a modern development environment without the complexity of the full Onyx application, allowing agents to build custom UIs quickly.
+This template provides a modern development environment without the complexity of the full VertualAI application, allowing agents to build custom UIs quickly.
 
 ### Python Venv Template
 

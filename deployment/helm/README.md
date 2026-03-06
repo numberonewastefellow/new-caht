@@ -53,7 +53,7 @@ By default, some onyx containers run as root. If you'd like to explicitly run th
     ```
 
 ## Resourcing
-In the helm charts, we have resource suggestions for all Onyx-owned components. 
+In the helm charts, we have resource suggestions for all VertualAI-owned components. 
 These are simply initial suggestions, and may need to be tuned for your specific use case.
 
 Please talk to us in Slack if you have any questions!
@@ -64,7 +64,7 @@ The chart renders Kubernetes HorizontalPodAutoscalers by default. To keep this b
 
 If you would like to use KEDA ScaledObjects instead:
 
-1. Install and manage the KEDA operator in your cluster yourself (for example via the official KEDA Helm chart). KEDA is no longer packaged as a dependency of the Onyx chart.
+1. Install and manage the KEDA operator in your cluster yourself (for example via the official KEDA Helm chart). KEDA is no longer packaged as a dependency of the VertualAI chart.
 2. Set `autoscaling.engine: keda` in your `values.yaml` and enable autoscaling for the components you want to scale.
 
 When `autoscaling.engine` is set to `keda`, the chart will render the existing ScaledObject templates; otherwise HPAs will be rendered.

@@ -1,6 +1,6 @@
 ---
 name: playwright-e2e-tests
-description: Write and maintain Playwright end-to-end tests for the Onyx application. Use when creating new E2E tests, debugging test failures, adding test coverage, or when the user mentions Playwright, E2E tests, or browser testing.
+description: Write and maintain Playwright end-to-end tests for the VertualAI application. Use when creating new E2E tests, debugging test failures, adding test coverage, or when the user mentions Playwright, E2E tests, or browser testing.
 ---
 
 # Playwright E2E Tests
@@ -124,7 +124,7 @@ Backend API client for test setup/teardown. Key methods:
 
 - `sendMessage(page, message)` — sends a message and waits for AI response
 - `startNewChat(page)` — clicks new-chat button and waits for intro
-- `verifyDefaultAssistantIsChosen(page)` — checks Onyx logo is visible
+- `verifyDefaultAssistantIsChosen(page)` — checks VertualAI logo is visible
 - `verifyAssistantIsChosen(page, name)` — checks assistant name display
 - `switchModel(page, modelName)` — switches LLM model via popover
 
@@ -167,7 +167,7 @@ for (const theme of THEMES) {
 
 Use locators in this priority order:
 
-1. **`data-testid` / `aria-label`** — preferred for Onyx components
+1. **`data-testid` / `aria-label`** — preferred for VertualAI components
    ```typescript
    page.getByTestId("AppSidebar/new-session")
    page.getByLabel("admin-page-title")

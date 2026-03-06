@@ -82,7 +82,7 @@ These are **two completely separate systems**:
 | | Craft (Build Mode) | Code Interpreter (PythonTool) |
 |---|---|---|
 | Purpose | AI app/dashboard builder | Run Python code in chat |
-| Image | `onyxdotapp/sandbox` / built into api_server | `onyxdotapp/code-interpreter` (separate) |
+| Image | `vertualai/sandbox` / built into api_server | `vertualai/code-interpreter` (separate) |
 | Execution | `opencode acp` CLI via subprocess | HTTP API `/v1/execute` on port 8000 |
 | Enabled by | `ENABLE_CRAFT=true` (build-time) | `CODE_INTERPRETER_BETA_ENABLED=true` (runtime) |
 | Sandbox | opencode CLI + ACP protocol | Docker-out-of-Docker, spawns `python-executor-sci` containers |
@@ -92,15 +92,15 @@ This plan modifies **only the Code Interpreter**, not Craft.
 ## Source Code Location
 
 The code-interpreter service source is open source:
-- **Repo**: https://github.com/onyx-dot-app/code-interpreter
+- **Repo**: https://github.com/vertualai/code-interpreter
 - **License**: MIT
-- **Current image**: `onyxdotapp/code-interpreter:latest`
+- **Current image**: `vertualai/code-interpreter:latest`
 
 We clone it into our project at `code-interpreter/` (outside `backend/`) to have full control:
 
 ```
 d:\llm\danswer20022026\
-├── backend\                         ← Onyx backend (unchanged)
+├── backend\                         ← VertualAI backend (unchanged)
 ├── web\                             ← Frontend (unchanged)
 ├── deployment\                      ← Docker compose configs
 └── code-interpreter\                ← CLONED HERE
@@ -139,7 +139,7 @@ d:\llm\danswer20022026\
 |---|------|--------|------|
 | 7 | `_kernel.py` | **CREATE** | Persistent Python REPL — runs once, accepts code via stdin JSON |
 
-### Onyx Backend (backend/)
+### VertualAI Backend (backend/)
 
 | # | File | Action | What |
 |---|------|--------|------|
@@ -283,7 +283,7 @@ class PythonTool(Tool):
         )
 
         # Do NOT delete files after execution (they persist in session)
-        # Only download generated output files to Onyx file store
+        # Only download generated output files to VertualAI file store
 ```
 
 ## Backward Compatibility

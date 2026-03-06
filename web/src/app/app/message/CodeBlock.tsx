@@ -2,6 +2,9 @@ import { cn } from "@/lib/utils";
 import Text from "@/refresh-components/texts/Text";
 import React, { useState, ReactNode, useCallback, useMemo, memo } from "react";
 import { SvgCheck, SvgCode, SvgCopy } from "@opal/icons";
+import { useCodeExecution } from "@/app/app/message/CodeExecutionContext";
+
+const RUNNABLE_LANGUAGES = new Set(["python", "py", "python3"]);
 
 interface CodeBlockProps {
   className?: string;
@@ -19,6 +22,8 @@ export const CodeBlock = memo(function CodeBlock({
   codeText,
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const [running, setRunning] = useState(false);
+  const execContext = useCodeExecution();
 
   const language = useMemo(() => {
     return className
@@ -28,6 +33,11 @@ export const CodeBlock = memo(function CodeBlock({
       .join(" ");
   }, [className]);
 
+  const isRunnable =
+    RUNNABLE_LANGUAGES.has(language.toLowerCase()) &&
+    execContext !== null &&
+    execContext.parentMessageId !== undefined;
+
   const handleCopy = useCallback(() => {
     if (!codeText) return;
     navigator.clipboard.writeText(codeText).then(() => {
@@ -36,9 +46,41 @@ export const CodeBlock = memo(function CodeBlock({
     });
   }, [codeText]);
 
+  const handleRun = useCallback(async () => {
+    if (!codeText || !execContext || !execContext.parentMessageId) return;
+    setRunning(true);
+    try {
+      const resp = await fetch("/api/chat/execute-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_session_id: execContext.chatSessionId,
+          parent_message_id: execContext.parentMessageId,
+          code: codeText,
+        }),
+      });
+      if (!resp.ok) {
+        const errText = await resp.text();
+        console.error("Execute code failed:", resp.status, errText);
+        return;
+      }
+      const data = await resp.json();
+      execContext.onCodeExecutionResult({
+        messageId: data.message_id,
+        parentMessageId: data.parent_message_id,
+        content: buildExecutionContent(codeText, data),
+        files: data.files || [],
+      });
+    } catch (err) {
+      console.error("Execute code error:", err);
+    } finally {
+      setRunning(false);
+    }
+  }, [codeText, execContext]);
+
   const CopyButton = () => (
     <div
-      className="ml-auto cursor-pointer select-none"
+      className="cursor-pointer select-none"
       onMouseDown={handleCopy}
     >
       {copied ? (
@@ -56,6 +98,42 @@ export const CodeBlock = memo(function CodeBlock({
           </Text>
         </div>
       )}
+    </div>
+  );
+
+  const RunButton = () => (
+    <div
+      className="cursor-pointer select-none"
+      onMouseDown={(e) => {
+        e.preventDefault();
+        if (!running) handleRun();
+      }}
+    >
+      <div className="flex items-center space-x-2">
+        {running ? (
+          <>
+            <div className="h-3.5 w-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            <Text as="p" secondaryMono>
+              Running...
+            </Text>
+          </>
+        ) : (
+          <>
+            <svg
+              height={14}
+              width={14}
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              stroke="none"
+            >
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            <Text as="p" secondaryMono>
+              Run
+            </Text>
+          </>
+        )}
+      </div>
     </div>
   );
 
@@ -122,7 +200,10 @@ export const CodeBlock = memo(function CodeBlock({
             className="my-auto"
           />
           <Text secondaryMono>{language}</Text>
-          {codeText && <CopyButton />}
+          <div className="ml-auto flex items-center gap-x-3">
+            {isRunnable && <RunButton />}
+            {codeText && <CopyButton />}
+          </div>
         </div>
       )}
 
@@ -133,3 +214,25 @@ export const CodeBlock = memo(function CodeBlock({
 
 CodeBlock.displayName = "CodeBlock";
 MemoizedCodeLine.displayName = "MemoizedCodeLine";
+
+function buildExecutionContent(
+  code: string,
+  data: { stdout?: string; stderr?: string; exit_code?: number; files?: any[] }
+): string {
+  const parts: string[] = [];
+  parts.push("**Code Execution Result**\n");
+  parts.push(`\`\`\`\n${code}\n\`\`\`\n`);
+  if (data.stdout?.trim()) {
+    parts.push(`**Output:**\n\`\`\`\n${data.stdout.trim()}\n\`\`\`\n`);
+  }
+  if (data.stderr?.trim()) {
+    parts.push(`**Errors:**\n\`\`\`\n${data.stderr.trim()}\n\`\`\`\n`);
+  }
+  if (data.exit_code != null && data.exit_code !== 0) {
+    parts.push(`Exit code: ${data.exit_code}\n`);
+  }
+  if (data.files && data.files.length > 0) {
+    parts.push(`**Generated ${data.files.length} file(s)**\n`);
+  }
+  return parts.join("\n");
+}

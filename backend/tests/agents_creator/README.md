@@ -36,7 +36,8 @@ agents_creator/
   config.py               # Shared API client, defaults, label helpers
   create_assistants.py    # Create & update agents from JSON
   import_open_webui.py    # Import Open WebUI exports into VirtualAI
-  generate_icon.py        # Generate & upload avatar icons
+  generate_icon_v2.py     # Generate icons from Iconify SVGs (recommended)
+  generate_icon.py        # Generate text-based avatar icons (legacy)
   migrate_labels.py       # Bulk label consolidation tool
   menu.bat                # Windows interactive menu
   apikey.txt              # Your API key (not committed)
@@ -45,9 +46,11 @@ agents_creator/
     01_police.json
     02_mro_revenue.json
     ...
-    27_content_generators.json
+    29_universal_agent.json
   open_web_ui/            # Drop Open WebUI exports here for import
-  icons_preview/          # Generated icon previews (local only)
+  icon_cache/             # Cached SVGs from Iconify (auto-created)
+  icons_v2_preview/       # V2 icon previews (local only)
+  icons_preview/          # V1 icon previews (local only)
 ```
 
 ---
@@ -223,39 +226,48 @@ python import_open_webui.py --file open_web_ui/marketing_expert.json --create
 
 ## Generating Agent Icons
 
-Generate professional 256x256 avatar icons with 2-letter initials and category-colored backgrounds, then upload them to the server.
+Two icon generators are available:
 
-**Generate & upload for all agents:**
+### `generate_icon_v2.py` — Real SVG Icons (Recommended)
 
-```bash
-python generate_icon.py --all
-```
+Downloads professional vector icons from the [Iconify API](https://iconify.design/) (200k+ icons from Material Design, Fluent, Carbon, etc.), renders them on vibrant gradient backgrounds, and uploads to the server.
 
-**Generate for agents in a specific JSON file:**
+**Dependencies:** `pip install Pillow svglib reportlab requests`
 
-```bash
-python generate_icon.py --file assistants/01_police.json
-```
+**How it works:**
+1. Extracts search keywords from agent name + labels (150+ domain term mappings)
+2. Searches Iconify API across preferred icon sets (Fluent, Material Design, Carbon, etc.)
+3. Downloads SVG → renders with svglib → creates alpha mask → composites white icon on gradient background
+4. Caches SVGs locally in `icon_cache/` to avoid re-downloading
 
-**Generate for a single agent by ID:**
-
-```bash
-python generate_icon.py --id 42
-```
-
-**Preview only** (save to `icons_preview/` without uploading):
+**Commands:**
 
 ```bash
-python generate_icon.py --preview
+python generate_icon_v2.py --search "cybersecurity"  # Test icon search
+python generate_icon_v2.py --test                     # Test one agent
+python generate_icon_v2.py --preview                  # Preview all (save to icons_v2_preview/)
+python generate_icon_v2.py --all                      # Generate & upload for all agents
+python generate_icon_v2.py --id 42                    # Single agent
+python generate_icon_v2.py --icon mdi:shield-lock     # Force specific icon
+python generate_icon_v2.py --style flat               # Colored icon, no background
 ```
 
-**Test with one agent:**
+**Styles:**
+- `monochrome` (default) — white icon on vibrant gradient background
+- `flat` — colored icon on transparent background
+
+### `generate_icon.py` — Text-Based Icons (Legacy)
+
+Generates simple 256x256 avatars with 2-letter initials on colored backgrounds. No internet required.
 
 ```bash
-python generate_icon.py --test
+python generate_icon.py --all                              # Generate & upload all
+python generate_icon.py --file assistants/01_police.json   # From specific file
+python generate_icon.py --id 42                            # Single agent
+python generate_icon.py --preview                          # Preview only
 ```
 
-Icons are colored based on the agent's first label. Colors are defined in `DEPARTMENT_COLORS` inside `generate_icon.py`.
+Icons are colored based on the agent's first label. Colors are defined in `DEPARTMENT_COLORS` inside each script.
 
 ---
 
@@ -352,10 +364,31 @@ Double-click `menu.bat` for an interactive menu:
 2. Run `python create_assistants.py --update --file assistants/<file>.json`
 3. Changes are applied without recreating the agent (preserves ID, chat history)
 
-### Full deployment (all 147 agents)
+### Full deployment (all agents)
 
 ```bash
 python create_assistants.py                # Create all agents
-python generate_icon.py --all              # Upload all icons
+python generate_icon_v2.py --all           # Upload real SVG icons (recommended)
 python create_assistants.py --list         # Verify
+```
+
+---
+
+## Related: Workflow Creator
+
+Multi-agent workflows (sequential pipelines, LLM-decision routing, HITL) are managed in a separate toolkit:
+
+- **Workflow definitions & deployment:** `backend/tests/workflow_creator/`
+- **Workflow JSON files:** `backend/tests/workflow_creator/workflows/` (28 workflows)
+- **Test data & sample questions:** `backend/tests/workflow_creator/test_data/README.md`
+- **Workflow patterns guide:** `backend/tests/workflow_creator/README_new_workflows.md`
+- **Universal Solver docs:** `backend/tests/workflow_creator/UNIVERSAL_SOLVER_README.md`
+
+Quick start:
+
+```bash
+cd backend/tests/workflow_creator
+python create_workflows.py --list                              # List workflows
+python create_workflows.py --file workflows/22_medical_diagnosis.json  # Deploy
+python create_workflows.py --run <ID> "Your question here"     # Test run
 ```

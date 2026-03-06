@@ -1,9 +1,9 @@
-# Contributing to Onyx
-Hey there! We are so excited that you're interested in Onyx.
+# Contributing to VertualAI
+Hey there! We are so excited that you're interested in VertualAI.
 
 
 ## Contribution Opportunities
-The [GitHub Issues](https://github.com/onyx-dot-app/onyx/issues) page is a great place to look for and share contribution ideas.
+The [GitHub Issues](https://github.com/vertualai/vertualai/issues) page is a great place to look for and share contribution ideas.
 
 If you have your own feature that you would like to build please create an issue and community members can provide feedback and
 thumb it up if they feel a common need. 
@@ -26,7 +26,7 @@ See you there!
 
 
 ## Release Process
-Onyx loosely follows the SemVer versioning standard.
+VertualAI loosely follows the SemVer versioning standard.
 Major changes are released with a "minor" version bump. Currently we use patch release versions to indicate small feature changes.
 A set of Docker containers will be pushed automatically to DockerHub with every tag.
-You can see the containers [here](https://hub.docker.com/search?q=onyx%2F).
+You can see the containers [here](https://hub.docker.com/search?q=vertualai%2F).

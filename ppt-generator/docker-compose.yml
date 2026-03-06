@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  ppt-mcp-server:
+    build: .
+    container_name: ppt-mcp-server
+    ports:
+      - "8100:8100"
+    volumes:
+      - ppt_output:/app/output
+      - ppt_templates:/app/templates
+    environment:
+      - PPT_TEMPLATE_PATH=/app/templates
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8100/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  ppt_output:
+  ppt_templates:

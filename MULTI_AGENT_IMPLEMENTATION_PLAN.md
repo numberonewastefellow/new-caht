@@ -117,10 +117,10 @@ User Message → SessionManager → SandboxManager → OpenCode Agent → Stream
 | Component | Details |
 |-----------|---------|
 | **Agent** | OpenCode CLI — communicates via ACP (Agent Communication Protocol, JSON-RPC 2.0 over stdin/stdout) |
-| **LLM Loop** | Internal to OpenCode, NOT the Onyx `llm_loop.py` — completely separate |
+| **LLM Loop** | Internal to OpenCode, NOT the VertualAI `llm_loop.py` — completely separate |
 | **Sandbox** | Isolated workspace per user (local filesystem or Kubernetes pod) |
-| **Streaming** | SSE (Server-Sent Events) with ACP event types, NOT the Onyx Packet/Emitter system |
-| **Tools** | File operations, bash commands, web access, MCP servers — NOT the Onyx Tool system |
+| **Streaming** | SSE (Server-Sent Events) with ACP event types, NOT the VertualAI Packet/Emitter system |
+| **Tools** | File operations, bash commands, web access, MCP servers — NOT the VertualAI Tool system |
 | **State** | Stateful sessions with artifacts, snapshots, restore — NOT stateless chat turns |
 | **DB** | Separate tables: `BuildSession`, `BuildMessage`, `Sandbox` — NOT `ChatSession`/`ChatMessage` |
 
@@ -179,23 +179,23 @@ User Message → SessionManager → SandboxManager → OpenCode Agent → Stream
 
 ### Craft vs Chat vs Our Proposed Multi-Agent System
 
-| Aspect | Onyx Chat | Craft | Our Multi-Agent (Proposed) |
+| Aspect | VertualAI Chat | Craft | Our Multi-Agent (Proposed) |
 |--------|-----------|-------|---------------------------|
 | **Agent count** | 1 persona per session | 1 OpenCode agent per sandbox | N personas coordinated by orchestrator |
-| **LLM loop** | `llm_loop.py` (Onyx) | OpenCode internal (separate) | `llm_loop.py` (reuse Onyx) |
-| **Tool system** | Onyx Tool interface | OpenCode tools (bash, edit, etc.) | Onyx Tool interface (reuse) |
+| **LLM loop** | `llm_loop.py` (VertualAI) | OpenCode internal (separate) | `llm_loop.py` (reuse VertualAI) |
+| **Tool system** | VertualAI Tool interface | OpenCode tools (bash, edit, etc.) | VertualAI Tool interface (reuse) |
 | **Orchestration** | None (single agent) | None (single agent) | LLM-decision or sequential |
 | **Agent coordination** | N/A | N/A | Orchestrator routes between agents |
 | **Output type** | Text + citations | Code + apps + artifacts | Text + any agent capability |
 | **Streaming** | Packet/Emitter system | SSE/ACP events | Packet/Emitter (reuse) |
 | **State** | Stateless turns | Stateful sandbox sessions | Workflow execution context |
-| **Isolation** | None | Full sandbox (local/K8s) | None (runs in Onyx process) |
+| **Isolation** | None | Full sandbox (local/K8s) | None (runs in VertualAI process) |
 
 ### Is Craft Agent-Based Orchestration?
 
 **No.** Craft is a **single-agent-with-tools** pattern:
 - One OpenCode agent makes ALL decisions autonomously
-- The agent has its own internal LLM loop (not Onyx's)
+- The agent has its own internal LLM loop (not VertualAI's)
 - SessionManager just manages lifecycle — it does NOT route between agents
 - Tool calls (bash, edit, read) are sequential decisions by the same agent
 - No multi-agent coordination, no orchestrator, no agent handoffs
