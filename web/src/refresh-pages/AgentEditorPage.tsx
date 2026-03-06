@@ -765,6 +765,7 @@ export default function AgentEditorPage({
     replace_base_system_prompt:
       existingAgent?.replace_base_system_prompt ?? false,
     reminders: existingAgent?.task_prompt ?? "",
+    max_output_tokens: existingAgent?.max_output_tokens ?? null,
     // For new assistants, default to false for optional tools to avoid
     // "Tool not available" errors when the tool isn't configured.
     // For existing assistants, preserve the current tool configuration.
@@ -1018,6 +1019,7 @@ export default function AgentEditorPage({
         replace_base_system_prompt: values.replace_base_system_prompt,
         task_prompt: values.reminders || "",
         datetime_aware: false,
+        max_output_tokens: values.max_output_tokens ? Number(values.max_output_tokens) : null,
       };
 
       // Call API
@@ -1686,6 +1688,17 @@ export default function AgentEditorPage({
                                 description="Replace ALL default system instructions. Warning: this removes helpful built-in behaviors like markdown rendering and citation formatting."
                               >
                                 <SwitchField name="replace_base_system_prompt" />
+                              </InputLayouts.Horizontal>
+                              <InputLayouts.Horizontal
+                                name="max_output_tokens"
+                                title="Max Output Tokens"
+                                description="Limit how many tokens the agent can produce per response. Leave empty for the default (5000). Lower values save cost; higher values allow longer answers."
+                              >
+                                <InputTypeInField
+                                  name="max_output_tokens"
+                                  type="number"
+                                  placeholder="5000"
+                                />
                               </InputLayouts.Horizontal>
                             </Card>
 

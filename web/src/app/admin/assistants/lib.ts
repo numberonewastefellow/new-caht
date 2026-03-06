@@ -31,6 +31,7 @@ interface PersonaUpsertRequest {
   label_ids: number[] | null;
   user_file_ids: string[] | null;
   replace_base_system_prompt: boolean;
+  max_output_tokens?: number | null;
   // Hierarchy nodes (folders, spaces, channels) for scoped search
   hierarchy_node_ids: number[];
   // Individual documents for scoped search
@@ -61,6 +62,7 @@ export interface PersonaUpsertParameters {
   is_default_persona: boolean;
   label_ids: number[] | null;
   user_file_ids: string[];
+  max_output_tokens?: number | null;
   // Hierarchy nodes (folders, spaces, channels) for scoped search
   hierarchy_node_ids?: number[];
   // Individual documents for scoped search
@@ -93,6 +95,7 @@ function buildPersonaUpsertRequest({
   starter_messages,
   label_ids,
   replace_base_system_prompt,
+  max_output_tokens,
 }: PersonaUpsertParameters): PersonaUpsertRequest {
   return {
     name,
@@ -121,6 +124,7 @@ function buildPersonaUpsertRequest({
     label_ids: label_ids ?? null,
     user_file_ids: user_file_ids ?? null,
     replace_base_system_prompt,
+    max_output_tokens: max_output_tokens ?? null,
     hierarchy_node_ids: hierarchy_node_ids ?? [],
     document_ids: document_ids ?? [],
   };

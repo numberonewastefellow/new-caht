@@ -1,11 +1,58 @@
 # Test Data & Sample Questions for Workflow Testing
 
 This directory contains **CSV datasets** and **copy-paste-ready sample questions** for testing
-all coding workflows and the Data Analyst persona. Every prompt is designed to exercise the
-full pipeline and produce **charts (PNG)**, **tables**, and **insight reports**.
+all coding workflows, domain-specific multi-agent workflows, and the Data Analyst persona.
+Every prompt is designed to exercise the full pipeline and produce **charts (PNG)**, **tables**,
+and **insight reports**.
 
 > **Workflow IDs** are assigned at creation time and may differ on your server.
 > Check your server's `/api/admin/workflow` endpoint for current IDs.
+
+---
+
+## Domain-Specific Multi-Agent Workflows (6 New)
+
+These workflows feature 9-10 specialist agents per workflow, dynamic LLM-based routing,
+HITL (Human-in-the-Loop) pause/resume, PythonTool data analysis, and guard rail validation
+(verifying correct specialists called AND wrong specialists NOT called).
+
+| # | Workflow | JSON | Test Suite | Test Data | Agents |
+|---|---------|------|------------|-----------|--------|
+| 22 | Medical Diagnosis Panel | `22_medical_diagnosis.json` | `test_medical_diagnosis.py` | `patients/{P1,P2,P3}` | 10 |
+| 23 | Financial Crime Investigation | `23_financial_crime.json` | `test_financial_crime.py` | `financial_crime/{C1,C2,C3}` | 9 |
+| 24 | Engineering Failure Analysis | `24_engineering_failure.json` | `test_engineering_failure.py` | `engineering_failure/{F1,F2,F3}` | 10 |
+| 25 | Cybersecurity Incident Response | `25_cybersecurity_ir.json` | `test_cybersecurity_ir.py` | `cybersecurity/{I1,I2,I3}` | 9 |
+| 26 | Insurance Claims Investigation | `26_insurance_claims.json` | `test_insurance_claims.py` | `insurance_claims/{CL1,CL2,CL3}` | 9 |
+| 27 | M&A Due Diligence | `27_mna_due_diligence.json` | `test_mna_due_diligence.py` | `mna_due_diligence/{D1,D2,D3}` | 10 |
+| 28 | Drug Development Pipeline | `28_drug_development.json` | `test_drug_development.py` | `drug_development/{RX1,RX2,RX3}` | 10 |
+
+### Test Data Structure
+All test data is **CSV format** (compatible with UI file upload). Each case has a folder
+with multiple CSVs representing different data sources (e.g., lab panels, financial statements,
+network logs). See individual test suite files for case details.
+
+### Guard Rail Validation
+Each test validates that the **correct specialists** were called AND **wrong specialists**
+were NOT called. For example, in Medical Diagnosis P1 (autoimmune case), the test verifies
+Endocrinologist + Rheumatologist were called but Cardiologist + Gastroenterologist were NOT.
+
+### Running Domain Workflow Tests
+```bash
+# Deploy a workflow
+python create_workflows.py --file workflows/22_medical_diagnosis.json
+
+# Run a specific test suite
+python test_medical_diagnosis.py
+python test_financial_crime.py
+python test_engineering_failure.py
+python test_cybersecurity_ir.py
+python test_insurance_claims.py
+python test_mna_due_diligence.py
+python test_drug_development.py
+
+# With custom server
+python test_medical_diagnosis.py --url http://myserver:3000 --key MY_API_KEY
+```
 
 ---
 

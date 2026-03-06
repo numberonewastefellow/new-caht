@@ -13,7 +13,7 @@ import {
 } from "@/lib/constants";
 import { Metadata } from "next";
 import { buildClientUrl } from "@/lib/utilsSS";
-import { Inter } from "next/font/google";
+import { Inter, Geist } from "next/font/google";
 import {
   EnterpriseSettings,
   ApplicationStatus,
@@ -37,6 +37,12 @@ import StatsOverlayLoader from "@/components/dev/StatsOverlayLoader";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
   display: "swap",
 });
 
@@ -86,7 +92,7 @@ export default async function RootLayout({
   const getPageContent = async (content: React.ReactNode) => (
     <html
       lang="en"
-      className={inter.variable}
+      className={`${inter.variable} ${geist.variable}`}
       suppressHydrationWarning
     >
       <head>

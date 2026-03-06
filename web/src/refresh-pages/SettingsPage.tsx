@@ -65,6 +65,7 @@ import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidE
 import {
   useVirtualAITheme,
   VirtualAIAccent,
+  VirtualAIFont,
 } from "@/providers/VirtualAIThemeProvider";
 
 interface PAT {
@@ -189,7 +190,7 @@ function GeneralSettings() {
     updateUserChatBackground,
   } = useUser();
   const { theme, setTheme, systemTheme } = useTheme();
-  const { accent, setAccent } = useVirtualAITheme();
+  const { accent, setAccent, font, setFont } = useVirtualAITheme();
   const { refreshChatSessions } = useChatSessions();
   const router = useRouter();
   const pathname = usePathname();
@@ -468,6 +469,70 @@ function GeneralSettings() {
                             backgroundColor:
                               color || "var(--theme-primary-05)",
                           }}
+                        >
+                          <SvgCheck className="w-2.5 h-2.5 stroke-text-inverted-05" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </InputLayouts.Vertical>
+            <InputLayouts.Vertical title="Font">
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    {
+                      id: "inter" as VirtualAIFont,
+                      label: "Inter",
+                      description: "Default",
+                      sampleClass: "font-['Inter',sans-serif]",
+                    },
+                    {
+                      id: "geist" as VirtualAIFont,
+                      label: "Geist",
+                      description: "Modern",
+                      sampleClass: "font-[var(--font-geist),sans-serif]",
+                    },
+                    {
+                      id: "system" as VirtualAIFont,
+                      label: "System",
+                      description: "Native OS",
+                      sampleClass: "font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]",
+                    },
+                  ] as const
+                ).map((fontOption) => {
+                  const isSelected = font === fontOption.id;
+                  return (
+                    <button
+                      key={fontOption.id}
+                      onClick={() => setFont(fontOption.id)}
+                      className="relative overflow-hidden rounded-lg transition-all w-[90px] h-[68px] cursor-pointer border-none p-0 bg-transparent group"
+                      title={fontOption.label}
+                      aria-label={`${fontOption.label} font${isSelected ? " (selected)" : ""}`}
+                    >
+                      <div className="absolute inset-0 bg-background-tint-02 flex flex-col items-center justify-center gap-0.5">
+                        <span
+                          className={`text-sm font-semibold text-text-05 ${fontOption.sampleClass}`}
+                        >
+                          {fontOption.label}
+                        </span>
+                        <span className="text-[10px] text-text-02">
+                          {fontOption.description}
+                        </span>
+                      </div>
+                      <div
+                        className={cn(
+                          "absolute inset-0 transition-all rounded-lg",
+                          isSelected
+                            ? "ring-2 ring-inset ring-[var(--theme-primary-05)]"
+                            : "ring-1 ring-inset ring-border-02 group-hover:ring-border-03"
+                        )}
+                      />
+                      {isSelected && (
+                        <div
+                          className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: "var(--theme-primary-05)" }}
                         >
                           <SvgCheck className="w-2.5 h-2.5 stroke-text-inverted-05" />
                         </div>

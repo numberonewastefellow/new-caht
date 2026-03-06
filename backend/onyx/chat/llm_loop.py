@@ -795,6 +795,13 @@ def run_llm_loop(
             # This measures how long the user waits before the answer starts streaming
             pre_answer_processing_time = time.monotonic() - loop_start_time
 
+            # Resolve max output tokens: persona-specific or default 5000
+            _max_tokens = (
+                persona.max_output_tokens
+                if persona and persona.max_output_tokens
+                else 5000
+            )
+
             llm_step_result, has_reasoned = run_llm_step(
                 emitter=emitter,
                 history=truncated_message_history,
@@ -810,6 +817,7 @@ def run_llm_loop(
                 final_documents=gathered_documents,
                 user_identity=user_identity,
                 pre_answer_processing_time=pre_answer_processing_time,
+                max_tokens=_max_tokens,
             )
             if has_reasoned:
                 reasoning_cycles += 1

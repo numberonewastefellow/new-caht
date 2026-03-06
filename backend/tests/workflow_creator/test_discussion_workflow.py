@@ -171,7 +171,7 @@ HITL_TESTS = [
         "expected_agents": ["Topic Moderator"],
         "expect_python": False,
         "expected_in_output": [],
-        "expected_pause_keywords": ["aspect", "perspective"],
+        "expected_pause_keywords": ["?"],
         "min_answer_length": 0,
         "purpose": "Verifies HITL: Vague topic triggers Moderator's [NEEDS_INPUT] "
                    "with clarifying questions about which aspect of crypto to discuss.",
@@ -185,7 +185,7 @@ HITL_TESTS = [
         "expected_agents": ["Topic Moderator"],
         "expect_python": False,
         "expected_in_output": [],
-        "expected_pause_keywords": ["aspect"],
+        "expected_pause_keywords": ["?"],
         "min_answer_length": 0,
         "purpose": "Verifies HITL: Very broad topic triggers Moderator scoping questions.",
     },

@@ -4,6 +4,8 @@ from typing import Any
 from typing import cast
 from uuid import UUID
 
+import requests
+
 from pydantic import TypeAdapter
 from sqlalchemy.orm import Session
 from typing_extensions import override
@@ -244,8 +246,12 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
         try:
             logger.debug(f"Executing code: {code}")
 
-            # Execute code with timeout
-            response = client.execute(
+            # Execute code with retry on session/connection failure.
+            # If the code-interpreter service restarted or the session was
+            # reaped (idle > 30 min), the first call will fail.  We detect
+            # that, create a fresh session, and retry exactly once.
+            response = self._execute_with_retry(
+                client=client,
                 code=code,
                 timeout_ms=CODE_INTERPRETER_DEFAULT_TIMEOUT_MS,
                 files=files_to_stage or None,

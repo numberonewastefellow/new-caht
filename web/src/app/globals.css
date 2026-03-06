@@ -369,7 +369,7 @@
 
 /* Font Imports */
 
-/* Font Family Variables */
+/* Font Family Variables — default is Inter */
 :root {
   --font-hanken-grotesk: var(--font-inter), -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, sans-serif;
@@ -377,6 +377,21 @@
     Consolas, "Courier New", monospace;
   --font-kh-teka: "KH Teka", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, sans-serif;
+}
+
+/* ========================================
+   Font Preference Classes
+   Applied to <html> to switch the primary body font.
+   Default (no class / .font-pref-inter) = Inter.
+   ======================================== */
+.font-pref-geist {
+  --font-hanken-grotesk: var(--font-geist), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+}
+
+.font-pref-system {
+  --font-hanken-grotesk: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
 }
 
 /* HEADING STYLES */

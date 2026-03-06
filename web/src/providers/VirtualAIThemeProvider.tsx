@@ -8,24 +8,12 @@ import React, {
   useState,
 } from "react";
 
+// ─── Accent Theme ────────────────────────────────────────────────────────
+
 export type VirtualAIAccent = "none" | "ocean" | "emerald" | "violet" | "neonai";
 
 const ACCENT_STORAGE_KEY = "virtualai-accent-theme";
 const ACCENT_CLASS_PREFIX = "virtualai-";
-
-interface VirtualAIThemeContextValue {
-  accent: VirtualAIAccent;
-  setAccent: (accent: VirtualAIAccent) => void;
-}
-
-const VirtualAIThemeContext = createContext<VirtualAIThemeContextValue>({
-  accent: "none",
-  setAccent: () => {},
-});
-
-export function useVirtualAITheme() {
-  return useContext(VirtualAIThemeContext);
-}
 
 function getStoredAccent(): VirtualAIAccent {
   if (typeof window === "undefined") return "none";
@@ -43,17 +31,66 @@ function getStoredAccent(): VirtualAIAccent {
 
 function applyAccentClass(accent: VirtualAIAccent) {
   const html = document.documentElement;
-  // Remove all existing accent classes
   html.classList.forEach((cls) => {
     if (cls.startsWith(ACCENT_CLASS_PREFIX)) {
       html.classList.remove(cls);
     }
   });
-  // Add the new one (if not "none")
   if (accent !== "none") {
     html.classList.add(`${ACCENT_CLASS_PREFIX}${accent}`);
   }
 }
+
+// ─── Font Preference ─────────────────────────────────────────────────────
+
+export type VirtualAIFont = "inter" | "geist" | "system";
+
+const FONT_STORAGE_KEY = "virtualai-font-preference";
+const FONT_CLASS_PREFIX = "font-pref-";
+
+function getStoredFont(): VirtualAIFont {
+  if (typeof window === "undefined") return "inter";
+  const stored = localStorage.getItem(FONT_STORAGE_KEY);
+  if (stored === "inter" || stored === "geist" || stored === "system") {
+    return stored;
+  }
+  return "inter";
+}
+
+function applyFontClass(font: VirtualAIFont) {
+  const html = document.documentElement;
+  html.classList.forEach((cls) => {
+    if (cls.startsWith(FONT_CLASS_PREFIX)) {
+      html.classList.remove(cls);
+    }
+  });
+  // "inter" is the default (no class needed — :root already uses Inter)
+  if (font !== "inter") {
+    html.classList.add(`${FONT_CLASS_PREFIX}${font}`);
+  }
+}
+
+// ─── Context ─────────────────────────────────────────────────────────────
+
+interface VirtualAIThemeContextValue {
+  accent: VirtualAIAccent;
+  setAccent: (accent: VirtualAIAccent) => void;
+  font: VirtualAIFont;
+  setFont: (font: VirtualAIFont) => void;
+}
+
+const VirtualAIThemeContext = createContext<VirtualAIThemeContextValue>({
+  accent: "none",
+  setAccent: () => {},
+  font: "inter",
+  setFont: () => {},
+});
+
+export function useVirtualAITheme() {
+  return useContext(VirtualAIThemeContext);
+}
+
+// ─── Provider ────────────────────────────────────────────────────────────
 
 export function VirtualAIThemeProvider({
   children,
@@ -61,12 +98,17 @@ export function VirtualAIThemeProvider({
   children: React.ReactNode;
 }) {
   const [accent, setAccentState] = useState<VirtualAIAccent>("none");
+  const [font, setFontState] = useState<VirtualAIFont>("inter");
 
   // Load from localStorage on mount
   useEffect(() => {
-    const stored = getStoredAccent();
-    setAccentState(stored);
-    applyAccentClass(stored);
+    const storedAccent = getStoredAccent();
+    setAccentState(storedAccent);
+    applyAccentClass(storedAccent);
+
+    const storedFont = getStoredFont();
+    setFontState(storedFont);
+    applyFontClass(storedFont);
   }, []);
 
   const setAccent = useCallback((newAccent: VirtualAIAccent) => {
@@ -75,8 +117,14 @@ export function VirtualAIThemeProvider({
     applyAccentClass(newAccent);
   }, []);
 
+  const setFont = useCallback((newFont: VirtualAIFont) => {
+    setFontState(newFont);
+    localStorage.setItem(FONT_STORAGE_KEY, newFont);
+    applyFontClass(newFont);
+  }, []);
+
   return (
-    <VirtualAIThemeContext.Provider value={{ accent, setAccent }}>
+    <VirtualAIThemeContext.Provider value={{ accent, setAccent, font, setFont }}>
       {children}
     </VirtualAIThemeContext.Provider>
   );

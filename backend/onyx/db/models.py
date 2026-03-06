@@ -3303,6 +3303,10 @@ class Persona(Base):
         nullable=True,
     )
 
+    # Maximum output tokens for this persona's LLM responses.
+    # When set, overrides the default (1000). NULL = use default.
+    max_output_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
     starter_messages: Mapped[list[StarterMessage] | None] = mapped_column(
         PydanticListType(StarterMessage), nullable=True
     )

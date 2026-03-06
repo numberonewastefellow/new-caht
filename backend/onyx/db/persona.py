@@ -286,6 +286,7 @@ def create_update_persona(
             recency_bias=create_persona_request.recency_bias,
             llm_model_provider_override=create_persona_request.llm_model_provider_override,
             llm_model_version_override=create_persona_request.llm_model_version_override,
+            max_output_tokens=create_persona_request.max_output_tokens,
             starter_messages=create_persona_request.starter_messages,
             system_prompt=create_persona_request.system_prompt,
             task_prompt=create_persona_request.task_prompt,
@@ -849,6 +850,7 @@ def upsert_persona(
     chunks_above: int = CONTEXT_CHUNKS_ABOVE,
     chunks_below: int = CONTEXT_CHUNKS_BELOW,
     replace_base_system_prompt: bool = False,
+    max_output_tokens: int | None = None,
 ) -> Persona:
     """
     NOTE: This operation cannot update persona configuration options that
@@ -964,6 +966,7 @@ def upsert_persona(
         existing_persona.recency_bias = recency_bias
         existing_persona.llm_model_provider_override = llm_model_provider_override
         existing_persona.llm_model_version_override = llm_model_version_override
+        existing_persona.max_output_tokens = max_output_tokens
         existing_persona.starter_messages = starter_messages
         existing_persona.deleted = False  # Un-delete if previously deleted
         existing_persona.is_public = is_public
@@ -1040,6 +1043,7 @@ def upsert_persona(
             document_sets=document_sets or [],
             llm_model_provider_override=llm_model_provider_override,
             llm_model_version_override=llm_model_version_override,
+            max_output_tokens=max_output_tokens,
             starter_messages=starter_messages,
             tools=tools or [],
             uploaded_image_id=uploaded_image_id,

@@ -115,6 +115,7 @@ class PersonaUpsertRequest(BaseModel):
     llm_relevance_filter: bool
     llm_model_provider_override: str | None = None
     llm_model_version_override: str | None = None
+    max_output_tokens: int | None = None
     starter_messages: list[StarterMessage] | None = None
     # For Private Personas, who should be able to access these
     users: list[UUID] = Field(default_factory=list)
@@ -168,6 +169,7 @@ class MinimalPersonaSnapshot(BaseModel):
     knowledge_sources: list[DocumentSource]
     llm_model_version_override: str | None
     llm_model_provider_override: str | None
+    max_output_tokens: int | None
 
     uploaded_image_id: str | None
     icon_name: str | None
@@ -228,6 +230,7 @@ class MinimalPersonaSnapshot(BaseModel):
             knowledge_sources=list(sources),
             llm_model_version_override=persona.llm_model_version_override,
             llm_model_provider_override=persona.llm_model_provider_override,
+            max_output_tokens=persona.max_output_tokens,
             uploaded_image_id=persona.uploaded_image_id,
             icon_name=persona.icon_name,
             is_public=persona.is_public,
@@ -269,6 +272,7 @@ class PersonaSnapshot(BaseModel):
     document_sets: list[DocumentSetSummary]
     llm_model_provider_override: str | None
     llm_model_version_override: str | None
+    max_output_tokens: int | None
     num_chunks: float | None
     # Hierarchy nodes attached for scoped search
     hierarchy_nodes: list[HierarchyNodeSnapshot] = Field(default_factory=list)
@@ -328,6 +332,7 @@ class PersonaSnapshot(BaseModel):
             ],
             llm_model_provider_override=persona.llm_model_provider_override,
             llm_model_version_override=persona.llm_model_version_override,
+            max_output_tokens=persona.max_output_tokens,
             num_chunks=persona.num_chunks,
             system_prompt=persona.system_prompt,
             replace_base_system_prompt=persona.replace_base_system_prompt,
@@ -401,6 +406,7 @@ class FullPersonaSnapshot(PersonaSnapshot):
             llm_filter_extraction=persona.llm_filter_extraction,
             llm_model_provider_override=persona.llm_model_provider_override,
             llm_model_version_override=persona.llm_model_version_override,
+            max_output_tokens=persona.max_output_tokens,
             system_prompt=persona.system_prompt,
             replace_base_system_prompt=persona.replace_base_system_prompt,
             task_prompt=persona.task_prompt,

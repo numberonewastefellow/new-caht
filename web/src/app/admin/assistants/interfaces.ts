@@ -84,6 +84,7 @@ export interface FullPersona extends Persona {
   search_start_date: string | null;
   llm_relevance_filter?: boolean;
   llm_filter_extraction?: boolean;
+  max_output_tokens?: number | null;
 }
 
 export interface PersonaLabel {

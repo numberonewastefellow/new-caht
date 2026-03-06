@@ -263,6 +263,13 @@ class AgentTool(Tool[None]):
                 available_tokens=llm.config.max_input_tokens,
             )
 
+            # Resolve max output tokens: persona-specific or default 5000
+            _max_tokens = (
+                self._persona.max_output_tokens
+                if self._persona and self._persona.max_output_tokens
+                else 5000
+            )
+
             llm_step_result, _ = run_llm_step(
                 emitter=self.emitter,
                 history=truncated_history,
@@ -274,6 +281,7 @@ class AgentTool(Tool[None]):
                 state_container=state_container,
                 final_documents=None,
                 user_identity=None,
+                max_tokens=_max_tokens,
             )
 
             # If LLM produced a text answer (no tool calls), we're done
