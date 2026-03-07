@@ -198,7 +198,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--url", default=DEFAULT_SERVER_URL,
+        "--mcp-url", default=DEFAULT_SERVER_URL,
         help=f"PPT MCP server URL (default: {DEFAULT_SERVER_URL})",
     )
     parser.add_argument(
@@ -237,7 +237,7 @@ def main():
         return
 
     # Step 1: Register server
-    server_id = register_server(args.url)
+    server_id = register_server(args.mcp_url)
     if server_id is None:
         sys.exit(1)
 

@@ -49,6 +49,7 @@ class MCPTool(Tool[None]):
         user_email: str = "",
         user_oauth_token: str | None = None,
         additional_headers: dict[str, str] | None = None,
+        session_scope_id: str | None = None,
     ) -> None:
         super().__init__(emitter=emitter)
 
@@ -58,6 +59,7 @@ class MCPTool(Tool[None]):
         self.user_email = user_email
         self._user_oauth_token = user_oauth_token
         self._additional_headers = additional_headers or {}
+        self._session_scope_id = session_scope_id
 
         self._name = tool_name
         self._tool_definition = tool_definition
@@ -205,6 +207,7 @@ class MCPTool(Tool[None]):
                 llm_kwargs,
                 connection_headers=headers,
                 transport=self.mcp_server.transport or MCPTransport.STREAMABLE_HTTP,
+                session_scope_id=self._session_scope_id,
             )
 
             logger.info(f"MCP tool '{self._name}' executed successfully")

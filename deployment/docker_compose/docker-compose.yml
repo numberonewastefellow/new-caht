@@ -527,6 +527,22 @@ services:
   #       max-file: "6"
   #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
+  # SmartSearch AI (Perplexica) — AI-powered web search with cited sources
+  # Configure in Admin > Web Search > SmartSearch AI with base URL: http://smartsearch:3000
+  smartsearch:
+    image: itzcrazykns1337/perplexica:latest
+    container_name: smartsearch
+    ports:
+      - "3001:3000"
+    volumes:
+      - smartsearch_data:/home/perplexica/data
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+
 volumes:
   # Necessary for persisting data for use
   db_volume:
@@ -545,3 +561,5 @@ volumes:
   file-system:
   # Craft templates (venv + npm deps), shared between api_server and background
   craft-templates:
+  # SmartSearch AI (Perplexica) data
+  smartsearch_data:

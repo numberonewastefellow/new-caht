@@ -77,7 +77,7 @@ def stream_api(method: str, path: str, data: dict | None = None) -> requests.Res
     """
     url = urljoin(CONFIG["base_url"] + "/", f"api/{path.lstrip('/')}")
     return requests.request(
-        method, url, headers=headers(), json=data, timeout=300, stream=True
+        method, url, headers=headers(), json=data, timeout=600, stream=True
     )
 
 

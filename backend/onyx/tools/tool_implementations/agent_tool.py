@@ -19,6 +19,9 @@ from onyx.server.query_and_chat.streaming_models import SectionEnd
 from onyx.tools.interface import Tool
 from onyx.tools.models import ChatFile
 from onyx.tools.models import ToolResponse
+from onyx.utils.logger import setup_logger
+
+logger = setup_logger()
 
 if TYPE_CHECKING:
     from onyx.db.models import User
@@ -159,6 +162,7 @@ class AgentTool(Tool[None]):
         from onyx.chat.llm_loop import construct_message_history
         from onyx.chat.llm_step import run_llm_step
         from onyx.chat.models import ChatMessageSimple
+        from onyx.chat.models import ToolCallSimple
         from onyx.configs.constants import MessageType
         from onyx.llm.factory import get_llm_for_persona
         from onyx.llm.models import ToolChoiceOptions
@@ -187,6 +191,8 @@ class AgentTool(Tool[None]):
 
         # Build persona's tools — skip entirely if persona has none (Tier 1.1)
         tools: list = []
+        # Unique scope ID for MCP session persistence within this agent step
+        mcp_scope_id = f"agent_step_{self._step_id}_{id(self)}"
         if self._has_tools:
             from onyx.tools.tool_constructor import construct_tools
             from onyx.tools.tool_constructor import SearchToolConfig
@@ -198,6 +204,7 @@ class AgentTool(Tool[None]):
                 user=user,
                 llm=llm,
                 search_tool_config=SearchToolConfig(),
+                chat_session_id=mcp_scope_id,
             )
             for tool_list in tool_dict.values():
                 tools.extend(tool_list)
@@ -250,7 +257,7 @@ class AgentTool(Tool[None]):
         tool_choice = ToolChoiceOptions.AUTO if tools else ToolChoiceOptions.NONE
 
         # Run a multi-turn loop (similar to research_agent.py pattern)
-        max_cycles = 5  # Sub-agent gets up to 5 tool-call cycles
+        max_cycles = 15  # Sub-agent gets up to 15 tool-call cycles
         final_answer = ""
 
         for cycle in range(max_cycles):
@@ -302,18 +309,19 @@ class AgentTool(Tool[None]):
                 for tc in llm_step_result.tool_calls:
                     matched_tool = tool_by_name.get(tc.tool_name)
                     if matched_tool is None:
-                        # Tool not found — add error response to history
+                        # Tool not found — add structured error response
                         error_msg = f"Tool '{tc.tool_name}' not found"
                         tool_call_msg = ChatMessageSimple(
-                            message=json.dumps(
-                                {
-                                    "tool_call_id": tc.tool_call_id,
-                                    "name": tc.tool_name,
-                                    "arguments": tc.tool_args,
-                                }
-                            ),
+                            message="",
                             token_count=50,
                             message_type=MessageType.ASSISTANT,
+                            tool_calls=[
+                                ToolCallSimple(
+                                    tool_call_id=tc.tool_call_id,
+                                    tool_name=tc.tool_name,
+                                    tool_arguments=tc.tool_args,
+                                )
+                            ],
                         )
                         msg_history.append(tool_call_msg)
                         msg_history.append(
@@ -321,6 +329,7 @@ class AgentTool(Tool[None]):
                                 message=error_msg,
                                 token_count=token_counter(error_msg),
                                 message_type=MessageType.TOOL_CALL_RESPONSE,
+                                tool_call_id=tc.tool_call_id,
                             )
                         )
                         continue
@@ -341,9 +350,26 @@ class AgentTool(Tool[None]):
                         )
 
                     # Run the tool with the kickoff's placement
-                    tool_response = matched_tool.run(
-                        tc.placement, override_kwargs, **tc.tool_args
-                    )
+                    try:
+                        tool_response = matched_tool.run(
+                            tc.placement, override_kwargs, **tc.tool_args
+                        )
+                    except Exception as e:
+                        # Gracefully handle tool errors (e.g., empty search results)
+                        # so the agent can continue rather than crashing the workflow
+                        from onyx.tools.models import ToolCallException
+                        logger.warning(
+                            f"Tool {tc.tool_name} failed: {e}"
+                        )
+                        error_msg = (
+                            e.llm_facing_message
+                            if isinstance(e, ToolCallException)
+                            else str(e)
+                        )
+                        tool_response = ToolResponse(
+                            rich_response=None,
+                            llm_facing_response=f"Tool error: {error_msg}",
+                        )
                     tool_response.tool_call = tc
 
                     # Emit SectionEnd so the frontend marks the tool
@@ -355,27 +381,28 @@ class AgentTool(Tool[None]):
                         )
                     )
 
-                    # Add assistant message with tool call
+                    # Add assistant message with structured tool call
                     tool_call_msg = ChatMessageSimple(
-                        message=json.dumps(
-                            {
-                                "tool_call_id": tc.tool_call_id,
-                                "name": tc.tool_name,
-                                "arguments": tc.tool_args,
-                            }
-                        ),
+                        message="",
                         token_count=50,
                         message_type=MessageType.ASSISTANT,
+                        tool_calls=[
+                            ToolCallSimple(
+                                tool_call_id=tc.tool_call_id,
+                                tool_name=tc.tool_name,
+                                tool_arguments=tc.tool_args,
+                            )
+                        ],
                     )
                     msg_history.append(tool_call_msg)
 
-                    # Add tool response
+                    # Add tool response with tool_call_id
+                    tool_response_text = tool_response.llm_facing_response or ""
                     tool_response_msg = ChatMessageSimple(
-                        message=tool_response.llm_facing_response or "",
-                        token_count=token_counter(
-                            tool_response.llm_facing_response or ""
-                        ),
+                        message=tool_response_text,
+                        token_count=token_counter(tool_response_text),
                         message_type=MessageType.TOOL_CALL_RESPONSE,
+                        tool_call_id=tc.tool_call_id,
                     )
                     msg_history.append(tool_response_msg)
 
@@ -389,6 +416,14 @@ class AgentTool(Tool[None]):
 
         if not final_answer:
             final_answer = "(Agent did not produce a final answer)"
+
+        # Close any persistent MCP sessions opened during this agent step.
+        # This ensures server-side resources (e.g., in-memory presentations)
+        # are properly released after the agent finishes its work.
+        from onyx.tools.tool_implementations.mcp.mcp_client import (
+            mcp_session_manager,
+        )
+        mcp_session_manager.close_scope(mcp_scope_id)
 
         # The workflow engine streams emitter.bus via _stream_agent_packets()
         # in real-time while this method runs in a background thread, capturing

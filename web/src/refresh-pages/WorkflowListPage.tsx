@@ -23,10 +23,12 @@ import {
 function WorkflowCard({
   workflow,
   onEdit,
+  onVisualEdit,
   onDelete,
 }: {
   workflow: WorkflowSnapshot;
   onEdit: () => void;
+  onVisualEdit: () => void;
   onDelete: () => void;
 }) {
   const stepCount = workflow.steps.length;
@@ -89,6 +91,9 @@ function WorkflowCard({
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
+          <Button secondary onClick={onVisualEdit}>
+            Visual
+          </Button>
           <Button secondary onClick={onEdit}>
             Edit
           </Button>
@@ -158,9 +163,14 @@ export default function WorkflowListPage() {
           title="Workflows"
           description="Create and manage multi-agent workflows"
           rightChildren={
-            <Button leftIcon={SvgSparkle} onClick={() => router.push("/admin/workflows/create")}>
-              New Workflow
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button secondary onClick={() => router.push("/admin/workflows/visual")}>
+                Visual Builder
+              </Button>
+              <Button leftIcon={SvgSparkle} onClick={() => router.push("/admin/workflows/create")}>
+                New Workflow
+              </Button>
+            </div>
           }
           separator
         />
@@ -199,6 +209,7 @@ export default function WorkflowListPage() {
                   key={workflow.id}
                   workflow={workflow}
                   onEdit={() => router.push(`/admin/workflows/edit/${workflow.id}`)}
+                  onVisualEdit={() => router.push(`/admin/workflows/visual/${workflow.id}`)}
                   onDelete={() => {
                     setWorkflowToDelete(workflow);
                     deleteModal.toggle(true);

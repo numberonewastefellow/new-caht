@@ -63,7 +63,8 @@ export function ClientLayout({
   // Pages with custom sidebar still get the top bar, but their content area is unstyled
   const hasCustomSidebar =
     pathname.startsWith("/admin/connectors") ||
-    pathname.startsWith("/admin/embeddings");
+    pathname.startsWith("/admin/embeddings") ||
+    pathname.startsWith("/admin/workflows/visual");
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden bg-background-tint-00">

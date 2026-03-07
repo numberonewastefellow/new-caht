@@ -30,6 +30,9 @@ from onyx.tools.tool_implementations.web_search.clients.searxng_client import (
 from onyx.tools.tool_implementations.web_search.clients.serper_client import (
     SerperClient,
 )
+from onyx.tools.tool_implementations.web_search.clients.smartsearch_client import (
+    SmartSearchClient,
+)
 from onyx.tools.tool_implementations.web_search.models import DEFAULT_MAX_RESULTS
 from onyx.tools.tool_implementations.web_search.models import WebContentProviderConfig
 from onyx.tools.tool_implementations.web_search.models import WebSearchProvider
@@ -67,7 +70,10 @@ def provider_requires_api_key(provider_type: WebSearchProviderType) -> bool:
     This list is most likely just going to contain SEARXNG. The way it works is that it uses public search engines that do not
     require an API key. You can also set it up in a way which requires a key but SearXNG itself does not require a key.
     """
-    return provider_type != WebSearchProviderType.SEARXNG
+    return provider_type not in (
+        WebSearchProviderType.SEARXNG,
+        WebSearchProviderType.SMARTSEARCH,
+    )
 
 
 def build_search_provider_from_config(
@@ -77,6 +83,23 @@ def build_search_provider_from_config(
 ) -> WebSearchProvider:
     config = config or {}
     num_results = int(config.get("num_results") or DEFAULT_MAX_RESULTS)
+
+    # SmartSearch AI (Perplexica) does not require an API key
+    if provider_type == WebSearchProviderType.SMARTSEARCH:
+        smartsearch_base_url = config.get("smartsearch_base_url")
+        if not smartsearch_base_url:
+            raise ValueError(
+                "Please provide a URL for your SmartSearch AI (Perplexica) instance."
+            )
+        return SmartSearchClient(
+            base_url=smartsearch_base_url,
+            num_results=num_results,
+            chat_model_provider_id=config.get("chat_model_provider_id"),
+            chat_model_key=config.get("chat_model_key") or "gpt-4o-mini",
+            embedding_model_provider_id=config.get("embedding_model_provider_id"),
+            embedding_model_key=config.get("embedding_model_key") or "Xenova/all-MiniLM-L6-v2",
+            optimization_mode=config.get("optimization_mode") or "speed",
+        )
 
     # SearXNG does not require an API key
     if provider_type == WebSearchProviderType.SEARXNG:

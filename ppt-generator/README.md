@@ -6,6 +6,26 @@ Users describe what they need in natural language, and the system plans, builds,
 
 ---
 
+## Purpose
+
+The PPT MCP Server is a **stateful MCP server** that exposes 37 PowerPoint manipulation tools. It runs as a standalone Docker container and integrates with VirtualAI's multi-agent workflow system.
+
+**Why a separate MCP server?**
+
+- PowerPoint generation requires `python-pptx`, a specialized library -- keeping it isolated avoids bloating the main backend image
+- The MCP protocol provides a standard interface for tool discovery and invocation
+- The server maintains **in-memory presentation state** per session, allowing multi-step construction (create → add slides → format → save) across sequential tool calls
+- Any MCP-compatible client can use these tools, not just VirtualAI
+
+**What it does:**
+
+- Creates, edits, and saves `.pptx` files using 37 fine-grained tools
+- Supports charts, tables, bullet points, images, shapes, connectors, and professional design themes
+- Maintains presentation state in memory within a session, saving to disk on `save_presentation`
+- Integrates with VirtualAI's workflow engine as a 3-agent pipeline: Planner → Builder → Reviewer
+
+---
+
 ## How It Works
 
 ### The Big Picture
@@ -103,7 +123,7 @@ Agent LLM decides to call "create_presentation"
 VirtualAI MCPTool class (backend/onyx/tools/tool_implementations/mcp/)
         |
         v
-MCP Client opens session to http://ppt-mcp-server:8100/mcp
+MCP Client opens persistent session to http://ppt-mcp-server:8100/mcp
         |
         v
 JSON-RPC 2.0: {"method": "tools/call", "params": {"name": "create_presentation", ...}}
@@ -115,7 +135,7 @@ PPT MCP Server executes python-pptx code, returns result
 MCPTool wraps result in ToolResponse, streams back to chat UI
 ```
 
-The LLM agent calls multiple MCP tools within one session, so the presentation state (in-memory `Presentation` object) persists across calls.
+**Session Persistence:** The VirtualAI MCP client uses a client-side session pool (Pattern A from [MCP_SESSION_PERSISTENCE.md](MCP_SESSION_PERSISTENCE.md)). All tool calls within one agent step share the same `ClientSession`, so the PPT MCP Server's in-memory presentation state persists across `create_presentation` → `add_slide` → `save_presentation` calls. Sessions are automatically cleaned up when the agent step finishes.
 
 ---
 
@@ -130,22 +150,116 @@ The LLM agent calls multiple MCP tools within one session, so the presentation s
 
 ---
 
+## Docker Container
+
+### Image Details
+
+| Property | Value |
+|----------|-------|
+| Base image | `python:3.11-slim` |
+| Core library | [python-pptx](https://github.com/scanny/python-pptx) via `office-powerpoint-mcp-server` (PyPI) |
+| MCP framework | [FastMCP](https://github.com/modelcontextprotocol/python-sdk) |
+| Transport | Streamable HTTP (JSON-RPC 2.0 over HTTP with SSE responses) |
+| Port | 8100 |
+| State | In-memory per session; saved to disk on `save_presentation` |
+| Auth | None (intended for internal Docker network only) |
+| Volumes | `ppt_output` → `/app/output` (generated files), `ppt_templates` → `/app/templates` (custom templates) |
+| Health check | HTTP GET to `http://localhost:8100/` every 30s |
+
+### Dockerfile
+
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+RUN pip install --no-cache-dir office-powerpoint-mcp-server
+RUN mkdir -p /app/templates /app/output
+ENV PPT_TEMPLATE_PATH=/app/templates
+EXPOSE 8100
+CMD ["python", "-c", "from ppt_mcp_server import app; \
+  app.settings.port = 8100; \
+  app.settings.host = '0.0.0.0'; \
+  app.settings.transport_security.enable_dns_rebinding_protection = False; \
+  app.run(transport='streamable-http')"]
+```
+
+**Note:** DNS rebinding protection is disabled because the container is accessed via Docker DNS hostname (`ppt-mcp-server`) rather than `localhost`. This is safe because the container is only accessible on the internal Docker network.
+
+### docker-compose.yml
+
+```yaml
+services:
+  ppt-mcp-server:
+    build: .
+    container_name: ppt-mcp-server
+    ports:
+      - "8100:8100"
+    volumes:
+      - ppt_output:/app/output
+      - ppt_templates:/app/templates
+    environment:
+      - PPT_TEMPLATE_PATH=/app/templates
+    restart: unless-stopped
+
+volumes:
+  ppt_output:
+  ppt_templates:
+```
+
+### Network Connectivity
+
+The PPT MCP server runs in its own Docker Compose project (`ppt-generator/`), separate from the main Onyx stack (`deployment/docker_compose/`). For the API server to reach it by hostname, the container must be connected to the `onyx_default` network:
+
+```bash
+docker network connect onyx_default ppt-mcp-server
+```
+
+The `dev.bat` helper does this automatically on `dev up` and `dev build`. If you start the container manually, run the network connect command after `docker compose up -d`.
+
+---
+
 ## Setup Guide
 
-### Prerequisites
+### Option A: Using dev.bat (Recommended)
 
-- VirtualAI application running (backend API accessible)
-- Docker installed
-- Python 3.10+ with `requests` package
-- API key for VirtualAI admin (in `backend/tests/agents_creator/apikey.txt` or `VIRTUALAI_API_KEY` env var)
+The `dev.bat` helper in `deployment/docker_compose/` manages the PPT MCP server alongside the main Onyx stack.
 
-### Step 1: Start the PPT MCP Server
+```bash
+cd deployment/docker_compose
+
+# Start everything (Onyx + PPT MCP server)
+dev up
+
+# Or build everything from scratch
+dev build
+
+# Start only the PPT MCP server
+dev up ppt
+
+# Build and restart only the PPT MCP server
+dev build ppt
+
+# View PPT MCP server logs
+dev logs ppt
+
+# Restart just the PPT MCP server
+dev restart ppt
+
+# Stop everything (including PPT MCP server)
+dev down
+```
+
+After the services are up, proceed to [Step 2: Register](#step-2-register-the-mcp-server-in-virtualai).
+
+### Option B: Manual Docker Compose
 
 ```bash
 cd ppt-generator
 
 # Build and start
 docker compose up -d
+
+# Connect to Onyx network (required for API server to reach it)
+docker network connect onyx_default ppt-mcp-server
 
 # Verify it's running
 docker compose logs -f
@@ -160,7 +274,7 @@ The server exposes 37 MCP tools via Streamable HTTP transport on port 8100.
 cd backend/tests/workflow_creator
 
 # Register server + discover all 37 tools
-python register_ppt_mcp.py --url http://localhost:8100
+python register_ppt_mcp.py --mcp-url http://localhost:8100
 ```
 
 This will:
@@ -170,7 +284,7 @@ This will:
 
 **If your VirtualAI instance runs on a different host/port:**
 ```bash
-python register_ppt_mcp.py --url http://localhost:8100 --base-url http://your-virtualai:3000
+python register_ppt_mcp.py --mcp-url http://localhost:8100 --url http://your-virtualai:3000
 ```
 
 ### Step 3: Deploy the Workflow
@@ -263,12 +377,14 @@ Open VirtualAI in your browser. You should see "Presentation Generator" in the a
 ## Management Commands
 
 ```bash
+cd backend/tests/workflow_creator
+
 # List discovered tools
 python register_ppt_mcp.py --list-tools
 
 # Re-register (if server URL changed)
 python register_ppt_mcp.py --delete
-python register_ppt_mcp.py --url http://new-host:8100
+python register_ppt_mcp.py --mcp-url http://new-host:8100
 
 # Re-attach tools after re-registration
 python register_ppt_mcp.py --attach-to-personas
@@ -308,11 +424,12 @@ To give agents additional tools (e.g., WebSearch for researching content):
 
 | Issue | Fix |
 |-------|-----|
-| MCP server won't start | Check `docker compose logs`. Ensure port 8100 is free. |
+| MCP server won't start | Check `dev logs ppt` or `docker compose logs`. Ensure port 8100 is free. |
 | "Transport not configured" error | Server was created without transport. Delete and re-register: `python register_ppt_mcp.py --delete && python register_ppt_mcp.py` |
 | Tool discovery returns 0 tools | Ensure the MCP server is running and accessible from the VirtualAI backend. Test with `curl -X POST http://localhost:8100/mcp -H "Accept: application/json, text/event-stream" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}},"id":1}'` |
 | Personas not found when attaching | Deploy the workflow first (Step 3), then attach tools (Step 4) |
-| "No presentation loaded" errors | This is normal for inter-session calls. The Onyx MCP client handles session management -- all tool calls within one agent turn share a session. |
+| API server can't reach MCP server | Run `docker network connect onyx_default ppt-mcp-server` or use `dev up` which does this automatically |
+| "421 Misdirected Request" error | DNS rebinding protection is blocking Docker hostnames. The Dockerfile already disables this -- rebuild with `dev build ppt` |
 | Generated PPTX looks basic | The MCP server uses python-pptx which has limitations. For richer designs, use `apply_professional_design` and `apply_slide_template` tools. |
 
 ---
@@ -326,6 +443,10 @@ To give agents additional tools (e.g., WebSearch for researching content):
 - **Transport**: Streamable HTTP (JSON-RPC 2.0 over HTTP with SSE responses)
 - **State**: In-memory per session (presentations are Python objects, saved to disk on `save_presentation`)
 - **Auth**: None (intended for internal network only)
+
+### MCP Session Persistence
+
+VirtualAI implements **Pattern A: Client-Side Session Pool** for MCP session management. This ensures all MCP tool calls within a single agent step share the same persistent session, preserving in-memory state (like loaded presentations) across sequential tool calls. See [MCP_SESSION_PERSISTENCE.md](MCP_SESSION_PERSISTENCE.md) for the full architecture analysis.
 
 ### Workflow
 - **Orchestration**: LLM-decision mode (orchestrator LLM decides agent routing)

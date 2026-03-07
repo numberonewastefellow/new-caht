@@ -3,7 +3,8 @@ export type WebSearchProviderType =
   | "serper"
   | "exa"
   | "searxng"
-  | "brave";
+  | "brave"
+  | "smartsearch";
 
 export const SEARCH_PROVIDERS_URL = "/api/admin/web-search/search-providers";
 
@@ -51,6 +52,13 @@ export const SEARCH_PROVIDER_DETAILS: Record<
     subtitle: "SearXNG",
     helper: "Connect to SearXNG to set up web search.",
     logoSrc: "/SearXNG.svg",
+  },
+  smartsearch: {
+    label: "SmartSearch AI",
+    subtitle: "Perplexica",
+    helper:
+      "Connect to SmartSearch AI (Perplexica) for AI-powered web search with cited sources.",
+    logoSrc: "/SmartSearch.svg",
   },
 };
 
@@ -122,6 +130,13 @@ const SEARCH_PROVIDER_CAPABILITIES: Record<
     requiredConfigKeys: ["searxng_base_url"],
     storedConfigAliases: {
       searxng_base_url: ["searxng_base_url"],
+    },
+  },
+  smartsearch: {
+    requiresApiKey: false,
+    requiredConfigKeys: ["smartsearch_base_url"],
+    storedConfigAliases: {
+      smartsearch_base_url: ["smartsearch_base_url"],
     },
   },
 };

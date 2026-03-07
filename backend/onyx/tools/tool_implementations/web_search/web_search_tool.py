@@ -176,7 +176,7 @@ class WebSearchTool(Tool[WebSearchToolOverrideKwargs]):
     def run(
         self,
         placement: Placement,
-        override_kwargs: WebSearchToolOverrideKwargs,
+        override_kwargs: WebSearchToolOverrideKwargs | None,
         **llm_kwargs: Any,
     ) -> ToolResponse:
         """Execute the web search tool with multiple queries in parallel"""
@@ -323,7 +323,7 @@ class WebSearchTool(Tool[WebSearchToolOverrideKwargs]):
         else:
             docs_str, citation_mapping = convert_inference_sections_to_llm_string(
                 top_sections=inference_sections,
-                citation_start=override_kwargs.starting_citation_num,
+                citation_start=override_kwargs.starting_citation_num if override_kwargs else 1,
                 limit=None,  # Already truncated
                 include_source_type=False,
                 include_link=True,

@@ -1318,7 +1318,21 @@ export default function Page() {
                     </>
                   ),
                 }
-              : undefined
+              : selectedProviderType === "smartsearch"
+                ? {
+                    label: "SmartSearch AI Base URL",
+                    value: searchModal.configValue,
+                    onChange: (value) =>
+                      dispatchSearchModal({ type: "SET_CONFIG_VALUE", value }),
+                    placeholder: "http://localhost:3000",
+                    description: (
+                      <>
+                        Paste the base URL of your SmartSearch AI (Perplexica)
+                        instance. No API key required.
+                      </>
+                    ),
+                  }
+                : undefined
         }
         helperMessage={
           searchModal.message?.kind === "error" ? (
