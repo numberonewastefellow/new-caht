@@ -33,6 +33,7 @@ backend/onyx/evals/one_off/*.json
 .env
 jira_test_env
 settings.json
+backend/tests/workflow_creator/gpt_key
 
 # others
 /deployment/data/nginx/app.conf
