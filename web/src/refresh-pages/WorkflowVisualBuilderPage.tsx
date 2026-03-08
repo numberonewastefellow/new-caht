@@ -23,6 +23,7 @@ import {
   AgentTestModal,
   type AgentTestTarget,
 } from "@/components/workflow-builder/AgentTestModal";
+import { QuickCreateAgentModal } from "@/components/workflow-builder/QuickCreateAgentModal";
 import type {
   AgentNodeData,
   DragPersonaData,
@@ -37,7 +38,7 @@ function WorkflowVisualBuilderInner({
   workflowId,
 }: WorkflowVisualBuilderPageProps) {
   const router = useRouter();
-  const { agents, isLoading: agentsLoading } = useAgents();
+  const { agents, isLoading: agentsLoading, refresh: refreshAgents } = useAgents();
   const { workflow, isLoading: workflowLoading } = useWorkflow(
     workflowId ?? null
   );
@@ -48,6 +49,7 @@ function WorkflowVisualBuilderInner({
   const [loaded, setLoaded] = useState(false);
   const enrichedRef = useRef(false);
   const [testTarget, setTestTarget] = useState<AgentTestTarget | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Listen for agent test button clicks from ReactFlow nodes
   useEffect(() => {
@@ -216,7 +218,11 @@ function WorkflowVisualBuilderInner({
         llmProviders={llmProviders ?? []}
       />
       <div className="wfb-content">
-        <AgentSidebar agents={agents} isLoading={agentsLoading} />
+        <AgentSidebar
+          agents={agents}
+          isLoading={agentsLoading}
+          onCreateNew={() => setShowCreateModal(true)}
+        />
         <WorkflowCanvas
           nodes={nodes}
           edges={edges}
@@ -249,6 +255,19 @@ function WorkflowVisualBuilderInner({
         <AgentTestModal
           target={testTarget}
           onClose={() => setTestTarget(null)}
+        />
+      )}
+
+      {/* Quick Create Agent Modal */}
+      {showCreateModal && (
+        <QuickCreateAgentModal
+          onCreated={(dragData) => {
+            refreshAgents();
+            addAgentNode(dragData, { x: 400, y: 300 });
+            setShowCreateModal(false);
+            toast.success(`Agent "${dragData.persona_name}" created and added.`);
+          }}
+          onClose={() => setShowCreateModal(false)}
         />
       )}
     </div>

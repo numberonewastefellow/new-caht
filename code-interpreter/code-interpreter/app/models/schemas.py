@@ -1,0 +1,134 @@
+from __future__ import annotations
+
+from typing import ClassVar, Literal
+
+from pydantic import BaseModel, Field, StrictInt, StrictStr
+
+from app.services.executor_base import EntryKind
+
+
+class ExecuteFile(BaseModel):
+    path: StrictStr = Field(..., description="Relative file path within the execution workspace.")
+    file_id: StrictStr = Field(
+        ..., description="UUID of a previously uploaded file to use for execution."
+    )
+
+
+class WorkspaceFile(BaseModel):
+    path: StrictStr
+    kind: EntryKind
+    file_id: StrictStr | None = Field(
+        None, description="ID of the file in storage (only for files, not directories)."
+    )
+
+
+class ExecuteRequest(BaseModel):
+    code: StrictStr = Field(..., description="Python source to execute.")
+    stdin: StrictStr | None = Field(None, description="Optional stdin passed to the program.")
+    timeout_ms: StrictInt = Field(2000, ge=1, description="Execution timeout in milliseconds.")
+    last_line_interactive: bool = Field(
+        True,
+        description=(
+            "If True, the last line of code will print its value to stdout if it's a bare "
+            "expression (like Jupyter notebooks or Python REPL). Only the last line is affected; "
+            "earlier expressions are not printed. Default is True."
+        ),
+    )
+    files: list[ExecuteFile] = Field(
+        default_factory=list,
+        description="Optional collection of files to stage in the execution workspace.",
+    )
+    session_id: StrictStr | None = Field(
+        None,
+        description=(
+            "Optional session ID for persistent execution. When provided, code runs in "
+            "a persistent kernel where variables and imports survive between calls. "
+            "When absent, uses ephemeral stateless execution (backward compatible)."
+        ),
+    )
+
+
+class CreateSessionResponse(BaseModel):
+    session_id: StrictStr = Field(..., description="Unique identifier for the session.")
+
+
+class ExecuteResponse(BaseModel):
+    stdout: StrictStr
+    stderr: StrictStr
+    exit_code: int | None
+    timed_out: bool
+    duration_ms: StrictInt
+    files: list[WorkspaceFile] = Field(
+        default_factory=list,
+        description="Snapshot of the execution workspace after completion.",
+    )
+
+
+class SSEModel(BaseModel):
+    """Base for Server-Sent Event payloads.
+
+    Subclasses declare ``sse_event`` as a ClassVar to set the SSE event type.
+    Call ``to_sse()`` to get a fully-formatted SSE frame.
+    """
+
+    sse_event: ClassVar[str]
+
+    def to_sse(self) -> str:
+        data = self.model_dump_json()
+        return f"event: {self.sse_event}\ndata: {data}\n\n"
+
+
+class StreamOutputEvent(SSEModel):
+    """Payload for 'output' SSE events."""
+
+    sse_event: ClassVar[str] = "output"
+
+    stream: Literal["stdout", "stderr"]
+    data: StrictStr
+
+
+class StreamResultEvent(SSEModel):
+    """Payload for the final 'result' SSE event."""
+
+    sse_event: ClassVar[str] = "result"
+
+    exit_code: int | None
+    timed_out: bool
+    duration_ms: StrictInt
+    files: list[WorkspaceFile] = Field(
+        default_factory=list,
+        description="Snapshot of the execution workspace after completion.",
+    )
+
+
+class StreamErrorEvent(SSEModel):
+    """Payload for 'error' SSE events."""
+
+    sse_event: ClassVar[str] = "error"
+
+    message: StrictStr
+
+
+class UploadFileResponse(BaseModel):
+    file_id: StrictStr = Field(..., description="Unique identifier for the uploaded file.")
+    filename: StrictStr = Field(..., description="Original filename as provided during upload.")
+    size_bytes: StrictInt = Field(..., description="Size of the uploaded file in bytes.")
+
+
+class FileMetadataResponse(BaseModel):
+    file_id: StrictStr
+    filename: StrictStr
+    size_bytes: StrictInt
+    upload_time: float = Field(..., description="Unix timestamp of when the file was uploaded.")
+
+
+class ListFilesResponse(BaseModel):
+    files: list[FileMetadataResponse] = Field(
+        default_factory=list,
+        description="List of all stored files with their metadata.",
+    )
+
+
+class HealthResponse(BaseModel):
+    status: Literal["ok", "error"]
+    message: StrictStr | None = None

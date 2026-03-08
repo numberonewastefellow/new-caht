@@ -1,0 +1,23 @@
+services:
+  office-mcp-server:
+    build: .
+    container_name: office-mcp-server
+    ports:
+      - "8100:8100"
+    volumes:
+      - office_output:/app/output
+      - office_templates:/app/templates
+      - office_documents:/app/documents
+    environment:
+      - PPT_TEMPLATE_PATH=/app/templates
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8100/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  office_output:
+  office_templates:
+  office_documents:

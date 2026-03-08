@@ -1073,3 +1073,182 @@
 .dark .wfb-edge-label {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
+
+/* ── Sidebar: Create New Agent button ─────────────────────────────── */
+
+.wfb-sidebar-create-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  border: 1.5px dashed var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+  border-radius: 10px;
+  background: transparent;
+  color: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.wfb-sidebar-create-btn:hover {
+  background: var(--virtualai-accent-subtle, var(--theme-primary-01, #eef2ff));
+  border-color: var(--virtualai-accent, var(--theme-primary-06, #4f46e5));
+}
+
+.wfb-sidebar-create-btn:active {
+  transform: scale(0.98);
+}
+
+/* ── Quick-Create Agent Modal ─────────────────────────────────────── */
+
+.wfb-create-modal {
+  background: var(--background-tint-00, #fff);
+  border: 1px solid var(--border-01, #e5e7eb);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  width: 440px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.wfb-create-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.wfb-create-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.wfb-create-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-05, #374151);
+}
+
+.wfb-create-input {
+  padding: 9px 12px;
+  border: 1px solid var(--border-01, #e5e7eb);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--background-tint-01, #fafafa);
+  color: var(--text-05, #374151);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.wfb-create-input:focus {
+  border-color: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+}
+
+.wfb-create-textarea {
+  padding: 9px 12px;
+  border: 1px solid var(--border-01, #e5e7eb);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--background-tint-01, #fafafa);
+  color: var(--text-05, #374151);
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  min-height: 56px;
+  transition: border-color 0.15s;
+}
+
+.wfb-create-textarea:focus {
+  border-color: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+}
+
+.wfb-create-textarea--tall {
+  min-height: 90px;
+}
+
+.wfb-create-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-03, #6b7280);
+  padding: 0;
+}
+
+.wfb-create-toggle:hover {
+  color: var(--text-05, #374151);
+}
+
+.wfb-create-error {
+  font-size: 12px;
+  color: var(--theme-red-05, #dc2626);
+  background: var(--theme-red-01, #fef2f2);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.wfb-create-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-01, #e5e7eb);
+}
+
+.wfb-create-cancel-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--border-01, #e5e7eb);
+  border-radius: 8px;
+  background: var(--background-tint-00, #fff);
+  color: var(--text-05, #374151);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.wfb-create-cancel-btn:hover {
+  background: var(--background-tint-02, #f3f4f6);
+}
+
+.wfb-create-submit-btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.wfb-create-submit-btn:hover {
+  background: var(--theme-primary-06, #4f46e5);
+}
+
+.wfb-create-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Dark mode overrides for create modal */
+.dark .wfb-create-modal {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.dark .wfb-sidebar-create-btn:hover {
+  background: rgba(99, 102, 241, 0.1);
+}

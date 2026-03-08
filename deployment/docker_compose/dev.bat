@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 set COMPOSE_CMD=docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml
-set INFRA=relational_db index cache inference_model_server indexing_model_server minio code-interpreter
+set INFRA=relational_db index cache inference_model_server indexing_model_server minio code-interpreter smartsearch
 set APP=api_server background web_server nginx
 set MCP=ppt-mcp-server
 
@@ -27,6 +27,8 @@ if /i "!_arg!"=="db" set SERVICES=!SERVICES! relational_db
 if /i "!_arg!"=="cache" set SERVICES=!SERVICES! cache
 if /i "!_arg!"=="vespa" set SERVICES=!SERVICES! index
 if /i "!_arg!"=="minio" set SERVICES=!SERVICES! minio
+if /i "!_arg!"=="search" set SERVICES=!SERVICES! smartsearch
+if /i "!_arg!"=="smartsearch" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="ppt" set SERVICES=!SERVICES! __PPT__
 set /a _i+=1
 goto resolve_args
@@ -228,6 +230,8 @@ if /i "!_arg!"=="db" set SERVICES=!SERVICES! relational_db
 if /i "!_arg!"=="cache" set SERVICES=!SERVICES! cache
 if /i "!_arg!"=="vespa" set SERVICES=!SERVICES! index
 if /i "!_arg!"=="minio" set SERVICES=!SERVICES! minio
+if /i "!_arg!"=="search" set SERVICES=!SERVICES! smartsearch
+if /i "!_arg!"=="smartsearch" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="ppt" set SERVICES=!SERVICES! __PPT__
 set /a _i+=1
 goto resolve_from_loop
@@ -346,8 +350,9 @@ echo     logs ppt              Tail logs for PPT MCP server
 echo     ps                    Show running containers (all + MCP)
 echo.
 echo   Groups:
-echo     infra      = db, vespa, redis, model servers, minio, code-interpreter
+echo     infra      = db, vespa, redis, model servers, minio, code-interpreter, smartsearch
 echo     app        = api_server, background, web_server, nginx
+echo     search     = smartsearch (Perplexica AI web search)
 echo     ppt        = PPT MCP server (PowerPoint generation via MCP)
 echo.
 echo   Service shortcuts:
@@ -360,6 +365,8 @@ echo     db         = relational_db
 echo     cache      = cache (redis)
 echo     vespa      = index (vespa)
 echo     minio      = minio
+echo     search     = smartsearch (Perplexica AI web search)
+echo     smartsearch = smartsearch (alias for search)
 echo     ppt        = ppt-mcp-server (PowerPoint MCP, separate compose)
 echo.
 echo   Notes:

@@ -1,0 +1,10 @@
+{
+  "project": "test-analytics",
+  "version": "1.0",
+  "settings": {
+    "chart_style": "seaborn",
+    "output_format": "png",
+    "dpi": 100
+  },
+  "columns": ["date", "product", "region", "units", "price", "revenue"]
+}

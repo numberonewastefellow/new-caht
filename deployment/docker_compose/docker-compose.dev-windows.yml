@@ -134,5 +134,22 @@ services:
       - MEMORY_LIMIT_MB=1024
       - CPU_TIME_LIMIT_SEC=30
 
+  # SmartSearch AI (Perplexica) — AI-powered web search
+  # Builds from local source at ../../Perplexica (repo root/Perplexica)
+  # Note: Next.js compiles to .next/standalone — source bind-mounting won't work.
+  # To pick up source changes, rebuild: docker compose ... build smartsearch
+  smartsearch:
+    build:
+      context: ../../Perplexica
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    volumes:
+      - E:/temp/vert/smartsearch_data:/home/perplexica/data
+      # Mount SearxNG config so we can tweak search engines without rebuilding
+      - ../../Perplexica/searxng/settings.yml:/etc/searxng/settings.yml
+      # Mount uploads directory for persistence
+      - E:/temp/vert/smartsearch_uploads:/home/perplexica/uploads
+
 volumes:
   craft-templates:

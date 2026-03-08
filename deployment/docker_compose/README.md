@@ -45,3 +45,78 @@ downloaded during the initial setup. Feel free to edit the .env file to customiz
 located near the top of the file.
 
 IMAGE_TAG is the version of VertualAI to run. It is recommended to leave it as latest to get all updates with each redeployment.
+
+## SmartSearch AI (Perplexica) Setup
+
+SmartSearch AI is an AI-powered web search provider that uses [Perplexica](https://github.com/ItzCrazyKns/Perplexica) as its backend.
+The Perplexica source code lives at `Perplexica/` in the repo root and is built as the `smartsearch` service in `docker-compose.yml`.
+
+### How It Works
+
+Perplexica runs a 4-stage pipeline for each search request:
+1. **Classifier** — Rewrites the query into a standalone form and classifies search type
+2. **Researcher** — Agentic loop that generates SEO keyword queries and searches via SearxNG (iteration limits: speed=2, balanced=6, quality=25)
+3. **Writer** — Synthesizes an AI answer with `[N]` citations from search results
+4. **Response** — Returns `{message, sources[]}` to VirtualAI
+
+### First-Time Configuration
+
+After starting the stack, Perplexica needs its LLM providers configured:
+
+1. **Build and start the stack** (first time builds Perplexica from `../../Perplexica`):
+   ```
+   docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml up -d --build
+   ```
+
+2. **Configure Perplexica's LLM providers** — Open `http://localhost:3001` in your browser and set up:
+   - **Chat Model**: Select an OpenAI-compatible provider (e.g., your existing OpenAI API key)
+   - **Embedding Model**: Select a Transformers-based local model or an API provider
+
+3. **Get Perplexica's provider IDs** (needed for VirtualAI config):
+   ```
+   curl http://localhost:3001/api/providers
+   ```
+   Note the `chatModelProviders` and `embeddingModelProviders` IDs from the response.
+
+4. **Configure VirtualAI to use SmartSearch**:
+   - Go to **Admin > Web Search** in VirtualAI
+   - Select **SmartSearch AI** as the provider
+   - Set **Base URL**: `http://smartsearch:3000` (Docker internal network)
+   - Save and activate
+
+### Networking Notes
+
+- Perplexica listens on port 3000 inside the container, mapped to 3001 on the host (since nginx uses 3000)
+- VirtualAI services should use `http://smartsearch:3000` (Docker DNS) — not `localhost`
+- The dev-windows override maps the data volume to `E:/temp/vert/smartsearch_data`
+
+### Building from Source
+
+Perplexica is a Next.js app that compiles to `.next/standalone`. Unlike Python services, you cannot
+bind-mount the source code for live reloading. After editing files in `Perplexica/src/`, rebuild:
+
+```
+docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml build smartsearch
+docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml up -d smartsearch
+```
+
+### SearxNG Configuration
+
+Perplexica bundles its own SearxNG instance internally. The dev-windows override mounts
+`Perplexica/searxng/settings.yml` directly into the container, so you can edit it locally
+and restart the container to apply changes (no rebuild needed):
+
+```
+docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml restart smartsearch
+```
+
+Common fixes:
+- Disable DuckDuckGo if you get CAPTCHA blocks (enable Google + Bing instead)
+- For production, consider using a paid search API (Serper, Brave Search) instead of SearxNG scrapers
+
+### Architecture Notes
+
+See `SMARTSEARCH_AI_INTEGRATION.md` in the project root for a detailed analysis of:
+- The full Perplexica pipeline internals
+- Known limitations (double LLM cost, multiplicative search explosion, double query rewriting)
+- Four improvement options (A-D) for production deployments

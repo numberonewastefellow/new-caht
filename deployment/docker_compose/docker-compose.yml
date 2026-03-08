@@ -529,8 +529,13 @@ services:
 
   # SmartSearch AI (Perplexica) — AI-powered web search with cited sources
   # Configure in Admin > Web Search > SmartSearch AI with base URL: http://smartsearch:3000
+  # Build from local source: ../../Perplexica (repo root/Perplexica)
+  # Bundles SearxNG internally (port 8080) + Perplexica Next.js app (port 3000)
   smartsearch:
-    image: itzcrazykns1337/perplexica:latest
+    image: ${SMARTSEARCH_IMAGE:-itzcrazykns1337/perplexica:latest}
+    build:
+      context: ../../Perplexica
+      dockerfile: Dockerfile
     container_name: smartsearch
     ports:
       - "3001:3000"
