@@ -167,7 +167,7 @@ TMP_DRALPHA_PERSONA_NAME = "KG Beta"
 
 
 class DocumentSource(str, Enum):
-    # Special case, document passed in via Onyx APIs without specifying a source type
+    # Special case, document passed in via VertualAi APIs without specifying a source type
     INGESTION_API = "ingestion_api"
     SLACK = "slack"
     WEB = "web"
@@ -185,6 +185,7 @@ class DocumentSource(str, Enum):
     SLAB = "slab"
     PRODUCTBOARD = "productboard"
     FILE = "file"
+    FOLDER = "folder"
     CODA = "coda"
     NOTION = "notion"
     ZULIP = "zulip"
@@ -241,7 +242,7 @@ class FederatedConnectorSource(str, Enum):
         return None
 
 
-DocumentSourceRequiringTenantContext: list[DocumentSource] = [DocumentSource.FILE]
+DocumentSourceRequiringTenantContext: list[DocumentSource] = [DocumentSource.FILE, DocumentSource.FOLDER]
 
 
 class NotificationType(str, Enum):
@@ -617,7 +618,7 @@ NUM_DAYS_TO_KEEP_INDEX_ATTEMPTS = NUM_DAYS_TO_KEEP_CHECKPOINTS + 1
 
 # TODO: this should be stored likely in database
 DocumentSourceDescription: dict[DocumentSource, str] = {
-    # Special case, document passed in via Onyx APIs without specifying a source type
+    # Special case, document passed in via VertualAi APIs without specifying a source type
     DocumentSource.INGESTION_API: "ingestion_api",
     DocumentSource.SLACK: "slack channels for discussions and collaboration",
     DocumentSource.WEB: "indexed web pages",
@@ -636,6 +637,7 @@ DocumentSourceDescription: dict[DocumentSource, str] = {
     DocumentSource.SLAB: "slab data",
     DocumentSource.PRODUCTBOARD: "productboard data (boards, etc.)",
     DocumentSource.FILE: "files",
+    DocumentSource.FOLDER: "local folder — recursive file indexing from filesystem directories",
     DocumentSource.CODA: "coda - team workspace with docs, tables, and pages",
     DocumentSource.NOTION: "notion data - a workspace that combines note-taking, \
 project management, and collaboration tools into a single, customizable platform",

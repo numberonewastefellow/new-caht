@@ -1,4 +1,4 @@
-"""Async HTTP client for communicating with Onyx API pods."""
+"""Async HTTP client for communicating with VertualAi API pods."""
 
 import aiohttp
 
@@ -17,10 +17,10 @@ logger = setup_logger()
 
 
 class OnyxAPIClient:
-    """Async HTTP client for sending chat requests to Onyx API pods.
+    """Async HTTP client for sending chat requests to VertualAi API pods.
 
     This client manages an aiohttp session for making non-blocking HTTP
-    requests to the Onyx API server. It handles authentication with per-tenant
+    requests to the VertualAi API server. It handles authentication with per-tenant
     API keys and multi-tenant routing.
 
     Usage:
@@ -94,7 +94,7 @@ class OnyxAPIClient:
         api_key: str,
         persona_id: int | None = None,
     ) -> ChatFullResponse:
-        """Send a chat message to the Onyx API server and get a response.
+        """Send a chat message to the VertualAi API server and get a response.
 
         This method sends a non-streaming chat request to the API server. The response
         contains the complete answer with any citations and metadata.

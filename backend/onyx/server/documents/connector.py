@@ -1599,6 +1599,49 @@ def update_connector_from_model(
     )
 
 
+@router.post("/admin/connector/folder/validate-paths", tags=PUBLIC_API_TAGS)
+def validate_folder_paths(
+    request: dict[str, list[str]],
+    _: User = Depends(current_curator_or_admin_user),
+) -> dict:
+    """Validate folder paths exist, are directories, and are in the allowlist."""
+    from onyx.configs.app_configs import FOLDER_CONNECTOR_ALLOWED_DIRECTORIES
+
+    paths = request.get("paths", [])
+    results: dict[str, dict] = {}
+
+    allowed = FOLDER_CONNECTOR_ALLOWED_DIRECTORIES.strip()
+    allowed_dirs = [d.strip() for d in allowed.split(",") if d.strip()] if allowed else []
+
+    for path in paths:
+        real_path = os.path.realpath(path)
+
+        # Check allowlist
+        if allowed_dirs:
+            real_lower = real_path.replace("\\", "/").lower()
+            in_allowlist = any(
+                real_lower.startswith(ad.replace("\\", "/").lower().rstrip("/") + "/")
+                or real_lower == ad.replace("\\", "/").lower().rstrip("/")
+                for ad in allowed_dirs
+            )
+            if not in_allowlist:
+                results[path] = {"valid": False, "error": "Not in allowed directories"}
+                continue
+
+        if not os.path.exists(real_path):
+            results[path] = {"valid": False, "error": "Path does not exist"}
+        elif not os.path.isdir(real_path):
+            results[path] = {"valid": False, "error": "Not a directory"}
+        else:
+            try:
+                file_count = sum(1 for entry in os.scandir(real_path) if entry.is_file())
+                results[path] = {"valid": True, "file_count": file_count}
+            except PermissionError:
+                results[path] = {"valid": False, "error": "Permission denied"}
+
+    return {"results": results}
+
+
 @router.delete(
     "/admin/connector/{connector_id}",
     response_model=StatusResponse[int],

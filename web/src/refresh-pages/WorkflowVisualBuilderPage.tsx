@@ -6,6 +6,8 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { useAgents } from "@/hooks/useAgents";
 import { useWorkflow } from "@/hooks/useWorkflows";
 import { useLLMProviders } from "@/lib/hooks/useLLMProviders";
+import { useAvailableTools } from "@/hooks/useAvailableTools";
+import { useDocumentSets } from "@/lib/hooks/useDocumentSets";
 import {
   createWorkflow,
   updateWorkflow,
@@ -17,7 +19,14 @@ import { AgentSidebar } from "@/components/workflow-builder/AgentSidebar";
 import { NodeConfigPanel } from "@/components/workflow-builder/NodeConfigPanel";
 import { GlobalConfigToolbar } from "@/components/workflow-builder/GlobalConfigToolbar";
 import { useWorkflowGraph } from "@/components/workflow-builder/useWorkflowGraph";
-import type { AgentNodeData, DragPersonaData } from "@/components/workflow-builder/types";
+import {
+  AgentTestModal,
+  type AgentTestTarget,
+} from "@/components/workflow-builder/AgentTestModal";
+import type {
+  AgentNodeData,
+  DragPersonaData,
+} from "@/components/workflow-builder/types";
 import { ORCHESTRATOR_NODE_ID } from "@/components/workflow-builder/types";
 
 interface WorkflowVisualBuilderPageProps {
@@ -33,9 +42,22 @@ function WorkflowVisualBuilderInner({
     workflowId ?? null
   );
   const { llmProviders } = useLLMProviders();
+  const { tools: availableTools } = useAvailableTools();
+  const { documentSets } = useDocumentSets();
   const [isSaving, setIsSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const enrichedRef = useRef(false);
+  const [testTarget, setTestTarget] = useState<AgentTestTarget | null>(null);
+
+  // Listen for agent test button clicks from ReactFlow nodes
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as AgentTestTarget;
+      if (detail?.personaId) setTestTarget(detail);
+    };
+    window.addEventListener("wfb-test-agent", handler);
+    return () => window.removeEventListener("wfb-test-agent", handler);
+  }, []);
 
   const {
     nodes,
@@ -67,7 +89,12 @@ function WorkflowVisualBuilderInner({
 
   // Enrich agent nodes with persona details (LLM, tools, labels) once agents are loaded
   useEffect(() => {
-    if (!loaded || agentsLoading || agents.length === 0 || enrichedRef.current)
+    if (
+      !loaded ||
+      agentsLoading ||
+      agents.length === 0 ||
+      enrichedRef.current
+    )
       return;
     enrichedRef.current = true;
     const agentMap = new Map(agents.map((a) => [a.id, a]));
@@ -83,7 +110,8 @@ function WorkflowVisualBuilderInner({
         persona_num_tools: persona.tools?.length || 0,
         persona_tool_names: (persona.tools || []).map((t) => t.name),
         persona_llm_model: persona.llm_model_version_override || null,
-        persona_llm_provider: persona.llm_model_provider_override || null,
+        persona_llm_provider:
+          persona.llm_model_provider_override || null,
         persona_labels: [],
       });
     }
@@ -203,6 +231,9 @@ function WorkflowVisualBuilderInner({
             nodeId={selectedNodeId!}
             data={selectedNode!.data as AgentNodeData}
             agents={agents}
+            availableTools={availableTools}
+            documentSets={documentSets}
+            llmProviders={llmProviders ?? []}
             onUpdate={updateNodeData}
             onDelete={(id) => {
               removeNode(id);
@@ -212,6 +243,14 @@ function WorkflowVisualBuilderInner({
           />
         )}
       </div>
+
+      {/* Agent Test Modal */}
+      {testTarget && (
+        <AgentTestModal
+          target={testTarget}
+          onClose={() => setTestTarget(null)}
+        />
+      )}
     </div>
   );
 }

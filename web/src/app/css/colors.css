@@ -337,6 +337,12 @@
   --theme-gradient-05: var(--tint-50);
   --theme-gradient-00: var(--grey-100);
 
+  /* Default accent (neutral dark) */
+  --virtualai-accent: #1c1c1c;
+  --virtualai-accent-glow: rgba(28, 28, 28, 0.12);
+  --virtualai-accent-glow-strong: rgba(28, 28, 28, 0.22);
+  --virtualai-accent-subtle: rgba(28, 28, 28, 0.05);
+
   /* Theme / Red */
   --theme-red-05: var(--red-50);
   --theme-red-04: var(--red-50);
@@ -542,6 +548,12 @@
   /* Theme / Gradient */
   --theme-gradient-05: var(--grey-50);
   --theme-gradient-00: var(--grey-00);
+
+  /* Default accent (indigo — visible on dark backgrounds) */
+  --virtualai-accent: #6366f1;
+  --virtualai-accent-glow: rgba(99, 102, 241, 0.20);
+  --virtualai-accent-glow-strong: rgba(99, 102, 241, 0.30);
+  --virtualai-accent-subtle: rgba(99, 102, 241, 0.08);
 
   /* Theme / Red */
   --theme-red-05: var(--red-45);

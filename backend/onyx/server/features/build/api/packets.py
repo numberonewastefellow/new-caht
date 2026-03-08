@@ -53,7 +53,7 @@ class BasePacket(BaseModel):
 
 
 class ErrorPacket(BasePacket):
-    """An Onyx-specific error occurred (e.g., session not found, sandbox not running)."""
+    """A VertualAi-specific error occurred (e.g., session not found, sandbox not running)."""
 
     type: Literal["error"] = "error"
     message: str

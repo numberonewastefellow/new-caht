@@ -17,6 +17,16 @@ export interface WorkflowStepSnapshot {
   is_terminal: boolean;
   can_request_input: boolean;
   promote_output: boolean;
+
+  // Step-level overrides
+  llm_provider_override?: string | null;
+  llm_model_override?: string | null;
+  max_output_tokens_override?: number | null;
+  system_prompt_override?: string | null;
+  task_prompt_override?: string | null;
+  tool_ids_override?: number[] | null;
+  document_set_ids_override?: number[] | null;
+  replace_base_system_prompt_override?: boolean | null;
 }
 
 export interface WorkflowSnapshot {
@@ -51,6 +61,16 @@ export interface WorkflowStepCreate {
   is_terminal?: boolean;
   can_request_input?: boolean;
   promote_output?: boolean;
+
+  // Step-level overrides
+  llm_provider_override?: string | null;
+  llm_model_override?: string | null;
+  max_output_tokens_override?: number | null;
+  system_prompt_override?: string | null;
+  task_prompt_override?: string | null;
+  tool_ids_override?: number[] | null;
+  document_set_ids_override?: number[] | null;
+  replace_base_system_prompt_override?: boolean | null;
 }
 
 export interface WorkflowCreate {

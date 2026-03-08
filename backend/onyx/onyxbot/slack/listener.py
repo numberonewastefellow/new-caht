@@ -698,12 +698,12 @@ def prefilter_requests(req: SocketModeRequest, client: TenantSocketModeClient) -
             if bot_token_bot_id and bot_token_bot_id in event_bot_id:
                 is_onyx_bot_msg = True
 
-            # OnyxBot should never respond to itself
+            # VertualAi Bot should never respond to itself
             if is_onyx_bot_msg:
-                logger.info("Ignoring message from OnyxBot (self-message)")
+                logger.info("Ignoring message from VertualAi Bot (self-message)")
                 return False
 
-            # DMs with the bot don't pick up the @OnyxBot so we have to keep the
+            # DMs with the bot don't pick up the @VertualAi Bot so we have to keep the
             # caught events_api
             if is_tagged and not is_dm:
                 # Let the tag flow handle this case, don't reply twice
@@ -724,7 +724,7 @@ def prefilter_requests(req: SocketModeRequest, client: TenantSocketModeClient) -
                     channel_name=channel_name,
                 )
 
-            # If OnyxBot is not specifically tagged and the channel is not set to respond to bots, ignore the message
+            # If VertualAi Bot is not specifically tagged and the channel is not set to respond to bots, ignore the message
             if (not bot_token_user_id or bot_token_user_id not in msg) and (
                 not slack_channel_config
                 or not slack_channel_config.channel_config.get("respond_to_bots")
@@ -747,7 +747,7 @@ def prefilter_requests(req: SocketModeRequest, client: TenantSocketModeClient) -
         message_ts = event.get("ts")
         thread_ts = event.get("thread_ts")
         # Pick the root of the thread (if a thread exists)
-        # Can respond in thread if it's an "im" directly to Onyx or @OnyxBot is tagged
+        # Can respond in thread if it's an "im" directly to VertualAi or @VertualAi Bot is tagged
         if (
             thread_ts
             and message_ts != thread_ts
@@ -771,14 +771,14 @@ def prefilter_requests(req: SocketModeRequest, client: TenantSocketModeClient) -
 
         if not channel:
             channel_specific_logger.error(
-                "Received OnyxBot command without channel - skipping"
+                "Received VertualAi Bot command without channel - skipping"
             )
             return False
 
         sender = req.payload.get("user_id")
         if not sender:
             channel_specific_logger.error(
-                "Cannot respond to OnyxBot command without sender to respond to."
+                "Cannot respond to VertualAi Bot command without sender to respond to."
             )
             return False
 
@@ -859,7 +859,7 @@ def build_request_details(
                     tagged = True
 
         if tagged:
-            logger.debug("User tagged OnyxBot")
+            logger.debug("User tagged VertualAi Bot")
 
         # Build Slack context for federated search
         # Get proper channel type from Slack API instead of relying on event.channel_type

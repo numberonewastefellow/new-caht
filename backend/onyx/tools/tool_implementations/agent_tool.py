@@ -60,6 +60,13 @@ class AgentTool(Tool[None]):
         promote_output: bool = False,
         chat_files: list[ChatFile] | None = None,
         sandbox_session_id: str | None = None,
+        # Step-level overrides (override persona defaults)
+        max_output_tokens_override: int | None = None,
+        system_prompt_override: str | None = None,
+        task_prompt_override: str | None = None,
+        tool_ids_override: list[int] | None = None,
+        document_set_ids_override: list[int] | None = None,
+        replace_base_system_prompt_override: bool | None = None,
     ) -> None:
         super().__init__(emitter=emitter)
         self._persona = persona
@@ -75,6 +82,13 @@ class AgentTool(Tool[None]):
         self._promote_output = promote_output
         self._chat_files = chat_files or []
         self._sandbox_session_id = sandbox_session_id
+        # Step-level overrides
+        self._max_output_tokens_override = max_output_tokens_override
+        self._system_prompt_override = system_prompt_override
+        self._task_prompt_override = task_prompt_override
+        self._tool_ids_override = tool_ids_override
+        self._document_set_ids_override = document_set_ids_override
+        self._replace_base_system_prompt_override = replace_base_system_prompt_override
 
     @property
     def id(self) -> int:
@@ -205,14 +219,26 @@ class AgentTool(Tool[None]):
                 llm=llm,
                 search_tool_config=SearchToolConfig(),
                 chat_session_id=mcp_scope_id,
+                allowed_tool_ids=self._tool_ids_override,
             )
             for tool_list in tool_dict.values():
                 tools.extend(tool_list)
 
-        # Build system prompt from persona
-        system_prompt_text = self._persona.system_prompt or ""
-        if self._persona.task_prompt:
-            system_prompt_text += f"\n\n{self._persona.task_prompt}"
+        # Build system prompt: step override > persona value
+        effective_system = (
+            self._system_prompt_override
+            if self._system_prompt_override is not None
+            else (self._persona.system_prompt or "")
+        )
+        effective_task = (
+            self._task_prompt_override
+            if self._task_prompt_override is not None
+            else (self._persona.task_prompt or "")
+        )
+
+        system_prompt_text = effective_system
+        if effective_task:
+            system_prompt_text += f"\n\n{effective_task}"
         if not system_prompt_text:
             system_prompt_text = (
                 f"You are {self._persona.name}. {self._persona.description or ''}"
@@ -270,11 +296,11 @@ class AgentTool(Tool[None]):
                 available_tokens=llm.config.max_input_tokens,
             )
 
-            # Resolve max output tokens: persona-specific or default 5000
+            # Resolve max output tokens: step override > persona > default 5000
             _max_tokens = (
-                self._persona.max_output_tokens
-                if self._persona and self._persona.max_output_tokens
-                else 5000
+                self._max_output_tokens_override
+                or (self._persona.max_output_tokens if self._persona else None)
+                or 5000
             )
 
             llm_step_result, _ = run_llm_step(

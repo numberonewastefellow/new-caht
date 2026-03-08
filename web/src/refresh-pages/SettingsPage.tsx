@@ -457,7 +457,7 @@ function GeneralSettings() {
                             : isSelected
                               ? {
                                   boxShadow:
-                                    "inset 0 0 0 2px var(--theme-primary-05)",
+                                    "inset 0 0 0 2px var(--virtualai-accent)",
                                 }
                               : undefined
                         }
@@ -467,7 +467,7 @@ function GeneralSettings() {
                           className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
                           style={{
                             backgroundColor:
-                              color || "var(--theme-primary-05)",
+                              color || "var(--virtualai-accent)",
                           }}
                         >
                           <SvgCheck className="w-2.5 h-2.5 stroke-text-inverted-05" />
@@ -525,14 +525,14 @@ function GeneralSettings() {
                         className={cn(
                           "absolute inset-0 transition-all rounded-lg",
                           isSelected
-                            ? "ring-2 ring-inset ring-[var(--theme-primary-05)]"
+                            ? "ring-2 ring-inset ring-[var(--virtualai-accent)]"
                             : "ring-1 ring-inset ring-border-02 group-hover:ring-border-03"
                         )}
                       />
                       {isSelected && (
                         <div
                           className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: "var(--theme-primary-05)" }}
+                          style={{ backgroundColor: "var(--virtualai-accent)" }}
                         >
                           <SvgCheck className="w-2.5 h-2.5 stroke-text-inverted-05" />
                         </div>
@@ -578,12 +578,15 @@ function GeneralSettings() {
                         className={cn(
                           "absolute inset-0 transition-all rounded-lg",
                           isSelected
-                            ? "ring-2 ring-inset ring-theme-primary-05"
+                            ? "ring-2 ring-inset ring-[var(--virtualai-accent)]"
                             : "ring-1 ring-inset ring-border-02 group-hover:ring-border-03"
                         )}
                       />
                       {isSelected && (
-                        <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-theme-primary-05 flex items-center justify-center">
+                        <div
+                          className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: "var(--virtualai-accent)" }}
+                        >
                           <SvgCheck className="w-2.5 h-2.5 stroke-text-inverted-05" />
                         </div>
                       )}
@@ -592,6 +595,25 @@ function GeneralSettings() {
                 })}
               </div>
             </InputLayouts.Vertical>
+            <InputLayouts.Horizontal
+              title="Reset Appearance"
+              description="Reset color mode, accent, font, and background to defaults."
+              center
+            >
+              <Button
+                secondary
+                onClick={() => {
+                  setTheme("system");
+                  updateUserThemePreference("system" as ThemePreference);
+                  setAccent("none");
+                  setFont("inter");
+                  updateUserChatBackground(null);
+                  toast.success("Appearance reset to defaults");
+                }}
+              >
+                Reset
+              </Button>
+            </InputLayouts.Horizontal>
           </Card>
         </Section>
 

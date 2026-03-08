@@ -26,6 +26,7 @@ import {
 import DeletionErrorStatus from "./DeletionErrorStatus";
 import { IndexAttemptsTable } from "./IndexAttemptsTable";
 import InlineFileManagement from "./InlineFileManagement";
+import InlineFolderManagement from "./InlineFolderManagement";
 import { buildCCPairInfoUrl, triggerIndexing } from "./lib";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -46,6 +47,7 @@ import {
   PauseIcon,
   Trash2Icon,
   RefreshCwIcon,
+  ScissorsIcon,
 } from "lucide-react";
 import IndexAttemptErrorsModal from "./IndexAttemptErrorsModal";
 import usePaginatedFetch from "@/hooks/usePaginatedFetch";
@@ -484,6 +486,41 @@ function Main({ ccPairId }: { ccPairId: number }) {
                 </DropdownMenuItemWithTooltip>
                 {!isDeleting && (
                   <DropdownMenuItemWithTooltip
+                    onClick={async () => {
+                      try {
+                        const res = await fetch(
+                          `/api/manage/admin/cc-pair/${ccPair.id}/prune`,
+                          { method: "POST" }
+                        );
+                        if (res.ok) {
+                          toast.success(
+                            "Pruning triggered. Deleted files will be removed from the index."
+                          );
+                        } else {
+                          toast.error("Failed to trigger pruning.");
+                        }
+                      } catch {
+                        toast.error("Failed to trigger pruning.");
+                      }
+                    }}
+                    disabled={
+                      isDeleting ||
+                      ccPair.status ===
+                        ConnectorCredentialPairStatus.PAUSED
+                    }
+                    className="flex items-center gap-x-2 cursor-pointer px-3 py-2"
+                    tooltip={
+                      ccPair.status === ConnectorCredentialPairStatus.PAUSED
+                        ? "Resume the connector before pruning"
+                        : undefined
+                    }
+                  >
+                    <ScissorsIcon className="h-4 w-4" />
+                    <span>Prune Deleted Files</span>
+                  </DropdownMenuItemWithTooltip>
+                )}
+                {!isDeleting && (
+                  <DropdownMenuItemWithTooltip
                     onClick={() =>
                       handleStatusUpdate(
                         statusIsNotCurrentlyActive(ccPair.status)
@@ -696,6 +733,25 @@ function Main({ ccPairId }: { ccPairId: number }) {
                   <div className="mt-6">
                     <InlineFileManagement
                       connectorId={ccPair.connector.id}
+                      onRefresh={refresh}
+                    />
+                  </div>
+                )}
+
+              {/* Inline folder management for folder connectors */}
+              {ccPair.connector.source === "folder" &&
+                ccPair.is_editable_for_current_user && (
+                  <div className="mt-6">
+                    <InlineFolderManagement
+                      connectorId={ccPair.connector.id}
+                      ccPairId={ccPair.id}
+                      currentPaths={
+                        ccPair.connector.connector_specific_config
+                          .folder_paths || []
+                      }
+                      connectorSpecificConfig={
+                        ccPair.connector.connector_specific_config
+                      }
                       onRefresh={refresh}
                     />
                   </div>

@@ -114,9 +114,9 @@ def handle_regular_answer(
     ) and not message_info.is_bot_dm
 
     # If the channel is configured to respond with an ephemeral message,
-    # or the message is a dm to the Onyx bot, we should use the proper onyx user from the email.
-    # This will make documents privately accessible to the user available to Onyx Bot answers.
-    # Otherwise - if not ephemeral or DM to Onyx Bot - we use anonymous user to restrict
+    # or the message is a dm to the VertualAi bot, we should use the proper user from the email.
+    # This will make documents privately accessible to the user available to VertualAi Bot answers.
+    # Otherwise - if not ephemeral or DM to VertualAi Bot - we use anonymous user to restrict
     # to public docs.
 
     if message_info.email:

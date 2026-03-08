@@ -30,6 +30,16 @@ class WorkflowStepCreate(BaseModel):
     can_request_input: bool = False
     promote_output: bool = False
 
+    # Step-level overrides (override persona defaults when set)
+    llm_provider_override: str | None = None
+    llm_model_override: str | None = None
+    max_output_tokens_override: int | None = None
+    system_prompt_override: str | None = None
+    task_prompt_override: str | None = None
+    tool_ids_override: list[int] | None = None
+    document_set_ids_override: list[int] | None = None
+    replace_base_system_prompt_override: bool | None = None
+
 
 class WorkflowCreate(BaseModel):
     name: str
@@ -80,6 +90,16 @@ class WorkflowStepResponse(BaseModel):
     is_terminal: bool
     can_request_input: bool
     promote_output: bool
+
+    # Step-level overrides
+    llm_provider_override: str | None = None
+    llm_model_override: str | None = None
+    max_output_tokens_override: int | None = None
+    system_prompt_override: str | None = None
+    task_prompt_override: str | None = None
+    tool_ids_override: list[int] | None = None
+    document_set_ids_override: list[int] | None = None
+    replace_base_system_prompt_override: bool | None = None
 
 
 class WorkflowResponse(BaseModel):

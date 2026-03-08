@@ -41,7 +41,7 @@ def _build_provider_extra_headers(
             api_key = f"Bearer {api_key}"
         return {"Authorization": api_key}
 
-    # Passing these will put Onyx on the OpenRouter leaderboard
+    # Passing these will put VertualAi on the OpenRouter leaderboard
     elif provider == LlmProviderNames.OPENROUTER:
         return {
             "HTTP-Referer": "https://onyx.app",

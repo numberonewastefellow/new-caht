@@ -13,7 +13,7 @@ import {
 } from "@/lib/constants";
 import { Metadata } from "next";
 import { buildClientUrl } from "@/lib/utilsSS";
-import { Inter, Geist } from "next/font/google";
+import localFont from "next/font/local";
 import {
   EnterpriseSettings,
   ApplicationStatus,
@@ -34,14 +34,24 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { fetchAppSidebarMetadata } from "@/lib/appSidebarSS";
 import StatsOverlayLoader from "@/components/dev/StatsOverlayLoader";
 
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: [
+    { path: "../../public/fonts/inter-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/inter-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../public/fonts/inter-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../../public/fonts/inter-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-inter",
   display: "swap",
 });
 
-const geist = Geist({
-  subsets: ["latin"],
+const geist = localFont({
+  src: [
+    { path: "../../public/fonts/geist-sans-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/geist-sans-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../public/fonts/geist-sans-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../../public/fonts/geist-sans-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-geist",
   display: "swap",
 });

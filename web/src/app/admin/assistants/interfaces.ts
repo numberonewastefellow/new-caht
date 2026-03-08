@@ -46,6 +46,8 @@ export interface MinimalPersonaSnapshot {
   knowledge_sources?: ValidSources[];
   llm_model_version_override?: string;
   llm_model_provider_override?: string;
+  max_output_tokens?: number | null;
+  replace_base_system_prompt?: boolean;
 
   uploaded_image_id?: string;
   icon_name?: string;

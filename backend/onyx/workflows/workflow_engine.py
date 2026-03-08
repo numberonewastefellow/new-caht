@@ -396,7 +396,7 @@ def _build_agent_tools(
     in background agent threads (Tier 1.1).
     """
     agent_tools = []
-    llm_cache: dict[int, LLM] = {}
+    llm_cache: dict[str, LLM] = {}
 
     for step in steps:
         persona = step.persona if step.persona else db_session.get(Persona, step.persona_id)
@@ -406,12 +406,38 @@ def _build_agent_tools(
             )
             continue
 
-        # Cache LLM per persona (avoids re-creating for same persona)
-        if persona.id not in llm_cache:
-            llm_cache[persona.id] = get_llm_for_persona(persona, user) if user else get_default_llm()
+        # Resolve effective LLM: step override > persona override > default
+        effective_provider = step.llm_provider_override or persona.llm_model_provider_override
+        effective_model = step.llm_model_override or persona.llm_model_version_override
+
+        # Cache LLM per (provider, model) pair
+        llm_key = f"{effective_provider}:{effective_model}"
+        if llm_key not in llm_cache:
+            if step.llm_provider_override and user:
+                # Step has its own LLM override — build a temporary persona-like
+                # object isn't needed; just override via LLMOverride
+                from onyx.llm.override_models import LLMOverride
+
+                llm_cache[llm_key] = get_llm_for_persona(
+                    persona,
+                    user,
+                    llm_override=LLMOverride(
+                        model_provider=step.llm_provider_override,
+                        model_version=step.llm_model_override,
+                    ),
+                )
+            elif user:
+                llm_cache[llm_key] = get_llm_for_persona(persona, user)
+            else:
+                llm_cache[llm_key] = get_default_llm()
 
         # Check has_tools on main thread (eager-loaded, thread-safe)
-        has_tools = bool(persona.tools)
+        # If tool_ids_override is set, override the has_tools check
+        has_tools = (
+            bool(step.tool_ids_override)
+            if step.tool_ids_override is not None
+            else bool(persona.tools)
+        )
 
         agent_tools.append(
             AgentTool(
@@ -423,11 +449,18 @@ def _build_agent_tools(
                 step_id=step.id,
                 output_key=step.output_key,
                 user=user,
-                llm=llm_cache[persona.id],
+                llm=llm_cache[llm_key],
                 has_tools=has_tools,
                 promote_output=step.promote_output,
                 chat_files=chat_files,
                 sandbox_session_id=sandbox_session_id,
+                # Step-level overrides (applied in AgentTool.run())
+                max_output_tokens_override=step.max_output_tokens_override,
+                system_prompt_override=step.system_prompt_override,
+                task_prompt_override=step.task_prompt_override,
+                tool_ids_override=step.tool_ids_override,
+                document_set_ids_override=step.document_set_ids_override,
+                replace_base_system_prompt_override=step.replace_base_system_prompt_override,
             )
         )
     return agent_tools

@@ -63,6 +63,14 @@ def _workflow_to_response(workflow) -> WorkflowResponse:
                 is_terminal=step.is_terminal,
                 can_request_input=step.can_request_input,
                 promote_output=step.promote_output,
+                llm_provider_override=step.llm_provider_override,
+                llm_model_override=step.llm_model_override,
+                max_output_tokens_override=step.max_output_tokens_override,
+                system_prompt_override=step.system_prompt_override,
+                task_prompt_override=step.task_prompt_override,
+                tool_ids_override=step.tool_ids_override,
+                document_set_ids_override=step.document_set_ids_override,
+                replace_base_system_prompt_override=step.replace_base_system_prompt_override,
             )
         )
 

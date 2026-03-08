@@ -1,0 +1,72 @@
+curl.exe ^"http://localhost:3000/api/chat/create-chat-session^" ^
+  -X POST ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0^" ^
+  -H ^"Accept: */*^" ^
+  -H ^"Accept-Language: en-US,en;q=0.9^" ^
+  -H ^"Accept-Encoding: gzip, deflate, br, zstd^" ^
+  -H ^"Referer: http://localhost:3000/app^" ^
+  -H ^"Content-Type: application/json^" ^
+  -H ^"Origin: http://localhost:3000^" ^
+  -H ^"Sec-GPC: 1^" ^
+  -H ^"Connection: keep-alive^" ^
+  -H ^"Cookie: fastapiusersauth=Ej7uiPgvwHscW8z5cIX81A13ltDSsDD9wOiVcZ3IPsQ^" ^
+  -H ^"Sec-Fetch-Dest: empty^" ^
+  -H ^"Sec-Fetch-Mode: cors^" ^
+  -H ^"Sec-Fetch-Site: same-origin^" ^
+  -H ^"Priority: u=0^" ^
+  --data-raw ^"^{^\^"persona_id^\^":0,^\^"description^\^":null,^\^"project_id^\^":null^}^"
+
+
+to send message with chat
+below will search in all public knowledge ( so wipro related docs are ingested from file connector)
+  curl.exe ^"http://localhost:3000/api/chat/send-chat-message^" ^
+  -X POST ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0^" ^
+  -H ^"Accept: */*^" ^
+  -H ^"Accept-Language: en-US,en;q=0.9^" ^
+  -H ^"Accept-Encoding: gzip, deflate, br, zstd^" ^
+  -H ^"Referer: http://localhost:3000/app^" ^
+  -H ^"Content-Type: application/json^" ^
+  -H ^"Origin: http://localhost:3000^" ^
+  -H ^"Sec-GPC: 1^" ^
+  -H ^"Connection: keep-alive^" ^
+  -H ^"Cookie: fastapiusersauth=Ej7uiPgvwHscW8z5cIX81A13ltDSsDD9wOiVcZ3IPsQ^" ^
+  -H ^"Sec-Fetch-Dest: empty^" ^
+  -H ^"Sec-Fetch-Mode: cors^" ^
+  -H ^"Sec-Fetch-Site: same-origin^" ^
+  -H ^"Priority: u=4^" ^
+  --data-raw ^"^{^\^"message^\^":^\^"what is wipro results^\^",^\^"chat_session_id^\^":^\^"b187c549-c0bf-4204-b9b1-c4ec7bca32c7^\^",^\^"parent_message_id^\^":null,^\^"file_descriptors^\^":^[^],^\^"internal_search_filters^\^":^{^\^"source_type^\^":^[^\^"file^\^"^],^\^"document_set^\^":null,^\^"time_cutoff^\^":null,^\^"tags^\^":^[^]^},^\^"deep_research^\^":false,^\^"allowed_tool_ids^\^":^[1,6,7^],^\^"forced_tool_id^\^":1,^\^"llm_override^\^":^{^\^"temperature^\^":0.5,^\^"model_provider^\^":^\^"v^\^",^\^"model_version^\^":^\^"gpt-5-mini^\^"^},^\^"origin^\^":^\^"webapp^\^"^}^"
+
+after chat response completed
+
+  curl.exe ^"http://localhost:3000/api/chat/rename-chat-session^" ^
+  -X PUT ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0^" ^
+  -H ^"Accept: */*^" ^
+  -H ^"Accept-Language: en-US,en;q=0.9^" ^
+  -H ^"Accept-Encoding: gzip, deflate, br, zstd^" ^
+  -H ^"Referer: http://localhost:3000/app?chatId=b187c549-c0bf-4204-b9b1-c4ec7bca32c7^" ^
+  -H ^"Content-Type: application/json^" ^
+  -H ^"Origin: http://localhost:3000^" ^
+  -H ^"Sec-GPC: 1^" ^
+  -H ^"Connection: keep-alive^" ^
+  -H ^"Cookie: fastapiusersauth=Ej7uiPgvwHscW8z5cIX81A13ltDSsDD9wOiVcZ3IPsQ^" ^
+  -H ^"Sec-Fetch-Dest: empty^" ^
+  -H ^"Sec-Fetch-Mode: cors^" ^
+  -H ^"Sec-Fetch-Site: same-origin^" ^
+  -H ^"Priority: u=4^" ^
+  --data-raw ^"^{^\^"chat_session_id^\^":^\^"b187c549-c0bf-4204-b9b1-c4ec7bca32c7^\^",^\^"name^\^":null^}^"
+
+
+
+  similary you can create new chat seesion and fire search query and resposne should match the user question
+  so you will add sample folder with text content (sample content may be up 400 tokens story and prepare setn of questions whihc can be answerd only from those test datathen verify the answerd
+  after that validate the answer (not word by word since llm generates different tokens everytime, but meaning and output should be reasonbel
+  
+  so you can prepare sample questions and expected answer)
+  )
+
+
+  accordingly prepare test case, deploy and run the test cases
+
+  improtant: Search tool is must be selected to send query to knowledge base of vespa search

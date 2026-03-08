@@ -128,7 +128,7 @@ def check_message_limit() -> bool:
         _ONYX_BOT_COUNT_START_TIME = time.time()
     if (_ONYX_BOT_MESSAGE_COUNT + 1) > ONYX_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD:
         logger.error(
-            f"OnyxBot has reached the message limit {ONYX_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD}"
+            f"VertualAi Bot has reached the message limit {ONYX_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD}"
             f" for the time period {ONYX_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS} seconds."
             " These limits are configurable in backend/onyx/configs/onyxbot_configs.py"
         )
@@ -577,16 +577,16 @@ def read_slack_thread(
                 is_onyx_bot_response = True
 
             if is_onyx_bot_response:
-                # OnyxBot response
+                # VertualAi Bot response
                 message_type = MessageType.ASSISTANT
                 user_sem_id = "Assistant"
 
-                # OnyxBot responses have both text and blocks
+                # VertualAi Bot responses have both text and blocks
                 # The useful content is in the blocks, specifically the first block unless there are
                 # auto-detected filters
                 blocks = reply.get("blocks")
                 if not blocks:
-                    logger.warning(f"OnyxBot response has no blocks: {reply}")
+                    logger.warning(f"VertualAi Bot response has no blocks: {reply}")
                     continue
 
                 message = blocks[0].get("text", {}).get("text")
@@ -597,11 +597,11 @@ def read_slack_thread(
                     if len(blocks) < 2:
                         logger.warning(f"Only filter blocks found: {reply}")
                         continue
-                    # This is the OnyxBot answer format, if there is a change to how we respond,
+                    # This is the VertualAi Bot answer format, if there is a change to how we respond,
                     # this will need to be updated to get the correct "answer" portion
                     message = reply["blocks"][1].get("text", {}).get("text")
             else:
-                # Other bots are not counted as the LLM response which only comes from Onyx
+                # Other bots are not counted as the LLM response which only comes from VertualAi
                 message_type = MessageType.USER
                 bot_user_name = fetch_user_semantic_id_from_id(
                     reply.get("user"), client

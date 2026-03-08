@@ -173,12 +173,12 @@ def handle_message(
     # Only default config can be disabled.
     # If channel config is disabled, bot should not respond to this message (including DMs)
     if slack_channel_config.channel_config.get("disabled"):
-        logger.info("Skipping message: OnyxBot is disabled for this channel")
+        logger.info("Skipping message: VertualAi Bot is disabled for this channel")
         return False
 
     # If bot should only respond to tags and is not tagged nor in a DM, skip message
     if respond_tag_only and not bypass_filters and not is_bot_dm:
-        logger.info("Skipping message: OnyxBot only responds to tags in this channel")
+        logger.info("Skipping message: VertualAi Bot only responds to tags in this channel")
         return False
 
     # List of user id to send message to, if None, send to everyone in channel
@@ -195,7 +195,7 @@ def handle_message(
         if missing_users:
             logger.warning(f"Failed to find these users/groups: {missing_users}")
 
-    # If configured to respond to team members only, then cannot be used with a /OnyxBot command
+    # If configured to respond to team members only, then cannot be used with a /VertualAi command
     # which would just respond to the sender
     if send_to and is_slash_command:
         if sender_id:

@@ -65,6 +65,15 @@ export function snapshotToGraph(workflow: WorkflowSnapshot): {
         input_mapping: step.input_mapping,
         condition: step.condition,
         stepOrder: i,
+        // Step-level overrides
+        llm_provider_override: step.llm_provider_override ?? null,
+        llm_model_override: step.llm_model_override ?? null,
+        max_output_tokens_override: step.max_output_tokens_override ?? null,
+        system_prompt_override: step.system_prompt_override ?? null,
+        task_prompt_override: step.task_prompt_override ?? null,
+        tool_ids_override: step.tool_ids_override ?? null,
+        document_set_ids_override: step.document_set_ids_override ?? null,
+        replace_base_system_prompt_override: step.replace_base_system_prompt_override ?? null,
       },
     });
   });
@@ -151,6 +160,15 @@ export function graphToPayload(
     is_terminal: node.data.is_terminal ?? false,
     can_request_input: node.data.can_request_input ?? false,
     promote_output: node.data.promote_output ?? false,
+    // Step-level overrides
+    llm_provider_override: node.data.llm_provider_override || null,
+    llm_model_override: node.data.llm_model_override || null,
+    max_output_tokens_override: node.data.max_output_tokens_override ?? null,
+    system_prompt_override: node.data.system_prompt_override || null,
+    task_prompt_override: node.data.task_prompt_override || null,
+    tool_ids_override: node.data.tool_ids_override ?? null,
+    document_set_ids_override: node.data.document_set_ids_override ?? null,
+    replace_base_system_prompt_override: node.data.replace_base_system_prompt_override ?? null,
   }));
 
   return {
@@ -204,12 +222,14 @@ export function computeStepOrders(
     }
 
     const neighbors = adjacency.get(current) || [];
-    // Sort neighbors by their Y position for consistent ordering
+    // Sort neighbors by X (column) first, then Y (row) for grid-aware ordering
     const nodeMap = new Map(nodes.map((n) => [n.id, n]));
     neighbors.sort((a, b) => {
-      const posA = nodeMap.get(a)?.position.y ?? 0;
-      const posB = nodeMap.get(b)?.position.y ?? 0;
-      return posA - posB;
+      const nodeA = nodeMap.get(a);
+      const nodeB = nodeMap.get(b);
+      const xDiff = (nodeA?.position.x ?? 0) - (nodeB?.position.x ?? 0);
+      if (Math.abs(xDiff) > 50) return xDiff;
+      return (nodeA?.position.y ?? 0) - (nodeB?.position.y ?? 0);
     });
 
     for (const neighbor of neighbors) {
@@ -232,9 +252,38 @@ export function computeStepOrders(
 // ── Auto Layout ────────────────────────────────────────────────────────
 
 /**
- * Position nodes in a left-to-right layout.
- * Sequential: linear chain.
- * LLM Decision: orchestrator on left, agents stacked vertically to the right.
+ * Determine optimal grid columns based on agent count.
+ * Aims to keep the layout compact and readable.
+ */
+function getGridColumns(count: number, mode: "sequential" | "llm_decision"): number {
+  if (mode === "sequential") {
+    // Sequential: wider rows since we read left-to-right
+    if (count <= 3) return count;
+    if (count <= 8) return 3;
+    if (count <= 12) return 4;
+    return 5;
+  } else {
+    // LLM Decision: prefer taller columns since all fan from orchestrator
+    if (count <= 5) return 1;
+    if (count <= 10) return 2;
+    if (count <= 18) return 3;
+    return 4;
+  }
+}
+
+/**
+ * Position nodes in an enterprise-grade grid layout.
+ *
+ * Sequential mode: Multi-row grid flowing left-to-right, top-to-bottom.
+ *   Orchestrator connects to first node; nodes chain through rows.
+ *   [START] → [A1] → [A2] → [A3]
+ *             [A4] → [A5] → [A6]
+ *
+ * LLM Decision mode: Multi-column fan from orchestrator.
+ *   Orchestrator centered on the left, agents in balanced columns.
+ *   [START] →  [A1]  [A4]  [A7]
+ *              [A2]  [A5]  [A8]
+ *              [A3]  [A6]  [A9]
  */
 export function autoLayout(
   nodes: WorkflowNode[],
@@ -249,37 +298,80 @@ export function autoLayout(
   const detectedMode =
     mode || (orchestrator.data as OrchestratorNodeData).orchestration_mode;
 
-  // Position orchestrator
-  const updated: WorkflowNode[] = [
-    { ...orchestrator, position: { x: 50, y: 250 } },
-  ];
+  const count = agentNodes.length;
+  if (count === 0) {
+    return [{ ...orchestrator, position: { x: 50, y: 250 } }];
+  }
+
+  const updated: WorkflowNode[] = [];
 
   if (detectedMode === "sequential") {
-    // Linear chain: left to right
+    // ── Sequential: Grid flowing left-to-right, top-to-bottom ──
+    const cols = getGridColumns(count, "sequential");
+    const rows = Math.ceil(count / cols);
+
     const stepOrders = computeStepOrders(nodes, edges);
-    const sorted = [...agentNodes].sort((a, b) => {
-      const orderA = stepOrders.get(a.id) ?? 999;
-      const orderB = stepOrders.get(b.id) ?? 999;
-      return orderA - orderB;
-    });
+    const sorted = [...agentNodes].sort((a, b) =>
+      (stepOrders.get(a.id) ?? 999) - (stepOrders.get(b.id) ?? 999)
+    );
+
+    const gridStartX = 50 + NODE_SPACING_X;
+    const totalHeight = rows * NODE_SPACING_Y;
+    const gridStartY = 250 - totalHeight / 2 + NODE_SPACING_Y / 2;
 
     sorted.forEach((node, i) => {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
       updated.push({
         ...node,
-        position: { x: 50 + (i + 1) * NODE_SPACING_X, y: 250 },
+        position: {
+          x: gridStartX + col * NODE_SPACING_X,
+          y: gridStartY + row * NODE_SPACING_Y,
+        },
       });
     });
-  } else {
-    // Star layout: agents stacked vertically to the right of orchestrator
-    const totalHeight = agentNodes.length * NODE_SPACING_Y;
-    const startY = 250 - totalHeight / 2 + NODE_SPACING_Y / 2;
 
-    agentNodes.forEach((node, i) => {
-      updated.push({
-        ...node,
-        position: { x: 50 + NODE_SPACING_X, y: startY + i * NODE_SPACING_Y },
-      });
-    });
+    // Center orchestrator vertically relative to all rows
+    const orchY = gridStartY + (rows - 1) * NODE_SPACING_Y / 2;
+    updated.unshift({ ...orchestrator, position: { x: 50, y: orchY } });
+
+  } else {
+    // ── LLM Decision: Multi-column fan from orchestrator ──
+    const numCols = getGridColumns(count, "llm_decision");
+    // Distribute agents evenly across columns (balance from left)
+    const basePerCol = Math.floor(count / numCols);
+    const extraCols = count % numCols;
+
+    let agentIdx = 0;
+    let globalMinY = Infinity;
+    let globalMaxY = -Infinity;
+
+    for (let col = 0; col < numCols; col++) {
+      // First `extraCols` columns get one extra agent for even distribution
+      const colCount = basePerCol + (col < extraCols ? 1 : 0);
+      const colHeight = colCount * NODE_SPACING_Y;
+      const colStartY = 250 - colHeight / 2 + NODE_SPACING_Y / 2;
+
+      for (let row = 0; row < colCount; row++) {
+        const y = colStartY + row * NODE_SPACING_Y;
+        const node = agentNodes[agentIdx]!;
+        updated.push({
+          ...node,
+          id: node.id,
+          position: {
+            x: 50 + (col + 1) * NODE_SPACING_X,
+            y,
+          },
+        } as WorkflowNode);
+        globalMinY = Math.min(globalMinY, y);
+        globalMaxY = Math.max(globalMaxY, y);
+        agentIdx++;
+      }
+    }
+
+    // Center orchestrator vertically across the full span of agents
+    const orchY = (globalMinY + globalMaxY) / 2;
+    updated.unshift({ ...orchestrator, position: { x: 50, y: orchY } });
   }
 
   return updated;

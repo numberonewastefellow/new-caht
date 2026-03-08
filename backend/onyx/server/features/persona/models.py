@@ -170,6 +170,7 @@ class MinimalPersonaSnapshot(BaseModel):
     llm_model_version_override: str | None
     llm_model_provider_override: str | None
     max_output_tokens: int | None
+    replace_base_system_prompt: bool
 
     uploaded_image_id: str | None
     icon_name: str | None
@@ -231,6 +232,7 @@ class MinimalPersonaSnapshot(BaseModel):
             llm_model_version_override=persona.llm_model_version_override,
             llm_model_provider_override=persona.llm_model_provider_override,
             max_output_tokens=persona.max_output_tokens,
+            replace_base_system_prompt=persona.replace_base_system_prompt,
             uploaded_image_id=persona.uploaded_image_id,
             icon_name=persona.icon_name,
             is_public=persona.is_public,

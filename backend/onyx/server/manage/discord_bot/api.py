@@ -137,7 +137,7 @@ def delete_service_api_key_endpoint(
     """Delete the Discord service API key.
 
     This endpoint allows manual deletion of the service API key used by the
-    Discord bot to authenticate with the Onyx API. The key is also automatically
+    Discord bot to authenticate with the VertualAi API. The key is also automatically
     deleted when:
     - Bot config is deleted (self-hosted)
     - All guild configs are deleted (Cloud)

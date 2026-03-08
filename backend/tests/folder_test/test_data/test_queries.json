@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "question": "Who led Project Aurora and what organism did they use?",
+    "expected_answer": "Project Aurora was led by Dr. Elena Vasquez, a renowned astrobiologist from the Buenos Aires Institute of Planetary Sciences. The project used a genetically engineered strain of cyanobacteria designated 'Photon-7', designed to convert CO2 into breathable oxygen at 340 times the rate of natural Earth cyanobacteria.",
+    "expected_keywords": ["elena vasquez", "photon-7", "cyanobacteria"],
+    "min_keyword_matches": 2,
+    "source_file": "aurora_project.txt"
+  },
+  {
+    "id": 2,
+    "question": "What is the budget and timeline for the Mars terraforming project?",
+    "expected_answer": "Project Aurora has a total projected budget of $4.2 trillion, funded by a consortium of 31 nations and 7 private space corporations. The estimated timeline is 47 years, broken into three phases: Phase 1 (years 1-12) seeding Photon-7 across Martian polar regions, Phase 2 (years 13-30) atmospheric thickening using orbital mirrors, Phase 3 (years 31-47) introducing higher plant life and open-air agriculture.",
+    "expected_keywords": ["4.2 trillion", "47 years", "aurora"],
+    "min_keyword_matches": 2,
+    "source_file": "aurora_project.txt"
+  },
+  {
+    "id": 3,
+    "question": "Who invented the Meridian Protocol and what technology does it use?",
+    "expected_answer": "The Meridian Protocol was invented by cybersecurity researcher Kai Tanaka of NexGen Labs in Osaka, Japan, published in 2076. It uses quantum-entangled key pairs — pairs of subatomic particles whose quantum states are intrinsically linked. His breakthrough was the 'Tanaka Resonator', a room-sized device producing ~2.7 million entangled key pairs per second.",
+    "expected_keywords": ["kai tanaka", "quantum", "nexgen", "entangl"],
+    "min_keyword_matches": 2,
+    "source_file": "meridian_protocol.txt"
+  },
+  {
+    "id": 4,
+    "question": "What is the weakness of the Meridian Protocol?",
+    "expected_answer": "The Meridian Protocol's significant weakness is that maintaining quantum entanglement across distances greater than 500 kilometers is extremely difficult. The entangled particles must travel through fiber-optic cables cooled to near absolute zero, and any vibration, temperature fluctuation, or electromagnetic interference breaks the entanglement. This requires 'Quantum Relay Stations' spaced no more than 450km apart, costing an estimated $890 billion globally.",
+    "expected_keywords": ["500", "kilometer", "entanglement", "distance", "relay"],
+    "min_keyword_matches": 2,
+    "source_file": "meridian_protocol.txt"
+  },
+  {
+    "id": 5,
+    "question": "What did the Deep Blue Expedition discover at the Mariana Trench?",
+    "expected_answer": "The Deep Blue Expedition discovered a vast colony of translucent, jellyfish-like organisms called 'Lumina Medusae' at 10,400 meters depth near the Challenger Deep. They emitted brilliant blue-violet bioluminescence and ranged from 15cm to over 2m in diameter. Most remarkably, they used chemosynthesis (not photosynthesis or predation), converting hydrogen sulfide and methane from hydrothermal vents into organic compounds — making them the largest chemosynthetic organisms ever discovered.",
+    "expected_keywords": ["lumina medusae", "bioluminescen", "10,400", "jellyfish"],
+    "min_keyword_matches": 2,
+    "source_file": "deepblue_expedition.txt"
+  },
+  {
+    "id": 6,
+    "question": "What ship was used in Captain Osei's deep-sea expedition?",
+    "expected_answer": "Captain Amara Osei's expedition used the research submersible RSS Poseidon, which departed from the port of Guam in January 2091 carrying a crew of 12 scientists and engineers. Osei is a Ghanaian-British oceanographer who held the world record for the deepest solo submersible dive at 9,800 meters.",
+    "expected_keywords": ["rss poseidon", "amara osei", "guam"],
+    "min_keyword_matches": 2,
+    "source_file": "deepblue_expedition.txt"
+  }
+]

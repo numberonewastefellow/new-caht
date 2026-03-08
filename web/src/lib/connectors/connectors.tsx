@@ -1066,6 +1066,63 @@ For example, specifying .*-support.* as a "channel" will cause the connector to 
     ],
     advanced_values: [],
   },
+  folder: {
+    description: "Configure Local Folder connector",
+    values: [
+      {
+        type: "list",
+        query: "Enter folder paths to index:",
+        label: "Folder Paths",
+        name: "folder_paths",
+        optional: false,
+        description:
+          "Absolute paths to directories (e.g., /data/docs, /mnt/shared)",
+      },
+      {
+        type: "checkbox",
+        query: "Recurse into subdirectories?",
+        label: "Recursive Scan",
+        name: "recursive",
+        optional: true,
+        default: true,
+      },
+    ],
+    advanced_values: [
+      {
+        type: "list",
+        query: "File extensions to include (empty = all supported):",
+        label: "File Extensions Filter",
+        name: "file_extensions",
+        optional: true,
+        description: "e.g., .pdf, .docx, .md (leave empty for all supported)",
+      },
+      {
+        type: "list",
+        query: "Patterns to exclude:",
+        label: "Exclude Patterns",
+        name: "exclude_patterns",
+        optional: true,
+        description: "Glob patterns (e.g., *.tmp, __pycache__, .git)",
+      },
+      {
+        type: "checkbox",
+        query: "Follow symbolic links?",
+        label: "Follow Symlinks",
+        name: "follow_symlinks",
+        optional: true,
+        default: false,
+      },
+      {
+        type: "number",
+        query: "Max file size in MB (0 = no limit):",
+        label: "Max File Size (MB)",
+        name: "max_file_size_mb",
+        optional: true,
+        default: 100,
+      },
+    ],
+    overrideDefaultFreq: 3600,
+  },
   zulip: {
     description: "Configure Zulip connector",
     values: [

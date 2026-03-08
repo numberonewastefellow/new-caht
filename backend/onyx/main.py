@@ -605,7 +605,7 @@ app = fetch_versioned_implementation(module="onyx.main", attribute="get_applicat
 
 if __name__ == "__main__":
     logger.notice(
-        f"Starting Onyx Backend version {__version__} on http://{APP_HOST}:{str(APP_PORT)}/"
+        f"Starting VertualAi Backend version {__version__} on http://{APP_HOST}:{str(APP_PORT)}/"
     )
 
     if global_version.is_ee_version():

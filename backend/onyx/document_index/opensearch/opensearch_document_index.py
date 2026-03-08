@@ -513,7 +513,7 @@ class OpenSearchDocumentIndex(DocumentIndex):
             logger.error(
                 f"Failed to put cluster settings for index {self._index_name}. If the settings have never been set before this "
                 "may cause unexpected index creation when indexing documents into an index that does not exist, or may cause "
-                "expected logs to not appear. If this is not the first time running Onyx against this instance of OpenSearch, "
+                "expected logs to not appear. If this is not the first time running VertualAi against this instance of OpenSearch, "
                 "these settings have likely already been set. Not taking any further action..."
             )
         if not self._os_client.index_exists():

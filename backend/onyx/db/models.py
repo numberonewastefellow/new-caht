@@ -2441,7 +2441,7 @@ class ChatSession(Base):
         ForeignKey("persona.id"), nullable=True
     )
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    # This chat created by OnyxBot
+    # This chat created by VertualAi Bot
     onyxbot_flow: Mapped[bool] = mapped_column(Boolean, default=False)
     # Only ever set to True if system is set to not hard-delete chats
     deleted: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -5099,6 +5099,18 @@ class AgentWorkflowStep(Base):
     # message content (MESSAGE_START/DELTA) instead of staying inside the
     # collapsible timeline panel (WORKFLOW_STEP_DELTA).
     promote_output: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    # ── Step-level overrides (workflow-specific, override persona defaults) ──
+    # When set, these override the corresponding persona fields at runtime.
+    # When NULL, the persona's own values are used (inheritance).
+    llm_provider_override: Mapped[str | None] = mapped_column(String, nullable=True)
+    llm_model_override: Mapped[str | None] = mapped_column(String, nullable=True)
+    max_output_tokens_override: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    system_prompt_override: Mapped[str | None] = mapped_column(Text, nullable=True)
+    task_prompt_override: Mapped[str | None] = mapped_column(Text, nullable=True)
+    tool_ids_override: Mapped[list[int] | None] = mapped_column(PGJSONB, nullable=True)
+    document_set_ids_override: Mapped[list[int] | None] = mapped_column(PGJSONB, nullable=True)
+    replace_base_system_prompt_override: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
     __table_args__ = (
         UniqueConstraint("workflow_id", "step_order", name="uq_workflow_step_order"),

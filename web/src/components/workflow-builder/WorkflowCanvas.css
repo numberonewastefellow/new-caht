@@ -69,13 +69,13 @@
 .wfb-handle {
   width: 10px !important;
   height: 10px !important;
-  border: 2px solid var(--theme-primary-05, #6366f1) !important;
+  border: 2px solid var(--virtualai-accent, #6366f1) !important;
   background: var(--background-tint-00, #fff) !important;
   border-radius: 50% !important;
 }
 
 .wfb-handle:hover {
-  background: var(--theme-primary-05, #6366f1) !important;
+  background: var(--virtualai-accent, #6366f1) !important;
 }
 
 /* ── Orchestrator Node ──────────────────────────────────────────────── */
@@ -83,8 +83,8 @@
 .wfb-orchestrator-node {
   background: linear-gradient(
     135deg,
-    var(--theme-primary-05, #6366f1),
-    var(--theme-primary-06, #4f46e5)
+    var(--virtualai-accent, #6366f1),
+    color-mix(in srgb, var(--virtualai-accent, #6366f1) 80%, #000)
   );
   color: #fff;
   border-radius: 12px;
@@ -129,7 +129,7 @@
 }
 
 .wfb-agent-node:hover {
-  border-color: var(--theme-primary-04, #818cf8);
+  border-color: var(--virtualai-accent, #818cf8);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
@@ -153,7 +153,7 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: var(--theme-primary-05, #6366f1);
+  background: var(--virtualai-accent, #6366f1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -198,11 +198,206 @@
 .wfb-agent-order {
   font-size: 11px;
   font-weight: 600;
-  color: var(--theme-primary-05, #6366f1);
-  background: var(--theme-primary-01, #eef2ff);
+  color: var(--virtualai-accent, #6366f1);
+  background: var(--virtualai-accent-subtle, rgba(99, 102, 241, 0.1));
   border-radius: 6px;
   padding: 2px 6px;
   flex-shrink: 0;
+}
+
+/* Test / Play button on agent node */
+.wfb-agent-test-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--virtualai-accent, #6366f1);
+  background: var(--virtualai-accent-subtle, rgba(99, 102, 241, 0.1));
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+
+.wfb-agent-test-btn:hover {
+  background: var(--virtualai-accent, #6366f1);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.wfb-agent-test-btn:active {
+  transform: scale(0.95);
+}
+
+/* Test modal overlay */
+.wfb-test-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+.wfb-test-modal {
+  background: var(--background-tint-00, #fff);
+  border: 1px solid var(--border-01, #e5e7eb);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  width: 560px;
+  max-width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.wfb-test-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-01, #e5e7eb);
+}
+
+.wfb-test-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-05, #111827);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wfb-test-title svg {
+  color: var(--virtualai-accent, #6366f1);
+}
+
+.wfb-test-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wfb-test-messages {
+  flex: 1;
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wfb-test-msg {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.wfb-test-msg--user {
+  background: var(--virtualai-accent-glow, rgba(99, 102, 241, 0.15));
+  color: var(--text-05, #111827);
+  align-self: flex-end;
+  max-width: 85%;
+  border-bottom-right-radius: 4px;
+}
+
+.wfb-test-msg--assistant {
+  background: var(--background-tint-02, #f3f4f6);
+  color: var(--text-05, #111827);
+  align-self: flex-start;
+  max-width: 85%;
+  border-bottom-left-radius: 4px;
+}
+
+.wfb-test-msg--error {
+  background: var(--theme-red-01, #fef2f2);
+  color: var(--theme-red-05, #dc2626);
+  font-size: 12px;
+}
+
+.wfb-test-msg--system {
+  background: transparent;
+  color: var(--text-03, #9ca3af);
+  font-size: 12px;
+  text-align: center;
+  padding: 4px;
+}
+
+.wfb-test-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.wfb-test-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border-01, #e5e7eb);
+  border-radius: 10px;
+  font-size: 13px;
+  background: var(--background-tint-01, #fafafa);
+  color: var(--text-05, #374151);
+  outline: none;
+  resize: none;
+  min-height: 42px;
+  max-height: 120px;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.wfb-test-input:focus {
+  border-color: var(--virtualai-accent, #6366f1);
+}
+
+.wfb-test-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  background: var(--virtualai-accent, #6366f1);
+  color: #fff;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.wfb-test-send-btn:hover {
+  background: color-mix(in srgb, var(--virtualai-accent, #6366f1) 85%, #000);
+}
+
+.wfb-test-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wfb-test-streaming-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--virtualai-accent, #6366f1);
+  animation: wfb-pulse 1s ease-in-out infinite;
+  margin-left: 4px;
+}
+
+@keyframes wfb-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
 }
 
 /* Info rows (LangFlow-style detail fields) */
@@ -257,7 +452,7 @@
 }
 
 .wfb-agent-info-code {
-  color: var(--theme-primary-05, #6366f1);
+  color: var(--virtualai-accent, #6366f1);
   font-family: monospace;
   font-size: 10px;
   background: var(--background-tint-02, #f3f4f6);
@@ -307,7 +502,7 @@
 /* ── Edges ──────────────────────────────────────────────────────────── */
 
 .wfb-edge .react-flow__edge-path {
-  stroke: var(--theme-primary-04, #818cf8);
+  stroke: var(--virtualai-accent, #818cf8);
   stroke-width: 2;
 }
 
@@ -335,7 +530,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--theme-primary-05, #6366f1);
+  background: var(--virtualai-accent, #6366f1);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -383,7 +578,7 @@
 }
 
 .wfb-sidebar-search:focus {
-  border-color: var(--theme-primary-05, #6366f1);
+  border-color: var(--virtualai-accent, #6366f1);
 }
 
 .wfb-sidebar-search::placeholder {
@@ -419,7 +614,7 @@
 }
 
 .wfb-sidebar-card:hover {
-  border-color: var(--theme-primary-04, #818cf8);
+  border-color: var(--virtualai-accent, #818cf8);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transform: translateY(-1px);
 }
@@ -540,12 +735,12 @@
 }
 
 .wfb-mode-btn--active {
-  background: var(--theme-primary-05, #6366f1);
+  background: var(--virtualai-accent, #6366f1);
   color: #fff;
 }
 
 .wfb-mode-btn--active:hover {
-  background: var(--theme-primary-06, #4f46e5);
+  background: color-mix(in srgb, var(--virtualai-accent, #6366f1) 85%, #000);
 }
 
 /* Toolbar buttons */
@@ -566,7 +761,7 @@
 
 .wfb-toolbar-btn:hover {
   background: var(--background-tint-02, #f3f4f6);
-  border-color: var(--theme-primary-04, #818cf8);
+  border-color: var(--virtualai-accent, #818cf8);
 }
 
 .wfb-toolbar-btn-icon {
@@ -584,19 +779,19 @@
 
 .wfb-toolbar-btn-icon:hover {
   background: var(--background-tint-02, #f3f4f6);
-  border-color: var(--theme-primary-04, #818cf8);
-  color: var(--theme-primary-05, #6366f1);
+  border-color: var(--virtualai-accent, #6366f1);
+  color: var(--virtualai-accent, #6366f1);
 }
 
 .wfb-toolbar-save {
-  background: var(--theme-primary-05, #6366f1);
+  background: var(--virtualai-accent, #6366f1);
   color: #fff;
-  border-color: var(--theme-primary-05, #6366f1);
+  border-color: var(--virtualai-accent, #6366f1);
 }
 
 .wfb-toolbar-save:hover {
-  background: var(--theme-primary-06, #4f46e5);
-  border-color: var(--theme-primary-06, #4f46e5);
+  background: color-mix(in srgb, var(--virtualai-accent, #6366f1) 85%, #000);
+  border-color: color-mix(in srgb, var(--virtualai-accent, #6366f1) 85%, #000);
 }
 
 /* Back button */
@@ -693,7 +888,7 @@
 }
 
 .wfb-config-input:focus {
-  border-color: var(--theme-primary-05, #6366f1);
+  border-color: var(--virtualai-accent, #6366f1);
 }
 
 .wfb-config-textarea {
@@ -711,7 +906,7 @@
 }
 
 .wfb-config-textarea:focus {
-  border-color: var(--theme-primary-05, #6366f1);
+  border-color: var(--virtualai-accent, #6366f1);
 }
 
 .wfb-config-toggle-row {
@@ -803,7 +998,7 @@
 }
 
 .wfb-settings-number:focus {
-  border-color: var(--theme-primary-05, #6366f1);
+  border-color: var(--virtualai-accent, #6366f1);
 }
 
 /* ── Page Layout ────────────────────────────────────────────────────── */
@@ -837,7 +1032,7 @@
 }
 
 .wfb-agent-select:focus {
-  border-color: var(--theme-primary-05, #6366f1);
+  border-color: var(--virtualai-accent, #6366f1);
 }
 
 /* ── Dark Mode Overrides ──────────────────────────────────────────── */

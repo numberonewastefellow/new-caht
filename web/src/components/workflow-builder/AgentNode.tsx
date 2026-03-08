@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import type { AgentNodeData } from "./types";
 
@@ -10,6 +10,24 @@ function AgentNodeComponent({
 }: NodeProps & { data: AgentNodeData }) {
   const toolNames = data.persona_tool_names || [];
   const llmModel = data.persona_llm_model;
+  const [imgError, setImgError] = useState(false);
+
+  const handleTestClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      // Dispatch custom event to open test modal at the page level
+      window.dispatchEvent(
+        new CustomEvent("wfb-test-agent", {
+          detail: {
+            personaId: data.persona_id,
+            personaName: data.persona_name,
+            stepName: data.step_name,
+          },
+        })
+      );
+    },
+    [data.persona_id, data.persona_name, data.step_name]
+  );
 
   return (
     <div
@@ -18,11 +36,12 @@ function AgentNodeComponent({
       {/* Header */}
       <div className="wfb-agent-header">
         <div className="wfb-agent-avatar">
-          {data.persona_icon_url ? (
+          {data.persona_icon_url && !imgError ? (
             <img
               src={data.persona_icon_url}
               alt=""
               className="wfb-agent-avatar-img"
+              onError={() => setImgError(true)}
             />
           ) : (
             <span className="wfb-agent-avatar-text">
@@ -40,6 +59,16 @@ function AgentNodeComponent({
             </div>
           )}
         </div>
+        {/* Test / Play button */}
+        <button
+          className="wfb-agent-test-btn"
+          onClick={handleTestClick}
+          title="Test this agent"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+        </button>
         {typeof data.stepOrder === "number" && (
           <span className="wfb-agent-order">#{data.stepOrder + 1}</span>
         )}

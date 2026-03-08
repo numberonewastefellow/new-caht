@@ -292,7 +292,7 @@ function ToggleSwitch({
         position: "relative",
         flexShrink: 0,
         background: checked
-          ? "var(--theme-primary-05, #6366f1)"
+          ? "var(--virtualai-accent, #6366f1)"
           : "var(--border-02, #d1d5db)",
         transition: "background 0.2s",
       }}

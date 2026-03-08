@@ -38,6 +38,7 @@ from ee.onyx.external_permissions.sharepoint.group_sync import sharepoint_group_
 from ee.onyx.external_permissions.slack.doc_sync import slack_doc_sync
 from ee.onyx.external_permissions.teams.doc_sync import teams_doc_sync
 from onyx.configs.constants import DocumentSource
+from onyx.connectors.folder.doc_sync import folder_doc_sync
 
 if TYPE_CHECKING:
     from onyx.access.models import DocExternalAccess  # noqa
@@ -178,6 +179,14 @@ _SOURCE_TO_SYNC_CONFIG: dict[DocumentSource, SyncConfig] = {
             group_sync_func=sharepoint_group_sync,
             group_sync_is_cc_pair_agnostic=False,
         ),
+    ),
+    DocumentSource.FOLDER: SyncConfig(
+        doc_sync_config=DocSyncConfig(
+            doc_sync_frequency=DEFAULT_PERMISSION_DOC_SYNC_FREQUENCY,
+            doc_sync_func=folder_doc_sync,
+            initial_index_should_sync=True,
+        ),
+        # No group_sync_config — OS groups mapped directly per-doc
     ),
 }
 

@@ -392,7 +392,7 @@ class OpenURLTool(Tool[OpenURLToolOverrideKwargs]):
                 raise RuntimeError(
                     "No web content provider available. "
                     "Please configure a content provider or ensure the "
-                    "built-in Onyx web crawler can be initialized."
+                    "built-in VertualAi web crawler can be initialized."
                 )
             self._provider = provider
 

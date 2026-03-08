@@ -20,6 +20,17 @@ export interface AgentNodeData {
   input_mapping?: Record<string, any> | null;
   condition?: Record<string, any> | null;
 
+  // Step-level overrides (saved to backend, override persona defaults)
+  // null/undefined = use persona default (inheritance)
+  llm_provider_override?: string | null;
+  llm_model_override?: string | null;
+  max_output_tokens_override?: number | null;
+  system_prompt_override?: string | null;
+  task_prompt_override?: string | null;
+  tool_ids_override?: number[] | null;
+  document_set_ids_override?: number[] | null;
+  replace_base_system_prompt_override?: boolean | null;
+
   // Display-only fields from the persona (not saved to backend)
   persona_description?: string;
   persona_icon_url?: string | null;
@@ -104,5 +115,6 @@ export interface DragPersonaData {
 
 export const ORCHESTRATOR_NODE_ID = "orchestrator";
 export const NODE_WIDTH = 300;
-export const NODE_SPACING_X = 380;
-export const NODE_SPACING_Y = 120;
+export const NODE_HEIGHT_ESTIMATE = 200;
+export const NODE_SPACING_X = 400;
+export const NODE_SPACING_Y = 250;

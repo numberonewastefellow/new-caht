@@ -53,7 +53,7 @@ import { SourceCategory, SourceMetadata } from "./search/interfaces";
 import { Persona } from "@/app/admin/assistants/interfaces";
 import React from "react";
 import { DOCS_ADMINS_PATH } from "./constants";
-import { SvgFileText, SvgGlobe } from "@opal/icons";
+import { SvgFileText, SvgFolder, SvgGlobe } from "@opal/icons";
 
 interface PartialSourceMetadata {
   icon: React.FC<{ size?: number; className?: string }>;
@@ -410,6 +410,13 @@ export const SOURCE_METADATA_MAP: SourceMap = {
     category: SourceCategory.Other,
     docs: `${DOCS_ADMINS_PATH}/connectors/official/file`,
     isPopular: true,
+  },
+  folder: {
+    icon: SvgFolder,
+    displayName: "Local Folder",
+    category: SourceCategory.Storage,
+    docs: `${DOCS_ADMINS_PATH}/connectors/official/folder`,
+    isPopular: false,
   },
   user_file: {
     // TODO: write docs for projects and link them here

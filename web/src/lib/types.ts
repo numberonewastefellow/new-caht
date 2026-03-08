@@ -483,6 +483,7 @@ export enum ValidSources {
   Hubspot = "hubspot",
   Document360 = "document360",
   File = "file",
+  Folder = "folder",
   UserFile = "user_file",
   GoogleSites = "google_sites",
   Loopio = "loopio",
@@ -542,6 +543,7 @@ export const validAutoSyncSources = [
   ValidSources.GitHub,
   ValidSources.Sharepoint,
   ValidSources.Teams,
+  ValidSources.Folder,
 ] as const;
 
 // Create a type from the array elements

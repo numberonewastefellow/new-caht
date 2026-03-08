@@ -381,7 +381,7 @@ def _format_messages_as_context(
             continue
 
         sender = (
-            "OnyxBot" if msg.author.id == bot_user.id else f"@{msg.author.display_name}"
+            "VertualAi Bot" if msg.author.id == bot_user.id else f"@{msg.author.display_name}"
         )
         formatted.append(f"{sender}: {format_message_content(msg)}")
 
@@ -389,7 +389,7 @@ def _format_messages_as_context(
         return None
 
     return (
-        "You are a Discord bot named OnyxBot.\n"
+        "You are a Discord bot named VertualAi Bot.\n"
         'Always assume that [user] is the same as the "Current message" author.'
         "Conversation history:\n"
         "---\n" + "\n".join(formatted) + "\n---"
@@ -435,7 +435,7 @@ async def send_response(
         for chunk in chunks:
             await message.channel.send(chunk)
     elif thread_only_mode:
-        thread_name = f"OnyxBot <> {message.author.display_name}"[:100]
+        thread_name = f"VertualAi Bot <> {message.author.display_name}"[:100]
         thread = await message.create_thread(name=thread_name)
         for chunk in chunks:
             await thread.send(chunk)

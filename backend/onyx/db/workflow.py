@@ -307,6 +307,15 @@ def _add_step(
         is_terminal=step_create.is_terminal,
         can_request_input=step_create.can_request_input,
         promote_output=step_create.promote_output,
+        # Step-level overrides
+        llm_provider_override=step_create.llm_provider_override,
+        llm_model_override=step_create.llm_model_override,
+        max_output_tokens_override=step_create.max_output_tokens_override,
+        system_prompt_override=step_create.system_prompt_override,
+        task_prompt_override=step_create.task_prompt_override,
+        tool_ids_override=step_create.tool_ids_override,
+        document_set_ids_override=step_create.document_set_ids_override,
+        replace_base_system_prompt_override=step_create.replace_base_system_prompt_override,
     )
     db_session.add(step)
     db_session.flush()
