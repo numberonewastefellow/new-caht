@@ -75,6 +75,8 @@ services:
       # Auth Settings
       - AUTH_TYPE=${AUTH_TYPE:-basic}
       - FILE_STORE_BACKEND=${FILE_STORE_BACKEND:-s3}
+      # Arize Phoenix LLM Observability
+      - PHOENIX_COLLECTOR_ENDPOINT=${PHOENIX_COLLECTOR_ENDPOINT:-}
       - POSTGRES_HOST=${POSTGRES_HOST:-relational_db}
       - VESPA_HOST=${VESPA_HOST:-index}
       - REDIS_HOST=${REDIS_HOST:-cache}
@@ -149,6 +151,8 @@ services:
     environment:
       - USE_LIGHTWEIGHT_BACKGROUND_WORKER=${USE_LIGHTWEIGHT_BACKGROUND_WORKER:-true}
       - FILE_STORE_BACKEND=${FILE_STORE_BACKEND:-s3}
+      # Arize Phoenix LLM Observability
+      - PHOENIX_COLLECTOR_ENDPOINT=${PHOENIX_COLLECTOR_ENDPOINT:-}
       - POSTGRES_HOST=${POSTGRES_HOST:-relational_db}
       - VESPA_HOST=${VESPA_HOST:-index}
       - REDIS_HOST=${REDIS_HOST:-cache}
@@ -513,6 +517,28 @@ services:
     # uncomment below + comment out the above to use the `docker-in-docker` execution mode
     # privileged: true
 
+  # Arize Phoenix — LLM Observability & Evaluation (port 6006)
+  # Receives OpenTelemetry traces from the backend. Set PHOENIX_ENABLED=true in .env to activate.
+  # Dashboard: http://localhost:6006
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    container_name: phoenix
+    # ports:
+    #   - "6006:6006"
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - PHOENIX_WORKING_DIR=/phoenix_data
+    volumes:
+      - phoenix_data:/phoenix_data
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+
   # PRODUCTION: Uncomment the following certbot service for SSL certificate management
   # certbot:
   #   image: certbot/certbot
@@ -568,3 +594,5 @@ volumes:
   craft-templates:
   # SmartSearch AI (Perplexica) data
   smartsearch_data:
+  # Arize Phoenix observability data
+  phoenix_data:

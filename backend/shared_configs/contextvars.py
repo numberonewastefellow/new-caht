@@ -31,6 +31,14 @@ CURRENT_ENDPOINT_CONTEXTVAR: contextvars.ContextVar[str | None] = (
     contextvars.ContextVar("current_endpoint", default=None)
 )
 
+# Set by auth dependency functions — used for tracing (Phoenix, Langfuse)
+CURRENT_USER_ID_CONTEXTVAR: contextvars.ContextVar[str | None] = (
+    contextvars.ContextVar("current_user_id", default=None)
+)
+CURRENT_USER_EMAIL_CONTEXTVAR: contextvars.ContextVar[str | None] = (
+    contextvars.ContextVar("current_user_email", default=None)
+)
+
 
 """Utils related to contextvars"""
 

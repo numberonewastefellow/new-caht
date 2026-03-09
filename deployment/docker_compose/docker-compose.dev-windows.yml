@@ -134,6 +134,12 @@ services:
       - MEMORY_LIMIT_MB=1024
       - CPU_TIME_LIMIT_SEC=30
 
+  phoenix:
+    ports:
+      - "6006:6006"
+    volumes:
+      - E:/temp/vert/phoenix_data:/phoenix_data
+
   # SmartSearch AI (Perplexica) — AI-powered web search
   # Builds from local source at ../../Perplexica (repo root/Perplexica)
   # Note: Next.js compiles to .next/standalone — source bind-mounting won't work.

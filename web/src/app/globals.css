@@ -774,6 +774,29 @@ textarea {
   animation: virtualai-pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Slow drifting motion for decorative blur circles */
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(10px, -15px); }
+  50% { transform: translate(-5px, 10px); }
+  75% { transform: translate(15px, 5px); }
+}
+
+.animate-drift-slow {
+  animation: drift 20s ease-in-out infinite;
+}
+
+.animate-drift-medium {
+  animation: drift 15s ease-in-out infinite reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-drift-slow,
+  .animate-drift-medium {
+    animation: none;
+  }
+}
+
 /* Spinning ring for status indicator */
 @keyframes virtualai-spin {
   from { transform: rotate(0deg); }

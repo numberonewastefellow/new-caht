@@ -12,7 +12,7 @@ services:
       - PPT_TEMPLATE_PATH=/app/templates
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8100/')"]
+      test: ["CMD", "python", "-c", "import socket; s=socket.create_connection(('localhost',8100),2); s.close()"]
       interval: 30s
       timeout: 10s
       retries: 3

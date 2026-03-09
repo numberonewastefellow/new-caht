@@ -1252,3 +1252,70 @@
 .dark .wfb-sidebar-create-btn:hover {
   background: rgba(99, 102, 241, 0.1);
 }
+
+/* ── JSON View Modal ──────────────────────────────────────────────── */
+
+.wfb-json-modal {
+  background: var(--background-tint-00, #fff);
+  border: 1px solid var(--border-01, #e5e7eb);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  width: 680px;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.wfb-json-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border-01, #e5e7eb);
+}
+
+.wfb-json-tab {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--text-03, #6b7280);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.wfb-json-tab:hover {
+  color: var(--text-05, #374151);
+}
+
+.wfb-json-tab--active {
+  color: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+  border-bottom-color: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+}
+
+.wfb-json-content {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  margin: 0;
+  font-family: "SF Mono", "Cascadia Code", "Fira Code", monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-05, #374151);
+  background: var(--background-tint-01, #fafafa);
+  white-space: pre;
+  tab-size: 2;
+  -webkit-user-select: all;
+  user-select: all;
+}
+
+.dark .wfb-json-modal {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.dark .wfb-json-content {
+  background: var(--background-tint-02, #1a1a2e);
+}

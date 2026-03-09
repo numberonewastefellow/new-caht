@@ -1,10 +1,11 @@
-"""Unified tracing setup for all providers (Braintrust, Langfuse, etc.)."""
+"""Unified tracing setup for all providers (Braintrust, Langfuse, Phoenix, etc.)."""
 
 from onyx.configs.app_configs import BRAINTRUST_API_KEY
 from onyx.configs.app_configs import BRAINTRUST_PROJECT
 from onyx.configs.app_configs import LANGFUSE_HOST
 from onyx.configs.app_configs import LANGFUSE_PUBLIC_KEY
 from onyx.configs.app_configs import LANGFUSE_SECRET_KEY
+from onyx.configs.app_configs import PHOENIX_COLLECTOR_ENDPOINT
 from onyx.utils.logger import setup_logger
 
 logger = setup_logger()
@@ -48,6 +49,16 @@ def setup_tracing() -> list[str]:
             logger.error(f"Failed to initialize Langfuse tracing: {e}")
     else:
         logger.info("Langfuse credentials not provided, skipping Langfuse setup")
+
+    # Setup Arize Phoenix if configured
+    if PHOENIX_COLLECTOR_ENDPOINT:
+        try:
+            _setup_phoenix()
+            initialized_providers.append("phoenix")
+        except Exception as e:
+            logger.error(f"Failed to initialize Phoenix tracing: {e}")
+    else:
+        logger.info("Phoenix endpoint not provided, skipping Phoenix setup")
 
     _initialized = True
 
@@ -98,3 +109,11 @@ def _setup_langfuse() -> None:
     )
 
     add_trace_processor(LangfuseTracingProcessor(client=client))
+
+
+def _setup_phoenix() -> None:
+    """Initialize Arize Phoenix tracing via OTLP/HTTP."""
+    from onyx.tracing.framework import add_trace_processor
+    from onyx.tracing.phoenix_tracing_processor import PhoenixTracingProcessor
+
+    add_trace_processor(PhoenixTracingProcessor(endpoint=PHOENIX_COLLECTOR_ENDPOINT))

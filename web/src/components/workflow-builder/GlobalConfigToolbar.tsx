@@ -15,6 +15,7 @@ interface GlobalConfigToolbarProps {
   isSaving: boolean;
   isEditMode: boolean;
   llmProviders: LLMProviderDescriptor[];
+  onViewJson?: () => void;
 }
 
 export function GlobalConfigToolbar({
@@ -26,6 +27,7 @@ export function GlobalConfigToolbar({
   isSaving,
   isEditMode,
   llmProviders,
+  onViewJson,
 }: GlobalConfigToolbarProps) {
   const [showSettings, setShowSettings] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -98,7 +100,7 @@ export function GlobalConfigToolbar({
         />
       </div>
 
-      {/* Center: mode toggle */}
+      {/* Center: mode toggle + JSON view */}
       <div className="wfb-toolbar-center">
         <div className="wfb-mode-toggle">
           <button
@@ -114,6 +116,18 @@ export function GlobalConfigToolbar({
             LLM Decision
           </button>
         </div>
+        {onViewJson && (
+          <button
+            className="wfb-toolbar-btn-icon"
+            onClick={onViewJson}
+            title="View workflow & agents JSON"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Right: settings, auto-layout, save */}

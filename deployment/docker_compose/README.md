@@ -46,6 +46,93 @@ located near the top of the file.
 
 IMAGE_TAG is the version of VertualAI to run. It is recommended to leave it as latest to get all updates with each redeployment.
 
+## Arize Phoenix — LLM Observability & Tracing
+
+Phoenix provides real-time LLM observability: trace every LLM call, tool invocation, and agent handoff with full input/output capture, token usage, cost tracking, and latency analysis.
+
+### What Gets Traced
+
+| Span Kind | Captured Data                                                                                                          |
+| --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **LLM**   | Model name, input/output, token usage (prompt/completion/cache), cost, reasoning, time-to-first-action, model parameters |
+| **Tool**  | Tool name, input/output (e.g. `internal_search` with Vespa results)                                                      |
+| **Agent** | Agent name, available tools, handoffs, output type                                                                        |
+| **Chain** | Generic spans for pipeline steps                                                                                          |
+
+All spans are nested in a trace hierarchy: `root → LLM → Tool → LLM → ...`
+
+### Enable Phoenix
+
+1. **Set the environment variable** in your `.env` file:
+   ```
+   PHOENIX_COLLECTOR_ENDPOINT=http://phoenix:6006/v1/traces
+   ```
+
+2. **Start the stack** (Phoenix container is included in `docker-compose.yml`):
+   ```bash
+   # Standard deployment
+   docker compose up -d
+
+   # Windows dev (exposes Phoenix UI on port 6006)
+   docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml up -d
+   ```
+
+3. **Open the Phoenix dashboard**: <http://localhost:6006>
+
+That's it. The backend auto-detects the endpoint and starts exporting traces via OTLP/HTTP.
+
+### Disable Phoenix
+
+Remove or comment out `PHOENIX_COLLECTOR_ENDPOINT` in `.env` and restart the backend containers:
+
+```bash
+docker compose up -d api_server background
+```
+
+The Phoenix container will still run but receive no traces. To stop it entirely, stop the `phoenix` service.
+
+### Architecture
+
+```
+api_server / background
+    └── PhoenixTracingProcessor (OTLP/HTTP)
+            └── BatchSpanProcessor (queue: 4096, batch: 512, flush: 2s)
+                    └── OTLPSpanExporter → http://phoenix:6006/v1/traces
+                            └── Phoenix container (SQLite storage at /phoenix_data)
+```
+
+- No Phoenix SDK required — uses standard OpenTelemetry packages already in the dependency tree
+- Runs alongside other tracing providers (Langfuse, Braintrust) without conflict
+- Data persists in the `phoenix_data` Docker volume (or `E:/temp/vert/phoenix_data` in dev-windows)
+- Sensitive data is masked before export (same masking as Langfuse)
+
+### Configuration Reference
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PHOENIX_COLLECTOR_ENDPOINT` | *(empty — disabled)* | OTLP/HTTP endpoint for Phoenix. Set to `http://phoenix:6006/v1/traces` to enable. |
+
+### Verify Traces Are Flowing
+
+After sending a chat message, check the Phoenix GraphQL API:
+
+```bash
+curl -s http://localhost:6006/graphql -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ projects { edges { node { name traceCount } } } }"}'
+```
+
+Expected: `traceCount > 0`
+
+### Production Notes
+
+- Pin `arizephoenix/phoenix` to a specific version tag (e.g. `arizephoenix/phoenix:8.0.0`) instead of `latest`
+- For high-throughput deployments, consider running Phoenix with PostgreSQL storage instead of the default SQLite — see [Phoenix docs](https://docs.arize.com/phoenix/deployment)
+- The BatchSpanProcessor queue (4096 spans) will drop spans under extreme load rather than blocking the backend
+- Phoenix port 6006 is **not exposed** by default in production compose — only in dev overrides
+
+---
+
 ## SmartSearch AI (Perplexica) Setup
 
 SmartSearch AI is an AI-powered web search provider that uses [Perplexica](https://github.com/ItzCrazyKns/Perplexica) as its backend.

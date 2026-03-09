@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { OnyxIcon } from "../icons/icons";
 
 /**
@@ -141,6 +144,87 @@ function BrandingPanel() {
   );
 }
 
+const BRAND_GRADIENT = `linear-gradient(135deg, ${BRAND_COLORS.pink} 0%, ${BRAND_COLORS.fuchsia} 35%, ${BRAND_COLORS.violet} 65%, ${BRAND_COLORS.indigo} 100%)`;
+
+function AnimatedBlurCircles() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div
+        className="absolute rounded-full animate-drift-slow"
+        style={{
+          width: 400,
+          height: 400,
+          top: "-10%",
+          left: "-10%",
+          background: BRAND_COLORS.pink,
+          opacity: 0.08,
+          filter: "blur(80px)",
+        }}
+      />
+      <div
+        className="absolute rounded-full animate-drift-medium"
+        style={{
+          width: 350,
+          height: 350,
+          top: "30%",
+          right: "-5%",
+          background: BRAND_COLORS.violet,
+          opacity: 0.1,
+          filter: "blur(70px)",
+        }}
+      />
+      <div
+        className="absolute rounded-full animate-drift-slow"
+        style={{
+          width: 300,
+          height: 300,
+          bottom: "-5%",
+          left: "20%",
+          background: BRAND_COLORS.indigo,
+          opacity: 0.12,
+          filter: "blur(60px)",
+        }}
+      />
+      <div
+        className="absolute rounded-full animate-drift-medium"
+        style={{
+          width: 200,
+          height: 200,
+          top: "60%",
+          left: "-5%",
+          background: BRAND_COLORS.fuchsia,
+          opacity: 0.06,
+          filter: "blur(50px)",
+        }}
+      />
+    </div>
+  );
+}
+
+const FEATURE_PILLS = [
+  "Enterprise-grade AI",
+  "Connected Knowledge",
+  "Secure & Private",
+];
+
+function FeaturePills() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3 mt-2">
+      {FEATURE_PILLS.map((text, i) => (
+        <motion.span
+          key={text}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 + i * 0.2, duration: 0.3, ease: "easeOut" }}
+          className="text-xs text-white/60 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.05]"
+        >
+          {text}
+        </motion.span>
+      ))}
+    </div>
+  );
+}
+
 function FooterLinks({
   authState,
   footerContent,
@@ -189,8 +273,91 @@ export default function AuthFlowContainer({
   children: React.ReactNode;
   authState?: "signup" | "login" | "join";
   footerContent?: React.ReactNode;
-  variant?: "card" | "split";
+  variant?: "card" | "split" | "fullscreen";
 }) {
+  if (variant === "fullscreen") {
+    return (
+      <div
+        className="dark min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden py-8 px-4"
+        style={{
+          background: `linear-gradient(160deg, #120618 0%, #0d0a1f 40%, #0a0e2a 100%)`,
+        }}
+      >
+        <AnimatedBlurCircles />
+
+        <div className="relative z-10 flex flex-col items-center gap-5 w-full max-w-md">
+          {/* Logo */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="virtualai-pulse-ring rounded-full p-4 bg-white/5 backdrop-blur-sm border border-white/10">
+              <OnyxIcon size={48} className="flex-shrink-0" />
+            </div>
+          </motion.div>
+
+          {/* Heading */}
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.6 }}
+          >
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              <span className="text-white/60">Welcome to </span>
+              <span
+                style={{
+                  background: BRAND_GRADIENT,
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                VertualAI
+              </span>
+            </h1>
+            <motion.p
+              className="text-white/70 text-sm sm:text-base mt-1.5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.7 }}
+            >
+              Your AI platform for work
+            </motion.p>
+          </motion.div>
+
+          {/* Form card */}
+          <motion.div
+            className="w-full"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            <div className="w-full bg-white/[0.04] backdrop-blur-md rounded-2xl p-6 sm:p-8 border border-white/10 shadow-2xl">
+              {children}
+            </div>
+          </motion.div>
+
+          {/* Footer links */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+          >
+            <FooterLinks
+              authState={authState}
+              footerContent={footerContent}
+            />
+          </motion.div>
+
+          {/* Feature pills — stagger in one by one */}
+          <FeaturePills />
+        </div>
+      </div>
+    );
+  }
+
   if (variant === "split") {
     return (
       <div className="flex min-h-screen">

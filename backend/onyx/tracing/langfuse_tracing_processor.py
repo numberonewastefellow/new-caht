@@ -125,9 +125,18 @@ class LangfuseTracingProcessor(TracingProcessor):
             # Always update the trace-level properties to set the trace name
             # session_id is optional but name should always be set
             session_id = metadata.get("chat_session_id")
+
+            # Read user context from context vars (set by auth dependency)
+            from shared_configs.contextvars import CURRENT_USER_EMAIL_CONTEXTVAR
+            from shared_configs.contextvars import CURRENT_USER_ID_CONTEXTVAR
+
+            user_id = CURRENT_USER_ID_CONTEXTVAR.get()
+            user_email = CURRENT_USER_EMAIL_CONTEXTVAR.get()
+
             langfuse_span.update_trace(
                 name=trace.name,
                 session_id=session_id if session_id else None,
+                user_id=user_email or user_id or None,
                 metadata=metadata if metadata else None,
             )
 

@@ -24,6 +24,7 @@ import {
   type AgentTestTarget,
 } from "@/components/workflow-builder/AgentTestModal";
 import { QuickCreateAgentModal } from "@/components/workflow-builder/QuickCreateAgentModal";
+import { JsonViewModal } from "@/components/workflow-builder/JsonViewModal";
 import type {
   AgentNodeData,
   DragPersonaData,
@@ -50,6 +51,7 @@ function WorkflowVisualBuilderInner({
   const enrichedRef = useRef(false);
   const [testTarget, setTestTarget] = useState<AgentTestTarget | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJsonView, setShowJsonView] = useState(false);
 
   // Listen for agent test button clicks from ReactFlow nodes
   useEffect(() => {
@@ -216,6 +218,7 @@ function WorkflowVisualBuilderInner({
         isSaving={isSaving}
         isEditMode={!!workflowId}
         llmProviders={llmProviders ?? []}
+        onViewJson={() => setShowJsonView(true)}
       />
       <div className="wfb-content">
         <AgentSidebar
@@ -268,6 +271,17 @@ function WorkflowVisualBuilderInner({
             toast.success(`Agent "${dragData.persona_name}" created and added.`);
           }}
           onClose={() => setShowCreateModal(false)}
+        />
+      )}
+
+      {/* JSON View Modal */}
+      {showJsonView && (
+        <JsonViewModal
+          workflowJson={toPayload()}
+          agentIds={nodes
+            .filter((n) => n.type === "agent")
+            .map((n) => (n.data as AgentNodeData).persona_id)}
+          onClose={() => setShowJsonView(false)}
         />
       )}
     </div>

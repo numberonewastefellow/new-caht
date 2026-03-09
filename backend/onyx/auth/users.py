@@ -1507,14 +1507,26 @@ async def double_check_user(
                 detail="Access denied. User's OIDC token has expired.",
             )
 
+        _set_user_context(user)
         return user
 
     if allow_anonymous_access:
-        return get_anonymous_user()
+        anon = get_anonymous_user()
+        _set_user_context(anon)
+        return anon
 
     raise BasicAuthenticationError(
         detail="Access denied. User is not authenticated.",
     )
+
+
+def _set_user_context(user: User) -> None:
+    """Set current user context vars for tracing (Phoenix, Langfuse, etc.)."""
+    from shared_configs.contextvars import CURRENT_USER_EMAIL_CONTEXTVAR
+    from shared_configs.contextvars import CURRENT_USER_ID_CONTEXTVAR
+
+    CURRENT_USER_ID_CONTEXTVAR.set(str(user.id))
+    CURRENT_USER_EMAIL_CONTEXTVAR.set(user.email or "")
 
 
 async def current_user_with_expired_token(
