@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 set COMPOSE_CMD=docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml
-set INFRA=relational_db index cache inference_model_server indexing_model_server minio code-interpreter smartsearch
+set INFRA=relational_db index cache inference_model_server indexing_model_server minio code-interpreter smartsearch phoenix
 set APP=api_server background web_server nginx
 
 :: Office MCP server (PPT + DOCX + PDF) runs from a separate compose file
@@ -28,6 +28,7 @@ if /i "!_arg!"=="vespa" set SERVICES=!SERVICES! index
 if /i "!_arg!"=="minio" set SERVICES=!SERVICES! minio
 if /i "!_arg!"=="search" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="smartsearch" set SERVICES=!SERVICES! smartsearch
+if /i "!_arg!"=="phoenix" set SERVICES=!SERVICES! phoenix
 if /i "!_arg!"=="office" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="ppt" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="docx" set SERVICES=!SERVICES! __OFFICE__
@@ -253,6 +254,7 @@ if /i "!_arg!"=="vespa" set SERVICES=!SERVICES! index
 if /i "!_arg!"=="minio" set SERVICES=!SERVICES! minio
 if /i "!_arg!"=="search" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="smartsearch" set SERVICES=!SERVICES! smartsearch
+if /i "!_arg!"=="phoenix" set SERVICES=!SERVICES! phoenix
 if /i "!_arg!"=="office" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="ppt" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="docx" set SERVICES=!SERVICES! __OFFICE__
@@ -373,9 +375,10 @@ echo     logs office           Tail logs for Office MCP server
 echo     ps                    Show running containers (all + MCP)
 echo.
 echo   Groups:
-echo     infra      = db, vespa, redis, model servers, minio, code-interpreter, smartsearch
+echo     infra      = db, vespa, redis, model servers, minio, code-interpreter, smartsearch, phoenix
 echo     app        = api_server, background, web_server, nginx
 echo     search     = smartsearch (Perplexica AI web search)
+echo     phoenix    = Phoenix LLM observability (dashboard at http://localhost:6006)
 echo     office     = Office MCP server (PPT + DOCX + PDF generation via MCP)
 echo.
 echo   Service shortcuts:
@@ -390,6 +393,7 @@ echo     vespa      = index (vespa)
 echo     minio      = minio
 echo     search     = smartsearch (Perplexica AI web search)
 echo     smartsearch = smartsearch (alias for search)
+echo     phoenix    = phoenix (LLM observability, http://localhost:6006)
 echo     office     = office-mcp-server (PPT + DOCX + PDF, separate compose)
 echo     ppt        = alias for office
 echo     docx       = alias for office

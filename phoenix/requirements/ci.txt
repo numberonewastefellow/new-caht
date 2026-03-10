@@ -1,0 +1,17 @@
+mypy==1.19.1
+pytest
+pytest-xdist
+pytest-asyncio
+uvloop; platform_system != 'Windows'
+pydantic>=1.0,!=2.0.*,<3
+pyright[nodejs]==1.1.394
+pytest-randomly
+pytest-rerunfailures
+deepdiff==8.6.1
+anthropic
+openai>=2.14.0
+pystache
+PyYAML
+aioboto3
+azure-identity
+ldap3

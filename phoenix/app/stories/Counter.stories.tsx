@@ -1,0 +1,44 @@
+import type { Meta, StoryFn } from "@storybook/react";
+
+import type { CounterProps } from "@phoenix/components";
+import { Counter } from "@phoenix/components";
+const meta: Meta = {
+  title: "Core/Content/Counter",
+  component: Counter,
+  parameters: {
+    layout: "centered",
+  },
+};
+
+export default meta;
+
+const Template: StoryFn<CounterProps> = (args) => <Counter {...args} />;
+
+/**
+ * Counters are used to perform actions within the UI
+ */
+export const Default = Template.bind({});
+
+Default.args = {
+  children: "9",
+};
+
+/**
+ * Use the `variant` prop to change the appearance of the Counter
+ */
+export const Danger = Template.bind({});
+
+Danger.args = {
+  children: "12,000",
+  variant: "danger",
+};
+
+/**
+ * The `quiet` variant removes the border and background
+ */
+export const Quiet = Template.bind({});
+
+Quiet.args = {
+  children: "1.2k",
+  variant: "quiet",
+};

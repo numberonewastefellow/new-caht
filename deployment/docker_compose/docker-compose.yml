@@ -521,7 +521,10 @@ services:
   # Receives OpenTelemetry traces from the backend. Set PHOENIX_ENABLED=true in .env to activate.
   # Dashboard: http://localhost:6006
   phoenix:
-    image: arizephoenix/phoenix:latest
+    build:
+      context: ../../phoenix
+      dockerfile: Dockerfile
+    image: virtualai-phoenix:13.11.0
     container_name: phoenix
     # ports:
     #   - "6006:6006"

@@ -1,0 +1,35 @@
+import type { Meta, StoryFn } from "@storybook/react";
+
+import type { LinkButtonProps } from "@phoenix/components";
+import { LinkButton } from "@phoenix/components";
+
+const meta: Meta = {
+  title: "Core/Actions/Link Button",
+  component: LinkButton,
+  parameters: {
+    layout: "centered",
+  },
+};
+
+export default meta;
+
+const Template: StoryFn<LinkButtonProps> = (args) => <LinkButton {...args} />;
+
+/**
+ * Buttons are used to perform actions within the UI
+ */
+export const Default = Template.bind({});
+
+Default.args = {
+  children: "LinkButton",
+};
+
+/**
+ * Use the `variant` prop to change the appearance of the button
+ */
+export const Danger = Template.bind({});
+
+Danger.args = {
+  children: "Danger",
+  variant: "danger",
+};

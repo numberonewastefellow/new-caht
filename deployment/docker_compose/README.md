@@ -126,10 +126,78 @@ Expected: `traceCount > 0`
 
 ### Production Notes
 
-- Pin `arizephoenix/phoenix` to a specific version tag (e.g. `arizephoenix/phoenix:8.0.0`) instead of `latest`
+- The image is pinned to `arizephoenix/phoenix:version-13.11.0` — update the tag in `docker-compose.yml` when upgrading
 - For high-throughput deployments, consider running Phoenix with PostgreSQL storage instead of the default SQLite — see [Phoenix docs](https://docs.arize.com/phoenix/deployment)
 - The BatchSpanProcessor queue (4096 spans) will drop spans under extreme load rather than blocking the backend
 - Phoenix port 6006 is **not exposed** by default in production compose — only in dev overrides
+
+---
+
+## Office MCP Server — PPT, DOCX & PDF Generation
+
+The Office MCP Server is a standalone Docker container that provides 91 MCP tools for generating PowerPoint presentations, Word documents, and PDF reports. It integrates with VirtualAI's multi-agent workflow system.
+
+### Quick Start
+
+```bash
+cd deployment/docker_compose
+
+# Start everything including Office MCP server
+dev up
+
+# Or start only the Office MCP server
+dev up office
+```
+
+The `dev.bat` helper automatically builds the container, starts it, and connects it to the `onyx_default` Docker network so the API server can reach it at `http://office-mcp-server:8100/mcp`.
+
+**Aliases:** `dev up office`, `dev up ppt`, and `dev up docx` all do the same thing — they start the unified server.
+
+### After First Start
+
+Once the container is running, register the tools and deploy the workflows:
+
+```bash
+cd backend/tests/workflow_creator
+
+# 1. Register MCP server and discover all 91 tools
+python register_office_mcp.py --mcp-url http://localhost:8100
+
+# 2. Deploy the Presentation Generator workflow (PPT)
+python create_workflows.py --file workflows/29_ppt_generator.json
+
+# 3. Deploy the Document Generator workflow (DOCX/PDF)
+python create_workflows.py --file workflows/32_document_generator.json
+
+# 4. Attach MCP tools to the workflow agent personas
+python register_office_mcp.py --attach-to-personas
+```
+
+After this, **Presentation Generator** and **Document Generator** appear in the VirtualAI chat UI.
+
+### What's Included
+
+| Format | Tools | Output |
+|--------|-------|--------|
+| PowerPoint | 37 `ppt_*` tools | `.pptx` files with slides, charts, tables, shapes, images |
+| Word | 54 `docx_*` tools | `.docx` files with headings, paragraphs, tables, lists, styles |
+| PDF | `docx_convert_to_pdf` | `.pdf` files converted from Word documents via LibreOffice |
+
+### dev.bat Commands
+
+| Command | What It Does |
+|---------|-------------|
+| `dev up office` | Start the Office MCP server (detached) |
+| `dev build office` | Build and start (use after Dockerfile changes) |
+| `dev restart office` | Restart the container |
+| `dev stop office` | Stop the container |
+| `dev logs office` | Tail container logs |
+| `dev ps` | Show all running containers including Office MCP |
+| `dev down` | Stop everything including Office MCP |
+
+### Full Documentation
+
+See [`office-mcp-server/README.md`](../../office-mcp-server/README.md) for detailed architecture, all 91 tool descriptions, troubleshooting, and customization options.
 
 ---
 
