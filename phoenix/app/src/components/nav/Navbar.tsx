@@ -149,7 +149,7 @@ function ExternalLink(props: {
 export function DocsLink({ isExpanded }: { isExpanded: boolean }) {
   return (
     <ExternalLink
-      href="https://arize.com/docs/phoenix"
+      href="https://docs.vertualai.app"
       leadingVisual={<Icon svg={<Icons.BookOutline />} />}
       text="Documentation"
       isExpanded={isExpanded}
@@ -158,15 +158,7 @@ export function DocsLink({ isExpanded }: { isExpanded: boolean }) {
 }
 
 export function GitHubLink({ isExpanded }: { isExpanded: boolean }) {
-  return (
-    <ExternalLink
-      href="https://github.com/Arize-ai/phoenix"
-      leadingVisual={<Icon svg={<Icons.GitHub />} />}
-      trailingVisual={<GitHubStarCount />}
-      text="Star on GitHub"
-      isExpanded={isExpanded}
-    />
-  );
+  return null;
 }
 
 export function ThemeSelector({ isExpanded }: { isExpanded: boolean }) {

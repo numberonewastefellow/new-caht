@@ -31,6 +31,17 @@ else
   echo "# Empty file - MCP server is disabled" > /etc/nginx/conf.d/mcp.conf.inc
 fi
 
+# Conditionally create Phoenix configuration
+if [ "${PHOENIX_ENABLED}" = "True" ] || [ "${PHOENIX_ENABLED}" = "true" ]; then
+  echo "Phoenix observability is enabled, creating Phoenix nginx configuration..."
+  cp /etc/nginx/conf.d/phoenix_upstream.conf.inc.template /etc/nginx/conf.d/phoenix_upstream.conf.inc
+  cp /etc/nginx/conf.d/phoenix.conf.inc.template /etc/nginx/conf.d/phoenix.conf.inc
+else
+  echo "Phoenix observability is disabled, removing Phoenix configuration..."
+  echo "# Empty file - Phoenix is disabled" > /etc/nginx/conf.d/phoenix_upstream.conf.inc
+  echo "# Empty file - Phoenix is disabled" > /etc/nginx/conf.d/phoenix.conf.inc
+fi
+
 # wait for the api_server to be ready
 echo "Waiting for API server to boot up; this may take a minute or two..."
 echo "If this takes more than ~5 minutes, check the logs of the API server container for errors with the following command:"

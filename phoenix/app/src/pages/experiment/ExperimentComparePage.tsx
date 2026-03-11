@@ -182,52 +182,68 @@ export function ExperimentComparePage() {
         paddingX="size-200"
         paddingTop="size-100"
         paddingBottom="size-200"
-        borderBottomColor="dark"
-        borderBottomWidth="thin"
         flex="none"
       >
-        <Flex
-          direction="row"
-          justifyContent="space-between"
-          gap="size-150"
-          alignItems="end"
+        <div
+          css={css`
+            position: relative;
+            padding-bottom: var(--global-dimension-size-100);
+            &::after {
+              content: "";
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              height: 2px;
+              background: var(--vai-gradient);
+              opacity: 0.6;
+              border-radius: 1px;
+            }
+          `}
         >
-          <ExperimentMultiSelector
-            queryRef={multiSelectorQueryReference}
-            selectedBaseExperimentId={baseExperimentId}
-            selectedCompareExperimentIds={compareExperimentIds}
-            onChange={(newBaseExperimentId, newCompareExperimentIds) => {
-              startTransition(() => {
-                if (newBaseExperimentId == null) {
-                  navigate(`/datasets/${datasetId}/compare`);
-                } else {
-                  searchParams.delete("experimentId");
-                  [newBaseExperimentId, ...newCompareExperimentIds].forEach(
-                    (experimentId) => {
-                      searchParams.append("experimentId", experimentId);
-                    }
-                  );
-                  navigate(
-                    `/datasets/${datasetId}/compare?${searchParams.toString()}`
-                  );
-                }
-              });
-            }}
-          />
-          <View flex="1" paddingBottom={5}>
-            <Suspense>
-              {selectedCompareExperimentsQueryReference && (
-                <SelectedCompareExperiments
-                  queryRef={selectedCompareExperimentsQueryReference}
-                />
-              )}
-            </Suspense>
-          </View>
-          <ExperimentCompareViewModeToggle
-            viewMode={viewMode}
-            onViewModeChange={onViewModeChange}
-          />
-        </Flex>
+          <Flex
+            direction="row"
+            justifyContent="space-between"
+            gap="size-150"
+            alignItems="end"
+          >
+            <ExperimentMultiSelector
+              queryRef={multiSelectorQueryReference}
+              selectedBaseExperimentId={baseExperimentId}
+              selectedCompareExperimentIds={compareExperimentIds}
+              onChange={(newBaseExperimentId, newCompareExperimentIds) => {
+                startTransition(() => {
+                  if (newBaseExperimentId == null) {
+                    navigate(`/datasets/${datasetId}/compare`);
+                  } else {
+                    searchParams.delete("experimentId");
+                    [newBaseExperimentId, ...newCompareExperimentIds].forEach(
+                      (experimentId) => {
+                        searchParams.append("experimentId", experimentId);
+                      }
+                    );
+                    navigate(
+                      `/datasets/${datasetId}/compare?${searchParams.toString()}`
+                    );
+                  }
+                });
+              }}
+            />
+            <View flex="1" paddingBottom={5}>
+              <Suspense>
+                {selectedCompareExperimentsQueryReference && (
+                  <SelectedCompareExperiments
+                    queryRef={selectedCompareExperimentsQueryReference}
+                  />
+                )}
+              </Suspense>
+            </View>
+            <ExperimentCompareViewModeToggle
+              viewMode={viewMode}
+              onViewModeChange={onViewModeChange}
+            />
+          </Flex>
+        </div>
       </View>
       {baseExperimentId == null ? (
         <View padding="size-200">

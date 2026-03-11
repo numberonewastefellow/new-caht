@@ -316,6 +316,11 @@ goto :eof
 :: Connect Office container to onyx_default network (required for inter-container DNS)
 :office_network_connect
 echo Connecting Office MCP server to onyx network...
+docker network inspect onyx_default >nul 2>nul
+if !errorlevel! neq 0 (
+    echo   onyx_default network does not exist yet — skipping. Run 'dev up' first.
+    goto :eof
+)
 docker network connect onyx_default office-mcp-server 2>nul
 if !errorlevel! equ 0 (
     echo   Connected office-mcp-server to onyx_default network

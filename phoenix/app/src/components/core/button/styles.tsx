@@ -107,8 +107,12 @@ export const buttonCSS = css`
   }
 
   &[data-variant="primary"] {
+    font-weight: 600;
     kbd {
-      background-color: var(--global-color-gray-700);
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    &:hover:not([disabled]) {
+      box-shadow: var(--vai-accent-glow, none);
     }
   }
 `;

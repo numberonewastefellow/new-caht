@@ -51,9 +51,10 @@ type ExperimentAnnotationAggregatesProps = {
 const listCSS = css`
   display: grid;
   grid-template-columns:
-    minmax(100px, max-content) minmax(70px, max-content)
+    minmax(100px, max-content) minmax(80px, max-content)
     minmax(100px, 1fr);
-  column-gap: var(--global-dimension-size-100);
+  column-gap: var(--global-dimension-size-125);
+  row-gap: var(--global-dimension-size-25);
 `;
 
 const listItemCSS = css`
@@ -62,6 +63,12 @@ const listItemCSS = css`
   grid-template-columns: subgrid;
   grid-column: 1 / -1;
   align-items: center;
+  padding: var(--global-dimension-size-25) 0;
+  border-radius: var(--global-rounding-small);
+  transition: background-color 0.15s ease;
+  &:hover {
+    background-color: var(--vai-accent-subtle, rgba(0, 0, 0, 0.03));
+  }
 `;
 
 const placeholderCSS = css`

@@ -52,6 +52,30 @@ const playgroundWrapCSS = css`
   height: 100%;
 `;
 
+const playgroundHeaderCSS = css`
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--vai-gradient);
+    opacity: 0.7;
+  }
+`;
+
+const headerTitleCSS = css`
+  font-weight: 700;
+  font-size: var(--global-font-size-xl);
+  line-height: 1;
+  background: var(--vai-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+`;
+
 export function Playground(props: Partial<PlaygroundProps>) {
   const [searchParams] = useSearchParams();
   const datasetId = searchParams.get("datasetId");
@@ -91,9 +115,9 @@ export function Playground(props: Partial<PlaygroundProps>) {
       modelConfigByProvider={modelConfigByProvider}
     >
       <div css={playgroundWrapCSS}>
-        <View borderBottomColor="dark" borderBottomWidth="thin">
+        <div css={playgroundHeaderCSS}>
           <PageHeader
-            title="Playground"
+            title={<span css={headerTitleCSS}>Playground</span>}
             extra={
               <Flex direction="row" gap="size-100" alignItems="center">
                 <PlaygroundCredentialsDropdown />
@@ -102,7 +126,7 @@ export function Playground(props: Partial<PlaygroundProps>) {
               </Flex>
             }
           />
-        </View>
+        </div>
         <PlaygroundContent />
       </div>
       <Suspense>

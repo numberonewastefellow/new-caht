@@ -17,7 +17,7 @@ are closed. This follows the same pattern as LangChain MCP Adapters' persistent
 session mode and is compliant with the MCP specification's Mcp-Session-Id header
 requirements.
 
-See ppt-generator/MCP_SESSION_PERSISTENCE.md for the full design rationale.
+See office-mcp-server/MCP_SESSION_PERSISTENCE.md for the full design rationale.
 """
 
 import asyncio

@@ -77,25 +77,18 @@ from phoenix.version import __version__ as phoenix_version
 
 _WELCOME_MESSAGE = Environment(loader=BaseLoader()).from_string("""
 
-██████╗ ██╗  ██╗ ██████╗ ███████╗███╗   ██╗██╗██╗  ██╗
-██╔══██╗██║  ██║██╔═══██╗██╔════╝████╗  ██║██║╚██╗██╔╝
-██████╔╝███████║██║   ██║█████╗  ██╔██╗ ██║██║ ╚███╔╝
-██╔═══╝ ██╔══██║██║   ██║██╔══╝  ██║╚██╗██║██║ ██╔██╗
-██║     ██║  ██║╚██████╔╝███████╗██║ ╚████║██║██╔╝ ██╗
-╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝ v{{ version }}
+██╗   ██╗███████╗██████╗ ████████╗██╗   ██╗ █████╗ ██╗      █████╗ ██╗
+██║   ██║██╔════╝██╔══██╗╚══██╔══╝██║   ██║██╔══██╗██║     ██╔══██╗██║
+██║   ██║█████╗  ██████╔╝   ██║   ██║   ██║███████║██║     ███████║██║
+╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║   ██║   ██║██╔══██║██║     ██╔══██║██║
+ ╚████╔╝ ███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║███████╗██║  ██║██║
+  ╚═══╝  ╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝ Traces v{{ version }}
 
-|  ⭐️⭐️⭐️ Support Open Source ⭐️⭐️⭐️
-|  ⭐️⭐️⭐️ Star on GitHub! ⭐️⭐️⭐️
-|  https://github.com/Arize-ai/phoenix
-|
-|  🌎 Join our Community 🌎
-|  https://join.slack.com/t/arize-ai/shared_invite/zt-3r07iavnk-ammtATWSlF0pSrd1DsMW7g
-|
 |  📚 Documentation 📚
-|  https://arize.com/docs/phoenix
+|  https://docs.vertualai.app
 |
-|  🚀 Phoenix Server 🚀
-|  Phoenix UI: {{ ui_path }}
+|  🚀 VertualAI Traces Server 🚀
+|  Dashboard: {{ ui_path }}
 |
 |  Authentication: {{ auth_enabled }}
 {%- if basic_auth_disabled %}

@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 
 export const cardCSS = (style?: CSSProperties) => css`
   --scope-border-color: ${
-    style?.borderColor ?? "var(--global-border-color-default)"
+    style?.borderColor ?? "var(--vai-border-subtle, var(--global-border-color-default))"
   };
   --collapsible-card-animation-duration: 200ms;
   --collapsible-card-icon-size: var(--global-dimension-size-300);
@@ -14,8 +14,10 @@ export const cardCSS = (style?: CSSProperties) => css`
   color: var(--global-text-color-900);
   border-radius: var(--global-rounding-medium);
   border: 1px solid var(--scope-border-color);
+  box-shadow: var(--vai-shadow-card, none);
   overflow: hidden;
   box-sizing: border-box;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 
   /* Card Header Styles */
   & > header {
@@ -91,7 +93,7 @@ export const cardCSS = (style?: CSSProperties) => css`
   /* Collapsible behavior */
   &[data-collapsible="true"] {
     & > header:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: var(--vai-accent-subtle, rgba(255, 255, 255, 0.1));
     }
   }
 

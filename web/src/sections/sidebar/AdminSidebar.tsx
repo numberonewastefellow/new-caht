@@ -295,6 +295,16 @@ const collections = (
               ]
             : []),
           {
+            name: "LLM Observability",
+            items: [
+              {
+                name: "LLM Traces",
+                icon: SvgActivity,
+                link: "/phoenix/",
+              },
+            ],
+          },
+          {
             name: "Settings",
             items: [
               {

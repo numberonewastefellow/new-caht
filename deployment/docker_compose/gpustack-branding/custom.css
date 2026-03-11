@@ -1,0 +1,74 @@
+/* VirtualAI Model Hub — GPUStack Branding Override */
+
+/* ── Sidebar branding ─────────────────────────────────────────────── */
+
+/* Hide the original GPUStack logo/icon */
+.ant-layout-sider .logo-wrap img,
+.ant-layout-sider .logo-wrap svg,
+[class*="logo"] img,
+[class*="logo"] svg {
+    display: none !important;
+}
+
+/* Style the sidebar */
+.ant-layout-sider,
+.ant-menu-dark,
+.ant-menu.ant-menu-dark {
+    background: #0f1219 !important;
+}
+
+/* Active menu item accent */
+.ant-menu-dark .ant-menu-item-selected,
+.ant-menu-dark .ant-menu-item-active {
+    background: rgba(99, 102, 241, 0.15) !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected::after {
+    border-right-color: #6366f1 !important;
+}
+
+/* ── Top header / navbar ──────────────────────────────────────────── */
+
+.ant-layout-header {
+    background: #0f1219 !important;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2) !important;
+}
+
+/* ── Accent colors (buttons, links, badges) ───────────────────────── */
+
+.ant-btn-primary,
+.ant-btn-primary:hover {
+    background: #6366f1 !important;
+    border-color: #6366f1 !important;
+}
+
+.ant-btn-primary:hover {
+    background: #818cf8 !important;
+    border-color: #818cf8 !important;
+}
+
+a {
+    color: #818cf8 !important;
+}
+
+a:hover {
+    color: #a5b4fc !important;
+}
+
+/* ── Login page ───────────────────────────────────────────────────── */
+
+.login-container h1,
+.login-title,
+[class*="login"] h1 {
+    font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+/* ── Scrollbar styling ────────────────────────────────────────────── */
+
+::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.5) !important;
+}

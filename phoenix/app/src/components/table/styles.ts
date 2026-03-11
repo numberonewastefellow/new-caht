@@ -18,7 +18,10 @@ export const tableCSS = css`
       th {
         padding: var(--global-dimension-size-100)
           var(--global-dimension-size-200);
-        background-color: var(--global-color-gray-100);
+        background-color: var(
+          --vai-surface-elevated,
+          var(--global-color-gray-100)
+        );
         position: relative;
         text-align: left;
         user-select: none;
@@ -26,6 +29,7 @@ export const tableCSS = css`
         font-weight: 600;
         font-size: var(--global-font-size-s);
         line-height: var(--global-line-height-s);
+        letter-spacing: 0.01em;
         border-bottom: 1px solid var(--global-border-color-default);
         &:not(:last-of-type) {
           border-right: 1px solid var(--global-border-color-default);
@@ -46,7 +50,7 @@ export const tableCSS = css`
           display: inline-block;
         }
         &:hover .resizer {
-          background: var(--global-color-gray-300);
+          background: var(--vai-accent, var(--global-color-gray-300));
         }
         div.resizer {
           display: inline-block;
@@ -61,7 +65,7 @@ export const tableCSS = css`
           touch-action: none;
           &.isResizing,
           &:hover {
-            background: var(--global-color-primary);
+            background: var(--vai-accent, var(--global-color-primary));
           }
         }
         // Style action menu buttons in the header
@@ -77,6 +81,7 @@ export const tableCSS = css`
     tr {
       // when paired with table.height:fit-content, allows table cells and their children to fill entire row height
       height: 100%;
+      transition: background-color 0.15s ease;
       &:not(:last-of-type) {
         & > td {
           border-bottom: 1px solid var(--global-color-gray-200);
@@ -87,7 +92,10 @@ export const tableCSS = css`
           var(--global-dimension-size-200);
       }
       &[data-selected="true"] {
-        background-color: var(--global-color-primary-100);
+        background-color: var(
+          --vai-accent-subtle,
+          var(--global-color-primary-100)
+        );
       }
     }
   }
@@ -110,7 +118,10 @@ export const interactiveTableCSS = css`
   tbody:not(.is-empty) {
     tr {
       &:hover {
-        background-color: var(--hover-background);
+        background-color: var(
+          --vai-accent-subtle,
+          var(--hover-background)
+        );
       }
     }
   }

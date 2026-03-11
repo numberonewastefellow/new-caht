@@ -40,14 +40,24 @@ const thumbIconCSS = css`
 
 const metricCardCSS = css`
   padding: var(--global-dimension-size-200);
-  border: 1px solid var(--global-color-gray-200);
+  border: 1px solid var(--vai-border-subtle, var(--global-color-gray-200));
   border-radius: var(--global-rounding-medium);
-  transition: border-color 0.2s;
+  background: var(--vai-surface-card, transparent);
+  box-shadow: var(--vai-shadow-card, none);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: var(--global-dimension-size-200);
   height: 100%;
+  &:hover {
+    border-color: var(--vai-border-accent, var(--global-color-gray-300));
+    box-shadow: var(--vai-shadow-elevated, none);
+    transform: translateY(-1px);
+  }
 `;
 
 type MetricValue = number | null | undefined;
@@ -437,6 +447,18 @@ export function ExperimentCompareMetricsPage({
   );
 }
 
+const metricsColumnHeadingCSS = css`
+  margin-bottom: var(--global-dimension-size-150);
+  padding-bottom: var(--global-dimension-size-75);
+  border-bottom: 2px solid transparent;
+  border-image: var(
+      --vai-gradient,
+      linear-gradient(135deg, #e8449a, #4338ca)
+    )
+    1;
+  display: inline-block;
+`;
+
 function MetricsColumn({
   title,
   metrics,
@@ -446,12 +468,7 @@ function MetricsColumn({
 }) {
   return (
     <View>
-      <Heading
-        level={2}
-        css={css`
-          margin-bottom: var(--global-dimension-size-150);
-        `}
-      >
+      <Heading level={2} css={metricsColumnHeadingCSS}>
         {title}
       </Heading>
       <ul
@@ -717,9 +734,10 @@ function HorizontalBarChart({
           key={index}
           css={css`
             background-color: ${bar.color};
-            height: 0.3rem;
-            border-radius: 2px;
+            height: 0.35rem;
+            border-radius: var(--global-rounding-full);
             width: ${barLengths[index]}%;
+            transition: width 0.3s ease;
           `}
         />
       ))}

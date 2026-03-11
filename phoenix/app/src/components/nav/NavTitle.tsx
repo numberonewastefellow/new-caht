@@ -10,7 +10,7 @@ export function NavTitle() {
       matchesWithCrumb
         .map((match) => match.handle.crumb(match.loaderData))
         .reverse()
-        .join(" - ") || "Phoenix",
+        .join(" - ") || "VertualAI Traces",
     [matchesWithCrumb]
   );
   return <title>{titleText}</title>;

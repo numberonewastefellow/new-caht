@@ -1,9 +1,20 @@
+import { css } from "@emotion/react";
+
 import {
   Icon,
   Icons,
   ToggleButton,
   ToggleButtonGroup,
 } from "@phoenix/components";
+
+const viewModeToggleCSS = css`
+  .toggle-button[data-selected="true"] {
+    background: var(--vai-accent, var(--global-color-primary)) !important;
+    color: #ffffff !important;
+    border-color: var(--vai-accent, var(--global-color-primary)) !important;
+    font-weight: 600;
+  }
+`;
 
 export type ExperimentCompareViewMode = "grid" | "list" | "metrics";
 
@@ -35,6 +46,7 @@ export function ExperimentCompareViewModeToggle({
 }) {
   return (
     <ToggleButtonGroup
+      css={viewModeToggleCSS}
       selectedKeys={[viewMode]}
       selectionMode="single"
       onSelectionChange={(selection) => {

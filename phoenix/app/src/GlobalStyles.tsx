@@ -920,7 +920,7 @@ export const derivedCSS = (theme: ThemeContextType["theme"]) => css`
     --highlight-foreground: var(--global-text-color-900);
     --highlight-background: var(--global-color-primary-100);
     --hover-background: var(--global-color-gray-200);
-    --focus-ring-color: var(--global-color-primary-500);
+    --focus-ring-color: var(--vai-accent, var(--global-color-primary-500));
 
     // Text
     --text-color-placeholder: var(--global-color-gray-400);
@@ -942,13 +942,11 @@ export const derivedCSS = (theme: ThemeContextType["theme"]) => css`
     );
     --global-menu-item-gap: var(--global-dimension-static-size-50);
 
-    // Styles for buttons
-    --global-button-primary-background-color: var(--global-color-gray-900);
-    --global-button-primary-foreground-color: var(--global-color-gray-100);
-    --global-button-primary-background-color-hover: var(
-      --global-color-gray-800
-    );
-    --global-button-primary-border-color: var(--global-color-gray-900);
+    // Styles for buttons — VirtualAI accent-colored primary buttons
+    --global-button-primary-background-color: var(--vai-accent);
+    --global-button-primary-foreground-color: #ffffff;
+    --global-button-primary-background-color-hover: var(--vai-accent-hover);
+    --global-button-primary-border-color: var(--vai-accent);
     --global-button-danger-background-color: var(--global-color-danger-700);
     --global-button-danger-background-color-hover: var(
       --global-color-danger-900
@@ -960,9 +958,9 @@ export const derivedCSS = (theme: ThemeContextType["theme"]) => css`
     );
     --global-button-success-border-color: var(--global-color-success);
 
-    // Styles for checkbox
-    --global-checkbox-selected-color: var(--global-color-gray-800);
-    --global-checkbox-selected-color-pressed: var(--global-color-gray-900);
+    // Styles for checkbox — VirtualAI accent
+    --global-checkbox-selected-color: var(--vai-accent, var(--global-color-gray-800));
+    --global-checkbox-selected-color-pressed: var(--vai-accent-hover, var(--global-color-gray-900));
     --global-checkbox-checkmark-color: var(--global-color-gray-50);
     --global-checkbox-border-color: var(--global-color-gray-300);
     --global-checkbox-border-color-pressed: var(--global-color-gray-400);
@@ -1086,6 +1084,179 @@ const appGlobalStylesCSS = css`
     }
   }
 
+  /* ──────────────────────────────────────────────────────────────────
+     VirtualAI Enterprise UI Enhancements
+     ────────────────────────────────────────────────────────────────── */
+
+  /* Page header — gradient accent bar */
+  .theme [data-testid="page-header"] {
+    position: relative;
+    border-bottom: none !important;
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--vai-gradient);
+      opacity: 0.6;
+    }
+  }
+
+  /* Primary button glow on hover */
+  .theme .button[data-variant="primary"]:hover {
+    box-shadow: var(--vai-accent-glow);
+  }
+
+  /* Disclosure (accordion) headers — subtle accent on hover */
+  .theme .disclosure [role="button"]:hover {
+    background: var(--vai-accent-subtle);
+  }
+
+  /* Cards — elevated surface with subtle shadow */
+  .theme .card {
+    background: var(--vai-surface-card);
+    border: 1px solid var(--vai-border-subtle);
+    box-shadow: var(--vai-shadow-card);
+    border-radius: var(--global-rounding-medium);
+  }
+
+  /* Toggle button group — accent active state */
+  .theme .toggle-button-group .toggle-button[data-selected="true"] {
+    background: var(--vai-accent);
+    color: #ffffff;
+    border-color: var(--vai-accent);
+  }
+
+  /* Progress bars — VirtualAI accent default fill */
+  .theme .bar-loader__fill {
+    background: var(--vai-accent) !important;
+    border-radius: var(--global-rounding-full);
+  }
+  .theme .bar-loader__track {
+    background: var(--vai-accent-subtle);
+    border-radius: var(--global-rounding-full);
+  }
+
+  /* Score badge styling for experiment results */
+  .theme .vai-score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--global-rounding-full);
+    font-family: "Geist Mono", monospace;
+    font-size: var(--global-font-size-xs);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .theme .vai-score-badge--excellent {
+    background: rgba(52, 211, 153, 0.15);
+    color: var(--vai-score-excellent);
+  }
+  .theme .vai-score-badge--good {
+    background: var(--vai-accent-subtle);
+    color: var(--vai-accent);
+  }
+  .theme .vai-score-badge--fair {
+    background: rgba(251, 191, 36, 0.15);
+    color: var(--vai-score-fair);
+  }
+  .theme .vai-score-badge--poor {
+    background: rgba(248, 113, 113, 0.15);
+    color: var(--vai-score-poor);
+  }
+
+  /* Table headers — accent-tinted background */
+  .theme table thead tr th {
+    background-color: var(--vai-surface-elevated) !important;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  /* Table row hover with accent tint */
+  .theme table tbody:not(.is-empty) tr:hover {
+    background-color: var(--vai-accent-subtle) !important;
+  }
+
+  /* Chat message role cards — refined borders */
+  .theme [data-role="system"] {
+    border-left: 3px solid #7c3aed;
+  }
+  .theme [data-role="user"] {
+    border-left: 3px solid #e8449a;
+  }
+  .theme [data-role="assistant"],
+  .theme [data-role="ai"] {
+    border-left: 3px solid #4338ca;
+  }
+  .theme [data-role="tool"],
+  .theme [data-role="function"] {
+    border-left: 3px solid #c026d3;
+  }
+
+  /* Popover refinements */
+  .theme .popover {
+    box-shadow: var(--vai-shadow-elevated);
+    border: 1px solid var(--vai-border-subtle);
+  }
+
+  /* Keyboard shortcut badge styling */
+  .theme .keyboard {
+    background: var(--vai-surface-elevated);
+    border: 1px solid var(--vai-border-subtle);
+    border-radius: var(--global-rounding-small);
+    padding: 1px 6px;
+    font-size: var(--global-font-size-xxs);
+  }
+
+  /* Experiment compare — column header with gradient accent */
+  .theme .experiment-header {
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--vai-gradient);
+      border-radius: 1px;
+    }
+  }
+
+  /* Experiment color swatch — rounded pill */
+  .theme .experiment-color-swatch {
+    border-radius: var(--global-rounding-full);
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+  }
+
+  /* Slider — accent-colored track fill */
+  .theme .slider-track-fill {
+    background: var(--vai-accent) !important;
+  }
+  .theme .slider-thumb {
+    border-color: var(--vai-accent) !important;
+  }
+
+  /* Switch — accent-colored when active */
+  .theme .switch[data-selected="true"] .switch-track {
+    background: var(--vai-accent) !important;
+  }
+
+  /* ComboBox / Select focus accent */
+  .theme .combobox:focus-within,
+  .theme .text-field:focus-within {
+    border-color: var(--vai-accent);
+    box-shadow: 0 0 0 1px var(--vai-border-accent);
+  }
+
+  /* Empty state placeholder text */
+  .theme .empty-state {
+    color: var(--vai-text-tertiary);
+  }
+
   :root,
   .theme {
     --section-background-color: #2f353d;
@@ -1137,22 +1308,64 @@ const appGlobalStylesCSS = css`
   }
 
   .theme--dark {
-    --primary-color: #9efcfd;
-    --primary-color--transparent: rgb(158, 252, 253, 0.2);
-    --reference-color: #baa1f9;
-    --reference-color--transparent: #baa1f982;
+    --primary-color: #a78bfa;
+    --primary-color--transparent: rgba(167, 139, 250, 0.2);
+    --reference-color: #c084fc;
+    --reference-color--transparent: rgba(192, 132, 252, 0.5);
     --corpus-color: #92969c;
     --corpus-color--transparent: #92969c63;
     --overlay-shadow-color: rgba(0, 0, 0, 0.6);
+
+    /* VirtualAI enterprise accent tokens */
+    --vai-accent: #a78bfa;
+    --vai-accent-hover: #c4b5fd;
+    --vai-accent-subtle: rgba(167, 139, 250, 0.12);
+    --vai-accent-muted: rgba(167, 139, 250, 0.25);
+    --vai-accent-glow: 0 0 12px rgba(167, 139, 250, 0.25);
+    --vai-gradient: linear-gradient(135deg, #e8449a 0%, #c026d3 35%, #7c3aed 65%, #4338ca 100%);
+    --vai-gradient-subtle: linear-gradient(135deg, rgba(232,68,154,0.15) 0%, rgba(192,38,211,0.15) 35%, rgba(124,58,237,0.15) 65%, rgba(67,56,202,0.15) 100%);
+    --vai-surface-elevated: rgba(255, 255, 255, 0.04);
+    --vai-surface-card: rgba(255, 255, 255, 0.03);
+    --vai-border-subtle: rgba(255, 255, 255, 0.08);
+    --vai-border-accent: rgba(167, 139, 250, 0.3);
+    --vai-shadow-card: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+    --vai-shadow-elevated: 0 4px 12px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.25);
+    --vai-score-excellent: #34d399;
+    --vai-score-good: #a78bfa;
+    --vai-score-fair: #fbbf24;
+    --vai-score-poor: #f87171;
+    --vai-text-secondary: rgba(255, 255, 255, 0.6);
+    --vai-text-tertiary: rgba(255, 255, 255, 0.4);
   }
   .theme--light {
-    --primary-color: #00add0;
-    --primary-color--transparent: rgba(0, 173, 208, 0.2);
-    --reference-color: #4500d9;
-    --reference-color--transparent: rgba(69, 0, 217, 0.2);
+    --primary-color: #7c3aed;
+    --primary-color--transparent: rgba(124, 58, 237, 0.2);
+    --reference-color: #9333ea;
+    --reference-color--transparent: rgba(147, 51, 234, 0.2);
     --corpus-color: #92969c;
     --corpus-color--transparent: #92969c63;
     --overlay-shadow-color: rgba(0, 0, 0, 0.1);
+
+    /* VirtualAI enterprise accent tokens */
+    --vai-accent: #7c3aed;
+    --vai-accent-hover: #6d28d9;
+    --vai-accent-subtle: rgba(124, 58, 237, 0.08);
+    --vai-accent-muted: rgba(124, 58, 237, 0.15);
+    --vai-accent-glow: 0 0 12px rgba(124, 58, 237, 0.15);
+    --vai-gradient: linear-gradient(135deg, #e8449a 0%, #c026d3 35%, #7c3aed 65%, #4338ca 100%);
+    --vai-gradient-subtle: linear-gradient(135deg, rgba(232,68,154,0.08) 0%, rgba(192,38,211,0.08) 35%, rgba(124,58,237,0.08) 65%, rgba(67,56,202,0.08) 100%);
+    --vai-surface-elevated: rgba(255, 255, 255, 0.7);
+    --vai-surface-card: rgba(255, 255, 255, 0.5);
+    --vai-border-subtle: rgba(0, 0, 0, 0.08);
+    --vai-border-accent: rgba(124, 58, 237, 0.25);
+    --vai-shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --vai-shadow-elevated: 0 4px 12px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+    --vai-score-excellent: #059669;
+    --vai-score-good: #7c3aed;
+    --vai-score-fair: #d97706;
+    --vai-score-poor: #dc2626;
+    --vai-text-secondary: rgba(0, 0, 0, 0.55);
+    --vai-text-tertiary: rgba(0, 0, 0, 0.4);
   }
 `;
 

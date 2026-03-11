@@ -34,7 +34,7 @@
 # For a complete production setup, refer to docker-compose.prod.yml
 # =============================================================================
 
-name: onyx
+name: virtualai
 
 services:
   api_server:
@@ -421,6 +421,7 @@ services:
       - NGINX_PROXY_CONNECT_TIMEOUT=${NGINX_PROXY_CONNECT_TIMEOUT:-300}
       - NGINX_PROXY_SEND_TIMEOUT=${NGINX_PROXY_SEND_TIMEOUT:-300}
       - NGINX_PROXY_READ_TIMEOUT=${NGINX_PROXY_READ_TIMEOUT:-300}
+      - PHOENIX_ENABLED=${PHOENIX_ENABLED:-false}
     ports:
       - "${HOST_PORT_80:-80}:80"
       - "${HOST_PORT:-3000}:80" # allow for localhost:3000 usage, since that is the norm
@@ -519,7 +520,7 @@ services:
 
   # Arize Phoenix — LLM Observability & Evaluation (port 6006)
   # Receives OpenTelemetry traces from the backend. Set PHOENIX_ENABLED=true in .env to activate.
-  # Dashboard: http://localhost:6006
+  # Dashboard: accessible at /phoenix/ via nginx proxy
   phoenix:
     build:
       context: ../../phoenix
@@ -532,8 +533,10 @@ services:
     env_file:
       - path: .env
         required: false
+    user: "0:0"
     environment:
       - PHOENIX_WORKING_DIR=/phoenix_data
+      - PHOENIX_HOST_ROOT_PATH=/phoenix
     volumes:
       - phoenix_data:/phoenix_data
     logging:
@@ -578,24 +581,39 @@ services:
         max-file: "6"
 
 volumes:
+  # ⚠ All volumes use explicit fixed names so they are NEVER affected by
+  #   the compose project name. Rename here only if you want a fresh volume.
   # Necessary for persisting data for use
   db_volume:
-  vespa_volume: # Created by the container itself
+    name: onyx-stack_db_volume
+  vespa_volume:
+    name: onyx-stack_vespa_volume
   minio_data:
+    name: onyx-stack_minio_data
   # Caches to prevent re-downloading models, not strictly necessary
   model_cache_huggingface:
+    name: onyx-stack_model_cache_huggingface
   indexing_huggingface_model_cache:
+    name: onyx-stack_indexing_huggingface_model_cache
   # Logs preserved across container restarts
   api_server_logs:
+    name: onyx-stack_api_server_logs
   background_logs:
+    name: onyx-stack_background_logs
   # mcp_server_logs:
   inference_model_server_logs:
+    name: onyx-stack_inference_model_server_logs
   indexing_model_server_logs:
+    name: onyx-stack_indexing_model_server_logs
   # Shared volume for persistent document storage (Craft file-system mode)
   file-system:
+    name: onyx-stack_file-system
   # Craft templates (venv + npm deps), shared between api_server and background
   craft-templates:
+    name: onyx-stack_craft-templates
   # SmartSearch AI (Perplexica) data
   smartsearch_data:
+    name: onyx-stack_smartsearch_data
   # Arize Phoenix observability data
   phoenix_data:
+    name: onyx-stack_phoenix_data

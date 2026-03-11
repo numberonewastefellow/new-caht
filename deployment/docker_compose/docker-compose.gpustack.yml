@@ -1,0 +1,109 @@
+# GPUStack + VirtualAI Model Hub — Enterprise Model Hosting Platform
+# Provides a unified management UI for deploying LLM, embedding, reranking,
+# TTS, STT, vision, and image generation models with OpenAI-compatible APIs.
+#
+# Usage (add to existing stack):
+#   docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml -f docker-compose.gpustack.yml up -d
+#
+# Or start GPUStack + proxy only:
+#   docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml -f docker-compose.gpustack.yml up -d gpustack gpustack-proxy
+#
+# After startup:
+#   1. Get admin password:  docker exec gpustack cat /var/lib/gpustack/initial_admin_password
+#   2. Open UI:             http://localhost:9090  (VirtualAI branded)
+#   3. Direct GPUStack UI:  http://localhost:9080  (original, for debugging)
+#   4. Login as:            admin / <password from step 1>
+#   5. Deploy a model from the Model Catalog
+#
+# API endpoint (OpenAI-compatible):
+#   http://localhost:9090/v1-openai/chat/completions
+#   http://localhost:9090/v1-openai/embeddings
+
+services:
+  gpustack:
+    image: gpustack/gpustack:latest
+    container_name: gpustack
+    ports:
+      - "9080:80"
+    restart: unless-stopped
+    environment:
+      - GPUSTACK_DISABLE_WORKER=false
+      - GPUSTACK_BOOTSTRAP_PASSWORD=VirtualAI2026!
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - E:/temp/vert/gpustack_data:/var/lib/gpustack
+      - E:/temp/vert/gpustack_cache:/root/.cache
+      - //var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:80/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # VirtualAI branding proxy — injects custom CSS/JS into GPUStack UI
+  gpustack-proxy:
+    image: nginx:1.25.5-alpine
+    container_name: gpustack-proxy
+    ports:
+      - "9090:80"
+    restart: unless-stopped
+    depends_on:
+      gpustack:
+        condition: service_healthy
+    volumes:
+      - ./gpustack-branding/nginx-gpustack.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./gpustack-branding/custom.css:/usr/share/nginx/branding/custom.css:ro
+      - ./gpustack-branding/custom.js:/usr/share/nginx/branding/custom.js:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # GPU-enabled GPUStack (uncomment below, comment out CPU service above)
+  # Requires nvidia-container-toolkit on host
+  # gpustack:
+  #   image: gpustack/gpustack:latest
+  #   container_name: gpustack
+  #   ports:
+  #     - "9080:80"
+  #   restart: unless-stopped
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: all
+  #             capabilities: [gpu]
+  #   volumes:
+  #     - E:/temp/vert/gpustack_data:/var/lib/gpustack
+  #     - E:/temp/vert/gpustack_cache:/root/.cache
+  #   logging:
+  #     driver: json-file
+  #     options:
+  #       max-size: "50m"
+  #       max-file: "6"
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "curl -sf http://localhost:80/healthz || exit 1"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 30s

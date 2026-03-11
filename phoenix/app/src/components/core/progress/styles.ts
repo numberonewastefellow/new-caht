@@ -72,7 +72,7 @@ export const progressCircleCSS = css`
     cx: var(--progress-circle-center);
     cy: var(--progress-circle-center);
     r: var(--progress-circle-radius);
-    stroke: var(--global-color-primary);
+    stroke: var(--vai-accent, var(--global-color-primary));
     stroke-width: var(--progress-circle-stroke-width);
     transition: stroke-dashoffset 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     stroke-dasharray: var(--progress-circle-dasharray);
@@ -100,16 +100,21 @@ export const progressBarCSS = css`
   .progress-bar__track {
     forced-color-adjust: none;
     height: 100%;
-    border-radius: 3px;
+    border-radius: var(--global-rounding-full);
     overflow: hidden;
     background-color: var(
       --mod-barloader-track-color,
-      var(--global-color-gray-300)
+      var(--vai-accent-subtle, var(--global-color-gray-300))
     );
   }
 
   .progress-bar__fill {
-    background: var(--mod-barloader-fill-color, var(--global-color-primary));
+    background: var(
+      --mod-barloader-fill-color,
+      var(--vai-accent, var(--global-color-primary))
+    );
     height: 100%;
+    border-radius: var(--global-rounding-full);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 `;
