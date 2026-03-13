@@ -1,0 +1,18 @@
+{
+  "operation_id": "upsert_google_service_gmail_account_key",
+  "path": "/manage/admin/connector/gmail/service-account-key",
+  "method": "PUT",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "operation_id": "create_group_token_limit_settings",
+  "path": "/admin/token-rate-limits/user-group/{group_id}",
+  "method": "POST",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "group_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

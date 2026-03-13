@@ -12,7 +12,7 @@ export const GOOGLE_SERVICES = {
 } as const;
 
 export const useGoogleAppCredential = (service: "gmail" | "google_drive") => {
-  const endpoint = `/api/manage/admin/connector/${
+  const endpoint = `/api/nexus/admin/connector/${
     service === "gmail" ? GOOGLE_SERVICES.GMAIL : GOOGLE_SERVICES.GOOGLE_DRIVE
   }/app-credential`;
 
@@ -25,7 +25,7 @@ export const useGoogleAppCredential = (service: "gmail" | "google_drive") => {
 export const useGoogleServiceAccountKey = (
   service: "gmail" | "google_drive"
 ) => {
-  const endpoint = `/api/manage/admin/connector/${
+  const endpoint = `/api/nexus/admin/connector/${
     service === "gmail" ? GOOGLE_SERVICES.GMAIL : GOOGLE_SERVICES.GOOGLE_DRIVE
   }/service-account-key`;
 
@@ -48,7 +48,7 @@ export const useGoogleCredentials = (
 export const useConnectorsByCredentialId = (credential_id: number | null) => {
   let url: string | null = null;
   if (credential_id !== null) {
-    url = `/api/manage/admin/connector?credential=${credential_id}`;
+    url = `/api/nexus/admin/connector?credential=${credential_id}`;
   }
   const swrResponse = useSWR<ConnectorSnapshot[]>(url, errorHandlingFetcher);
 
@@ -115,6 +115,6 @@ export const refreshAllGoogleData = (
     source === ValidSources.Gmail
       ? GOOGLE_SERVICES.GMAIL
       : GOOGLE_SERVICES.GOOGLE_DRIVE;
-  mutate(`/api/manage/admin/connector/${service}/app-credential`);
-  mutate(`/api/manage/admin/connector/${service}/service-account-key`);
+  mutate(`/api/nexus/admin/connector/${service}/app-credential`);
+  mutate(`/api/nexus/admin/connector/${service}/service-account-key`);
 };

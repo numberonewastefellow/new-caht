@@ -33,7 +33,7 @@ export default function UpgradingPage({
 
   const { data: connectors, isLoading: isLoadingConnectors } = useSWR<
     Connector<any>[]
-  >("/api/manage/connector", errorHandlingFetcher, {
+  >("/api/nexus/connector", errorHandlingFetcher, {
     refreshInterval: 5000, // 5 seconds
   });
 
@@ -51,7 +51,7 @@ export default function UpgradingPage({
   const { data: failedIndexingStatus } = useSWR<
     FailedConnectorIndexingStatus[]
   >(
-    "/api/manage/admin/connector/failed-indexing-status?secondary_index=true",
+    "/api/nexus/admin/connector/failed-indexing-status?secondary_index=true",
     errorHandlingFetcher,
     { refreshInterval: 5000 } // 5 seconds
   );

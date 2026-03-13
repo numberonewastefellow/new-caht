@@ -5072,8 +5072,13 @@ class AgentWorkflowStep(Base):
     workflow_id: Mapped[int] = mapped_column(
         ForeignKey("agent_workflow.id", ondelete="CASCADE"), nullable=False
     )
-    persona_id: Mapped[int] = mapped_column(
-        ForeignKey("persona.id", ondelete="CASCADE"), nullable=False
+    persona_id: Mapped[int | None] = mapped_column(
+        ForeignKey("persona.id", ondelete="CASCADE"), nullable=True
+    )
+
+    # Step type: "agent" (default) or "conditional_router"
+    step_type: Mapped[str] = mapped_column(
+        String, default="agent", server_default="agent"
     )
 
     step_order: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -5120,7 +5125,7 @@ class AgentWorkflowStep(Base):
     workflow: Mapped[AgentWorkflow] = relationship(
         "AgentWorkflow", back_populates="steps"
     )
-    persona: Mapped[Persona] = relationship("Persona")
+    persona: Mapped[Persona | None] = relationship("Persona")
 
 
 class WorkflowExecution(Base):

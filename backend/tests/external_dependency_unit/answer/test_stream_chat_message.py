@@ -490,7 +490,7 @@ def test_image_generation_tool_no_reasoning(
                     images=[
                         GeneratedImage(
                             file_id="123",
-                            url="/api/chat/file/123",
+                            url="/api/converse/file/123",
                             revised_prompt=QUERY,
                             shape="square",
                         )

@@ -92,7 +92,7 @@ export class OnyxApiClient {
   /**
    * Generic GET request to the API.
    *
-   * @param endpoint - API endpoint path (e.g., "/manage/document-set/123")
+   * @param endpoint - API endpoint path (e.g., "/nexus/document-set/123")
    * @returns The API response
    */
   private async get(endpoint: string): Promise<APIResponse> {
@@ -102,7 +102,7 @@ export class OnyxApiClient {
   /**
    * Generic POST request to the API.
    *
-   * @param endpoint - API endpoint path (e.g., "/manage/admin/document-set")
+   * @param endpoint - API endpoint path (e.g., "/nexus/admin/document-set")
    * @param data - Optional request body data
    * @returns The API response
    */
@@ -115,7 +115,7 @@ export class OnyxApiClient {
   /**
    * Generic DELETE request to the API.
    *
-   * @param endpoint - API endpoint path (e.g., "/manage/admin/document-set/123")
+   * @param endpoint - API endpoint path (e.g., "/nexus/admin/document-set/123")
    * @returns The API response
    */
   private async delete(endpoint: string): Promise<APIResponse> {
@@ -125,7 +125,7 @@ export class OnyxApiClient {
   /**
    * Generic PUT request to the API.
    *
-   * @param endpoint - API endpoint path (e.g., "/manage/admin/cc-pair/123/status")
+   * @param endpoint - API endpoint path (e.g., "/nexus/admin/cc-pair/123/status")
    * @param data - Optional request body data
    * @returns The API response
    */
@@ -182,7 +182,7 @@ export class OnyxApiClient {
    * We poll here because the deletion endpoint is asynchronous (kicks off a celery task)
    * and we want to wait for it to complete.
    *
-   * @param endpoint - API endpoint to poll (e.g., "/manage/document-set/123")
+   * @param endpoint - API endpoint to poll (e.g., "/nexus/document-set/123")
    * @param resourceType - Human-readable resource type for error messages (e.g., "Document set")
    * @param resourceId - The resource ID for error messages
    * @param timeout - Maximum time to wait in milliseconds (default: 30000)
@@ -229,7 +229,7 @@ export class OnyxApiClient {
     connectorName: string = "Test File Connector"
   ): Promise<number> {
     const response = await this.post(
-      "/manage/admin/connector-with-mock-credential",
+      "/nexus/admin/connector-with-mock-credential",
       {
         name: connectorName,
         source: "file",
@@ -269,7 +269,7 @@ export class OnyxApiClient {
    */
   async pauseConnector(ccPairId: number): Promise<void> {
     const response = await this.put(
-      `/manage/admin/cc-pair/${ccPairId}/status`,
+      `/nexus/admin/cc-pair/${ccPairId}/status`,
       {
         status: "PAUSED",
       }
@@ -291,7 +291,7 @@ export class OnyxApiClient {
     documentSetName: string,
     ccPairIds: number[]
   ): Promise<number> {
-    const response = await this.post("/manage/admin/document-set", {
+    const response = await this.post("/nexus/admin/document-set", {
       name: documentSetName,
       description: `Test document set: ${documentSetName}`,
       cc_pair_ids: ccPairIds,
@@ -319,7 +319,7 @@ export class OnyxApiClient {
    */
   async deleteDocumentSet(documentSetId: number): Promise<void> {
     const response = await this.delete(
-      `/manage/admin/document-set/${documentSetId}`
+      `/nexus/admin/document-set/${documentSetId}`
     );
 
     if (
@@ -333,7 +333,7 @@ export class OnyxApiClient {
 
     this.log(`Initiated deletion for document set: ${documentSetId}`);
     await this.waitForDeletion(
-      `/manage/document-set/${documentSetId}`,
+      `/nexus/document-set/${documentSetId}`,
       "Document set",
       documentSetId
     );
@@ -350,7 +350,7 @@ export class OnyxApiClient {
    */
   async deleteCCPair(ccPairId: number): Promise<void> {
     // Get CC pair details to extract connector_id and credential_id
-    const getResponse = await this.get(`/manage/admin/cc-pair/${ccPairId}`);
+    const getResponse = await this.get(`/nexus/admin/cc-pair/${ccPairId}`);
 
     if (
       !(await this.handleResponseSoft(
@@ -368,7 +368,7 @@ export class OnyxApiClient {
     } = ccPairInfo;
 
     // Delete using the deletion-attempt endpoint
-    const deleteResponse = await this.post("/manage/admin/deletion-attempt", {
+    const deleteResponse = await this.post("/nexus/admin/deletion-attempt", {
       connector_id: connectorId,
       credential_id: credentialId,
     });
@@ -386,7 +386,7 @@ export class OnyxApiClient {
       `Initiated deletion for CC pair: ${ccPairId} (connector: ${connectorId}, credential: ${credentialId})`
     );
     await this.waitForDeletion(
-      `/manage/admin/cc-pair/${ccPairId}`,
+      `/nexus/admin/cc-pair/${ccPairId}`,
       "CC pair",
       ccPairId
     );
@@ -539,7 +539,7 @@ export class OnyxApiClient {
     groupName: string,
     userIds: string[] = []
   ): Promise<number> {
-    const response = await this.post("/manage/admin/user-group", {
+    const response = await this.post("/nexus/admin/user-group", {
       name: groupName,
       user_ids: userIds,
       cc_pair_ids: [],
@@ -560,7 +560,7 @@ export class OnyxApiClient {
    * @param groupId - The user group ID to delete
    */
   async deleteUserGroup(groupId: number): Promise<void> {
-    const response = await this.delete(`/manage/admin/user-group/${groupId}`);
+    const response = await this.delete(`/nexus/admin/user-group/${groupId}`);
 
     await this.handleResponseSoft(
       response,
@@ -576,7 +576,7 @@ export class OnyxApiClient {
     explicitOverride = false
   ): Promise<void> {
     const response = await this.request.patch(
-      `${this.baseUrl}/manage/set-user-role`,
+      `${this.baseUrl}/nexus/set-user-role`,
       {
         data: {
           user_email: email,
@@ -715,7 +715,7 @@ export class OnyxApiClient {
     role: string;
   } | null> {
     const response = await this.request.get(
-      `${this.baseUrl}/manage/users/accepted`,
+      `${this.baseUrl}/nexus/users/accepted`,
       {
         params: {
           q: email,
@@ -743,7 +743,7 @@ export class OnyxApiClient {
     isCurator: boolean = true
   ): Promise<void> {
     const response = await this.request.post(
-      `${this.baseUrl}/manage/admin/user-group/${userGroupId}/set-curator`,
+      `${this.baseUrl}/nexus/admin/user-group/${userGroupId}/set-curator`,
       {
         data: {
           user_id: userId,
@@ -882,7 +882,7 @@ export class OnyxApiClient {
     registration_key: string;
     guild_name: string | null;
   }> {
-    const response = await this.post("/manage/admin/discord-bot/guilds");
+    const response = await this.post("/nexus/admin/discord-bot/guilds");
 
     const guild = await this.handleResponse<{
       id: number;
@@ -909,7 +909,7 @@ export class OnyxApiClient {
       enabled: boolean;
     }>
   > {
-    const response = await this.get("/manage/admin/discord-bot/guilds");
+    const response = await this.get("/nexus/admin/discord-bot/guilds");
     return await this.handleResponse(response, "Failed to list Discord guilds");
   }
 
@@ -927,7 +927,7 @@ export class OnyxApiClient {
     default_persona_id: number | null;
   } | null> {
     const response = await this.get(
-      `/manage/admin/discord-bot/guilds/${guildId}`
+      `/nexus/admin/discord-bot/guilds/${guildId}`
     );
     if (response.status() === 404) {
       return null;
@@ -955,7 +955,7 @@ export class OnyxApiClient {
     enabled: boolean;
   }> {
     const response = await this.request.patch(
-      `${this.baseUrl}/manage/admin/discord-bot/guilds/${guildId}`,
+      `${this.baseUrl}/nexus/admin/discord-bot/guilds/${guildId}`,
       { data: updates }
     );
     return await this.handleResponse(
@@ -971,7 +971,7 @@ export class OnyxApiClient {
    */
   async deleteDiscordGuild(guildId: number): Promise<void> {
     const response = await this.delete(
-      `/manage/admin/discord-bot/guilds/${guildId}`
+      `/nexus/admin/discord-bot/guilds/${guildId}`
     );
 
     await this.handleResponseSoft(
@@ -998,7 +998,7 @@ export class OnyxApiClient {
     }>
   > {
     const response = await this.get(
-      `/manage/admin/discord-bot/guilds/${guildConfigId}/channels`
+      `/nexus/admin/discord-bot/guilds/${guildConfigId}/channels`
     );
     return await this.handleResponse(
       response,
@@ -1030,7 +1030,7 @@ export class OnyxApiClient {
     enabled: boolean;
   }> {
     const response = await this.request.patch(
-      `${this.baseUrl}/manage/admin/discord-bot/guilds/${guildConfigId}/channels/${channelConfigId}`,
+      `${this.baseUrl}/nexus/admin/discord-bot/guilds/${guildConfigId}/channels/${channelConfigId}`,
       { data: updates }
     );
     return await this.handleResponse(
@@ -1053,7 +1053,7 @@ export class OnyxApiClient {
     description: string,
     personaId: number = 0
   ): Promise<string> {
-    const response = await this.post("/chat/create-chat-session", {
+    const response = await this.post("/converse/create-chat-session", {
       persona_id: personaId,
       description,
     });
@@ -1073,7 +1073,7 @@ export class OnyxApiClient {
    * @param chatId - The chat session ID to delete
    */
   async deleteChatSession(chatId: string): Promise<void> {
-    const response = await this.delete(`/chat/delete-chat-session/${chatId}`);
+    const response = await this.delete(`/converse/delete-chat-session/${chatId}`);
     await this.handleResponseSoft(
       response,
       `Failed to delete chat session ${chatId}`

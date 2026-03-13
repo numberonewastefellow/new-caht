@@ -1,0 +1,23 @@
+{
+  "operation_id": "get_auth_type",
+  "path": "/auth/type",
+  "method": "GET",
+  "auth_type": "public",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 200,
+    "content_type": "application/json",
+    "body_structure": {
+      "anonymous_user_enabled": "<bool>",
+      "auth_type": "<str>",
+      "has_users": "<bool>",
+      "oauth_enabled": "<bool>",
+      "password_min_length": "<int>",
+      "requires_verification": "<bool>"
+    }
+  }
+}

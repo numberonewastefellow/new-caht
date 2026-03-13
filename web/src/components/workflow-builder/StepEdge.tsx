@@ -71,7 +71,25 @@ export function StepEdge({
             : undefined
         }
       />
-      {typeof data?.stepOrder === "number" && (
+      {data?.branchLabel ? (
+        <foreignObject
+          x={labelX - 24}
+          y={labelY - 12}
+          width={48}
+          height={24}
+          className="wfb-edge-label-container"
+        >
+          <div
+            className={`wfb-edge-label-pill ${
+              data.branchLabel === "True"
+                ? "wfb-edge-label-pill--true"
+                : "wfb-edge-label-pill--false"
+            }`}
+          >
+            {data.branchLabel}
+          </div>
+        </foreignObject>
+      ) : typeof data?.stepOrder === "number" ? (
         <foreignObject
           x={labelX - (isLlmDecision ? 30 : 28)}
           y={labelY - 12}
@@ -89,7 +107,7 @@ export function StepEdge({
             {isLlmDecision ? "may call" : `then #${data.stepOrder + 1}`}
           </div>
         </foreignObject>
-      )}
+      ) : null}
     </>
   );
 }

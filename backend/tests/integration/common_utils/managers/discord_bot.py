@@ -14,7 +14,7 @@ from tests.integration.common_utils.test_models import DATestDiscordChannelConfi
 from tests.integration.common_utils.test_models import DATestDiscordGuildConfig
 from tests.integration.common_utils.test_models import DATestUser
 
-DISCORD_BOT_API_URL = f"{API_SERVER_URL}/manage/admin/discord-bot"
+DISCORD_BOT_API_URL = f"{API_SERVER_URL}/nexus/admin/discord-bot"
 
 
 class DiscordBotManager:

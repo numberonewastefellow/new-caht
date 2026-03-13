@@ -68,7 +68,7 @@ export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
 
       if (credentialFileType === "authorized_user") {
         const response = await fetch(
-          "/api/manage/admin/connector/google-drive/app-credential",
+          "/api/nexus/admin/connector/google-drive/app-credential",
           {
             method: "PUT",
             headers: {
@@ -79,7 +79,7 @@ export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
         );
         if (response.ok) {
           toast.success("Successfully uploaded app credentials");
-          mutate("/api/manage/admin/connector/google-drive/app-credential");
+          mutate("/api/nexus/admin/connector/google-drive/app-credential");
           if (onSuccess) {
             onSuccess();
           }
@@ -91,7 +91,7 @@ export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
 
       if (credentialFileType === "service_account") {
         const response = await fetch(
-          "/api/manage/admin/connector/google-drive/service-account-key",
+          "/api/nexus/admin/connector/google-drive/service-account-key",
           {
             method: "PUT",
             headers: {
@@ -103,7 +103,7 @@ export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
         if (response.ok) {
           toast.success("Successfully uploaded service account key");
           mutate(
-            "/api/manage/admin/connector/google-drive/service-account-key"
+            "/api/nexus/admin/connector/google-drive/service-account-key"
           );
           if (onSuccess) {
             onSuccess();
@@ -322,8 +322,8 @@ export const DriveJsonUploadSection = ({
                 onClick={async () => {
                   const endpoint =
                     localServiceAccountData?.service_account_email
-                      ? "/api/manage/admin/connector/google-drive/service-account-key"
-                      : "/api/manage/admin/connector/google-drive/app-credential";
+                      ? "/api/nexus/admin/connector/google-drive/service-account-key"
+                      : "/api/nexus/admin/connector/google-drive/app-credential";
 
                   const response = await fetch(endpoint, {
                     method: "DELETE",
@@ -338,13 +338,13 @@ export const DriveJsonUploadSection = ({
 
                     // Add additional mutations to refresh all credential-related endpoints
                     mutate(
-                      "/api/manage/admin/connector/google-drive/credentials"
+                      "/api/nexus/admin/connector/google-drive/credentials"
                     );
                     mutate(
-                      "/api/manage/admin/connector/google-drive/public-credential"
+                      "/api/nexus/admin/connector/google-drive/public-credential"
                     );
                     mutate(
-                      "/api/manage/admin/connector/google-drive/service-account-credential"
+                      "/api/nexus/admin/connector/google-drive/service-account-credential"
                     );
 
                     toast.success(
@@ -525,7 +525,7 @@ export const DriveAuthSection = ({
               formikHelpers.setSubmitting(true);
               try {
                 const response = await fetch(
-                  "/api/manage/admin/connector/google-drive/service-account-credential",
+                  "/api/nexus/admin/connector/google-drive/service-account-credential",
                   {
                     method: "PUT",
                     headers: {

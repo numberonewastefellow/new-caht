@@ -69,7 +69,7 @@ export async function handleFederatedOAuthCallback(
   state: string
 ): Promise<OAuthBaseCallbackResponse> {
   // Use the generic callback endpoint - the connector ID will be extracted from the state parameter
-  const url = `/api/federated/callback?code=${encodeURIComponent(
+  const url = `/api/bridges/callback?code=${encodeURIComponent(
     code
   )}&state=${encodeURIComponent(state)}`;
 

@@ -1,0 +1,35 @@
+{
+  "operation_id": "get_versions",
+  "path": "/versions",
+  "method": "GET",
+  "auth_type": "public",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 200,
+    "content_type": "application/json",
+    "body_structure": {
+      "dev": {
+        "index": "<str>",
+        "nginx": "<str>",
+        "onyx": "<str>",
+        "relational_db": "<str>"
+      },
+      "migration": {
+        "index": "<str>",
+        "nginx": "<str>",
+        "onyx": "<str>",
+        "relational_db": "<str>"
+      },
+      "stable": {
+        "index": "<str>",
+        "nginx": "<str>",
+        "onyx": "<str>",
+        "relational_db": "<str>"
+      }
+    }
+  }
+}

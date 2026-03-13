@@ -1,0 +1,18 @@
+{
+  "operation_id": "list_oauth_configs",
+  "path": "/admin/oauth-config",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

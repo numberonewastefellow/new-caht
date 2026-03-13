@@ -23,7 +23,7 @@ PUBLIC_ENDPOINT_SPECS = [
     # should always be callable, will just return 401 if not authenticated
     ("/me", {"GET"}),
     # just returns 200 to validate that the server is up
-    ("/health", {"GET"}),
+    ("/heartbeat", {"GET"}),
     # just returns auth type, needs to be accessible before the user is logged
     # in to determine what flow to give the user
     ("/auth/type", {"GET"}),

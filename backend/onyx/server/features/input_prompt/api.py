@@ -22,8 +22,8 @@ from onyx.utils.logger import setup_logger
 
 logger = setup_logger()
 
-basic_router = APIRouter(prefix="/input_prompt")
-admin_router = APIRouter(prefix="/admin/input_prompt")
+basic_router = APIRouter(prefix="/prompts")
+admin_router = APIRouter(prefix="/admin/prompts")
 
 
 @basic_router.get("")

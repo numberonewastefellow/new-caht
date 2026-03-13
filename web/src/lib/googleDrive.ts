@@ -7,7 +7,7 @@ export const setupGoogleDriveOAuth = async ({
   isAdmin: boolean;
   name: string;
 }): Promise<[string | null, string]> => {
-  const credentialCreationResponse = await fetch("/api/manage/credential", {
+  const credentialCreationResponse = await fetch("/api/nexus/credential", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -30,7 +30,7 @@ export const setupGoogleDriveOAuth = async ({
     (await credentialCreationResponse.json()) as Credential<{}>;
 
   const authorizationUrlResponse = await fetch(
-    `/api/manage/connector/google-drive/authorize/${credential.id}`
+    `/api/nexus/connector/google-drive/authorize/${credential.id}`
   );
   if (!authorizationUrlResponse.ok) {
     return [

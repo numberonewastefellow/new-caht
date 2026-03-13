@@ -1,0 +1,18 @@
+{
+  "operation_id": "get_mcp_servers_for_user",
+  "path": "/mcp/servers",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

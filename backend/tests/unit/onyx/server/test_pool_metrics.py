@@ -113,13 +113,13 @@ def test_checkout_event_stores_endpoint_and_increments_gauge() -> None:
     ):
         mock_labels = MagicMock()
         mock_gauge.labels.return_value = mock_labels
-        mock_ctx.get.return_value = "/api/chat/send-message"
+        mock_ctx.get.return_value = "/api/converse/send-message"
         listeners["checkout"](None, conn_record, None)
 
-    assert conn_record.info["_metrics_endpoint"] == "/api/chat/send-message"
+    assert conn_record.info["_metrics_endpoint"] == "/api/converse/send-message"
     assert "_metrics_checkout_time" in conn_record.info
     mock_gauge.labels.assert_called_with(
-        handler="/api/chat/send-message", engine="sync"
+        handler="/api/converse/send-message", engine="sync"
     )
     mock_labels.inc.assert_called_once()
 
@@ -280,10 +280,10 @@ def test_match_route_exact_paths() -> None:
     """Verify _match_route handles exact (non-parameterized) paths."""
     app = FastAPI()
 
-    @app.get("/api/health")
+    @app.get("/api/heartbeat")
     def health() -> dict:
         return {}
 
     route_map = _build_route_map(app)
-    result = _match_route(route_map, "/api/health")
-    assert result == "/api/health"
+    result = _match_route(route_map, "/api/heartbeat")
+    assert result == "/api/heartbeat"

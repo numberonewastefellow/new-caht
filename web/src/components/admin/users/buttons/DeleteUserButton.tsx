@@ -18,7 +18,7 @@ const DeleteUserButton = ({
   children?: React.ReactNode;
 }) => {
   const { trigger, isMutating } = useSWRMutation(
-    "/api/manage/admin/delete-user",
+    "/api/nexus/admin/delete-user",
     userMutationFetcher,
     {
       onSuccess: () => {

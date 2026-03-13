@@ -5,7 +5,7 @@ import type { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import type { ToolSnapshot } from "@/lib/tools/interfaces";
 import type { DocumentSetSummary } from "@/lib/types";
 import type { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
-import type { AgentNodeData } from "./types";
+import type { AgentNodeData, ConditionalRouterNodeData } from "./types";
 import {
   SEARCH_TOOL_ID,
   WEB_SEARCH_TOOL_ID,
@@ -13,8 +13,10 @@ import {
   PYTHON_TOOL_ID,
   OPEN_URL_TOOL_ID,
   FILE_READER_TOOL_ID,
+  HTTP_REQUEST_TOOL_ID,
 } from "@/app/app/components/tools/constants";
 import { structureValue, parseLlmDescriptor } from "@/lib/llm/utils";
+import { CONDITION_OPERATORS } from "@/lib/workflows/interfaces";
 
 // Built-in tool display config
 const BUILTIN_TOOLS: {
@@ -47,23 +49,32 @@ const BUILTIN_TOOLS: {
     label: "File Reader",
     desc: "Read and process uploaded files section by section. Essential for large documents that exceed the AI's context window.",
   },
+  {
+    id: HTTP_REQUEST_TOOL_ID,
+    label: "HTTP Request",
+    desc: "Make HTTP requests to any URL. Supports GET, POST, PUT, DELETE, PATCH methods with custom headers and body.",
+  },
 ];
+
+// CONDITION_OPERATORS imported from @/lib/workflows/interfaces (single source of truth)
 
 interface NodeConfigPanelProps {
   nodeId: string;
-  data: AgentNodeData;
+  nodeType?: string;
+  data: AgentNodeData | ConditionalRouterNodeData;
   agents: MinimalPersonaSnapshot[];
   availableTools: ToolSnapshot[];
   documentSets: DocumentSetSummary[];
   llmProviders: LLMProviderDescriptor[];
-  onUpdate: (nodeId: string, partial: Partial<AgentNodeData>) => void;
+  onUpdate: (nodeId: string, partial: Partial<AgentNodeData> | Partial<ConditionalRouterNodeData>) => void;
   onDelete: (nodeId: string) => void;
   onClose: () => void;
 }
 
 export function NodeConfigPanel({
   nodeId,
-  data,
+  nodeType,
+  data: rawData,
   agents,
   availableTools,
   documentSets,
@@ -72,8 +83,27 @@ export function NodeConfigPanel({
   onDelete,
   onClose,
 }: NodeConfigPanelProps) {
-  // Current persona from agents list (has tools and document_sets)
+  // If this is a conditional router node, render specialized config
+  if (nodeType === "conditional_router") {
+    return (
+      <ConditionConfigPanel
+        nodeId={nodeId}
+        data={rawData as ConditionalRouterNodeData}
+        onUpdate={onUpdate}
+        onDelete={onDelete}
+        onClose={onClose}
+      />
+    );
+  }
+
+  // After the early return above, rawData is guaranteed to be AgentNodeData.
+  const data = rawData as AgentNodeData;
   const currentPersona = agents.find((a) => a.id === data.persona_id);
+
+  // Check if current persona is a utility agent
+  const isHttpRequestAgent = data.persona_name === "HTTP Request";
+  const isCodeExecutorAgent = data.persona_name === "Code Executor";
+  const isUtilityAgent = isHttpRequestAgent || isCodeExecutorAgent;
 
   // Effective tool IDs: step override > persona tools
   const effectiveToolIds = useMemo(() => {
@@ -203,6 +233,22 @@ export function NodeConfigPanel({
           />
         </div>
 
+        {/* Utility agent specialized config */}
+        {isHttpRequestAgent && (
+          <HttpRequestConfigSection
+            nodeId={nodeId}
+            data={data}
+            onUpdate={onUpdate}
+          />
+        )}
+        {isCodeExecutorAgent && (
+          <CodeExecutorConfigSection
+            nodeId={nodeId}
+            data={data}
+            onUpdate={onUpdate}
+          />
+        )}
+
         {/* Toggles */}
         <div className="wfb-config-section">
           <div className="wfb-config-label">Options</div>
@@ -220,20 +266,22 @@ export function NodeConfigPanel({
             />
           </div>
 
-          <div className="wfb-config-toggle-row">
-            <div>
-              <div className="wfb-config-toggle-label">
-                Can Request Input (HITL)
+          {!isUtilityAgent && (
+            <div className="wfb-config-toggle-row">
+              <div>
+                <div className="wfb-config-toggle-label">
+                  Can Request Input (HITL)
+                </div>
+                <div className="wfb-config-toggle-desc">
+                  Agent can pause for user input
+                </div>
               </div>
-              <div className="wfb-config-toggle-desc">
-                Agent can pause for user input
-              </div>
+              <ToggleSwitch
+                checked={data.can_request_input}
+                onChange={(v) => onUpdate(nodeId, { can_request_input: v })}
+              />
             </div>
-            <ToggleSwitch
-              checked={data.can_request_input}
-              onChange={(v) => onUpdate(nodeId, { can_request_input: v })}
-            />
-          </div>
+          )}
 
           <div className="wfb-config-toggle-row">
             <div>
@@ -249,36 +297,42 @@ export function NodeConfigPanel({
           </div>
         </div>
 
-        {/* ── LLM Section ──────────────────────────────────── */}
-        <LlmSection
-          nodeId={nodeId}
-          data={data}
-          currentPersona={currentPersona}
-          llmProviders={llmProviders}
-          onUpdate={onUpdate}
-        />
+        {/* ── LLM Section (hidden for utility agents) ─────── */}
+        {!isUtilityAgent && (
+          <LlmSection
+            nodeId={nodeId}
+            data={data}
+            currentPersona={currentPersona}
+            llmProviders={llmProviders}
+            onUpdate={onUpdate}
+          />
+        )}
 
-        {/* ── Tools Section ──────────────────────────────────── */}
-        <ToolsSection
-          nodeId={nodeId}
-          data={data}
-          effectiveToolIds={effectiveToolIds}
-          availableTools={availableTools}
-          currentPersona={currentPersona}
-          onUpdate={onUpdate}
-        />
+        {/* ── Tools Section (hidden for utility agents) ────── */}
+        {!isUtilityAgent && (
+          <ToolsSection
+            nodeId={nodeId}
+            data={data}
+            effectiveToolIds={effectiveToolIds}
+            availableTools={availableTools}
+            currentPersona={currentPersona}
+            onUpdate={onUpdate}
+          />
+        )}
 
-        {/* ── Knowledge Section ──────────────────────────────── */}
-        <KnowledgeSection
-          nodeId={nodeId}
-          data={data}
-          effectiveToolIds={effectiveToolIds}
-          effectiveDocSetIds={effectiveDocSetIds}
-          availableTools={availableTools}
-          documentSets={documentSets}
-          currentPersona={currentPersona}
-          onUpdate={onUpdate}
-        />
+        {/* ── Knowledge Section (hidden for utility agents) ── */}
+        {!isUtilityAgent && (
+          <KnowledgeSection
+            nodeId={nodeId}
+            data={data}
+            effectiveToolIds={effectiveToolIds}
+            effectiveDocSetIds={effectiveDocSetIds}
+            availableTools={availableTools}
+            documentSets={documentSets}
+            currentPersona={currentPersona}
+            onUpdate={onUpdate}
+          />
+        )}
 
         {/* Advanced: input_mapping & condition */}
         <AdvancedSection nodeId={nodeId} data={data} onUpdate={onUpdate} />
@@ -1078,6 +1132,281 @@ function AdvancedSection({
   );
 }
 
+// ── HTTP Request Config ─────────────────────────────────────────────────
+
+interface HttpConfig {
+  method: string;
+  url: string;
+  headers: { key: string; value: string }[];
+  body: string;
+}
+
+function parseHttpConfig(taskPrompt: string | null | undefined): HttpConfig {
+  const config: HttpConfig = {
+    method: "GET",
+    url: "",
+    headers: [],
+    body: "",
+  };
+  if (!taskPrompt) return config;
+
+  const methodMatch = taskPrompt.match(/Method:\s*(\w+)/);
+  if (methodMatch?.[1]) config.method = methodMatch[1].toUpperCase();
+
+  const urlMatch = taskPrompt.match(/URL:\s*(.+)/);
+  if (urlMatch?.[1]) config.url = urlMatch[1].trim();
+
+  // Parse headers block
+  const headersMatch = taskPrompt.match(
+    /Headers:\n((?:\s{2}\S+:.*\n?)*)/
+  );
+  if (headersMatch?.[1]) {
+    const lines = headersMatch[1].trim().split("\n");
+    for (const line of lines) {
+      const colonIdx = line.indexOf(":");
+      if (colonIdx > 0) {
+        config.headers.push({
+          key: line.slice(0, colonIdx).trim(),
+          value: line.slice(colonIdx + 1).trim(),
+        });
+      }
+    }
+  }
+
+  const bodyMatch = taskPrompt.match(/Body:\n([\s\S]*?)\n\nReturn/);
+  if (bodyMatch?.[1]) config.body = bodyMatch[1].trim();
+
+  return config;
+}
+
+function buildHttpTaskPrompt(config: HttpConfig): string {
+  let prompt = `Call the following HTTP endpoint and return the full response:\n\nMethod: ${config.method}\nURL: ${config.url}`;
+  if (config.headers.length > 0) {
+    prompt += "\nHeaders:";
+    for (const h of config.headers) {
+      if (h.key.trim()) prompt += `\n  ${h.key}: ${h.value}`;
+    }
+  }
+  if (config.body.trim() && ["POST", "PUT", "PATCH"].includes(config.method)) {
+    prompt += `\nBody:\n${config.body}`;
+  }
+  prompt += "\n\nReturn the response body exactly as received.";
+  return prompt;
+}
+
+function HttpRequestConfigSection({
+  nodeId,
+  data,
+  onUpdate,
+}: {
+  nodeId: string;
+  data: AgentNodeData;
+  onUpdate: (nodeId: string, partial: Partial<AgentNodeData>) => void;
+}) {
+  const [config, setConfig] = useState<HttpConfig>(() =>
+    parseHttpConfig(data.task_prompt_override)
+  );
+
+  const updateConfig = (partial: Partial<HttpConfig>) => {
+    const updated = { ...config, ...partial };
+    setConfig(updated);
+    onUpdate(nodeId, { task_prompt_override: buildHttpTaskPrompt(updated) });
+  };
+
+  return (
+    <div className="wfb-config-section">
+      <div className="wfb-config-label">HTTP Request</div>
+
+      {/* Method */}
+      <div style={{ marginBottom: 8 }}>
+        <div className="wfb-config-toggle-label">Method</div>
+        <select
+          className="wfb-agent-select"
+          value={config.method}
+          onChange={(e) => updateConfig({ method: e.target.value })}
+        >
+          {["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"].map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* URL */}
+      <div style={{ marginBottom: 8 }}>
+        <div className="wfb-config-toggle-label">URL</div>
+        <input
+          className="wfb-config-input"
+          type="text"
+          value={config.url}
+          onChange={(e) => updateConfig({ url: e.target.value })}
+          placeholder="https://api.example.com/data"
+        />
+        <div className="wfb-config-toggle-desc">
+          Use $step_name.output to reference previous step outputs
+        </div>
+      </div>
+
+      {/* Headers */}
+      <div style={{ marginBottom: 8 }}>
+        <div
+          className="wfb-config-toggle-label"
+          style={{ display: "flex", alignItems: "center", gap: 6 }}
+        >
+          Headers
+          <button
+            type="button"
+            onClick={() =>
+              updateConfig({
+                headers: [...config.headers, { key: "", value: "" }],
+              })
+            }
+            style={{
+              background: "none",
+              border: "1px solid var(--border-01)",
+              borderRadius: 4,
+              padding: "1px 6px",
+              fontSize: 11,
+              cursor: "pointer",
+              color: "var(--text-02)",
+            }}
+          >
+            + Add
+          </button>
+        </div>
+        {config.headers.map((h, i) => (
+          <div
+            key={i}
+            style={{
+              display: "flex",
+              gap: 4,
+              marginBottom: 4,
+              alignItems: "center",
+            }}
+          >
+            <input
+              className="wfb-config-input"
+              type="text"
+              value={h.key}
+              onChange={(e) => {
+                const headers = [...config.headers];
+                headers[i] = { key: e.target.value, value: headers[i]?.value ?? "" };
+                updateConfig({ headers });
+              }}
+              placeholder="Header name"
+              style={{ flex: 1 }}
+            />
+            <input
+              className="wfb-config-input"
+              type="text"
+              value={h.value}
+              onChange={(e) => {
+                const headers = [...config.headers];
+                headers[i] = { key: headers[i]?.key ?? "", value: e.target.value };
+                updateConfig({ headers });
+              }}
+              placeholder="Value"
+              style={{ flex: 2 }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const headers = config.headers.filter((_, j) => j !== i);
+                updateConfig({ headers });
+              }}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--text-03)",
+                fontSize: 14,
+                padding: 2,
+              }}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Body */}
+      {["POST", "PUT", "PATCH"].includes(config.method) && (
+        <div style={{ marginBottom: 8 }}>
+          <div className="wfb-config-toggle-label">Body</div>
+          <textarea
+            className="wfb-config-textarea"
+            value={config.body}
+            onChange={(e) => updateConfig({ body: e.target.value })}
+            placeholder='{"key": "value"}'
+            rows={4}
+            style={{ fontFamily: "monospace", fontSize: 11 }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Code Executor Config ──────────────────────────────────────────────
+
+function buildCodeTaskPrompt(code: string): string {
+  return `Execute the following Python code using the run_python tool. Do not modify the code.\n\n\`\`\`python\n${code}\n\`\`\`\n\nReturn only the printed output.`;
+}
+
+function parseCodeFromTaskPrompt(
+  taskPrompt: string | null | undefined
+): string {
+  if (!taskPrompt) return "";
+  const match = taskPrompt.match(/```python\n([\s\S]*?)\n```/);
+  return match?.[1] ?? "";
+}
+
+function CodeExecutorConfigSection({
+  nodeId,
+  data,
+  onUpdate,
+}: {
+  nodeId: string;
+  data: AgentNodeData;
+  onUpdate: (nodeId: string, partial: Partial<AgentNodeData>) => void;
+}) {
+  const [code, setCode] = useState(() =>
+    parseCodeFromTaskPrompt(data.task_prompt_override)
+  );
+
+  const handleChange = (newCode: string) => {
+    setCode(newCode);
+    onUpdate(nodeId, { task_prompt_override: buildCodeTaskPrompt(newCode) });
+  };
+
+  return (
+    <div className="wfb-config-section">
+      <div className="wfb-config-label">Python Code</div>
+      <div className="wfb-config-toggle-desc" style={{ marginBottom: 6 }}>
+        Write the Python code to execute. Use $step_name.output in string
+        literals to reference previous step outputs. Output is captured from
+        stdout (print statements).
+      </div>
+      <textarea
+        className="wfb-config-textarea"
+        value={code}
+        onChange={(e) => handleChange(e.target.value)}
+        placeholder={`import json\ndata = json.loads("""$api_response.output""")\nresult = data['items'][0]['name']\nprint(result)`}
+        rows={10}
+        style={{
+          fontFamily: "monospace",
+          fontSize: 12,
+          lineHeight: 1.5,
+          background: "var(--background-tint-02, #f3f4f6)",
+          borderRadius: 8,
+          tabSize: 4,
+        }}
+      />
+    </div>
+  );
+}
+
 // ── Toggle Switch ─────────────────────────────────────────────────────
 
 function ToggleSwitch({
@@ -1124,5 +1453,151 @@ function ToggleSwitch({
         }}
       />
     </button>
+  );
+}
+
+
+// ── Condition Config Panel ──────────────────────────────────────────
+
+function ConditionConfigPanel({
+  nodeId,
+  data,
+  onUpdate,
+  onDelete,
+  onClose,
+}: {
+  nodeId: string;
+  data: ConditionalRouterNodeData;
+  onUpdate: (nodeId: string, partial: Partial<ConditionalRouterNodeData>) => void;
+  onDelete: (nodeId: string) => void;
+  onClose: () => void;
+}) {
+  const needsMatchValue = !["is_empty", "is_not_empty"].includes(data.operator);
+
+  return (
+    <div className="wfb-config-panel">
+      {/* Header */}
+      <div className="wfb-config-header">
+        <div className="wfb-config-title">Configure Condition</div>
+        <button className="wfb-config-close" onClick={onClose} title="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="wfb-config-body">
+        {/* Step Name */}
+        <div className="wfb-config-section">
+          <div className="wfb-config-label">Step Name</div>
+          <input
+            className="wfb-config-input"
+            value={data.step_name}
+            onChange={(e) => onUpdate(nodeId, { step_name: e.target.value })}
+            placeholder="e.g., Check for errors"
+          />
+        </div>
+
+        {/* Output Key */}
+        <div className="wfb-config-section">
+          <div className="wfb-config-label">Output Key</div>
+          <input
+            className="wfb-config-input"
+            value={data.output_key}
+            onChange={(e) => onUpdate(nodeId, { output_key: e.target.value })}
+            placeholder="e.g., condition_result"
+          />
+          <div className="wfb-config-hint">
+            Stores &quot;true&quot; or &quot;false&quot; in workflow context
+          </div>
+        </div>
+
+        {/* Condition Field */}
+        <div className="wfb-config-section">
+          <div className="wfb-config-label">Condition Field</div>
+          <input
+            className="wfb-config-input"
+            value={data.condition_field}
+            onChange={(e) => onUpdate(nodeId, { condition_field: e.target.value })}
+            placeholder="e.g., $research.output"
+          />
+          <div className="wfb-config-hint">
+            Reference a previous step&apos;s output using $step_name.output
+          </div>
+        </div>
+
+        {/* Operator */}
+        <div className="wfb-config-section">
+          <div className="wfb-config-label">Operator</div>
+          <select
+            className="wfb-config-input"
+            value={data.operator}
+            onChange={(e) => onUpdate(nodeId, { operator: e.target.value })}
+          >
+            {CONDITION_OPERATORS.map((op) => (
+              <option key={op.value} value={op.value}>
+                {op.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Match Value */}
+        {needsMatchValue && (
+          <div className="wfb-config-section">
+            <div className="wfb-config-label">Match Value</div>
+            <input
+              className="wfb-config-input"
+              value={data.match_value}
+              onChange={(e) => onUpdate(nodeId, { match_value: e.target.value })}
+              placeholder="e.g., error"
+            />
+          </div>
+        )}
+
+        {/* Case Sensitive */}
+        <div className="wfb-config-section">
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <input
+              type="checkbox"
+              checked={data.case_sensitive}
+              onChange={(e) => onUpdate(nodeId, { case_sensitive: e.target.checked })}
+            />
+            <span className="wfb-config-label" style={{ margin: 0 }}>Case sensitive</span>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div className="wfb-config-section">
+          <div className="wfb-config-label">Description (optional)</div>
+          <textarea
+            className="wfb-config-textarea"
+            value={data.step_description}
+            onChange={(e) => onUpdate(nodeId, { step_description: e.target.value })}
+            placeholder="Describe what this condition checks..."
+            rows={2}
+          />
+        </div>
+
+        {/* Info about branch connections */}
+        <div className="wfb-config-section">
+          <div className="wfb-config-hint" style={{ padding: "8px 10px", background: "var(--bg-02, #f3f4f6)", borderRadius: 6 }}>
+            Connect the <strong style={{ color: "#22c55e" }}>True</strong> and{" "}
+            <strong style={{ color: "#ef4444" }}>False</strong> handles on the right
+            side of the node to the agents that should run for each branch.
+          </div>
+        </div>
+
+        {/* Delete */}
+        <div className="wfb-config-section" style={{ marginTop: 16 }}>
+          <button
+            className="wfb-config-danger-btn"
+            onClick={() => onDelete(nodeId)}
+          >
+            Remove Condition
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

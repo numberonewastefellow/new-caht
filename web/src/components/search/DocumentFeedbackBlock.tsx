@@ -10,7 +10,7 @@ const giveDocumentFeedback = async (
   documentRank: number,
   searchFeedback: DocumentFeedbackType
 ): Promise<string | null> => {
-  const response = await fetch("/api/chat/document-search-feedback", {
+  const response = await fetch("/api/converse/document-search-feedback", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

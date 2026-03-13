@@ -70,7 +70,7 @@ const GmailCredentialUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
 
       if (credentialFileType === "authorized_user") {
         const response = await fetch(
-          "/api/manage/admin/connector/gmail/app-credential",
+          "/api/nexus/admin/connector/gmail/app-credential",
           {
             method: "PUT",
             headers: {
@@ -81,7 +81,7 @@ const GmailCredentialUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
         );
         if (response.ok) {
           toast.success("Successfully uploaded app credentials");
-          mutate("/api/manage/admin/connector/gmail/app-credential");
+          mutate("/api/nexus/admin/connector/gmail/app-credential");
           if (onSuccess) {
             onSuccess();
           }
@@ -93,7 +93,7 @@ const GmailCredentialUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
 
       if (credentialFileType === "service_account") {
         const response = await fetch(
-          "/api/manage/admin/connector/gmail/service-account-key",
+          "/api/nexus/admin/connector/gmail/service-account-key",
           {
             method: "PUT",
             headers: {
@@ -104,7 +104,7 @@ const GmailCredentialUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
         );
         if (response.ok) {
           toast.success("Successfully uploaded service account key");
-          mutate("/api/manage/admin/connector/gmail/service-account-key");
+          mutate("/api/nexus/admin/connector/gmail/service-account-key");
           if (onSuccess) {
             onSuccess();
           }
@@ -321,8 +321,8 @@ export const GmailJsonUploadSection = ({
                 onClick={async () => {
                   const endpoint =
                     localServiceAccountData?.service_account_email
-                      ? "/api/manage/admin/connector/gmail/service-account-key"
-                      : "/api/manage/admin/connector/gmail/app-credential";
+                      ? "/api/nexus/admin/connector/gmail/service-account-key"
+                      : "/api/nexus/admin/connector/gmail/app-credential";
 
                   const response = await fetch(endpoint, {
                     method: "DELETE",
@@ -334,12 +334,12 @@ export const GmailJsonUploadSection = ({
                     mutate(buildSimilarCredentialInfoURL(ValidSources.Gmail));
 
                     // Add additional mutations to refresh all credential-related endpoints
-                    mutate("/api/manage/admin/connector/gmail/credentials");
+                    mutate("/api/nexus/admin/connector/gmail/credentials");
                     mutate(
-                      "/api/manage/admin/connector/gmail/public-credential"
+                      "/api/nexus/admin/connector/gmail/public-credential"
                     );
                     mutate(
-                      "/api/manage/admin/connector/gmail/service-account-credential"
+                      "/api/nexus/admin/connector/gmail/service-account-credential"
                     );
 
                     toast.success(
@@ -536,7 +536,7 @@ export const GmailAuthSection = ({
               formikHelpers.setSubmitting(true);
               try {
                 const response = await fetch(
-                  "/api/manage/admin/connector/gmail/service-account-credential",
+                  "/api/nexus/admin/connector/gmail/service-account-credential",
                   {
                     method: "PUT",
                     headers: {

@@ -763,7 +763,7 @@ function PromptShortcuts() {
 
       // Otherwise, delete from backend
       try {
-        const response = await fetch(`/api/input_prompt/${shortcut.id}`, {
+        const response = await fetch(`/api/prompts/${shortcut.id}`, {
           method: "DELETE",
         });
 
@@ -792,7 +792,7 @@ function PromptShortcuts() {
       try {
         if (shortcut.isNew) {
           // Create new shortcut
-          const response = await fetch("/api/input_prompt", {
+          const response = await fetch("/api/prompts", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -811,7 +811,7 @@ function PromptShortcuts() {
           }
         } else {
           // Update existing shortcut
-          const response = await fetch(`/api/input_prompt/${shortcut.id}`, {
+          const response = await fetch(`/api/prompts/${shortcut.id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -1573,7 +1573,7 @@ function FederatedConnectorCard({
     setIsDisconnecting(true);
     try {
       const response = await fetch(
-        `/api/federated/${connector.federated_connector_id}/oauth`,
+        `/api/bridges/${connector.federated_connector_id}/oauth`,
         { method: "DELETE" }
       );
 

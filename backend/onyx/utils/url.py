@@ -272,6 +272,167 @@ def ssrf_safe_get(
     return response
 
 
+# Headers that must never be forwarded from LLM-generated requests
+BLOCKED_HEADERS = {
+    "authorization",
+    "cookie",
+    "set-cookie",
+    "host",
+    "x-forwarded-for",
+    "x-forwarded-host",
+    "x-forwarded-proto",
+    "x-real-ip",
+    "proxy-authorization",
+    "proxy-connection",
+}
+
+
+def sanitize_headers(headers: dict[str, str]) -> dict[str, str]:
+    """Remove dangerous headers that could be used for impersonation or routing attacks.
+
+    Args:
+        headers: Raw headers dict (e.g. from LLM kwargs).
+
+    Returns:
+        Sanitized headers dict with blocked headers removed.
+    """
+    sanitized = {}
+    removed = []
+    for key, value in headers.items():
+        if key.lower().strip() in BLOCKED_HEADERS:
+            removed.append(key)
+        else:
+            sanitized[key] = value
+    if removed:
+        logger.warning(
+            "Blocked headers removed from HTTP request: %s", ", ".join(removed)
+        )
+    return sanitized
+
+
+# Maximum response body size to read (10 MB)
+MAX_RESPONSE_BYTES = 10 * 1024 * 1024
+
+
+def ssrf_safe_request(
+    method: str,
+    url: str,
+    headers: dict[str, str] | None = None,
+    json_body: dict | None = None,
+    data: str | None = None,
+    timeout: int = 30,
+    follow_redirects: bool = False,
+    max_response_bytes: int = MAX_RESPONSE_BYTES,
+) -> requests.Response:
+    """Make an HTTP request with SSRF protection, header sanitization, and size limits.
+
+    Supports all HTTP methods (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS).
+    Validates URLs against private/internal IP ranges, sanitizes headers,
+    disables redirects by default, and limits response body size.
+
+    Args:
+        method: HTTP method (GET, POST, etc.)
+        url: Target URL
+        headers: Optional request headers (will be sanitized)
+        json_body: Optional JSON body for POST/PUT/PATCH
+        data: Optional raw string body for POST/PUT/PATCH
+        timeout: Request timeout in seconds
+        follow_redirects: Whether to follow redirects (default False to prevent SSRF bypass)
+        max_response_bytes: Maximum response body size to read
+
+    Returns:
+        requests.Response object
+
+    Raises:
+        SSRFException: If the URL targets a private/internal address
+        ValueError: If the URL is malformed
+        requests.RequestException: If the request fails
+    """
+    # Validate URL against SSRF
+    _validate_and_resolve_url(url)
+
+    # Sanitize headers
+    safe_headers = sanitize_headers(headers) if headers else {}
+
+    # Make request with redirects disabled to prevent SSRF bypass via redirect
+    response = requests.request(
+        method=method.upper(),
+        url=url,
+        headers=safe_headers,
+        json=json_body,
+        data=data,
+        timeout=timeout,
+        allow_redirects=False,
+        stream=True,  # Stream to enforce size limit
+    )
+
+    # Enforce response size limit by reading in chunks
+    content_length = response.headers.get("Content-Length")
+    if content_length and int(content_length) > max_response_bytes:
+        response.close()
+        raise requests.exceptions.ContentDecodingError(
+            f"Response too large: {content_length} bytes "
+            f"(max {max_response_bytes} bytes)"
+        )
+
+    # Read the content with size enforcement
+    chunks = []
+    bytes_read = 0
+    for chunk in response.iter_content(chunk_size=8192):
+        bytes_read += len(chunk)
+        if bytes_read > max_response_bytes:
+            response.close()
+            raise requests.exceptions.ContentDecodingError(
+                f"Response exceeded max size of {max_response_bytes} bytes"
+            )
+        chunks.append(chunk)
+
+    # Reconstruct the response content
+    response._content = b"".join(chunks)
+
+    # Handle redirects if enabled
+    if follow_redirects and response.is_redirect:
+        redirect_count = 0
+        current_url = url
+        while response.is_redirect and redirect_count < MAX_REDIRECTS:
+            redirect_count += 1
+            redirect_url = response.headers.get("Location")
+            if not redirect_url:
+                break
+
+            if not redirect_url.startswith(("http://", "https://")):
+                parsed_current = urlparse(current_url)
+                if redirect_url.startswith("/"):
+                    redirect_url = (
+                        f"{parsed_current.scheme}://{parsed_current.netloc}"
+                        f"{redirect_url}"
+                    )
+                else:
+                    base_path = parsed_current.path.rsplit("/", 1)[0]
+                    redirect_url = (
+                        f"{parsed_current.scheme}://{parsed_current.netloc}"
+                        f"{base_path}/{redirect_url}"
+                    )
+
+            # Validate redirect target
+            _validate_and_resolve_url(redirect_url)
+            current_url = redirect_url
+            response = requests.request(
+                method=method.upper(),
+                url=redirect_url,
+                headers=safe_headers,
+                json=json_body if method.upper() in ("POST", "PUT", "PATCH") else None,
+                data=data if method.upper() in ("POST", "PUT", "PATCH") else None,
+                timeout=timeout,
+                allow_redirects=False,
+            )
+
+        if response.is_redirect and redirect_count >= MAX_REDIRECTS:
+            raise SSRFException(f"Too many redirects (max {MAX_REDIRECTS})")
+
+    return response
+
+
 def normalize_url(url: str) -> str:
     """
     Normalize a URL by removing query parameters and fragments.

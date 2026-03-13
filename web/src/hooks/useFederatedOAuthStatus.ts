@@ -80,7 +80,7 @@ import { errorHandlingFetcher } from "@/lib/fetcher";
 export default function useFederatedOAuthStatus() {
   const { data, error, isLoading, mutate } = useSWR<
     FederatedConnectorOAuthStatus[]
-  >("/api/federated/oauth-status", errorHandlingFetcher);
+  >("/api/bridges/oauth-status", errorHandlingFetcher);
 
   const connectors = data ?? [];
   const needsAuth = useMemo(

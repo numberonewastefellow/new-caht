@@ -757,6 +757,16 @@
   color: var(--text-03, #9ca3af);
 }
 
+/* Section title within sidebar */
+.wfb-sidebar-section-title {
+  padding: 8px 14px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-03, #9ca3af);
+}
+
 /* Sidebar draggable card */
 .wfb-sidebar-card {
   display: flex;
@@ -1494,4 +1504,183 @@
 
 .dark .wfb-json-content {
   background: var(--background-tint-02, #1a1a2e);
+}
+
+/* ── Conditional Router Node ────────────────────────────────────────── */
+
+.wfb-condition-node {
+  background: var(--bg-01, #ffffff);
+  border: 2px solid var(--border-02, #d1d5db);
+  border-radius: 12px;
+  min-width: 240px;
+  max-width: 280px;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.wfb-condition-node:hover {
+  border-color: var(--virtualai-accent, #818cf8);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.wfb-condition-node--selected {
+  border-color: var(--virtualai-accent, #818cf8);
+  box-shadow: 0 0 0 2px var(--virtualai-accent-subtle, rgba(129, 140, 248, 0.2)),
+    0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.wfb-condition-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-01, #e5e7eb);
+}
+
+.wfb-condition-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f59e0b22, #f59e0b11);
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.dark .wfb-condition-icon {
+  background: linear-gradient(135deg, #f59e0b33, #f59e0b22);
+  color: #fbbf24;
+}
+
+.wfb-condition-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.wfb-condition-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-01, #111827);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wfb-condition-type {
+  font-size: 10px;
+  color: var(--text-03, #9ca3af);
+}
+
+.wfb-condition-summary {
+  padding: 8px 12px;
+}
+
+.wfb-condition-expr {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-02, #6b7280);
+  background: var(--bg-02, #f3f4f6);
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dark .wfb-condition-expr {
+  background: var(--background-tint-02, #1a1a2e);
+}
+
+/* True/False handle labels */
+.wfb-condition-handle-labels {
+  position: absolute;
+  right: -40px;
+  top: 0;
+  bottom: 0;
+  width: 36px;
+  pointer-events: none;
+}
+
+.wfb-condition-label {
+  position: absolute;
+  font-size: 9px;
+  font-weight: 600;
+  transform: translateY(-50%);
+  right: 0;
+}
+
+.wfb-condition-label--true {
+  color: #22c55e;
+}
+
+.wfb-condition-label--false {
+  color: #ef4444;
+}
+
+/* Handle colors for condition node */
+.wfb-handle-true {
+  background: #22c55e !important;
+  border-color: #22c55e !important;
+}
+
+.wfb-handle-false {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+}
+
+/* Edge labels for branches */
+.wfb-edge-label-pill--true {
+  background: #dcfce7;
+  color: #166534;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.wfb-edge-label-pill--false {
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.dark .wfb-edge-label-pill--true {
+  background: #166534;
+  color: #dcfce7;
+}
+
+.dark .wfb-edge-label-pill--false {
+  background: #991b1b;
+  color: #fee2e2;
+}
+
+/* Condition card in sidebar */
+.wfb-sidebar-card--condition {
+  border-left: 3px solid #f59e0b;
+}
+
+.wfb-sidebar-card-avatar--condition {
+  background: linear-gradient(135deg, #f59e0b22, #f59e0b11);
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.dark .wfb-sidebar-card-avatar--condition {
+  background: linear-gradient(135deg, #f59e0b33, #f59e0b22);
+  color: #fbbf24;
 }

@@ -139,7 +139,7 @@ def is_image_generation_final_equal(
     """
     What we care about:
      - Number of images are the same
-     - On each image, url and file_id are aligned such that url=/api/chat/file/{file_id}
+     - On each image, url and file_id are aligned such that url=/api/converse/file/{file_id}
      - Revised prompt is expected
      - Shape is expected
     """
@@ -147,7 +147,7 @@ def is_image_generation_final_equal(
         return False
 
     for received_image, expected_image in zip(received.images, expected.images):
-        if received_image.url != f"/api/chat/file/{received_image.file_id}":
+        if received_image.url != f"/api/converse/file/{received_image.file_id}":
             return False
         if received_image.revised_prompt != expected_image.revised_prompt:
             return False

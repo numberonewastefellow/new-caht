@@ -19,7 +19,7 @@ export const createDocumentSet = async ({
   groups,
   federated_connectors,
 }: DocumentSetCreationRequest) => {
-  return fetch("/api/manage/admin/document-set", {
+  return fetch("/api/nexus/admin/document-set", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export const updateDocumentSet = async ({
   groups,
   federated_connectors,
 }: DocumentSetUpdateRequest) => {
-  return fetch("/api/manage/admin/document-set", {
+  return fetch("/api/nexus/admin/document-set", {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -73,7 +73,7 @@ export const updateDocumentSet = async ({
 };
 
 export const deleteDocumentSet = async (id: number) => {
-  return fetch(`/api/manage/admin/document-set/${id}`, {
+  return fetch(`/api/nexus/admin/document-set/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

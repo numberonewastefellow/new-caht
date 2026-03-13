@@ -28,7 +28,7 @@ from onyx.utils.logger import setup_logger
 
 logger = setup_logger()
 
-router = APIRouter(prefix="/manage", tags=PUBLIC_API_TAGS)
+router = APIRouter(prefix="/nexus", tags=PUBLIC_API_TAGS)
 
 
 @router.get("/admin/user-group")

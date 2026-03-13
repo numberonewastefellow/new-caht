@@ -27,7 +27,7 @@ export default function UserRoleDropdown({
   const [pendingRole, setPendingRole] = useState<string | null>(null);
 
   const { trigger: setUserRole, isMutating: isSettingRole } = useSWRMutation(
-    "/api/manage/set-user-role",
+    "/api/nexus/set-user-role",
     userMutationFetcher,
     { onSuccess, onError }
   );

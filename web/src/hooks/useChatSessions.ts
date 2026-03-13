@@ -113,7 +113,7 @@ function useFindAgentForCurrentChatSession(
 
 export default function useChatSessions(): UseChatSessionsOutput {
   const { data, error, mutate } = useSWR<ChatSessionsResponse>(
-    "/api/chat/get-user-chat-sessions",
+    "/api/converse/get-user-chat-sessions",
     errorHandlingFetcher,
     {
       revalidateOnFocus: false,

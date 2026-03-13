@@ -165,7 +165,7 @@ _INDEXING_STATUS_PAGE_SIZE = 10
 SEEN_ZIP_DETAIL = "Only one zip file is allowed per file connector, \
 use the ingestion APIs for multiple files"
 
-router = APIRouter(prefix="/manage", dependencies=[Depends(require_vector_db)])
+router = APIRouter(prefix="/nexus", dependencies=[Depends(require_vector_db)])
 
 
 """Admin only API endpoints"""

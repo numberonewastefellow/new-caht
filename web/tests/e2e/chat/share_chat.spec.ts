@@ -87,7 +87,7 @@ test.describe("Share Chat Session Modal", () => {
 
   test("Cancel closes modal without API calls", async () => {
     let patchCallCount = 0;
-    await page.route("**/api/chat/chat-session/*", async (route) => {
+    await page.route("**/api/converse/chat-session/*", async (route) => {
       if (route.request().method() === "PATCH") {
         patchCallCount++;
       }
@@ -108,7 +108,7 @@ test.describe("Share Chat Session Modal", () => {
 
   test("X button closes modal without API calls", async () => {
     let patchCallCount = 0;
-    await page.route("**/api/chat/chat-session/*", async (route) => {
+    await page.route("**/api/converse/chat-session/*", async (route) => {
       if (route.request().method() === "PATCH") {
         patchCallCount++;
       }
@@ -133,7 +133,7 @@ test.describe("Share Chat Session Modal", () => {
     const dialog = page.getByRole("dialog");
 
     let patchBody: Record<string, unknown> | null = null;
-    await page.route("**/api/chat/chat-session/*", async (route) => {
+    await page.route("**/api/converse/chat-session/*", async (route) => {
       if (route.request().method() === "PATCH") {
         patchBody = JSON.parse(route.request().postData() ?? "{}");
         await route.continue();
@@ -148,7 +148,7 @@ test.describe("Share Chat Session Modal", () => {
 
     await page.waitForResponse(
       (r) =>
-        r.url().includes("/api/chat/chat-session/") &&
+        r.url().includes("/api/converse/chat-session/") &&
         r.request().method() === "PATCH",
       { timeout: 10000 }
     );
@@ -208,7 +208,7 @@ test.describe("Share Chat Session Modal", () => {
 
   test("making chat private again calls API and closes modal", async () => {
     let patchBody: Record<string, unknown> | null = null;
-    await page.route("**/api/chat/chat-session/*", async (route) => {
+    await page.route("**/api/converse/chat-session/*", async (route) => {
       if (route.request().method() === "PATCH") {
         patchBody = JSON.parse(route.request().postData() ?? "{}");
         await route.continue();
@@ -230,7 +230,7 @@ test.describe("Share Chat Session Modal", () => {
 
     await page.waitForResponse(
       (r) =>
-        r.url().includes("/api/chat/chat-session/") &&
+        r.url().includes("/api/converse/chat-session/") &&
         r.request().method() === "PATCH",
       { timeout: 10000 }
     );

@@ -33,7 +33,7 @@ export function useFederatedConnector(
         setError(null);
 
         // First, fetch connector details to get the source type
-        const connectorResponse = await fetch(`/api/federated/${connectorId}`);
+        const connectorResponse = await fetch(`/api/bridges/${connectorId}`);
 
         if (!connectorResponse.ok) {
           throw new Error(
@@ -52,7 +52,7 @@ export function useFederatedConnector(
 
         // Now fetch credential schema and set state in parallel
         const schemaPromise = fetch(
-          `/api/federated/sources/federated_${extractedSourceType}/credentials/schema`
+          `/api/bridges/sources/federated_${extractedSourceType}/credentials/schema`
         );
 
         // Set the data we already have

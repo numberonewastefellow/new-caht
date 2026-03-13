@@ -8,6 +8,7 @@ import type {
   WorkflowNode,
   WorkflowEdge,
   AgentNodeData,
+  ConditionalRouterNodeData,
   WorkflowMeta,
   OrchestratorNodeData,
 } from "./types";
@@ -44,61 +45,145 @@ export function snapshotToGraph(workflow: WorkflowSnapshot): {
     },
   });
 
-  // 2. Agent nodes from steps (sorted by step_order)
+  // 2. Nodes from steps (sorted by step_order)
   const sortedSteps = [...workflow.steps].sort(
     (a, b) => a.step_order - b.step_order
   );
 
   sortedSteps.forEach((step, i) => {
-    const nodeId = `agent-${step.id}`;
-    nodes.push({
-      id: nodeId,
-      type: "agent",
-      position: { x: 0, y: 0 }, // Will be set by autoLayout
-      data: {
-        persona_id: step.persona_id,
-        persona_name: step.persona_name || `Agent ${step.persona_id}`,
-        step_name: step.step_name,
-        step_description: step.step_description || "",
-        output_key: step.output_key || "output",
-        is_terminal: step.is_terminal,
-        can_request_input: step.can_request_input,
-        promote_output: step.promote_output,
-        input_mapping: step.input_mapping,
-        condition: step.condition,
-        stepOrder: i,
-        orchestration_mode: mode,
-        // Step-level overrides
-        llm_provider_override: step.llm_provider_override ?? null,
-        llm_model_override: step.llm_model_override ?? null,
-        max_output_tokens_override: step.max_output_tokens_override ?? null,
-        system_prompt_override: step.system_prompt_override ?? null,
-        task_prompt_override: step.task_prompt_override ?? null,
-        tool_ids_override: step.tool_ids_override ?? null,
-        document_set_ids_override: step.document_set_ids_override ?? null,
-        replace_base_system_prompt_override: step.replace_base_system_prompt_override ?? null,
-      },
-    });
+    if (step.step_type === "conditional_router") {
+      // Conditional router node
+      const condition = step.condition || {};
+      const nodeId = `condition-${step.id}`;
+      nodes.push({
+        id: nodeId,
+        type: "conditional_router",
+        position: { x: 0, y: 0 },
+        data: {
+          step_name: step.step_name,
+          step_description: step.step_description || "",
+          output_key: step.output_key || "output",
+          condition_field: condition.condition_field || "",
+          operator: condition.operator || "contains",
+          match_value: condition.match_value || "",
+          case_sensitive: condition.case_sensitive || false,
+          true_steps: condition.true_steps || [],
+          false_steps: condition.false_steps || [],
+          stepOrder: i,
+          orchestration_mode: mode,
+        },
+      } as WorkflowNode);
+    } else {
+      // Agent node (default)
+      const nodeId = `agent-${step.id}`;
+      nodes.push({
+        id: nodeId,
+        type: "agent",
+        position: { x: 0, y: 0 },
+        data: {
+          persona_id: step.persona_id!,
+          persona_name: step.persona_name || `Agent ${step.persona_id}`,
+          step_name: step.step_name,
+          step_description: step.step_description || "",
+          output_key: step.output_key || "output",
+          is_terminal: step.is_terminal,
+          can_request_input: step.can_request_input,
+          promote_output: step.promote_output,
+          input_mapping: step.input_mapping,
+          condition: step.condition,
+          stepOrder: i,
+          orchestration_mode: mode,
+          // Step-level overrides
+          llm_provider_override: step.llm_provider_override ?? null,
+          llm_model_override: step.llm_model_override ?? null,
+          max_output_tokens_override: step.max_output_tokens_override ?? null,
+          system_prompt_override: step.system_prompt_override ?? null,
+          task_prompt_override: step.task_prompt_override ?? null,
+          tool_ids_override: step.tool_ids_override ?? null,
+          document_set_ids_override: step.document_set_ids_override ?? null,
+          replace_base_system_prompt_override: step.replace_base_system_prompt_override ?? null,
+        },
+      });
+    }
   });
 
   // 3. Edges
-  const agentNodeIds = sortedSteps.map((s) => `agent-${s.id}`);
+  // Build a map of step_order → nodeId for conditional routing
+  const stepOrderToNodeId = new Map<number, string>();
+  sortedSteps.forEach((step) => {
+    const prefix = step.step_type === "conditional_router" ? "condition" : "agent";
+    stepOrderToNodeId.set(step.step_order, `${prefix}-${step.id}`);
+  });
+
+  const allStepNodeIds = sortedSteps.map((s) => {
+    const prefix = s.step_type === "conditional_router" ? "condition" : "agent";
+    return `${prefix}-${s.id}`;
+  });
 
   if (mode === "sequential") {
-    // Linear chain: orchestrator -> agent[0] -> agent[1] -> ...
-    agentNodeIds.forEach((nodeId, i) => {
-      const sourceId = i === 0 ? ORCHESTRATOR_NODE_ID : (agentNodeIds[i - 1] ?? ORCHESTRATOR_NODE_ID);
-      edges.push({
-        id: `edge-${sourceId}-${nodeId}`,
-        source: sourceId,
-        target: nodeId,
-        type: "step",
-        data: { stepOrder: i, orchestration_mode: mode },
+    // Linear chain: orchestrator -> node[0] -> node[1] -> ...
+    // But conditional routers break the chain with true/false branches
+    allStepNodeIds.forEach((nodeId, i) => {
+      const step = sortedSteps[i]!;
+
+      // Check if this node is a target of a conditional router branch
+      // If so, the conditional router already created the edge
+      const isConditionalTarget = sortedSteps.some((s) => {
+        if (s.step_type !== "conditional_router") return false;
+        const cond = s.condition || {};
+        const trueSteps: number[] = cond.true_steps || [];
+        const falseSteps: number[] = cond.false_steps || [];
+        return trueSteps.includes(step.step_order) || falseSteps.includes(step.step_order);
       });
+
+      if (!isConditionalTarget) {
+        const sourceId = i === 0 ? ORCHESTRATOR_NODE_ID : (allStepNodeIds[i - 1] ?? ORCHESTRATOR_NODE_ID);
+        edges.push({
+          id: `edge-${sourceId}-${nodeId}`,
+          source: sourceId,
+          target: nodeId,
+          type: "step",
+          data: { stepOrder: i, orchestration_mode: mode },
+        });
+      }
+
+      // If this is a conditional router, create true/false branch edges
+      if (step.step_type === "conditional_router") {
+        const cond = step.condition || {};
+        const trueSteps: number[] = cond.true_steps || [];
+        const falseSteps: number[] = cond.false_steps || [];
+
+        for (const targetOrder of trueSteps) {
+          const targetId = stepOrderToNodeId.get(targetOrder);
+          if (targetId) {
+            edges.push({
+              id: `edge-${nodeId}-true-${targetId}`,
+              source: nodeId,
+              sourceHandle: "true",
+              target: targetId,
+              type: "step",
+              data: { orchestration_mode: mode, branchLabel: "True" },
+            });
+          }
+        }
+        for (const targetOrder of falseSteps) {
+          const targetId = stepOrderToNodeId.get(targetOrder);
+          if (targetId) {
+            edges.push({
+              id: `edge-${nodeId}-false-${targetId}`,
+              source: nodeId,
+              sourceHandle: "false",
+              target: targetId,
+              type: "step",
+              data: { orchestration_mode: mode, branchLabel: "False" },
+            });
+          }
+        }
+      }
     });
   } else {
-    // Star topology: orchestrator -> each agent
-    agentNodeIds.forEach((nodeId, i) => {
+    // Star topology: orchestrator -> each agent (conditional routers not used in llm_decision)
+    allStepNodeIds.forEach((nodeId, i) => {
       edges.push({
         id: `edge-${ORCHESTRATOR_NODE_ID}-${nodeId}`,
         source: ORCHESTRATOR_NODE_ID,
@@ -110,7 +195,7 @@ export function snapshotToGraph(workflow: WorkflowSnapshot): {
   }
 
   // 4. Add END node for sequential mode
-  if (mode === "sequential" && agentNodeIds.length > 0) {
+  if (mode === "sequential" && allStepNodeIds.length > 0) {
     nodes.push({
       id: FINISH_NODE_ID,
       type: "finish" as any,
@@ -119,13 +204,13 @@ export function snapshotToGraph(workflow: WorkflowSnapshot): {
       selectable: false,
       data: {} as any,
     });
-    const lastAgentId = agentNodeIds[agentNodeIds.length - 1]!;
+    const lastNodeId = allStepNodeIds[allStepNodeIds.length - 1]!;
     edges.push({
-      id: `edge-${lastAgentId}-${FINISH_NODE_ID}`,
-      source: lastAgentId,
+      id: `edge-${lastNodeId}-${FINISH_NODE_ID}`,
+      source: lastNodeId,
       target: FINISH_NODE_ID,
       type: "step",
-      data: { stepOrder: agentNodeIds.length, orchestration_mode: mode },
+      data: { stepOrder: allStepNodeIds.length, orchestration_mode: mode },
     });
   }
 
@@ -158,46 +243,71 @@ export function graphToPayload(
   icon_name?: string | null;
   steps: WorkflowStepCreate[];
 } {
-  // Filter to agent nodes only (exclude orchestrator, finish, etc.)
-  const agentNodes = nodes.filter(
-    (n): n is WorkflowNode & { data: AgentNodeData } => n.type === "agent"
+  // Filter to step nodes (agent + conditional_router), exclude orchestrator/finish
+  const stepNodes = nodes.filter(
+    (n) => n.type === "agent" || n.type === "conditional_router"
   );
   // Filter edges to exclude finish node connections
-  const agentEdges = edges.filter(
+  const stepEdges = edges.filter(
     (e) => e.target !== FINISH_NODE_ID && e.source !== FINISH_NODE_ID
   );
 
   // Compute step ordering via BFS from orchestrator
-  const stepOrders = computeStepOrders(nodes, agentEdges);
+  const stepOrders = computeStepOrders(nodes, stepEdges);
 
-  // Sort agent nodes by computed step order
-  const sorted = [...agentNodes].sort((a, b) => {
+  // Sort by computed step order
+  const sorted = [...stepNodes].sort((a, b) => {
     const orderA = stepOrders.get(a.id) ?? 999;
     const orderB = stepOrders.get(b.id) ?? 999;
     return orderA - orderB;
   });
 
-  const steps: WorkflowStepCreate[] = sorted.map((node, i) => ({
-    persona_id: node.data.persona_id,
-    step_order: i,
-    step_name: node.data.step_name || node.data.persona_name,
-    step_description: node.data.step_description || null,
-    output_key: node.data.output_key || "output",
-    input_mapping: node.data.input_mapping || null,
-    condition: node.data.condition || null,
-    is_terminal: node.data.is_terminal ?? false,
-    can_request_input: node.data.can_request_input ?? false,
-    promote_output: node.data.promote_output ?? false,
-    // Step-level overrides
-    llm_provider_override: node.data.llm_provider_override || null,
-    llm_model_override: node.data.llm_model_override || null,
-    max_output_tokens_override: node.data.max_output_tokens_override ?? null,
-    system_prompt_override: node.data.system_prompt_override || null,
-    task_prompt_override: node.data.task_prompt_override || null,
-    tool_ids_override: node.data.tool_ids_override ?? null,
-    document_set_ids_override: node.data.document_set_ids_override ?? null,
-    replace_base_system_prompt_override: node.data.replace_base_system_prompt_override ?? null,
-  }));
+  const steps: WorkflowStepCreate[] = sorted.map((node, i) => {
+    if (node.type === "conditional_router") {
+      const data = node.data as ConditionalRouterNodeData;
+      return {
+        step_type: "conditional_router",
+        persona_id: null,
+        step_order: i,
+        step_name: data.step_name || "Condition",
+        step_description: data.step_description || null,
+        output_key: data.output_key || "output",
+        condition: {
+          condition_field: data.condition_field || "",
+          operator: data.operator || "contains",
+          match_value: data.match_value || "",
+          case_sensitive: data.case_sensitive || false,
+          true_steps: data.true_steps || [],
+          false_steps: data.false_steps || [],
+        },
+      };
+    }
+
+    // Agent node
+    const data = node.data as AgentNodeData;
+    return {
+      step_type: "agent",
+      persona_id: data.persona_id,
+      step_order: i,
+      step_name: data.step_name || data.persona_name,
+      step_description: data.step_description || null,
+      output_key: data.output_key || "output",
+      input_mapping: data.input_mapping || null,
+      condition: data.condition || null,
+      is_terminal: data.is_terminal ?? false,
+      can_request_input: data.can_request_input ?? false,
+      promote_output: data.promote_output ?? false,
+      // Step-level overrides
+      llm_provider_override: data.llm_provider_override || null,
+      llm_model_override: data.llm_model_override || null,
+      max_output_tokens_override: data.max_output_tokens_override ?? null,
+      system_prompt_override: data.system_prompt_override || null,
+      task_prompt_override: data.task_prompt_override || null,
+      tool_ids_override: data.tool_ids_override ?? null,
+      document_set_ids_override: data.document_set_ids_override ?? null,
+      replace_base_system_prompt_override: data.replace_base_system_prompt_override ?? null,
+    };
+  });
 
   return {
     name: meta.name,
@@ -267,9 +377,9 @@ export function computeStepOrders(
     }
   }
 
-  // Assign remaining unvisited agent nodes (disconnected)
+  // Assign remaining unvisited step nodes (disconnected)
   for (const node of nodes) {
-    if (node.type === "agent" && !orders.has(node.id)) {
+    if ((node.type === "agent" || node.type === "conditional_router") && !orders.has(node.id)) {
       orders.set(node.id, order++);
     }
   }
@@ -319,7 +429,7 @@ export function autoLayout(
   mode?: "sequential" | "llm_decision"
 ): WorkflowNode[] {
   const orchestrator = nodes.find((n) => n.id === ORCHESTRATOR_NODE_ID);
-  const agentNodes = nodes.filter((n) => n.type === "agent");
+  const agentNodes = nodes.filter((n) => n.type === "agent" || n.type === "conditional_router");
   const finishNode = nodes.find((n) => n.id === FINISH_NODE_ID);
 
   if (!orchestrator) return nodes;
@@ -473,13 +583,53 @@ export function validateGraph(
     }
   }
 
-  // Check for disconnected agents (no incoming edge, exclude finish node)
-  const targetsWithEdges = new Set(edges.map((e) => e.target));
-  for (const node of agentNodes.filter((n) => n.id !== FINISH_NODE_ID)) {
-    if (!targetsWithEdges.has(node.id)) {
+  // Validate conditional router nodes
+  const conditionNodes = nodes.filter((n) => n.type === "conditional_router");
+  for (const node of conditionNodes) {
+    const data = node.data as ConditionalRouterNodeData;
+    if (!data.step_name?.trim()) {
       errors.push({
         nodeId: node.id,
-        message: `Agent "${(node.data as AgentNodeData).persona_name}" is not connected — draw an edge to it`,
+        message: "Conditional router needs a step name",
+      });
+    }
+    if (!data.condition_field?.trim()) {
+      errors.push({
+        nodeId: node.id,
+        message: `Condition "${data.step_name}" needs a condition field`,
+      });
+    }
+    // Check it has outgoing edges
+    const outgoing = edges.filter((e) => e.source === node.id);
+    if (outgoing.length === 0) {
+      errors.push({
+        nodeId: node.id,
+        message: `Condition "${data.step_name}" needs at least one outgoing branch`,
+      });
+    }
+    // Include in duplicate output key check
+    const key = data.output_key || "output";
+    if (outputKeys.has(key)) {
+      errors.push({
+        nodeId: node.id,
+        message: `Duplicate output key "${key}" — also used by "${outputKeys.get(key)}"`,
+      });
+    } else {
+      outputKeys.set(key, data.step_name);
+    }
+  }
+
+  // Check for disconnected nodes (no incoming edge, exclude finish node)
+  const allStepNodes = [...agentNodes, ...conditionNodes];
+  const targetsWithEdges = new Set(edges.map((e) => e.target));
+  for (const node of allStepNodes.filter((n) => n.id !== FINISH_NODE_ID)) {
+    if (!targetsWithEdges.has(node.id)) {
+      const name = node.type === "conditional_router"
+        ? (node.data as ConditionalRouterNodeData).step_name
+        : (node.data as AgentNodeData).persona_name;
+      errors.push({
+        nodeId: node.id,
+        message: `"${name}" is not connected — draw an edge to it`,
       });
     }
   }

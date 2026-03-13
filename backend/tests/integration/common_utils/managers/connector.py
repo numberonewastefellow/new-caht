@@ -49,7 +49,7 @@ class ConnectorManager:
         )
 
         response = requests.post(
-            url=f"{API_SERVER_URL}/manage/admin/connector",
+            url=f"{API_SERVER_URL}/nexus/admin/connector",
             json=connector_update_request.model_dump(),
             headers=(
                 user_performing_action.headers
@@ -76,7 +76,7 @@ class ConnectorManager:
         user_performing_action: DATestUser | None = None,
     ) -> None:
         response = requests.patch(
-            url=f"{API_SERVER_URL}/manage/admin/connector/{connector.id}",
+            url=f"{API_SERVER_URL}/nexus/admin/connector/{connector.id}",
             json=connector.model_dump(exclude={"id"}),
             headers=(
                 user_performing_action.headers
@@ -92,7 +92,7 @@ class ConnectorManager:
         user_performing_action: DATestUser | None = None,
     ) -> None:
         response = requests.delete(
-            url=f"{API_SERVER_URL}/manage/admin/connector/{connector.id}",
+            url=f"{API_SERVER_URL}/nexus/admin/connector/{connector.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -106,7 +106,7 @@ class ConnectorManager:
         user_performing_action: DATestUser | None = None,
     ) -> list[DATestConnector]:
         response = requests.get(
-            url=f"{API_SERVER_URL}/manage/connector",
+            url=f"{API_SERVER_URL}/nexus/connector",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -130,7 +130,7 @@ class ConnectorManager:
         connector_id: int, user_performing_action: DATestUser | None = None
     ) -> DATestConnector:
         response = requests.get(
-            url=f"{API_SERVER_URL}/manage/connector/{connector_id}",
+            url=f"{API_SERVER_URL}/nexus/connector/{connector_id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action

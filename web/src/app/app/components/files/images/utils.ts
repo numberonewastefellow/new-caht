@@ -1,3 +1,3 @@
 export function buildImgUrl(fileId: string) {
-  return `/api/chat/file/${fileId}`;
+  return `/api/converse/file/${fileId}`;
 }

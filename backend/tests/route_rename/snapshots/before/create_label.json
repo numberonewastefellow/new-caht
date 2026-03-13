@@ -1,0 +1,18 @@
+{
+  "operation_id": "create_label",
+  "path": "/persona/labels",
+  "method": "POST",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

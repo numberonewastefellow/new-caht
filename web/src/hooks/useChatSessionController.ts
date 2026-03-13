@@ -179,7 +179,7 @@ export default function useChatSessionController({
       setIsFetchingChatMessages(existingChatSessionId, true);
 
       const response = await fetch(
-        `/api/chat/get-chat-session/${existingChatSessionId}`
+        `/api/converse/get-chat-session/${existingChatSessionId}`
       );
 
       const session = await response.json();

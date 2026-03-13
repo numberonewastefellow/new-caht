@@ -1,0 +1,18 @@
+{
+  "operation_id": "get_all_mcp_tools",
+  "path": "/admin/mcp/tools",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

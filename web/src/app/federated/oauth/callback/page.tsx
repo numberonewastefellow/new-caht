@@ -15,7 +15,7 @@ export default function FederatedOAuthCallbackPage() {
     redirectingMessage: "Redirecting to chat in 2 seconds...",
     autoRedirectDelay: 2000,
     defaultRedirectPath: "/app",
-    callbackApiUrl: "/api/federated/callback",
+    callbackApiUrl: "/api/bridges/callback",
     errorMessageMap: {
       "validation errors":
         "Configuration error - please check your connector settings",

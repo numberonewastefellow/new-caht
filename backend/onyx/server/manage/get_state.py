@@ -25,7 +25,7 @@ from onyx.server.models import StatusResponse
 router = APIRouter()
 
 
-@router.get("/health", tags=PUBLIC_API_TAGS)
+@router.get("/heartbeat", tags=PUBLIC_API_TAGS)
 async def healthcheck() -> StatusResponse:
     return StatusResponse(success=True, message="ok")
 

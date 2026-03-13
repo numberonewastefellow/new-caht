@@ -3,10 +3,40 @@
  * Mirrors backend Pydantic schemas in backend/onyx/workflows/models.py
  */
 
+// Condition operators — single source of truth for frontend.
+// Mirrors CONDITION_OPERATORS in backend/onyx/workflows/models.py
+export const CONDITION_OPERATORS = [
+  { value: "contains", label: "Contains" },
+  { value: "not_contains", label: "Does not contain" },
+  { value: "equals", label: "Equals" },
+  { value: "not_equals", label: "Not equals" },
+  { value: "starts_with", label: "Starts with" },
+  { value: "ends_with", label: "Ends with" },
+  { value: "regex_match", label: "Regex match" },
+  { value: "is_empty", label: "Is empty" },
+  { value: "is_not_empty", label: "Is not empty" },
+  { value: "greater_than", label: "Greater than" },
+  { value: "greater_than_or_equal", label: "Greater than or equal" },
+  { value: "less_than", label: "Less than" },
+  { value: "less_than_or_equal", label: "Less than or equal" },
+] as const;
+
+export type ConditionOperator = (typeof CONDITION_OPERATORS)[number]["value"];
+
+export interface ConditionConfig {
+  condition_field: string;
+  operator: ConditionOperator;
+  match_value: string;
+  case_sensitive: boolean;
+  true_steps: number[];
+  false_steps: number[];
+}
+
 export interface WorkflowStepSnapshot {
   id: number;
   workflow_id: number;
-  persona_id: number;
+  step_type: string;
+  persona_id: number | null;
   persona_name: string | null;
   step_order: number;
   step_name: string;
@@ -51,7 +81,8 @@ export interface WorkflowSnapshot {
 }
 
 export interface WorkflowStepCreate {
-  persona_id: number;
+  step_type?: string;
+  persona_id?: number | null;
   step_order: number;
   step_name: string;
   step_description?: string | null;

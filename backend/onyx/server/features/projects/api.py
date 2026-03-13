@@ -38,7 +38,7 @@ from shared_configs.contextvars import get_current_tenant_id
 logger = setup_logger()
 
 
-router = APIRouter(prefix="/user/projects")
+router = APIRouter(prefix="/workspaces")
 
 
 class UserFileDeleteResult(BaseModel):

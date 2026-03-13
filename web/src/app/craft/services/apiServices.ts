@@ -662,7 +662,7 @@ export async function deleteConnector(
   connectorId: number,
   credentialId: number
 ): Promise<void> {
-  const res = await fetch("/api/manage/admin/deletion-attempt", {
+  const res = await fetch("/api/nexus/admin/deletion-attempt", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

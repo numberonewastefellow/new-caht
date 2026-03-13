@@ -1,0 +1,20 @@
+{
+  "operation_id": "upsert_unstructured_api_key",
+  "path": "/search-settings/upsert-unstructured-api-key",
+  "method": "PUT",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {
+      "unstructured_api_key": "test"
+    },
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

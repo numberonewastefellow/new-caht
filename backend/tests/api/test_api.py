@@ -35,14 +35,14 @@ def test_handle_simplified_chat_message(client: TestClient) -> None:
 
     req["persona_id"] = 0
     req["description"] = "pytest"
-    response = client.post("/chat/create-chat-session", json=req)
+    response = client.post("/converse/create-chat-session", json=req)
     chat_session_id = response.json()["chat_session_id"]
 
     req = {}
     req["chat_session_id"] = chat_session_id
     req["message"] = "hello"
 
-    response = client.post("/chat/send-message-simple-api", json=req)
+    response = client.post("/converse/send-message-simple-api", json=req)
     assert response.status_code == 200
 
 
@@ -97,7 +97,7 @@ def test_handle_send_message_simple_with_history(client: TestClient) -> None:
 
     req["messages"] = messages
 
-    response = client.post("/chat/send-message-simple-with-history", json=req)
+    response = client.post("/converse/send-message-simple-with-history", json=req)
     assert response.status_code == 200
 
     resp_json = response.json()

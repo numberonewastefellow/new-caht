@@ -79,7 +79,7 @@ export default function InlineFolderManagement({
     setIsValidating(true);
     try {
       const res = await fetch(
-        "/api/manage/admin/connector/folder/validate-paths",
+        "/api/nexus/admin/connector/folder/validate-paths",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -154,7 +154,7 @@ export default function InlineFolderManagement({
       };
 
       const patchRes = await fetch(
-        `/api/manage/admin/connector/${connectorId}`,
+        `/api/nexus/admin/connector/${connectorId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -174,7 +174,7 @@ export default function InlineFolderManagement({
       // If paths were removed, trigger a prune to clean up orphan docs
       if (hasRemovals) {
         const pruneRes = await fetch(
-          `/api/manage/admin/cc-pair/${ccPairId}/prune`,
+          `/api/nexus/admin/cc-pair/${ccPairId}/prune`,
           { method: "POST" }
         );
         if (pruneRes.ok) {

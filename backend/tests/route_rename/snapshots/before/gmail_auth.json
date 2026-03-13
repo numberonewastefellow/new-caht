@@ -1,0 +1,20 @@
+{
+  "operation_id": "gmail_auth",
+  "path": "/manage/connector/gmail/authorize/{credential_id}",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "credential_id": "test"
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

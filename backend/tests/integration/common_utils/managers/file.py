@@ -35,7 +35,7 @@ class FileManager:
             files_param.append(("files", (filename, file_obj, mime_type)))
 
         response = requests.post(
-            f"{API_SERVER_URL}/user/projects/file/upload",
+            f"{API_SERVER_URL}/workspaces/file/upload",
             files=files_param,
             headers=headers,
         )
@@ -70,7 +70,7 @@ class FileManager:
         user_performing_action: DATestUser | None = None,
     ) -> bytes:
         response = requests.get(
-            f"{API_SERVER_URL}/chat/file/{file_id}",
+            f"{API_SERVER_URL}/converse/file/{file_id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -105,7 +105,7 @@ class FileManager:
 
         # Make the request
         response = requests.post(
-            f"{API_SERVER_URL}/manage/admin/connector/file/upload",
+            f"{API_SERVER_URL}/nexus/admin/connector/file/upload",
             files=files,
             headers=headers,
         )

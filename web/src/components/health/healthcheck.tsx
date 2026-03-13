@@ -23,7 +23,7 @@ export const HealthCheckBanner = () => {
       return false;
     }
   });
-  const { error } = useSWR("/api/health", errorHandlingFetcher, {
+  const { error } = useSWR("/api/heartbeat", errorHandlingFetcher, {
     // Only poll frequently when there's an error so auto-recovery works;
     // when healthy, fall back to default SWR revalidation (no polling).
     refreshInterval: (data: unknown) => (data ? 0 : 10000),

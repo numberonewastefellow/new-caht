@@ -1,0 +1,21 @@
+{
+  "operation_id": "prepare_authorization_request",
+  "path": "/oauth/prepare-authorization-request",
+  "method": "POST",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {
+      "connector": "test",
+      "redirect_on_success": "test"
+    },
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

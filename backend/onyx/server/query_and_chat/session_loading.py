@@ -760,7 +760,7 @@ def translate_assistant_message_to_packets(
                                 stdout = result_data.get("stdout", "")
                                 stderr = result_data.get("stderr", "")
                                 # Extract file_ids from file_link URLs
-                                # file_link format: {WEB_DOMAIN}/api/chat/file/{file_id}
+                                # file_link format: {WEB_DOMAIN}/api/converse/file/{file_id}
                                 for gen_file in result_data.get(
                                     "generated_files", []
                                 ):

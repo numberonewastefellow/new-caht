@@ -1,0 +1,22 @@
+{
+  "operation_id": "update_user_assistant_visibility_api",
+  "path": "/user/assistant-list/update/{assistant_id}",
+  "method": "PATCH",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {
+      "show": false
+    },
+    "path_params": {
+      "assistant_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

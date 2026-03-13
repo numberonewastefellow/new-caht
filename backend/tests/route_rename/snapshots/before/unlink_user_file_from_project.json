@@ -1,0 +1,21 @@
+{
+  "operation_id": "unlink_user_file_from_project",
+  "path": "/user/projects/{project_id}/files/{file_id}",
+  "method": "DELETE",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "project_id": 0,
+      "file_id": "00000000-0000-0000-0000-000000000000"
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

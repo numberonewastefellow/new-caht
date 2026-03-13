@@ -19,7 +19,7 @@ export const InviteUserButton = ({
   mutate: (() => void) | (() => void)[];
 }) => {
   const { trigger: inviteTrigger, isMutating: isInviting } = useSWRMutation(
-    "/api/manage/admin/users",
+    "/api/nexus/admin/users",
     async (url, { arg }: { arg: { emails: string[] } }) => {
       const response = await fetch(url, {
         method: "PUT",
@@ -51,7 +51,7 @@ export const InviteUserButton = ({
   );
 
   const { trigger: uninviteTrigger, isMutating: isUninviting } = useSWRMutation(
-    "/api/manage/admin/remove-invited-user",
+    "/api/nexus/admin/remove-invited-user",
     async (url, { arg }: { arg: { user_email: string } }) => {
       const response = await fetch(url, {
         method: "PATCH",

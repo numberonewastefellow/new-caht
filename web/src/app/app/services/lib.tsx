@@ -29,7 +29,7 @@ export async function updateLlmOverrideForChatSession(
   chatSessionId: string,
   newAlternateModel: string
 ) {
-  const response = await fetch("/api/chat/update-chat-session-model", {
+  const response = await fetch("/api/converse/update-chat-session-model", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -46,7 +46,7 @@ export async function updateTemperatureOverrideForChatSession(
   chatSessionId: string,
   newTemperature: number
 ) {
-  const response = await fetch("/api/chat/update-chat-session-temperature", {
+  const response = await fetch("/api/converse/update-chat-session-temperature", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export async function createChatSession(
   projectId: number | null
 ): Promise<string> {
   const createChatSessionResponse = await fetch(
-    "/api/chat/create-chat-session",
+    "/api/converse/create-chat-session",
     {
       method: "POST",
       headers: {
@@ -167,7 +167,7 @@ export async function* sendMessage({
 
   const body = JSON.stringify(payload);
 
-  const response = await fetch(`/api/chat/send-chat-message`, {
+  const response = await fetch(`/api/converse/send-chat-message`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -184,7 +184,7 @@ export async function* sendMessage({
 }
 
 export async function nameChatSession(chatSessionId: string) {
-  const response = await fetch("/api/chat/rename-chat-session", {
+  const response = await fetch("/api/converse/rename-chat-session", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -198,7 +198,7 @@ export async function nameChatSession(chatSessionId: string) {
 }
 
 export async function patchMessageToBeLatest(messageId: number) {
-  const response = await fetch("/api/chat/set-message-as-latest", {
+  const response = await fetch("/api/converse/set-message-as-latest", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -216,7 +216,7 @@ export async function handleChatFeedback(
   feedbackDetails: string,
   predefinedFeedback: string | undefined
 ) {
-  const response = await fetch("/api/chat/create-chat-message-feedback", {
+  const response = await fetch("/api/converse/create-chat-message-feedback", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -233,7 +233,7 @@ export async function handleChatFeedback(
 
 export async function removeChatFeedback(messageId: number) {
   const response = await fetch(
-    `/api/chat/remove-chat-message-feedback?chat_message_id=${messageId}`,
+    `/api/converse/remove-chat-message-feedback?chat_message_id=${messageId}`,
     {
       method: "DELETE",
       headers: {
@@ -248,7 +248,7 @@ export async function renameChatSession(
   chatSessionId: string,
   newName: string
 ) {
-  const response = await fetch(`/api/chat/rename-chat-session`, {
+  const response = await fetch(`/api/converse/rename-chat-session`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -263,7 +263,7 @@ export async function renameChatSession(
 
 export async function deleteChatSession(chatSessionId: string) {
   const response = await fetch(
-    `/api/chat/delete-chat-session/${chatSessionId}`,
+    `/api/converse/delete-chat-session/${chatSessionId}`,
     {
       method: "DELETE",
     }
@@ -272,7 +272,7 @@ export async function deleteChatSession(chatSessionId: string) {
 }
 
 export async function deleteAllChatSessions() {
-  const response = await fetch(`/api/chat/delete-all-chat-sessions`, {
+  const response = await fetch(`/api/converse/delete-all-chat-sessions`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -285,7 +285,7 @@ export async function getAvailableContextTokens(
   chatSessionId: string
 ): Promise<number> {
   const response = await fetch(
-    `/api/chat/available-context-tokens/${chatSessionId}`
+    `/api/converse/available-context-tokens/${chatSessionId}`
   );
   if (!response.ok) {
     return 0;
@@ -446,7 +446,7 @@ export async function uploadFilesForChat(
     formData.append("files", file);
   });
 
-  const response = await fetch("/api/chat/file", {
+  const response = await fetch("/api/converse/file", {
     method: "POST",
     body: formData,
   });

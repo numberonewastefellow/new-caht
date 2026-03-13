@@ -46,7 +46,7 @@ export default function NotificationsPopover({
     data: notifications,
     mutate,
     isLoading,
-  } = useSWR<Notification[]>("/api/notifications", errorHandlingFetcher);
+  } = useSWR<Notification[]>("/api/signals", errorHandlingFetcher);
 
   const handleNotificationClick = (notification: Notification) => {
     // Handle build_mode feature announcement specially - show intro animation
@@ -91,7 +91,7 @@ export default function NotificationsPopover({
     e?.stopPropagation(); // Prevent triggering the LineItem onClick
     try {
       const response = await fetch(
-        `/api/notifications/${notificationId}/dismiss`,
+        `/api/signals/${notificationId}/dismiss`,
         {
           method: "POST",
         }

@@ -1,0 +1,18 @@
+{
+  "operation_id": "get_user_chat_sessions",
+  "path": "/chat/get-user-chat-sessions",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

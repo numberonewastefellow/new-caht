@@ -8,7 +8,7 @@ import { StandardAnswerCategory } from "@/lib/types";
 
 async function Page() {
   const standardAnswerCategoriesResponse = await fetchSS(
-    "/manage/admin/standard-answer/category"
+    "/nexus/admin/standard-answer/category"
   );
 
   if (!standardAnswerCategoriesResponse.ok) {

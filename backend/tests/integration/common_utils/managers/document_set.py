@@ -38,7 +38,7 @@ class DocumentSetManager:
         }
 
         response = requests.post(
-            f"{API_SERVER_URL}/manage/admin/document-set",
+            f"{API_SERVER_URL}/nexus/admin/document-set",
             json=doc_set_creation_request,
             headers=(
                 user_performing_action.headers
@@ -75,7 +75,7 @@ class DocumentSetManager:
             "federated_connectors": document_set.federated_connectors,
         }
         response = requests.patch(
-            f"{API_SERVER_URL}/manage/admin/document-set",
+            f"{API_SERVER_URL}/nexus/admin/document-set",
             json=doc_set_update_request,
             headers=(
                 user_performing_action.headers
@@ -92,7 +92,7 @@ class DocumentSetManager:
         user_performing_action: DATestUser | None = None,
     ) -> bool:
         response = requests.delete(
-            f"{API_SERVER_URL}/manage/admin/document-set/{document_set.id}",
+            f"{API_SERVER_URL}/nexus/admin/document-set/{document_set.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -107,7 +107,7 @@ class DocumentSetManager:
         user_performing_action: DATestUser | None = None,
     ) -> list[DATestDocumentSet]:
         response = requests.get(
-            f"{API_SERVER_URL}/manage/document-set",
+            f"{API_SERVER_URL}/nexus/document-set",
             headers=(
                 user_performing_action.headers
                 if user_performing_action

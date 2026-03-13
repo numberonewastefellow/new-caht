@@ -15,7 +15,7 @@ import { processCookies } from "@/lib/userSS";
 export const GET = async (request: NextRequest) => {
   const requestCookies = await cookies();
   const connector = request.url.includes("gmail") ? "gmail" : "google-drive";
-  const callbackEndpoint = `/manage/connector/${connector}/callback`;
+  const callbackEndpoint = `/nexus/connector/${connector}/callback`;
   const url = new URL(buildUrl(callbackEndpoint));
   url.search = request.nextUrl.search;
 

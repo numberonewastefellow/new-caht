@@ -100,7 +100,7 @@ export default function TextViewModal({
 
       try {
         const response = await fetch(
-          `/api/chat/file/${encodeURIComponent(fileIdLocal)}`,
+          `/api/converse/file/${encodeURIComponent(fileIdLocal)}`,
           {
             method: "GET",
             signal,

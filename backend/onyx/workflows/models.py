@@ -6,11 +6,63 @@ from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel
+from pydantic import model_validator
 
 from onyx.file_store.models import FileDescriptor
 
 # Valid orchestration modes
 OrchestrationMode = Literal["sequential", "llm_decision"]
+
+# Valid step types
+StepType = Literal["agent", "conditional_router"]
+
+# Condition operators — single source of truth (also exposed via API)
+CONDITION_OPERATORS = [
+    "equals",
+    "not_equals",
+    "contains",
+    "not_contains",
+    "starts_with",
+    "ends_with",
+    "regex_match",
+    "greater_than",
+    "greater_than_or_equal",
+    "less_than",
+    "less_than_or_equal",
+    "is_empty",
+    "is_not_empty",
+]
+
+ConditionOperator = Literal[
+    "equals",
+    "not_equals",
+    "contains",
+    "not_contains",
+    "starts_with",
+    "ends_with",
+    "regex_match",
+    "greater_than",
+    "greater_than_or_equal",
+    "less_than",
+    "less_than_or_equal",
+    "is_empty",
+    "is_not_empty",
+]
+
+
+class ConditionConfig(BaseModel):
+    """Typed schema for conditional router step conditions.
+
+    Validated on workflow create/update to catch config errors early
+    rather than at runtime.
+    """
+
+    condition_field: str
+    operator: ConditionOperator = "contains"
+    match_value: str = ""
+    case_sensitive: bool = False
+    true_steps: list[int] = []
+    false_steps: list[int] = []
 
 
 # ========================
@@ -19,16 +71,27 @@ OrchestrationMode = Literal["sequential", "llm_decision"]
 
 
 class WorkflowStepCreate(BaseModel):
-    persona_id: int
+    step_type: StepType = "agent"
+    persona_id: int | None = None
     step_order: int
     step_name: str
     step_description: str | None = None
     input_mapping: dict[str, Any] | None = None
     output_key: str = "output"
-    condition: dict[str, Any] | None = None
+    condition: ConditionConfig | None = None
     is_terminal: bool = False
     can_request_input: bool = False
     promote_output: bool = False
+
+    @model_validator(mode="after")
+    def validate_step_type_fields(self) -> "WorkflowStepCreate":
+        if self.step_type == "conditional_router" and self.condition is None:
+            raise ValueError(
+                "conditional_router steps must have a 'condition' configuration"
+            )
+        if self.step_type == "agent" and self.persona_id is None:
+            raise ValueError("agent steps must have a 'persona_id'")
+        return self
 
     # Step-level overrides (override persona defaults when set)
     llm_provider_override: str | None = None
@@ -79,7 +142,8 @@ class WorkflowUpdate(BaseModel):
 class WorkflowStepResponse(BaseModel):
     id: int
     workflow_id: int
-    persona_id: int
+    step_type: str = "agent"
+    persona_id: int | None = None
     persona_name: str | None = None
     step_order: int
     step_name: str

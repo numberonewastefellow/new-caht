@@ -21,6 +21,7 @@ import "./WorkflowCanvas.css";
 import { AgentNode } from "./AgentNode";
 import { OrchestratorNode } from "./OrchestratorNode";
 import { FinishNode } from "./FinishNode";
+import { ConditionalRouterNode } from "./ConditionalRouterNode";
 import { StepEdge } from "./StepEdge";
 import type { WorkflowNode, WorkflowEdge, DragPersonaData, OrchestratorNodeData } from "./types";
 import { ORCHESTRATOR_NODE_ID } from "./types";
@@ -29,6 +30,7 @@ const nodeTypes: NodeTypes = {
   agent: AgentNode as any,
   orchestrator: OrchestratorNode as any,
   finish: FinishNode as any,
+  conditional_router: ConditionalRouterNode as any,
 };
 
 const edgeTypes: EdgeTypes = {
@@ -43,6 +45,7 @@ interface WorkflowCanvasProps {
   onConnect: OnConnect;
   onNodeClick: (nodeId: string) => void;
   onDrop: (persona: DragPersonaData, position: { x: number; y: number }) => void;
+  onConditionDrop?: (position: { x: number; y: number }) => void;
 }
 
 function FlowLegend({ nodes }: { nodes: WorkflowNode[] }) {
@@ -110,6 +113,7 @@ export function WorkflowCanvas({
   onConnect,
   onNodeClick,
   onDrop,
+  onConditionDrop,
 }: WorkflowCanvasProps) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { screenToFlowPosition } = useReactFlow();
@@ -123,6 +127,18 @@ export function WorkflowCanvas({
     (event: DragEvent) => {
       event.preventDefault();
 
+      // Check for conditional router drop
+      const conditionData = event.dataTransfer.getData("application/reactflow-condition");
+      if (conditionData && onConditionDrop) {
+        const position = screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
+        onConditionDrop(position);
+        return;
+      }
+
+      // Check for agent persona drop
       const raw = event.dataTransfer.getData("application/reactflow");
       if (!raw) return;
 
@@ -137,7 +153,7 @@ export function WorkflowCanvas({
         // Invalid drag data
       }
     },
-    [screenToFlowPosition, onDrop]
+    [screenToFlowPosition, onDrop, onConditionDrop]
   );
 
   const handleNodeClick = useCallback(

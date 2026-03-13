@@ -183,9 +183,9 @@ export const MemoizedLink = memo(
     const url = ensureHrefProtocol(href);
 
     // Check if the link is to a file on the backend
-    const isChatFile = url?.includes("/api/chat/file/");
+    const isChatFile = url?.includes("/api/converse/file/");
     if (isChatFile && updatePresentingDocument) {
-      const fileId = url!.split("/api/chat/file/")[1]?.split(/[?#]/)[0] || "";
+      const fileId = url!.split("/api/converse/file/")[1]?.split(/[?#]/)[0] || "";
       const filename = value?.toString() || "download";
       return (
         <a

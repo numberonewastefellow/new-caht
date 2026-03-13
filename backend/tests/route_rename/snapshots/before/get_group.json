@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_group",
+  "path": "/scim/v2/Groups/{group_id}",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "group_id": "test"
+    }
+  },
+  "response": {
+    "status_code": 401,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

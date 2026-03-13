@@ -4,7 +4,7 @@ import { errorHandlingFetcher } from "@/lib/fetcher";
 
 export function useDocumentSets() {
   const { data, error, mutate } = useSWR<DocumentSetSummary[]>(
-    "/api/manage/document-set",
+    "/api/nexus/document-set",
     errorHandlingFetcher,
     {
       revalidateOnFocus: false,

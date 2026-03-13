@@ -27,6 +27,7 @@ import { QuickCreateAgentModal } from "@/components/workflow-builder/QuickCreate
 import { JsonViewModal } from "@/components/workflow-builder/JsonViewModal";
 import type {
   AgentNodeData,
+  ConditionalRouterNodeData,
   DragPersonaData,
 } from "@/components/workflow-builder/types";
 import { ORCHESTRATOR_NODE_ID } from "@/components/workflow-builder/types";
@@ -72,6 +73,7 @@ function WorkflowVisualBuilderInner({
     meta,
     updateMeta,
     addAgentNode,
+    addConditionalRouterNode,
     removeNode,
     updateNodeData,
     selectedNodeId,
@@ -142,6 +144,14 @@ function WorkflowVisualBuilderInner({
     [addAgentNode]
   );
 
+  // Handle conditional router drop from sidebar
+  const handleConditionDrop = useCallback(
+    (position: { x: number; y: number }) => {
+      addConditionalRouterNode(position);
+    },
+    [addConditionalRouterNode]
+  );
+
   // Save workflow
   const handleSave = useCallback(async () => {
     const errors = validate();
@@ -206,6 +216,7 @@ function WorkflowVisualBuilderInner({
     selectedNodeId &&
     selectedNodeId !== ORCHESTRATOR_NODE_ID &&
     selectedNode;
+  const isConditionNode = selectedNode?.type === "conditional_router";
 
   return (
     <div className="wfb-page">
@@ -234,11 +245,13 @@ function WorkflowVisualBuilderInner({
           onConnect={onConnect}
           onNodeClick={handleNodeClick}
           onDrop={handleDrop}
+          onConditionDrop={handleConditionDrop}
         />
         {showConfigPanel && (
           <NodeConfigPanel
             nodeId={selectedNodeId!}
-            data={selectedNode!.data as AgentNodeData}
+            nodeType={selectedNode!.type}
+            data={selectedNode!.data as AgentNodeData | ConditionalRouterNodeData}
             agents={agents}
             availableTools={availableTools}
             documentSets={documentSets}

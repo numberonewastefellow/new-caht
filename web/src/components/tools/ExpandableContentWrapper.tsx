@@ -48,7 +48,7 @@ export default function ExpandableContentWrapper({
 
   const downloadFile = () => {
     const a = document.createElement("a");
-    a.href = `api/chat/file/${fileDescriptor.id}`;
+    a.href = `api/converse/file/${fileDescriptor.id}`;
     a.download = fileDescriptor.name || "download.csv";
     a.setAttribute("download", fileDescriptor.name || "download.csv");
     document.body.appendChild(a);

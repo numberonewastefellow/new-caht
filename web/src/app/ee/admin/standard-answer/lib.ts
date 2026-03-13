@@ -21,7 +21,7 @@ const buildRequestBodyFromStandardAnswerCategoryCreationRequest = (
 export const createStandardAnswerCategory = async (
   request: StandardAnswerCategoryCreationRequest
 ) => {
-  return fetch("/api/manage/admin/standard-answer/category", {
+  return fetch("/api/nexus/admin/standard-answer/category", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const updateStandardAnswerCategory = async (
   id: number,
   request: StandardAnswerCategoryCreationRequest
 ) => {
-  return fetch(`/api/manage/admin/standard-answer/category/${id}`, {
+  return fetch(`/api/nexus/admin/standard-answer/category/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -58,7 +58,7 @@ const buildRequestBodyFromStandardAnswerCreationRequest = (
 export const createStandardAnswer = async (
   request: StandardAnswerCreationRequest
 ) => {
-  return fetch("/api/manage/admin/standard-answer", {
+  return fetch("/api/nexus/admin/standard-answer", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -71,7 +71,7 @@ export const updateStandardAnswer = async (
   id: number,
   request: StandardAnswerCreationRequest
 ) => {
-  return fetch(`/api/manage/admin/standard-answer/${id}`, {
+  return fetch(`/api/nexus/admin/standard-answer/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -81,7 +81,7 @@ export const updateStandardAnswer = async (
 };
 
 export const deleteStandardAnswer = async (id: number) => {
-  return fetch(`/api/manage/admin/standard-answer/${id}`, {
+  return fetch(`/api/nexus/admin/standard-answer/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

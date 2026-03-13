@@ -68,7 +68,7 @@ import { errorHandlingFetcher } from "@/lib/fetcher";
  */
 export default function useCCPairs() {
   const { data, error, isLoading, mutate } = useSWR<CCPairBasicInfo[]>(
-    "/api/manage/connector-status",
+    "/api/nexus/connector-status",
     errorHandlingFetcher
   );
 

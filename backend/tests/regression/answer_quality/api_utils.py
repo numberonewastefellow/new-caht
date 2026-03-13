@@ -19,7 +19,7 @@ def _api_url_builder(env_name: str, api_path: str) -> str:
 
 @retry(tries=10, delay=10)
 def check_indexing_status(env_name: str) -> tuple[int, bool]:
-    url = _api_url_builder(env_name, "/manage/admin/connector/indexing-status/")
+    url = _api_url_builder(env_name, "/nexus/admin/connector/indexing-status/")
     try:
         indexing_status_dict = requests.post(
             url, headers=GENERAL_HEADERS, json={"get_all_connectors": True}
@@ -55,7 +55,7 @@ def check_indexing_status(env_name: str) -> tuple[int, bool]:
 
 
 def run_cc_once(env_name: str, connector_id: int, credential_id: int) -> None:
-    url = _api_url_builder(env_name, "/manage/admin/connector/run-once/")
+    url = _api_url_builder(env_name, "/nexus/admin/connector/run-once/")
     body = {
         "connector_id": connector_id,
         "credential_ids": [credential_id],
@@ -72,7 +72,7 @@ def run_cc_once(env_name: str, connector_id: int, credential_id: int) -> None:
 
 def create_cc_pair(env_name: str, connector_id: int, credential_id: int) -> None:
     url = _api_url_builder(
-        env_name, f"/manage/connector/{connector_id}/credential/{credential_id}"
+        env_name, f"/nexus/connector/{connector_id}/credential/{credential_id}"
     )
 
     body = {"name": "zip_folder_contents", "is_public": True, "groups": []}
@@ -86,7 +86,7 @@ def create_cc_pair(env_name: str, connector_id: int, credential_id: int) -> None
 
 
 def _get_existing_connector_names(env_name: str) -> list[str]:
-    url = _api_url_builder(env_name, "/manage/connector")
+    url = _api_url_builder(env_name, "/nexus/connector")
 
     body = {
         "credential_json": {},
@@ -101,7 +101,7 @@ def _get_existing_connector_names(env_name: str) -> list[str]:
 
 
 def create_connector(env_name: str, file_paths: list[str]) -> int:
-    url = _api_url_builder(env_name, "/manage/admin/connector")
+    url = _api_url_builder(env_name, "/nexus/admin/connector")
     connector_name = base_connector_name = "search_eval_connector"
     existing_connector_names = _get_existing_connector_names(env_name)
 
@@ -133,7 +133,7 @@ def create_connector(env_name: str, file_paths: list[str]) -> int:
 
 
 def create_credential(env_name: str) -> int:
-    url = _api_url_builder(env_name, "/manage/credential")
+    url = _api_url_builder(env_name, "/nexus/credential")
     body = {
         "credential_json": {},
         "admin_public": True,
@@ -153,7 +153,7 @@ def upload_file(env_name: str, zip_file_path: str) -> list[str]:
         ("files", open(zip_file_path, "rb")),
     ]
 
-    api_path = _api_url_builder(env_name, "/manage/admin/connector/file/upload")
+    api_path = _api_url_builder(env_name, "/nexus/admin/connector/file/upload")
     try:
         response = requests.post(api_path, files=files)
         response.raise_for_status()  # Raises an HTTPError for bad responses

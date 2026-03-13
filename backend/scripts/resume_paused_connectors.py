@@ -17,7 +17,7 @@ def resume_paused_connectors(
 
     # Get all paused connectors
     response = requests.post(
-        f"{api_server_url}/api/manage/admin/connector/indexing-status",
+        f"{api_server_url}/api/nexus/admin/connector/indexing-status",
         headers=headers,
         json={"get_all_connectors": True},
     )
@@ -39,7 +39,7 @@ def resume_paused_connectors(
                 if connector["cc_pair_status"] == "PAUSED":
                     print(f"Resuming connector: {connector['name']}")
                     response = requests.put(
-                        f"{api_server_url}/api/manage/admin/cc-pair/{connector['cc_pair_id']}/status",
+                        f"{api_server_url}/api/nexus/admin/cc-pair/{connector['cc_pair_id']}/status",
                         json={"status": "ACTIVE"},
                         headers=headers,
                     )

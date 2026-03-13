@@ -361,8 +361,9 @@ class IntermediateReportCitedDocs(BaseObj):
 class WorkflowStepStart(BaseObj):
     type: Literal["workflow_step_start"] = StreamingType.WORKFLOW_STEP_START.value
     step_name: str
-    persona_name: str
+    persona_name: str | None = None
     step_order: int
+    step_type: str = "agent"
     promote_output: bool = False
 
 

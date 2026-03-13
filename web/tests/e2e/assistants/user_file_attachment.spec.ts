@@ -142,7 +142,7 @@ async function uploadTestFile(
       // Wait for upload API completion to avoid racing the UI refresh.
       const uploadResponsePromise = page.waitForResponse(
         (response) =>
-          response.url().includes("/api/user/projects/file/upload") &&
+          response.url().includes("/api/workspaces/file/upload") &&
           response.request().method() === "POST",
         { timeout: 15000 }
       );

@@ -121,7 +121,7 @@ async function promoteToAdmin(
     storageState: adminStorageState,
   });
   try {
-    const res = await ctx.patch("/api/manage/set-user-role", {
+    const res = await ctx.patch("/api/nexus/set-user-role", {
       data: {
         user_email: email,
         new_role: "admin",

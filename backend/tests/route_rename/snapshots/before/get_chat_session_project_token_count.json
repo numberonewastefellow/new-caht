@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_chat_session_project_token_count",
+  "path": "/user/projects/session/{chat_session_id}/token-count",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "chat_session_id": "test"
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

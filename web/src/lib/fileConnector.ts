@@ -31,7 +31,7 @@ export async function updateConnectorFiles(
   });
 
   const response = await fetch(
-    `/api/manage/admin/connector/${connectorId}/files/update`,
+    `/api/nexus/admin/connector/${connectorId}/files/update`,
     {
       method: "POST",
       body: formData,

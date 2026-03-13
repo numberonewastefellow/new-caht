@@ -4,7 +4,7 @@ export const updateUserGroup = async (
   groupId: number,
   userGroup: UserGroupUpdate
 ) => {
-  const url = `/api/manage/admin/user-group/${groupId}`;
+  const url = `/api/nexus/admin/user-group/${groupId}`;
   return await fetch(url, {
     method: "PATCH",
     headers: {
@@ -18,7 +18,7 @@ export const updateCuratorStatus = async (
   groupId: number,
   curatorRequest: SetCuratorRequest
 ) => {
-  const url = `/api/manage/admin/user-group/${groupId}/set-curator`;
+  const url = `/api/nexus/admin/user-group/${groupId}/set-curator`;
   return await fetch(url, {
     method: "POST",
     headers: {

@@ -140,7 +140,7 @@ export function FileCard({
 
   const imageUrl = useMemo(() => {
     if (isImage && file.file_id) {
-      return `/api/chat/file/${file.file_id}`;
+      return `/api/converse/file/${file.file_id}`;
     }
     return null;
   }, [isImage, file.file_id]);

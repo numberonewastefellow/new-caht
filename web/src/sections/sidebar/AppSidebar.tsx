@@ -208,7 +208,7 @@ const MemoizedAppSidebarInner = memo(
     // Fetch notifications for build mode intro
     const { data: notifications, mutate: mutateNotifications } = useSWR<
       Notification[]
-    >("/api/notifications", errorHandlingFetcher);
+    >("/api/signals", errorHandlingFetcher);
 
     // Check if Onyx Craft is enabled via settings (backed by PostHog feature flag)
     // Only explicit true enables the feature; false or undefined = disabled
@@ -259,7 +259,7 @@ const MemoizedAppSidebarInner = memo(
     const dismissBuildModeNotification = useCallback(async () => {
       if (!buildModeNotification) return;
       try {
-        await fetch(`/api/notifications/${buildModeNotification.id}/dismiss`, {
+        await fetch(`/api/signals/${buildModeNotification.id}/dismiss`, {
           method: "POST",
         });
         mutateNotifications();

@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_cc_pair_latest_sync",
+  "path": "/manage/admin/cc-pair/{cc_pair_id}/sync-permissions",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "cc_pair_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

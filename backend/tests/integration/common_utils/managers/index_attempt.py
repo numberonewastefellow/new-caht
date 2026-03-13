@@ -96,7 +96,7 @@ class IndexAttemptManager:
         }
 
         url = (
-            f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair_id}/index-attempts"
+            f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair_id}/index-attempts"
             f"?{urlencode(query_params, doseq=True)}"
         )
         response = requests.get(
@@ -226,7 +226,7 @@ class IndexAttemptManager:
         include_resolved: bool = True,
         user_performing_action: DATestUser | None = None,
     ) -> list[IndexAttemptErrorPydantic]:
-        url = f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair_id}/errors?page_size=100"
+        url = f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair_id}/errors?page_size=100"
         if include_resolved:
             url += "&include_resolved=true"
         response = requests.get(

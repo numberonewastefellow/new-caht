@@ -1,0 +1,20 @@
+{
+  "operation_id": "download_query_history_csv",
+  "path": "/admin/query-history/download",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {
+      "request_id": "test"
+    },
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

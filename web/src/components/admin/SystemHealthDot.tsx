@@ -6,7 +6,7 @@ import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import { cn } from "@/lib/utils";
 
 export default function SystemHealthDot() {
-  const { error } = useSWR("/api/health", errorHandlingFetcher, {
+  const { error } = useSWR("/api/heartbeat", errorHandlingFetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 30000,
   });

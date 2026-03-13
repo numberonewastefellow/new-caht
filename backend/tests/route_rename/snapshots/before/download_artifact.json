@@ -1,0 +1,21 @@
+{
+  "operation_id": "download_artifact",
+  "path": "/build/sessions/{session_id}/artifacts/{path}",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "session_id": "00000000-0000-0000-0000-000000000000",
+      "path": "test"
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

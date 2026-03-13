@@ -368,8 +368,8 @@ def verify_user_files(
 
 
 def build_frontend_file_url(file_id: str) -> str:
-    return f"/api/chat/file/{file_id}"
+    return f"/api/converse/file/{file_id}"
 
 
 def build_full_frontend_file_url(file_id: str) -> str:
-    return f"{WEB_DOMAIN}/api/chat/file/{file_id}"
+    return f"{WEB_DOMAIN}/api/converse/file/{file_id}"

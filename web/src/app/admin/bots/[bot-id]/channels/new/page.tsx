@@ -27,7 +27,7 @@ async function NewChannelConfigPage(props: {
     assistantsResponse,
     standardAnswerCategoryResponse,
   ] = await Promise.all([
-    fetchSS("/manage/document-set") as Promise<Response>,
+    fetchSS("/nexus/document-set") as Promise<Response>,
     fetchAssistantsSS(),
     getStandardAnswerCategoriesIfEE(),
   ]);

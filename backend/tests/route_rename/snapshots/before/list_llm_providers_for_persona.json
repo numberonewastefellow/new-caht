@@ -1,0 +1,20 @@
+{
+  "operation_id": "list_llm_providers_for_persona",
+  "path": "/llm/persona/{persona_id}/providers",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "persona_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_connector_by_id",
+  "path": "/manage/connector/{connector_id}",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "connector_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

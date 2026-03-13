@@ -118,7 +118,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
     usePaginatedFetch<IndexAttemptError>({
       itemsPerPage: 10,
       pagesPerBatch: 1,
-      endpoint: `/api/manage/admin/cc-pair/${ccPairId}/errors`,
+      endpoint: `/api/nexus/admin/cc-pair/${ccPairId}/errors`,
     });
 
   // Initialize hooks at top level to avoid conditional hook calls
@@ -489,7 +489,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
                     onClick={async () => {
                       try {
                         const res = await fetch(
-                          `/api/manage/admin/cc-pair/${ccPair.id}/prune`,
+                          `/api/nexus/admin/cc-pair/${ccPair.id}/prune`,
                           { method: "POST" }
                         );
                         if (res.ok) {

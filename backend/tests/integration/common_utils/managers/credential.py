@@ -34,7 +34,7 @@ class CredentialManager:
         }
 
         response = requests.post(
-            url=f"{API_SERVER_URL}/manage/credential",
+            url=f"{API_SERVER_URL}/nexus/credential",
             json=credential_request,
             headers=(
                 user_performing_action.headers
@@ -61,7 +61,7 @@ class CredentialManager:
     ) -> None:
         request = credential.model_dump(include={"name", "credential_json"})
         response = requests.put(
-            url=f"{API_SERVER_URL}/manage/admin/credential/{credential.id}",
+            url=f"{API_SERVER_URL}/nexus/admin/credential/{credential.id}",
             json=request,
             headers=(
                 user_performing_action.headers
@@ -77,7 +77,7 @@ class CredentialManager:
         user_performing_action: DATestUser | None = None,
     ) -> None:
         response = requests.delete(
-            url=f"{API_SERVER_URL}/manage/credential/{credential.id}",
+            url=f"{API_SERVER_URL}/nexus/credential/{credential.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -91,7 +91,7 @@ class CredentialManager:
         credential_id: int, user_performing_action: DATestUser | None = None
     ) -> CredentialSnapshot:
         response = requests.get(
-            url=f"{API_SERVER_URL}/manage/credential/{credential_id}",
+            url=f"{API_SERVER_URL}/nexus/credential/{credential_id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -106,7 +106,7 @@ class CredentialManager:
         user_performing_action: DATestUser | None = None,
     ) -> list[CredentialSnapshot]:
         response = requests.get(
-            f"{API_SERVER_URL}/manage/credential",
+            f"{API_SERVER_URL}/nexus/credential",
             headers=(
                 user_performing_action.headers
                 if user_performing_action

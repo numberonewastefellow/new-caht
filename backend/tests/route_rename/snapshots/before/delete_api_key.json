@@ -1,0 +1,20 @@
+{
+  "operation_id": "delete_api_key",
+  "path": "/admin/api-key/{api_key_id}",
+  "method": "DELETE",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "api_key_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

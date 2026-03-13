@@ -12,7 +12,7 @@ STREAMABLE_HTTP_URL = f"{MCP_SERVER_URL.rstrip('/')}/?transportType=streamable-h
 
 def test_mcp_server_health_check(reset: None) -> None:  # noqa: ARG001
     """Test MCP server health check endpoint."""
-    response = requests.get(f"{MCP_SERVER_URL}/health", timeout=10)
+    response = requests.get(f"{MCP_SERVER_URL}/heartbeat", timeout=10)
     assert response.status_code == 200
     assert response.json()["status"] == "healthy"
     assert response.json()["service"] == "mcp_server"

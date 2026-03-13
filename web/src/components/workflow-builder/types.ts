@@ -47,6 +47,25 @@ export interface AgentNodeData {
   [key: string]: unknown;
 }
 
+/** Data stored on each conditional router node */
+export interface ConditionalRouterNodeData {
+  step_name: string;
+  step_description: string;
+  output_key: string;
+  condition_field: string;
+  operator: string;
+  match_value: string;
+  case_sensitive: boolean;
+  true_steps: number[];
+  false_steps: number[];
+
+  // Visual state
+  isSelected?: boolean;
+  stepOrder?: number;
+  orchestration_mode?: "sequential" | "llm_decision";
+  [key: string]: unknown;
+}
+
 /** Data stored on the orchestrator (start) node */
 export interface OrchestratorNodeData {
   label: string;
@@ -59,6 +78,8 @@ export interface StepEdgeData {
   stepOrder?: number;
   condition?: Record<string, any> | null;
   orchestration_mode?: "sequential" | "llm_decision";
+  /** "True" or "False" label for edges from conditional router nodes */
+  branchLabel?: "True" | "False" | null;
   [key: string]: unknown;
 }
 
@@ -66,7 +87,8 @@ export interface StepEdgeData {
 
 export type AgentFlowNode = Node<AgentNodeData, "agent">;
 export type OrchestratorFlowNode = Node<OrchestratorNodeData, "orchestrator">;
-export type WorkflowNode = AgentFlowNode | OrchestratorFlowNode;
+export type ConditionalRouterFlowNode = Node<ConditionalRouterNodeData, "conditional_router">;
+export type WorkflowNode = AgentFlowNode | OrchestratorFlowNode | ConditionalRouterFlowNode;
 export type WorkflowEdge = Edge<StepEdgeData>;
 
 // ── Workflow meta (global settings, not per-node) ──────────────────────

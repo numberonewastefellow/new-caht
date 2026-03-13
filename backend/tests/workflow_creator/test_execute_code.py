@@ -60,7 +60,7 @@ def create_chat_session(persona_id: int = 0) -> str | None:
         "persona_id": persona_id,
         "description": "test-execute-code",
     }
-    resp = api("POST", "chat/create-chat-session", body)
+    resp = api("POST", "converse/create-chat-session", body)
     if resp.status_code != 200:
         log(f"Failed to create chat session: {resp.status_code} {resp.text}")
         return None
@@ -81,7 +81,7 @@ def send_message(chat_session_id: str, message: str, parent_message_id: int = -1
         "origin": "webapp",
     }
 
-    resp = stream_api("POST", "chat/send-chat-message", body)
+    resp = stream_api("POST", "converse/send-chat-message", body)
     if resp.status_code != 200:
         log(f"Failed to send message: {resp.status_code} {resp.text}")
         return None
@@ -121,7 +121,7 @@ def send_message(chat_session_id: str, message: str, parent_message_id: int = -1
 
 def get_chat_session_detail(chat_session_id: str) -> dict | None:
     """Get full chat session detail including all messages."""
-    resp = api("GET", f"chat/get-chat-session/{chat_session_id}")
+    resp = api("GET", f"converse/get-chat-session/{chat_session_id}")
     if resp.status_code != 200:
         log(f"Failed to get chat session: {resp.status_code} {resp.text}")
         return None
@@ -137,7 +137,7 @@ def execute_code(
         "parent_message_id": parent_message_id,
         "code": code,
     }
-    resp = api("POST", "chat/execute-code", body)
+    resp = api("POST", "converse/execute-code", body)
     if resp.status_code != 200:
         log(f"Execute code failed: {resp.status_code} {resp.text}")
         return None

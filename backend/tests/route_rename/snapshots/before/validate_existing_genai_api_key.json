@@ -1,0 +1,18 @@
+{
+  "operation_id": "validate_existing_genai_api_key",
+  "path": "/manage/admin/genai-api-key/validate",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

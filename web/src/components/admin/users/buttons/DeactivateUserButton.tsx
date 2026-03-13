@@ -19,8 +19,8 @@ const DeactivateUserButton = ({
 }) => {
   const { trigger, isMutating } = useSWRMutation(
     deactivate
-      ? "/api/manage/admin/deactivate-user"
-      : "/api/manage/admin/activate-user",
+      ? "/api/nexus/admin/deactivate-user"
+      : "/api/nexus/admin/activate-user",
     userMutationFetcher,
     {
       onSuccess: () => {

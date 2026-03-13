@@ -25,6 +25,7 @@ from onyx.db.workflow import list_workflows
 from onyx.db.workflow import update_workflow
 from onyx.server.utils import get_json_line
 from onyx.utils.logger import setup_logger
+from onyx.workflows.models import CONDITION_OPERATORS
 from onyx.workflows.models import WorkflowCreate
 from onyx.workflows.models import WorkflowExecutionResponse
 from onyx.workflows.models import WorkflowResponse
@@ -52,6 +53,7 @@ def _workflow_to_response(workflow) -> WorkflowResponse:
             WorkflowStepResponse(
                 id=step.id,
                 workflow_id=step.workflow_id,
+                step_type=step.step_type or "agent",
                 persona_id=step.persona_id,
                 persona_name=persona.name if persona else None,
                 step_order=step.step_order,
@@ -97,6 +99,19 @@ def _workflow_to_response(workflow) -> WorkflowResponse:
 
 
 # ========================
+# Metadata
+# ========================
+
+
+@router.get("/condition-operators")
+def get_condition_operators(
+    _: User = Depends(current_user),
+) -> list[str]:
+    """Return the list of valid condition operators for conditional router steps."""
+    return CONDITION_OPERATORS
+
+
+# ========================
 # CRUD Endpoints (Admin)
 # ========================
 
@@ -108,8 +123,10 @@ def create_workflow_endpoint(
     db_session: Session = Depends(get_session),
 ) -> WorkflowResponse:
     """Create a new multi-agent workflow."""
-    # Validate that all referenced personas exist
+    # Validate that all referenced personas exist (skip conditional_router steps)
     for step in workflow_data.steps:
+        if step.step_type == "conditional_router":
+            continue
         persona = db_session.get(Persona, step.persona_id)
         if persona is None or persona.deleted:
             raise HTTPException(

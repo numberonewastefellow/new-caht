@@ -5,7 +5,7 @@ export async function updateSlackBotField(
   field: keyof SlackBot,
   value: any
 ): Promise<Response> {
-  return fetch(`/api/manage/admin/slack-app/bots/${slackBot.id}`, {
+  return fetch(`/api/nexus/admin/slack-app/bots/${slackBot.id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

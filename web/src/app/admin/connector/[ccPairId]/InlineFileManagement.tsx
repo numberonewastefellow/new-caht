@@ -56,7 +56,7 @@ export default function InlineFileManagement({
     error,
     mutate: refreshFiles,
   } = useSWR<{ files: ConnectorFileInfo[] }>(
-    `/api/manage/admin/connector/${connectorId}/files`,
+    `/api/nexus/admin/connector/${connectorId}/files`,
     errorHandlingFetcher,
     { refreshInterval: isEditing ? 0 : 5000 } // Disable auto-refresh while editing
   );

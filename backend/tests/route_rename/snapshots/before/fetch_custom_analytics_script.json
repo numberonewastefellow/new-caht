@@ -1,0 +1,16 @@
+{
+  "operation_id": "fetch_custom_analytics_script",
+  "path": "/enterprise-settings/custom-analytics-script",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 200,
+    "content_type": "application/json",
+    "body_structure": null
+  }
+}

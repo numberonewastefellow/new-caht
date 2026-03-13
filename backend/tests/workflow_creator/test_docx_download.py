@@ -5,7 +5,7 @@ Sends a simple DOCX request to the Document Generator workflow,
 streams the response, and verifies:
   1. DOCX Builder creates a document
   2. file_ids appear in the stream (MCP file saved to MinIO)
-  3. The file is downloadable via /api/chat/file/{file_id}
+  3. The file is downloadable via /api/converse/file/{file_id}
 """
 
 import json
@@ -25,7 +25,7 @@ ASSISTANT_ID = 465  # Document Generator
 
 def create_chat_session():
     """Create a new chat session for the Document Generator."""
-    resp = api("POST", "chat/create-chat-session", {
+    resp = api("POST", "converse/create-chat-session", {
         "persona_id": ASSISTANT_ID,
         "description": "DOCX download test",
     })
@@ -47,7 +47,8 @@ def send_message_and_stream(session_id: int, message: str):
         "query_override": None,
     }
 
-    url = CONFIG['base_url'].rstrip("/") + "/api/chat/send-chat-message"
+    url = CONFIG['base_url'].rstrip("/") + "/api/converse/send-chat-message"
+    # Use cookie auth (Bearer token doesn't work for converse routes)
     resp = req.post(url, json=body, headers=headers(), stream=True, timeout=300)
     assert resp.status_code == 200, f"Failed: {resp.status_code} {resp.text}"
 
@@ -107,7 +108,7 @@ def verify_file_download(file_id: str):
     """Verify we can download the file from MinIO via the API and check content."""
     import requests as req
 
-    url = CONFIG['base_url'].rstrip("/") + f"/api/chat/file/{file_id}"
+    url = CONFIG['base_url'].rstrip("/") + f"/api/converse/file/{file_id}"
     resp = req.get(url, headers=headers(), timeout=30)
 
     if resp.status_code != 200:
@@ -208,7 +209,7 @@ def main():
 
     # Step 4: Verify session reload (file_ids persist in history)
     print(f"\n5. Verifying session reload (file_ids in history)...")
-    resp = api("GET", f"chat/get-chat-session/{session_id}")
+    resp = api("GET", f"converse/get-chat-session/{session_id}")
     if resp.status_code == 200:
         session_data = resp.json()
         messages = session_data.get("messages", [])

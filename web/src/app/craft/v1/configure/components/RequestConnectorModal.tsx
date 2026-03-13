@@ -35,7 +35,7 @@ export default function RequestConnectorModal({
     setSuccessMessage(null);
 
     try {
-      const response = await fetch("/api/manage/connector-request", {
+      const response = await fetch("/api/nexus/connector-request", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

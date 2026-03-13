@@ -111,7 +111,7 @@ router = APIRouter()
 USERS_PAGE_SIZE = 10
 
 
-@router.patch("/manage/set-user-role", tags=PUBLIC_API_TAGS)
+@router.patch("/nexus/set-user-role", tags=PUBLIC_API_TAGS)
 def set_user_role(
     user_role_update_request: UserRoleUpdateRequest,
     current_user: User = Depends(current_admin_user),
@@ -155,7 +155,7 @@ class TestUpsertRequest(BaseModel):
     email: str
 
 
-@router.post("/manage/users/test-upsert-user")
+@router.post("/nexus/users/test-upsert-user")
 async def test_upsert_user(
     request: TestUpsertRequest,
     _: User = Depends(current_admin_user),
@@ -167,7 +167,7 @@ async def test_upsert_user(
     return FullUserSnapshot.from_user_model(user) if user else None
 
 
-@router.get("/manage/users/accepted", tags=PUBLIC_API_TAGS)
+@router.get("/nexus/users/accepted", tags=PUBLIC_API_TAGS)
 def list_accepted_users(
     q: str | None = Query(default=None),
     page_num: int = Query(0, ge=0),
@@ -208,7 +208,7 @@ def list_accepted_users(
     )
 
 
-@router.get("/manage/users/invited", tags=PUBLIC_API_TAGS)
+@router.get("/nexus/users/invited", tags=PUBLIC_API_TAGS)
 def list_invited_users(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
@@ -224,7 +224,7 @@ def list_invited_users(
     return [InvitedUserSnapshot(email=email) for email in filtered_invited_emails]
 
 
-@router.get("/manage/users", tags=PUBLIC_API_TAGS)
+@router.get("/nexus/users", tags=PUBLIC_API_TAGS)
 def list_all_users(
     q: str | None = None,
     accepted_page: int | None = None,
@@ -326,7 +326,7 @@ def list_all_users(
     )
 
 
-@router.get("/manage/users/download")
+@router.get("/nexus/users/download")
 def download_users_csv(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
@@ -363,7 +363,7 @@ def download_users_csv(
     )
 
 
-@router.put("/manage/admin/users", tags=PUBLIC_API_TAGS)
+@router.put("/nexus/admin/users", tags=PUBLIC_API_TAGS)
 def bulk_invite_users(
     emails: list[str] = Body(..., embed=True),
     current_user: User = Depends(current_admin_user),
@@ -457,7 +457,7 @@ def bulk_invite_users(
         raise e
 
 
-@router.patch("/manage/admin/remove-invited-user", tags=PUBLIC_API_TAGS)
+@router.patch("/nexus/admin/remove-invited-user", tags=PUBLIC_API_TAGS)
 def remove_invited_user(
     user_email: UserByEmail,
     _: User = Depends(current_admin_user),
@@ -485,7 +485,7 @@ def remove_invited_user(
     return number_of_invited_users
 
 
-@router.patch("/manage/admin/deactivate-user", tags=PUBLIC_API_TAGS)
+@router.patch("/nexus/admin/deactivate-user", tags=PUBLIC_API_TAGS)
 def deactivate_user_api(
     user_email: UserByEmail,
     current_user: User = Depends(current_admin_user),
@@ -514,7 +514,7 @@ def deactivate_user_api(
         )()
 
 
-@router.delete("/manage/admin/delete-user", tags=PUBLIC_API_TAGS)
+@router.delete("/nexus/admin/delete-user", tags=PUBLIC_API_TAGS)
 async def delete_user(
     user_email: UserByEmail,
     _: User = Depends(current_admin_user),
@@ -558,7 +558,7 @@ async def delete_user(
         raise HTTPException(status_code=500, detail="Error deleting user")
 
 
-@router.patch("/manage/admin/activate-user", tags=PUBLIC_API_TAGS)
+@router.patch("/nexus/admin/activate-user", tags=PUBLIC_API_TAGS)
 def activate_user_api(
     user_email: UserByEmail,
     _: User = Depends(current_admin_user),
@@ -588,7 +588,7 @@ def activate_user_api(
         )()
 
 
-@router.get("/manage/admin/valid-domains")
+@router.get("/nexus/admin/valid-domains")
 def get_valid_domains(
     _: User = Depends(current_admin_user),
 ) -> list[str]:

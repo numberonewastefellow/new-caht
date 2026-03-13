@@ -353,7 +353,7 @@ webserver:
   # Example:
   # readinessProbe:
   #   httpGet:
-  #     path: /api/health
+  #     path: /api/heartbeat
   #     port: http
   startupProbe: {}
   readinessProbe: {}
@@ -442,7 +442,7 @@ api:
   # Example:
   # readinessProbe:
   #   httpGet:
-  #     path: /health
+  #     path: /heartbeat
   #     port: api-server-port
   startupProbe: {}
   readinessProbe: {}
@@ -1025,14 +1025,14 @@ codeInterpreter:
   # Health probes
   livenessProbe:
     httpGet:
-      path: /health
+      path: /heartbeat
       port: http
     initialDelaySeconds: 10
     periodSeconds: 10
 
   readinessProbe:
     httpGet:
-      path: /health
+      path: /heartbeat
       port: http
     initialDelaySeconds: 5
     periodSeconds: 5

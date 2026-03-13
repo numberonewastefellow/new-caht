@@ -1,0 +1,20 @@
+{
+  "operation_id": "set_provider_as_default",
+  "path": "/admin/llm/provider/{provider_id}/default",
+  "method": "POST",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "provider_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

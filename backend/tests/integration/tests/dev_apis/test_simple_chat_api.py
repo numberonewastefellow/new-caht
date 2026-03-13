@@ -28,7 +28,7 @@ def test_send_message_simple_with_history(
     docs = document_builder(content_list)
 
     response = requests.post(
-        f"{API_SERVER_URL}/chat/send-message-simple-with-history",
+        f"{API_SERVER_URL}/converse/send-message-simple-with-history",
         json={
             "messages": [
                 {
@@ -78,7 +78,7 @@ def test_using_reference_docs_with_simple_with_history_api_flow(
 
     # SEINDING MESSAGE 1
     response = requests.post(
-        f"{API_SERVER_URL}/chat/send-message-simple-with-history",
+        f"{API_SERVER_URL}/converse/send-message-simple-with-history",
         json={
             "messages": [
                 {
@@ -98,7 +98,7 @@ def test_using_reference_docs_with_simple_with_history_api_flow(
 
     # SEINDING MESSAGE 2
     response = requests.post(
-        f"{API_SERVER_URL}/chat/send-message-simple-with-history",
+        f"{API_SERVER_URL}/converse/send-message-simple-with-history",
         json={
             "messages": [
                 {
@@ -134,7 +134,7 @@ def test_send_message_simple_with_history_strict_json(
 ) -> None:
 
     response = requests.post(
-        f"{API_SERVER_URL}/chat/send-message-simple-with-history",
+        f"{API_SERVER_URL}/converse/send-message-simple-with-history",
         json={
             # intentionally not relevant prompt to ensure that the
             # structured response format is actually used

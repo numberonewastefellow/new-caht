@@ -185,7 +185,7 @@ export const test = base.extend<{
 
     // Mock the guild list endpoint
     await page.route(
-      "**/api/manage/admin/discord-bot/guilds",
+      "**/api/nexus/admin/discord-bot/guilds",
       async (route) => {
         const method = route.request().method();
         if (method === "GET") {
@@ -202,7 +202,7 @@ export const test = base.extend<{
 
     // Mock the specific guild endpoint
     await page.route(
-      `**/api/manage/admin/discord-bot/guilds/${MOCK_GUILD_ID}`,
+      `**/api/nexus/admin/discord-bot/guilds/${MOCK_GUILD_ID}`,
       async (route) => {
         const method = route.request().method();
         if (method === "GET") {
@@ -222,7 +222,7 @@ export const test = base.extend<{
 
     // Mock the channels endpoint for this guild
     await page.route(
-      `**/api/manage/admin/discord-bot/guilds/${MOCK_GUILD_ID}/channels`,
+      `**/api/nexus/admin/discord-bot/guilds/${MOCK_GUILD_ID}/channels`,
       async (route) => {
         await route.fulfill(jsonResponse(mockChannels));
       }
@@ -230,7 +230,7 @@ export const test = base.extend<{
 
     // Mock channel update endpoint
     await page.route(
-      `**/api/manage/admin/discord-bot/guilds/${MOCK_GUILD_ID}/channels/*`,
+      `**/api/nexus/admin/discord-bot/guilds/${MOCK_GUILD_ID}/channels/*`,
       async (route) => {
         if (route.request().method() === "PATCH") {
           const body = (await route.request().postDataJSON()) || {};
@@ -277,7 +277,7 @@ export const test = base.extend<{
     };
 
     await page.route(
-      "**/api/manage/admin/discord-bot/config",
+      "**/api/nexus/admin/discord-bot/config",
       async (route) => {
         const method = route.request().method();
         if (method === "GET" || method === "POST") {

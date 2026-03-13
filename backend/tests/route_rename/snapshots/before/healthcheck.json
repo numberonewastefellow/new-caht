@@ -1,0 +1,20 @@
+{
+  "operation_id": "healthcheck",
+  "path": "/health",
+  "method": "GET",
+  "auth_type": "public",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 200,
+    "content_type": "application/json",
+    "body_structure": {
+      "data": "<null>",
+      "message": "<str>",
+      "success": "<bool>"
+    }
+  }
+}

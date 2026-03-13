@@ -1,0 +1,18 @@
+{
+  "operation_id": "patch_agents_display_priorities",
+  "path": "/admin/agents/display-priorities",
+  "method": "PATCH",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

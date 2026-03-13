@@ -21,7 +21,7 @@ export const submitGoogleSite = async (
       formData.append("files", file);
     });
 
-    const response = await fetch("/api/manage/admin/connector/file/upload", {
+    const response = await fetch("/api/nexus/admin/connector/file/upload", {
       method: "POST",
       body: formData,
     });

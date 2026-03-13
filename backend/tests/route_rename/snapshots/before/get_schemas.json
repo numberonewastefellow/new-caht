@@ -1,0 +1,39 @@
+{
+  "operation_id": "get_schemas",
+  "path": "/scim/v2/Schemas",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 200,
+    "content_type": "application/json",
+    "body_structure": [
+      {
+        "attributes": [
+          {
+            "caseExact": "<bool>",
+            "description": "<str>",
+            "multiValued": "<bool>",
+            "mutability": "<str>",
+            "name": "<str>",
+            "required": "<bool>",
+            "returned": "<str>",
+            "subAttributes": "<empty_list>",
+            "type": "<str>",
+            "uniqueness": "<str>"
+          }
+        ],
+        "description": "<str>",
+        "id": "<str>",
+        "name": "<str>",
+        "schemas": [
+          "<str>"
+        ]
+      }
+    ]
+  }
+}

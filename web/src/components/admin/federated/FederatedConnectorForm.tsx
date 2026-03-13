@@ -66,7 +66,7 @@ async function validateCredentials(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const response = await fetch(
-      `/api/federated/sources/federated_${source}/credentials/validate`,
+      `/api/bridges/sources/federated_${source}/credentials/validate`,
       {
         method: "POST",
         headers: {
@@ -101,7 +101,7 @@ async function createFederatedConnector(
   config?: ConfigForm
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const response = await fetch("/api/federated", {
+    const response = await fetch("/api/bridges", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -136,7 +136,7 @@ async function updateFederatedConnector(
   config?: ConfigForm
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const response = await fetch(`/api/federated/${id}`, {
+    const response = await fetch(`/api/bridges/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -168,7 +168,7 @@ async function deleteFederatedConnector(
   id: number
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const response = await fetch(`/api/federated/${id}`, {
+    const response = await fetch(`/api/bridges/${id}`, {
       method: "DELETE",
     });
 
@@ -227,7 +227,7 @@ export function FederatedConnectorForm({
         setIsLoadingSchema(true);
         try {
           const response = await fetch(
-            `/api/federated/sources/federated_${connector}/credentials/schema`
+            `/api/bridges/sources/federated_${connector}/credentials/schema`
           );
 
           if (!response.ok) {
@@ -262,7 +262,7 @@ export function FederatedConnectorForm({
     const fetchConfigurationSchema = async () => {
       try {
         const response = await fetch(
-          `/api/federated/sources/federated_${connector}/configuration/schema`
+          `/api/bridges/sources/federated_${connector}/configuration/schema`
         );
 
         if (!response.ok) {

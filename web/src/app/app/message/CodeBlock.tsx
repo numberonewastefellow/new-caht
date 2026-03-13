@@ -50,7 +50,7 @@ export const CodeBlock = memo(function CodeBlock({
     if (!codeText || !execContext || !execContext.parentMessageId) return;
     setRunning(true);
     try {
-      const resp = await fetch("/api/chat/execute-code", {
+      const resp = await fetch("/api/converse/execute-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

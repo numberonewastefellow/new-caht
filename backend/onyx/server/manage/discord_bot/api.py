@@ -36,7 +36,7 @@ from onyx.server.manage.discord_bot.utils import (
 )
 from shared_configs.contextvars import get_current_tenant_id
 
-router = APIRouter(prefix="/manage/admin/discord-bot")
+router = APIRouter(prefix="/nexus/admin/discord-bot")
 
 
 def _check_bot_config_api_access() -> None:

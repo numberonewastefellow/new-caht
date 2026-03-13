@@ -43,7 +43,7 @@ from onyx.utils.variable_functionality import fetch_ee_implementation_or_noop
 logger = setup_logger()
 
 
-router = APIRouter(prefix="/manage", tags=PUBLIC_API_TAGS)
+router = APIRouter(prefix="/nexus", tags=PUBLIC_API_TAGS)
 
 
 def _ignore_credential_permissions(source: DocumentSource) -> bool:

@@ -64,7 +64,7 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /health
+              path: /heartbeat
               port: mcp-server-port
             initialDelaySeconds: {{ .Values.mcpServer.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.mcpServer.livenessProbe.periodSeconds }}
@@ -72,7 +72,7 @@ spec:
             failureThreshold: {{ .Values.mcpServer.livenessProbe.failureThreshold }}
           readinessProbe:
             httpGet:
-              path: /health
+              path: /heartbeat
               port: mcp-server-port
             initialDelaySeconds: {{ .Values.mcpServer.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.mcpServer.readinessProbe.periodSeconds }}

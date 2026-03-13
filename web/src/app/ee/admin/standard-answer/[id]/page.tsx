@@ -9,8 +9,8 @@ import { StandardAnswer, StandardAnswerCategory } from "@/lib/types";
 async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const tasks = [
-    fetchSS("/manage/admin/standard-answer"),
-    fetchSS(`/manage/admin/standard-answer/category`),
+    fetchSS("/nexus/admin/standard-answer"),
+    fetchSS(`/nexus/admin/standard-answer/category`),
   ];
   const [standardAnswersResponse, standardAnswerCategoriesResponse] =
     await Promise.all(tasks);

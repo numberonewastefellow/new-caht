@@ -5,7 +5,7 @@ export const setupGmailOAuth = async ({
 }: {
   isAdmin: boolean;
 }): Promise<[string | null, string]> => {
-  const credentialCreationResponse = await fetch("/api/manage/credential", {
+  const credentialCreationResponse = await fetch("/api/nexus/credential", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -26,7 +26,7 @@ export const setupGmailOAuth = async ({
     (await credentialCreationResponse.json()) as Credential<{}>;
 
   const authorizationUrlResponse = await fetch(
-    `/api/manage/connector/gmail/authorize/${credential.id}`
+    `/api/nexus/connector/gmail/authorize/${credential.id}`
   );
   if (!authorizationUrlResponse.ok) {
     return [

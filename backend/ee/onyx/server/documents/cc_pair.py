@@ -26,7 +26,7 @@ from onyx.utils.logger import setup_logger
 from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
-router = APIRouter(prefix="/manage")
+router = APIRouter(prefix="/nexus")
 
 
 @router.get("/admin/cc-pair/{cc_pair_id}/sync-permissions")

@@ -59,6 +59,7 @@ from onyx.utils.threadpool_concurrency import run_in_background
 from onyx.utils.threadpool_concurrency import wait_on_background
 from onyx.workflows.models import WorkflowCheckpoint
 from onyx.workflows.models import WorkflowContext
+from onyx.workflows.step_runners.conditional_router import evaluate_condition
 
 logger = setup_logger()
 
@@ -667,9 +668,15 @@ def run_workflow_sequential(
     cancelled = False
 
     # Pre-build agent tools with cached LLMs + user (Tier 1.5 performance)
+    # Skip non-agent steps (e.g. conditional_router has no persona)
     agent_tools_by_step: dict[int, AgentTool] = {}
     llm_cache: dict[int, LLM] = {}
+    skip_step_orders: set[int] = set()  # Branch-skip for conditional router
     for step in steps:
+        if step.step_type == "conditional_router":
+            continue
+        if step.persona_id is None:
+            continue
         persona = step.persona if step.persona else db_session.get(Persona, step.persona_id)
         if persona is None or persona.deleted:
             continue
@@ -712,6 +719,89 @@ def run_workflow_sequential(
                     "[Sequential] Skipping completed step '%s' (id=%d)",
                     step.step_name, step.id,
                 )
+                continue
+
+            # Skip steps that are in the inactive branch of a conditional router
+            if step.step_order in skip_step_orders:
+                logger.info(
+                    "[Sequential] Skipping step '%s' (order=%d) — "
+                    "inactive conditional branch",
+                    step.step_name, step.step_order,
+                )
+                continue
+
+            # ── Conditional Router step: evaluate and set branch skips ──
+            if step.step_type == "conditional_router":
+                condition_config = step.condition or {}
+                result, explanation = evaluate_condition(
+                    condition_config, context
+                )
+                # Store result in context
+                context.step_outputs[step.output_key] = (
+                    "true" if result else "false"
+                )
+
+                # Determine which branch to skip
+                if result:
+                    false_steps = condition_config.get("false_steps", [])
+                    skip_step_orders.update(int(s) for s in false_steps)
+                else:
+                    true_steps = condition_config.get("true_steps", [])
+                    skip_step_orders.update(int(s) for s in true_steps)
+
+                placement = Placement(turn_index=turn_index)
+
+                # Emit step lifecycle so the UI shows the evaluation
+                yield Packet(
+                    placement=placement,
+                    obj=WorkflowStepStart(
+                        step_name=step.step_name,
+                        persona_name=None,
+                        step_order=step.step_order,
+                        step_type="conditional_router",
+                    ),
+                )
+                yield Packet(
+                    placement=placement,
+                    obj=WorkflowStepDelta(content=explanation),
+                )
+                yield Packet(
+                    placement=placement,
+                    obj=WorkflowStepEnd(
+                        step_name=step.step_name,
+                        output_key=step.output_key,
+                    ),
+                )
+                yield Packet(placement=placement, obj=SectionEnd())
+
+                # Save checkpoint
+                step_checkpoint = WorkflowCheckpoint(
+                    step_outputs=dict(context.step_outputs),
+                    shared_data={
+                        **context.shared_data,
+                        "_original_user_input": context.shared_data.get(
+                            "_original_user_input", context.user_input
+                        ),
+                    },
+                    completed_step_ids=[
+                        s.id for s in steps
+                        if s.output_key in context.step_outputs
+                    ],
+                    turn_index=turn_index,
+                )
+                save_checkpoint(db_session, execution.id, step_checkpoint)
+
+                steps_executed.append({
+                    "step_id": step.id,
+                    "persona_id": None,
+                    "step_name": step.step_name,
+                    "input_text": str(condition_config)[:500],
+                    "output_text": explanation,
+                    "duration_ms": 0,
+                    "tokens_used": 0,
+                })
+
+                turn_index += 1
                 continue
 
             agent_tool = agent_tools_by_step.get(step.id)

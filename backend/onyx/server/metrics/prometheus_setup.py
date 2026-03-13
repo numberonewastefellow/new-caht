@@ -18,7 +18,7 @@ from onyx.server.metrics.postgres_connection_pool import pool_timeout_handler
 from onyx.server.metrics.slow_requests import slow_request_callback
 
 _EXCLUDED_HANDLERS = [
-    "/health",
+    "/heartbeat",
     "/metrics",
     "/openapi.json",
 ]

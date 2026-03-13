@@ -103,8 +103,8 @@ test.describe("Guilds List Page", () => {
 
     const initialState = await enabledSwitch.getAttribute("aria-checked");
     const expectedState = initialState === "true" ? "false" : "true";
-    const guildUrl = `/api/manage/admin/discord-bot/guilds/${mockRegisteredGuild.id}`;
-    const guildsListUrl = `/api/manage/admin/discord-bot/guilds`;
+    const guildUrl = `/api/nexus/admin/discord-bot/guilds/${mockRegisteredGuild.id}`;
+    const guildsListUrl = `/api/nexus/admin/discord-bot/guilds`;
 
     // Set up response waiters before clicking
     const patchPromise = adminPage.waitForResponse(
@@ -231,7 +231,7 @@ test.describe("Guilds List Page", () => {
     // Set up the wait BEFORE navigation so we can catch the response
     const configResponsePromise = adminPage.waitForResponse(
       (response) =>
-        response.url().includes("/api/manage/admin/discord-bot/config") &&
+        response.url().includes("/api/nexus/admin/discord-bot/config") &&
         response.request().method() === "GET"
     );
 
@@ -266,7 +266,7 @@ test.describe("Guilds List Page", () => {
   test("loading state shows loader", async ({ adminPage }) => {
     // Intercept API to delay response
     await adminPage.route(
-      "**/api/manage/admin/discord-bot/**",
+      "**/api/nexus/admin/discord-bot/**",
       async (route) => {
         await new Promise((r) => setTimeout(r, 1000));
         await route.continue();
@@ -295,7 +295,7 @@ test.describe("Guilds List Page", () => {
 
   test("error state shows error message", async ({ adminPage }) => {
     // Intercept API to return error
-    await adminPage.route("**/api/manage/admin/discord-bot/guilds", (route) => {
+    await adminPage.route("**/api/nexus/admin/discord-bot/guilds", (route) => {
       route.fulfill({
         status: 500,
         contentType: "application/json",

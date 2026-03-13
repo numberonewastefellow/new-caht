@@ -58,7 +58,7 @@ def test_all_stream_chat_message_objects_outputs(reset: None) -> None:  # noqa: 
 
     # TESTING RESPONSE FOR QUESTION 1
     response = requests.post(
-        f"{API_SERVER_URL}/chat/send-message-simple-with-history",
+        f"{API_SERVER_URL}/converse/send-message-simple-with-history",
         json={
             "messages": [
                 {
@@ -96,7 +96,7 @@ def test_all_stream_chat_message_objects_outputs(reset: None) -> None:  # noqa: 
 
     # TESTING RESPONSE FOR QUESTION 2
     response = requests.post(
-        f"{API_SERVER_URL}/chat/send-message-simple-with-history",
+        f"{API_SERVER_URL}/converse/send-message-simple-with-history",
         json={
             "messages": [
                 {
@@ -142,7 +142,7 @@ def test_all_stream_chat_message_objects_outputs(reset: None) -> None:  # noqa: 
 
     # TESTING RESPONSE FOR QUESTION 3
     response = requests.post(
-        f"{API_SERVER_URL}/chat/send-message-simple-with-history",
+        f"{API_SERVER_URL}/converse/send-message-simple-with-history",
         json={
             "messages": [
                 {

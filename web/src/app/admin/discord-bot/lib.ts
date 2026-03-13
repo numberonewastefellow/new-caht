@@ -7,7 +7,7 @@ import {
   DiscordChannelConfigUpdate,
 } from "@/app/admin/discord-bot/types";
 
-const BASE_URL = "/api/manage/admin/discord-bot";
+const BASE_URL = "/api/nexus/admin/discord-bot";
 
 // === Bot Config (Self-hosted only) ===
 

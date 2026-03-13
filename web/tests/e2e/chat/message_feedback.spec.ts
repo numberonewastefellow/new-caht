@@ -26,7 +26,7 @@ test.describe("Message feedback thumbs controls", () => {
     }[] = [];
 
     await page.route(
-      "**/api/chat/create-chat-message-feedback",
+      "**/api/converse/create-chat-message-feedback",
       async (route) => {
         const body = JSON.parse(route.request().postData() ?? "{}");
         createFeedbackRequests.push(body);
@@ -39,7 +39,7 @@ test.describe("Message feedback thumbs controls", () => {
     );
 
     await page.route(
-      "**/api/chat/remove-chat-message-feedback?*",
+      "**/api/converse/remove-chat-message-feedback?*",
       async (route) => {
         const url = new URL(route.request().url());
         removeFeedbackRequests.push({
@@ -73,7 +73,7 @@ test.describe("Message feedback thumbs controls", () => {
     await expect(submitButton).toBeEnabled({ timeout: 2000 });
 
     await Promise.all([
-      page.waitForRequest("**/api/chat/create-chat-message-feedback"),
+      page.waitForRequest("**/api/converse/create-chat-message-feedback"),
       submitButton.click(),
     ]);
 
@@ -87,7 +87,7 @@ test.describe("Message feedback thumbs controls", () => {
 
     // Clicking thumbs up again removes the feedback
     await Promise.all([
-      page.waitForRequest("**/api/chat/remove-chat-message-feedback?*"),
+      page.waitForRequest("**/api/converse/remove-chat-message-feedback?*"),
       likeButton.click(),
     ]);
     expect(removeFeedbackRequests).toHaveLength(1);
@@ -113,7 +113,7 @@ test.describe("Message feedback thumbs controls", () => {
     await expect(submitButtonDislike).toBeEnabled();
 
     await Promise.all([
-      page.waitForRequest("**/api/chat/create-chat-message-feedback"),
+      page.waitForRequest("**/api/converse/create-chat-message-feedback"),
       submitButtonDislike.click(),
     ]);
 

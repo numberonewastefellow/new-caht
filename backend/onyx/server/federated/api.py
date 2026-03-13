@@ -47,7 +47,7 @@ from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
 
-router = APIRouter(prefix="/federated")
+router = APIRouter(prefix="/bridges")
 
 
 def _get_federated_connector_instance(

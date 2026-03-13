@@ -1,0 +1,21 @@
+{
+  "operation_id": "confluence_oauth_callback",
+  "path": "/oauth/connector/confluence/callback",
+  "method": "POST",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {
+      "code": "test",
+      "state": "test"
+    },
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

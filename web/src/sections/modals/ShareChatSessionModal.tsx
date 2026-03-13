@@ -25,7 +25,7 @@ function buildShareLink(chatSessionId: string) {
 }
 
 async function generateShareLink(chatSessionId: string) {
-  const response = await fetch(`/api/chat/chat-session/${chatSessionId}`, {
+  const response = await fetch(`/api/converse/chat-session/${chatSessionId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sharing_status: "public" }),
@@ -38,7 +38,7 @@ async function generateShareLink(chatSessionId: string) {
 }
 
 async function deleteShareLink(chatSessionId: string) {
-  const response = await fetch(`/api/chat/chat-session/${chatSessionId}`, {
+  const response = await fetch(`/api/converse/chat-session/${chatSessionId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sharing_status: "private" }),

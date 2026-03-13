@@ -4,8 +4,8 @@ import { Connector } from "../connectors/connectors";
 
 export async function fetchValidFilterInfo() {
   const [connectorsResponse, documentSetResponse] = await Promise.all([
-    fetchSS("/manage/connector"),
-    fetchSS("/manage/document-set"),
+    fetchSS("/nexus/connector"),
+    fetchSS("/nexus/document-set"),
   ]);
 
   let connectors = [] as Connector<any>[];

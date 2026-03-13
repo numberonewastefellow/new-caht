@@ -1,0 +1,18 @@
+{
+  "operation_id": "bulk_invite_users",
+  "path": "/manage/admin/users",
+  "method": "PUT",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

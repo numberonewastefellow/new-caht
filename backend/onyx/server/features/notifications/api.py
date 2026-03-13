@@ -17,7 +17,7 @@ from onyx.server.settings.models import Notification as NotificationModel
 from onyx.utils.logger import setup_logger
 
 logger = setup_logger()
-router = APIRouter(prefix="/notifications")
+router = APIRouter(prefix="/signals")
 
 
 @router.get("")

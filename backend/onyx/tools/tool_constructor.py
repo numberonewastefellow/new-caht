@@ -32,6 +32,9 @@ from onyx.tools.tool_implementations.custom.custom_tool import (
     build_custom_tools_from_openapi_schema_and_headers,
 )
 from onyx.tools.tool_implementations.file_reader.file_reader_tool import FileReaderTool
+from onyx.tools.tool_implementations.http_request.http_request_tool import (
+    HttpRequestTool,
+)
 from onyx.tools.tool_implementations.images.image_generation_tool import (
     ImageGenerationTool,
 )
@@ -264,6 +267,15 @@ def construct_tools(
                         emitter=emitter,
                         user_file_ids=cfg.user_file_ids,
                         chat_file_ids=cfg.chat_file_ids,
+                    )
+                ]
+
+            # Handle HTTP Request Tool
+            elif tool_cls.__name__ == HttpRequestTool.__name__:
+                tool_dict[db_tool_model.id] = [
+                    HttpRequestTool(
+                        tool_id=db_tool_model.id,
+                        emitter=emitter,
                     )
                 ]
 

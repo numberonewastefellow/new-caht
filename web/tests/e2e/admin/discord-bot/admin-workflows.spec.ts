@@ -82,7 +82,7 @@ test.describe("Admin Workflow E2E Flows", () => {
         response
           .url()
           .includes(
-            `/api/manage/admin/discord-bot/guilds/${mockRegisteredGuild.id}/channels`
+            `/api/nexus/admin/discord-bot/guilds/${mockRegisteredGuild.id}/channels`
           ) && response.request().method() === "PATCH"
     );
 

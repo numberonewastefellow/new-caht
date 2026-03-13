@@ -253,7 +253,7 @@ Resources:
       HealthCheckEnabled: True
       HealthCheckIntervalSeconds: 30
       HealthCheckPort: 80
-      HealthCheckPath: /api/health
+      HealthCheckPath: /api/heartbeat
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 20
       HealthyThresholdCount: 3

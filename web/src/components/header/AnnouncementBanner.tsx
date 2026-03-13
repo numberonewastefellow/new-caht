@@ -32,7 +32,7 @@ export function AnnouncementBanner() {
   const handleDismiss = async (notificationId: number) => {
     try {
       const response = await fetch(
-        `/api/notifications/${notificationId}/dismiss`,
+        `/api/signals/${notificationId}/dismiss`,
         {
           method: "POST",
         }

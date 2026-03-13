@@ -89,7 +89,7 @@ export default function SignedUpUserTable({
   } = usePaginatedFetch<User>({
     itemsPerPage: ITEMS_PER_PAGE,
     pagesPerBatch: PAGES_PER_BATCH,
-    endpoint: "/api/manage/users/accepted",
+    endpoint: "/api/nexus/users/accepted",
     query: q,
     filter: filters,
   });

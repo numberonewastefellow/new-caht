@@ -1,0 +1,18 @@
+{
+  "operation_id": "create_oauth_config_endpoint",
+  "path": "/admin/oauth-config/create",
+  "method": "POST",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

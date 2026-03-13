@@ -297,13 +297,14 @@ def _add_step(
 ) -> AgentWorkflowStep:
     step = AgentWorkflowStep(
         workflow_id=workflow_id,
+        step_type=step_create.step_type,
         persona_id=step_create.persona_id,
         step_order=step_create.step_order,
         step_name=step_create.step_name,
         step_description=step_create.step_description,
         input_mapping=step_create.input_mapping,
         output_key=step_create.output_key,
-        condition=step_create.condition,
+        condition=step_create.condition.model_dump() if step_create.condition else None,
         is_terminal=step_create.is_terminal,
         can_request_input=step_create.can_request_input,
         promote_output=step_create.promote_output,

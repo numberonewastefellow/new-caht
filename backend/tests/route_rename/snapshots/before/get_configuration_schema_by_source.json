@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_configuration_schema_by_source",
+  "path": "/federated/sources/{source}/configuration/schema",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "source": "test"
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

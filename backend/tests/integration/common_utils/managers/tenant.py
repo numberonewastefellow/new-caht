@@ -29,7 +29,7 @@ class TenantManager:
         user_performing_action: DATestUser | None = None,
     ) -> AllUsersResponse:
         response = requests.get(
-            url=f"{API_SERVER_URL}/manage/users",
+            url=f"{API_SERVER_URL}/nexus/users",
             headers=(
                 user_performing_action.headers
                 if user_performing_action

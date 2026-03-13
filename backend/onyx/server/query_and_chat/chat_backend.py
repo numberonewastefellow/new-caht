@@ -106,7 +106,7 @@ from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
 
-router = APIRouter(prefix="/chat")
+router = APIRouter(prefix="/converse")
 
 
 def _get_available_tokens_for_persona(

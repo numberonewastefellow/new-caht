@@ -1,0 +1,18 @@
+{
+  "operation_id": "backfill_workflow_personas_endpoint",
+  "path": "/admin/workflow/backfill-personas",
+  "method": "POST",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

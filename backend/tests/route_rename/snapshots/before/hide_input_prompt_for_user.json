@@ -1,0 +1,20 @@
+{
+  "operation_id": "hide_input_prompt_for_user",
+  "path": "/input_prompt/{input_prompt_id}/hide",
+  "method": "POST",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "input_prompt_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

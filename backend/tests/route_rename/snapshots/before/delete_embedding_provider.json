@@ -1,0 +1,20 @@
+{
+  "operation_id": "delete_embedding_provider",
+  "path": "/admin/embedding/embedding-provider/{provider_type}",
+  "method": "DELETE",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "provider_type": "test"
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

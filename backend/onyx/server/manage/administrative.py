@@ -41,7 +41,7 @@ from onyx.server.models import StatusResponse
 from onyx.utils.logger import setup_logger
 from shared_configs.contextvars import get_current_tenant_id
 
-router = APIRouter(prefix="/manage")
+router = APIRouter(prefix="/nexus")
 logger = setup_logger()
 
 """Admin only API endpoints"""

@@ -20,7 +20,7 @@ from onyx.server.manage.models import StandardAnswerCategory
 from onyx.server.manage.models import StandardAnswerCategoryCreationRequest
 from onyx.server.manage.models import StandardAnswerCreationRequest
 
-router = APIRouter(prefix="/manage")
+router = APIRouter(prefix="/nexus")
 
 
 @router.post("/admin/standard-answer")

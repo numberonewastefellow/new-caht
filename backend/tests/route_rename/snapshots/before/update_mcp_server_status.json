@@ -1,0 +1,22 @@
+{
+  "operation_id": "update_mcp_server_status",
+  "path": "/admin/mcp/server/{server_id}/status",
+  "method": "PATCH",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {
+      "status": "test"
+    },
+    "path_params": {
+      "server_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

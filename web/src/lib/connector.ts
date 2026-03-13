@@ -17,7 +17,7 @@ async function handleResponse(
 export async function fetchConnectors(
   credential_id: number
 ): Promise<ConnectorSnapshot[]> {
-  const url = `/api/manage/admin/connector?credential=${credential_id}`;
+  const url = `/api/nexus/admin/connector?credential=${credential_id}`;
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Failed to fetch connectors: ${await response.text()}`);
@@ -29,7 +29,7 @@ export async function fetchConnectors(
 export async function createConnector<T>(
   connector: ConnectorBase<T>
 ): Promise<[string | null, Connector<T> | null]> {
-  const response = await fetch(`/api/manage/admin/connector`, {
+  const response = await fetch(`/api/nexus/admin/connector`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export async function updateConnectorCredentialPairName(
   newName: string
 ): Promise<Response> {
   return fetch(
-    `/api/manage/admin/cc-pair/${ccPairId}/name?new_name=${encodeURIComponent(
+    `/api/nexus/admin/cc-pair/${ccPairId}/name?new_name=${encodeURIComponent(
       newName
     )}`,
     {
@@ -61,7 +61,7 @@ export async function updateConnectorCredentialPairProperty(
   name: string,
   value: string
 ): Promise<Response> {
-  return fetch(`/api/manage/admin/cc-pair/${ccPairId}/property`, {
+  return fetch(`/api/nexus/admin/cc-pair/${ccPairId}/property`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -76,7 +76,7 @@ export async function updateConnectorCredentialPairProperty(
 export async function updateConnector<T>(
   connector: Connector<T>
 ): Promise<Connector<T>> {
-  const response = await fetch(`/api/manage/admin/connector/${connector.id}`, {
+  const response = await fetch(`/api/nexus/admin/connector/${connector.id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -89,7 +89,7 @@ export async function updateConnector<T>(
 export async function deleteConnector(
   connectorId: number
 ): Promise<string | null> {
-  const response = await fetch(`/api/manage/admin/connector/${connectorId}`, {
+  const response = await fetch(`/api/nexus/admin/connector/${connectorId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -106,7 +106,7 @@ export async function runConnector(
   credentialIds: number[],
   fromBeginning: boolean = false
 ): Promise<string | null> {
-  const response = await fetch("/api/manage/admin/connector/run-once", {
+  const response = await fetch("/api/nexus/admin/connector/run-once", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -128,7 +128,7 @@ export async function deleteConnectorIfExistsAndIsUnlinked({
   source: ValidSources;
   name?: string;
 }): Promise<string | null> {
-  const connectorsResponse = await fetch("/api/manage/connector");
+  const connectorsResponse = await fetch("/api/nexus/connector");
   if (connectorsResponse.ok) {
     const connectors = (await connectorsResponse.json()) as Connector<any>[];
     const matchingConnectors = connectors.filter(

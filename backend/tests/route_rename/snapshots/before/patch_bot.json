@@ -1,0 +1,20 @@
+{
+  "operation_id": "patch_bot",
+  "path": "/manage/admin/slack-app/bots/{slack_bot_id}",
+  "method": "PATCH",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "slack_bot_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

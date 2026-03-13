@@ -130,7 +130,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> None:
         result = requests.put(
-            url=f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair.id}/status",
+            url=f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair.id}/status",
             json={"status": "PAUSED"},
             headers=(
                 user_performing_action.headers
@@ -146,7 +146,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> None:
         result = requests.put(
-            url=f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair.id}/status",
+            url=f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair.id}/status",
             json={"status": "ACTIVE"},
             headers=(
                 user_performing_action.headers
@@ -166,7 +166,7 @@ class CCPairManager:
             credential_id=cc_pair.credential_id,
         )
         result = requests.post(
-            url=f"{API_SERVER_URL}/manage/admin/deletion-attempt",
+            url=f"{API_SERVER_URL}/nexus/admin/deletion-attempt",
             json=cc_pair_identifier.model_dump(),
             headers=(
                 user_performing_action.headers
@@ -182,7 +182,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> CCPairFullInfo | None:
         response = requests.get(
-            f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair_id}",
+            f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair_id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -199,7 +199,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> ConnectorIndexingStatusLite | None:
         response = requests.post(
-            f"{API_SERVER_URL}/manage/admin/connector/indexing-status",
+            f"{API_SERVER_URL}/nexus/admin/connector/indexing-status",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -222,7 +222,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> list[ConnectorIndexingStatusLite]:
         response = requests.post(
-            f"{API_SERVER_URL}/manage/admin/connector/indexing-status",
+            f"{API_SERVER_URL}/nexus/admin/connector/indexing-status",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -244,7 +244,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> list[ConnectorStatus]:
         response = requests.get(
-            f"{API_SERVER_URL}/manage/admin/connector/status",
+            f"{API_SERVER_URL}/nexus/admin/connector/status",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -293,7 +293,7 @@ class CCPairManager:
             "from_beginning": from_beginning,
         }
         result = requests.post(
-            url=f"{API_SERVER_URL}/manage/admin/connector/run-once",
+            url=f"{API_SERVER_URL}/nexus/admin/connector/run-once",
             json=body,
             headers=(
                 user_performing_action.headers
@@ -433,7 +433,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> None:
         result = requests.post(
-            url=f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair.id}/prune",
+            url=f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair.id}/prune",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -448,7 +448,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> datetime | None:
         response = requests.get(
-            url=f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair.id}/last_pruned",
+            url=f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair.id}/last_pruned",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -503,7 +503,7 @@ class CCPairManager:
         409 Conflict pass through since if it's running that's what we were trying to do anyway.
         """
         result = requests.post(
-            url=f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair.id}/sync-permissions",
+            url=f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair.id}/sync-permissions",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -514,7 +514,7 @@ class CCPairManager:
             result.raise_for_status()
 
         group_sync_result = requests.post(
-            url=f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair.id}/sync-groups",
+            url=f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair.id}/sync-groups",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -531,7 +531,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> datetime | None:
         doc_sync_response = requests.get(
-            url=f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair.id}/sync-permissions",
+            url=f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair.id}/sync-permissions",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -556,7 +556,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> datetime | None:
         group_sync_response = requests.get(
-            url=f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair.id}/sync-groups",
+            url=f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair.id}/sync-groups",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -581,7 +581,7 @@ class CCPairManager:
         user_performing_action: DATestUser | None = None,
     ) -> list[DocumentSyncStatus]:
         response = requests.get(
-            url=f"{API_SERVER_URL}/manage/admin/cc-pair/{cc_pair.id}/get-docs-sync-status",
+            url=f"{API_SERVER_URL}/nexus/admin/cc-pair/{cc_pair.id}/get-docs-sync-status",
             headers=(
                 user_performing_action.headers
                 if user_performing_action

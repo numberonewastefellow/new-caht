@@ -82,7 +82,7 @@ class ChatSessionManager:
             persona_id=persona_id, description=description
         )
         response = requests.post(
-            f"{API_SERVER_URL}/chat/create-chat-session",
+            f"{API_SERVER_URL}/converse/create-chat-session",
             json=chat_session_creation_req.model_dump(),
             headers=(
                 user_performing_action.headers
@@ -134,7 +134,7 @@ class ChatSessionManager:
         cookies = user_performing_action.cookies if user_performing_action else None
 
         response = requests.post(
-            f"{API_SERVER_URL}/chat/send-chat-message",
+            f"{API_SERVER_URL}/converse/send-chat-message",
             json=chat_message_req.model_dump(mode="json"),
             headers=headers,
             stream=True,
@@ -218,7 +218,7 @@ class ChatSessionManager:
         packets_received = 0
 
         with requests.post(
-            f"{API_SERVER_URL}/chat/send-chat-message",
+            f"{API_SERVER_URL}/converse/send-chat-message",
             json=chat_message_req.model_dump(mode="json"),
             headers=headers,
             stream=True,
@@ -362,7 +362,7 @@ class ChatSessionManager:
         user_performing_action: DATestUser | None = None,
     ) -> list[DATestChatMessage]:
         response = requests.get(
-            f"{API_SERVER_URL}/chat/get-chat-session/{chat_session.id}",
+            f"{API_SERVER_URL}/converse/get-chat-session/{chat_session.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -392,7 +392,7 @@ class ChatSessionManager:
         predefined_feedback: str | None = None,
     ) -> None:
         response = requests.post(
-            url=f"{API_SERVER_URL}/chat/create-chat-message-feedback",
+            url=f"{API_SERVER_URL}/converse/create-chat-message-feedback",
             json={
                 "chat_message_id": message_id,
                 "is_positive": is_positive,
@@ -419,7 +419,7 @@ class ChatSessionManager:
         Returns True if deletion was successful, False otherwise.
         """
         response = requests.delete(
-            f"{API_SERVER_URL}/chat/delete-chat-session/{chat_session.id}",
+            f"{API_SERVER_URL}/converse/delete-chat-session/{chat_session.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -441,7 +441,7 @@ class ChatSessionManager:
         # Since there's no direct API for soft delete, we'll use a query parameter approach
         # or make a direct call with hard_delete=False parameter via a new endpoint
         response = requests.delete(
-            f"{API_SERVER_URL}/chat/delete-chat-session/{chat_session.id}?hard_delete=false",
+            f"{API_SERVER_URL}/converse/delete-chat-session/{chat_session.id}?hard_delete=false",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -461,7 +461,7 @@ class ChatSessionManager:
         Returns True if deletion was successful, False otherwise.
         """
         response = requests.delete(
-            f"{API_SERVER_URL}/chat/delete-chat-session/{chat_session.id}?hard_delete=true",
+            f"{API_SERVER_URL}/converse/delete-chat-session/{chat_session.id}?hard_delete=true",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -481,7 +481,7 @@ class ChatSessionManager:
         Returns True if the chat session is confirmed deleted, False if it still exists.
         """
         response = requests.get(
-            f"{API_SERVER_URL}/chat/get-chat-session/{chat_session.id}",
+            f"{API_SERVER_URL}/converse/get-chat-session/{chat_session.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -503,7 +503,7 @@ class ChatSessionManager:
         """
         # Try to get the chat session with include_deleted=true
         response = requests.get(
-            f"{API_SERVER_URL}/chat/get-chat-session/{chat_session.id}?include_deleted=true",
+            f"{API_SERVER_URL}/converse/get-chat-session/{chat_session.id}?include_deleted=true",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -529,7 +529,7 @@ class ChatSessionManager:
         """
         # Try to get the chat session with include_deleted=true
         response = requests.get(
-            f"{API_SERVER_URL}/chat/get-chat-session/{chat_session.id}?include_deleted=true",
+            f"{API_SERVER_URL}/converse/get-chat-session/{chat_session.id}?include_deleted=true",
             headers=(
                 user_performing_action.headers
                 if user_performing_action

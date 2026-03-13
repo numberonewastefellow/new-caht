@@ -22,6 +22,7 @@ import { parseLlmDescriptor, structureValue } from "@/lib/llm/utils";
 import LLMSelector from "@/components/llm/LLMSelector";
 import { createWorkflow, updateWorkflow, deleteWorkflow } from "@/lib/workflows/api";
 import {
+  CONDITION_OPERATORS,
   WorkflowSnapshot,
   WorkflowStepCreate,
 } from "@/lib/workflows/interfaces";
@@ -146,9 +147,12 @@ function WorkflowStepRow({
   onMoveDown,
 }: WorkflowStepRowProps) {
   const { values, setFieldValue, errors, touched } = useFormikContext<any>();
+  const stepType = values.steps?.[index]?.step_type ?? "agent";
   const currentPersonaId = values.steps?.[index]?.persona_id ?? 0;
   const stepErrors = (errors.steps as any)?.[index];
   const stepTouched = (touched.steps as any)?.[index];
+
+  const isConditionalRouter = stepType === "conditional_router";
 
   return (
     <Card padding={1}>
@@ -156,15 +160,26 @@ function WorkflowStepRow({
         {/* Step number */}
         <div
           className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
-          style={{ backgroundColor: "var(--theme-purple-01)" }}
+          style={{
+            backgroundColor: isConditionalRouter
+              ? "var(--theme-green-01)"
+              : "var(--theme-purple-01)",
+          }}
         >
-          <Text as="span" style={{ color: "var(--theme-purple-05)" }}>
+          <Text
+            as="span"
+            style={{
+              color: isConditionalRouter
+                ? "var(--theme-green-05)"
+                : "var(--theme-purple-05)",
+            }}
+          >
             {index + 1}
           </Text>
         </div>
 
         <div className="flex-1 space-y-4">
-          {/* Row 1: Step Name + Agent — side by side */}
+          {/* Row 0: Step Type selector */}
           <div className="grid grid-cols-2 gap-4">
             <InputLayouts.Vertical
               name={`steps.${index}.step_name`}
@@ -173,10 +188,50 @@ function WorkflowStepRow({
             >
               <InputTypeInField
                 name={`steps.${index}.step_name`}
-                placeholder="e.g. Research, Summarize, Find Flights..."
+                placeholder={
+                  isConditionalRouter
+                    ? "e.g. Check Error, Route by Status..."
+                    : "e.g. Research, Summarize, Find Flights..."
+                }
               />
             </InputLayouts.Vertical>
 
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-1">
+                <Text mainContentEmphasis text04>Step Type</Text>
+                <InfoTip>
+                  Agent steps run an AI agent. Conditional Router steps evaluate a condition and branch the workflow.
+                </InfoTip>
+              </div>
+              <select
+                value={stepType}
+                className="w-full h-10 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm"
+                onChange={(e) => {
+                  setFieldValue(`steps.${index}.step_type`, e.target.value);
+                  if (e.target.value === "conditional_router") {
+                    setFieldValue(`steps.${index}.persona_id`, null);
+                    setFieldValue(`steps.${index}.condition`, {
+                      condition_field: "",
+                      operator: "contains",
+                      match_value: "",
+                      case_sensitive: false,
+                      true_steps: [],
+                      false_steps: [],
+                    });
+                  } else {
+                    setFieldValue(`steps.${index}.persona_id`, 0);
+                    setFieldValue(`steps.${index}.condition`, null);
+                  }
+                }}
+              >
+                <option value="agent">Agent</option>
+                <option value="conditional_router">Conditional Router</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Agent-specific: persona selector */}
+          {!isConditionalRouter && (
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-1">
                 <Text mainContentEmphasis text04>Agent</Text>
@@ -201,7 +256,6 @@ function WorkflowStepRow({
                   );
                 }}
                 onBlur={() => {
-                  // Trigger touched state for validation display
                   const touchedArr = Array.isArray(touched.steps) ? touched.steps : [];
                   const touchedSteps = [...touchedArr];
                   touchedSteps[index] = { ...touchedSteps[index], persona_id: true };
@@ -220,18 +274,96 @@ function WorkflowStepRow({
                 </Text>
               )}
             </div>
-          </div>
+          )}
+
+          {/* Conditional Router config */}
+          {isConditionalRouter && (
+            <div className="space-y-3 p-3 rounded-8 border border-border bg-background-tint-01">
+              <Text secondaryBody text04 className="text-xs font-medium">Condition Configuration</Text>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-0.5">
+                  <Text secondaryBody text04 className="text-xs">Condition Field</Text>
+                  <input
+                    type="text"
+                    className="w-full h-9 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm font-mono"
+                    value={values.steps[index]?.condition?.condition_field ?? ""}
+                    onChange={(e) =>
+                      setFieldValue(`steps.${index}.condition.condition_field`, e.target.value)
+                    }
+                    placeholder="$step_name.output"
+                  />
+                  <Text secondaryBody text03 className="text-xs">
+                    Reference a previous step output (e.g. $research.output) or $user_input
+                  </Text>
+                </div>
+
+                <div className="flex flex-col gap-0.5">
+                  <Text secondaryBody text04 className="text-xs">Operator</Text>
+                  <select
+                    className="w-full h-9 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm"
+                    value={values.steps[index]?.condition?.operator ?? "contains"}
+                    onChange={(e) =>
+                      setFieldValue(`steps.${index}.condition.operator`, e.target.value)
+                    }
+                  >
+                    {CONDITION_OPERATORS.map((op) => (
+                      <option key={op.value} value={op.value}>
+                        {op.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {!["is_empty", "is_not_empty"].includes(
+                values.steps[index]?.condition?.operator ?? ""
+              ) && (
+                <div className="flex flex-col gap-0.5">
+                  <Text secondaryBody text04 className="text-xs">Match Value</Text>
+                  <input
+                    type="text"
+                    className="w-full h-9 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm"
+                    value={values.steps[index]?.condition?.match_value ?? ""}
+                    onChange={(e) =>
+                      setFieldValue(`steps.${index}.condition.match_value`, e.target.value)
+                    }
+                    placeholder="Value to compare against"
+                  />
+                </div>
+              )}
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={values.steps[index]?.condition?.case_sensitive ?? false}
+                  onChange={(e) =>
+                    setFieldValue(`steps.${index}.condition.case_sensitive`, e.target.checked)
+                  }
+                />
+                <Text secondaryBody text04 className="text-xs">Case sensitive</Text>
+              </div>
+            </div>
+          )}
 
           {/* Row 2: Step Description — full width */}
           <InputLayouts.Vertical
             name={`steps.${index}.step_description`}
             title="Step Description"
             optional
-            description="What this step should accomplish. Helps the orchestrator decide when to use it."
+            description={
+              isConditionalRouter
+                ? "Describe the routing logic for documentation purposes."
+                : "What this step should accomplish. Helps the orchestrator decide when to use it."
+            }
           >
             <InputTextAreaField
               name={`steps.${index}.step_description`}
-              placeholder="e.g. Collect travel details like destination, dates, budget, and number of travelers from the user's message."
+              placeholder={
+                isConditionalRouter
+                  ? "e.g. Route to error handling if the research step found errors."
+                  : "e.g. Collect travel details like destination, dates, budget, and number of travelers from the user's message."
+              }
             />
           </InputLayouts.Vertical>
 
@@ -241,12 +373,14 @@ function WorkflowStepRow({
               <div className="flex items-center">
                 <Text mainContentEmphasis text04>Output Key</Text>
                 <InfoTip>
-                  A unique variable name to store this step&apos;s output (e.g. &quot;travel_details&quot;, &quot;flights&quot;, &quot;summary&quot;). Other steps can reference this output. Use lowercase with underscores, no spaces.
+                  {isConditionalRouter
+                    ? 'Stores "true" or "false" as the result of the condition evaluation.'
+                    : 'A unique variable name to store this step\u0027s output (e.g. "travel_details", "flights", "summary"). Other steps can reference this output. Use lowercase with underscores, no spaces.'}
                 </InfoTip>
               </div>
               <InputTypeInField
                 name={`steps.${index}.output_key`}
-                placeholder="e.g. research_results"
+                placeholder={isConditionalRouter ? "e.g. route_result" : "e.g. research_results"}
               />
             </div>
           </div>
@@ -262,15 +396,17 @@ function WorkflowStepRow({
                 </InfoTip>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <SwitchField name={`steps.${index}.can_request_input`} />
-              <div className="flex items-center">
-                <Text secondaryBody text04>Can Request Input</Text>
-                <InfoTip>
-                  When enabled, this agent can pause the workflow and ask the user for more information.
-                </InfoTip>
+            {!isConditionalRouter && (
+              <div className="flex items-center gap-2">
+                <SwitchField name={`steps.${index}.can_request_input`} />
+                <div className="flex items-center">
+                  <Text secondaryBody text04>Can Request Input</Text>
+                  <InfoTip>
+                    When enabled, this agent can pause the workflow and ask the user for more information.
+                  </InfoTip>
+                </div>
               </div>
-            </div>
+            )}
             <div className="flex items-center gap-2">
               <SwitchField name={`steps.${index}.promote_output`} />
               <div className="flex items-center">
@@ -396,21 +532,25 @@ export default function WorkflowEditorPage({
     timeout_seconds: existingWorkflow?.timeout_seconds ?? 1800,
     is_public: existingWorkflow?.is_public ?? true,
     steps: existingWorkflow?.steps?.map((s) => ({
+      step_type: s.step_type ?? "agent",
       persona_id: s.persona_id,
       step_order: s.step_order,
       step_name: s.step_name,
       step_description: s.step_description ?? "",
       output_key: s.output_key ?? "output",
+      condition: s.condition ?? null,
       is_terminal: s.is_terminal,
       can_request_input: s.can_request_input ?? false,
       promote_output: s.promote_output ?? false,
     })) ?? [
       {
+        step_type: "agent" as const,
         persona_id: 0,
         step_order: 0,
         step_name: "",
         step_description: "",
         output_key: "output",
+        condition: null as Record<string, any> | null,
         is_terminal: false,
         can_request_input: false,
         promote_output: false,
@@ -429,7 +569,12 @@ export default function WorkflowEditorPage({
     steps: Yup.array()
       .of(
         Yup.object().shape({
-          persona_id: Yup.number().min(1, "Please select an agent").required("Agent is required"),
+          step_type: Yup.string().oneOf(["agent", "conditional_router"]).required(),
+          persona_id: Yup.number().when("step_type", {
+            is: "agent",
+            then: (schema) => schema.min(1, "Please select an agent").required("Agent is required"),
+            otherwise: (schema) => schema.nullable(),
+          }),
           step_name: Yup.string().required("Step name is required"),
           step_description: Yup.string().optional(),
           output_key: Yup.string()
@@ -453,7 +598,12 @@ export default function WorkflowEditorPage({
         const s = values.steps[i];
         if (!s) continue;
         if (!s.step_name?.trim()) return `Step ${i + 1}: Please enter a step name.`;
-        if (!s.persona_id || s.persona_id === 0) return `Step ${i + 1}: Please select an agent.`;
+        if (s.step_type === "agent" && (!s.persona_id || s.persona_id === 0)) {
+          return `Step ${i + 1}: Please select an agent.`;
+        }
+        if (s.step_type === "conditional_router" && !s.condition?.condition_field) {
+          return `Step ${i + 1}: Please configure the condition field.`;
+        }
       }
     }
     return null;
@@ -462,11 +612,13 @@ export default function WorkflowEditorPage({
   async function handleSubmit(values: typeof initialValues) {
     try {
       const steps: WorkflowStepCreate[] = values.steps.map((s, i) => ({
-        persona_id: s.persona_id,
+        step_type: s.step_type || "agent",
+        persona_id: s.step_type === "conditional_router" ? null : s.persona_id,
         step_order: i,
         step_name: s.step_name,
         step_description: s.step_description || null,
         output_key: s.output_key || "output",
+        condition: s.step_type === "conditional_router" ? s.condition : null,
         is_terminal: s.is_terminal,
         can_request_input: s.can_request_input ?? false,
         promote_output: s.promote_output ?? false,
@@ -700,25 +852,56 @@ export default function WorkflowEditorPage({
                                 />
                               ))}
 
-                              <Button
-                                type="button"
-                                secondary
-                                leftIcon={SvgSparkle}
-                                onClick={() =>
-                                  arrayHelpers.push({
-                                    persona_id: 0,
-                                    step_order: values.steps.length,
-                                    step_name: "",
-                                    step_description: "",
-                                    output_key: "output",
-                                    is_terminal: false,
-                                    can_request_input: false,
-                                    promote_output: false,
-                                  })
-                                }
-                              >
-                                Add Step
-                              </Button>
+                              <div className="flex gap-2">
+                                <Button
+                                  type="button"
+                                  secondary
+                                  leftIcon={SvgSparkle}
+                                  onClick={() =>
+                                    arrayHelpers.push({
+                                      step_type: "agent",
+                                      persona_id: 0,
+                                      step_order: values.steps.length,
+                                      step_name: "",
+                                      step_description: "",
+                                      output_key: "output",
+                                      condition: null,
+                                      is_terminal: false,
+                                      can_request_input: false,
+                                      promote_output: false,
+                                    })
+                                  }
+                                >
+                                  Add Agent Step
+                                </Button>
+                                <Button
+                                  type="button"
+                                  secondary
+                                  onClick={() =>
+                                    arrayHelpers.push({
+                                      step_type: "conditional_router",
+                                      persona_id: null,
+                                      step_order: values.steps.length,
+                                      step_name: "",
+                                      step_description: "",
+                                      output_key: "route_result",
+                                      condition: {
+                                        condition_field: "",
+                                        operator: "contains",
+                                        match_value: "",
+                                        case_sensitive: false,
+                                        true_steps: [],
+                                        false_steps: [],
+                                      },
+                                      is_terminal: false,
+                                      can_request_input: false,
+                                      promote_output: false,
+                                    })
+                                  }
+                                >
+                                  Add Conditional Router
+                                </Button>
+                              </div>
                             </GeneralLayouts.Section>
                           )}
                         </FieldArray>

@@ -1,0 +1,20 @@
+{
+  "operation_id": "update_oauth_config_endpoint",
+  "path": "/admin/oauth-config/{oauth_config_id}",
+  "method": "PUT",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "oauth_config_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

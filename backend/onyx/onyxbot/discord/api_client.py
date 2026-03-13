@@ -205,7 +205,7 @@ class OnyxAPIClient:
             return False
 
         try:
-            url = f"{self._base_url}/health"
+            url = f"{self._base_url}/heartbeat"
             async with self._session.get(
                 url, timeout=aiohttp.ClientTimeout(total=10)
             ) as response:

@@ -80,7 +80,7 @@ async function sendMessageAndCapturePayload(
 ): Promise<SendChatMessagePayload> {
   const requestPromise = page.waitForRequest(
     (request) =>
-      request.url().includes("/api/chat/send-chat-message") &&
+      request.url().includes("/api/converse/send-chat-message") &&
       request.method() === "POST"
   );
 
@@ -215,7 +215,7 @@ test.describe("LLM Runtime Selection", () => {
     await openChat(page);
 
     let turn = 0;
-    await page.route("**/api/chat/send-chat-message", async (route) => {
+    await page.route("**/api/converse/send-chat-message", async (route) => {
       turn += 1;
       await route.fulfill({
         status: 200,
@@ -262,7 +262,7 @@ test.describe("LLM Runtime Selection", () => {
     await openChat(page);
 
     let turn = 0;
-    await page.route("**/api/chat/send-chat-message", async (route) => {
+    await page.route("**/api/converse/send-chat-message", async (route) => {
       turn += 1;
       await route.fulfill({
         status: 200,
@@ -309,7 +309,7 @@ test.describe("LLM Runtime Selection", () => {
 
     const regenerateRequestPromise = page.waitForRequest(
       (request) =>
-        request.url().includes("/api/chat/send-chat-message") &&
+        request.url().includes("/api/converse/send-chat-message") &&
         request.method() === "POST"
     );
 
@@ -388,7 +388,7 @@ test.describe("LLM Runtime Selection", () => {
     const capturedPayloads: SendChatMessagePayload[] = [];
     let turn = 0;
 
-    await page.route("**/api/chat/send-chat-message", async (route) => {
+    await page.route("**/api/converse/send-chat-message", async (route) => {
       turn += 1;
       capturedPayloads.push(
         route.request().postDataJSON() as SendChatMessagePayload

@@ -1,0 +1,20 @@
+{
+  "operation_id": "deactivate_search_provider",
+  "path": "/admin/web-search/search-providers/{provider_id}/deactivate",
+  "method": "POST",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "provider_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

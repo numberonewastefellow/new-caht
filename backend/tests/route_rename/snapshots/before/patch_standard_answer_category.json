@@ -1,0 +1,20 @@
+{
+  "operation_id": "patch_standard_answer_category",
+  "path": "/manage/admin/standard-answer/category/{standard_answer_category_id}",
+  "method": "PATCH",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "standard_answer_category_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

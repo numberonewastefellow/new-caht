@@ -69,7 +69,7 @@ export interface AdvancedConfig {
   indexingStart: string;
 }
 
-const BASE_CONNECTOR_URL = "/api/manage/admin/connector";
+const BASE_CONNECTOR_URL = "/api/nexus/admin/connector";
 const CONNECTOR_CREATION_TIMEOUT_MS = 10000; // ~10 seconds is reasonable for longer connector validation
 
 export async function submitConnector<T>(
@@ -85,7 +85,7 @@ export async function submitConnector<T>(
   try {
     if (fakeCredential) {
       const response = await fetch(
-        "/api/manage/admin/connector-with-mock-credential",
+        "/api/nexus/admin/connector-with-mock-credential",
         {
           method: isUpdate ? "PATCH" : "POST",
           headers: {

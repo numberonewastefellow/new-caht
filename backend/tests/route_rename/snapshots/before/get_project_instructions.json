@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_project_instructions",
+  "path": "/user/projects/{project_id}/instructions",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "project_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

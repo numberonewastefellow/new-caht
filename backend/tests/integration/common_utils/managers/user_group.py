@@ -27,7 +27,7 @@ class UserGroupManager:
             "cc_pair_ids": cc_pair_ids or [],
         }
         response = requests.post(
-            f"{API_SERVER_URL}/manage/admin/user-group",
+            f"{API_SERVER_URL}/nexus/admin/user-group",
             json=request,
             headers=(
                 user_performing_action.headers
@@ -50,7 +50,7 @@ class UserGroupManager:
         user_performing_action: DATestUser | None = None,
     ) -> None:
         response = requests.patch(
-            f"{API_SERVER_URL}/manage/admin/user-group/{user_group.id}",
+            f"{API_SERVER_URL}/nexus/admin/user-group/{user_group.id}",
             json=user_group.model_dump(),
             headers=(
                 user_performing_action.headers
@@ -66,7 +66,7 @@ class UserGroupManager:
         user_performing_action: DATestUser | None = None,
     ) -> None:
         response = requests.delete(
-            f"{API_SERVER_URL}/manage/admin/user-group/{user_group.id}",
+            f"{API_SERVER_URL}/nexus/admin/user-group/{user_group.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -86,7 +86,7 @@ class UserGroupManager:
         }
 
         response = requests.post(
-            f"{API_SERVER_URL}/manage/admin/user-group/{user_group.id}/add-users",
+            f"{API_SERVER_URL}/nexus/admin/user-group/{user_group.id}/add-users",
             json=request,
             headers=(
                 user_performing_action.headers
@@ -115,7 +115,7 @@ class UserGroupManager:
             "is_curator": is_curator,
         }
         response = requests.post(
-            f"{API_SERVER_URL}/manage/admin/user-group/{test_user_group.id}/set-curator",
+            f"{API_SERVER_URL}/nexus/admin/user-group/{test_user_group.id}/set-curator",
             json=set_curator_request,
             headers=(
                 user_performing_action.headers
@@ -130,7 +130,7 @@ class UserGroupManager:
         user_performing_action: DATestUser | None = None,
     ) -> list[UserGroup]:
         response = requests.get(
-            f"{API_SERVER_URL}/manage/admin/user-group",
+            f"{API_SERVER_URL}/nexus/admin/user-group",
             headers=(
                 user_performing_action.headers
                 if user_performing_action

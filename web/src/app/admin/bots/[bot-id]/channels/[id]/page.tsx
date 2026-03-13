@@ -18,8 +18,8 @@ async function EditslackChannelConfigPage(props: {
 }) {
   const params = await props.params;
   const tasks = [
-    fetchSS("/manage/admin/slack-app/channel"),
-    fetchSS("/manage/document-set"),
+    fetchSS("/nexus/admin/slack-app/channel"),
+    fetchSS("/nexus/document-set"),
     fetchAssistantsSS(),
   ];
 

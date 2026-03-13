@@ -79,7 +79,7 @@ def test_setup_attaches_instrumentator_to_app() -> None:
             should_group_untemplated=True,
             should_instrument_requests_inprogress=True,
             inprogress_labels=True,
-            excluded_handlers=["/health", "/metrics", "/openapi.json"],
+            excluded_handlers=["/heartbeat", "/metrics", "/openapi.json"],
         )
         mock_instance.add.assert_called_once()
         mock_instance.instrument.assert_called_once_with(

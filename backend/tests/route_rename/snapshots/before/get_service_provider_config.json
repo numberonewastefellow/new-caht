@@ -1,0 +1,46 @@
+{
+  "operation_id": "get_service_provider_config",
+  "path": "/scim/v2/ServiceProviderConfig",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 200,
+    "content_type": "application/json",
+    "body_structure": {
+      "authenticationSchemes": [
+        {
+          "description": "<str>",
+          "name": "<str>",
+          "type": "<str>"
+        }
+      ],
+      "bulk": {
+        "supported": "<bool>"
+      },
+      "changePassword": {
+        "supported": "<bool>"
+      },
+      "etag": {
+        "supported": "<bool>"
+      },
+      "filter": {
+        "maxResults": "<int>",
+        "supported": "<bool>"
+      },
+      "patch": {
+        "supported": "<bool>"
+      },
+      "schemas": [
+        "<str>"
+      ],
+      "sort": {
+        "supported": "<bool>"
+      }
+    }
+  }
+}

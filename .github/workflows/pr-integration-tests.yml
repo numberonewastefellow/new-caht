@@ -390,7 +390,7 @@ jobs:
             done
           }
 
-          wait_for_service "http://localhost:8080/health" "API server"
+          wait_for_service "http://localhost:8080/heartbeat" "API server"
           echo "Finished waiting for services."
 
       - name: Start Mock Services
@@ -537,7 +537,7 @@ jobs:
               echo "Timeout reached. Service did not become ready in $timeout seconds."
               exit 1
             fi
-            response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health || echo "curl_error")
+            response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/heartbeat || echo "curl_error")
             if [ "$response" = "200" ]; then
               echo "API server is ready!"
               break
@@ -667,7 +667,7 @@ jobs:
               echo "Timeout reached. Service did not become ready in 5 minutes."
               exit 1
             fi
-            response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health || echo "curl_error")
+            response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/heartbeat || echo "curl_error")
             if [ "$response" = "200" ]; then
               echo "Service is ready!"
               break

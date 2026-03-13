@@ -1,0 +1,20 @@
+{
+  "operation_id": "disconnect_oauth_token",
+  "path": "/federated/{id}/oauth",
+  "method": "DELETE",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

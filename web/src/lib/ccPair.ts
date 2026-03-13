@@ -8,7 +8,7 @@ export async function setCCPairStatus(
 ) {
   try {
     const response = await fetch(
-      `/api/manage/admin/cc-pair/${ccPairId}/status`,
+      `/api/nexus/admin/cc-pair/${ccPairId}/status`,
       {
         method: "PUT",
         headers: {

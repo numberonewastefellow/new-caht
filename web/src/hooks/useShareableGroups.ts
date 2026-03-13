@@ -19,7 +19,7 @@ export default function useShareableGroups() {
     combinedSettings && combinedSettings.enterpriseSettings !== null;
 
   const { data, error, mutate, isLoading } = useSWR<MinimalUserGroupSnapshot[]>(
-    isPaidEnterpriseFeaturesEnabled ? "/api/manage/user-groups/minimal" : null,
+    isPaidEnterpriseFeaturesEnabled ? "/api/nexus/user-groups/minimal" : null,
     errorHandlingFetcher
   );
 

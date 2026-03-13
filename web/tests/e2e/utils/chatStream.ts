@@ -57,7 +57,7 @@ export async function sendMessageAndCaptureStreamPackets(
     waitForAiMessage?: boolean;
   }
 ): Promise<ChatStreamPacket[]> {
-  const requestUrlPattern = "**/api/chat/send-chat-message";
+  const requestUrlPattern = "**/api/converse/send-chat-message";
   const mockLlmResponse = options?.mockLlmResponse;
   const payloadOverrides = options?.payloadOverrides;
   const waitForAiMessage = options?.waitForAiMessage ?? true;
@@ -90,7 +90,7 @@ export async function sendMessageAndCaptureStreamPackets(
   const responsePromise = page.waitForResponse((response) => {
     if (
       response.request().method() !== "POST" ||
-      !response.url().includes("/api/chat/send-chat-message")
+      !response.url().includes("/api/converse/send-chat-message")
     ) {
       return false;
     }

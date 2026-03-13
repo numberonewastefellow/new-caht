@@ -67,7 +67,7 @@ echo
 echo "Waiting for nginx to be ready, this may take a minute..."
 while true; do
   # Use curl to send a request and capture the HTTP status code
-  status_code=$(curl -o /dev/null -s -w "%{http_code}\n" "http://localhost/api/health")
+  status_code=$(curl -o /dev/null -s -w "%{http_code}\n" "http://localhost/api/heartbeat")
   
   # Check if the status code is 200
   if [ "$status_code" -eq 200 ]; then

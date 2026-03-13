@@ -1,0 +1,18 @@
+{
+  "operation_id": "validate_folder_paths",
+  "path": "/manage/admin/connector/folder/validate-paths",
+  "method": "POST",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

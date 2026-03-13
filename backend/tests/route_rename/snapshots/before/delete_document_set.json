@@ -1,0 +1,20 @@
+{
+  "operation_id": "delete_document_set",
+  "path": "/manage/admin/document-set/{document_set_id}",
+  "method": "DELETE",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "document_set_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

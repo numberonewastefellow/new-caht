@@ -63,7 +63,7 @@ export type ProjectDetails = {
 };
 
 export async function fetchProjects(): Promise<Project[]> {
-  const response = await fetch("/api/user/projects");
+  const response = await fetch("/api/workspaces");
   if (!response.ok) {
     handleRequestError("Fetch projects", response);
   }
@@ -72,7 +72,7 @@ export async function fetchProjects(): Promise<Project[]> {
 
 export async function createProject(name: string): Promise<Project> {
   const response = await fetch(
-    `/api/user/projects/create?name=${encodeURIComponent(name)}`,
+    `/api/workspaces/create?name=${encodeURIComponent(name)}`,
     { method: "POST" }
   );
   if (!response.ok) {
@@ -98,7 +98,7 @@ export async function uploadFiles(
     );
   }
 
-  const response = await fetch("/api/user/projects/file/upload", {
+  const response = await fetch("/api/workspaces/file/upload", {
     method: "POST",
     body: formData,
   });
@@ -121,7 +121,7 @@ export async function getRecentFiles(): Promise<ProjectFile[]> {
 export async function getFilesInProject(
   projectId: number
 ): Promise<ProjectFile[]> {
-  const response = await fetch(`/api/user/projects/files/${projectId}`);
+  const response = await fetch(`/api/workspaces/files/${projectId}`);
   if (!response.ok) {
     handleRequestError("Fetch project files", response);
   }
@@ -129,7 +129,7 @@ export async function getFilesInProject(
 }
 
 export async function getProject(projectId: number): Promise<Project> {
-  const response = await fetch(`/api/user/projects/${projectId}`);
+  const response = await fetch(`/api/workspaces/${projectId}`);
   if (!response.ok) {
     handleRequestError("Fetch project", response);
   }
@@ -140,7 +140,7 @@ export async function renameProject(
   projectId: number,
   name: string
 ): Promise<Project> {
-  const response = await fetch(`/api/user/projects/${projectId}`, {
+  const response = await fetch(`/api/workspaces/${projectId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name }),
@@ -152,7 +152,7 @@ export async function renameProject(
 }
 
 export async function deleteProject(projectId: number): Promise<void> {
-  const response = await fetch(`/api/user/projects/${projectId}`, {
+  const response = await fetch(`/api/workspaces/${projectId}`, {
     method: "DELETE",
   });
   if (!response.ok) {
@@ -163,7 +163,7 @@ export async function deleteProject(projectId: number): Promise<void> {
 export async function getProjectInstructions(
   projectId: number
 ): Promise<string | null> {
-  const response = await fetch(`/api/user/projects/${projectId}/instructions`);
+  const response = await fetch(`/api/workspaces/${projectId}/instructions`);
   if (!response.ok) {
     handleRequestError("Fetch project instructions", response);
   }
@@ -175,7 +175,7 @@ export async function upsertProjectInstructions(
   projectId: number,
   instructions: string
 ): Promise<string | null> {
-  const response = await fetch(`/api/user/projects/${projectId}/instructions`, {
+  const response = await fetch(`/api/workspaces/${projectId}/instructions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ instructions }),
@@ -190,7 +190,7 @@ export async function upsertProjectInstructions(
 export async function getProjectDetails(
   projectId: number
 ): Promise<ProjectDetails> {
-  const response = await fetch(`/api/user/projects/${projectId}/details`);
+  const response = await fetch(`/api/workspaces/${projectId}/details`);
   if (!response.ok) {
     handleRequestError("Fetch project details", response);
   }
@@ -202,7 +202,7 @@ export async function unlinkFileFromProject(
   fileId: string
 ): Promise<Response> {
   const response = await fetch(
-    `/api/user/projects/${encodeURIComponent(
+    `/api/workspaces/${encodeURIComponent(
       projectId
     )}/files/${encodeURIComponent(fileId)}`,
     { method: "DELETE" }
@@ -218,7 +218,7 @@ export async function linkFileToProject(
   fileId: string
 ): Promise<Response> {
   const response = await fetch(
-    `/api/user/projects/${encodeURIComponent(
+    `/api/workspaces/${encodeURIComponent(
       projectId
     )}/files/${encodeURIComponent(fileId)}`,
     { method: "POST" }
@@ -233,7 +233,7 @@ export async function deleteUserFile(
   fileId: string
 ): Promise<UserFileDeleteResult> {
   const response = await fetch(
-    `/api/user/projects/file/${encodeURIComponent(fileId)}`,
+    `/api/workspaces/file/${encodeURIComponent(fileId)}`,
     {
       method: "DELETE",
     }
@@ -246,7 +246,7 @@ export async function deleteUserFile(
 
 export async function getUserFile(fileId: string): Promise<ProjectFile> {
   const response = await fetch(
-    `/api/user/projects/file/${encodeURIComponent(fileId)}`
+    `/api/workspaces/file/${encodeURIComponent(fileId)}`
   );
   if (!response.ok) {
     handleRequestError("Fetch file", response);
@@ -257,7 +257,7 @@ export async function getUserFile(fileId: string): Promise<ProjectFile> {
 export async function getUserFileStatuses(
   fileIds: string[]
 ): Promise<ProjectFile[]> {
-  const response = await fetch(`/api/user/projects/file/statuses`, {
+  const response = await fetch(`/api/workspaces/file/statuses`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ file_ids: fileIds }),
@@ -272,7 +272,7 @@ export async function getSessionProjectTokenCount(
   chatSessionId: string
 ): Promise<number> {
   const response = await fetch(
-    `/api/user/projects/session/${encodeURIComponent(
+    `/api/workspaces/session/${encodeURIComponent(
       chatSessionId
     )}/token-count`
   );
@@ -287,7 +287,7 @@ export async function getProjectFilesForSession(
   chatSessionId: string
 ): Promise<ProjectFile[]> {
   const response = await fetch(
-    `/api/user/projects/session/${encodeURIComponent(chatSessionId)}/files`
+    `/api/workspaces/session/${encodeURIComponent(chatSessionId)}/files`
   );
   if (!response.ok) {
     return [];
@@ -297,7 +297,7 @@ export async function getProjectFilesForSession(
 
 export async function getProjectTokenCount(projectId: number): Promise<number> {
   const response = await fetch(
-    `/api/user/projects/${encodeURIComponent(projectId)}/token-count`
+    `/api/workspaces/${encodeURIComponent(projectId)}/token-count`
   );
   if (!response.ok) {
     return 0;
@@ -310,7 +310,7 @@ export async function getMaxSelectedDocumentTokens(
   personaId: number
 ): Promise<number> {
   const response = await fetch(
-    `/api/chat/max-selected-document-tokens?persona_id=${personaId}`
+    `/api/converse/max-selected-document-tokens?persona_id=${personaId}`
   );
   if (!response.ok) {
     return 128_000;
@@ -324,7 +324,7 @@ export async function moveChatSession(
   chatSessionId: string
 ): Promise<boolean> {
   const response = await fetch(
-    `/api/user/projects/${projectId}/move_chat_session`,
+    `/api/workspaces/${projectId}/move_chat_session`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -340,7 +340,7 @@ export async function moveChatSession(
 export async function removeChatSessionFromProject(
   chatSessionId: string
 ): Promise<boolean> {
-  const response = await fetch(`/api/user/projects/remove_chat_session`, {
+  const response = await fetch(`/api/workspaces/remove_chat_session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chat_session_id: chatSessionId }),

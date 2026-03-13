@@ -38,7 +38,7 @@ export default function CreateRateLimitModal({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/manage/admin/user-group");
+        const response = await fetch("/api/nexus/admin/user-group");
         const data = await response.json();
         const options = data.map((userGroup: UserGroup) => ({
           name: userGroup.name,

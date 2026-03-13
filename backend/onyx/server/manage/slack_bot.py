@@ -39,7 +39,7 @@ SLACK_MAX_RETURNED_CHANNELS = 500
 logger = setup_logger()
 
 
-router = APIRouter(prefix="/manage")
+router = APIRouter(prefix="/nexus")
 
 
 def _form_channel_config(

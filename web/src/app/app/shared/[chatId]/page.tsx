@@ -33,7 +33,7 @@ export function constructMiniFiedPersona(name: string, id: number): Persona {
 
 async function getSharedChat(chatId: string) {
   const response = await fetchSS(
-    `/chat/get-chat-session/${chatId}?is_shared=True`
+    `/converse/get-chat-session/${chatId}?is_shared=True`
   );
   if (response.ok) {
     return await response.json();

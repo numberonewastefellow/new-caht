@@ -1,0 +1,21 @@
+{
+  "operation_id": "gmail_callback",
+  "path": "/manage/connector/gmail/callback",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {
+      "state": "test",
+      "code": "test"
+    },
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "operation_id": "delete_custom_tool",
+  "path": "/admin/tool/custom/{tool_id}",
+  "method": "DELETE",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "tool_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

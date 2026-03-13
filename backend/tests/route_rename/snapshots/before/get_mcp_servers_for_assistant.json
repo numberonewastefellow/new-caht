@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_mcp_servers_for_assistant",
+  "path": "/mcp/servers/persona/{assistant_id}",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "assistant_id": "test"
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

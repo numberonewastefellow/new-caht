@@ -85,7 +85,7 @@ def create_mcp_fastapi_app() -> FastAPI:
     async def health_check(
         request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
-        if request.url.path.rstrip("/") == "/health":
+        if request.url.path.rstrip("/") == "/heartbeat":
             return JSONResponse({"status": "healthy", "service": "mcp_server"})
         return await call_next(request)
 

@@ -140,7 +140,7 @@ class UserManager:
         explicit_override: bool = False,
     ) -> DATestUser:
         response = requests.patch(
-            url=f"{API_SERVER_URL}/manage/set-user-role",
+            url=f"{API_SERVER_URL}/nexus/set-user-role",
             json={
                 "user_email": user_to_set.email,
                 "new_role": target_role.value,
@@ -191,7 +191,7 @@ class UserManager:
         elif target_status is False:
             url_substring = "deactivate"
         response = requests.patch(
-            url=f"{API_SERVER_URL}/manage/admin/{url_substring}-user",
+            url=f"{API_SERVER_URL}/nexus/admin/{url_substring}-user",
             json={"user_email": user_to_set.email},
             headers=user_performing_action.headers,
         )
@@ -246,7 +246,7 @@ class UserManager:
             query_params["is_active"] = is_active_filter
 
         response = requests.get(
-            url=f"{API_SERVER_URL}/manage/users/accepted?{urlencode(query_params, doseq=True)}",
+            url=f"{API_SERVER_URL}/nexus/users/accepted?{urlencode(query_params, doseq=True)}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -273,7 +273,7 @@ class UserManager:
             user_performing_action: User with admin permissions performing the invitation
         """
         response = requests.put(
-            url=f"{API_SERVER_URL}/manage/admin/users",
+            url=f"{API_SERVER_URL}/nexus/admin/users",
             headers=user_performing_action.headers,
             json={"emails": [user_to_invite_email]},
         )
@@ -307,7 +307,7 @@ class UserManager:
             List of invited user snapshots
         """
         response = requests.get(
-            url=f"{API_SERVER_URL}/manage/users/invited",
+            url=f"{API_SERVER_URL}/nexus/users/invited",
             headers=user_performing_action.headers,
         )
         response.raise_for_status()

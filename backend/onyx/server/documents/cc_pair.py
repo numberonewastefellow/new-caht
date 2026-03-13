@@ -71,7 +71,7 @@ from onyx.utils.variable_functionality import fetch_ee_implementation_or_noop
 from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
-router = APIRouter(prefix="/manage")
+router = APIRouter(prefix="/nexus")
 
 
 @router.get("/admin/cc-pair/{cc_pair_id}/index-attempts", tags=PUBLIC_API_TAGS)

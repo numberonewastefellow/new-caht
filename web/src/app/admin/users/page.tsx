@@ -67,7 +67,7 @@ const UsersTables = ({
     const startTime = Date.now();
     const minDurationMsForSpinner = 1000;
     try {
-      const response = await fetch("/api/manage/users/download");
+      const response = await fetch("/api/nexus/users/download");
       if (!response.ok) {
         throw new Error("Failed to download all users");
       }
@@ -101,12 +101,12 @@ const UsersTables = ({
     isLoading: invitedUsersLoading,
     mutate: invitedUsersMutate,
   } = useSWR<InvitedUserSnapshot[]>(
-    "/api/manage/users/invited",
+    "/api/nexus/users/invited",
     errorHandlingFetcher
   );
 
   const { data: validDomains, error: domainsError } = useSWR<string[]>(
-    "/api/manage/admin/valid-domains",
+    "/api/nexus/admin/valid-domains",
     errorHandlingFetcher
   );
 
@@ -267,7 +267,7 @@ function AddUserButton() {
 
   const onSuccess = () => {
     mutate(
-      (key) => typeof key === "string" && key.startsWith("/api/manage/users")
+      (key) => typeof key === "string" && key.startsWith("/api/nexus/users")
     );
     setBulkAddUsersModal(false);
     toast.success("Team members invited!");

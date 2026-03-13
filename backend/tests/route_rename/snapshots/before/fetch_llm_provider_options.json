@@ -1,0 +1,20 @@
+{
+  "operation_id": "fetch_llm_provider_options",
+  "path": "/admin/llm/built-in/options/{provider_name}",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "provider_name": "test"
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

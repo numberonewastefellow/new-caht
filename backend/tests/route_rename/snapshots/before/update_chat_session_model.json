@@ -1,0 +1,21 @@
+{
+  "operation_id": "update_chat_session_model",
+  "path": "/chat/update-chat-session-model",
+  "method": "PUT",
+  "auth_type": "user",
+  "request": {
+    "body": {
+      "chat_session_id": 0,
+      "new_model": "test"
+    },
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

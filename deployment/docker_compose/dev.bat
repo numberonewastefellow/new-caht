@@ -94,18 +94,20 @@ if /i "%~1"=="up" (
 
 :: ==================== DOWN ====================
 if /i "%~1"=="down" (
-    echo Stopping all services...
-    %COMPOSE_CMD% down
     echo Stopping Office MCP server...
+    call :office_network_disconnect
     %OFFICE_COMPOSE% down
+    echo Stopping all services...
+    %COMPOSE_CMD% down --remove-orphans
     goto end
 )
 
 if /i "%~1"=="down-v" (
-    echo Stopping all services and removing volumes...
-    %COMPOSE_CMD% down -v
-    echo Stopping Office MCP server and removing volumes...
+    echo Stopping Office MCP server...
+    call :office_network_disconnect
     %OFFICE_COMPOSE% down -v
+    echo Stopping all services and removing volumes...
+    %COMPOSE_CMD% down -v --remove-orphans
     goto end
 )
 
@@ -336,6 +338,27 @@ if !errorlevel! equ 0 (
     echo   Connected office-mcp-server to !_net! network
 ) else (
     echo   office-mcp-server already connected to !_net! network
+)
+goto :eof
+
+:: Disconnect Office container from the main compose network before 'down'
+:: (prevents "network still in use" error that leaves containers orphaned)
+:office_network_disconnect
+set _net=
+docker network inspect virtualai_default >nul 2>nul
+if !errorlevel! equ 0 (
+    set _net=virtualai_default
+) else (
+    docker network inspect onyx_default >nul 2>nul
+    if !errorlevel! equ 0 (
+        set _net=onyx_default
+    )
+)
+if defined _net (
+    docker network disconnect !_net! office-mcp-server 2>nul
+    if !errorlevel! equ 0 (
+        echo   Disconnected office-mcp-server from !_net! network
+    )
 )
 goto :eof
 

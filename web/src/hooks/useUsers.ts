@@ -39,7 +39,7 @@ export interface UseUsersParams {
  */
 export default function useUsers({ includeApiKeys }: UseUsersParams) {
   const { data, error, mutate, isLoading } = useSWR<AllUsersResponse>(
-    `/api/manage/users?include_api_keys=${includeApiKeys}`,
+    `/api/nexus/users?include_api_keys=${includeApiKeys}`,
     errorHandlingFetcher
   );
 

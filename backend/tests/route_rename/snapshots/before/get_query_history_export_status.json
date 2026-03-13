@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_query_history_export_status",
+  "path": "/admin/query-history/export-status",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {
+      "request_id": "test"
+    },
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

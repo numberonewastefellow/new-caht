@@ -1,0 +1,21 @@
+{
+  "operation_id": "update_chat_session_temperature",
+  "path": "/chat/update-chat-session-temperature",
+  "method": "PUT",
+  "auth_type": "user",
+  "request": {
+    "body": {
+      "chat_session_id": 0,
+      "temperature": 0.5
+    },
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

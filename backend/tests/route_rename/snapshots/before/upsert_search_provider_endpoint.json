@@ -1,0 +1,18 @@
+{
+  "operation_id": "upsert_search_provider_endpoint",
+  "path": "/admin/web-search/search-providers",
+  "method": "POST",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

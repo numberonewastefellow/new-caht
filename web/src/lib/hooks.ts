@@ -41,7 +41,7 @@ import { SEARCH_TOOL_ID } from "@/app/app/components/tools/constants";
 import { updateTemperatureOverrideForChatSession } from "@/app/app/services/lib";
 import { useLLMProviders } from "./hooks/useLLMProviders";
 
-const CREDENTIAL_URL = "/api/manage/admin/credential";
+const CREDENTIAL_URL = "/api/nexus/admin/credential";
 
 export const usePublicCredentials = () => {
   const { mutate } = useSWRConfig();
@@ -57,7 +57,7 @@ export const usePublicCredentials = () => {
 };
 
 const buildReactedDocsUrl = (ascending: boolean, limit: number) => {
-  return `/api/manage/admin/doc-boosts?ascending=${ascending}&limit=${limit}`;
+  return `/api/nexus/admin/doc-boosts?ascending=${ascending}&limit=${limit}`;
 };
 
 export const useMostReactedToDocuments = (
@@ -88,8 +88,8 @@ export const useObjectState = <T>(
   return [state, set];
 };
 
-const INDEXING_STATUS_URL = "/api/manage/admin/connector/indexing-status";
-const CONNECTOR_STATUS_URL = "/api/manage/admin/connector/status";
+const INDEXING_STATUS_URL = "/api/nexus/admin/connector/indexing-status";
+const CONNECTOR_STATUS_URL = "/api/nexus/admin/connector/status";
 
 export const useConnectorIndexingStatusWithPagination = (
   filters: Omit<IndexingStatusRequest, "source" | "source_to_page"> = {},
@@ -224,7 +224,7 @@ export const useConnectorStatus = (refreshInterval = 30000) => {
 };
 
 export const useBasicConnectorStatus = () => {
-  const url = "/api/manage/connector-status";
+  const url = "/api/nexus/connector-status";
   const swrResponse = useSWR<CCPairBasicInfo[]>(url, errorHandlingFetcher);
   return {
     ...swrResponse,
@@ -234,7 +234,7 @@ export const useBasicConnectorStatus = () => {
 
 export const useFederatedConnectors = () => {
   const { mutate } = useSWRConfig();
-  const url = "/api/federated";
+  const url = "/api/bridges";
   const swrResponse = useSWR<FederatedConnectorDetail[]>(
     url,
     errorHandlingFetcher
@@ -868,7 +868,7 @@ export function useAuthType(): AuthType | null {
 EE Only APIs
 */
 
-const USER_GROUP_URL = "/api/manage/admin/user-group";
+const USER_GROUP_URL = "/api/nexus/admin/user-group";
 
 export const useUserGroups = (): {
   data: UserGroup[] | undefined;

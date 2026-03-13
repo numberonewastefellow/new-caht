@@ -231,7 +231,7 @@ async function mockChatEndpoint(
   page: Page,
   responseContent: string
 ): Promise<void> {
-  await page.route("**/api/chat/send-chat-message", async (route) => {
+  await page.route("**/api/converse/send-chat-message", async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "text/plain",
@@ -245,7 +245,7 @@ async function mockChatEndpointSequence(
   responses: string[]
 ): Promise<void> {
   let callIndex = 0;
-  await page.route("**/api/chat/send-chat-message", async (route) => {
+  await page.route("**/api/converse/send-chat-message", async (route) => {
     const content =
       responses[Math.min(callIndex, responses.length - 1)] ??
       responses[responses.length - 1]!;
@@ -572,7 +572,7 @@ Key advantages include:
       }) => {
         await openChat(page);
 
-        await page.route("**/api/chat/send-chat-message", async (route) => {
+        await page.route("**/api/converse/send-chat-message", async (route) => {
           await route.fulfill({
             status: 200,
             contentType: "text/plain",
@@ -641,7 +641,7 @@ The platform architecture document provides additional context on how these impr
 
         await openChat(page);
 
-        await page.route("**/api/chat/send-chat-message", async (route) => {
+        await page.route("**/api/converse/send-chat-message", async (route) => {
           await route.fulfill({
             status: 200,
             contentType: "text/plain",

@@ -1,0 +1,20 @@
+{
+  "operation_id": "dismiss_notification_endpoint",
+  "path": "/notifications/{notification_id}/dismiss",
+  "method": "POST",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "notification_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_cc_source_full_info",
+  "path": "/manage/admin/similar-credentials/{source_type}",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "source_type": "test"
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

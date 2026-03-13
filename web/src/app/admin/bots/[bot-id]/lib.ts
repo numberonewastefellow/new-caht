@@ -60,7 +60,7 @@ const buildRequestBodyFromCreationRequest = (
 export const createSlackChannelConfig = async (
   creationRequest: SlackChannelConfigCreationRequest
 ) => {
-  return fetch("/api/manage/admin/slack-app/channel", {
+  return fetch("/api/nexus/admin/slack-app/channel", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -73,7 +73,7 @@ export const updateSlackChannelConfig = async (
   id: number,
   creationRequest: SlackChannelConfigCreationRequest
 ) => {
-  return fetch(`/api/manage/admin/slack-app/channel/${id}`, {
+  return fetch(`/api/nexus/admin/slack-app/channel/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -83,7 +83,7 @@ export const updateSlackChannelConfig = async (
 };
 
 export const deleteSlackChannelConfig = async (id: number) => {
-  return fetch(`/api/manage/admin/slack-app/channel/${id}`, {
+  return fetch(`/api/nexus/admin/slack-app/channel/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

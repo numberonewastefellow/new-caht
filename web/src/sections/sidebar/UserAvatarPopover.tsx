@@ -51,7 +51,7 @@ function SettingsPopover({
 }: SettingsPopoverProps) {
   const { user } = useUser();
   const { data: notifications } = useSWR<Notification[]>(
-    "/api/notifications",
+    "/api/signals",
     errorHandlingFetcher,
     { revalidateOnFocus: false }
   );
@@ -169,7 +169,7 @@ export default function UserAvatarPopover({
   // Fetch notifications for display
   // The GET endpoint also triggers a refresh if release notes are stale
   const { data: notifications } = useSWR<Notification[]>(
-    "/api/notifications",
+    "/api/signals",
     errorHandlingFetcher
   );
 
@@ -182,8 +182,8 @@ export default function UserAvatarPopover({
     if (state) {
       // Prefetch user settings data when popover opens for instant modal display
       preload("/api/user/pats", errorHandlingFetcher);
-      preload("/api/federated/oauth-status", errorHandlingFetcher);
-      preload("/api/manage/connector-status", errorHandlingFetcher);
+      preload("/api/bridges/oauth-status", errorHandlingFetcher);
+      preload("/api/nexus/connector-status", errorHandlingFetcher);
       preload("/api/llm/provider", errorHandlingFetcher);
       setPopupState("Settings");
     } else {

@@ -41,7 +41,7 @@ export default function useGroups() {
     combinedSettings && combinedSettings.enterpriseSettings !== null;
 
   const { data, error, mutate, isLoading } = useSWR<UserGroup[]>(
-    isPaidEnterpriseFeaturesEnabled ? "/api/manage/admin/user-group" : null,
+    isPaidEnterpriseFeaturesEnabled ? "/api/nexus/admin/user-group" : null,
     errorHandlingFetcher
   );
 

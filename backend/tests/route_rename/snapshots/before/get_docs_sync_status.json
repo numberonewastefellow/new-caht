@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_docs_sync_status",
+  "path": "/manage/admin/cc-pair/{cc_pair_id}/get-docs-sync-status",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "cc_pair_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

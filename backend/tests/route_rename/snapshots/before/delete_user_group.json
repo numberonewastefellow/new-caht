@@ -1,0 +1,20 @@
+{
+  "operation_id": "delete_user_group",
+  "path": "/manage/admin/user-group/{user_group_id}",
+  "method": "DELETE",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "user_group_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

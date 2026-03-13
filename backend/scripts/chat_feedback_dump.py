@@ -129,7 +129,7 @@ logger = getLogger(__name__)
 
 def create_new_chat_session(onyx_url: str, api_key: str | None) -> int:
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else None
-    session_endpoint = onyx_url + "/api/chat/create-chat-session"
+    session_endpoint = onyx_url + "/api/converse/create-chat-session"
 
     response = requests.get(session_endpoint, headers=headers)
     response.raise_for_status()

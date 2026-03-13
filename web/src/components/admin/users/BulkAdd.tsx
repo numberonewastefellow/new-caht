@@ -81,7 +81,7 @@ const AddUserForm = withFormik<FormProps, FormValues>({
   handleSubmit: async (values: FormValues, formikBag) => {
     const emails = normalizeEmails(values.emails);
     formikBag.setSubmitting(true);
-    await addUsers("/api/manage/admin/users", { arg: emails })
+    await addUsers("/api/nexus/admin/users", { arg: emails })
       .then((res) => {
         if (res.ok) {
           formikBag.props.onSuccess();

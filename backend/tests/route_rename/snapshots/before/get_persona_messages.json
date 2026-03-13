@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_persona_messages",
+  "path": "/analytics/admin/persona/messages",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {
+      "persona_id": 0
+    },
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

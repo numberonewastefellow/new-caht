@@ -4,7 +4,7 @@ import { errorHandlingFetcher } from "@/lib/fetcher";
 
 export function useProjects() {
   const { data, error, mutate } = useSWR<Project[]>(
-    "/api/user/projects",
+    "/api/workspaces",
     errorHandlingFetcher,
     {
       revalidateOnFocus: false,

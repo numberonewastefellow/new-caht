@@ -5,6 +5,7 @@ SEARCH_TOOL_NAME = "run_search"
 INTERNET_SEARCH_TOOL_NAME = "run_internet_search"
 IMAGE_GENERATION_TOOL_NAME = "run_image_generation"
 PYTHON_TOOL_NAME = "run_python"
+HTTP_REQUEST_TOOL_NAME = "http_request"
 OPEN_URL_TOOL_NAME = "open_url"
 
 # In-code tool IDs that also correspond to the tool's name when associated with a persona
@@ -15,6 +16,7 @@ PYTHON_TOOL_ID = "PythonTool"
 OPEN_URL_TOOL_ID = "OpenURLTool"
 FILE_READER_TOOL_ID = "FileReaderTool"
 MEMORY_TOOL_ID = "MemoryTool"
+HTTP_REQUEST_TOOL_ID = "HttpRequestTool"
 
 # Tool names as referenced by tool results / tool calls (read_file)
 FILE_READER_TOOL_NAME = "read_file"

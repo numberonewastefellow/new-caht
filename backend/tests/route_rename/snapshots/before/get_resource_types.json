@@ -1,0 +1,28 @@
+{
+  "operation_id": "get_resource_types",
+  "path": "/scim/v2/ResourceTypes",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 200,
+    "content_type": "application/json",
+    "body_structure": [
+      {
+        "description": "<str>",
+        "endpoint": "<str>",
+        "id": "<str>",
+        "name": "<str>",
+        "schema": "<str>",
+        "schemaExtensions": "<empty_list>",
+        "schemas": [
+          "<str>"
+        ]
+      }
+    ]
+  }
+}

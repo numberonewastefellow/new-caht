@@ -1,0 +1,20 @@
+{
+  "operation_id": "confluence_oauth_accessible_resources",
+  "path": "/oauth/connector/confluence/accessible-resources",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {
+      "credential_id": 0
+    },
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

@@ -21,6 +21,7 @@ import type {
   WorkflowNode,
   WorkflowEdge,
   AgentNodeData,
+  ConditionalRouterNodeData,
   WorkflowMeta,
   DragPersonaData,
 } from "./types";
@@ -100,6 +101,40 @@ export function useWorkflowGraph() {
     [nodes, setNodes]
   );
 
+  // ── Add conditional router node (from sidebar drag-drop) ────────
+
+  const addConditionalRouterNode = useCallback(
+    (position: { x: number; y: number }) => {
+      const nodeId = `condition-${Date.now()}`;
+      const stepCount = nodes.filter(
+        (n) => n.type === "agent" || n.type === "conditional_router"
+      ).length;
+
+      const newNode: WorkflowNode = {
+        id: nodeId,
+        type: "conditional_router",
+        position,
+        data: {
+          step_name: `Condition ${stepCount + 1}`,
+          step_description: "",
+          output_key: `condition_${stepCount}`,
+          condition_field: "",
+          operator: "contains",
+          match_value: "",
+          case_sensitive: false,
+          true_steps: [],
+          false_steps: [],
+          stepOrder: stepCount,
+          orchestration_mode: meta.orchestration_mode,
+        },
+      } as WorkflowNode;
+
+      setNodes((nds) => [...nds, newNode]);
+      return nodeId;
+    },
+    [nodes, setNodes, meta.orchestration_mode]
+  );
+
   // ── Remove node ──────────────────────────────────────────────────
 
   const removeNode = useCallback(
@@ -117,11 +152,12 @@ export function useWorkflowGraph() {
   // ── Update node data ─────────────────────────────────────────────
 
   const updateNodeData = useCallback(
-    (nodeId: string, partial: Partial<AgentNodeData>) => {
+    (nodeId: string, partial: Partial<AgentNodeData> | Partial<ConditionalRouterNodeData>) => {
       setNodes((nds) =>
         nds.map((n) => {
-          if (n.id !== nodeId || n.type !== "agent") return n;
-          return { ...n, data: { ...n.data, ...partial } };
+          if (n.id !== nodeId) return n;
+          if (n.type !== "agent" && n.type !== "conditional_router") return n;
+          return { ...n, data: { ...n.data, ...partial } } as WorkflowNode;
         })
       );
     },
@@ -154,7 +190,7 @@ export function useWorkflowGraph() {
                   },
                 } as WorkflowNode;
               }
-              if (n.type === "agent") {
+              if (n.type === "agent" || n.type === "conditional_router") {
                 return {
                   ...n,
                   data: { ...n.data, orchestration_mode: newMode },
@@ -185,19 +221,46 @@ export function useWorkflowGraph() {
       if (connection.source === connection.target) return;
 
       // In sequential mode, enforce max 1 outgoing edge per node
+      // Exception: conditional_router nodes can have 2 outgoing edges (true/false)
       if (meta.orchestration_mode === "sequential") {
-        const hasOutgoing = edges.some(
-          (e) => e.source === connection.source
-        );
-        if (hasOutgoing && connection.source !== ORCHESTRATOR_NODE_ID) return;
+        const sourceNode = nodes.find((n) => n.id === connection.source);
+        const isConditionNode = sourceNode?.type === "conditional_router";
+
+        if (isConditionNode) {
+          // Allow max 1 edge per handle (true/false)
+          const handleId = connection.sourceHandle;
+          const hasEdgeForHandle = edges.some(
+            (e) => e.source === connection.source && e.sourceHandle === handleId
+          );
+          if (hasEdgeForHandle) return;
+        } else {
+          const hasOutgoing = edges.some(
+            (e) => e.source === connection.source
+          );
+          if (hasOutgoing && connection.source !== ORCHESTRATOR_NODE_ID) return;
+        }
       }
 
+      // Determine branch label for conditional router edges
+      const sourceNode = nodes.find((n) => n.id === connection.source);
+      const branchLabel = sourceNode?.type === "conditional_router" && connection.sourceHandle
+        ? (connection.sourceHandle === "true" ? "True" : "False") as "True" | "False"
+        : null;
+
+      const edgeId = connection.sourceHandle
+        ? `edge-${connection.source}-${connection.sourceHandle}-${connection.target}`
+        : `edge-${connection.source}-${connection.target}`;
+
       const newEdge: WorkflowEdge = {
-        id: `edge-${connection.source}-${connection.target}`,
+        id: edgeId,
         source: connection.source!,
+        sourceHandle: connection.sourceHandle || undefined,
         target: connection.target!,
         type: "step",
-        data: { orchestration_mode: meta.orchestration_mode },
+        data: {
+          orchestration_mode: meta.orchestration_mode,
+          branchLabel,
+        },
       };
 
       setEdges((eds) => addEdge(newEdge, eds) as WorkflowEdge[]);
@@ -263,7 +326,7 @@ export function useWorkflowGraph() {
   const selectedNode =
     selectedNodeId !== null
       ? (nodes.find((n) => n.id === selectedNodeId) as
-          | (WorkflowNode & { data: AgentNodeData })
+          | WorkflowNode
           | undefined)
       : null;
 
@@ -281,6 +344,7 @@ export function useWorkflowGraph() {
 
     // Node operations
     addAgentNode,
+    addConditionalRouterNode,
     removeNode,
     updateNodeData,
 

@@ -1,0 +1,18 @@
+{
+  "operation_id": "get_openrouter_available_models",
+  "path": "/admin/llm/openrouter/available-models",
+  "method": "POST",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

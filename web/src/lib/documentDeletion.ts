@@ -8,7 +8,7 @@ export async function scheduleDeletionJobForConnector(
   // Will schedule a background job which will:
   // 1. Remove all documents indexed by the connector / credential pair
   // 2. Remove the connector (if this is the only pair using the connector)
-  const response = await fetch(`/api/manage/admin/deletion-attempt`, {
+  const response = await fetch(`/api/nexus/admin/deletion-attempt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

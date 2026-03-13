@@ -1,0 +1,20 @@
+{
+  "operation_id": "get_guild_config",
+  "path": "/manage/admin/discord-bot/guilds/{config_id}",
+  "method": "GET",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "config_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

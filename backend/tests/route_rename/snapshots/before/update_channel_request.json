@@ -1,0 +1,21 @@
+{
+  "operation_id": "update_channel_request",
+  "path": "/manage/admin/discord-bot/guilds/{guild_config_id}/channels/{channel_config_id}",
+  "method": "PATCH",
+  "auth_type": "admin",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {
+      "guild_config_id": 0,
+      "channel_config_id": 0
+    }
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "operation_id": "google_drive_callback",
+  "path": "/manage/connector/google-drive/callback",
+  "method": "GET",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {
+      "state": "test",
+      "code": "test"
+    },
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

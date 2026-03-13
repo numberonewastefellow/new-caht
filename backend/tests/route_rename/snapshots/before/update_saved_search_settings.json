@@ -1,0 +1,18 @@
+{
+  "operation_id": "update_saved_search_settings",
+  "path": "/search-settings/update-inference-settings",
+  "method": "POST",
+  "auth_type": "user",
+  "request": {
+    "body": null,
+    "query_params": {},
+    "path_params": {}
+  },
+  "response": {
+    "status_code": 403,
+    "content_type": "application/json",
+    "body_structure": {
+      "detail": "<str>"
+    }
+  }
+}

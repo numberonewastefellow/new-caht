@@ -230,7 +230,7 @@ test.describe("Message Edit and Regenerate Tests", () => {
 
     const uploadResponsePromise = page.waitForResponse(
       (response) =>
-        response.url().includes("/api/user/projects/file/upload") &&
+        response.url().includes("/api/workspaces/file/upload") &&
         response.request().method() === "POST"
     );
 

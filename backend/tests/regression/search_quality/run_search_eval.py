@@ -623,7 +623,7 @@ def run_search_eval(
     # check onyx is running
     try:
         response = requests.get(
-            f"{config.api_url}/health", timeout=config.request_timeout
+            f"{config.api_url}/heartbeat", timeout=config.request_timeout
         )
         response.raise_for_status()
     except RequestException as e:

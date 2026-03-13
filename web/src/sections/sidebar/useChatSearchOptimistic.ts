@@ -127,7 +127,7 @@ export function useChatSearchOptimistic(
         params.set("query", debouncedQuery);
       }
 
-      return `/api/chat/search?${params.toString()}`;
+      return `/api/converse/search?${params.toString()}`;
     },
     [enabled, debouncedQuery]
   );

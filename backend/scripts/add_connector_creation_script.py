@@ -26,7 +26,7 @@ def create_connector(
     }
 
     response = requests.post(
-        url=f"{API_SERVER_URL}/api/manage/admin/connector",
+        url=f"{API_SERVER_URL}/api/nexus/admin/connector",
         json=connector_update_request,
         headers=HEADERS,
     )
@@ -50,7 +50,7 @@ def create_credential(
     }
 
     response = requests.post(
-        url=f"{API_SERVER_URL}/api/manage/credential",
+        url=f"{API_SERVER_URL}/api/nexus/credential",
         json=credential_request,
         headers=HEADERS,
     )
@@ -72,7 +72,7 @@ def create_cc_pair(
     }
 
     response = requests.put(
-        url=f"{API_SERVER_URL}/api/manage/connector/{connector_id}/credential/{credential_id}",
+        url=f"{API_SERVER_URL}/api/nexus/connector/{connector_id}/credential/{credential_id}",
         json=cc_pair_request,
         headers=HEADERS,
     )

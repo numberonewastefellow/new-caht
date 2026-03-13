@@ -18,7 +18,7 @@ class ProjectManager:
     ) -> UserProjectSnapshot:
         """Create a new project via API."""
         response = requests.post(
-            f"{API_SERVER_URL}/user/projects/create",
+            f"{API_SERVER_URL}/workspaces/create",
             params={"name": name},
             headers=user_performing_action.headers or GENERAL_HEADERS,
         )
@@ -31,7 +31,7 @@ class ProjectManager:
     ) -> List[UserProjectSnapshot]:
         """Get all projects for a user via API."""
         response = requests.get(
-            f"{API_SERVER_URL}/user/projects",
+            f"{API_SERVER_URL}/workspaces",
             headers=user_performing_action.headers or GENERAL_HEADERS,
         )
         response.raise_for_status()
@@ -44,7 +44,7 @@ class ProjectManager:
     ) -> bool:
         """Delete a project via API."""
         response = requests.delete(
-            f"{API_SERVER_URL}/user/projects/{project_id}",
+            f"{API_SERVER_URL}/workspaces/{project_id}",
             headers=user_performing_action.headers or GENERAL_HEADERS,
         )
         return response.status_code == 204
@@ -56,7 +56,7 @@ class ProjectManager:
     ) -> bool:
         """Verify that a project has been deleted by ensuring it's not in list."""
         response = requests.get(
-            f"{API_SERVER_URL}/user/projects",
+            f"{API_SERVER_URL}/workspaces",
             headers=user_performing_action.headers or GENERAL_HEADERS,
         )
         response.raise_for_status()
@@ -70,7 +70,7 @@ class ProjectManager:
     ) -> bool:
         """Verify that all files have been unlinked from the project via API."""
         response = requests.get(
-            f"{API_SERVER_URL}/user/projects/files/{project_id}",
+            f"{API_SERVER_URL}/workspaces/files/{project_id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -91,7 +91,7 @@ class ProjectManager:
     ) -> bool:
         """Verify that all chat sessions have been unlinked from the project via API."""
         response = requests.get(
-            f"{API_SERVER_URL}/user/projects/{project_id}",
+            f"{API_SERVER_URL}/workspaces/{project_id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -133,7 +133,7 @@ class ProjectManager:
         headers.pop("Content-Type", None)
 
         response = requests.post(
-            f"{API_SERVER_URL}/user/projects/file/upload",
+            f"{API_SERVER_URL}/workspaces/file/upload",
             data=data,
             files=files_payload,
             headers=headers,
@@ -148,7 +148,7 @@ class ProjectManager:
     ) -> List[UserFileSnapshot]:
         """Get all files associated with a project via API."""
         response = requests.get(
-            f"{API_SERVER_URL}/user/projects/files/{project_id}",
+            f"{API_SERVER_URL}/workspaces/files/{project_id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -168,7 +168,7 @@ class ProjectManager:
     ) -> str:
         """Set project instructions via API."""
         response = requests.post(
-            f"{API_SERVER_URL}/user/projects/{project_id}/instructions",
+            f"{API_SERVER_URL}/workspaces/{project_id}/instructions",
             json={"instructions": instructions},
             headers=user_performing_action.headers or GENERAL_HEADERS,
         )

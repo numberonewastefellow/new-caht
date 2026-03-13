@@ -26,7 +26,7 @@ export async function getStandardAnswerCategoriesIfEE(): Promise<StandardAnswerC
   }
 
   const standardAnswerCategoriesResponse = await fetchSS(
-    "/manage/admin/standard-answer/category"
+    "/nexus/admin/standard-answer/category"
   );
   if (!standardAnswerCategoriesResponse.ok) {
     return {

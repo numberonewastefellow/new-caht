@@ -8,7 +8,7 @@ import {
   DiscordChannelConfig,
 } from "@/app/admin/discord-bot/types";
 
-const BASE_URL = "/api/manage/admin/discord-bot";
+const BASE_URL = "/api/nexus/admin/discord-bot";
 
 /**
  * Custom fetcher for bot config that handles 403 specially.

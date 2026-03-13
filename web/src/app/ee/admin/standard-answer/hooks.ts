@@ -3,7 +3,7 @@ import { StandardAnswerCategory, StandardAnswer } from "@/lib/types";
 import useSWR, { mutate } from "swr";
 
 export const useStandardAnswerCategories = () => {
-  const url = "/api/manage/admin/standard-answer/category";
+  const url = "/api/nexus/admin/standard-answer/category";
   const swrResponse = useSWR<StandardAnswerCategory[]>(
     url,
     errorHandlingFetcher
@@ -16,7 +16,7 @@ export const useStandardAnswerCategories = () => {
 };
 
 export const useStandardAnswers = () => {
-  const url = "/api/manage/admin/standard-answer";
+  const url = "/api/nexus/admin/standard-answer";
   const swrResponse = useSWR<StandardAnswer[]>(url, errorHandlingFetcher);
 
   return {

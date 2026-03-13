@@ -110,7 +110,7 @@ interface UseChatControllerProps {
 }
 
 async function stopChatSession(chatSessionId: string): Promise<void> {
-  const response = await fetch(`/api/chat/stop-chat-session/${chatSessionId}`, {
+  const response = await fetch(`/api/converse/stop-chat-session/${chatSessionId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -1041,7 +1041,7 @@ export default function useChatController({
       }
 
       try {
-        const response = await fetch("/api/chat/seed-chat-session-from-slack", {
+        const response = await fetch("/api/converse/seed-chat-session-from-slack", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1073,7 +1073,7 @@ export default function useChatController({
 
     async function fetchMaxTokens() {
       const response = await fetch(
-        `/api/chat/max-selected-document-tokens?persona_id=${liveAssistant?.id}`
+        `/api/converse/max-selected-document-tokens?persona_id=${liveAssistant?.id}`
       );
       if (response.ok) {
         const maxTokens = (await response.json()).max_tokens as number;
