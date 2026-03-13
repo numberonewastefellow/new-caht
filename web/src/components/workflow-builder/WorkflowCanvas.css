@@ -114,6 +114,25 @@
   margin-top: 2px;
 }
 
+.wfb-orchestrator-subtitle {
+  font-size: 10px;
+  opacity: 0.7;
+  margin-top: 2px;
+  max-width: 140px;
+  line-height: 1.3;
+}
+
+/* Sequential: pipeline left-border stripe */
+.wfb-orchestrator-node--sequential {
+  border-left: 4px solid rgba(255, 255, 255, 0.5);
+}
+
+/* LLM Decision: radial glow halo */
+.wfb-orchestrator-node--llm-decision {
+  box-shadow: 0 0 20px var(--virtualai-accent-glow, rgba(99, 102, 241, 0.3)),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 /* ── Agent Node ─────────────────────────────────────────────────────── */
 
 .wfb-agent-node {
@@ -203,6 +222,18 @@
   border-radius: 6px;
   padding: 2px 6px;
   flex-shrink: 0;
+}
+
+.wfb-agent-order--ai {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 6px;
+  color: var(--virtualai-accent, #6366f1);
+  background: var(--virtualai-accent-subtle, rgba(99, 102, 241, 0.1));
 }
 
 /* Test / Play button on agent node */
@@ -506,9 +537,16 @@
   stroke-width: 2;
 }
 
+/* Sequential: solid with slightly thicker stroke */
+.wfb-edge--sequential .react-flow__edge-path {
+  stroke-width: 2.5;
+}
+
+/* LLM Decision: dashed + animated + lower opacity for uncertainty */
 .wfb-edge--dashed .react-flow__edge-path {
   stroke-dasharray: 6 4;
   animation: wfb-dash 1s linear infinite;
+  opacity: 0.7;
 }
 
 .wfb-edge--selected .react-flow__edge-path {
@@ -526,18 +564,139 @@
   overflow: visible;
 }
 
-.wfb-edge-label {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--virtualai-accent, #6366f1);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
+/* Pill-shaped edge labels */
+.wfb-edge-label-pill {
+  height: 22px;
+  border-radius: 11px;
+  font-size: 10px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Sequential: solid accent pill */
+.wfb-edge-label-pill--seq {
+  background: var(--virtualai-accent, #6366f1);
+  color: #fff;
+  padding: 0 8px;
+}
+
+/* LLM Decision: outlined dashed pill */
+.wfb-edge-label-pill--llm {
+  background: var(--background-tint-00, #fff);
+  color: var(--virtualai-accent, #6366f1);
+  border: 1.5px dashed var(--virtualai-accent, #6366f1);
+  padding: 0 8px;
+  font-size: 9px;
+}
+
+/* ── Finish Node (END) ─────────────────────────────────────────────── */
+
+.wfb-finish-node {
+  background: linear-gradient(
+    135deg,
+    var(--theme-green-05, #16a34a),
+    color-mix(in srgb, var(--theme-green-05, #16a34a) 80%, #000)
+  );
+  color: #fff;
+  border-radius: 12px;
+  padding: 14px 20px;
+  min-width: 100px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  cursor: default;
+}
+
+.wfb-finish-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+  opacity: 0.9;
+}
+
+.wfb-finish-label {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+/* ── Canvas Legend ──────────────────────────────────────────────────── */
+
+.wfb-legend {
+  background: var(--background-tint-00, #fff);
+  border: 1px solid var(--border-01, #e5e7eb);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 11px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  max-width: 200px;
+  color: var(--text-05, #374151);
+}
+
+.wfb-legend-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.wfb-legend-title {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-05, #111827);
+}
+
+.wfb-legend-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: var(--text-03, #9ca3af);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+}
+
+.wfb-legend-close:hover {
+  background: var(--background-tint-02, #f3f4f6);
+  color: var(--text-05, #374151);
+}
+
+.wfb-legend-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 3px 0;
+  font-size: 11px;
+  color: var(--text-04, #6b7280);
+}
+
+.wfb-legend-flow {
+  font-size: 10px;
+  color: var(--text-03, #9ca3af);
+  font-style: italic;
+}
+
+.wfb-legend-solid {
+  width: 20px;
+  height: 2.5px;
+  background: var(--virtualai-accent, #6366f1);
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.wfb-legend-dashed {
+  width: 20px;
+  height: 0;
+  border-top: 2px dashed var(--virtualai-accent, #6366f1);
+  opacity: 0.7;
+  flex-shrink: 0;
 }
 
 /* ── Sidebar ────────────────────────────────────────────────────────── */
@@ -1070,8 +1229,25 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.dark .wfb-edge-label {
+.dark .wfb-edge-label-pill {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.dark .wfb-edge-label-pill--llm {
+  background: var(--background-tint-02, #1a1a2e);
+}
+
+.dark .wfb-finish-node {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.dark .wfb-legend {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark .wfb-orchestrator-node--llm-decision {
+  box-shadow: 0 0 24px var(--virtualai-accent-glow, rgba(99, 102, 241, 0.4)),
+    0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* ── Sidebar: Create New Agent button ─────────────────────────────── */

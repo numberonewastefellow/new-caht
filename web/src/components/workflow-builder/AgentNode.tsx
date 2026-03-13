@@ -70,7 +70,15 @@ function AgentNodeComponent({
           </svg>
         </button>
         {typeof data.stepOrder === "number" && (
-          <span className="wfb-agent-order">#{data.stepOrder + 1}</span>
+          data.orchestration_mode === "llm_decision" ? (
+            <span className="wfb-agent-order wfb-agent-order--ai" title="AI-routed">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M9.5 2A2.5 2.5 0 0112 4.5v15a2.5 2.5 0 01-4.96.44A2.5 2.5 0 015.5 15H5a2 2 0 01-2-2v-1c0-1.1.9-2 2-2h.5A2.5 2.5 0 018 7.5V7a2 2 0 012-2h1c1.1 0 2 .9 2 2v.5A2.5 2.5 0 0115.5 10h1a2 2 0 012 2v1a2 2 0 01-2 2h-1a2.5 2.5 0 00-2.5 2.5v.5a2 2 0 01-2 2h-1a2 2 0 01-2-2v-.5"/>
+              </svg>
+            </span>
+          ) : (
+            <span className="wfb-agent-order">#{data.stepOrder + 1}</span>
+          )
         )}
       </div>
 

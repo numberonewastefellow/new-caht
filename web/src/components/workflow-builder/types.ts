@@ -43,6 +43,7 @@ export interface AgentNodeData {
   // Visual state
   isSelected?: boolean;
   stepOrder?: number;
+  orchestration_mode?: "sequential" | "llm_decision";
   [key: string]: unknown;
 }
 

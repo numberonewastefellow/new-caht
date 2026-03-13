@@ -34,6 +34,7 @@ import {
   graphToPayload,
   validateGraph,
   autoLayout,
+  FINISH_NODE_ID,
 } from "./graphUtils";
 
 // ── Initial state: just the orchestrator node ──────────────────────────
@@ -103,7 +104,7 @@ export function useWorkflowGraph() {
 
   const removeNode = useCallback(
     (nodeId: string) => {
-      if (nodeId === ORCHESTRATOR_NODE_ID) return; // Can't delete start
+      if (nodeId === ORCHESTRATOR_NODE_ID || nodeId === FINISH_NODE_ID) return;
       setNodes((nds) => nds.filter((n) => n.id !== nodeId));
       setEdges((eds) =>
         eds.filter((e) => e.source !== nodeId && e.target !== nodeId)
@@ -134,20 +135,40 @@ export function useWorkflowGraph() {
       setMeta((prev) => {
         const next = { ...prev, ...partial };
 
-        // If orchestration mode changed, update the orchestrator node
+        // If orchestration mode changed, update orchestrator + agent nodes
         if (partial.orchestration_mode) {
-          setNodes((nds) =>
-            nds.map((n) => {
-              if (n.id !== ORCHESTRATOR_NODE_ID) return n;
-              return {
-                ...n,
-                data: {
-                  label: "Start",
-                  orchestration_mode: partial.orchestration_mode!,
-                },
-              } as WorkflowNode;
-            })
-          );
+          const newMode = partial.orchestration_mode;
+          setNodes((nds) => {
+            // Remove finish node if switching away from sequential
+            let updated = newMode !== "sequential"
+              ? nds.filter((n) => n.id !== FINISH_NODE_ID)
+              : nds;
+
+            return updated.map((n) => {
+              if (n.id === ORCHESTRATOR_NODE_ID) {
+                return {
+                  ...n,
+                  data: {
+                    label: "Start",
+                    orchestration_mode: newMode,
+                  },
+                } as WorkflowNode;
+              }
+              if (n.type === "agent") {
+                return {
+                  ...n,
+                  data: { ...n.data, orchestration_mode: newMode },
+                } as WorkflowNode;
+              }
+              return n;
+            });
+          });
+          // Remove finish node edges too
+          if (newMode !== "sequential") {
+            setEdges((eds) =>
+              eds.filter((e) => e.source !== FINISH_NODE_ID && e.target !== FINISH_NODE_ID)
+            );
+          }
         }
 
         return next;

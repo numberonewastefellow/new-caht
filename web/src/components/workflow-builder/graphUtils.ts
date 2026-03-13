@@ -17,6 +17,8 @@ import {
   NODE_SPACING_Y,
 } from "./types";
 
+export const FINISH_NODE_ID = "finish";
+
 // ── Snapshot → Graph ───────────────────────────────────────────────────
 
 /**
@@ -65,6 +67,7 @@ export function snapshotToGraph(workflow: WorkflowSnapshot): {
         input_mapping: step.input_mapping,
         condition: step.condition,
         stepOrder: i,
+        orchestration_mode: mode,
         // Step-level overrides
         llm_provider_override: step.llm_provider_override ?? null,
         llm_model_override: step.llm_model_override ?? null,
@@ -106,7 +109,27 @@ export function snapshotToGraph(workflow: WorkflowSnapshot): {
     });
   }
 
-  // 4. Auto-layout positions
+  // 4. Add END node for sequential mode
+  if (mode === "sequential" && agentNodeIds.length > 0) {
+    nodes.push({
+      id: FINISH_NODE_ID,
+      type: "finish" as any,
+      position: { x: 0, y: 0 },
+      deletable: false,
+      selectable: false,
+      data: {} as any,
+    });
+    const lastAgentId = agentNodeIds[agentNodeIds.length - 1]!;
+    edges.push({
+      id: `edge-${lastAgentId}-${FINISH_NODE_ID}`,
+      source: lastAgentId,
+      target: FINISH_NODE_ID,
+      type: "step",
+      data: { stepOrder: agentNodeIds.length, orchestration_mode: mode },
+    });
+  }
+
+  // 5. Auto-layout positions
   const laid = autoLayout(nodes, edges, mode);
 
   return { nodes: laid, edges };
@@ -135,12 +158,17 @@ export function graphToPayload(
   icon_name?: string | null;
   steps: WorkflowStepCreate[];
 } {
+  // Filter to agent nodes only (exclude orchestrator, finish, etc.)
   const agentNodes = nodes.filter(
     (n): n is WorkflowNode & { data: AgentNodeData } => n.type === "agent"
   );
+  // Filter edges to exclude finish node connections
+  const agentEdges = edges.filter(
+    (e) => e.target !== FINISH_NODE_ID && e.source !== FINISH_NODE_ID
+  );
 
   // Compute step ordering via BFS from orchestrator
-  const stepOrders = computeStepOrders(nodes, edges);
+  const stepOrders = computeStepOrders(nodes, agentEdges);
 
   // Sort agent nodes by computed step order
   const sorted = [...agentNodes].sort((a, b) => {
@@ -292,6 +320,7 @@ export function autoLayout(
 ): WorkflowNode[] {
   const orchestrator = nodes.find((n) => n.id === ORCHESTRATOR_NODE_ID);
   const agentNodes = nodes.filter((n) => n.type === "agent");
+  const finishNode = nodes.find((n) => n.id === FINISH_NODE_ID);
 
   if (!orchestrator) return nodes;
 
@@ -334,6 +363,18 @@ export function autoLayout(
     // Center orchestrator vertically relative to all rows
     const orchY = gridStartY + (rows - 1) * NODE_SPACING_Y / 2;
     updated.unshift({ ...orchestrator, position: { x: 50, y: orchY } });
+
+    // Place finish node after the last agent
+    if (finishNode && sorted.length > 0) {
+      const lastAgent = updated[updated.length - 1]!;
+      updated.push({
+        ...finishNode,
+        position: {
+          x: lastAgent.position.x + NODE_SPACING_X,
+          y: lastAgent.position.y,
+        },
+      } as WorkflowNode);
+    }
 
   } else {
     // ── LLM Decision: Multi-column fan from orchestrator ──
@@ -432,9 +473,9 @@ export function validateGraph(
     }
   }
 
-  // Check for disconnected agents (no incoming edge)
+  // Check for disconnected agents (no incoming edge, exclude finish node)
   const targetsWithEdges = new Set(edges.map((e) => e.target));
-  for (const node of agentNodes) {
+  for (const node of agentNodes.filter((n) => n.id !== FINISH_NODE_ID)) {
     if (!targetsWithEdges.has(node.id)) {
       errors.push({
         nodeId: node.id,
