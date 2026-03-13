@@ -313,19 +313,29 @@ goto :eof
 %OFFICE_COMPOSE% up -d --build
 goto :eof
 
-:: Connect Office container to onyx_default network (required for inter-container DNS)
+:: Connect Office container to the main compose network (required for inter-container DNS)
+:: Auto-detects the network name (virtualai_default or onyx_default)
 :office_network_connect
-echo Connecting Office MCP server to onyx network...
-docker network inspect onyx_default >nul 2>nul
-if !errorlevel! neq 0 (
-    echo   onyx_default network does not exist yet — skipping. Run 'dev up' first.
+echo Connecting Office MCP server to main network...
+set _net=
+docker network inspect virtualai_default >nul 2>nul
+if !errorlevel! equ 0 (
+    set _net=virtualai_default
+) else (
+    docker network inspect onyx_default >nul 2>nul
+    if !errorlevel! equ 0 (
+        set _net=onyx_default
+    )
+)
+if not defined _net (
+    echo   Main network does not exist yet — skipping. Run 'dev up' first.
     goto :eof
 )
-docker network connect onyx_default office-mcp-server 2>nul
+docker network connect !_net! office-mcp-server 2>nul
 if !errorlevel! equ 0 (
-    echo   Connected office-mcp-server to onyx_default network
+    echo   Connected office-mcp-server to !_net! network
 ) else (
-    echo   office-mcp-server already connected to onyx_default network
+    echo   office-mcp-server already connected to !_net! network
 )
 goto :eof
 
@@ -383,7 +393,7 @@ echo   Groups:
 echo     infra      = db, vespa, redis, model servers, minio, code-interpreter, smartsearch, phoenix
 echo     app        = api_server, background, web_server, nginx
 echo     search     = smartsearch (Perplexica AI web search)
-echo     phoenix    = Phoenix LLM observability (dashboard at http://localhost:6006)
+echo     phoenix    = Phoenix LLM observability (dashboard at http://localhost:3000/phoenix/)
 echo     office     = Office MCP server (PPT + DOCX + PDF generation via MCP)
 echo.
 echo   Service shortcuts:
@@ -398,7 +408,7 @@ echo     vespa      = index (vespa)
 echo     minio      = minio
 echo     search     = smartsearch (Perplexica AI web search)
 echo     smartsearch = smartsearch (alias for search)
-echo     phoenix    = phoenix (LLM observability, http://localhost:6006)
+echo     phoenix    = phoenix (LLM observability, http://localhost:3000/phoenix/)
 echo     office     = office-mcp-server (PPT + DOCX + PDF, separate compose)
 echo     ppt        = alias for office
 echo     docx       = alias for office

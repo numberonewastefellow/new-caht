@@ -91,26 +91,54 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
           {/* File responses */}
           {fileIds && fileIds.length > 0 && (
             <div className="text-sm text-muted-foreground flex flex-col gap-2">
-              {fileIds.map((fid, idx) => (
-                <div key={fid} className="flex items-center gap-2 flex-wrap">
-                  <span className="whitespace-nowrap">File {idx + 1}</span>
-                  <a
-                    href={buildImgUrl(fid)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline whitespace-nowrap"
+              {fileIds.map((fid, idx) => {
+                // Try to extract actual filename from tool result data
+                let filename = `File ${idx + 1}`;
+                try {
+                  const toolResult = (data as Record<string, unknown>)
+                    ?.tool_result;
+                  const parsed =
+                    typeof toolResult === "string"
+                      ? JSON.parse(toolResult)
+                      : toolResult;
+                  const filePath =
+                    parsed?.file_path ||
+                    (Array.isArray(parsed?.file_paths)
+                      ? parsed.file_paths[idx]
+                      : null);
+                  if (filePath) {
+                    filename = String(filePath).split("/").pop() || filename;
+                  }
+                } catch {
+                  // keep default "File N"
+                }
+
+                return (
+                  <div
+                    key={fid}
+                    className="flex items-center gap-2 flex-wrap"
                   >
-                    <FiExternalLink className="w-3 h-3" /> Open
-                  </a>
-                  <a
-                    href={buildImgUrl(fid)}
-                    download
-                    className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline whitespace-nowrap"
-                  >
-                    <FiDownload className="w-3 h-3" /> Download
-                  </a>
-                </div>
-              ))}
+                    <span className="whitespace-nowrap font-medium">
+                      {filename}
+                    </span>
+                    <a
+                      href={buildImgUrl(fid)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline whitespace-nowrap"
+                    >
+                      <FiExternalLink className="w-3 h-3" /> Open
+                    </a>
+                    <a
+                      href={buildImgUrl(fid)}
+                      download={filename}
+                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline whitespace-nowrap"
+                    >
+                      <FiDownload className="w-3 h-3" /> Download
+                    </a>
+                  </div>
+                );
+              })}
             </div>
           )}
 

@@ -10,12 +10,12 @@ import { Section, LineItemLayout } from "@/layouts/general-layouts";
 import Text from "@/refresh-components/texts/Text";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import Separator from "@/refresh-components/Separator";
-import SimpleCollapsible from "@/refresh-components/SimpleCollapsible";
 import {
   SvgActions,
   SvgBubbleText,
   SvgExpand,
   SvgFold,
+  SvgFiles,
   SvgOrganization,
   SvgStar,
   SvgUser,
@@ -36,17 +36,93 @@ import { formatMmDdYyyy } from "@/lib/dateUtils";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import { FileCard } from "@/sections/cards/FileCard";
 import DocumentSetCard from "@/sections/cards/DocumentSetCard";
-import {
-  getLLMProviderOverrideForPersona,
-  getDisplayName,
-} from "@/lib/llm/utils";
+import { getDisplayName } from "@/lib/llm/utils";
 import { useLLMProviders } from "@/lib/hooks/useLLMProviders";
 import { Interactive } from "@opal/core";
+import { cn } from "@/lib/utils";
 
-/**
- * Read-only MCP Server card for the viewer modal.
- * Displays the server header with its tools listed in the expandable content area.
- */
+// ─── Tab types ────────────────────────────────────────────────────────────────
+
+type TabId = "overview" | "tools" | "knowledge";
+
+interface TabConfig {
+  id: TabId;
+  label: string;
+  count?: number;
+}
+
+function TabStrip({
+  tabs,
+  active,
+  onChange,
+}: {
+  tabs: TabConfig[];
+  active: TabId;
+  onChange: (id: TabId) => void;
+}) {
+  return (
+    <div className="flex items-center gap-1 border-b border-border-01 pb-0 -mx-1">
+      {tabs.map((tab) => {
+        const isActive = tab.id === active;
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => onChange(tab.id)}
+            className={cn(
+              "relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-t-08",
+              "transition-colors select-none focus:outline-none",
+              isActive ? "text-text-05" : "text-text-03 hover:text-text-04"
+            )}
+            style={
+              isActive
+                ? {
+                    color:
+                      "var(--virtualai-accent, var(--theme-primary-05))",
+                  }
+                : undefined
+            }
+          >
+            {tab.label}
+            {tab.count !== undefined && tab.count > 0 && (
+              <span
+                className={cn(
+                  "inline-flex items-center justify-center min-w-[1.25rem] h-4 px-1 rounded-full text-[10px] font-semibold leading-none",
+                  isActive
+                    ? "text-background-neutral-00"
+                    : "text-text-02 bg-background-tint-02"
+                )}
+                style={
+                  isActive
+                    ? {
+                        backgroundColor:
+                          "var(--virtualai-accent, var(--theme-primary-05))",
+                      }
+                    : undefined
+                }
+              >
+                {tab.count}
+              </span>
+            )}
+            {/* Active bottom border indicator */}
+            {isActive && (
+              <span
+                className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                style={{
+                  backgroundColor:
+                    "var(--virtualai-accent, var(--theme-primary-05))",
+                }}
+              />
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── MCP Server card (read-only, expandable) ──────────────────────────────────
+
 interface ViewerMCPServerCardProps {
   server: MCPServer;
   tools: ToolSnapshot[];
@@ -66,13 +142,26 @@ function ViewerMCPServerCard({ server, tools }: ViewerMCPServerCardProps) {
             description={server.description}
             variant="secondary"
             rightChildren={
-              <Button
-                internal
-                rightIcon={folded ? SvgExpand : SvgFold}
-                onClick={() => setFolded((prev) => !prev)}
-              >
-                {folded ? "Expand" : "Fold"}
-              </Button>
+              <div className="flex items-center gap-2">
+                {tools.length > 0 && (
+                  <span
+                    className="inline-flex items-center justify-center h-5 px-1.5 rounded-full text-[10px] font-semibold text-background-neutral-00 leading-none"
+                    style={{
+                      backgroundColor:
+                        "var(--virtualai-accent, var(--theme-primary-05))",
+                    }}
+                  >
+                    {tools.length}
+                  </span>
+                )}
+                <Button
+                  internal
+                  rightIcon={folded ? SvgExpand : SvgFold}
+                  onClick={() => setFolded((prev) => !prev)}
+                >
+                  {folded ? "Expand" : "Fold"}
+                </Button>
+              </div>
             }
             center
           />
@@ -95,10 +184,8 @@ function ViewerMCPServerCard({ server, tools }: ViewerMCPServerCardProps) {
   );
 }
 
-/**
- * Read-only OpenAPI tool card for the viewer modal.
- * Displays just the tool header (no expandable content).
- */
+// ─── OpenAPI tool card (read-only, static) ────────────────────────────────────
+
 function ViewerOpenApiToolCard({ tool }: { tool: ToolSnapshot }) {
   return (
     <ExpandableCard.Root>
@@ -117,12 +204,10 @@ function ViewerOpenApiToolCard({ tool }: { tool: ToolSnapshot }) {
   );
 }
 
+// ─── Chat input bar ───────────────────────────────────────────────────────────
+
 const EMPTY_DOCS: [] = [];
 
-/**
- * Floating ChatInputBar below the AgentViewerModal.
- * On submit, navigates to the agent's chat with the message pre-filled.
- */
 interface AgentChatInputProps {
   agent: FullPersona;
   onSubmit: (message: string) => void;
@@ -153,35 +238,320 @@ function AgentChatInput({ agent, onSubmit }: AgentChatInputProps) {
   );
 }
 
-/**
- * AgentViewerModal - A read-only view of an agent's configuration
- *
- * This modal is the view-only counterpart to `AgentEditorPage.tsx`. While
- * AgentEditorPage allows creating and editing agents with forms and inputs,
- * AgentViewerModal displays the same information in a read-only format.
- *
- * Key differences from AgentEditorPage:
- * - Modal presentation instead of full page
- * - Read-only display (no form inputs, switches, or editable fields)
- * - Static text/badges instead of form controls
- * - Designed to be opened from AgentCard when clicking on the card body
- *
- * Sections displayed (mirroring AgentEditorPage):
- * - Agent info: name, description, avatar
- * - Instructions (system prompt)
- * - Conversation starters
- * - Knowledge configuration
- * - Actions/tools
- * - Advanced options (model, sharing status)
- */
+// ─── Overview tab ─────────────────────────────────────────────────────────────
+
+function OverviewTab({
+  agent,
+  defaultModel,
+  onStartChat,
+}: {
+  agent: FullPersona;
+  defaultModel: string | null | undefined;
+  onStartChat: (message: string) => void;
+}) {
+  const hasStarters =
+    agent.starter_messages && agent.starter_messages.length > 0;
+
+  return (
+    <div className="flex flex-col gap-5">
+      {/* Conversation Starters */}
+      {hasStarters && (
+        <div className="flex flex-col gap-2">
+          <Text as="p" mainContentEmphasis className="text-xs font-semibold uppercase tracking-wide text-text-02">
+            Conversation Starters
+          </Text>
+          <div className="grid grid-cols-2 gap-2">
+            {agent.starter_messages!.map((starter, index) => (
+              <Interactive.Base
+                key={index}
+                onClick={() => onStartChat(starter.message)}
+                variant="default"
+                prominence="tertiary"
+              >
+                <div
+                  className="rounded-12 border p-3 cursor-pointer transition-all duration-150 group"
+                  style={{
+                    borderColor:
+                      "var(--virtualai-accent-glow, color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 25%, transparent))",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.backgroundColor =
+                      "var(--virtualai-accent-subtle, color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 8%, transparent))";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.backgroundColor = "";
+                  }}
+                >
+                  <div className="flex items-start gap-2">
+                    <SvgBubbleText
+                      className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
+                      style={{
+                        color:
+                          "var(--virtualai-accent, var(--theme-primary-05))",
+                      }}
+                    />
+                    <Text
+                      as="p"
+                      secondaryBody
+                      className="text-text-04 text-xs leading-relaxed line-clamp-3"
+                    >
+                      {starter.message}
+                    </Text>
+                  </div>
+                </div>
+              </Interactive.Base>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!hasStarters && (
+        <div className="text-center py-6">
+          <SvgBubbleText className="w-8 h-8 mx-auto mb-2 text-text-02" />
+          <Text as="p" secondaryBody text03>
+            No conversation starters configured.
+          </Text>
+          <Text as="p" secondaryBody text03>
+            Ask anything to get started.
+          </Text>
+        </div>
+      )}
+
+      {/* Prompt Reminders */}
+      {agent.task_prompt && (
+        <>
+          <Separator noPadding />
+          <div className="flex flex-col gap-1.5">
+            <Text as="p" mainContentEmphasis className="text-xs font-semibold uppercase tracking-wide text-text-02">
+              Prompt Reminders
+            </Text>
+            <div className="rounded-08 bg-background-tint-02 p-3">
+              <Text as="p" secondaryBody text03 className="text-xs leading-relaxed whitespace-pre-wrap">
+                {agent.task_prompt}
+              </Text>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* More Info */}
+      <Separator noPadding />
+      <div className="flex flex-col gap-2">
+        <Text as="p" mainContentEmphasis className="text-xs font-semibold uppercase tracking-wide text-text-02">
+          Configuration
+        </Text>
+        <div className="flex flex-col gap-1">
+          {agent.system_prompt && (
+            <Horizontal
+              title="Instructions"
+              description={agent.system_prompt}
+              nonInteractive
+              variant="secondary"
+            />
+          )}
+          {defaultModel && (
+            <Horizontal
+              title="Default Model"
+              description="This model will be used by VertualAI by default in your chats."
+              nonInteractive
+              variant="secondary"
+            >
+              <Text>{defaultModel}</Text>
+            </Horizontal>
+          )}
+          {agent.search_start_date && (
+            <Horizontal
+              title="Knowledge Cutoff Date"
+              description="Documents with a last-updated date prior to this will be ignored."
+              nonInteractive
+              variant="secondary"
+            >
+              <Text mainUiMono>
+                {formatMmDdYyyy(agent.search_start_date)}
+              </Text>
+            </Horizontal>
+          )}
+          <Horizontal
+            title="Overwrite System Prompts"
+            description='Remove the base system prompt which includes useful instructions (e.g. "You can use Markdown tables"). This may affect response quality.'
+            nonInteractive
+            variant="secondary"
+          >
+            <Switch disabled checked={agent.replace_base_system_prompt} />
+          </Horizontal>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Tools tab ────────────────────────────────────────────────────────────────
+
+function ToolsTab({
+  mcpServersWithTools,
+  openApiTools,
+}: {
+  mcpServersWithTools: { server: MCPServer; tools: ToolSnapshot[] }[];
+  openApiTools: ToolSnapshot[];
+}) {
+  const hasActions = mcpServersWithTools.length > 0 || openApiTools.length > 0;
+
+  if (!hasActions) {
+    return (
+      <div className="py-6">
+        <EmptyMessage title="No Actions" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      {mcpServersWithTools.length > 0 && (
+        <div className="flex flex-col gap-1">
+          {mcpServersWithTools.length > 0 && (
+            <Text as="p" mainContentEmphasis className="text-xs font-semibold uppercase tracking-wide text-text-02 mb-1">
+              MCP Servers
+            </Text>
+          )}
+          <Section gap={0.5} alignItems="start">
+            {mcpServersWithTools.map(({ server, tools }) => (
+              <ViewerMCPServerCard
+                key={server.id}
+                server={server}
+                tools={tools}
+              />
+            ))}
+          </Section>
+        </div>
+      )}
+
+      {openApiTools.length > 0 && (
+        <div className="flex flex-col gap-1">
+          <Text as="p" mainContentEmphasis className="text-xs font-semibold uppercase tracking-wide text-text-02 mb-1">
+            API Actions
+          </Text>
+          <Section gap={0.5} alignItems="start">
+            {openApiTools.map((tool) => (
+              <ViewerOpenApiToolCard key={tool.id} tool={tool} />
+            ))}
+          </Section>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Knowledge tab ────────────────────────────────────────────────────────────
+
+function KnowledgeTab({
+  agent,
+  allRecentFiles,
+}: {
+  agent: FullPersona;
+  allRecentFiles: ReturnType<typeof useProjectsContext>["allRecentFiles"];
+}) {
+  const hasDocSets = agent.document_sets && agent.document_sets.length > 0;
+  const hasFiles = agent.user_file_ids && agent.user_file_ids.length > 0;
+  const hasKnowledge = hasDocSets || hasFiles;
+
+  if (!hasKnowledge) {
+    return (
+      <div className="py-8 flex flex-col items-center gap-3">
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center"
+          style={{
+            backgroundColor:
+              "var(--virtualai-accent-subtle, color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 8%, transparent))",
+          }}
+        >
+          <SvgFiles
+            className="w-6 h-6"
+            style={{
+              color: "var(--virtualai-accent, var(--theme-primary-05))",
+            }}
+          />
+        </div>
+        <div className="text-center">
+          <Text as="p" mainContentBody className="font-medium text-text-04">
+            No Knowledge Connected
+          </Text>
+          <Text as="p" secondaryBody text03 className="mt-0.5">
+            This agent doesn&apos;t have any knowledge sources attached.
+          </Text>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-5">
+      {/* Document Sets */}
+      {hasDocSets && (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <Text as="p" mainContentEmphasis className="text-xs font-semibold uppercase tracking-wide text-text-02">
+              Collections
+            </Text>
+            <span
+              className="inline-flex items-center justify-center min-w-[1.25rem] h-4 px-1 rounded-full text-[10px] font-semibold leading-none text-background-neutral-00"
+              style={{
+                backgroundColor:
+                  "var(--virtualai-accent, var(--theme-primary-05))",
+              }}
+            >
+              {agent.document_sets!.length}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {agent.document_sets!.map((docSet) => (
+              <DocumentSetCard key={docSet.id} documentSet={docSet} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* User Files */}
+      {hasFiles && (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <Text as="p" mainContentEmphasis className="text-xs font-semibold uppercase tracking-wide text-text-02">
+              Files
+            </Text>
+            <span
+              className="inline-flex items-center justify-center min-w-[1.25rem] h-4 px-1 rounded-full text-[10px] font-semibold leading-none text-background-neutral-00"
+              style={{
+                backgroundColor:
+                  "var(--virtualai-accent, var(--theme-primary-05))",
+              }}
+            >
+              {agent.user_file_ids!.length}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {agent.user_file_ids!.map((fileId) => {
+              const file = allRecentFiles.find((f) => f.id === fileId);
+              if (!file) return null;
+              return <FileCard key={fileId} file={file} />;
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main AgentViewerModal ────────────────────────────────────────────────────
+
 export interface AgentViewerModalProps {
   agent: FullPersona;
 }
+
 export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
   const agentViewerModal = useModal();
   const router = useRouter();
   const { allRecentFiles } = useProjectsContext();
   const { llmProviders } = useLLMProviders(agent.id);
+  const [activeTab, setActiveTab] = useState<TabId>("overview");
 
   const handleStartChat = useCallback(
     (message: string) => {
@@ -196,12 +566,7 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
     [agent.id, router, agentViewerModal]
   );
 
-  const hasKnowledge =
-    (agent.document_sets && agent.document_sets.length > 0) ||
-    (agent.hierarchy_nodes && agent.hierarchy_nodes.length > 0) ||
-    (agent.user_file_ids && agent.user_file_ids.length > 0);
-
-  // Categorize tools into MCP, OpenAPI, and built-in
+  // Categorize tools into MCP and OpenAPI
   const mcpToolsByServerId = useMemo(() => {
     const map = new Map<number, ToolSnapshot[]>();
     agent.tools.forEach((tool) => {
@@ -220,7 +585,6 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
     [agent.tools]
   );
 
-  // Fetch MCP server metadata for display
   const { mcpData } = useMcpServersForAgentEditor();
   const mcpServers = mcpData?.mcp_servers ?? [];
 
@@ -235,8 +599,20 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
     [mcpServers, mcpToolsByServerId]
   );
 
-  const hasActions = mcpServersWithTools.length > 0 || openApiTools.length > 0;
+  const totalToolCount =
+    mcpServersWithTools.reduce((acc, s) => acc + s.tools.length, 0) +
+    openApiTools.length;
+
+  const knowledgeCount =
+    (agent.document_sets?.length ?? 0) + (agent.user_file_ids?.length ?? 0);
+
   const defaultModel = getDisplayName(agent, llmProviders ?? []);
+
+  const tabs: TabConfig[] = [
+    { id: "overview", label: "Overview" },
+    { id: "tools", label: "Tools", count: totalToolCount },
+    { id: "knowledge", label: "Knowledge", count: knowledgeCount },
+  ];
 
   return (
     <Modal
@@ -255,163 +631,68 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
         />
 
         <Modal.Body>
-          {/* Metadata */}
-          <Section flexDirection="row" justifyContent="start">
+          {/* ── Metadata pills ── */}
+          <div className="flex flex-wrap items-center gap-1.5">
             {!agent.is_default_persona && (
-              <LineItemLayout
-                icon={SvgStar}
-                title="Featured"
-                variant="tertiary"
-                width="fit"
-              />
-            )}
-            <LineItemLayout
-              icon={SvgUser}
-              title={agent.owner?.email ?? "VertualAI"}
-              variant="tertiary-muted"
-              width="fit"
-            />
-            {agent.is_public && (
-              <LineItemLayout
-                icon={SvgOrganization}
-                title="Public to your organization"
-                variant="tertiary-muted"
-                width="fit"
-              />
-            )}
-          </Section>
-
-          {/* Description */}
-          {agent.description && <Text text03>{agent.description}</Text>}
-
-          {/* Knowledge */}
-          <Separator noPadding />
-          <Section gap={0.5} alignItems="start">
-            <Title title="Knowledge" />
-            {hasKnowledge ? (
-              <Section
-                gap={0.5}
-                flexDirection="row"
-                justifyContent="start"
-                wrap
-                alignItems="start"
+              <span
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                style={{
+                  backgroundColor:
+                    "var(--virtualai-accent-subtle, color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 12%, transparent))",
+                  color:
+                    "var(--virtualai-accent, var(--theme-primary-05))",
+                }}
               >
-                {agent.document_sets?.map((docSet) => (
-                  <DocumentSetCard key={docSet.id} documentSet={docSet} />
-                ))}
-                {agent.user_file_ids?.map((fileId) => {
-                  const file = allRecentFiles.find((f) => f.id === fileId);
-                  if (!file) return null;
-                  return <FileCard key={fileId} file={file} />;
-                })}
-              </Section>
-            ) : (
-              <EmptyMessage title="No Knowledge" />
+                <SvgStar className="w-3 h-3" />
+                Featured
+              </span>
             )}
-          </Section>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-background-tint-02 text-text-03">
+              <SvgUser className="w-3 h-3" />
+              {agent.owner?.email ?? "VertualAI"}
+            </span>
+            {agent.is_public && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-background-tint-02 text-text-03">
+                <SvgOrganization className="w-3 h-3" />
+                Public to your organization
+              </span>
+            )}
+          </div>
 
-          {/* Actions & Tools */}
-          <SimpleCollapsible>
-            <SimpleCollapsible.Header title="Actions & Tools" />
-            <SimpleCollapsible.Content>
-              {hasActions ? (
-                <Section gap={0.5} alignItems="start">
-                  {mcpServersWithTools.map(({ server, tools }) => (
-                    <ViewerMCPServerCard
-                      key={server.id}
-                      server={server}
-                      tools={tools}
-                    />
-                  ))}
-                  {openApiTools.map((tool) => (
-                    <ViewerOpenApiToolCard key={tool.id} tool={tool} />
-                  ))}
-                </Section>
-              ) : (
-                <EmptyMessage title="No Actions" />
-              )}
-            </SimpleCollapsible.Content>
-          </SimpleCollapsible>
-
-          {/* More Info (Collapsible) */}
-          <Separator noPadding />
-          <SimpleCollapsible>
-            <SimpleCollapsible.Header title="More Info" />
-            <SimpleCollapsible.Content>
-              <Section gap={0.5} alignItems="start">
-                {agent.system_prompt && (
-                  <LineItemLayout
-                    title="Instructions"
-                    description={agent.system_prompt}
-                    variant="secondary"
-                  />
-                )}
-                {defaultModel && (
-                  <Horizontal
-                    title="Default Model"
-                    description="This model will be used by VertualAI by default in your chats."
-                    nonInteractive
-                    variant="secondary"
-                  >
-                    <Text>{defaultModel}</Text>
-                  </Horizontal>
-                )}
-                {agent.search_start_date && (
-                  <Horizontal
-                    title="Knowledge Cutoff Date"
-                    description="Documents with a last-updated date prior to this will be ignored."
-                    nonInteractive
-                    variant="secondary"
-                  >
-                    <Text mainUiMono>
-                      {formatMmDdYyyy(agent.search_start_date)}
-                    </Text>
-                  </Horizontal>
-                )}
-                <Horizontal
-                  title="Overwrite System Prompts"
-                  description='Remove the base system prompt which includes useful instructions (e.g. "You can use Markdown tables"). This may affect response quality.'
-                  nonInteractive
-                  variant="secondary"
-                >
-                  <Switch disabled checked={agent.replace_base_system_prompt} />
-                </Horizontal>
-              </Section>
-            </SimpleCollapsible.Content>
-          </SimpleCollapsible>
-
-          {/* Prompt Reminders */}
-          {agent.task_prompt && (
-            <>
-              <Separator noPadding />
-              <Title title="Prompt Reminders" description={agent.task_prompt} />
-            </>
+          {/* ── Description ── */}
+          {agent.description && (
+            <div className="rounded-10 bg-background-tint-02 px-3 py-2.5">
+              <Text as="p" secondaryBody className="text-text-04 text-sm leading-relaxed">
+                {agent.description}
+              </Text>
+            </div>
           )}
 
-          {/* Conversation Starters */}
-          {agent.starter_messages && agent.starter_messages.length > 0 && (
-            <>
-              <Separator noPadding />
-              <Title title="Conversation Starters" />
-              <div className="grid grid-cols-2 gap-1 w-full">
-                {agent.starter_messages.map((starter, index) => (
-                  <Interactive.Base
-                    key={index}
-                    onClick={() => handleStartChat(starter.message)}
-                    prominence="tertiary"
-                  >
-                    <Interactive.Container>
-                      <LineItemLayout
-                        icon={SvgBubbleText}
-                        title={starter.message}
-                        variant="tertiary-muted"
-                      />
-                    </Interactive.Container>
-                  </Interactive.Base>
-                ))}
-              </div>
-            </>
-          )}
+          {/* ── Tab strip ── */}
+          <TabStrip tabs={tabs} active={activeTab} onChange={setActiveTab} />
+
+          {/* ── Tab content ── */}
+          <div className="flex flex-col">
+            {activeTab === "overview" && (
+              <OverviewTab
+                agent={agent}
+                defaultModel={defaultModel}
+                onStartChat={handleStartChat}
+              />
+            )}
+            {activeTab === "tools" && (
+              <ToolsTab
+                mcpServersWithTools={mcpServersWithTools}
+                openApiTools={openApiTools}
+              />
+            )}
+            {activeTab === "knowledge" && (
+              <KnowledgeTab
+                agent={agent}
+                allRecentFiles={allRecentFiles}
+              />
+            )}
+          </div>
         </Modal.Body>
       </Modal.Content>
     </Modal>

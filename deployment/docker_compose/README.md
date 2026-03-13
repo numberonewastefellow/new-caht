@@ -63,33 +63,37 @@ All spans are nested in a trace hierarchy: `root → LLM → Tool → LLM → ..
 
 ### Enable Phoenix
 
-1. **Set the environment variable** in your `.env` file:
+1. **Set the environment variables** in your `.env` file:
    ```
+   PHOENIX_ENABLED=true
    PHOENIX_COLLECTOR_ENDPOINT=http://phoenix:6006/v1/traces
    ```
 
+   - `PHOENIX_ENABLED` — exposes the Phoenix UI at `/phoenix/` through the nginx reverse proxy
+   - `PHOENIX_COLLECTOR_ENDPOINT` — enables trace collection from the backend
+
 2. **Start the stack** (Phoenix container is included in `docker-compose.yml`):
    ```bash
-   # Standard deployment
    docker compose up -d
-
-   # Windows dev (exposes Phoenix UI on port 6006)
-   docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml up -d
    ```
 
-3. **Open the Phoenix dashboard**: <http://localhost:6006>
+3. **Open the Phoenix dashboard**: <http://localhost:3000/phoenix/>
+
+   The dashboard is accessible through the main application URL — no separate port needed. You can also find the link in the **Admin Panel** sidebar under **LLM Observability → LLM Traces**.
 
 That's it. The backend auto-detects the endpoint and starts exporting traces via OTLP/HTTP.
 
 ### Disable Phoenix
 
-Remove or comment out `PHOENIX_COLLECTOR_ENDPOINT` in `.env` and restart the backend containers:
+Remove or comment out both variables in `.env` and restart:
 
 ```bash
-docker compose up -d api_server background
+docker compose up -d api_server background nginx
 ```
 
-The Phoenix container will still run but receive no traces. To stop it entirely, stop the `phoenix` service.
+- Without `PHOENIX_COLLECTOR_ENDPOINT`: the backend sends no traces (Phoenix container still runs but is idle)
+- Without `PHOENIX_ENABLED`: the `/phoenix/` route is removed from nginx (returns 404)
+- To stop the container entirely: `docker compose stop phoenix`
 
 ### Architecture
 
@@ -110,14 +114,27 @@ api_server / background
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `PHOENIX_COLLECTOR_ENDPOINT` | *(empty — disabled)* | OTLP/HTTP endpoint for Phoenix. Set to `http://phoenix:6006/v1/traces` to enable. |
+| `PHOENIX_ENABLED` | `false` | Set to `true` to expose the Phoenix UI at `/phoenix/` via nginx reverse proxy. |
+| `PHOENIX_COLLECTOR_ENDPOINT` | *(empty — disabled)* | OTLP/HTTP endpoint for Phoenix. Set to `http://phoenix:6006/v1/traces` to enable trace collection. |
+
+### Nginx Integration
+
+Phoenix is served through the main nginx reverse proxy at `/phoenix/`. This uses the same conditional include pattern as the MCP server:
+
+| File | Purpose |
+|------|---------|
+| `deployment/data/nginx/phoenix_upstream.conf.inc.template` | Upstream definition (phoenix:6006) |
+| `deployment/data/nginx/phoenix.conf.inc.template` | Location block with rewrite + WebSocket support |
+| `deployment/data/nginx/run-nginx.sh` | Conditional enable/disable based on `PHOENIX_ENABLED` |
+
+When `PHOENIX_ENABLED=true`, nginx strips the `/phoenix` prefix and proxies requests to the Phoenix container. The `PHOENIX_HOST_ROOT_PATH=/phoenix` env var on the Phoenix container ensures all generated URLs (assets, API endpoints, SPA routes) use the `/phoenix/` prefix.
 
 ### Verify Traces Are Flowing
 
 After sending a chat message, check the Phoenix GraphQL API:
 
 ```bash
-curl -s http://localhost:6006/graphql -X POST \
+curl -s http://localhost:3000/phoenix/graphql -X POST \
   -H "Content-Type: application/json" \
   -d '{"query": "{ projects { edges { node { name traceCount } } } }"}'
 ```
@@ -126,10 +143,10 @@ Expected: `traceCount > 0`
 
 ### Production Notes
 
-- The image is pinned to `arizephoenix/phoenix:version-13.11.0` — update the tag in `docker-compose.yml` when upgrading
+- The image is built from source at `../../phoenix` — update the Dockerfile or source when upgrading
 - For high-throughput deployments, consider running Phoenix with PostgreSQL storage instead of the default SQLite — see [Phoenix docs](https://docs.arize.com/phoenix/deployment)
 - The BatchSpanProcessor queue (4096 spans) will drop spans under extreme load rather than blocking the backend
-- Phoenix port 6006 is **not exposed** by default in production compose — only in dev overrides
+- Phoenix port 6006 is **not exposed** to the host by default — access is through nginx at `/phoenix/`
 
 ---
 

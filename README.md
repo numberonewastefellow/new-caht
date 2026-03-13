@@ -85,6 +85,46 @@ VertualAI is built for teams of all sizes, from individual users to the largest 
 
 
 
+## 🌱 Database Seeding (Restore Agents & Workflows)
+
+After a fresh deployment or database reset, use `seed_all.py` to restore all LLM providers, agents, and workflows in one command.
+
+```bash
+cd backend/tests
+
+# Seed everything (default: http://localhost:3000, key from agents_creator/apikey.txt)
+python seed_all.py
+
+# Custom target and API key
+python seed_all.py --url http://localhost:3000 --key <your-api-key>
+
+# With LLM provider API key (e.g. OpenRouter)
+python seed_all.py --llm-key sk-or-...
+```
+
+**Options:**
+
+| Flag | Description |
+| ---- | ----------- |
+| `--only providers` | Seed only LLM providers |
+| `--only agents` | Seed only standalone agents (153 agents from 31 JSON files) |
+| `--only workflows` | Seed only workflows (36 workflows from 36 JSON files) |
+| `--force` | Re-create even if name already exists |
+| `--dry-run` | Preview what would be created without making changes |
+| `--no-icons` | Skip icon generation for workflow wrapper personas |
+| `--llm-key KEY` | API key for LLM provider (or set `LLM_API_KEY` env var) |
+| `--url URL` | Target VirtualAI instance (default: `http://localhost:3000`) |
+| `--key KEY` | VirtualAI API key (default: from `agents_creator/apikey.txt`) |
+
+**Dependency order** (handled automatically):
+
+1. LLM Providers → from `backend/tests/llm_providers.json`
+2. Standalone Agents → from `backend/tests/agents_creator/assistants/*.json`
+3. Workflows → from `backend/tests/workflow_creator/workflows/*.json`
+
+The script is **idempotent** — safe to run multiple times. Existing items are skipped by name.
+
+
 ## 🚧 Roadmap
 To see ongoing and upcoming projects, check out our [roadmap](https://github.com/orgs/vertualai/projects/2)!
 

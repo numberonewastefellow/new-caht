@@ -40,9 +40,11 @@ import {
 } from "@/app/app/services/actionUtils";
 import {
   SvgArrowUp,
+  SvgAudioEqSmall,
   SvgCalendar,
   SvgFiles,
   SvgFileText,
+  SvgMicrophone,
   SvgPlus,
   SvgPaperclip,
   SvgSearch,
@@ -61,6 +63,16 @@ import QuickActionChips from "@/sections/input/QuickActionChips";
 const LINE_HEIGHT = 24;
 const MIN_INPUT_HEIGHT = 44;
 const MAX_INPUT_HEIGHT = 200;
+
+// Web Speech API — gracefully absent in Firefox/Safari
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createSpeechRecognition(): any | null {
+  if (typeof window === "undefined") return null;
+  const Ctor =
+    (window as any).SpeechRecognition ||
+    (window as any).webkitSpeechRecognition;
+  return Ctor ? new Ctor() : null;
+}
 
 export interface SourceChipProps {
   icon?: React.ReactNode;
@@ -307,6 +319,35 @@ const AppInputBar = React.memo(
       !selectedAssistant ||
       llmManager.isLoadingProviders;
     const [showPrompts, setShowPrompts] = useState(false);
+
+    // Voice / speech-to-text state
+    const [isRecording, setIsRecording] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const recognitionRef = useRef<any>(null);
+
+    const toggleRecording = useCallback(() => {
+      if (isRecording) {
+        recognitionRef.current?.stop();
+        setIsRecording(false);
+        return;
+      }
+      const recognition = createSpeechRecognition();
+      if (!recognition) return;
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results as any[])
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((r: any) => r[0]?.transcript ?? "")
+          .join("");
+        setMessage(transcript);
+      };
+      recognition.onend = () => setIsRecording(false);
+      recognitionRef.current = recognition;
+      recognition.start();
+      setIsRecording(true);
+    }, [isRecording]);
 
     // Memoize availableSources to prevent unnecessary re-renders
     const memoizedAvailableSources = useMemo(
@@ -797,6 +838,43 @@ const AppInputBar = React.memo(
 
               {/* Bottom right controls */}
               <div className="flex flex-row items-center gap-1">
+                {/* Voice input buttons */}
+                <button
+                  type="button"
+                  disabled={disabled}
+                  title="Voice input"
+                  onClick={toggleRecording}
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-150",
+                    isRecording
+                      ? "text-background-neutral-00"
+                      : "text-text-03 hover:text-text-05 hover:bg-background-neutral-02",
+                    disabled && "opacity-40 pointer-events-none"
+                  )}
+                  style={
+                    isRecording
+                      ? {
+                          backgroundColor:
+                            "var(--virtualai-accent, var(--theme-primary-05))",
+                        }
+                      : undefined
+                  }
+                >
+                  <SvgMicrophone size={16} />
+                </button>
+                <button
+                  type="button"
+                  disabled={disabled}
+                  title="Audio mode"
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-150",
+                    "text-text-03 hover:text-text-05 hover:bg-background-neutral-02",
+                    disabled && "opacity-40 pointer-events-none"
+                  )}
+                >
+                  <SvgAudioEqSmall size={16} />
+                </button>
+
                 {/* LLM popover - loads when ready */}
                 <div
                   data-testid="AppInputBar/llm-popover-trigger"

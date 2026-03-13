@@ -61,6 +61,7 @@ class AgentTool(Tool[None]):
         chat_files: list[ChatFile] | None = None,
         sandbox_session_id: str | None = None,
         # Step-level overrides (override persona defaults)
+        max_cycles_override: int | None = None,
         max_output_tokens_override: int | None = None,
         system_prompt_override: str | None = None,
         task_prompt_override: str | None = None,
@@ -83,6 +84,7 @@ class AgentTool(Tool[None]):
         self._chat_files = chat_files or []
         self._sandbox_session_id = sandbox_session_id
         # Step-level overrides
+        self._max_cycles_override = max_cycles_override
         self._max_output_tokens_override = max_output_tokens_override
         self._system_prompt_override = system_prompt_override
         self._task_prompt_override = task_prompt_override
@@ -283,7 +285,7 @@ class AgentTool(Tool[None]):
         tool_choice = ToolChoiceOptions.AUTO if tools else ToolChoiceOptions.NONE
 
         # Run a multi-turn loop (similar to research_agent.py pattern)
-        max_cycles = 15  # Sub-agent gets up to 15 tool-call cycles
+        max_cycles = self._max_cycles_override or 40
         final_answer = ""
 
         for cycle in range(max_cycles):
@@ -443,6 +445,19 @@ class AgentTool(Tool[None]):
         if not final_answer:
             final_answer = "(Agent did not produce a final answer)"
 
+        # Post-step file capture: fetch any files tracked during this agent
+        # step (e.g., DOCX/PPTX/PDF created by MCP tools) and save to MinIO.
+        # This runs BEFORE the MCP session closes so the files are still
+        # available on the MCP server.
+        from onyx.tools.tool_implementations.mcp.mcp_tool import (
+            collect_pending_files,
+        )
+        step_file_ids = collect_pending_files(
+            scope_id=mcp_scope_id,
+            emitter=self.emitter,
+            placement=placement,
+        )
+
         # Close any persistent MCP sessions opened during this agent step.
         # This ensures server-side resources (e.g., in-memory presentations)
         # are properly released after the agent finishes its work.
@@ -455,12 +470,15 @@ class AgentTool(Tool[None]):
         # in real-time while this method runs in a background thread, capturing
         # all intermediate packets (search, reasoning, etc.) as they are emitted.
 
+        response_dict: dict[str, Any] = {
+            "agent_name": self._persona.name,
+            "agent_output": final_answer,
+        }
+        # Persist file_ids so session reload can reconstruct download links
+        if step_file_ids:
+            response_dict["_file_ids"] = step_file_ids
+
         return ToolResponse(
             rich_response=final_answer,
-            llm_facing_response=json.dumps(
-                {
-                    "agent_name": self._persona.name,
-                    "agent_output": final_answer,
-                }
-            ),
+            llm_facing_response=json.dumps(response_dict),
         )

@@ -127,6 +127,32 @@ def _create_workflow_step_packets(tool_call: ToolCall) -> list[Packet]:
                     obj=WorkflowStepDelta(content=output),
                 )
             )
+        # Reconstruct file download links if this step captured files
+        file_ids = args.get("_file_ids")
+        if file_ids:
+            from onyx.server.query_and_chat.streaming_models import (
+                CustomToolDelta,
+                CustomToolStart,
+            )
+            packets.append(
+                Packet(
+                    placement=placement,
+                    obj=CustomToolStart(tool_name="document_files"),
+                )
+            )
+            packets.append(
+                Packet(
+                    placement=placement,
+                    obj=CustomToolDelta(
+                        tool_name="document_files",
+                        response_type="json",
+                        data={"tool_result": "Generated document files", "_file_ids": file_ids},
+                        file_ids=file_ids,
+                    ),
+                )
+            )
+            packets.append(Packet(placement=placement, obj=SectionEnd()))
+
         packets.append(
             Packet(
                 placement=placement,
@@ -766,14 +792,34 @@ def translate_assistant_message_to_packets(
                         )
 
                     else:
-                        # Custom tool or unknown tool
+                        # Custom tool or MCP tool — parse stored JSON
+                        # for file_ids persisted by MCP file download flow
+                        response_type = "text"
+                        data: dict | list | str | int | float | bool | None = (
+                            tool_call.tool_call_response
+                        )
+                        file_ids: list[str] | None = None
+
+                        if tool_call.tool_call_response:
+                            try:
+                                parsed = json.loads(
+                                    tool_call.tool_call_response
+                                )
+                                if isinstance(parsed, dict):
+                                    file_ids = parsed.pop("_file_ids", None)
+                                    data = parsed
+                                    response_type = "json"
+                            except (json.JSONDecodeError, ValueError):
+                                pass
+
                         turn_tool_packets.extend(
                             create_custom_tool_packets(
                                 tool_name=tool.display_name or tool.name,
-                                response_type="text",
+                                response_type=response_type,
                                 turn_index=turn_num,
                                 tab_index=tool_call.tab_index,
-                                data=tool_call.tool_call_response,
+                                data=data,
+                                file_ids=file_ids,
                             )
                         )
 

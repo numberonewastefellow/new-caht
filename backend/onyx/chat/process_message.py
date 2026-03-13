@@ -507,6 +507,12 @@ def _run_workflow_and_save(
                 _cur_step["content_parts"].append(
                     getattr(packet.obj, "content", "") or ""
                 )
+        elif ptype == StreamingType.CUSTOM_TOOL_DELTA.value:
+            # Track file_ids emitted by post-step file capture
+            fids = getattr(packet.obj, "file_ids", None)
+            if fids and _cur_step is not None:
+                _cur_step.setdefault("file_ids", []).extend(fids)
+
         elif ptype == StreamingType.WORKFLOW_STEP_END.value:
             if _cur_step is not None:
                 _cur_step["output"] = "".join(_cur_step.pop("content_parts", []))
@@ -552,6 +558,7 @@ def _run_workflow_and_save(
                     "step_name": rec["step_name"],
                     "persona_name": rec["persona_name"],
                     "step_order": rec["step_order"],
+                    **({"_file_ids": rec["file_ids"]} if rec.get("file_ids") else {}),
                 },
                 tool_call_response=rec.get("output", ""),
             )

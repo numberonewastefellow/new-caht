@@ -690,6 +690,12 @@ def run_workflow_sequential(
             promote_output=step.promote_output,
             chat_files=chat_files,
             sandbox_session_id=sandbox_session_id,
+            max_output_tokens_override=step.max_output_tokens_override,
+            system_prompt_override=step.system_prompt_override,
+            task_prompt_override=step.task_prompt_override,
+            tool_ids_override=step.tool_ids_override,
+            document_set_ids_override=step.document_set_ids_override,
+            replace_base_system_prompt_override=step.replace_base_system_prompt_override,
         )
 
     try:

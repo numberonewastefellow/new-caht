@@ -324,6 +324,20 @@ export function getAdminNavGroups(opts: {
       });
     }
 
+    // Platform Services
+    workspaceItems.push(
+      {
+        name: "Services Dashboard",
+        icon: SvgServer,
+        link: "/admin/services",
+      },
+      {
+        name: "LLM Traces",
+        icon: SvgActivity,
+        link: "/phoenix/",
+      }
+    );
+
     // Performance / Observability items (enterprise only)
     if (enableEnterprise) {
       workspaceItems.push({
@@ -414,6 +428,7 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   connector: "Connector",
   federated: "Federated",
   systeminfo: "System Information",
+  services: "Platform Services",
   debug: "Debug",
   new: "New",
   channels: "Channels",
@@ -465,6 +480,7 @@ const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
   ["/admin/api-key", "orange"],
   ["/admin/token-rate-limits", "orange"],
   // Workspace (cyan)
+  ["/admin/services", "cyan"],
   ["/admin/settings", "cyan"],
   ["/ee/admin/theme", "cyan"],
   ["/admin/billing", "cyan"],

@@ -106,6 +106,15 @@ export default function LoginPage({
         </div>
       )}
 
+      {/* Fallback: show basic email/password form when authTypeMetadata is null
+          (backend unreachable during SSR — user gets a proper error on submit) */}
+      {!authTypeMetadata && (
+        <div className="flex flex-col w-full gap-6">
+          <LoginText />
+          <EmailPasswordForm nextUrl={effectiveNextUrl} />
+        </div>
+      )}
+
       {!hidePageRedirect && (
         <p className="text-center mt-4">
           Don&apos;t have an account?{" "}

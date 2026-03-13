@@ -321,6 +321,15 @@ Examples:
     args = parser.parse_args()
     apply_common_args(args)
 
+    # Sync the bare 'config' module (used by create_assistants.py via
+    # `from config import ...`) with the package-imported CONFIG.  Python
+    # treats bare 'config' and 'agents_creator.config' as separate modules,
+    # so apply_common_args only updates the package version.
+    import config as _bare_config  # noqa: E402
+
+    _bare_config.CONFIG["base_url"] = CONFIG["base_url"]
+    _bare_config.CONFIG["api_key"] = CONFIG["api_key"]
+
     print("\n" + "=" * 60)
     print("  VirtualAI — Seed All")
     print(f"  Target: {CONFIG['base_url']}")

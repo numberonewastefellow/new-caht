@@ -295,8 +295,13 @@ const collections = (
               ]
             : []),
           {
-            name: "LLM Observability",
+            name: "Platform Services",
             items: [
+              {
+                name: "Services Dashboard",
+                icon: SvgServer,
+                link: "/admin/services",
+              },
               {
                 name: "LLM Traces",
                 icon: SvgActivity,

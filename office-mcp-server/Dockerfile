@@ -9,7 +9,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN pip install --no-cache-dir \
     office-powerpoint-mcp-server \
-    office-word-mcp-server
+    office-word-mcp-server \
+    fastapi \
+    uvicorn
 
 # Create directories for templates, output, and documents
 RUN mkdir -p /app/templates /app/output /app/documents

@@ -263,11 +263,8 @@
     transition: box-shadow 0.2s ease, border-color 0.2s ease;
   }
   .virtualai-input-glow:focus-within {
-    box-shadow:
-      0px 2px 16px 0px var(--shadow-02),
-      0px 0px 6px 1px var(--shadow-02),
-      0 0 0 2px var(--virtualai-accent-glow, transparent);
     border-color: var(--border-02);
+    animation: virtualai-glow-orbit 3s linear infinite;
   }
 
   /* VirtualAI User Message Bubble — subtle accent tint */
@@ -772,6 +769,45 @@ textarea {
 
 .virtualai-pulse-ring {
   animation: virtualai-pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* LED orbit comet — bright spot travels around the input border */
+@keyframes virtualai-glow-orbit {
+  0% {
+    box-shadow:
+      0px 2px 16px 0px var(--shadow-02),
+      0 0 0 1px var(--virtualai-accent-glow, transparent),
+      8px 0 28px 3px var(--virtualai-accent-glow-strong, transparent),
+      4px -1px 18px 1px var(--virtualai-accent-glow, transparent);
+  }
+  25% {
+    box-shadow:
+      0px 2px 16px 0px var(--shadow-02),
+      0 0 0 1px var(--virtualai-accent-glow, transparent),
+      0 -6px 28px 3px var(--virtualai-accent-glow-strong, transparent),
+      2px -3px 18px 1px var(--virtualai-accent-glow, transparent);
+  }
+  50% {
+    box-shadow:
+      0px 2px 16px 0px var(--shadow-02),
+      0 0 0 1px var(--virtualai-accent-glow, transparent),
+      -8px 0 28px 3px var(--virtualai-accent-glow-strong, transparent),
+      -4px 1px 18px 1px var(--virtualai-accent-glow, transparent);
+  }
+  75% {
+    box-shadow:
+      0px 2px 16px 0px var(--shadow-02),
+      0 0 0 1px var(--virtualai-accent-glow, transparent),
+      0 6px 28px 3px var(--virtualai-accent-glow-strong, transparent),
+      -2px 3px 18px 1px var(--virtualai-accent-glow, transparent);
+  }
+  100% {
+    box-shadow:
+      0px 2px 16px 0px var(--shadow-02),
+      0 0 0 1px var(--virtualai-accent-glow, transparent),
+      8px 0 28px 3px var(--virtualai-accent-glow-strong, transparent),
+      4px -1px 18px 1px var(--virtualai-accent-glow, transparent);
+  }
 }
 
 /* Slow drifting motion for decorative blur circles */
