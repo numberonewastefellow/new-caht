@@ -18,14 +18,29 @@ _tests_dir = Path(__file__).parent.parent
 if str(_tests_dir) not in sys.path:
     sys.path.insert(0, str(_tests_dir))
 
-from workflow_creator.config import api, CONFIG, headers
+import requests as req
+
+from workflow_creator.config import CONFIG
 
 ASSISTANT_ID = 465  # Document Generator
+AUTH_COOKIE = "fastapiusersauth=YrIXqRkYA77sdcBhdTeD2Yl4WuQ769-ztxyerV8mfs0"
+
+
+def _cookie_headers() -> dict:
+    return {
+        "Content-Type": "application/json",
+        "Cookie": AUTH_COOKIE,
+    }
+
+
+def _api(method: str, path: str, data: dict | None = None, **kwargs):
+    url = CONFIG['base_url'].rstrip("/") + f"/api/{path.lstrip('/')}"
+    return req.request(method, url, headers=_cookie_headers(), json=data, **kwargs)
 
 
 def create_chat_session():
     """Create a new chat session for the Document Generator."""
-    resp = api("POST", "converse/create-chat-session", {
+    resp = _api("POST", "converse/create-chat-session", {
         "persona_id": ASSISTANT_ID,
         "description": "DOCX download test",
     })
@@ -35,8 +50,6 @@ def create_chat_session():
 
 def send_message_and_stream(session_id: int, message: str):
     """Send a message and stream the response, collecting file_ids."""
-    import requests as req
-
     body = {
         "chat_session_id": session_id,
         "message": message,
@@ -47,9 +60,7 @@ def send_message_and_stream(session_id: int, message: str):
         "query_override": None,
     }
 
-    url = CONFIG['base_url'].rstrip("/") + "/api/converse/send-chat-message"
-    # Use cookie auth (Bearer token doesn't work for converse routes)
-    resp = req.post(url, json=body, headers=headers(), stream=True, timeout=300)
+    resp = _api("POST", "converse/send-chat-message", body, stream=True, timeout=300)
     assert resp.status_code == 200, f"Failed: {resp.status_code} {resp.text}"
 
     file_ids = []
@@ -83,9 +94,15 @@ def send_message_and_stream(session_id: int, message: str):
                     print(f"  [TOOL_RESULT] {obj.get('tool_name', '?')}: {result_str}")
 
             elif ptype == "message_delta":
-                msg = obj.get("message", "")
+                msg = obj.get("message", "") or obj.get("content", "")
                 if msg:
                     last_message += msg
+                # Check for file_ids in the final summary message
+                msg_fids = obj.get("file_ids")
+                if msg_fids:
+                    print(f"  [MSG FILE_IDS] {msg_fids}")
+                    msg_fnames = obj.get("file_names", [])
+                    print(f"  [MSG FILE_NAMES] {msg_fnames}")
 
             elif ptype == "workflow_step_start":
                 step_name = obj.get("step_name", "?")
@@ -99,17 +116,15 @@ def send_message_and_stream(session_id: int, message: str):
         print(f"  [STREAM ERROR] {e}")
 
     if last_message:
-        print(f"\n  [FINAL MESSAGE] {last_message[:300]}...")
+        safe_msg = last_message[:500].encode("ascii", "replace").decode("ascii")
+        print(f"\n  [FINAL MESSAGE] {safe_msg}...")
 
     return file_ids, tool_results
 
 
 def verify_file_download(file_id: str):
     """Verify we can download the file from MinIO via the API and check content."""
-    import requests as req
-
-    url = CONFIG['base_url'].rstrip("/") + f"/api/converse/file/{file_id}"
-    resp = req.get(url, headers=headers(), timeout=30)
+    resp = _api("GET", f"converse/file/{file_id}", timeout=30)
 
     if resp.status_code != 200:
         print(f"  [DOWNLOAD FAIL] file_id={file_id} -> {resp.status_code}")
@@ -209,7 +224,7 @@ def main():
 
     # Step 4: Verify session reload (file_ids persist in history)
     print(f"\n5. Verifying session reload (file_ids in history)...")
-    resp = api("GET", f"converse/get-chat-session/{session_id}")
+    resp = _api("GET", f"converse/get-chat-session/{session_id}")
     if resp.status_code == 200:
         session_data = resp.json()
         messages = session_data.get("messages", [])

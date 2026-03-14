@@ -512,6 +512,24 @@ def _apply_input_mapping(
         parts = [f"User request: {context.user_input}"]
         for key, output in context.step_outputs.items():
             parts.append(f"\nOutput from '{key}':\n{output}")
+
+        # Inject structured file metadata from previous steps so downstream
+        # agents know exact filenames and paths without relying on text parsing.
+        step_files = context.shared_data.get("step_files", {})
+        if step_files:
+            file_lines: list[str] = []
+            for step_key, file_info in step_files.items():
+                for f in file_info.get("files", []):
+                    file_lines.append(
+                        f"- {f['filename']} "
+                        f"(path: {f['file_path']}, from step '{step_key}')"
+                    )
+            if file_lines:
+                parts.append(
+                    "\nFiles created by previous steps:\n"
+                    + "\n".join(file_lines)
+                )
+
         return "\n".join(parts)
 
     result_parts = []
@@ -877,6 +895,17 @@ def run_workflow_sequential(
                     result.llm_facing_response if result else ""
                 )
                 agent_output = result_data.get("agent_output", "")
+                # Capture file metadata for downstream workflow steps
+                _file_details = result_data.get("_file_details", [])
+                _file_ids = result_data.get("_file_ids", [])
+                if _file_details:
+                    step_files = context.shared_data.setdefault(
+                        "step_files", {}
+                    )
+                    step_files[step.output_key] = {
+                        "file_ids": _file_ids,
+                        "files": _file_details,
+                    }
             except (json.JSONDecodeError, AttributeError):
                 agent_output = (
                     result.llm_facing_response if result else ""
@@ -1080,6 +1109,73 @@ def run_workflow_sequential(
 
             if step.is_terminal:
                 break
+
+        # ── Final summary emission ──────────────────────────────────────
+        # After all steps complete, emit a final message for the user.
+        # Uses the last step's output plus file download links from
+        # shared_data["step_files"] (structured file metadata).
+        if not cancelled and context.step_outputs:
+            # Check if any step already promoted output
+            any_promoted = any(
+                s.promote_output
+                for s in steps
+                if s.output_key in context.step_outputs
+            )
+
+            # Collect file_ids and file_names from structured metadata
+            step_files = context.shared_data.get("step_files", {})
+            all_file_ids: list[str] = []
+            all_file_names: list[str] = []
+            for _sk, file_info in step_files.items():
+                for fid in file_info.get("file_ids", []):
+                    all_file_ids.append(fid)
+                for f in file_info.get("files", []):
+                    all_file_names.append(f["filename"])
+
+            # Emit final summary if no step promoted its output
+            if not any_promoted:
+                last_key = list(context.step_outputs.keys())[-1]
+                last_output = context.step_outputs[last_key]
+
+                final_placement = Placement(turn_index=turn_index)
+                yield Packet(
+                    placement=final_placement,
+                    obj=AgentResponseStart(),
+                )
+                yield Packet(
+                    placement=final_placement,
+                    obj=AgentResponseDelta(
+                        content=last_output,
+                        file_ids=all_file_ids or None,
+                        file_names=all_file_names or None,
+                    ),
+                )
+                yield Packet(
+                    placement=final_placement,
+                    obj=SectionEnd(),
+                )
+                turn_index += 1
+            elif all_file_ids:
+                # A step promoted output but we still have files to
+                # show — emit a brief file summary with download links
+                file_placement = Placement(turn_index=turn_index)
+                yield Packet(
+                    placement=file_placement,
+                    obj=AgentResponseStart(),
+                )
+                yield Packet(
+                    placement=file_placement,
+                    obj=AgentResponseDelta(
+                        content="",
+                        file_ids=all_file_ids,
+                        file_names=all_file_names or None,
+                    ),
+                )
+                yield Packet(
+                    placement=file_placement,
+                    obj=SectionEnd(),
+                )
+                turn_index += 1
 
         total_duration_ms = int((time.monotonic() - start_time) * 1000)
         final_status = "cancelled" if cancelled else "completed"

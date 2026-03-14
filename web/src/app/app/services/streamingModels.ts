@@ -79,6 +79,8 @@ export interface MessageStart extends BaseObj {
 export interface MessageDelta extends BaseObj {
   content: string;
   type: "message_delta";
+  file_ids?: string[] | null;
+  file_names?: string[] | null;
 }
 
 export interface MessageEnd extends BaseObj {

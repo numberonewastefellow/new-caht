@@ -129,6 +129,8 @@ class AgentResponseDelta(BaseObj):
     type: Literal["message_delta"] = StreamingType.MESSAGE_DELTA.value
 
     content: str
+    file_ids: list[str] | None = None
+    file_names: list[str] | None = None
 
 
 # Citation info for the sidebar and inline citations

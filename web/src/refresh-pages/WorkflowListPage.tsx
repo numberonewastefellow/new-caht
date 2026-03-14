@@ -115,6 +115,17 @@ export default function WorkflowListPage() {
   const { workflows, isLoading, refresh } = useWorkflows();
   const deleteModal = useCreateModal();
   const [workflowToDelete, setWorkflowToDelete] = React.useState<WorkflowSnapshot | null>(null);
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const filteredWorkflows = React.useMemo(() => {
+    if (!searchQuery.trim()) return workflows;
+    const q = searchQuery.toLowerCase();
+    return workflows.filter(
+      (w) =>
+        w.name.toLowerCase().includes(q) ||
+        (w.description && w.description.toLowerCase().includes(q))
+    );
+  }, [workflows, searchQuery]);
 
   async function handleDelete() {
     if (!workflowToDelete) return;
@@ -157,7 +168,7 @@ export default function WorkflowListPage() {
         )}
       </deleteModal.Provider>
 
-      <SettingsLayouts.Root>
+      <SettingsLayouts.Root width="lg">
         <SettingsLayouts.Header
           icon={SvgSliders}
           title="Workflows"
@@ -172,8 +183,20 @@ export default function WorkflowListPage() {
               </Button>
             </div>
           }
-          separator
-        />
+        >
+          <input
+            type="text"
+            placeholder="Search workflows by name or description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg text-sm
+              bg-background-tint-02 text-text-01 placeholder-text-03
+              border border-line-01 focus:outline-none focus:ring-1
+              focus:ring-[var(--virtualai-accent,#6366f1)]
+              focus:border-[var(--virtualai-accent,#6366f1)]
+              transition-colors"
+          />
+        </SettingsLayouts.Header>
 
         <SettingsLayouts.Body>
           {isLoading ? (
@@ -202,9 +225,17 @@ export default function WorkflowListPage() {
                 </Button>
               </div>
             </Card>
+          ) : filteredWorkflows.length === 0 ? (
+            <Card padding={1}>
+              <div className="flex flex-col items-center gap-2 py-6">
+                <Text secondaryBody text03>
+                  No workflows match &quot;{searchQuery}&quot;
+                </Text>
+              </div>
+            </Card>
           ) : (
             <GeneralLayouts.Section gap={0.5}>
-              {workflows.map((workflow) => (
+              {filteredWorkflows.map((workflow) => (
                 <WorkflowCard
                   key={workflow.id}
                   workflow={workflow}

@@ -452,7 +452,7 @@ class AgentTool(Tool[None]):
         from onyx.tools.tool_implementations.mcp.mcp_tool import (
             collect_pending_files,
         )
-        step_file_ids = collect_pending_files(
+        step_file_ids, step_file_details = collect_pending_files(
             scope_id=mcp_scope_id,
             emitter=self.emitter,
             placement=placement,
@@ -474,9 +474,11 @@ class AgentTool(Tool[None]):
             "agent_name": self._persona.name,
             "agent_output": final_answer,
         }
-        # Persist file_ids so session reload can reconstruct download links
+        # Persist file metadata so session reload can reconstruct download
+        # links and downstream workflow steps can access file info.
         if step_file_ids:
             response_dict["_file_ids"] = step_file_ids
+            response_dict["_file_details"] = step_file_details
 
         return ToolResponse(
             rich_response=final_answer,

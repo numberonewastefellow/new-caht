@@ -117,13 +117,15 @@ def collect_pending_files(
     scope_id: str,
     emitter: Any = None,
     placement: Any = None,
-) -> list[str]:
+) -> tuple[list[str], list[dict[str, str]]]:
     """Called at step end — fetch all tracked files, save to MinIO, emit
-    download links.  Returns a list of file_ids (UUIDs)."""
+    download links.  Returns (file_ids, file_details) where file_details
+    is a list of {"file_path": ..., "filename": ...} dicts for passing
+    structured file metadata between workflow steps."""
     with _pending_files_lock:
         pending = _pending_files.pop(scope_id, set())
     if not pending:
-        return []
+        return [], []
 
     file_store = get_default_file_store()
     file_ids: list[str] = []
@@ -190,7 +192,7 @@ def collect_pending_files(
         from onyx.server.query_and_chat.streaming_models import SectionEnd
         emitter.emit(Packet(placement=placement, obj=SectionEnd()))
 
-    return file_ids
+    return file_ids, file_details
 
 # Headers that cannot be overridden by user requests to prevent security issues
 # Host header is particularly critical - it can be used for Host Header Injection attacks
