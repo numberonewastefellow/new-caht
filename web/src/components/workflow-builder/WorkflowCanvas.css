@@ -702,8 +702,7 @@
 /* ── Sidebar ────────────────────────────────────────────────────────── */
 
 .wfb-sidebar {
-  width: 264px;
-  min-width: 264px;
+  width: 100%;
   height: 100%;
   border-right: 1px solid var(--border-01, #e5e7eb);
   background: var(--background-tint-00, #fff);
@@ -985,8 +984,7 @@
 /* ── Config Panel ───────────────────────────────────────────────────── */
 
 .wfb-config-panel {
-  width: 320px;
-  min-width: 320px;
+  width: 100%;
   height: 100%;
   border-left: 1px solid var(--border-01, #e5e7eb);
   background: var(--background-tint-00, #fff);
@@ -1683,4 +1681,197 @@
 .dark .wfb-sidebar-card-avatar--condition {
   background: linear-gradient(135deg, #f59e0b33, #f59e0b22);
   color: #fbbf24;
+}
+
+/* ── Sidebar Tabs ──────────────────────────────────────────────────── */
+
+.wfb-sidebar-tabs {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-01, #e5e7eb);
+  padding: 0 4px;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.wfb-sidebar-tab {
+  flex: 1;
+  padding: 10px 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-03, #9ca3af);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  text-align: center;
+}
+
+.wfb-sidebar-tab:hover {
+  color: var(--text-05, #374151);
+}
+
+.wfb-sidebar-tab--active {
+  color: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+  border-bottom-color: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+}
+
+/* Settings content inside sidebar */
+.wfb-sidebar-settings {
+  padding: 12px 14px;
+}
+
+/* ── Config Panel Tabs ─────────────────────────────────────────────── */
+
+.wfb-config-tabs {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-01, #e5e7eb);
+  padding: 0 8px;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.wfb-config-tab {
+  flex: 1;
+  padding: 9px 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-03, #9ca3af);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  text-align: center;
+}
+
+.wfb-config-tab:hover {
+  color: var(--text-05, #374151);
+}
+
+.wfb-config-tab--active {
+  color: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+  border-bottom-color: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+}
+
+/* ── Resize Handle ─────────────────────────────────────────────────── */
+
+.wfb-resize-handle {
+  width: 4px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.15s;
+  position: relative;
+  z-index: 10;
+}
+
+.wfb-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -2px;
+  right: -2px;
+  bottom: 0;
+}
+
+.wfb-resize-handle:hover,
+.wfb-resize-handle:active {
+  background: var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+}
+
+/* ── Collapsed Panel States ────────────────────────────────────────── */
+
+.wfb-sidebar--collapsed {
+  width: 36px !important;
+  min-width: 36px !important;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12px;
+  border-right: 1px solid var(--border-01, #e5e7eb);
+}
+
+.wfb-config-panel--collapsed {
+  width: 36px !important;
+  min-width: 36px !important;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12px;
+  border-left: 1px solid var(--border-01, #e5e7eb);
+}
+
+.wfb-sidebar-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-03, #9ca3af);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.wfb-sidebar-collapse-btn:hover {
+  background: var(--background-tint-02, #f3f4f6);
+  color: var(--text-05, #111827);
+}
+
+/* Inline collapse button in tab bar */
+.wfb-sidebar-collapse-btn--inline {
+  margin-left: auto;
+}
+
+/* ── Visual Polish: Node accent bar ───────────────────────────────── */
+
+.wfb-agent-node {
+  border-left: 4px solid var(--virtualai-accent, var(--theme-primary-05, #6366f1));
+  border-radius: 12px;
+}
+
+.wfb-agent-node--selected {
+  box-shadow: 0 0 0 3px var(--virtualai-accent-glow, rgba(99, 102, 241, 0.2)),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.wfb-condition-node {
+  border-left: 4px solid #f59e0b;
+  border-radius: 12px;
+}
+
+.wfb-condition-node--selected {
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Dark mode for new styles ──────────────────────────────────────── */
+
+.dark .wfb-sidebar-tab:hover {
+  color: var(--text-04, #d1d5db);
+}
+
+.dark .wfb-config-tab:hover {
+  color: var(--text-04, #d1d5db);
+}
+
+.dark .wfb-resize-handle:hover,
+.dark .wfb-resize-handle:active {
+  background: var(--virtualai-accent, var(--theme-primary-05, #818cf8));
+}
+
+.dark .wfb-sidebar-collapse-btn:hover {
+  background: var(--background-tint-02, #1f2937);
+  color: var(--text-04, #d1d5db);
+}
+
+.dark .wfb-sidebar--collapsed,
+.dark .wfb-config-panel--collapsed {
+  background: var(--background-tint-00, #111827);
 }

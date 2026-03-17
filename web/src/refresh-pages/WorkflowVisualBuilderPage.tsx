@@ -32,6 +32,37 @@ import type {
 } from "@/components/workflow-builder/types";
 import { ORCHESTRATOR_NODE_ID } from "@/components/workflow-builder/types";
 
+// localStorage keys for panel state persistence
+const LS_SIDEBAR_WIDTH = "wfb-sidebar-width";
+const LS_CONFIG_WIDTH = "wfb-config-width";
+const LS_SIDEBAR_COLLAPSED = "wfb-sidebar-collapsed";
+const LS_CONFIG_COLLAPSED = "wfb-config-collapsed";
+
+const DEFAULT_SIDEBAR_WIDTH = 264;
+const DEFAULT_CONFIG_WIDTH = 320;
+const MIN_SIDEBAR = 200;
+const MAX_SIDEBAR = 400;
+const MIN_CONFIG = 280;
+const MAX_CONFIG = 500;
+
+function readLsNumber(key: string, fallback: number): number {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? Number(v) || fallback : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function readLsBool(key: string, fallback: boolean): boolean {
+  try {
+    const v = localStorage.getItem(key);
+    return v === "true" ? true : v === "false" ? false : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 interface WorkflowVisualBuilderPageProps {
   workflowId?: number;
 }
@@ -53,6 +84,36 @@ function WorkflowVisualBuilderInner({
   const [testTarget, setTestTarget] = useState<AgentTestTarget | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJsonView, setShowJsonView] = useState(false);
+
+  // ── Panel resize & collapse state ──────────────────────────────────
+  const [sidebarWidth, setSidebarWidth] = useState(() => readLsNumber(LS_SIDEBAR_WIDTH, DEFAULT_SIDEBAR_WIDTH));
+  const [configWidth, setConfigWidth] = useState(() => readLsNumber(LS_CONFIG_WIDTH, DEFAULT_CONFIG_WIDTH));
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => readLsBool(LS_SIDEBAR_COLLAPSED, false));
+  const [configCollapsed, setConfigCollapsed] = useState(() => readLsBool(LS_CONFIG_COLLAPSED, false));
+
+  // Persist panel state
+  useEffect(() => { try { localStorage.setItem(LS_SIDEBAR_WIDTH, String(sidebarWidth)); } catch {} }, [sidebarWidth]);
+  useEffect(() => { try { localStorage.setItem(LS_CONFIG_WIDTH, String(configWidth)); } catch {} }, [configWidth]);
+  useEffect(() => { try { localStorage.setItem(LS_SIDEBAR_COLLAPSED, String(sidebarCollapsed)); } catch {} }, [sidebarCollapsed]);
+  useEffect(() => { try { localStorage.setItem(LS_CONFIG_COLLAPSED, String(configCollapsed)); } catch {} }, [configCollapsed]);
+
+  // Keyboard shortcuts: [ to toggle sidebar, ] to toggle config panel
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // Don't trigger when typing in inputs/textareas
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (e.key === "[") {
+        e.preventDefault();
+        setSidebarCollapsed((v) => !v);
+      } else if (e.key === "]") {
+        e.preventDefault();
+        setConfigCollapsed((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   // Listen for agent test button clicks from ReactFlow nodes
   useEffect(() => {
@@ -192,6 +253,51 @@ function WorkflowVisualBuilderInner({
     router.push("/admin/workflows");
   }, [router]);
 
+  // ── Resize handlers ────────────────────────────────────────────────
+  const handleSidebarResize = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = sidebarWidth;
+
+    const onMouseMove = (ev: MouseEvent) => {
+      const delta = ev.clientX - startX;
+      const newW = Math.min(MAX_SIDEBAR, Math.max(MIN_SIDEBAR, startW + delta));
+      setSidebarWidth(newW);
+    };
+    const onMouseUp = () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  }, [sidebarWidth]);
+
+  const handleConfigResize = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = configWidth;
+
+    const onMouseMove = (ev: MouseEvent) => {
+      const delta = startX - ev.clientX; // reversed: drag left = wider
+      const newW = Math.min(MAX_CONFIG, Math.max(MIN_CONFIG, startW + delta));
+      setConfigWidth(newW);
+    };
+    const onMouseUp = () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  }, [configWidth]);
+
   // Show loading state for edit mode
   if (workflowId && workflowLoading) {
     return (
@@ -216,7 +322,15 @@ function WorkflowVisualBuilderInner({
     selectedNodeId &&
     selectedNodeId !== ORCHESTRATOR_NODE_ID &&
     selectedNode;
-  const isConditionNode = selectedNode?.type === "conditional_router";
+  // Compute sidebar style
+  const sidebarStyle: React.CSSProperties = sidebarCollapsed
+    ? { width: 36, minWidth: 36 }
+    : { width: sidebarWidth, minWidth: sidebarWidth };
+
+  // Compute config panel style
+  const configStyle: React.CSSProperties = configCollapsed
+    ? { width: 36, minWidth: 36 }
+    : { width: configWidth, minWidth: configWidth };
 
   return (
     <div className="wfb-page">
@@ -232,11 +346,31 @@ function WorkflowVisualBuilderInner({
         onViewJson={() => setShowJsonView(true)}
       />
       <div className="wfb-content">
-        <AgentSidebar
-          agents={agents}
-          isLoading={agentsLoading}
-          onCreateNew={() => setShowCreateModal(true)}
-        />
+        {/* Sidebar with dynamic width */}
+        <div style={sidebarStyle}>
+          <AgentSidebar
+            agents={agents}
+            isLoading={agentsLoading}
+            onCreateNew={() => setShowCreateModal(true)}
+            meta={meta}
+            onUpdateMeta={updateMeta}
+            llmProviders={llmProviders ?? []}
+            collapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+          />
+        </div>
+
+        {/* Resize handle: sidebar */}
+        {!sidebarCollapsed && (
+          <div
+            className="wfb-resize-handle"
+            onMouseDown={handleSidebarResize}
+            onDoubleClick={() => setSidebarWidth(DEFAULT_SIDEBAR_WIDTH)}
+            title="Drag to resize sidebar (double-click to reset)"
+          />
+        )}
+
+        {/* Canvas (fills remaining space) */}
         <WorkflowCanvas
           nodes={nodes}
           edges={edges}
@@ -247,22 +381,38 @@ function WorkflowVisualBuilderInner({
           onDrop={handleDrop}
           onConditionDrop={handleConditionDrop}
         />
-        {showConfigPanel && (
-          <NodeConfigPanel
-            nodeId={selectedNodeId!}
-            nodeType={selectedNode!.type}
-            data={selectedNode!.data as AgentNodeData | ConditionalRouterNodeData}
-            agents={agents}
-            availableTools={availableTools}
-            documentSets={documentSets}
-            llmProviders={llmProviders ?? []}
-            onUpdate={updateNodeData}
-            onDelete={(id) => {
-              removeNode(id);
-              selectNode(null);
-            }}
-            onClose={() => selectNode(null)}
+
+        {/* Resize handle: config panel */}
+        {showConfigPanel && !configCollapsed && (
+          <div
+            className="wfb-resize-handle"
+            onMouseDown={handleConfigResize}
+            onDoubleClick={() => setConfigWidth(DEFAULT_CONFIG_WIDTH)}
+            title="Drag to resize config panel (double-click to reset)"
           />
+        )}
+
+        {/* Config panel with dynamic width */}
+        {showConfigPanel && (
+          <div style={configStyle}>
+            <NodeConfigPanel
+              nodeId={selectedNodeId!}
+              nodeType={selectedNode!.type}
+              data={selectedNode!.data as AgentNodeData | ConditionalRouterNodeData}
+              agents={agents}
+              availableTools={availableTools}
+              documentSets={documentSets}
+              llmProviders={llmProviders ?? []}
+              onUpdate={updateNodeData}
+              onDelete={(id) => {
+                removeNode(id);
+                selectNode(null);
+              }}
+              onClose={() => selectNode(null)}
+              collapsed={configCollapsed}
+              onToggleCollapse={() => setConfigCollapsed((v) => !v)}
+            />
+          </div>
         )}
       </div>
 

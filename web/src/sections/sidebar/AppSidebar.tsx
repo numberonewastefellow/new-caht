@@ -112,17 +112,25 @@ function buildVisibleAgents(
   return [visibleAgents, currentAgentIsPinned];
 }
 
+const INITIAL_VISIBLE_CHATS = 15;
+const LOAD_MORE_INCREMENT = 15;
+
 interface RecentsSectionProps {
   chatSessions: ChatSession[];
 }
 
 function RecentsSection({ chatSessions }: RecentsSectionProps) {
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_CHATS);
   const { setNodeRef, isOver } = useDroppable({
     id: DRAG_TYPES.RECENTS,
     data: {
       type: DRAG_TYPES.RECENTS,
     },
   });
+
+  const visibleSessions = chatSessions.slice(0, visibleCount);
+  const hasMore = chatSessions.length > visibleCount;
+  const remainingCount = chatSessions.length - visibleCount;
 
   return (
     <div
@@ -138,13 +146,30 @@ function RecentsSection({ chatSessions }: RecentsSectionProps) {
             Try sending a message! Your chat history will appear here.
           </Text>
         ) : (
-          chatSessions.map((chatSession) => (
-            <ChatButton
-              key={chatSession.id}
-              chatSession={chatSession}
-              draggable
-            />
-          ))
+          <>
+            {visibleSessions.map((chatSession) => (
+              <ChatButton
+                key={chatSession.id}
+                chatSession={chatSession}
+                draggable
+              />
+            ))}
+            {hasMore && (
+              <button
+                type="button"
+                onClick={() =>
+                  setVisibleCount((prev) => prev + LOAD_MORE_INCREMENT)
+                }
+                className={cn(
+                  "w-full px-3 py-1.5 text-xs font-medium text-text-03",
+                  "hover:text-text-05 hover:bg-background-tint-02",
+                  "rounded-08 transition-colors duration-150 text-left"
+                )}
+              >
+                View more ({remainingCount})
+              </button>
+            )}
+          </>
         )}
       </SidebarSection>
     </div>

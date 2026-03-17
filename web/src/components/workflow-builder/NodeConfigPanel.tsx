@@ -58,6 +58,8 @@ const BUILTIN_TOOLS: {
 
 // CONDITION_OPERATORS imported from @/lib/workflows/interfaces (single source of truth)
 
+type ConfigTab = "properties" | "advanced" | "json";
+
 interface NodeConfigPanelProps {
   nodeId: string;
   nodeType?: string;
@@ -69,6 +71,9 @@ interface NodeConfigPanelProps {
   onUpdate: (nodeId: string, partial: Partial<AgentNodeData> | Partial<ConditionalRouterNodeData>) => void;
   onDelete: (nodeId: string) => void;
   onClose: () => void;
+  /** Collapse state */
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export function NodeConfigPanel({
@@ -82,7 +87,28 @@ export function NodeConfigPanel({
   onUpdate,
   onDelete,
   onClose,
+  collapsed,
+  onToggleCollapse,
 }: NodeConfigPanelProps) {
+  const [activeTab, setActiveTab] = useState<ConfigTab>("properties");
+
+  // Collapsed state: render thin strip
+  if (collapsed) {
+    return (
+      <div className="wfb-config-panel wfb-config-panel--collapsed">
+        <button
+          className="wfb-sidebar-collapse-btn"
+          onClick={onToggleCollapse}
+          title="Expand config panel"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+      </div>
+    );
+  }
+
   // If this is a conditional router node, render specialized config
   if (nodeType === "conditional_router") {
     return (
@@ -92,6 +118,7 @@ export function NodeConfigPanel({
         onUpdate={onUpdate}
         onDelete={onDelete}
         onClose={onClose}
+        onToggleCollapse={onToggleCollapse}
       />
     );
   }
@@ -123,233 +150,303 @@ export function NodeConfigPanel({
     );
   }, [data.document_set_ids_override, currentPersona?.document_sets]);
 
+  // JSON view of node data
+  const nodeJson = useMemo(() => {
+    try {
+      const clean = { ...data };
+      // Remove display-only fields for cleaner JSON
+      delete (clean as Record<string, unknown>).isSelected;
+      return JSON.stringify(clean, null, 2);
+    } catch {
+      return "{}";
+    }
+  }, [data]);
+
   return (
     <div className="wfb-config-panel">
       {/* Header */}
       <div className="wfb-config-header">
         <div className="wfb-config-title">Configure Step</div>
-        <button className="wfb-config-close" onClick={onClose} title="Close">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {onToggleCollapse && (
+            <button className="wfb-config-close" onClick={onToggleCollapse} title="Collapse panel">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          )}
+          <button className="wfb-config-close" onClick={onClose} title="Close">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Tab bar */}
+      <div className="wfb-config-tabs">
+        <button
+          className={`wfb-config-tab ${activeTab === "properties" ? "wfb-config-tab--active" : ""}`}
+          onClick={() => setActiveTab("properties")}
+        >
+          Properties
+        </button>
+        {!isUtilityAgent && (
+          <button
+            className={`wfb-config-tab ${activeTab === "advanced" ? "wfb-config-tab--active" : ""}`}
+            onClick={() => setActiveTab("advanced")}
           >
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
+            Advanced
+          </button>
+        )}
+        <button
+          className={`wfb-config-tab ${activeTab === "json" ? "wfb-config-tab--active" : ""}`}
+          onClick={() => setActiveTab("json")}
+        >
+          JSON
         </button>
       </div>
 
       {/* Body */}
       <div className="wfb-config-body">
-        {/* Agent selection */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-label">Agent</div>
-          <select
-            className="wfb-agent-select"
-            value={data.persona_id}
-            onChange={(e) => {
-              const id = Number(e.target.value);
-              const agent = agents.find((a) => a.id === id);
-              if (agent) {
-                onUpdate(nodeId, {
-                  persona_id: agent.id,
-                  persona_name: agent.name,
-                  persona_description: agent.description || "",
-                  persona_icon_url: agent.uploaded_image_id
-                    ? `/api/persona/${agent.id}/uploaded_image`
-                    : null,
-                  persona_num_tools: agent.tools?.length || 0,
-                  persona_tool_names: (agent.tools || []).map((t) => t.name),
-                  persona_llm_model:
-                    agent.llm_model_version_override || null,
-                  persona_llm_provider:
-                    agent.llm_model_provider_override || null,
-                  // Clear all overrides when switching agent
-                  llm_provider_override: null,
-                  llm_model_override: null,
-                  max_output_tokens_override: null,
-                  system_prompt_override: null,
-                  task_prompt_override: null,
-                  tool_ids_override: null,
-                  document_set_ids_override: null,
-                  replace_base_system_prompt_override: null,
-                });
-              }
-            }}
-          >
-            {agents
-              .filter((a) => !a.workflow_id && a.id !== 0)
-              .map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name}
-                </option>
-              ))}
-          </select>
-        </div>
-
-        {/* Step name */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-label">Step Name</div>
-          <input
-            className="wfb-config-input"
-            type="text"
-            value={data.step_name}
-            onChange={(e) => onUpdate(nodeId, { step_name: e.target.value })}
-            placeholder="e.g. Research Topic"
-          />
-        </div>
-
-        {/* Step description */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-label">Step Description</div>
-          <textarea
-            className="wfb-config-textarea"
-            value={data.step_description}
-            onChange={(e) =>
-              onUpdate(nodeId, { step_description: e.target.value })
-            }
-            placeholder="What this step does..."
-            rows={3}
-          />
-        </div>
-
-        {/* Output key */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-label">Output Key</div>
-          <input
-            className="wfb-config-input"
-            type="text"
-            value={data.output_key}
-            onChange={(e) => {
-              const val = e.target.value
-                .toLowerCase()
-                .replace(/[^a-z0-9_]/g, "");
-              onUpdate(nodeId, { output_key: val });
-            }}
-            placeholder="e.g. research_results"
-          />
-        </div>
-
-        {/* Utility agent specialized config */}
-        {isHttpRequestAgent && (
-          <HttpRequestConfigSection
-            nodeId={nodeId}
-            data={data}
-            onUpdate={onUpdate}
-          />
-        )}
-        {isCodeExecutorAgent && (
-          <CodeExecutorConfigSection
-            nodeId={nodeId}
-            data={data}
-            onUpdate={onUpdate}
-          />
-        )}
-
-        {/* Toggles */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-label">Options</div>
-
-          <div className="wfb-config-toggle-row">
-            <div>
-              <div className="wfb-config-toggle-label">Terminal Step</div>
-              <div className="wfb-config-toggle-desc">
-                Marks this as a final step
-              </div>
+        {/* ── Properties Tab ─────────────────────────────── */}
+        {activeTab === "properties" && (
+          <>
+            {/* Agent selection */}
+            <div className="wfb-config-section">
+              <div className="wfb-config-label">Agent</div>
+              <select
+                className="wfb-agent-select"
+                value={data.persona_id}
+                onChange={(e) => {
+                  const id = Number(e.target.value);
+                  const agent = agents.find((a) => a.id === id);
+                  if (agent) {
+                    onUpdate(nodeId, {
+                      persona_id: agent.id,
+                      persona_name: agent.name,
+                      persona_description: agent.description || "",
+                      persona_icon_url: agent.uploaded_image_id
+                        ? `/api/persona/${agent.id}/uploaded_image`
+                        : null,
+                      persona_num_tools: agent.tools?.length || 0,
+                      persona_tool_names: (agent.tools || []).map((t) => t.name),
+                      persona_llm_model:
+                        agent.llm_model_version_override || null,
+                      persona_llm_provider:
+                        agent.llm_model_provider_override || null,
+                      // Clear all overrides when switching agent
+                      llm_provider_override: null,
+                      llm_model_override: null,
+                      max_output_tokens_override: null,
+                      system_prompt_override: null,
+                      task_prompt_override: null,
+                      tool_ids_override: null,
+                      document_set_ids_override: null,
+                      replace_base_system_prompt_override: null,
+                    });
+                  }
+                }}
+              >
+                {agents
+                  .filter((a) => !a.workflow_id && a.id !== 0)
+                  .map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.name}
+                    </option>
+                  ))}
+              </select>
             </div>
-            <ToggleSwitch
-              checked={data.is_terminal}
-              onChange={(v) => onUpdate(nodeId, { is_terminal: v })}
-            />
-          </div>
 
-          {!isUtilityAgent && (
-            <div className="wfb-config-toggle-row">
-              <div>
-                <div className="wfb-config-toggle-label">
-                  Can Request Input (HITL)
-                </div>
-                <div className="wfb-config-toggle-desc">
-                  Agent can pause for user input
-                </div>
-              </div>
-              <ToggleSwitch
-                checked={data.can_request_input}
-                onChange={(v) => onUpdate(nodeId, { can_request_input: v })}
+            {/* Step name */}
+            <div className="wfb-config-section">
+              <div className="wfb-config-label">Step Name</div>
+              <input
+                className="wfb-config-input"
+                type="text"
+                value={data.step_name}
+                onChange={(e) => onUpdate(nodeId, { step_name: e.target.value })}
+                placeholder="e.g. Research Topic"
               />
             </div>
-          )}
 
-          <div className="wfb-config-toggle-row">
-            <div>
-              <div className="wfb-config-toggle-label">Show as Message</div>
-              <div className="wfb-config-toggle-desc">
-                Output appears in chat
+            {/* Step description */}
+            <div className="wfb-config-section">
+              <div className="wfb-config-label">Step Description</div>
+              <textarea
+                className="wfb-config-textarea"
+                value={data.step_description}
+                onChange={(e) =>
+                  onUpdate(nodeId, { step_description: e.target.value })
+                }
+                placeholder="What this step does..."
+                rows={3}
+              />
+            </div>
+
+            {/* Output key */}
+            <div className="wfb-config-section">
+              <div className="wfb-config-label">Output Key</div>
+              <input
+                className="wfb-config-input"
+                type="text"
+                value={data.output_key}
+                onChange={(e) => {
+                  const val = e.target.value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9_]/g, "");
+                  onUpdate(nodeId, { output_key: val });
+                }}
+                placeholder="e.g. research_results"
+              />
+            </div>
+
+            {/* Utility agent specialized config */}
+            {isHttpRequestAgent && (
+              <HttpRequestConfigSection
+                nodeId={nodeId}
+                data={data}
+                onUpdate={onUpdate}
+              />
+            )}
+            {isCodeExecutorAgent && (
+              <CodeExecutorConfigSection
+                nodeId={nodeId}
+                data={data}
+                onUpdate={onUpdate}
+              />
+            )}
+
+            {/* Toggles */}
+            <div className="wfb-config-section">
+              <div className="wfb-config-label">Options</div>
+
+              <div className="wfb-config-toggle-row">
+                <div>
+                  <div className="wfb-config-toggle-label">Terminal Step</div>
+                  <div className="wfb-config-toggle-desc">
+                    Marks this as a final step
+                  </div>
+                </div>
+                <ToggleSwitch
+                  checked={data.is_terminal}
+                  onChange={(v) => onUpdate(nodeId, { is_terminal: v })}
+                />
+              </div>
+
+              {!isUtilityAgent && (
+                <div className="wfb-config-toggle-row">
+                  <div>
+                    <div className="wfb-config-toggle-label">
+                      Can Request Input (HITL)
+                    </div>
+                    <div className="wfb-config-toggle-desc">
+                      Agent can pause for user input
+                    </div>
+                  </div>
+                  <ToggleSwitch
+                    checked={data.can_request_input}
+                    onChange={(v) => onUpdate(nodeId, { can_request_input: v })}
+                  />
+                </div>
+              )}
+
+              <div className="wfb-config-toggle-row">
+                <div>
+                  <div className="wfb-config-toggle-label">Show as Message</div>
+                  <div className="wfb-config-toggle-desc">
+                    Output appears in chat
+                  </div>
+                </div>
+                <ToggleSwitch
+                  checked={data.promote_output}
+                  onChange={(v) => onUpdate(nodeId, { promote_output: v })}
+                />
               </div>
             </div>
-            <ToggleSwitch
-              checked={data.promote_output}
-              onChange={(v) => onUpdate(nodeId, { promote_output: v })}
+
+            {/* Agent info (read-only) */}
+            {data.persona_description && (
+              <div className="wfb-config-section">
+                <div className="wfb-config-label">Agent Description</div>
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: "var(--text-03, #9ca3af)",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {data.persona_description}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ── Advanced Tab ───────────────────────────────── */}
+        {activeTab === "advanced" && !isUtilityAgent && (
+          <>
+            <LlmSection
+              nodeId={nodeId}
+              data={data}
+              currentPersona={currentPersona}
+              llmProviders={llmProviders}
+              onUpdate={onUpdate}
             />
-          </div>
-        </div>
 
-        {/* ── LLM Section (hidden for utility agents) ─────── */}
-        {!isUtilityAgent && (
-          <LlmSection
-            nodeId={nodeId}
-            data={data}
-            currentPersona={currentPersona}
-            llmProviders={llmProviders}
-            onUpdate={onUpdate}
-          />
+            <ToolsSection
+              nodeId={nodeId}
+              data={data}
+              effectiveToolIds={effectiveToolIds}
+              availableTools={availableTools}
+              currentPersona={currentPersona}
+              onUpdate={onUpdate}
+            />
+
+            <KnowledgeSection
+              nodeId={nodeId}
+              data={data}
+              effectiveToolIds={effectiveToolIds}
+              effectiveDocSetIds={effectiveDocSetIds}
+              availableTools={availableTools}
+              documentSets={documentSets}
+              currentPersona={currentPersona}
+              onUpdate={onUpdate}
+            />
+
+            <AdvancedSection nodeId={nodeId} data={data} onUpdate={onUpdate} />
+          </>
         )}
 
-        {/* ── Tools Section (hidden for utility agents) ────── */}
-        {!isUtilityAgent && (
-          <ToolsSection
-            nodeId={nodeId}
-            data={data}
-            effectiveToolIds={effectiveToolIds}
-            availableTools={availableTools}
-            currentPersona={currentPersona}
-            onUpdate={onUpdate}
-          />
-        )}
-
-        {/* ── Knowledge Section (hidden for utility agents) ── */}
-        {!isUtilityAgent && (
-          <KnowledgeSection
-            nodeId={nodeId}
-            data={data}
-            effectiveToolIds={effectiveToolIds}
-            effectiveDocSetIds={effectiveDocSetIds}
-            availableTools={availableTools}
-            documentSets={documentSets}
-            currentPersona={currentPersona}
-            onUpdate={onUpdate}
-          />
-        )}
-
-        {/* Advanced: input_mapping & condition */}
-        <AdvancedSection nodeId={nodeId} data={data} onUpdate={onUpdate} />
-
-        {/* Agent info (read-only) */}
-        {data.persona_description && (
+        {/* ── JSON Tab ───────────────────────────────────── */}
+        {activeTab === "json" && (
           <div className="wfb-config-section">
-            <div className="wfb-config-label">Agent Description</div>
-            <div
+            <div className="wfb-config-label">Node Configuration (read-only)</div>
+            <pre
               style={{
-                fontSize: 12,
-                color: "var(--text-03, #9ca3af)",
+                fontSize: 11,
+                fontFamily: "monospace",
+                background: "var(--background-tint-02, #f3f4f6)",
+                border: "1px solid var(--border-01, #e5e7eb)",
+                borderRadius: 6,
+                padding: 10,
+                overflowX: "auto",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+                color: "var(--text-05, #374151)",
                 lineHeight: 1.5,
+                maxHeight: "100%",
               }}
             >
-              {data.persona_description}
-            </div>
+              {nodeJson}
+            </pre>
           </div>
         )}
       </div>
@@ -1465,12 +1562,14 @@ function ConditionConfigPanel({
   onUpdate,
   onDelete,
   onClose,
+  onToggleCollapse,
 }: {
   nodeId: string;
   data: ConditionalRouterNodeData;
   onUpdate: (nodeId: string, partial: Partial<ConditionalRouterNodeData>) => void;
   onDelete: (nodeId: string) => void;
   onClose: () => void;
+  onToggleCollapse?: () => void;
 }) {
   const needsMatchValue = !["is_empty", "is_not_empty"].includes(data.operator);
 
@@ -1479,11 +1578,20 @@ function ConditionConfigPanel({
       {/* Header */}
       <div className="wfb-config-header">
         <div className="wfb-config-title">Configure Condition</div>
-        <button className="wfb-config-close" onClick={onClose} title="Close">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {onToggleCollapse && (
+            <button className="wfb-config-close" onClick={onToggleCollapse} title="Collapse panel">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 15 6" />
+              </svg>
+            </button>
+          )}
+          <button className="wfb-config-close" onClick={onClose} title="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="wfb-config-body">
