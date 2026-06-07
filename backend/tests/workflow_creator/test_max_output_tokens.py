@@ -138,7 +138,7 @@ def patch_persona_max_tokens(persona_id: int, max_output_tokens: int) -> bool:
 def send_chat_message(persona_id: int, message: str) -> str | None:
     """Send a simple chat message and collect the streamed response."""
     # Create chat session (matches curl format from curl.txt)
-    session_resp = api("POST", "chat/create-chat-session", {
+    session_resp = api("POST", "converse/create-chat-session", {
         "persona_id": persona_id,
         "description": None,
         "project_id": None,
@@ -159,7 +159,7 @@ def send_chat_message(persona_id: int, message: str) -> str | None:
         "origin": "webapp",
     }
 
-    resp = stream_api("POST", "chat/send-chat-message", msg_body)
+    resp = stream_api("POST", "converse/send-chat-message", msg_body)
     if resp.status_code != 200:
         log(f"Failed to send message: {resp.status_code} {resp.text[:300]}")
         return None

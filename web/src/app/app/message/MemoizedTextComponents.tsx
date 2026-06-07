@@ -7,7 +7,7 @@ import {
   MinimalOnyxDocument,
   OnyxDocument,
 } from "@/lib/search/interfaces";
-import React, { memo, JSX, useMemo, useCallback } from "react";
+import React, { memo, useState, JSX, useMemo, useCallback } from "react";
 import { SourceIcon } from "@/components/SourceIcon";
 import { WebResultIcon } from "@/components/WebResultIcon";
 import { SubQuestionDetail, CitationMap } from "../interfaces";
@@ -23,6 +23,13 @@ import {
 } from "@/refresh-components/buttons/source-tag/sourceTagUtils";
 import { openDocument } from "@/lib/search/utils";
 import { ensureHrefProtocol } from "@/lib/utils";
+import { InMessageImage } from "@/app/app/components/files/images/InMessageImage";
+import ExpandableContentWrapper from "@/components/tools/ExpandableContentWrapper";
+import CsvContent from "@/components/tools/CSVContent";
+import { ChatFileType } from "@/app/app/interfaces";
+
+const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"];
+const CSV_EXTENSIONS = [".csv", ".tsv"];
 
 export const MemoizedAnchor = memo(
   ({
@@ -184,24 +191,39 @@ export const MemoizedLink = memo(
 
     // Check if the link is to a file on the backend
     const isChatFile = url?.includes("/api/converse/file/");
-    if (isChatFile && updatePresentingDocument) {
+    if (isChatFile) {
       const fileId = url!.split("/api/converse/file/")[1]?.split(/[?#]/)[0] || "";
       const filename = value?.toString() || "download";
-      return (
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            updatePresentingDocument({
-              document_id: fileId,
-              semantic_identifier: filename,
-            });
-          }}
-          className="cursor-pointer text-link hover:text-link-hover"
-        >
-          {rest.children}
-        </a>
-      );
+
+      // Render image files inline instead of as text links
+      const ext = filename.slice(filename.lastIndexOf(".")).toLowerCase();
+      if (fileId && IMAGE_EXTENSIONS.includes(ext)) {
+        return <InMessageImage fileId={fileId} />;
+      }
+
+      // Render CSV files inline as expandable tables
+      if (fileId && CSV_EXTENSIONS.includes(ext)) {
+        return <InlineCsvPreview fileId={fileId} filename={filename} />;
+      }
+
+      // Non-image files: clickable link that opens document presenter
+      if (updatePresentingDocument) {
+        return (
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              updatePresentingDocument({
+                document_id: fileId,
+                semantic_identifier: filename,
+              });
+            }}
+            className="cursor-pointer text-link hover:text-link-hover"
+          >
+            {rest.children}
+          </a>
+        );
+      }
     }
 
     return (
@@ -216,6 +238,34 @@ export const MemoizedLink = memo(
     );
   }
 );
+
+/** Inline CSV table preview that can be collapsed back to a link */
+function InlineCsvPreview({ fileId, filename }: { fileId: string; filename: string }) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  if (collapsed) {
+    return (
+      <a
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          setCollapsed(false);
+        }}
+        className="cursor-pointer text-link hover:text-link-hover"
+      >
+        {filename}
+      </a>
+    );
+  }
+
+  return (
+    <ExpandableContentWrapper
+      fileDescriptor={{ id: fileId, type: ChatFileType.CSV, name: filename }}
+      close={() => setCollapsed(true)}
+      ContentComponent={CsvContent}
+    />
+  );
+}
 
 interface MemoizedParagraphProps {
   className?: string;

@@ -285,7 +285,7 @@ def find_workflow_id() -> int | None:
 
 def create_chat_session(persona_id: int = 0) -> str | None:
     """Create a chat session and return its UUID."""
-    resp = api("POST", "chat/create-chat-session", {"persona_id": persona_id})
+    resp = api("POST", "converse/create-chat-session", {"persona_id": persona_id})
     if resp.status_code != 200:
         print(f"[ERROR] Could not create chat session: {resp.status_code} {resp.text[:300]}")
         return None

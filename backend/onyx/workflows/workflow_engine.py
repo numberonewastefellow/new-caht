@@ -549,6 +549,32 @@ def _apply_input_mapping(
     return "\n".join(result_parts)
 
 
+def _collect_workflow_files(
+    step_files: dict[str, Any],
+) -> tuple[list[str], list[str]]:
+    """Aggregate deliverable files across steps, de-duplicated by filename.
+
+    Each agent step captures and re-saves any office file it touches under a
+    fresh file_id (see collect_pending_files), with no cross-step de-dup. When
+    several steps touch the same document (e.g. a builder creates it and a
+    reviewer edits it), the same filename ends up saved multiple times. Here we
+    keep only the most recently saved version per filename (last writer wins).
+
+    step_files is dict-ordered by execution order, and within each step
+    file_ids[i] corresponds to files[i] (built in lockstep by
+    collect_pending_files), so iterating + overwriting yields the latest id.
+
+    Returns (file_ids, file_names) aligned by index.
+    """
+    latest_by_name: dict[str, str] = {}
+    for _step_key, file_info in step_files.items():
+        file_ids = file_info.get("file_ids", [])
+        files = file_info.get("files", [])
+        for fid, f in zip(file_ids, files):
+            latest_by_name[f["filename"]] = fid
+    return list(latest_by_name.values()), list(latest_by_name.keys())
+
+
 def run_workflow_sequential(
     workflow: AgentWorkflow,
     user_message: str,
@@ -1021,23 +1047,17 @@ def run_workflow_sequential(
                 obj=WorkflowStepDelta(content=agent_output),
             )
 
-            # Output promotion: also emit as MESSAGE packets so the
-            # frontend renders it as main content outside the timeline.
-            if step.promote_output and agent_output:
-                promoted_placement = Placement(turn_index=turn_index + 1)
-                yield Packet(
-                    placement=promoted_placement,
-                    obj=AgentResponseStart(),
-                )
-                yield Packet(
-                    placement=promoted_placement,
-                    obj=AgentResponseDelta(content=agent_output),
-                )
-                yield Packet(
-                    placement=promoted_placement,
-                    obj=SectionEnd(),
-                )
-                turn_index += 1
+            # Emit step end BEFORE promote_output so no tool packet
+            # follows the promoted message_start (which would reset
+            # finalAnswerComing in the frontend).
+            yield Packet(
+                placement=placement,
+                obj=WorkflowStepEnd(
+                    step_name=step.step_name,
+                    output_key=step.output_key,
+                ),
+            )
+            yield Packet(placement=placement, obj=SectionEnd())
 
             # Store output in context
             context.step_outputs[step.output_key] = agent_output
@@ -1088,15 +1108,25 @@ def run_workflow_sequential(
                 "tokens_used": step_tokens,
             })
 
-            # Emit step end
-            yield Packet(
-                placement=placement,
-                obj=WorkflowStepEnd(
-                    step_name=step.step_name,
-                    output_key=step.output_key,
-                ),
-            )
-            yield Packet(placement=placement, obj=SectionEnd())
+            # Output promotion: emit as MESSAGE packets so the frontend
+            # renders it as main content outside the timeline.
+            # Emitted AFTER step end so no trailing tool packet resets
+            # the frontend's finalAnswerComing flag.
+            if step.promote_output and agent_output:
+                promoted_placement = Placement(turn_index=turn_index + 1)
+                yield Packet(
+                    placement=promoted_placement,
+                    obj=AgentResponseStart(),
+                )
+                yield Packet(
+                    placement=promoted_placement,
+                    obj=AgentResponseDelta(content=agent_output),
+                )
+                yield Packet(
+                    placement=promoted_placement,
+                    obj=SectionEnd(),
+                )
+                turn_index += 1
 
             # Advance turn_index past all indices used by this step
             turn_index += 1
@@ -1122,15 +1152,11 @@ def run_workflow_sequential(
                 if s.output_key in context.step_outputs
             )
 
-            # Collect file_ids and file_names from structured metadata
+            # Collect file_ids and file_names from structured metadata,
+            # de-duplicated by filename (last writer wins) so a document
+            # touched by more than one step yields a single download link.
             step_files = context.shared_data.get("step_files", {})
-            all_file_ids: list[str] = []
-            all_file_names: list[str] = []
-            for _sk, file_info in step_files.items():
-                for fid in file_info.get("file_ids", []):
-                    all_file_ids.append(fid)
-                for f in file_info.get("files", []):
-                    all_file_names.append(f["filename"])
+            all_file_ids, all_file_names = _collect_workflow_files(step_files)
 
             # Emit final summary if no step promoted its output
             if not any_promoted:
@@ -1687,6 +1713,19 @@ def run_workflow_llm_decision(
                     obj=WorkflowStepDelta(content=agent_output),
                 )
 
+                # Emit step end BEFORE promote_output so no tool
+                # packet follows the promoted message_start.
+                yield Packet(
+                    placement=agent_placement,
+                    obj=WorkflowStepEnd(
+                        step_name=_direct_resume_tool.display_name,
+                        output_key=_direct_resume_tool.output_key,
+                    ),
+                )
+                yield Packet(
+                    placement=agent_placement, obj=SectionEnd()
+                )
+
                 # Output promotion for direct resume path
                 if _direct_resume_tool.promote_output and agent_output:
                     promoted_placement = Placement(
@@ -1707,16 +1746,6 @@ def run_workflow_llm_decision(
                     turn_index += 1
                     promoted_output_emitted = True
 
-                yield Packet(
-                    placement=agent_placement,
-                    obj=WorkflowStepEnd(
-                        step_name=_direct_resume_tool.display_name,
-                        output_key=_direct_resume_tool.output_key,
-                    ),
-                )
-                yield Packet(
-                    placement=agent_placement, obj=SectionEnd()
-                )
                 turn_index += 1
 
                 # Increment call count for the resumed agent
@@ -2119,27 +2148,6 @@ def run_workflow_llm_decision(
                         obj=WorkflowStepDelta(content=agent_output),
                     )
 
-                    # Output promotion: also emit as MESSAGE packets so the
-                    # frontend renders it as main content outside the timeline.
-                    if agent_tool.promote_output and agent_output:
-                        promoted_placement = Placement(
-                            turn_index=turn_index + 1
-                        )
-                        yield Packet(
-                            placement=promoted_placement,
-                            obj=AgentResponseStart(),
-                        )
-                        yield Packet(
-                            placement=promoted_placement,
-                            obj=AgentResponseDelta(content=agent_output),
-                        )
-                        yield Packet(
-                            placement=promoted_placement,
-                            obj=SectionEnd(),
-                        )
-                        turn_index += 1
-                        promoted_output_emitted = True
-
                     # Store in context using output_key (M2 fix)
                     context.step_outputs[agent_tool.output_key] = agent_output
 
@@ -2221,6 +2229,9 @@ def run_workflow_llm_decision(
                         db_session, execution.id, step_checkpoint
                     )
 
+                    # Emit step end BEFORE promote_output so no tool
+                    # packet follows the promoted message_start (which
+                    # would reset finalAnswerComing in the frontend).
                     yield Packet(
                         placement=agent_placement,
                         obj=WorkflowStepEnd(
@@ -2229,6 +2240,29 @@ def run_workflow_llm_decision(
                         ),
                     )
                     yield Packet(placement=agent_placement, obj=SectionEnd())
+
+                    # Output promotion: emit as MESSAGE packets so the
+                    # frontend renders it as main content outside the
+                    # timeline. Emitted AFTER step end so no trailing
+                    # tool packet resets finalAnswerComing.
+                    if agent_tool.promote_output and agent_output:
+                        promoted_placement = Placement(
+                            turn_index=turn_index + 1
+                        )
+                        yield Packet(
+                            placement=promoted_placement,
+                            obj=AgentResponseStart(),
+                        )
+                        yield Packet(
+                            placement=promoted_placement,
+                            obj=AgentResponseDelta(content=agent_output),
+                        )
+                        yield Packet(
+                            placement=promoted_placement,
+                            obj=SectionEnd(),
+                        )
+                        turn_index += 1
+                        promoted_output_emitted = True
 
                 if cancelled:
                     break

@@ -213,6 +213,7 @@ def seed_workflows(force: bool = False, dry_run: bool = False, gen_icons: bool =
             generate_workflow_icons,
             load_json_files,
         )
+        from workflow_creator.config import resolve_or_create_persona
 
     workflows_dir = _workflow_dir / "workflows"
     if not workflows_dir.exists():
@@ -251,7 +252,18 @@ def seed_workflows(force: bool = False, dry_run: bool = False, gen_icons: bool =
         name = w.get("name", "Unnamed")
 
         if not force and name in existing_names:
-            print(f"  [SKIP] {name}")
+            # Workflow exists — still sync step persona prompts so they
+            # stay up-to-date with the JSON definitions.
+            steps = w.get("steps", [])
+            checked = 0
+            for step in steps:
+                if step.get("persona_def", {}).get("system_prompt"):
+                    resolve_or_create_persona(step)
+                    checked += 1
+            if checked:
+                print(f"  [SYNC] {name} — checked {checked} persona(s)")
+            else:
+                print(f"  [SKIP] {name}")
             skipped += 1
             continue
 

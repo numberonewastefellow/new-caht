@@ -53,12 +53,19 @@ export function isToolPacket(
 // when a tool packet arrives after message packets (Claude workaround).
 // Reasoning packets should NOT reset finalAnswerComing since they are
 // just the model thinking, not actual tool calls that would produce new content.
+// Workflow step packets are also excluded -- they are timeline events,
+// not Claude changing its mind about tool calls. Without this exclusion,
+// a WorkflowStepEnd arriving after a promoted message_start would
+// incorrectly reset finalAnswerComing and hide the promoted output.
 export function isActualToolCallPacket(packet: Packet): boolean {
   return (
     isToolPacket(packet, false) &&
     packet.obj.type !== PacketType.REASONING_START &&
     packet.obj.type !== PacketType.REASONING_DELTA &&
-    packet.obj.type !== PacketType.WORKFLOW_ORCHESTRATOR_THINKING
+    packet.obj.type !== PacketType.WORKFLOW_ORCHESTRATOR_THINKING &&
+    packet.obj.type !== PacketType.WORKFLOW_STEP_START &&
+    packet.obj.type !== PacketType.WORKFLOW_STEP_END &&
+    packet.obj.type !== PacketType.WORKFLOW_STEP_DELTA
   );
 }
 

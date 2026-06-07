@@ -38,8 +38,23 @@ SERVER_DESCRIPTION = (
 # Personas that should get PPT tools (ppt_*)
 PPT_PERSONAS = ["WF PPT Builder", "WF PPT Reviewer"]
 
-# Personas that should get DOCX tools (docx_*)
-DOCX_PERSONAS = ["WF DOCX Builder", "WF DOCX Reviewer"]
+# Personas that should get the FULL DOCX toolset (docx_*) — builders that write
+DOCX_WRITE_PERSONAS = ["WF DOCX Builder"]
+
+# Read-only DOCX tools — inspection only, no document mutation. Review-only
+# personas get ONLY these so a "review" step can never write/re-save the
+# document (which would create duplicate download files).
+DOCX_READONLY_TOOL_NAMES = {
+    "docx_get_document_info",
+    "docx_get_document_text",
+    "docx_get_document_outline",
+    "docx_find_text_in_document",
+    "docx_get_table_data",
+    "docx_list_available_documents",
+}
+
+# Personas that should get ONLY the read-only DOCX subset (review-only)
+DOCX_READONLY_PERSONAS = ["WF DOCX Reviewer"]
 
 # Personas that should get ALL tools (both ppt_* and docx_*)
 ALL_TOOL_PERSONAS = ["WF Document Builder"]
@@ -142,10 +157,10 @@ def get_tool_ids_from_db(server_id: int) -> dict:
     """Get tool IDs from DB, categorized by prefix."""
     resp = api("GET", f"admin/mcp/server/{server_id}/tools/snapshots?source=db")
     if resp.status_code != 200:
-        return {"ppt": [], "docx": [], "all": []}
+        return {"ppt": [], "docx": [], "docx_readonly": [], "all": []}
 
     tools = resp.json()
-    result = {"ppt": [], "docx": [], "all": []}
+    result = {"ppt": [], "docx": [], "docx_readonly": [], "all": []}
     for t in tools:
         tid = t["id"]
         result["all"].append(tid)
@@ -154,6 +169,8 @@ def get_tool_ids_from_db(server_id: int) -> dict:
             result["ppt"].append(tid)
         elif name.startswith("docx_"):
             result["docx"].append(tid)
+            if name in DOCX_READONLY_TOOL_NAMES:
+                result["docx_readonly"].append(tid)
     return result
 
 
@@ -166,15 +183,22 @@ def attach_tools_to_personas(tool_ids: dict) -> None:
 
     all_personas = resp.json()
 
+    # (persona_name, tool_ids_to_assign, replace_docx)
+    # replace_docx=True drops any DOCX tools NOT in the assigned set (used for
+    # review-only personas so previously-attached write tools are removed).
     assignments = []
     for pname in PPT_PERSONAS:
-        assignments.append((pname, tool_ids["ppt"]))
-    for pname in DOCX_PERSONAS:
-        assignments.append((pname, tool_ids["docx"]))
+        assignments.append((pname, tool_ids["ppt"], False))
+    for pname in DOCX_WRITE_PERSONAS:
+        assignments.append((pname, tool_ids["docx"], False))
+    for pname in DOCX_READONLY_PERSONAS:
+        assignments.append((pname, tool_ids["docx_readonly"], True))
     for pname in ALL_TOOL_PERSONAS:
-        assignments.append((pname, tool_ids["all"]))
+        assignments.append((pname, tool_ids["all"], False))
 
-    for pname, mcp_tool_ids in assignments:
+    docx_all_ids = set(tool_ids.get("docx", []))
+
+    for pname, mcp_tool_ids, replace_docx in assignments:
         if not mcp_tool_ids:
             continue
 
@@ -184,7 +208,14 @@ def attach_tools_to_personas(tool_ids: dict) -> None:
             continue
 
         existing_ids = [t["id"] for t in persona.get("tools", [])]
-        merged_ids = list(set(existing_ids + mcp_tool_ids))
+        if replace_docx:
+            # Keep non-DOCX tools; drop existing DOCX write tools, then add the
+            # read-only subset. Net effect: reviewer ends up with ONLY read-only
+            # docx tools (plus any unrelated tools it already had).
+            kept = [tid for tid in existing_ids if tid not in docx_all_ids]
+            merged_ids = list(set(kept) | set(mcp_tool_ids))
+        else:
+            merged_ids = list(set(existing_ids + mcp_tool_ids))
 
         patch_body = {
             "name": persona["name"],
@@ -206,9 +237,14 @@ def attach_tools_to_personas(tool_ids: dict) -> None:
             "document_ids": [], "user_file_ids": [],
         }
 
-        prefix = "ppt_*" if mcp_tool_ids == tool_ids["ppt"] else (
-            "docx_*" if mcp_tool_ids == tool_ids["docx"] else "all"
-        )
+        if mcp_tool_ids == tool_ids["ppt"]:
+            prefix = "ppt_*"
+        elif mcp_tool_ids == tool_ids["docx"]:
+            prefix = "docx_*"
+        elif mcp_tool_ids == tool_ids.get("docx_readonly"):
+            prefix = "docx_* (read-only)"
+        else:
+            prefix = "all"
         resp = api("PATCH", f"persona/{persona['id']}", patch_body)
         if resp.status_code == 200:
             print(f"  [OK] Attached {len(mcp_tool_ids)} MCP tools ({prefix}) to '{pname}' (ID={persona['id']})")

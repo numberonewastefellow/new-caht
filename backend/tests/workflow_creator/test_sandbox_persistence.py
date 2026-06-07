@@ -38,7 +38,7 @@ from config import (
 
 def create_chat_session(persona_id: int) -> str | None:
     """Create a chat session and return its UUID."""
-    resp = api("POST", "chat/create-chat-session", {"persona_id": persona_id})
+    resp = api("POST", "converse/create-chat-session", {"persona_id": persona_id})
     if resp.status_code != 200:
         print(f"[ERROR] Could not create chat session: {resp.status_code} {resp.text[:300]}")
         return None
@@ -103,7 +103,7 @@ def send_message(
     if forced_tool_id is not None:
         body["forced_tool_id"] = forced_tool_id
 
-    resp = stream_api("POST", "chat/send-chat-message", body)
+    resp = stream_api("POST", "converse/send-chat-message", body)
     if resp.status_code != 200:
         print(f"[ERROR] send-chat-message returned {resp.status_code}: {resp.text[:500]}")
         return {"code": [], "stdout": [], "stderr": [], "answer": "", "parent_message_id": parent_message_id, "files": []}

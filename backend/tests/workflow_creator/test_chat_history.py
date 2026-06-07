@@ -41,7 +41,7 @@ def _safe_print(text: str, **kwargs):
 
 def create_chat_session(persona_id: int) -> str | None:
     """Create a chat session with the given persona."""
-    resp = api("POST", "chat/create-chat-session", {"persona_id": persona_id})
+    resp = api("POST", "converse/create-chat-session", {"persona_id": persona_id})
     if resp.status_code != 200:
         print(f"[ERROR] Create session failed: {resp.status_code} {resp.text[:300]}")
         return None
@@ -71,7 +71,7 @@ def send_chat_message(
         "include_citations": True,
     }
 
-    resp = stream_api("POST", "chat/send-chat-message", body)
+    resp = stream_api("POST", "converse/send-chat-message", body)
     if resp.status_code != 200:
         print(f"[ERROR] Send message failed: {resp.status_code} {resp.text[:500]}")
         return None, None, ""
@@ -122,7 +122,7 @@ def send_chat_message(
 
 def load_chat_session(chat_session_id: str) -> dict | None:
     """Load a chat session to verify persisted messages."""
-    resp = api("GET", f"chat/get-chat-session/{chat_session_id}")
+    resp = api("GET", f"converse/get-chat-session/{chat_session_id}")
     if resp.status_code != 200:
         print(f"[ERROR] Load session failed: {resp.status_code} {resp.text[:300]}")
         return None

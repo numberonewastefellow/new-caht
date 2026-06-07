@@ -158,6 +158,77 @@ def create_step_persona(persona_def: dict) -> int | None:
         return None
 
 
+def _update_step_persona(persona_id: int, persona_def: dict) -> bool:
+    """Update an existing step persona's prompt, description, tools, and labels.
+
+    Compares all mutable fields against the current server state and only
+    PATCHes when something actually changed.  Returns True if a PATCH was
+    performed, False otherwise.
+    """
+    resp = api("GET", f"persona/{persona_id}")
+    if resp.status_code != 200:
+        print(f"  [WARN] Could not fetch persona {persona_id} for update")
+        return False
+
+    p = resp.json()
+
+    # ── Compute old vs new for every mutable field ──
+    old_prompt = p.get("system_prompt") or ""
+    new_prompt = persona_def.get("system_prompt", "")
+
+    old_desc = p.get("description") or ""
+    new_desc = persona_def.get("description", old_desc)
+
+    old_tool_ids = sorted(t["id"] for t in p.get("tools", []))
+    new_tool_ids = old_tool_ids  # default: keep existing
+    tool_names = persona_def.get("tool_names")
+    if tool_names and isinstance(tool_names, list):
+        new_tool_ids = sorted(resolve_tool_names(tool_names))
+
+    old_label_ids = sorted(l["id"] for l in p.get("labels", []))
+    new_label_ids = old_label_ids  # default: keep existing
+    label_names = persona_def.get("labels")
+    if label_names and isinstance(label_names, list):
+        new_label_ids = sorted(get_or_create_labels(label_names))
+
+    # Skip if nothing changed
+    if (old_prompt == new_prompt and old_desc == new_desc
+            and old_tool_ids == new_tool_ids and old_label_ids == new_label_ids):
+        return False
+
+    patch_body = {
+        "name": p["name"],
+        "description": new_desc,
+        "system_prompt": new_prompt,
+        "task_prompt": p.get("task_prompt") or "",
+        "num_chunks": p.get("num_chunks", 0),
+        "is_public": p.get("is_public", True),
+        "recency_bias": p.get("recency_bias", "base_decay"),
+        "llm_filter_extraction": p.get("llm_filter_extraction", False),
+        "llm_relevance_filter": p.get("llm_relevance_filter", False),
+        "replace_base_system_prompt": p.get("replace_base_system_prompt", True),
+        "datetime_aware": p.get("datetime_aware", True),
+        "document_set_ids": p.get("document_set_ids", []),
+        "tool_ids": new_tool_ids,
+        "label_ids": new_label_ids,
+        "starter_messages": p.get("starter_messages", []),
+        "users": [], "groups": [], "hierarchy_node_ids": [],
+        "document_ids": [], "user_file_ids": [],
+    }
+
+    resp = api("PATCH", f"persona/{persona_id}", patch_body)
+    if resp.status_code == 200:
+        print(f"  [PATCH] Updated {p['name']} (ID={persona_id})")
+        return True
+    else:
+        try:
+            err = resp.json()
+        except Exception:
+            err = resp.text
+        print(f"  [WARN] Failed to update {p['name']}: {resp.status_code} {err}")
+        return False
+
+
 def resolve_or_create_persona(step_def: dict) -> int | None:
     """Resolve persona_name to persona_id, auto-creating if needed.
 
@@ -165,6 +236,9 @@ def resolve_or_create_persona(step_def: dict) -> int | None:
       - persona_id: int (used directly)
       - persona_name: str (resolved by name, auto-created if missing)
       - persona_def: dict (full persona definition for auto-creation)
+
+    If the persona already exists and a persona_def is provided, the existing
+    persona's prompt, description, and tools are updated to match the definition.
     """
     # Direct ID
     if "persona_id" in step_def and step_def["persona_id"]:
@@ -175,6 +249,10 @@ def resolve_or_create_persona(step_def: dict) -> int | None:
     if name:
         pid = resolve_persona_id(name)
         if pid is not None:
+            # Update the existing persona's prompt if a persona_def is provided
+            persona_def = step_def.get("persona_def", {})
+            if persona_def and persona_def.get("system_prompt"):
+                _update_step_persona(pid, persona_def)
             return pid
 
     # Auto-create from embedded definition
