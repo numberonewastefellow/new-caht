@@ -570,7 +570,7 @@ const MemoizedAppSidebarInner = memo(
     const vectorDbEnabled =
       combinedSettings?.settings?.vector_db_enabled !== false;
     const adminDefaultHref = vectorDbEnabled
-      ? "/admin/indexing/status"
+      ? "/admin/workflows"
       : "/admin/assistants";
 
     const settingsButton = useMemo(

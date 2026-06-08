@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agentic AI — Design Mockup</title>
+<style>
+  /* ============================================================
+     THEME PALETTE — mirrors web/src/app/css/colors.css
+     Switch via body classes: .dark  +  .theme-ocean/.theme-emerald/.theme-violet
+     (no theme class = Default)
+     ============================================================ */
+
+  /* ---- LIGHT (default neutrals) ---- */
+  body {
+    --page-bg: #f6f6f7;
+    --card-bg: #ffffff;
+    --tint-01: #f2f2f3;
+    --tint-02: #ededee;
+    --line-01: #e4e4e7;
+    --text-01: #1c1c1c;
+    --text-02: #5b5b61;
+    --text-03: #84848c;
+
+    /* mode/status chips */
+    --blue-bg: #e7effc;   --blue-fg: #286df8;
+    --orange-bg: #fbeae4; --orange-fg: #ce4b05;
+    --purple-bg: #f1ebfa; --purple-fg: #9948e3;
+
+    /* Default accent (light) */
+    --accent: #1c1c1c;
+    --accent-glow: rgba(28,28,28,0.12);
+    --accent-subtle: rgba(28,28,28,0.06);
+    --grad-00: #2b2b2b;
+    --grad-05: #8a8a8a;
+  }
+  /* ---- DARK (default neutrals) ---- */
+  body.dark {
+    --page-bg: #0c0c0e;
+    --card-bg: #171719;
+    --tint-01: #1d1d20;
+    --tint-02: #242428;
+    --line-01: #2a2a2e;
+    --text-01: #f4f4f5;
+    --text-02: #a8a8b0;
+    --text-03: #82828b;
+
+    --blue-bg: rgba(40,109,248,0.16);   --blue-fg: #6ea0ff;
+    --orange-bg: rgba(206,75,5,0.18);   --orange-fg: #ff9a5c;
+    --purple-bg: rgba(153,72,227,0.18); --purple-fg: #c79cf0;
+
+    /* Default accent (dark) = indigo */
+    --accent: #6366f1;
+    --accent-glow: rgba(99,102,241,0.22);
+    --accent-subtle: rgba(99,102,241,0.10);
+    --grad-00: #c7c9ff;
+    --grad-05: #6366f1;
+  }
+
+  /* ---- OCEAN ---- */
+  body.theme-ocean      { --accent:#3b82f6; --accent-glow:rgba(59,130,246,.15); --accent-subtle:rgba(59,130,246,.07); --grad-00:#3b82f6; --grad-05:#1e40af; }
+  body.theme-ocean.dark { --accent:#60a5fa; --accent-glow:rgba(59,130,246,.28); --accent-subtle:rgba(59,130,246,.12); --grad-00:#93c5fd; --grad-05:#2563eb; }
+  /* ---- EMERALD ---- */
+  body.theme-emerald      { --accent:#059669; --accent-glow:rgba(52,211,153,.15); --accent-subtle:rgba(52,211,153,.07); --grad-00:#34d399; --grad-05:#059669; }
+  body.theme-emerald.dark { --accent:#34d399; --accent-glow:rgba(52,211,153,.28); --accent-subtle:rgba(52,211,153,.12); --grad-00:#6ee7b7; --grad-05:#059669; }
+  /* ---- VIOLET ---- */
+  body.theme-violet      { --accent:#7c3aed; --accent-glow:rgba(167,139,250,.15); --accent-subtle:rgba(124,58,237,.07); --grad-00:#a78bfa; --grad-05:#7c3aed; }
+  body.theme-violet.dark { --accent:#a78bfa; --accent-glow:rgba(167,139,250,.28); --accent-subtle:rgba(167,139,250,.12); --grad-00:#c4b5fd; --grad-05:#7c3aed; }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Inter, system-ui, sans-serif;
+    background: var(--page-bg);
+    color: var(--text-01);
+    transition: background .25s, color .25s;
+  }
+
+  /* ===== Preview harness (NOT part of the real design) ===== */
+  .harness {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 10px 18px;
+    background: var(--card-bg); border-bottom: 1px solid var(--line-01);
+    font-size: 13px;
+  }
+  .harness b { color: var(--text-02); font-weight: 600; margin-right: 2px; }
+  .harness button {
+    cursor: pointer; border: 1px solid var(--line-01); background: var(--tint-01);
+    color: var(--text-02); padding: 5px 12px; border-radius: 999px; font-size: 12px;
+  }
+  .harness button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .harness .sw { width:14px;height:14px;border-radius:50%;display:inline-block;vertical-align:-2px;margin-right:6px;border:1px solid rgba(0,0,0,.2);}
+  .harness .note { color: var(--text-03); font-style: italic; }
+
+  /* ===== Page shell ===== */
+  .page { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* ----- Hero ----- */
+  .hero { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+  .hero-left { display:flex; gap:14px; align-items:flex-start; }
+  .hero-icon {
+    width:46px;height:46px;border-radius:13px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    background: var(--accent-subtle); color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-glow), 0 6px 20px var(--accent-glow);
+  }
+  .gradient-title {
+    font-size: 30px; font-weight: 800; line-height:1.1; margin:0;
+    background: linear-gradient(95deg, var(--grad-00), var(--grad-05));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .subtitle { margin:6px 0 0; color: var(--text-03); font-size: 14px; }
+  .hero-actions { display:flex; gap:10px; flex-shrink:0; }
+  .btn {
+    border-radius: 10px; padding: 9px 15px; font-size: 13px; font-weight:600;
+    cursor:pointer; border:1px solid var(--line-01); background: var(--card-bg); color: var(--text-01);
+    display:inline-flex; align-items:center; gap:7px;
+  }
+  .btn.secondary:hover { background: var(--tint-01); }
+  .btn.primary { background: var(--accent); color:#fff; border-color: var(--accent); }
+  .btn.primary:hover { filter: brightness(1.08); }
+
+  /* ----- KPI strip ----- */
+  .kpis { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin:26px 0 22px; }
+  .kpi {
+    background: var(--card-bg); border:1px solid var(--line-01); border-radius:16px; padding:16px 18px;
+    position:relative; overflow:hidden;
+  }
+  .kpi::before { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background: var(--accent); opacity:.8; }
+  .kpi .num { font-size: 28px; font-weight: 800; color: var(--text-01); }
+  .kpi .num.accent { color: var(--accent); }
+  .kpi .lbl { font-size: 12px; color: var(--text-03); margin-top: 2px; letter-spacing:.02em; text-transform:uppercase; }
+
+  /* ----- Filter row ----- */
+  .filters { display:flex; align-items:center; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .tab {
+    cursor:pointer; border:1px solid var(--line-01); background: var(--tint-01); color: var(--text-02);
+    padding:7px 14px; border-radius:999px; font-size:12.5px; font-weight:600; display:inline-flex; gap:6px; align-items:center;
+  }
+  .tab.active { background: var(--accent); color:#fff; border-color: var(--accent); }
+  .search {
+    margin-left:auto; min-width:240px; flex:1; max-width:340px;
+    padding:9px 13px; border-radius:10px; font-size:13px;
+    background: var(--tint-02); color: var(--text-01); border:1px solid var(--line-01);
+  }
+  .search:focus { outline:none; border-color: var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
+
+  /* ----- Cards ----- */
+  .list { display:flex; flex-direction:column; gap:10px; }
+  .card {
+    background: var(--card-bg); border:1px solid var(--line-01); border-radius:16px; padding:16px;
+    display:flex; align-items:center; gap:16px; transition: box-shadow .2s, border-color .2s, transform .05s;
+  }
+  .card:hover { border-color: var(--accent); box-shadow: 0 4px 24px var(--accent-glow); }
+  .card-icon {
+    width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;
+    background: var(--purple-bg); color: var(--purple-fg);
+  }
+  .card-body { flex:1; min-width:0; }
+  .card-title-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .card-title { font-size:15px; font-weight:700; color: var(--text-01); }
+  .badge { font-size:11px; font-weight:600; padding:2px 9px; border-radius:999px; display:inline-flex; align-items:center; gap:4px; }
+  .badge.autonomous { background: var(--accent-subtle); color: var(--accent); }
+  .badge.sequential { background: var(--blue-bg); color: var(--blue-fg); }
+  .badge.private    { background: var(--orange-bg); color: var(--orange-fg); }
+  .card-desc { color: var(--text-03); font-size: 13px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  .chain { display:flex; align-items:center; gap:6px; margin-top:9px; flex-wrap:wrap; }
+  .chain .count { font-size:11.5px; color: var(--text-02); font-weight:600; margin-right:4px; }
+  .node {
+    display:inline-flex; align-items:center; gap:5px;
+    background: var(--tint-01); border:1px solid var(--line-01);
+    color: var(--text-02); font-size:11px; padding:3px 9px; border-radius:999px;
+  }
+  .node .dot { width:6px;height:6px;border-radius:50%; background: var(--accent); }
+  .arrow { color: var(--text-03); font-size:12px; }
+
+  .card-actions { display:flex; align-items:center; gap:7px; flex-shrink:0; }
+  .icon-btn { width:34px;height:34px;border-radius:9px;border:1px solid var(--line-01);background:var(--card-bg);color:var(--text-02);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .icon-btn.danger:hover { background: var(--orange-bg); color: var(--orange-fg); border-color: transparent; }
+  .icon-btn:hover { background: var(--tint-01); }
+
+  @media (max-width: 720px) {
+    .kpis { grid-template-columns: repeat(2,1fr); }
+    .card-desc { white-space: normal; }
+    .hero { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+  <!-- ===== Preview controls (remove in real build) ===== -->
+  <div class="harness">
+    <span><b>Mode:</b>
+      <button id="m-light" class="active" onclick="setMode('light')">Light</button>
+      <button id="m-dark" onclick="setMode('dark')">Dark</button>
+    </span>
+    <span><b>Accent:</b>
+      <button class="active" data-theme="" onclick="setTheme('')"><span class="sw" style="background:#6366f1"></span>Default</button>
+      <button data-theme="theme-ocean" onclick="setTheme('theme-ocean')"><span class="sw" style="background:#3b82f6"></span>Ocean</button>
+      <button data-theme="theme-emerald" onclick="setTheme('theme-emerald')"><span class="sw" style="background:#059669"></span>Emerald</button>
+      <button data-theme="theme-violet" onclick="setTheme('theme-violet')"><span class="sw" style="background:#7c3aed"></span>Violet</button>
+    </span>
+    <span class="note">↑ preview harness — not part of the design</span>
+  </div>
+
+  <div class="page">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-icon">✦</div>
+        <div>
+          <h1 class="gradient-title">Agentic AI</h1>
+          <p class="subtitle">Build, orchestrate &amp; manage autonomous multi-agent systems</p>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn secondary">▦ Visual Builder</button>
+        <button class="btn primary">✦ New Agent</button>
+      </div>
+    </div>
+
+    <!-- KPI strip -->
+    <div class="kpis">
+      <div class="kpi"><div class="num">36</div><div class="lbl">Systems</div></div>
+      <div class="kpi"><div class="num accent">27</div><div class="lbl">⚡ Autonomous</div></div>
+      <div class="kpi"><div class="num">9</div><div class="lbl">↻ Sequential</div></div>
+      <div class="kpi"><div class="num">203</div><div class="lbl">Agents</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button class="tab active" data-f="all" onclick="setFilter('all')">All</button>
+      <button class="tab" data-f="autonomous" onclick="setFilter('autonomous')">⚡ Autonomous</button>
+      <button class="tab" data-f="sequential" onclick="setFilter('sequential')">↻ Sequential</button>
+      <button class="tab" data-f="private" onclick="setFilter('private')">🔒 Private</button>
+      <input class="search" placeholder="🔍  Search agents by name or description…" oninput="search(this.value)" />
+    </div>
+
+    <!-- List -->
+    <div class="list" id="list"></div>
+  </div>
+
+<script>
+  const data = [
+    { name:"Universal Problem Solver", mode:"autonomous", priv:false,
+      desc:"Autonomous orchestrator that classifies any problem and routes to specialist agents.",
+      agents:["Analyzer","Researcher","Code Eng.","Synthesizer"] },
+    { name:"Cybersecurity IR", mode:"autonomous", priv:false,
+      desc:"Multi-analyst incident response; specialists selected dynamically by incident type.",
+      agents:["SOC Triage","Forensics","Threat Intel","Report"] },
+    { name:"Medical Diagnosis Panel", mode:"autonomous", priv:true,
+      desc:"10-specialist consultation with dynamic routing based on symptoms & labs.",
+      agents:["Intake","Cardio","Neuro","Synthesis"] },
+    { name:"Document Generator", mode:"sequential", priv:false,
+      desc:"AI-powered document generator for Word & PDF reports — plan, build, review.",
+      agents:["Planner","DOCX Builder","Reviewer"] },
+    { name:"seq-Presentation Generator", mode:"sequential", priv:false,
+      desc:"Sequential PPT pipeline — Planner → Builder → Reviewer in fixed order.",
+      agents:["PPT Planner","PPT Builder","PPT Reviewer"] },
+    { name:"Data Science Tutor", mode:"sequential", priv:false,
+      desc:"Interactive DS tutoring combining LLM explanations with live code execution.",
+      agents:["Explainer","Code Demo","Practice","Summary"] },
+  ];
+
+  let filter = "all", query = "";
+
+  function render() {
+    const el = document.getElementById("list");
+    const items = data.filter(w => {
+      const okF = filter==="all" || (filter==="private" ? w.priv : w.mode===filter);
+      const okQ = !query || (w.name+" "+w.desc).toLowerCase().includes(query);
+      return okF && okQ;
+    });
+    el.innerHTML = items.map(w => `
+      <div class="card">
+        <div class="card-icon">▦</div>
+        <div class="card-body">
+          <div class="card-title-row">
+            <span class="card-title">${w.name}</span>
+            ${w.mode==="autonomous"
+              ? '<span class="badge autonomous">⚡ Autonomous</span>'
+              : '<span class="badge sequential">↻ Sequential</span>'}
+            ${w.priv ? '<span class="badge private">🔒 Private</span>' : ''}
+          </div>
+          <div class="card-desc">${w.desc}</div>
+          <div class="chain">
+            <span class="count">${w.agents.length} agents</span>
+            ${w.agents.map(a=>`<span class="node"><span class="dot"></span>${a}</span>`).join('<span class="arrow">→</span>')}
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn secondary" style="padding:7px 12px">Visual</button>
+          <button class="btn secondary" style="padding:7px 12px">Edit</button>
+          <button class="icon-btn danger" title="Delete">🗑</button>
+        </div>
+      </div>`).join("") || `<div style="color:var(--text-03);padding:24px;text-align:center">No agentic systems match.</div>`;
+  }
+
+  function setMode(m){
+    document.body.classList.toggle("dark", m==="dark");
+    document.getElementById("m-light").classList.toggle("active", m==="light");
+    document.getElementById("m-dark").classList.toggle("active", m==="dark");
+  }
+  function setTheme(t){
+    ["theme-ocean","theme-emerald","theme-violet"].forEach(c=>document.body.classList.remove(c));
+    if(t) document.body.classList.add(t);
+    document.querySelectorAll(".harness [data-theme]").forEach(b=>b.classList.toggle("active", b.dataset.theme===t));
+  }
+  function setFilter(f){
+    filter=f;
+    document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active", b.dataset.f===f));
+    render();
+  }
+  function search(v){ query=v.toLowerCase(); render(); }
+  render();
+</script>
+</body>
+</html>

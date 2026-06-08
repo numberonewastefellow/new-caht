@@ -500,12 +500,12 @@ export function getGroupColorForPath(pathname: string): NavGroupColor | null {
  * to the correct child page URL so breadcrumb links navigate properly.
  */
 export const BREADCRUMB_REDIRECT_MAP: Record<string, string> = {
-  "/admin": "/admin/indexing/status",
+  "/admin": "/admin/workflows",
   "/admin/indexing": "/admin/indexing/status",
   "/admin/configuration": "/admin/configuration/default-assistant",
   "/admin/documents": "/admin/documents/sets",
   "/admin/actions": "/admin/actions/mcp",
-  "/ee/admin": "/admin/indexing/status",
+  "/ee/admin": "/admin/workflows",
   "/ee/admin/performance": "/ee/admin/performance/usage",
 };
 
