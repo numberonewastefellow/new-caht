@@ -267,6 +267,20 @@
     animation: virtualai-glow-orbit 3s linear infinite;
   }
 
+  /* Always-on glow border (e.g. modals) — reuses the input orbit comet */
+  .virtualai-glow-border {
+    animation: virtualai-glow-orbit 3s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .virtualai-glow-border {
+      animation: none;
+      box-shadow:
+        0px 2px 16px 0px var(--shadow-02),
+        0 0 0 1px var(--virtualai-accent-glow, transparent),
+        0 0 28px 3px var(--virtualai-accent-glow-strong, transparent);
+    }
+  }
+
   /* VirtualAI User Message Bubble — subtle accent tint */
   .virtualai-user-bubble {
     background: color-mix(in srgb, var(--virtualai-accent, var(--theme-primary-05)) 8%, var(--background-tint-02) 92%);

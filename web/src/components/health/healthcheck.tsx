@@ -243,7 +243,7 @@ export const HealthCheckBanner = () => {
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-mask-03 backdrop-blur-03">
-      <div className="mx-4 w-full max-w-[26rem] overflow-hidden rounded-16 border bg-background-tint-00 shadow-2xl">
+      <div className="mx-4 w-full max-w-[26rem] overflow-hidden rounded-16 border bg-background-tint-00 virtualai-glow-border">
         {/* Top accent bar */}
         <div className="h-1 w-full bg-gradient-to-r from-[var(--theme-orange-05)] via-[var(--theme-amber-04)] to-[var(--theme-orange-05)]" />
 

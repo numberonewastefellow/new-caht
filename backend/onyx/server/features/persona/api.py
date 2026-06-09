@@ -235,10 +235,16 @@ def get_agents_admin_paginated(
     include_default: bool = Query(
         True, description="If true, includes builtin/default personas."
     ),
+    q: str | None = Query(
+        None,
+        description="Optional search term matched against agent name or description.",
+    ),
 ) -> PaginatedReturn[PersonaSnapshot]:
     """Paginated endpoint for listing agents (formerly personas) (admin view).
 
-    Returns items for the requested page plus total count.
+    Returns items for the requested page plus total count. When `q` is provided,
+    results are filtered (case-insensitive substring on name OR description)
+    across ALL pages before pagination.
     Agents are ordered by display_priority (ASC, nulls last) then by ID (ASC).
     """
     agents = get_persona_snapshots_paginated(
@@ -249,6 +255,7 @@ def get_agents_admin_paginated(
         get_editable=get_editable,
         include_default=include_default,
         include_deleted=include_deleted,
+        search_query=q,
     )
 
     total_count = get_persona_count_for_user(
@@ -257,6 +264,7 @@ def get_agents_admin_paginated(
         get_editable=get_editable,
         include_default=include_default,
         include_deleted=include_deleted,
+        search_query=q,
     )
 
     return PaginatedReturn(
@@ -473,10 +481,16 @@ def get_agents_paginated(
     include_default: bool = Query(
         True, description="If true, includes builtin/default personas."
     ),
+    q: str | None = Query(
+        None,
+        description="Optional search term matched against agent name or description.",
+    ),
 ) -> PaginatedReturn[MinimalPersonaSnapshot]:
     """Paginated endpoint for listing agents available to the user.
 
-    Returns items for the requested page plus total count.
+    Returns items for the requested page plus total count. When `q` is provided,
+    results are filtered (case-insensitive substring on name OR description)
+    across ALL pages before pagination.
     Personas are ordered by display_priority (ASC, nulls last) then by ID (ASC).
 
     NOTE: persona_ids filter is not supported with pagination. Use the
@@ -490,6 +504,7 @@ def get_agents_paginated(
         get_editable=get_editable,
         include_default=include_default,
         include_deleted=include_deleted,
+        search_query=q,
     )
 
     total_count = get_persona_count_for_user(
@@ -498,6 +513,7 @@ def get_agents_paginated(
         get_editable=get_editable,
         include_default=include_default,
         include_deleted=include_deleted,
+        search_query=q,
     )
 
     return PaginatedReturn(

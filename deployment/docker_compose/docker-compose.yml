@@ -219,6 +219,12 @@ services:
     restart: unless-stopped
     environment:
       - INTERNAL_URL=${INTERNAL_URL:-http://api_server:8080}
+      # Default UI version for dual-version pages (e.g. the Agentic AI page).
+      # Plain (NON-NEXT_PUBLIC_) var read at runtime by the Next server layout,
+      # so changing it only needs a container restart, not a rebuild.
+      # Values: "new" (default) | "legacy". Per-user override via the in-app
+      # toggle / ?legacy=1. See AGENTIC_AI_REBRAND_PLAN.md.
+      - DEFAULT_UI_VERSION=${DEFAULT_UI_VERSION:-new}
 
   # Uncomment the block below to enable the MCP server for Onyx.
   # mcp_server:

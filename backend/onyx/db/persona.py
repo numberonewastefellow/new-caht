@@ -472,6 +472,7 @@ def get_persona_count_for_user(
     include_default: bool = True,
     include_slack_bot_personas: bool = False,
     include_deleted: bool = False,
+    search_query: str | None = None,
 ) -> int:
     """Counts the total number of personas accessible to the user.
 
@@ -494,6 +495,7 @@ def get_persona_count_for_user(
         include_default=include_default,
         include_slack_bot_personas=include_slack_bot_personas,
         include_deleted=include_deleted,
+        search_query=search_query,
     )
     # Convert to count query.
     count_stmt = stmt.with_only_columns(func.count(func.distinct(Persona.id))).order_by(
@@ -511,6 +513,7 @@ def get_minimal_persona_snapshots_paginated(
     include_default: bool = True,
     include_slack_bot_personas: bool = False,
     include_deleted: bool = False,
+    search_query: str | None = None,
 ) -> list[MinimalPersonaSnapshot]:
     """Gets a single page of minimal persona snapshots with ordering.
 
@@ -541,6 +544,7 @@ def get_minimal_persona_snapshots_paginated(
         include_default,
         include_slack_bot_personas,
         include_deleted,
+        search_query=search_query,
     )
     # Do eager loading of columns we know MinimalPersonaSnapshot.from_model will
     # need.
@@ -570,6 +574,7 @@ def get_persona_snapshots_paginated(
     include_default: bool = True,
     include_slack_bot_personas: bool = False,
     include_deleted: bool = False,
+    search_query: str | None = None,
 ) -> list[PersonaSnapshot]:
     """Gets a single page of persona snapshots (admin view) with ordering.
 
@@ -603,6 +608,7 @@ def get_persona_snapshots_paginated(
         include_default,
         include_slack_bot_personas,
         include_deleted,
+        search_query=search_query,
     )
     # Do eager loading of columns we know PersonaSnapshot.from_model will need.
     stmt = stmt.options(
@@ -631,6 +637,7 @@ def _get_paginated_persona_query(
     include_default: bool = True,
     include_slack_bot_personas: bool = False,
     include_deleted: bool = False,
+    search_query: str | None = None,
 ) -> Select[tuple[Persona]]:
     """Builds a paginated query on personas ordered on display_priority and id.
 
@@ -658,6 +665,7 @@ def _get_paginated_persona_query(
         include_default=include_default,
         include_slack_bot_personas=include_slack_bot_personas,
         include_deleted=include_deleted,
+        search_query=search_query,
     )
     # Add the abs(id) expression to the SELECT list (required for DISTINCT +
     # ORDER BY).
@@ -678,6 +686,7 @@ def _build_persona_base_query(
     include_default: bool = True,
     include_slack_bot_personas: bool = False,
     include_deleted: bool = False,
+    search_query: str | None = None,
 ) -> Select[tuple[Persona]]:
     """Builds a base persona query with all user and persona filters applied.
 
@@ -692,6 +701,8 @@ def _build_persona_base_query(
         include_default: If True, includes builtin/default personas.
         include_slack_bot_personas: If True, includes Slack bot personas.
         include_deleted: If True, includes deleted personas.
+        search_query: If provided, case-insensitively matches the term against
+            persona name OR description (substring match).
 
     Returns:
         SQLAlchemy Select statement with all filters applied.
@@ -701,6 +712,21 @@ def _build_persona_base_query(
     stmt = _build_persona_filters(
         stmt, include_default, include_slack_bot_personas, include_deleted
     )
+    if search_query and search_query.strip():
+        # Escape LIKE wildcards so user input is treated as a literal substring.
+        safe = (
+            search_query.strip()
+            .replace("\\", "\\\\")
+            .replace("%", "\\%")
+            .replace("_", "\\_")
+        )
+        like = f"%{safe}%"
+        stmt = stmt.where(
+            or_(
+                Persona.name.ilike(like, escape="\\"),
+                Persona.description.ilike(like, escape="\\"),
+            )
+        )
     return stmt
 
 

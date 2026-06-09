@@ -87,6 +87,23 @@ Verified each interactive element / data binding the design depends on against l
 - Keep all `/admin/workflows/...` route paths (URL-stable rebrand).
 - KPI "Agents" = **sum of step counts** (defined agent steps), not distinct personas — label/tooltip should reflect that meaning.
 
+## Dual-version mechanism (IMPLEMENTED — web-only backward-compat)
+The Agentic AI page ships as the **default**, with the old list preserved as a one-click fallback. All web-only, no backend/API.
+- **Default source**: `DEFAULT_UI_VERSION` env (`new` | `legacy`) — a **plain (non-`NEXT_PUBLIC_`) server env** read in `web/src/app/layout.tsx` (`force-dynamic`) and injected via `web/src/providers/UiConfigProvider.tsx`. Change it + **restart `web_server` (no rebuild)**. Wired into `deployment/docker_compose/docker-compose.yml` `web_server.environment` + `env.template`.
+- **Per-user override**: `web/src/hooks/usePageVersion.ts` → URL `?legacy=1|0` → `localStorage["ui-version:<key>"]` → env default → `"new"`.
+- **Wrapper**: `web/src/refresh-components/VersionedPage.tsx` (+ `useVersionSwitch()`); `web/src/app/admin/workflows/page.tsx` renders `<VersionedPage versionKey="agentic-ai" current={<WorkflowListPage/>} legacy={<WorkflowListPageLegacy/>} />`.
+- **Switch UI**: new page header → "Classic view"; legacy page header → "Try the new Agentic AI view".
+- **Reuse**: any page → copy current to `*Legacy.tsx`, wrap its `page.tsx`, add the two switch buttons. One env var governs all keys.
+
+## Legacy cleanup checklist (no dead pages)
+Greppable tag on every temporary legacy page: `grep -r "TODO(agentic-ui-cleanup)" web/src`.
+
+| Legacy page | Status | Remove when |
+|---|---|---|
+| `web/src/refresh-pages/WorkflowListPageLegacy.tsx` | active (backward-compat) | new Agentic AI page verified in production |
+
+Removal steps when retiring a legacy page: (1) delete the `*Legacy.tsx`; (2) render the new page directly in its `page.tsx` (drop `<VersionedPage>`); (3) remove the "Classic view" switch; (4) if no page still uses versioning, delete `usePageVersion.ts`, `VersionedPage.tsx`, `UiConfigProvider.tsx`, the `layout.tsx` wiring, and the `DEFAULT_UI_VERSION` env var.
+
 ## Future TODO (deferred — not in this change)
 Redesign the **Visual Builder designer** (`/admin/workflows/visual/[id]`) to match the new Agentic AI branding once the list page lands. Likely touch points (per CLAUDE.md dual-editor rule, keep Wizard + Visual Builder in sync):
 - `web/src/components/workflow-builder/` — canvas, node styling, `GlobalConfigToolbar.tsx` (the Sequential/LLM-Decision toggle → "Autonomous" wording), `NodeConfigPanel.tsx`.

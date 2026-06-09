@@ -11,6 +11,8 @@ interface UseAdminPersonasOptions {
   includeDefault?: boolean;
   pageNum?: number;
   pageSize?: number;
+  // Server-side search term matched against agent name OR description.
+  searchQuery?: string;
 }
 
 interface PaginatedPersonasResponse {
@@ -25,10 +27,13 @@ export const useAdminPersonas = (options?: UseAdminPersonasOptions) => {
     includeDefault = false,
     pageNum,
     pageSize,
+    searchQuery,
   } = options || {};
 
   // If pageNum and pageSize are provided, use paginated endpoint.
   const usePagination = pageNum !== undefined && pageSize !== undefined;
+
+  const trimmedQuery = searchQuery?.trim();
 
   const url = usePagination
     ? buildApiPath("/api/admin/agents", {
@@ -37,6 +42,7 @@ export const useAdminPersonas = (options?: UseAdminPersonasOptions) => {
         include_default: includeDefault,
         page_num: pageNum,
         page_size: pageSize,
+        ...(trimmedQuery ? { q: trimmedQuery } : {}),
       })
     : buildApiPath("/api/admin/persona", {
         include_deleted: includeDeleted,
@@ -45,7 +51,7 @@ export const useAdminPersonas = (options?: UseAdminPersonasOptions) => {
 
   const { data, error, isLoading, mutate } = useSWR<
     Persona[] | PaginatedPersonasResponse
-  >(url, errorHandlingFetcher);
+  >(url, errorHandlingFetcher, { keepPreviousData: true });
 
   // Handle both paginated and non-paginated responses
   const personas = usePagination

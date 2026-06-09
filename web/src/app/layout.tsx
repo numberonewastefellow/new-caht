@@ -27,6 +27,7 @@ import Script from "next/script";
 import { WebVitals } from "./web-vitals";
 import { ThemeProvider } from "next-themes";
 import { VirtualAIThemeProvider } from "@/providers/VirtualAIThemeProvider";
+import { UiConfigProvider } from "@/providers/UiConfigProvider";
 import CloudError from "@/components/errorPages/CloudErrorPage";
 import Error from "@/components/errorPages/ErrorPage";
 import GatedContentWrapper from "@/components/GatedContentWrapper";
@@ -95,6 +96,14 @@ export default async function RootLayout({
   ]);
 
   const { folded } = await fetchAppSidebarMetadata(user);
+
+  // Web-only, runtime-switchable UI version default. Plain (non-NEXT_PUBLIC_)
+  // env read server-side here so changing it only needs a container restart,
+  // not a rebuild. Injected to client hooks via UiConfigProvider.
+  const defaultUiVersion =
+    process.env.DEFAULT_UI_VERSION?.toLowerCase() === "legacy"
+      ? "legacy"
+      : "new";
 
   const productGating =
     combinedSettings?.settings.application_status ?? ApplicationStatus.ACTIVE;
@@ -187,7 +196,9 @@ export default async function RootLayout({
         <PostHogPageView />
       </Suspense>
       <div id={MODAL_ROOT_ID} className="h-screen w-screen">
-        {content}
+        <UiConfigProvider defaultUiVersion={defaultUiVersion}>
+          {content}
+        </UiConfigProvider>
       </div>
       {process.env.NEXT_PUBLIC_POSTHOG_KEY && <WebVitals />}
       {process.env.NEXT_PUBLIC_ENABLE_STATS === "true" && (

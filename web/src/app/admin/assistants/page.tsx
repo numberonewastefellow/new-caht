@@ -6,7 +6,7 @@ import { useAdminPersonas } from "@/hooks/useAdminPersonas";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { ErrorCallout } from "@/components/ErrorCallout";
 import { SvgOnyxOctagon, SvgPlus } from "@opal/icons";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Pagination from "@/refresh-components/Pagination";
 import Text from "@/refresh-components/texts/Text";
 import Button from "@/refresh-components/buttons/Button";
@@ -21,16 +21,21 @@ function MainContent({
   currentPage,
   onPageChange,
   refreshPersonas,
+  searchInput,
+  onSearchChange,
+  searchActive,
 }: {
   personas: Persona[];
   totalItems: number;
   currentPage: number;
   onPageChange: (page: number) => void;
   refreshPersonas: () => void;
+  searchInput: string;
+  onSearchChange: (value: string) => void;
+  searchActive: boolean;
 }) {
   const customPersonas = personas.filter((persona) => !persona.builtin_persona);
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
@@ -38,36 +43,25 @@ function MainContent({
     }
   }, [currentPage, totalPages, onPageChange]);
 
-  const filteredPersonas = useMemo(() => {
-    if (!searchQuery) return customPersonas;
-    const q = searchQuery.toLowerCase();
-    return customPersonas.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q)
-    );
-  }, [customPersonas, searchQuery]);
-
   return (
     <div className="flex flex-col gap-4">
       {/* Compact header */}
       <div className="flex flex-row items-center justify-between gap-4">
         <div className="flex flex-col">
           <Text as="p" secondaryBody text03>
-            {totalItems} {totalItems === 1 ? "assistant" : "assistants"} managed by your organization.
+            {totalItems} {totalItems === 1 ? "assistant" : "assistants"}{" "}
+            {searchActive ? "found" : "managed by your organization"}.
           </Text>
         </div>
         <div className="flex flex-row items-center gap-2 flex-shrink-0">
-          {totalItems > 6 && (
-            <div className="w-[14rem]">
-              <InputTypeIn
-                placeholder="Search assistants..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                leftSearchIcon
-              />
-            </div>
-          )}
+          <div className="w-[14rem]">
+            <InputTypeIn
+              placeholder="Search assistants..."
+              value={searchInput}
+              onChange={(e) => onSearchChange(e.target.value)}
+              leftSearchIcon
+            />
+          </div>
           <Button href="/app/agents/create?admin=true" leftIcon={SvgPlus}>
             New Assistant
           </Button>
@@ -75,15 +69,15 @@ function MainContent({
       </div>
 
       {/* Card grid */}
-      {filteredPersonas.length > 0 ? (
+      {customPersonas.length > 0 ? (
         <>
           <PersonasTable
-            personas={filteredPersonas}
+            personas={customPersonas}
             refreshPersonas={refreshPersonas}
             currentPage={currentPage}
             pageSize={PAGE_SIZE}
           />
-          {!searchQuery && totalPages > 1 && (
+          {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -91,7 +85,13 @@ function MainContent({
             />
           )}
         </>
-      ) : totalItems === 0 ? (
+      ) : searchActive ? (
+        <div className="flex flex-col items-center justify-center py-12">
+          <Text as="p" secondaryBody text03>
+            No assistants match &ldquo;{searchInput}&rdquo;
+          </Text>
+        </div>
+      ) : (
         <div className="flex flex-col items-center justify-center py-16 gap-4">
           <div className="w-16 h-16 rounded-full bg-background-neutral-02 flex items-center justify-center">
             <SvgOnyxOctagon className="w-8 h-8 text-text-03" />
@@ -108,12 +108,6 @@ function MainContent({
             Create Your First Assistant
           </Button>
         </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-12">
-          <Text as="p" secondaryBody text03>
-            No assistants match &ldquo;{searchQuery}&rdquo;
-          </Text>
-        </div>
       )}
     </div>
   );
@@ -121,9 +115,27 @@ function MainContent({
 
 export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  // Debounce the search input so we don't fire a request per keystroke.
+  useEffect(() => {
+    const handle = setTimeout(() => setDebouncedQuery(searchInput.trim()), 300);
+    return () => clearTimeout(handle);
+  }, [searchInput]);
+
+  // Reset to the first page whenever the (debounced) search term changes.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedQuery]);
+
+  // Server-side search across ALL assistants (matches name OR description),
+  // not just the current page. keepPreviousData (in the hook) avoids the list
+  // unmounting between fetches so the search box keeps focus.
   const { personas, totalItems, isLoading, error, refresh } = useAdminPersonas({
     pageNum: currentPage - 1,
     pageSize: PAGE_SIZE,
+    searchQuery: debouncedQuery,
   });
 
   return (
@@ -150,6 +162,9 @@ export default function Page() {
           currentPage={currentPage}
           onPageChange={setCurrentPage}
           refreshPersonas={refresh}
+          searchInput={searchInput}
+          onSearchChange={setSearchInput}
+          searchActive={debouncedQuery.length > 0}
         />
       )}
     </>
