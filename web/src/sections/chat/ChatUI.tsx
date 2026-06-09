@@ -12,10 +12,10 @@ import Spacer from "@/refresh-components/Spacer";
 import DynamicBottomSpacer from "@/components/chat/DynamicBottomSpacer";
 import {
   useChatSessionStore,
-  useCurrentMessageHistory,
-  useCurrentMessageTree,
-  useLoadingError,
-  useUncaughtError,
+  useSessionMessageHistory,
+  useSessionMessageTree,
+  useSessionLoadingError,
+  useSessionUncaughtError,
 } from "@/app/app/stores/useChatSessionStore";
 import { upsertMessages, setMessageAsLatest } from "@/app/app/services/messageTree";
 import { patchMessageToBeLatest } from "@/app/app/services/lib";
@@ -53,6 +53,13 @@ export interface ChatUIProps {
    * Used by DynamicBottomSpacer to position the push-up effect.
    */
   anchorNodeId?: number;
+
+  /**
+   * Per-panel model label (compare mode). When set, overrides the model name
+   * shown on assistant messages so panels 2/3 display their own model rather
+   * than the single `llmManager.currentLlm`. Undefined for normal single chat.
+   */
+  overriddenModelName?: string;
 }
 
 const ChatUI = React.memo(
@@ -68,12 +75,15 @@ const ChatUI = React.memo(
     onResubmit,
     anchorNodeId,
     chatSessionId,
+    overriddenModelName,
   }: ChatUIProps) => {
-    // Get messages and error state from store
-    const messages = useCurrentMessageHistory();
-    const messageTree = useCurrentMessageTree();
-    const error = useUncaughtError();
-    const loadError = useLoadingError();
+    // Get messages and error state from the store, scoped to THIS panel's
+    // session id. (Compare panels each pass their own session so a packet in
+    // one panel re-renders only that panel — not the others.)
+    const messages = useSessionMessageHistory(chatSessionId);
+    const messageTree = useSessionMessageTree(chatSessionId);
+    const error = useSessionUncaughtError(chatSessionId);
+    const loadError = useSessionLoadingError(chatSessionId);
     // Stable fallbacks to avoid changing prop identities on each render
     const emptyDocs = useMemo<OnyxDocument[]>(() => [], []);
     const emptyChildrenIds = useMemo<number[]>(() => [], []);
@@ -245,7 +255,8 @@ const ChatUI = React.memo(
               docs: message.documents ?? emptyDocs,
               citations: message.citations,
               setPresentingDocument,
-              overriddenModel: llmManager.currentLlm?.modelName,
+              overriddenModel:
+                overriddenModelName ?? llmManager.currentLlm?.modelName,
               researchType: message.researchType,
             };
 

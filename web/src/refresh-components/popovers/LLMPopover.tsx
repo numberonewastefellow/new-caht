@@ -20,6 +20,10 @@ import { cn } from "@/lib/utils";
 import { SvgCheck, SvgRefreshCw } from "@opal/icons";
 import { OpenButton } from "@opal/components";
 import { LLMOption, LLMOptionGroup } from "./interfaces";
+import {
+  useCompareStore,
+  MAX_COMPARE_MODELS,
+} from "@/app/app/stores/useCompareStore";
 
 // ============================================================================
 // Types
@@ -369,6 +373,42 @@ export default function LLMPopover({
 
   const isSearching = searchQuery.trim().length > 0;
 
+  // ── Multi-model compare selection ───────────────────────────────────────
+  const compareModels = useCompareStore((s) => s.compareModels);
+  const toggleCompareModel = useCompareStore((s) => s.toggleModel);
+  const setCompareModels = useCompareStore((s) => s.setCompareModels);
+  const resetCompare = useCompareStore((s) => s.reset);
+  const compareActive = compareModels.length > 0;
+
+  const optionToDescriptor = (option: LLMOption): LlmDescriptor => ({
+    name: option.name,
+    provider: option.provider,
+    modelName: option.modelName,
+  });
+
+  const isInCompare = (option: LLMOption) =>
+    compareModels.some(
+      (m) =>
+        m.name === option.name &&
+        m.provider === option.provider &&
+        m.modelName === option.modelName
+    );
+
+  const handleToggleCompareMode = () => {
+    if (compareActive) {
+      resetCompare();
+    } else {
+      // Seed compare with the current primary model so it starts non-empty.
+      setCompareModels([
+        {
+          name: llmManager.currentLlm.name,
+          provider: llmManager.currentLlm.provider,
+          modelName: llmManager.currentLlm.modelName,
+        },
+      ]);
+    }
+  };
+
   const handleSelectModel = (option: LLMOption) => {
     llmManager.updateCurrentLlm({
       modelName: option.modelName,
@@ -443,6 +483,23 @@ export default function LLMPopover({
               </div>
             )}
 
+            {/* Compare-models toggle */}
+            <div className="flex items-center justify-between px-4 pt-2 bg-background-tint-00">
+              <button
+                type="button"
+                onClick={handleToggleCompareMode}
+                className="text-xs font-medium"
+                style={{ color: "var(--virtualai-accent, var(--theme-primary-05))" }}
+              >
+                {compareActive ? "Exit compare" : "Compare models"}
+              </button>
+              {compareActive && (
+                <Text secondaryBody text03 className="text-xs">
+                  {compareModels.length}/{MAX_COMPARE_MODELS} selected
+                </Text>
+              )}
+            </div>
+
             {/* Model Card Grid */}
             <ShadowDiv
               scrollContainerRef={scrollContainerRef}
@@ -469,16 +526,22 @@ export default function LLMPopover({
               ) : (
                 <div className="grid grid-cols-2 gap-2">
                   {tabFilteredOptions.map((option) => {
-                    const isSelected =
-                      option.modelName === llmManager.currentLlm.modelName &&
-                      option.provider === llmManager.currentLlm.provider;
+                    const isSelected = compareActive
+                      ? isInCompare(option)
+                      : option.modelName ===
+                          llmManager.currentLlm.modelName &&
+                        option.provider === llmManager.currentLlm.provider;
                     return (
                       <ModelCard
                         key={`${option.name}-${option.modelName}`}
                         ref={isSelected ? selectedCardRef : undefined}
                         option={option}
                         isSelected={isSelected}
-                        onSelect={() => handleSelectModel(option)}
+                        onSelect={() =>
+                          compareActive
+                            ? toggleCompareModel(optionToDescriptor(option))
+                            : handleSelectModel(option)
+                        }
                       />
                     );
                   })}
