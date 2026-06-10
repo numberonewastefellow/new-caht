@@ -13,6 +13,17 @@ import { LlmDescriptor } from "@/lib/hooks";
  */
 export const MAX_COMPARE_MODELS = 3;
 
+// Richer than a bare LlmDescriptor so compare panels + the picker can show the
+// provider, display name, and capability badges. Identity is still
+// name/provider/modelName, so it stays assignable to LlmDescriptor for the
+// streaming controller.
+export interface CompareModel extends LlmDescriptor {
+  displayName?: string;
+  providerDisplayName?: string;
+  supportsReasoning?: boolean;
+  supportsImageInput?: boolean;
+}
+
 function sameModel(a: LlmDescriptor, b: LlmDescriptor): boolean {
   return (
     a.name === b.name &&
@@ -22,12 +33,12 @@ function sameModel(a: LlmDescriptor, b: LlmDescriptor): boolean {
 }
 
 interface CompareStore {
-  compareModels: LlmDescriptor[];
+  compareModels: CompareModel[];
   // index-aligned with compareModels; entry is undefined until its session is created
   panelSessionIds: (string | undefined)[];
 
-  setCompareModels: (models: LlmDescriptor[]) => void;
-  toggleModel: (model: LlmDescriptor) => void;
+  setCompareModels: (models: CompareModel[]) => void;
+  toggleModel: (model: CompareModel) => void;
   isModelSelected: (model: LlmDescriptor) => boolean;
   setPanelSessionId: (index: number, sessionId: string) => void;
   reset: () => void;

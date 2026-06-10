@@ -19,10 +19,12 @@ import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import { cn } from "@/lib/utils";
 import { SvgCheck, SvgRefreshCw } from "@opal/icons";
 import { OpenButton } from "@opal/components";
+import Button from "@/refresh-components/buttons/Button";
 import { LLMOption, LLMOptionGroup } from "./interfaces";
 import {
   useCompareStore,
   MAX_COMPARE_MODELS,
+  CompareModel,
 } from "@/app/app/stores/useCompareStore";
 
 // ============================================================================
@@ -152,10 +154,11 @@ interface ModelCardProps {
   option: LLMOption;
   isSelected: boolean;
   onSelect: () => void;
+  disabled?: boolean;
 }
 
 const ModelCard = React.forwardRef<HTMLButtonElement, ModelCardProps>(
-  ({ option, isSelected, onSelect }, ref) => {
+  ({ option, isSelected, onSelect, disabled = false }, ref) => {
     const ProviderIcon = getProviderIcon(option.provider, option.modelName);
 
     return (
@@ -163,15 +166,17 @@ const ModelCard = React.forwardRef<HTMLButtonElement, ModelCardProps>(
         ref={ref}
         type="button"
         onClick={onSelect}
+        disabled={disabled}
         className={cn(
-          "flex flex-col items-start gap-1.5 p-3 rounded-12 border transition-colors text-left",
+          "relative flex flex-col items-start gap-1 p-3 rounded-12 border transition-colors text-left w-full",
           "virtualai-card-hover",
           isSelected
             ? "virtualai-model-card-selected"
-            : "border-border-01 bg-background-neutral-00"
+            : "border-border-01 bg-background-neutral-00",
+          disabled && "opacity-50 pointer-events-none"
         )}
       >
-        {/* Provider icon + model name */}
+        {/* Row: provider icon + model name + selection circle */}
         <div className="flex items-center gap-2 w-full">
           <div className="size-6 rounded-06 virtualai-accent-icon-badge flex items-center justify-center shrink-0">
             <ProviderIcon size={14} />
@@ -186,11 +191,38 @@ const ModelCard = React.forwardRef<HTMLButtonElement, ModelCardProps>(
           >
             {option.displayName}
           </Text>
+          <span
+            className="flex items-center justify-center w-4 h-4 rounded-full shrink-0 border"
+            style={{
+              backgroundColor: isSelected
+                ? "var(--virtualai-accent, var(--theme-primary-05))"
+                : "transparent",
+              borderColor: isSelected
+                ? "transparent"
+                : "var(--line-01)",
+            }}
+          >
+            {isSelected && (
+              <SvgCheck className="h-2.5 w-2.5 stroke-white shrink-0" />
+            )}
+          </span>
         </div>
+
+        {/* Provider sublabel */}
+        <Text as="p" secondaryBody text03 className="truncate w-full">
+          {option.providerDisplayName || option.provider}
+        </Text>
+
+        {/* One-line description */}
+        {option.description && (
+          <Text as="p" secondaryBody text03 className="line-clamp-2 w-full">
+            {option.description}
+          </Text>
+        )}
 
         {/* Capability pills */}
         {(option.supportsReasoning || option.supportsImageInput) && (
-          <div className="flex items-center gap-1 flex-wrap">
+          <div className="flex items-center gap-1 flex-wrap mt-0.5">
             {option.supportsReasoning && (
               <span className="virtualai-capability-pill virtualai-capability-pill--reasoning">
                 Reasoning
@@ -201,31 +233,6 @@ const ModelCard = React.forwardRef<HTMLButtonElement, ModelCardProps>(
                 Vision
               </span>
             )}
-          </div>
-        )}
-
-        {/* Selected indicator */}
-        {isSelected && (
-          <div className="flex items-center gap-1 mt-0.5">
-            <span
-              className="flex items-center justify-center w-4 h-4 rounded-full shrink-0"
-              style={{
-                backgroundColor:
-                  "var(--virtualai-accent, var(--theme-primary-05))",
-              }}
-            >
-              <SvgCheck className="h-2.5 w-2.5 stroke-white shrink-0" />
-            </span>
-            <Text
-              as="span"
-              secondaryBody
-              className="font-medium"
-              style={{
-                color: "var(--virtualai-accent, var(--theme-primary-05))",
-              }}
-            >
-              Selected
-            </Text>
           </div>
         )}
       </button>
@@ -380,10 +387,14 @@ export default function LLMPopover({
   const resetCompare = useCompareStore((s) => s.reset);
   const compareActive = compareModels.length > 0;
 
-  const optionToDescriptor = (option: LLMOption): LlmDescriptor => ({
+  const optionToCompareModel = (option: LLMOption): CompareModel => ({
     name: option.name,
     provider: option.provider,
     modelName: option.modelName,
+    displayName: option.displayName,
+    providerDisplayName: option.providerDisplayName,
+    supportsReasoning: option.supportsReasoning,
+    supportsImageInput: option.supportsImageInput,
   });
 
   const isInCompare = (option: LLMOption) =>
@@ -453,13 +464,35 @@ export default function LLMPopover({
             searchInputRef.current?.focus();
           }}
         >
-          <Modal.Header title="Choose Model">
+          <Modal.Header title={compareActive ? "Compare models" : "Choose Model"}>
+            {compareActive && (
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span
+                  className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style={{
+                    backgroundColor:
+                      "var(--virtualai-accent-subtle, color-mix(in srgb, var(--theme-primary-05) 12%, transparent))",
+                    color: "var(--virtualai-accent, var(--theme-primary-05))",
+                  }}
+                >
+                  {compareModels.length}/{MAX_COMPARE_MODELS} selected
+                </span>
+                <Text secondaryBody text03 className="text-xs">
+                  Pick up to {MAX_COMPARE_MODELS} models to run side-by-side on
+                  the same prompt.
+                </Text>
+              </div>
+            )}
             <InputTypeIn
               ref={searchInputRef}
               leftSearchIcon
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search models..."
+              placeholder={
+                compareActive
+                  ? "Search by model or provider..."
+                  : "Search models..."
+              }
               autoComplete="off"
             />
           </Modal.Header>
@@ -537,9 +570,14 @@ export default function LLMPopover({
                         ref={isSelected ? selectedCardRef : undefined}
                         option={option}
                         isSelected={isSelected}
+                        disabled={
+                          compareActive &&
+                          !isSelected &&
+                          compareModels.length >= MAX_COMPARE_MODELS
+                        }
                         onSelect={() =>
                           compareActive
-                            ? toggleCompareModel(optionToDescriptor(option))
+                            ? toggleCompareModel(optionToCompareModel(option))
                             : handleSelectModel(option)
                         }
                       />
@@ -578,6 +616,37 @@ export default function LLMPopover({
                     onValueCommit={handleGlobalTemperatureCommit}
                     className="w-full virtualai-slider"
                   />
+                  <div className="flex items-center justify-between">
+                    <Text as="span" secondaryBody text03 className="text-xs">
+                      Precise
+                    </Text>
+                    <Text as="span" secondaryBody text03 className="text-xs">
+                      Balanced
+                    </Text>
+                    <Text as="span" secondaryBody text03 className="text-xs">
+                      Creative
+                    </Text>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Compare footer */}
+            {compareActive && (
+              <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-border-01">
+                <Button tertiary onClick={() => resetCompare()}>
+                  Clear selection
+                </Button>
+                <div className="flex items-center gap-2">
+                  <Button secondary onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => setOpen(false)}
+                    disabled={compareModels.length < 2}
+                  >
+                    Start compare
+                  </Button>
                 </div>
               </div>
             )}

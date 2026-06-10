@@ -673,8 +673,10 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
     gridTemplateColumns: "1fr",
     gridTemplateRows: isSearch
       ? "0fr auto 1fr"
-      : appFocus.isChat()
-        ? "1fr auto 0fr"
+      : appFocus.isChat() || showCompareView
+        ? // Compare mode uses the chat layout: panels fill the height,
+          // input pinned to the bottom (no centered welcome/suggestions row).
+          "1fr auto 0fr"
         : appFocus.isProject()
           ? "auto auto 1fr"
           : "1fr auto 1fr",
