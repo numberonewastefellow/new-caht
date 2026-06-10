@@ -72,6 +72,12 @@ import useAppFocus from "@/hooks/useAppFocus";
 import { useQueryController } from "@/providers/QueryControllerProvider";
 import WelcomeMessage from "@/app/app/components/WelcomeMessage";
 import ChatUI from "@/sections/chat/ChatUI";
+import CompareView from "@/sections/chat/CompareView";
+import { useCompareController } from "@/hooks/useCompareController";
+import {
+  useIsCompareMode,
+  useCompareStore,
+} from "@/app/app/stores/useCompareStore";
 import { eeGated } from "@/ce";
 import EESearchUI from "@/ee/sections/SearchUI";
 const SearchUI = eeGated(EESearchUI);
@@ -379,6 +385,19 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
       setSelectedAssistantFromId,
     });
 
+  // ── Multi-model compare mode ──────────────────────────────────────────
+  const isCompareMode = useIsCompareMode();
+  const comparePanelSessionIds = useCompareStore((s) => s.panelSessionIds);
+  const hasComparePanels = comparePanelSessionIds.some(Boolean);
+  const showCompareView = isCompareMode && hasComparePanels && !!liveAssistant;
+  const { submitCompare } = useCompareController({
+    filterManager,
+    llmManager,
+    liveAssistant,
+    selectedDocuments,
+    resetInputBar,
+  });
+
   const { onMessageSelection, currentSessionFileTokenCount } =
     useChatSessionController({
       existingChatSessionId: currentChatSessionId,
@@ -495,6 +514,17 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
 
   const handleAppInputBarSubmit = useCallback(
     async (message: string) => {
+      // Compare mode: fan the prompt out to all selected models in parallel
+      // (each into its own panel session). Takes precedence over single chat.
+      if (isCompareMode) {
+        submitCompare({
+          message,
+          currentMessageFiles,
+          deepResearch: deepResearchEnabled,
+        });
+        return;
+      }
+
       // If we're in an existing chat session, always use chat mode
       // (appMode only applies to new sessions)
       if (currentChatSessionId) {
@@ -517,6 +547,8 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
       await submitQuery(message, onChat);
     },
     [
+      isCompareMode,
+      submitCompare,
       currentChatSessionId,
       submitQuery,
       onChat,
@@ -641,8 +673,10 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
     gridTemplateColumns: "1fr",
     gridTemplateRows: isSearch
       ? "0fr auto 1fr"
-      : appFocus.isChat()
-        ? "1fr auto 0fr"
+      : appFocus.isChat() || showCompareView
+        ? // Compare mode uses the chat layout: panels fill the height,
+          // input pinned to the bottom (no centered welcome/suggestions row).
+          "1fr auto 0fr"
         : appFocus.isProject()
           ? "auto auto 1fr"
           : "1fr auto 1fr",
@@ -752,6 +786,20 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                     </ChatScrollContainer>
                   </Fade>
 
+                  {/* Compare mode: N session-scoped panels side-by-side */}
+                  {showCompareView && (
+                    <div className="h-full w-full min-h-0 py-2">
+                      <CompareView
+                        liveAssistant={liveAssistant!}
+                        llmManager={llmManager}
+                        setPresentingDocument={setPresentingDocument}
+                        onMessageSelection={onMessageSelection}
+                        deepResearchEnabled={deepResearchEnabled}
+                        currentMessageFiles={currentMessageFiles}
+                      />
+                    </div>
+                  )}
+
                   {/* ProjectUI */}
                   {appFocus.isProject() && (
                     <div className="w-full max-h-[50vh] overflow-y-auto overscroll-y-none">
@@ -767,7 +815,8 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                   <Fade
                     show={
                       (appFocus.isNewSession() || appFocus.isAgent()) &&
-                      !classification
+                      !classification &&
+                      !showCompareView
                     }
                     className="w-full flex-1 flex flex-col items-center justify-end"
                   >

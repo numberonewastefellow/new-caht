@@ -644,3 +644,45 @@ export const useStreamingStartTime = () =>
       : null;
     return currentSession?.streamingStartTime;
   });
+
+// ──────────────────────────────────────────────────────────────────────────
+// Session-scoped selectors (parameterized by an explicit sessionId).
+// Used by the side-by-side compare panels: each panel subscribes ONLY to its
+// own session's slice, so a streamed packet in one panel does NOT re-render
+// the others. This is the UI-layer half of the "non-blocking" guarantee.
+// `updateSessionData` keeps `messageTree` reference-stable across unrelated
+// updates (chatState, etc.), so these narrow selectors don't over-render.
+// ──────────────────────────────────────────────────────────────────────────
+export const useSessionMessageTree = (sessionId: string | null | undefined) =>
+  useChatSessionStore((state) =>
+    sessionId ? state.sessions.get(sessionId)?.messageTree : undefined
+  );
+
+export const useSessionMessageHistory = (
+  sessionId: string | null | undefined
+) => {
+  const messageTree = useSessionMessageTree(sessionId);
+  return useMemo(() => {
+    if (!messageTree) return [];
+    return getLatestMessageChain(messageTree);
+  }, [messageTree]);
+};
+
+export const useSessionChatState = (sessionId: string | null | undefined) =>
+  useChatSessionStore((state) =>
+    sessionId
+      ? state.sessions.get(sessionId)?.chatState || "input"
+      : ("input" as const)
+  );
+
+export const useSessionUncaughtError = (
+  sessionId: string | null | undefined
+) =>
+  useChatSessionStore((state) =>
+    sessionId ? state.sessions.get(sessionId)?.uncaughtError || null : null
+  );
+
+export const useSessionLoadingError = (sessionId: string | null | undefined) =>
+  useChatSessionStore((state) =>
+    sessionId ? state.sessions.get(sessionId)?.loadingError || null : null
+  );
