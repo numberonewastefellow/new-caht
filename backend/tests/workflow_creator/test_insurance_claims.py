@@ -74,12 +74,34 @@ def load_claim_data(claim_id: str) -> str:
     return "\n".join(parts)
 
 
+def load_claim_documents(claim_id: str) -> str:
+    """Load the multi-format evidence packet (CL*/documents/) as extracted text.
+
+    Mirrors ``load_claim_data`` but reads the realistic docx/xlsx/txt/csv/jpg
+    packet via the generic ``doc_text_extract`` dispatcher (Option 1:
+    "realistic packet, text-extracted"). Generate the packet first with:
+        python build_cl1_evidence.py
+    """
+    from doc_text_extract import extract_folder
+
+    docs_dir = CLAIMS_DIR / claim_id / "documents"
+    if not docs_dir.exists():
+        return (
+            f"[ERROR] Document packet not found: {docs_dir}\n"
+            f"Generate it with: python build_cl1_evidence.py"
+        )
+    return extract_folder(docs_dir, recursive=True)
+
+
 # ── Build Test Messages ─────────────────────────────────────────────────────
 
 
-def build_cl1_message() -> str:
-    """CL1: Residential kitchen fire — legitimate claim, $180K damage."""
-    data = load_claim_data("CL1")
+def _cl1_wrapper(data: str) -> str:
+    """Wrap the CL1 claim narrative around a documentation text block.
+
+    ``data`` is either flattened CSV text (default) or the multi-format
+    evidence packet extracted to text (``--use-documents``).
+    """
     return (
         "Please investigate this insurance claim:\n\n"
         "Claim ID: CLM-2025-08742\n"
@@ -96,6 +118,16 @@ def build_cl1_message() -> str:
         "Please perform a complete claims investigation — triage, assess property damage, "
         "verify coverage, check for red flags, and produce a settlement recommendation."
     )
+
+
+def build_cl1_message() -> str:
+    """CL1: kitchen fire — from flattened CSV data (default)."""
+    return _cl1_wrapper(load_claim_data("CL1"))
+
+
+def build_cl1_message_from_documents() -> str:
+    """CL1: kitchen fire — from the multi-format evidence packet (CL1/documents/)."""
+    return _cl1_wrapper(load_claim_documents("CL1"))
 
 
 def build_cl2_message() -> str:
@@ -566,10 +598,23 @@ def main():
         "--workflow-id", type=int, default=None,
         help="Use a specific workflow ID instead of auto-detecting",
     )
+    parser.add_argument(
+        "--use-documents", action="store_true",
+        help="Feed CL1 the multi-format evidence packet (CL1/documents/, "
+             "docx/xlsx/txt/csv/jpg) instead of flattened CSVs. CL1 only.",
+    )
     add_common_args(parser)
 
     args = parser.parse_args()
     apply_common_args(args)
+
+    # Swap CL1's data source to the realistic document packet when requested.
+    if args.use_documents:
+        for t in CLAIM_TESTS:
+            if t["id"] == 1:
+                t["build_message"] = build_cl1_message_from_documents
+        print("  [--use-documents] CL1 will use the multi-format evidence packet "
+              "(CL1/documents/)")
 
     # Find workflow
     if args.workflow_id:

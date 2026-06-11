@@ -498,8 +498,9 @@ export default function LLMPopover({
           </Modal.Header>
 
           <Modal.Body twoTone padding={0}>
-            {/* Provider Tabs — only when multiple providers exist */}
-            {providerTabs.length > 2 && (
+            {/* Provider Tabs — only when multiple providers exist, and not in
+                compare mode (compare shows one ungrouped grid). */}
+            {providerTabs.length > 2 && !compareActive && (
               <div className="px-4 pt-3 bg-background-tint-00">
                 <Tabs
                   value={activeProviderTab}
@@ -516,22 +517,23 @@ export default function LLMPopover({
               </div>
             )}
 
-            {/* Compare-models toggle */}
-            <div className="flex items-center justify-between px-4 pt-2 bg-background-tint-00">
-              <button
-                type="button"
-                onClick={handleToggleCompareMode}
-                className="text-xs font-medium"
-                style={{ color: "var(--virtualai-accent, var(--theme-primary-05))" }}
-              >
-                {compareActive ? "Exit compare" : "Compare models"}
-              </button>
-              {compareActive && (
-                <Text secondaryBody text03 className="text-xs">
-                  {compareModels.length}/{MAX_COMPARE_MODELS} selected
-                </Text>
-              )}
-            </div>
+            {/* Compare-models entry — single mode only. In compare mode the
+                header shows the count and the footer handles clear/cancel, so
+                this row is hidden (matches the mockup). */}
+            {!compareActive && (
+              <div className="flex items-center justify-end px-4 pt-2 bg-background-tint-00">
+                <button
+                  type="button"
+                  onClick={handleToggleCompareMode}
+                  className="text-xs font-medium"
+                  style={{
+                    color: "var(--virtualai-accent, var(--theme-primary-05))",
+                  }}
+                >
+                  Compare models
+                </button>
+              </div>
+            )}
 
             {/* Model Card Grid */}
             <ShadowDiv

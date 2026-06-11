@@ -1,0 +1,21 @@
+ADJUSTER FIELD NOTES
+================================================================
+Claim: CLM-2025-08742    Adjuster: Karen Mitchell
+Insured: Margaret & Robert Chen
+
+INITIAL CONTACT
+  - Spoke with insured by phone. Cooperative. Kitchen unusable;
+    insured temporarily staying with family. Requesting ALE.
+  - Fire investigation report, 3 contractor bids, and a room-by-room
+    inventory already supplied with the claim.
+
+PRIOR CLAIMS HISTORY
+  - CLM-2020-03218 (2020-03-22): Water Damage - Pipe Burst — $3,200.00 [Paid and Closed]
+
+PRELIMINARY OBSERVATIONS
+  - Single prior claim ~5 yrs ago (water/pipe burst), dissimilar peril.
+    Not a frequency pattern; no SIU trigger at this time.
+  - Cause documented accidental (unattended grease fire). Confirm
+    coverage and reconcile the three contractor estimates.
+----------------------------------------------------------------
+Synthetic record generated for workflow testing.
