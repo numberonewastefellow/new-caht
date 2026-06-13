@@ -145,25 +145,36 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                 f"for chat {self._chat_session_id}"
             )
 
-            # Persist to DB so subsequent messages reuse this sandbox
+            # Persist to DB so subsequent messages reuse this sandbox.
+            # Workflow agent steps use a synthetic scope id (e.g.
+            # "agent_step_624_...") that is NOT a real ChatSession UUID — there
+            # is no row to update, so skip persistence quietly rather than
+            # raising on UUID() and logging a spurious error.
             if self._db_session and self._chat_session_id:
                 try:
-                    from onyx.db.models import ChatSession
-
                     chat_session_uuid = UUID(self._chat_session_id)
-                    self._db_session.query(ChatSession).filter(
-                        ChatSession.id == chat_session_uuid
-                    ).update({"sandbox_session_id": new_session_id})
-                    self._db_session.commit()
-                    logger.info(
-                        f"Persisted sandbox_session_id={new_session_id} "
-                        f"to chat_session={self._chat_session_id}"
+                except ValueError:
+                    logger.debug(
+                        f"chat_session_id={self._chat_session_id} is not a UUID "
+                        f"(workflow agent-step scope); skipping sandbox persistence"
                     )
-                except Exception:
-                    logger.exception(
-                        "Failed to persist sandbox_session_id to DB"
-                    )
-                    # Non-fatal: the session still works for this message
+                else:
+                    try:
+                        from onyx.db.models import ChatSession
+
+                        self._db_session.query(ChatSession).filter(
+                            ChatSession.id == chat_session_uuid
+                        ).update({"sandbox_session_id": new_session_id})
+                        self._db_session.commit()
+                        logger.info(
+                            f"Persisted sandbox_session_id={new_session_id} "
+                            f"to chat_session={self._chat_session_id}"
+                        )
+                    except Exception:
+                        logger.exception(
+                            "Failed to persist sandbox_session_id to DB"
+                        )
+                        # Non-fatal: the session still works for this message
 
             return new_session_id
         except Exception:
