@@ -7,13 +7,13 @@ from onyx.configs.chat_configs import HYBRID_ALPHA
 from onyx.configs.chat_configs import NUM_RETURNED_HITS
 from onyx.context.search.models import ChunkIndexRequest
 from onyx.context.search.models import IndexFilters
+from onyx.context.search.enums import QueryType
 from onyx.context.search.models import InferenceChunk
 from onyx.context.search.models import InferenceSection
-from onyx.context.search.models import QueryExpansionType
 from onyx.context.search.utils import get_query_embedding
 from onyx.context.search.utils import inference_section_from_chunks
-from onyx.document_index.interfaces import DocumentIndex
-from onyx.document_index.interfaces import VespaChunkRequest
+from onyx.document_index.interfaces_new import DocumentIndex
+from onyx.document_index.interfaces_new import DocumentSectionRequest
 from onyx.federated_connectors.federated_retrieval import (
     get_federated_retrieval_functions,
 )
@@ -56,19 +56,21 @@ def _embed_and_search(
 
     hybrid_alpha = query_request.hybrid_alpha or HYBRID_ALPHA
 
+    # Preserve the fork's keyword/semantic split threshold (0.3). The new
+    # hybrid_retrieval API derives alpha / time-decay / title-content-ratio from
+    # query_type + internal constants (same effective behavior as before, where
+    # those per-request params were already ignored).
+    query_type = (
+        QueryType.KEYWORD if hybrid_alpha <= 0.3 else QueryType.SEMANTIC
+    )
+
     top_chunks = document_index.hybrid_retrieval(
         query=query_request.query,
         query_embedding=query_embedding,
         final_keywords=query_request.query_keywords,
+        query_type=query_type,
         filters=query_request.filters,
-        hybrid_alpha=hybrid_alpha,
-        time_decay_multiplier=query_request.recency_bias_multiplier,
         num_to_retrieve=query_request.limit or NUM_RETURNED_HITS,
-        ranking_profile_type=(
-            QueryExpansionType.KEYWORD
-            if hybrid_alpha <= 0.3
-            else QueryExpansionType.SEMANTIC
-        ),
     )
 
     return top_chunks
@@ -138,8 +140,8 @@ def inference_sections_from_ids(
     # Currently only fetches whole docs
     doc_ids_set = set(doc_id for doc_id, _ in doc_identifiers)
 
-    chunk_requests: list[VespaChunkRequest] = [
-        VespaChunkRequest(document_id=doc_id) for doc_id in doc_ids_set
+    chunk_requests: list[DocumentSectionRequest] = [
+        DocumentSectionRequest(document_id=doc_id) for doc_id in doc_ids_set
     ]
 
     # No need for ACL here because the doc ids were validated beforehand

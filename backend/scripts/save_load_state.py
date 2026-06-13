@@ -14,7 +14,7 @@ from onyx.configs.app_configs import POSTGRES_HOST
 from onyx.configs.app_configs import POSTGRES_PASSWORD
 from onyx.configs.app_configs import POSTGRES_PORT
 from onyx.configs.app_configs import POSTGRES_USER
-from onyx.document_index.vespa.index import DOCUMENT_ID_ENDPOINT
+from onyx.document_index.vespa_constants import DOCUMENT_ID_ENDPOINT
 from onyx.utils.logger import setup_logger
 
 logger = setup_logger()

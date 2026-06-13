@@ -1,0 +1,58 @@
+# Standalone OpenSearch Dashboards (Kibana-equivalent GUI: Dev Tools console,
+# Query Workbench, Discover) for inspecting the dev OpenSearch index.
+#
+# It joins the EXISTING dev stack network (`virtualai_default`) and talks to the
+# running OpenSearch container via its in-network alias `opensearch` over TLS.
+# Kept as a SEPARATE compose file so it never burdens normal `dev up` runs.
+#
+# Usage (from deployment/docker_compose/):
+#   docker compose -p virtualai-dashboards -f docker-compose.opensearch-dashboards.yml up -d
+#   open http://localhost:5601   (login: admin / StrongPassword123!)
+# Tear down:
+#   docker compose -p virtualai-dashboards -f docker-compose.opensearch-dashboards.yml down
+
+services:
+  opensearch-dashboards:
+    # Tag MUST match the OpenSearch engine version (opensearchproject/opensearch:3.6.0).
+    image: opensearchproject/opensearch-dashboards:${OPENSEARCH_IMAGE_TAG:-3.6.0}
+    container_name: virtualai-opensearch-dashboards
+    restart: unless-stopped
+    ports:
+      - "5601:5601"
+    environment:
+      # Reach OpenSearch by its in-network service alias over TLS (self-signed).
+      - OPENSEARCH_HOSTS=["https://opensearch:9200"]
+      # Bind to all interfaces so the published port is reachable from the host.
+      - SERVER_HOST=0.0.0.0
+      # Service account Dashboards uses to connect (dev: reuse admin).
+      - OPENSEARCH_USERNAME=admin
+      - OPENSEARCH_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
+      # OpenSearch uses a self-signed cert in dev -> don't verify it.
+      - OPENSEARCH_SSL_VERIFICATIONMODE=none
+    networks:
+      - virtualai_default
+    healthcheck:
+      # Dashboards is healthy once /api/status responds 200 (it only does so
+      # after it has successfully connected to OpenSearch). The security plugin
+      # requires auth on /api/status, so authenticate with the service account.
+      # NOTE: $$VAR escapes compose interpolation -> the container shell expands
+      # the env vars set above (OPENSEARCH_USERNAME / OPENSEARCH_PASSWORD).
+      test:
+        [
+          "CMD-SHELL",
+          "curl -sf -u \"$$OPENSEARCH_USERNAME:$$OPENSEARCH_PASSWORD\" http://localhost:5601/api/status >/dev/null || exit 1",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+
+networks:
+  # The network created by the main dev stack (compose project `virtualai`).
+  virtualai_default:
+    external: true

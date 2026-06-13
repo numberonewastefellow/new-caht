@@ -8,7 +8,7 @@ from onyx.configs.app_configs import ENABLE_MULTIPASS_INDEXING
 from onyx.db.models import SearchSettings
 from onyx.db.search_settings import get_current_search_settings
 from onyx.db.search_settings import get_secondary_search_settings
-from onyx.document_index.interfaces import EnrichedDocumentIndexingInfo
+from onyx.document_index.vespa.internal_types import EnrichedDocumentIndexingInfo
 from onyx.indexing.models import DocMetadataAwareIndexChunk
 from onyx.indexing.models import MultipassConfig
 from shared_configs.configs import MULTI_TENANT
@@ -32,9 +32,6 @@ def get_multipass_config(search_settings: SearchSettings) -> MultipassConfig:
     Determines whether to enable multipass and large chunks by examining
     the current search settings and the embedder configuration.
     """
-    if not search_settings:
-        return MultipassConfig(multipass_indexing=False, enable_large_chunks=False)
-
     multipass = should_use_multipass(search_settings)
     enable_large_chunks = SearchSettings.can_use_large_chunks(
         multipass, search_settings.model_name, search_settings.provider_type

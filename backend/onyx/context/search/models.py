@@ -67,6 +67,10 @@ class BaseFilters(BaseModel):
     document_set: list[str] | None = None
     time_cutoff: datetime | None = None
     tags: list[Tag] | None = None
+    # Additive filters consumed by the document index for project / persona
+    # scoped retrieval. None means no restriction on that dimension.
+    project_id_filter: int | None = None
+    persona_id_filter: int | None = None
 
 
 class UserFileFilters(BaseModel):

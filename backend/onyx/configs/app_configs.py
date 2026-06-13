@@ -251,7 +251,11 @@ DEFAULT_OPENSEARCH_QUERY_TIMEOUT_S = int(
     os.environ.get("DEFAULT_OPENSEARCH_QUERY_TIMEOUT_S") or 50
 )
 OPENSEARCH_ADMIN_USERNAME = os.environ.get("OPENSEARCH_ADMIN_USERNAME", "admin")
-OPENSEARCH_ADMIN_PASSWORD = os.environ.get("OPENSEARCH_ADMIN_PASSWORD", "")
+# Matches the OpenSearch container default in docker-compose.yml so backend auth
+# works even when .env does not override it. OpenSearch 2.12+ requires a strong password.
+OPENSEARCH_ADMIN_PASSWORD = os.environ.get(
+    "OPENSEARCH_ADMIN_PASSWORD", "StrongPassword123!"
+)
 USING_AWS_MANAGED_OPENSEARCH = (
     os.environ.get("USING_AWS_MANAGED_OPENSEARCH", "").lower() == "true"
 )
@@ -288,6 +292,48 @@ ENABLE_OPENSEARCH_INDEXING_FOR_ONYX = (
 ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX = (
     ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
     and os.environ.get("ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX", "").lower() == "true"
+)
+# Skips scheduling the Vespa->OpenSearch backfill task. Set this on a brand-new
+# OpenSearch-only deployment (no Vespa to migrate from) so the task does not run
+# and error trying to reach a non-existent Vespa.
+DISABLE_OPENSEARCH_MIGRATION_TASK = (
+    os.environ.get("DISABLE_OPENSEARCH_MIGRATION_TASK", "").lower() == "true"
+)
+# When true, Vespa is not constructed/written-to and retrieval must come from
+# OpenSearch. Defaults to "false" so Vespa stays the default engine for this
+# deployment (upstream defaults this to "true"; do not copy that default here or
+# Vespa silently turns off).
+ONYX_DISABLE_VESPA = os.environ.get("ONYX_DISABLE_VESPA", "false").lower() == "true"
+
+# --- Config vars required by the upgraded document_index module ---
+OPENSEARCH_USE_SSL = os.environ.get("OPENSEARCH_USE_SSL", "true").lower() == "true"
+# Whether to disable match highlights for OpenSearch. Defaults to True for now
+# as we investigate query performance.
+OPENSEARCH_MATCH_HIGHLIGHTS_DISABLED = (
+    os.environ.get("OPENSEARCH_MATCH_HIGHLIGHTS_DISABLED", "true").lower() == "true"
+)
+VERIFY_CREATE_OPENSEARCH_INDEX_ON_INIT_MT = (
+    os.environ.get("VERIFY_CREATE_OPENSEARCH_INDEX_ON_INIT_MT", "true").lower()
+    == "true"
+)
+OPENSEARCH_INDEX_NUM_SHARDS: int | None = (
+    int(os.environ["OPENSEARCH_INDEX_NUM_SHARDS"])
+    if os.environ.get("OPENSEARCH_INDEX_NUM_SHARDS", None) is not None
+    else None
+)
+OPENSEARCH_INDEX_NUM_REPLICAS: int | None = (
+    int(os.environ["OPENSEARCH_INDEX_NUM_REPLICAS"])
+    if os.environ.get("OPENSEARCH_INDEX_NUM_REPLICAS", None) is not None
+    else None
+)
+MAX_CHUNKS_PER_DOC_BATCH = int(os.environ.get("MAX_CHUNKS_PER_DOC_BATCH") or 1000)
+VESPA_MIGRATION_REQUEST_TIMEOUT_S = int(
+    os.environ.get("VESPA_MIGRATION_REQUEST_TIMEOUT_S") or "120"
+)
+# Server-side traversal timeout Vespa uses to return partial results gracefully.
+# Should be lower than VESPA_MIGRATION_REQUEST_TIMEOUT_S. Formatted as "<seconds>s".
+VESPA_MIGRATION_SERVER_SIDE_REQUEST_TIMEOUT = os.environ.get(
+    "VESPA_MIGRATION_SERVER_SIDE_REQUEST_TIMEOUT", "110s"
 )
 
 VESPA_HOST = os.environ.get("VESPA_HOST") or "localhost"

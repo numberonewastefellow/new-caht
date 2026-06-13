@@ -28,6 +28,7 @@ from onyx.background.celery.tasks.vespa.document_sync import DOCUMENT_SYNC_PREFI
 from onyx.background.celery.tasks.vespa.document_sync import DOCUMENT_SYNC_TASKSET_KEY
 from onyx.configs.app_configs import DISABLE_VECTOR_DB
 from onyx.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
+from onyx.configs.app_configs import ONYX_DISABLE_VESPA
 from onyx.configs.constants import ONYX_CLOUD_CELERY_TASK_PREFIX
 from onyx.configs.constants import OnyxRedisLocks
 from onyx.db.engine.sql_engine import get_sqlalchemy_engine
@@ -523,8 +524,12 @@ def reset_tenant_id(
 
 
 def wait_for_vespa_or_shutdown(sender: Any, **kwargs: Any) -> None:  # noqa: ARG001
-    """Waits for Vespa to become ready subject to a timeout.
-    Raises WorkerShutdown if the timeout is reached."""
+    """Waits for the configured document index(es) to become ready subject to a
+    timeout. Raises WorkerShutdown if the timeout is reached.
+
+    Each engine is probed only when it is actually enabled, so OpenSearch-only
+    deployments (ONYX_DISABLE_VESPA=true) do not block on a non-existent Vespa.
+    """
 
     if DISABLE_VECTOR_DB:
         logger.info(
@@ -532,10 +537,11 @@ def wait_for_vespa_or_shutdown(sender: Any, **kwargs: Any) -> None:  # noqa: ARG
         )
         return
 
-    if not wait_for_vespa_with_timeout():
-        msg = "[Vespa] Readiness probe did not succeed within the timeout. Exiting..."
-        logger.error(msg)
-        raise WorkerShutdown(msg)
+    if not ONYX_DISABLE_VESPA:
+        if not wait_for_vespa_with_timeout():
+            msg = "[Vespa] Readiness probe did not succeed within the timeout. Exiting..."
+            logger.error(msg)
+            raise WorkerShutdown(msg)
 
     if ENABLE_OPENSEARCH_INDEXING_FOR_ONYX:
         if not wait_for_opensearch_with_timeout():

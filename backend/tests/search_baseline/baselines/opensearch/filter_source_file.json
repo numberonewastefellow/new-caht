@@ -1,0 +1,46 @@
+{
+  "engine": "opensearch",
+  "hits": [
+    {
+      "chunk_id": 0,
+      "document_id": "fin-expense-report",
+      "rank": 0,
+      "score": 0.7131,
+      "semantic_identifier": "How to submit an expense report",
+      "source_type": "file"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "shared-saas-cost",
+      "rank": 1,
+      "score": 0.5005,
+      "semantic_identifier": "Managing SaaS software costs for engineering teams",
+      "source_type": "file"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "hr-parental-leave",
+      "rank": 2,
+      "score": 0.2721,
+      "semantic_identifier": "Parental leave policy",
+      "source_type": "file"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "eng-db-indexing",
+      "rank": 3,
+      "score": 0.051,
+      "semantic_identifier": "Database indexing and query performance",
+      "source_type": "file"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "eng-k8s-deploy",
+      "rank": 4,
+      "score": 0.0005,
+      "semantic_identifier": "Deploying containers to Kubernetes",
+      "source_type": "file"
+    }
+  ],
+  "name": "filter_source_file"
+}

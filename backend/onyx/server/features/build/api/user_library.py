@@ -49,7 +49,7 @@ from onyx.db.document import upsert_documents
 from onyx.db.engine.sql_engine import get_session
 from onyx.db.enums import ConnectorCredentialPairStatus
 from onyx.db.models import User
-from onyx.document_index.interfaces import DocumentMetadata
+from onyx.document_index.document_metadata import DocumentMetadata
 from onyx.server.features.build.configs import USER_LIBRARY_MAX_FILE_SIZE_BYTES
 from onyx.server.features.build.configs import USER_LIBRARY_MAX_FILES_PER_UPLOAD
 from onyx.server.features.build.configs import USER_LIBRARY_MAX_TOTAL_SIZE_BYTES

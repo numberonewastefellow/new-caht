@@ -1,0 +1,30 @@
+{
+  "engine": "opensearch",
+  "hits": [
+    {
+      "chunk_id": 0,
+      "document_id": "fin-procurement",
+      "rank": 0,
+      "score": 1.0,
+      "semantic_identifier": "Vendor procurement and invoicing",
+      "source_type": "web"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "eng-python-async",
+      "rank": 1,
+      "score": 0.6133,
+      "semantic_identifier": "Python asyncio concurrency guide",
+      "source_type": "web"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "hr-remote-work",
+      "rank": 2,
+      "score": 0.001,
+      "semantic_identifier": "Remote work and hybrid policy",
+      "source_type": "web"
+    }
+  ],
+  "name": "filter_source_web"
+}

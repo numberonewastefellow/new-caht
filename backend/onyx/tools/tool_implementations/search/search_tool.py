@@ -65,7 +65,7 @@ from onyx.db.federated import list_federated_connector_oauth_tokens
 from onyx.db.models import Persona
 from onyx.db.models import User
 from onyx.db.slack_bot import fetch_slack_bots
-from onyx.document_index.interfaces import DocumentIndex
+from onyx.document_index.interfaces_new import DocumentIndex
 from onyx.llm.factory import get_llm_token_counter
 from onyx.llm.interfaces import LLM
 from onyx.onyxbot.slack.models import SlackContext

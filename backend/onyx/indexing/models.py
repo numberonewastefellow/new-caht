@@ -112,6 +112,9 @@ class DocMetadataAwareIndexChunk(IndexChunk):
     access: "DocumentAccess"
     document_sets: set[str]
     user_project: list[int]
+    # Persona IDs the document is associated with; indexed for persona-based
+    # filtering. Empty list means no persona association.
+    personas: list[int]
     boost: int
     aggregated_chunk_boost_factor: float
     # Full ancestor path from root hierarchy node to document's parent.
@@ -130,6 +133,7 @@ class DocMetadataAwareIndexChunk(IndexChunk):
         aggregated_chunk_boost_factor: float,
         tenant_id: str,
         ancestor_hierarchy_node_ids: list[int] | None = None,
+        personas: list[int] | None = None,
     ) -> "DocMetadataAwareIndexChunk":
         index_chunk_data = index_chunk.model_dump()
         return cls(
@@ -137,6 +141,7 @@ class DocMetadataAwareIndexChunk(IndexChunk):
             access=access,
             document_sets=document_sets,
             user_project=user_project,
+            personas=personas or [],
             boost=boost,
             aggregated_chunk_boost_factor=aggregated_chunk_boost_factor,
             tenant_id=tenant_id,

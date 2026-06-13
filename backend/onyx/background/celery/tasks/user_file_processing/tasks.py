@@ -36,7 +36,7 @@ from onyx.db.models import UserFile
 from onyx.db.search_settings import get_active_search_settings
 from onyx.db.search_settings import get_active_search_settings_list
 from onyx.document_index.factory import get_all_document_indices
-from onyx.document_index.interfaces import VespaDocumentUserFields
+from onyx.document_index.interfaces_new import MetadataUpdateRequest
 from onyx.document_index.vespa_constants import DOCUMENT_ID_ENDPOINT
 from onyx.file_store.file_store import get_default_file_store
 from onyx.file_store.utils import store_user_file_plaintext
@@ -514,9 +514,8 @@ def process_single_user_file_delete(
                     chunk_count = user_file.chunk_count
 
                 for retry_document_index in retry_document_indices:
-                    retry_document_index.delete_single(
-                        doc_id=user_file_id,
-                        tenant_id=tenant_id,
+                    retry_document_index.delete(
+                        user_file_id,
                         chunk_count=chunk_count,
                     )
 
@@ -658,14 +657,19 @@ def process_single_user_file_project_sync(
                 ]
 
                 project_ids = [project.id for project in user_file.projects]
+                update_request = MetadataUpdateRequest(
+                    document_ids=[str(user_file.id)],
+                    doc_id_to_chunk_cnt={
+                        str(user_file.id): (
+                            user_file.chunk_count
+                            if user_file.chunk_count is not None
+                            else -1
+                        )
+                    },
+                    project_ids=set(project_ids),
+                )
                 for retry_document_index in retry_document_indices:
-                    retry_document_index.update_single(
-                        doc_id=str(user_file.id),
-                        tenant_id=tenant_id,
-                        chunk_count=user_file.chunk_count,
-                        fields=None,
-                        user_fields=VespaDocumentUserFields(user_projects=project_ids),
-                    )
+                    retry_document_index.update([update_request])
 
             task_logger.info(
                 f"process_single_user_file_project_sync - User file id={user_file_id}"

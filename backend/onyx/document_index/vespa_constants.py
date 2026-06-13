@@ -58,6 +58,7 @@ DOCUMENT_SETS = "document_sets"
 USER_FILE = "user_file"
 USER_FOLDER = "user_folder"
 USER_PROJECT = "user_project"
+PERSONAS = "personas"
 LARGE_CHUNK_REFERENCE_IDS = "large_chunk_reference_ids"
 METADATA = "metadata"
 METADATA_LIST = "metadata_list"
@@ -81,7 +82,7 @@ FULL_CHUNK_EMBEDDING_KEY = "full_chunk"
 
 
 YQL_BASE = (
-    f"select "
+    f"select "  # noqa: S608 - Vespa YQL with static column-name constants, not SQL
     f"documentid, "
     f"{DOCUMENT_ID}, "
     f"{CHUNK_ID}, "

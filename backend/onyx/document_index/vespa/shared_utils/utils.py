@@ -52,7 +52,9 @@ def replace_invalid_doc_id_characters(text: str) -> str:
     return text.replace("'", "_")
 
 
-def get_vespa_http_client(no_timeout: bool = False, http2: bool = True) -> httpx.Client:
+def get_vespa_http_client(
+    no_timeout: bool = False, http2: bool = True, timeout: int | None = None
+) -> httpx.Client:
     """
     Configures and returns an HTTP client for communicating with Vespa,
     including authentication if needed.
@@ -64,7 +66,7 @@ def get_vespa_http_client(no_timeout: bool = False, http2: bool = True) -> httpx
             else None
         ),
         verify=False if not MANAGED_VESPA else True,
-        timeout=None if no_timeout else VESPA_REQUEST_TIMEOUT,
+        timeout=None if no_timeout else (timeout or VESPA_REQUEST_TIMEOUT),
         http2=http2,
     )
 
@@ -88,20 +90,23 @@ def wait_for_vespa_with_timeout(wait_interval: int = 5, wait_limit: int = 60) ->
                 return True
         except Exception as e:
             logger.warning(
-                f"Vespa: Readiness probe failed trying to connect to {url}. "
-                f"Exception: {e}"
+                "Vespa: Readiness probe failed trying to connect to %s. Exception: %s",
+                url,
+                e,
             )
 
         time_elapsed = time.monotonic() - time_start
         if time_elapsed > wait_limit:
             logger.info(
-                f"Vespa: Readiness probe did not succeed within the timeout "
-                f"({wait_limit} seconds)."
+                "Vespa: Readiness probe did not succeed within the timeout (%s seconds).",
+                wait_limit,
             )
             return False
 
         logger.info(
-            f"Vespa: Readiness probe ongoing. elapsed={time_elapsed:.1f} timeout={wait_limit:.1f}"
+            "Vespa: Readiness probe ongoing. elapsed=%s timeout=%s",
+            format(time_elapsed, ".1f"),
+            format(wait_limit, ".1f"),
         )
 
         time.sleep(wait_interval)

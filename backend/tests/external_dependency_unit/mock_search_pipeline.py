@@ -13,7 +13,7 @@ from onyx.context.search.models import InferenceChunk
 from onyx.context.search.models import SearchDoc
 from onyx.db.models import Persona
 from onyx.db.models import User
-from onyx.document_index.interfaces import DocumentIndex
+from onyx.document_index.interfaces_new import DocumentIndex
 from onyx.llm.interfaces import LLM
 
 

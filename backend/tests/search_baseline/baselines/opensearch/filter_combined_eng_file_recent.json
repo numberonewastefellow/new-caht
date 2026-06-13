@@ -1,0 +1,22 @@
+{
+  "engine": "opensearch",
+  "hits": [
+    {
+      "chunk_id": 0,
+      "document_id": "shared-saas-cost",
+      "rank": 0,
+      "score": 1.0,
+      "semantic_identifier": "Managing SaaS software costs for engineering teams",
+      "source_type": "file"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "eng-k8s-deploy",
+      "rank": 1,
+      "score": 0.0005,
+      "semantic_identifier": "Deploying containers to Kubernetes",
+      "source_type": "file"
+    }
+  ],
+  "name": "filter_combined_eng_file_recent"
+}

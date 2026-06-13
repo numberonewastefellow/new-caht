@@ -21,7 +21,7 @@ from onyx.document_index.chunk_content_enrichment import (
 )
 from onyx.document_index.document_index_utils import get_uuid_from_chunk
 from onyx.document_index.document_index_utils import get_uuid_from_chunk_info_old
-from onyx.document_index.interfaces import MinimalDocumentIndexingInfo
+from onyx.document_index.vespa.internal_types import MinimalDocumentIndexingInfo
 from onyx.document_index.vespa.shared_utils.utils import (
     replace_invalid_doc_id_characters,
 )
@@ -46,6 +46,7 @@ from onyx.document_index.vespa_constants import METADATA
 from onyx.document_index.vespa_constants import METADATA_LIST
 from onyx.document_index.vespa_constants import METADATA_SUFFIX
 from onyx.document_index.vespa_constants import NUM_THREADS
+from onyx.document_index.vespa_constants import PERSONAS
 from onyx.document_index.vespa_constants import PRIMARY_OWNERS
 from onyx.document_index.vespa_constants import SECONDARY_OWNERS
 from onyx.document_index.vespa_constants import SECTION_CONTINUATION
@@ -60,7 +61,6 @@ from onyx.document_index.vespa_constants import USER_PROJECT
 from onyx.indexing.models import DocMetadataAwareIndexChunk
 from onyx.utils.logger import setup_logger
 from onyx.utils.text_processing import remove_invalid_unicode_chars
-
 
 logger = setup_logger()
 
@@ -80,7 +80,7 @@ def _does_doc_chunk_exist(
         return False
 
     if doc_fetch_response.status_code != 200:
-        logger.debug(f"Failed to check for document with URL {doc_url}")
+        logger.debug("Failed to check for document with URL %s", doc_url)
         raise RuntimeError(
             f"Unexpected fetch document by ID value from Vespa: "
             f"error={doc_fetch_response.status_code} "
@@ -218,6 +218,7 @@ def _index_vespa_chunk(
         # still called `image_file_name` in Vespa for backwards compatibility
         IMAGE_FILE_NAME: chunk.image_file_id,
         USER_PROJECT: chunk.user_project if chunk.user_project is not None else [],
+        PERSONAS: chunk.personas if chunk.personas is not None else [],
         BOOST: chunk.boost,
         AGGREGATED_CHUNK_BOOST_FACTOR: chunk.aggregated_chunk_boost_factor,
     }
@@ -226,7 +227,7 @@ def _index_vespa_chunk(
         if chunk.tenant_id:
             vespa_document_fields[TENANT_ID] = chunk.tenant_id
     vespa_url = f"{DOCUMENT_ID_ENDPOINT.format(index_name=index_name)}/{vespa_chunk_id}"
-    logger.debug(f'Indexing to URL "{vespa_url}"')
+    logger.debug('Indexing to URL "%s"', vespa_url)
 
     # Retry logic with exponential backoff for rate limiting
     for attempt in range(INDEXING_MAX_RETRIES):
@@ -245,21 +246,24 @@ def _index_vespa_chunk(
                         INDEXING_BASE_DELAY * (2**attempt), INDEXING_MAX_DELAY
                     ) * random.uniform(0.5, 1.0)
                     logger.warning(
-                        f"Rate limited while indexing document '{document.id}' "
-                        f"(attempt {attempt + 1}/{INDEXING_MAX_RETRIES}). "
-                        f"Vespa response: '{e.response.text}'. "
-                        f"Backing off for {delay:.2f} seconds."
+                        "Rate limited while indexing document '%s' (attempt %s/%s). Vespa response: '%s'. Backing off for %s seconds.",
+                        document.id,
+                        attempt + 1,
+                        INDEXING_MAX_RETRIES,
+                        e.response.text,
+                        format(delay, ".2f"),
                     )
                     time.sleep(delay)
                     continue
                 else:
                     raise RuntimeError(
-                        f"Failed to index document '{document.id}' after {INDEXING_MAX_RETRIES} attempts "
-                        f"due to rate limiting"
+                        f"Failed to index document '{document.id}' after {INDEXING_MAX_RETRIES} attempts due to rate limiting"
                     ) from e
             elif e.response.status_code == HTTPStatus.INSUFFICIENT_STORAGE:
                 logger.error(
-                    f"Failed to index document: '{document.id}'. Got response: '{e.response.text}'"
+                    "Failed to index document: '%s'. Got response: '%s'",
+                    document.id,
+                    e.response.text,
                 )
                 logger.error(
                     "NOTE: HTTP Status 507 Insufficient Storage usually means "
@@ -277,21 +281,29 @@ def _index_vespa_chunk(
                 ):
                     # Non-retryable errors - fail immediately
                     logger.error(
-                        f"Non-retryable HTTP {e.response.status_code} error for document '{document.id}'"
+                        "Non-retryable HTTP %s error for document '%s'",
+                        e.response.status_code,
+                        document.id,
                     )
                     raise
                 # Retry other errors with shorter backoff
                 if attempt < INDEXING_MAX_RETRIES - 1:
                     delay = INDEXING_BASE_DELAY * (1.5**attempt)
                     logger.warning(
-                        f"HTTP error {e.response.status_code} while indexing document '{document.id}' "
-                        f"(attempt {attempt + 1}/{INDEXING_MAX_RETRIES}). Retrying in {delay:.2f} seconds."
+                        "HTTP error %s while indexing document '%s' (attempt %s/%s). Retrying in %s seconds.",
+                        e.response.status_code,
+                        document.id,
+                        attempt + 1,
+                        INDEXING_MAX_RETRIES,
+                        format(delay, ".2f"),
                     )
                     time.sleep(delay)
                     continue
                 else:
                     logger.exception(
-                        f"Failed to index document: '{document.id}'. Got response: '{e.response.text}'"
+                        "Failed to index document: '%s'. Got response: '%s'",
+                        document.id,
+                        e.response.text,
                     )
                     raise
         except Exception as e:
@@ -299,14 +311,17 @@ def _index_vespa_chunk(
             if attempt < INDEXING_MAX_RETRIES - 1:
                 delay = INDEXING_BASE_DELAY * (1.5**attempt)
                 logger.warning(
-                    f"Error while indexing document '{document.id}' "
-                    f"(attempt {attempt + 1}/{INDEXING_MAX_RETRIES}): {str(e)}. "
-                    f"Retrying in {delay:.2f} seconds."
+                    "Error while indexing document '%s' (attempt %s/%s): %s. Retrying in %s seconds.",
+                    document.id,
+                    attempt + 1,
+                    INDEXING_MAX_RETRIES,
+                    str(e),
+                    format(delay, ".2f"),
                 )
                 time.sleep(delay)
                 continue
             else:
-                logger.exception(f"Failed to index document: '{document.id}'")
+                logger.exception("Failed to index document: '%s'", document.id)
                 raise
 
 
@@ -389,7 +404,7 @@ class BaseHTTPXClientContext(ABC):
         pass
 
     @abstractmethod
-    def __exit__(self, exc_type, exc_value, traceback):  # type: ignore
+    def __exit__(self, exc_type, exc_value, traceback):
         pass
 
 
@@ -402,7 +417,7 @@ class GlobalHTTPXClientContext(BaseHTTPXClientContext):
     def __enter__(self) -> httpx.Client:
         return self._client  # Reuse the global client
 
-    def __exit__(self, exc_type, exc_value, traceback):  # type: ignore
+    def __exit__(self, exc_type, exc_value, traceback):
         pass  # Do nothing; don't close the global client
 
 
@@ -417,6 +432,6 @@ class TemporaryHTTPXClientContext(BaseHTTPXClientContext):
         self._client = self._client_factory()  # Create a new client
         return self._client
 
-    def __exit__(self, exc_type, exc_value, traceback):  # type: ignore
+    def __exit__(self, exc_type, exc_value, traceback):
         if self._client:
             self._client.close()

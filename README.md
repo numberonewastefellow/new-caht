@@ -75,6 +75,173 @@ See guides below:
 
 
 
+## 🔍 Search Engine Configuration (Vespa / OpenSearch)
+
+VertualAI supports two interchangeable search/index backends — **Vespa** (default) and
+**OpenSearch** — behind a single unified interface. You can run either one, run both at once
+(dual-index) and switch which one serves retrieval at runtime, or disable search entirely.
+
+All configuration is done through `deployment/docker_compose/.env` (see
+`deployment/docker_compose/env.template` for the documented block). The local stack is built/run via
+`deployment/docker_compose/dev.bat` (`dev build`, `dev up`, `dev down`).
+
+### Default: Vespa only
+The shipped `.env` sets `COMPOSE_PROFILES=s3-filestore,vespa`, so the Vespa `index` container runs and
+serves both indexing and retrieval, and `ONYX_DISABLE_VESPA` defaults to `false`. Keep `vespa` in
+`COMPOSE_PROFILES` for this default setup (it's a profile-gated container — see "How the engine
+containers are gated" below).
+
+### Enable OpenSearch (run both, switchable)
+The OpenSearch container is **opt-in** via a compose profile, so it does not run unless you ask for it.
+In `deployment/docker_compose/.env`:
+
+```bash
+# 1) Start the OpenSearch container ALONGSIDE Vespa (keep "vespa" so both run)
+COMPOSE_PROFILES=s3-filestore,vespa,opensearch
+
+# 2) Set a strong admin password (OpenSearch 2.12+ requires it)
+OPENSEARCH_ADMIN_PASSWORD=StrongPassword123!
+
+# 3) Also index documents into OpenSearch (so it has data to serve)
+ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true
+```
+
+Then rebuild and start: `dev build` (or `dev up`). Vespa stays the retrieval engine until you switch.
+
+### `.env` engine controls (which containers run + indexing)
+Each engine container is gated by a compose profile, so `COMPOSE_PROFILES` turns an engine **on/off
+permanently** (no leftover container): `vespa` starts the Vespa `index` container, `opensearch` starts
+the OpenSearch container. Always keep `s3-filestore` (MinIO). Set, then `dev up`.
+
+| Goal | `COMPOSE_PROFILES` | `ENABLE_OPENSEARCH_INDEXING_FOR_ONYX` | `ONYX_DISABLE_VESPA` |
+|---|---|---|---|
+| **[A] Vespa only** (default) | `s3-filestore,vespa` | `false` | `false` |
+| **[B] Both engines** (dual-index) | `s3-filestore,vespa,opensearch` | `true` | `false` |
+| **[C] OpenSearch only** (no Vespa container) | `s3-filestore,opensearch` | `true` | `true` |
+
+```bash
+# [B] Run both engines:
+COMPOSE_PROFILES=s3-filestore,vespa,opensearch
+OPENSEARCH_ADMIN_PASSWORD=StrongPassword123!
+ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true
+```
+
+> For mode **[C]**, switch retrieval to OpenSearch **before** selecting it (see next section),
+> otherwise the backend raises `ONYX_DISABLE_VESPA is set but opensearch_retrieval_enabled is not set`.
+
+#### How the engine containers are gated (for reference)
+Both search engines are optional compose services controlled purely by `COMPOSE_PROFILES`:
+- The Vespa `index` service has `profiles: ["vespa"]`; the OpenSearch service has `profiles: ["opensearch"]`.
+- `api_server` / `background` do **not** `depends_on` the search engine, so an engine that's off is never
+  force-started (the backend retries the index connection on startup).
+- `dev.bat`'s `INFRA` group no longer lists the engine; a full `dev up` (or `docker compose up`) starts
+  whichever engines are active in `COMPOSE_PROFILES`. Use `dev up vespa` to start Vespa explicitly.
+
+Consequence: `dev up` / `docker compose up` only starts an engine whose profile is active — so an engine
+you remove from `COMPOSE_PROFILES` stays **off permanently across restarts** (no leftover container, no
+`dev stop` needed). The trade-off: **you must keep `vespa` in `COMPOSE_PROFILES` for the default Vespa
+setup**, or Vespa won't start.
+
+### Which engine answers searches (retrieval) — runtime toggle, no rebuild
+When both engines run, **which one serves retrieval is a DB-backed toggle**, not an env var. It is
+resolved by `get_opensearch_retrieval_state` (`backend/onyx/db/opensearch_migration.py`):
+the DB record's `enable_opensearch_retrieval` flag (default **`false`** = Vespa) wins; the
+`ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX` env var is **only a bootstrap fallback used until that record
+exists** — and the backfill task creates the record as soon as indexing is enabled, so in practice you
+switch retrieval through the **admin API** (admin auth required):
+
+```bash
+# Check migration progress
+GET  /api/admin/opensearch-migration/status
+# Check current retrieval engine
+GET  /api/admin/opensearch-migration/retrieval
+# Switch retrieval to OpenSearch (false = back to Vespa)
+PUT  /api/admin/opensearch-migration/retrieval   {"enable_opensearch_retrieval": true}
+```
+
+Easiest locally: log into the web UI as an admin, then run in the browser DevTools console
+(the session cookie is sent automatically):
+
+```js
+await fetch('/api/admin/opensearch-migration/retrieval', {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ enable_opensearch_retrieval: true }),
+}).then(r => r.json());
+```
+
+A background task ports existing Vespa documents into OpenSearch once indexing is enabled, so there is
+data to serve before you flip the toggle (watch `/status` until `migration_completed_at` is set).
+
+### OpenSearch-only mode (Vespa container never starts)
+Because the Vespa `index` service is profile-gated, simply **omitting `vespa` from
+`COMPOSE_PROFILES`** means the container is never created — no `dev stop vespa` needed, and it stays off
+across restarts. First run both engines (above), let the backfill finish, and switch retrieval to
+OpenSearch; **then** set in `.env`:
+
+```bash
+COMPOSE_PROFILES=s3-filestore,opensearch
+ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true
+ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX=true
+ONYX_DISABLE_VESPA=true
+```
+
+`dev up` now starts everything except Vespa. To go back, restore `vespa` in `COMPOSE_PROFILES` and set
+`ONYX_DISABLE_VESPA=false`.
+
+#### Brand-new deployment that never needs Vespa
+On a **fresh** system there is no existing corpus to migrate, so you can go straight to OpenSearch-only —
+no backfill, no admin-API switch, no special Alembic step. Alembic migrations run automatically on
+backend startup and are **engine-agnostic** (they build the Postgres schema regardless of search engine);
+there is no "Alembic by engine". The OpenSearch index schema is created on startup by
+`verify_and_create_index_if_necessary`. Set in `.env` and `dev up`:
+
+```bash
+COMPOSE_PROFILES=s3-filestore,opensearch
+OPENSEARCH_ADMIN_PASSWORD=StrongPassword123!
+ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true
+ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX=true   # fresh DB has no toggle record, so this is used directly
+ONYX_DISABLE_VESPA=true
+DISABLE_OPENSEARCH_MIGRATION_TASK=true      # no Vespa corpus to migrate; skips the backfill task
+```
+
+### Helper scripts (migrating an existing Vespa deployment)
+`deployment/docker_compose/switch-retrieval-to-opensearch.{sh,bat}` automate the migration switch: they
+poll the backfill status until it completes, then flip retrieval to OpenSearch. They need an admin API
+key (UI → Admin → API Keys).
+
+```bash
+# after `dev up` in mode [B]:
+ONYX_API_KEY=<key> ./switch-retrieval-to-opensearch.sh            # wait for backfill, then switch
+ONYX_API_KEY=<key> ./switch-retrieval-to-opensearch.sh --revert   # switch back to Vespa
+```
+On Windows: `set ONYX_API_KEY=<key>` then `switch-retrieval-to-opensearch.bat`. (Not needed for a
+brand-new OpenSearch-only system — that's handled entirely by `.env` above.)
+
+### Disable search entirely
+`DISABLE_VECTOR_DB=true` turns off both engines — connectors and RAG are disabled, but chat, tools, and
+file uploads still work.
+
+### Key environment variables
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `COMPOSE_PROFILES` | `s3-filestore,vespa` | Engine containers to start: `vespa` and/or `opensearch` (keep `s3-filestore` for MinIO) |
+| `ONYX_DISABLE_VESPA` | `false` | `true` = run OpenSearch only (no Vespa) |
+| `ENABLE_OPENSEARCH_INDEXING_FOR_ONYX` | `false` | `true` = also index into OpenSearch |
+| `ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX` | `false` | Fallback retrieval engine (runtime DB toggle wins) |
+| `OPENSEARCH_ADMIN_PASSWORD` | `StrongPassword123!` | OpenSearch admin password (must be strong) |
+| `OPENSEARCH_HOST` | `opensearch` | Backend → OpenSearch host (compose service name) |
+| `OPENSEARCH_USE_SSL` | `true` | Use HTTPS to talk to OpenSearch |
+| `OPENSEARCH_IMAGE_TAG` | `3.6.0` | OpenSearch Docker image tag |
+| `OPENSEARCH_JAVA_OPTS` | `-Xms2g -Xmx2g` | OpenSearch JVM heap (~50% of its memory limit) |
+| `DISABLE_VECTOR_DB` | `false` | `true` = disable both engines (no RAG) |
+
+> Index schemas are created automatically on backend startup (no manual Alembic). The first run with a
+> new engine provisions its schema before indexing begins.
+
+
+
 ## 🔍 Other Notable Benefits
 VertualAI is built for teams of all sizes, from individual users to the largest global enterprises.
 
@@ -123,6 +290,37 @@ python seed_all.py --llm-key sk-or-...
 3. Workflows → from `backend/tests/workflow_creator/workflows/*.json`
 
 The script is **idempotent** — safe to run multiple times. Existing items are skipped by name.
+
+
+## 🔍 OpenSearch Dashboards (Dev Tools GUI)
+
+A Kibana-equivalent UI for inspecting/querying the OpenSearch index in dev (Dev Tools console,
+Query Workbench, Discover). It runs as a **standalone, opt-in** compose service that joins the
+existing dev network and connects to the `opensearch` container over TLS.
+
+**Manage lifecycle** (from `deployment/docker_compose/`):
+
+```bash
+# start
+docker compose -p virtualai-dashboards -f docker-compose.opensearch-dashboards.yml up -d
+# stop
+docker compose -p virtualai-dashboards -f docker-compose.opensearch-dashboards.yml down
+```
+
+**How to use it:**
+
+1. Open **[localhost:5601](http://localhost:5601)** → log in `admin` / `StrongPassword123!`.
+2. Go to **☰ → Management → Dev Tools** and run, e.g.:
+
+```jsonc
+GET _cat/indices?v
+GET danswer_chunk_nomic_ai_nomic_embed_text_v1/_count
+GET danswer_chunk_nomic_ai_nomic_embed_text_v1/_search
+{ "query": { "term": { "source_type": "user_file" } }, "size": 5 }
+```
+
+> Tip: the index name follows your embedding model (here `nomic-embed-text-v1`). Use
+> `GET _cat/indices?v` to list the actual `danswer_chunk_*` index.
 
 
 ## 🚧 Roadmap

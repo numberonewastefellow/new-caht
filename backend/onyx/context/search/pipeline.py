@@ -17,7 +17,7 @@ from onyx.context.search.retrieval.search_runner import search_chunks
 from onyx.context.search.utils import inference_section_from_chunks
 from onyx.db.models import Persona
 from onyx.db.models import User
-from onyx.document_index.interfaces import DocumentIndex
+from onyx.document_index.interfaces_new import DocumentIndex
 from onyx.llm.interfaces import LLM
 from onyx.natural_language_processing.english_stopwords import strip_stopwords
 from onyx.secondary_llm_flows.source_filter import extract_source_filter

@@ -104,6 +104,15 @@ services:
     volumes:
       - E:/temp/vert/vespa:/opt/vespa/var
 
+  # Store OpenSearch data on the host (like Vespa) instead of a Docker named volume.
+  # This bind replaces the base opensearch_data named volume (same target path).
+  # NOTE: OpenSearch runs as uid 1000 and is strict about data-dir permissions. If
+  # it fails to start with "failed to obtain node locks" / AccessDenied, revert to
+  # the named volume by removing this override.
+  opensearch:
+    volumes:
+      - E:/temp/vert/opensearch:/usr/share/opensearch/data
+
   inference_model_server:
     ports:
       - "9000:9000"

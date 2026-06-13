@@ -13,13 +13,18 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
 
 from onyx.context.search.models import IndexFilters  # noqa: E402
-from onyx.document_index.interfaces import VespaChunkRequest  # noqa: E402
+from onyx.document_index.interfaces_new import DocumentSectionRequest  # noqa: E402
+from onyx.document_index.interfaces_new import TenantState  # noqa: E402
 from onyx.db.engine.sql_engine import get_session_with_current_tenant  # noqa: E402
 from onyx.db.document import delete_documents_complete__no_commit  # noqa: E402
 from onyx.db.tag import delete_orphan_tags__no_commit  # noqa: E402
 from onyx.db.search_settings import get_current_search_settings  # noqa: E402
-from onyx.document_index.vespa.index import VespaIndex  # noqa: E402
+from onyx.document_index.vespa.vespa_document_index import (  # noqa: E402
+    VespaDocumentIndex,
+)
 from onyx.db.document import get_document  # noqa: E402
+from shared_configs.configs import MULTI_TENANT  # noqa: E402
+from shared_configs.contextvars import get_current_tenant_id  # noqa: E402
 
 BATCH_SIZE = 100
 
@@ -60,11 +65,12 @@ def main() -> None:
             search_settings = get_current_search_settings(db_session)
             multipass_config = get_multipass_config(search_settings)
             index_name = search_settings.index_name
-            vespa_index = VespaIndex(
+            vespa_index = VespaDocumentIndex(
                 index_name=index_name,
-                secondary_index_name=None,
+                tenant_state=TenantState(
+                    tenant_id=get_current_tenant_id(), multitenant=MULTI_TENANT
+                ),
                 large_chunks_enabled=multipass_config.enable_large_chunks,
-                secondary_large_chunks_enabled=None,
             )
 
             # Delete chunks from Vespa first
@@ -81,7 +87,9 @@ def main() -> None:
                     try:
                         chunks = vespa_index.id_based_retrieval(
                             chunk_requests=[
-                                VespaChunkRequest(document_id=doc_id, max_chunk_ind=2)
+                                DocumentSectionRequest(
+                                    document_id=doc_id, max_chunk_ind=2
+                                )
                             ],
                             filters=IndexFilters(access_control_list=None),
                             batch_retrieval=True,
@@ -97,9 +105,8 @@ def main() -> None:
 
                     try:
                         print(f"Deleting document {doc_id} in Vespa")
-                        chunks_deleted = vespa_index.delete_single(
+                        chunks_deleted = vespa_index.delete(
                             doc_id,
-                            tenant_id=POSTGRES_DEFAULT_SCHEMA,
                             chunk_count=document.chunk_count,
                         )
                         if chunks_deleted > 0:

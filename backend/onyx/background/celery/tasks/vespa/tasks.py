@@ -50,7 +50,7 @@ from onyx.db.sync_record import cleanup_sync_records
 from onyx.db.sync_record import insert_sync_record
 from onyx.db.sync_record import update_sync_record_status
 from onyx.document_index.factory import get_all_document_indices
-from onyx.document_index.interfaces import VespaDocumentFields
+from onyx.document_index.interfaces_new import MetadataUpdateRequest
 from onyx.httpx.httpx_pool import HttpxPool
 from onyx.redis.redis_document_set import RedisDocumentSet
 from onyx.redis.redis_pool import get_redis_client
@@ -498,12 +498,17 @@ def vespa_metadata_sync_task(self: Task, document_id: str, *, tenant_id: str) ->
                     document_id=document_id, db_session=db_session
                 )
 
-                fields = VespaDocumentFields(
+                update_request = MetadataUpdateRequest(
+                    document_ids=[document_id],
+                    doc_id_to_chunk_cnt={
+                        document_id: (
+                            doc.chunk_count if doc.chunk_count is not None else -1
+                        )
+                    },
                     document_sets=update_doc_sets,
                     access=doc_access,
                     boost=doc.boost,
                     hidden=doc.hidden,
-                    # aggregated_boost_factor=doc.aggregated_boost_factor,
                 )
 
                 for retry_document_index in retry_document_indices:
@@ -511,13 +516,7 @@ def vespa_metadata_sync_task(self: Task, document_id: str, *, tenant_id: str) ->
                     # it was ok if a doc did not exist in the document index. I
                     # don't agree with that claim, so keep an eye on this task
                     # to see if this raises.
-                    retry_document_index.update_single(
-                        document_id,
-                        tenant_id=tenant_id,
-                        chunk_count=doc.chunk_count,
-                        fields=fields,
-                        user_fields=None,
-                    )
+                    retry_document_index.update([update_request])
 
                 # update db last. Worst case = we crash right before this and
                 # the sync might repeat again later

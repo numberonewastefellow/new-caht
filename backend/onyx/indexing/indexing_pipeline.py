@@ -37,10 +37,10 @@ from onyx.db.tag import upsert_document_tags
 from onyx.document_index.document_index_utils import (
     get_multipass_config,
 )
-from onyx.document_index.interfaces import DocumentIndex
-from onyx.document_index.interfaces import DocumentInsertionRecord
-from onyx.document_index.interfaces import DocumentMetadata
-from onyx.document_index.interfaces import IndexBatchParams
+from onyx.document_index.document_metadata import DocumentMetadata
+from onyx.document_index.interfaces_new import DocumentIndex
+from onyx.document_index.interfaces_new import DocumentInsertionRecord
+from onyx.document_index.interfaces_new import IndexingMetadata
 from onyx.file_processing.image_summarization import summarize_image_with_error_handling
 from onyx.file_store.file_store import get_default_file_store
 from onyx.indexing.chunker import Chunker
@@ -764,11 +764,19 @@ def index_doc_batch(
             ) = write_chunks_to_vector_db_with_backoff(
                 document_index=document_index,
                 chunks=result.chunks,
-                index_batch_params=IndexBatchParams(
-                    doc_id_to_previous_chunk_cnt=result.doc_id_to_previous_chunk_cnt,
-                    doc_id_to_new_chunk_cnt=result.doc_id_to_new_chunk_cnt,
-                    tenant_id=tenant_id,
-                    large_chunks_enabled=chunker.enable_large_chunks,
+                indexing_metadata=IndexingMetadata(
+                    doc_id_to_chunk_cnt_diff={
+                        doc_id: IndexingMetadata.ChunkCounts(
+                            old_chunk_cnt=result.doc_id_to_previous_chunk_cnt.get(
+                                doc_id, 0
+                            ),
+                            new_chunk_cnt=result.doc_id_to_new_chunk_cnt.get(doc_id, 0),
+                        )
+                        for doc_id in (
+                            set(result.doc_id_to_previous_chunk_cnt.keys())
+                            | set(result.doc_id_to_new_chunk_cnt.keys())
+                        )
+                    },
                 ),
             )
 

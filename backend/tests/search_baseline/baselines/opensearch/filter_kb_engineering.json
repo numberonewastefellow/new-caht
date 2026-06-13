@@ -1,0 +1,46 @@
+{
+  "engine": "opensearch",
+  "hits": [
+    {
+      "chunk_id": 0,
+      "document_id": "eng-python-async",
+      "rank": 0,
+      "score": 0.6761,
+      "semantic_identifier": "Python asyncio concurrency guide",
+      "source_type": "web"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "shared-saas-cost",
+      "rank": 1,
+      "score": 0.5005,
+      "semantic_identifier": "Managing SaaS software costs for engineering teams",
+      "source_type": "file"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "eng-cicd-pipeline",
+      "rank": 2,
+      "score": 0.1261,
+      "semantic_identifier": "Setting up a CI/CD pipeline",
+      "source_type": "google_drive"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "eng-db-indexing",
+      "rank": 3,
+      "score": 0.0213,
+      "semantic_identifier": "Database indexing and query performance",
+      "source_type": "file"
+    },
+    {
+      "chunk_id": 0,
+      "document_id": "eng-k8s-deploy",
+      "rank": 4,
+      "score": 0.0005,
+      "semantic_identifier": "Deploying containers to Kubernetes",
+      "source_type": "file"
+    }
+  ],
+  "name": "filter_kb_engineering"
+}

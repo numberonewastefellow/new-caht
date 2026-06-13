@@ -170,12 +170,9 @@ def cancel_new_embedding(
         document_index = get_default_document_index(
             primary_search_settings, None, db_session
         )
-        document_index.ensure_indices_exist(
-            primary_embedding_dim=primary_search_settings.final_embedding_dim,
-            primary_embedding_precision=primary_search_settings.embedding_precision,
-            # just finished swap, no more secondary index
-            secondary_index_embedding_dim=None,
-            secondary_index_embedding_precision=None,
+        document_index.verify_and_create_index_if_necessary(
+            embedding_dim=primary_search_settings.final_embedding_dim,
+            embedding_precision=primary_search_settings.embedding_precision,
         )
 
 

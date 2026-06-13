@@ -2,7 +2,10 @@
 setlocal enabledelayedexpansion
 
 set COMPOSE_CMD=docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml
-set INFRA=relational_db index cache inference_model_server indexing_model_server minio code-interpreter smartsearch phoenix
+:: NOTE: the search engine (vespa=index / opensearch) is NOT listed here. It is
+:: controlled by COMPOSE_PROFILES in .env and started by a full `dev up` (which
+:: respects profiles). Naming it here would force it up regardless of profile.
+set INFRA=relational_db cache inference_model_server indexing_model_server minio code-interpreter smartsearch phoenix
 set APP=api_server background web_server nginx
 
 :: Office MCP server (PPT + DOCX + PDF) runs from a separate compose file
@@ -377,7 +380,7 @@ echo     up log app            Start app services with live logs
 echo     up log infra          Start infra with live logs
 echo     up log office         Start Office MCP server with live logs
 echo     up log api            Start api_server with live logs
-echo     up infra              Start infrastructure only (db, vespa, redis, models, minio)
+echo     up infra              Start infrastructure only (db, redis, models, minio; search engine via profile)
 echo     up app                Start app only (api, background, web, nginx)
 echo     up office             Start Office MCP server only (PPT + DOCX + PDF)
 echo     up api web ...        Start specific services
@@ -413,7 +416,7 @@ echo     logs office           Tail logs for Office MCP server
 echo     ps                    Show running containers (all + MCP)
 echo.
 echo   Groups:
-echo     infra      = db, vespa, redis, model servers, minio, code-interpreter, smartsearch, phoenix
+echo     infra      = db, redis, model servers, minio, code-interpreter, smartsearch, phoenix (search engine via COMPOSE_PROFILES)
 echo     app        = api_server, background, web_server, nginx
 echo     search     = smartsearch (Perplexica AI web search)
 echo     phoenix    = Phoenix LLM observability (dashboard at http://localhost:3000/phoenix/)

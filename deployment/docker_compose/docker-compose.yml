@@ -56,8 +56,9 @@ services:
     depends_on:
       relational_db:
         condition: service_started
-      index:
-        condition: service_started
+      # NOTE: Vespa (index) is intentionally NOT a hard dependency so it can be
+      # turned off via compose profiles for OpenSearch-only mode. The backend
+      # retries the search-index connection on startup.
       cache:
         condition: service_started
       inference_model_server:
@@ -79,6 +80,14 @@ services:
       - PHOENIX_COLLECTOR_ENDPOINT=${PHOENIX_COLLECTOR_ENDPOINT:-}
       - POSTGRES_HOST=${POSTGRES_HOST:-relational_db}
       - VESPA_HOST=${VESPA_HOST:-index}
+      # Search engine selection (Vespa is the default). OpenSearch is opt-in:
+      # add "opensearch" to COMPOSE_PROFILES and set ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true.
+      - OPENSEARCH_HOST=${OPENSEARCH_HOST:-opensearch}
+      - OPENSEARCH_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
+      - OPENSEARCH_USE_SSL=${OPENSEARCH_USE_SSL:-true}
+      - ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=${ENABLE_OPENSEARCH_INDEXING_FOR_ONYX:-false}
+      - ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX=${ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX:-false}
+      - ONYX_DISABLE_VESPA=${ONYX_DISABLE_VESPA:-false}
       - REDIS_HOST=${REDIS_HOST:-cache}
       - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
       - S3_ENDPOINT_URL=${S3_ENDPOINT_URL:-http://minio:9000}
@@ -142,8 +151,9 @@ services:
       - path: .env
         required: false
     depends_on:
+      # Vespa (index) intentionally omitted so it can be disabled via the
+      # "vespa" compose profile for OpenSearch-only mode (backend retries).
       - relational_db
-      - index
       - cache
       - inference_model_server
       - indexing_model_server
@@ -155,6 +165,14 @@ services:
       - PHOENIX_COLLECTOR_ENDPOINT=${PHOENIX_COLLECTOR_ENDPOINT:-}
       - POSTGRES_HOST=${POSTGRES_HOST:-relational_db}
       - VESPA_HOST=${VESPA_HOST:-index}
+      # Search engine selection (Vespa is the default). OpenSearch is opt-in:
+      # add "opensearch" to COMPOSE_PROFILES and set ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true.
+      - OPENSEARCH_HOST=${OPENSEARCH_HOST:-opensearch}
+      - OPENSEARCH_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
+      - OPENSEARCH_USE_SSL=${OPENSEARCH_USE_SSL:-true}
+      - ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=${ENABLE_OPENSEARCH_INDEXING_FOR_ONYX:-false}
+      - ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX=${ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX:-false}
+      - ONYX_DISABLE_VESPA=${ONYX_DISABLE_VESPA:-false}
       - REDIS_HOST=${REDIS_HOST:-cache}
       - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
       - INDEXING_MODEL_SERVER_HOST=${INDEXING_MODEL_SERVER_HOST:-indexing_model_server}
@@ -391,6 +409,10 @@ services:
   index:
     image: vespaengine/vespa:8.609.39
     restart: unless-stopped
+    # Gated behind the "vespa" profile so it can be turned off entirely (e.g.
+    # OpenSearch-only mode). It starts only when "vespa" is in COMPOSE_PROFILES.
+    # The default .env keeps "vespa" active, so normal `dev up` is unaffected.
+    profiles: ["vespa"]
     env_file:
       - path: .env
         required: false
@@ -404,6 +426,53 @@ services:
     #   - "8081:8081"
     volumes:
       - vespa_volume:/opt/vespa/var
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+
+  # Optional second search engine. Vespa (service `index`) stays the default.
+  # This service only starts when "opensearch" is included in COMPOSE_PROFILES
+  # (e.g. in .env: COMPOSE_PROFILES=s3-filestore,opensearch). To actually use it,
+  # also set ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true (and optionally
+  # ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX / ONYX_DISABLE_VESPA).
+  opensearch:
+    image: opensearchproject/opensearch:${OPENSEARCH_IMAGE_TAG:-3.6.0}
+    restart: unless-stopped
+    profiles: ["opensearch"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # single-node so OpenSearch doesn't wait to form a cluster
+      - discovery.type=single-node
+      # OpenSearch 2.12+ requires a STRONG initial admin password
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
+      - bootstrap.memory_lock=true
+      # Heap should be ~50% of the container memory limit; Xms must equal Xmx
+      - "OPENSEARCH_JAVA_OPTS=${OPENSEARCH_JAVA_OPTS:--Xms2g -Xmx2g}"
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -skf https://localhost:9200 -u admin:${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -594,6 +663,8 @@ volumes:
     name: onyx-stack_db_volume
   vespa_volume:
     name: onyx-stack_vespa_volume
+  opensearch_data:
+    name: onyx-stack_opensearch_data
   minio_data:
     name: onyx-stack_minio_data
   # Caches to prevent re-downloading models, not strictly necessary

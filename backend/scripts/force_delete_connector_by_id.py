@@ -37,7 +37,7 @@ from onyx.db.permission_sync_attempt import (
     delete_external_group_permission_sync_attempts__no_commit,
 )
 from onyx.db.models import ConnectorCredentialPair
-from onyx.document_index.interfaces import DocumentIndex
+from onyx.document_index.interfaces_new import DocumentIndex
 from onyx.utils.logger import setup_logger
 from onyx.configs.constants import DocumentSource
 from onyx.db.connector_credential_pair import (
@@ -83,9 +83,8 @@ def _unsafe_deletion(
 
         for document in documents:
             for document_index in document_indices:
-                document_index.delete_single(
-                    doc_id=document.id,
-                    tenant_id=POSTGRES_DEFAULT_SCHEMA,
+                document_index.delete(
+                    document.id,
                     chunk_count=document.chunk_count,
                 )
 
