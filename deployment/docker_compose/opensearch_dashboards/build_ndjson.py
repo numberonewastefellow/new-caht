@@ -13,7 +13,28 @@ import os
 
 INDEX_PATTERN_ID = "danswer-chunks"
 INDEX_PATTERN_TITLE = "danswer_chunk_*"
+DASHBOARD_ID = "danswer-files-and-chunks"
 VERSION = "3.6.0"
+
+# Drill-down: render each `user_projects` value (in the "Files by Project" table
+# and the Chunk Text saved search) as a link that reloads THIS dashboard scoped
+# to that project via a KQL query. This is the reliable, scales-to-many-projects
+# alternative to the legacy data-table cell click, which is broken by an OSD
+# 3.5/3.6 filter-button regression.
+FIELD_FORMAT_MAP = {
+    "user_projects": {
+        "id": "url",
+        "params": {
+            "type": "a",
+            "urlTemplate": (
+                "/app/dashboards#/view/" + DASHBOARD_ID
+                + "?_g=()&_a=(query:(language:kuery,query:'user_projects:{{value}}'))"
+            ),
+            "labelTemplate": "{{value}}",
+            "openLinkInCurrentTab": True,
+        },
+    }
+}
 
 INDEX_REF = {
     "name": "kibanaSavedObjectMeta.searchSourceJSON.index",
@@ -126,7 +147,10 @@ objects.append(
     {
         "id": INDEX_PATTERN_ID,
         "type": "index-pattern",
-        "attributes": {"title": INDEX_PATTERN_TITLE},
+        "attributes": {
+            "title": INDEX_PATTERN_TITLE,
+            "fieldFormatMap": json.dumps(FIELD_FORMAT_MAP),
+        },
         "references": [],
     }
 )
@@ -262,7 +286,7 @@ dashboard_refs = [
 ]
 objects.append(
     {
-        "id": "danswer-files-and-chunks",
+        "id": DASHBOARD_ID,
         "type": "dashboard",
         "attributes": {
             "title": "VirtualAI — Files & Chunks",

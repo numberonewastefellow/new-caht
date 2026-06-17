@@ -140,7 +140,7 @@ export default function useChatController({
   const { pinnedAgents, togglePinnedAgent } = usePinnedAgents();
   const { assistantPreferences } = useAgentPreferences();
   const { forcedToolIds } = useForcedTools();
-  const { fetchProjects, setCurrentMessageFiles, beginUpload } =
+  const { fetchProjects, setCurrentMessageFiles, beginUpload, currentProjectId } =
     useProjectsContext();
   const posthog = usePostHog();
 
@@ -997,12 +997,14 @@ export default function useChatController({
       updateChatStateAction(getCurrentSessionId(), "uploading");
       const uploadedMessageFiles = await beginUpload(
         Array.from(acceptedFiles),
-        null
+        // When inside a project, link the chat-attached file to it (same as the
+        // project panel "Attach"); null in a normal chat keeps it ephemeral.
+        currentProjectId
       );
       setCurrentMessageFiles((prev) => [...prev, ...uploadedMessageFiles]);
       updateChatStateAction(getCurrentSessionId(), "input");
     },
-    [liveAssistant, llmManager, forcedToolIds]
+    [liveAssistant, llmManager, forcedToolIds, currentProjectId]
   );
 
   useEffect(() => {
