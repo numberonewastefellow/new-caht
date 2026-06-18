@@ -451,6 +451,7 @@ def _run_workflow_and_save(
     chat_session_id: UUID | None,
     assistant_message: ChatMessage,
     sandbox_session_id: str | None = None,
+    chat_files: list[ChatFile] | None = None,
 ) -> AnswerStream:
     """Run a workflow and persist the assistant message + tool calls to DB.
 
@@ -479,6 +480,7 @@ def _run_workflow_and_save(
         user=user,
         is_connected=is_connected,
         chat_session_id=chat_session_id,
+        chat_files=chat_files,
         sandbox_session_id=sandbox_session_id,
     ):
         yield packet
@@ -1060,6 +1062,7 @@ def handle_stream_message_objects(
                 chat_session_id=chat_session.id,
                 assistant_message=assistant_response,
                 sandbox_session_id=chat_session.sandbox_session_id,
+                chat_files=chat_files_for_tools,
             )
 
         elif new_msg_req.deep_research:
