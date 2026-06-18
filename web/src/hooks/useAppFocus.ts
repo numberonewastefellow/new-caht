@@ -12,6 +12,7 @@ export type AppFocusType =
   | { type: "agent" | "project" | "chat"; id: string }
   | "new-session"
   | "more-agents"
+  | "workspaces-dashboard"
   | "user-settings"
   | "shared-chat";
 
@@ -42,6 +43,10 @@ export class AppFocus {
     return this.value === "more-agents";
   }
 
+  isWorkspacesDashboard(): boolean {
+    return this.value === "workspaces-dashboard";
+  }
+
   isUserSettings(): boolean {
     return this.value === "user-settings";
   }
@@ -57,6 +62,7 @@ export class AppFocus {
     | "shared-chat"
     | "new-session"
     | "more-agents"
+    | "workspaces-dashboard"
     | "user-settings" {
     return typeof this.value === "object" ? this.value.type : this.value;
   }
@@ -79,6 +85,11 @@ export default function useAppFocus(): AppFocus {
   // Check if we're on the agents page
   if (pathname.startsWith("/app/agents")) {
     return new AppFocus("more-agents");
+  }
+
+  // Check if we're on the workspaces dashboard
+  if (pathname.startsWith("/app/workspaces")) {
+    return new AppFocus("workspaces-dashboard");
   }
 
   // Check search params for chat, agent, or project

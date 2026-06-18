@@ -67,7 +67,31 @@ Internet access for this session is disabled. Do not make external web requests 
 Use `openpyxl` to read and write Excel files. You have access to libraries like numpy, pandas, scipy, matplotlib, and PIL.
 IMPORTANT: When generating charts or plots with matplotlib, you MUST save them as files using `plt.savefig('descriptive_name.png', dpi=150, bbox_inches='tight')` followed by `plt.close()`. NEVER use `plt.show()` — it does not work in this headless environment and will not produce any visible output or files.
 IMPORTANT: NEVER generate synthetic or fake data. User-uploaded files are always available in your working directory. Read them directly with pd.read_csv(), pd.read_excel(), etc. If a file is not found, print the exact error and stop — do NOT create substitute data.
+If the `python` tool returns an error or a traceback, do NOT give up. Read the error, fix the code, and call the `python` tool again with the corrected code. Only stop retrying once it succeeds or you are certain the error cannot be resolved (e.g. required data is genuinely missing), in which case explain the problem to the user.
 """
+
+# Prompt used by PythonTool's internal self-heal loop: when generated code raises
+# an error, the tool sends the failing code + traceback back to the LLM and asks
+# for a corrected version. The response MUST be runnable Python with no prose or
+# markdown fences, because it is executed directly in the sandbox.
+PYTHON_TOOL_SELF_HEAL_PROMPT = """You are a Python debugging assistant for a sandboxed code-execution environment.
+
+The following Python code was executed in a persistent sandbox (a long-running Jupyter-like session where previously defined variables, imports, and files still exist) and it failed with an error.
+
+--- CODE THAT FAILED ---
+{code}
+
+--- ERROR / TRACEBACK ---
+{error}
+
+Rewrite the code so it runs successfully and accomplishes the same intent. Guidelines:
+- Fix the actual cause of the error (e.g. wrong column/key name, bad type, missing import, wrong API usage). If a column or key is missing, inspect what IS available (e.g. print df.columns) and adapt rather than inventing data.
+- The sandbox is persistent, so variables/DataFrames/files from the failed run may already exist — reuse them instead of recomputing from scratch when appropriate.
+- Internet access is disabled. Do NOT make external web requests.
+- NEVER fabricate or substitute synthetic data. Use the real user files already in the working directory.
+- When generating charts, save them with plt.savefig(...) then plt.close(); never plt.show().
+
+Respond with ONLY the corrected, complete, runnable Python code. Do NOT include explanations, comments about the fix, or markdown code fences."""
 
 GENERATE_IMAGE_GUIDANCE = """
 

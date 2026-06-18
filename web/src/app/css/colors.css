@@ -343,6 +343,15 @@
   --virtualai-accent-glow-strong: rgba(28, 28, 28, 0.22);
   --virtualai-accent-subtle: rgba(28, 28, 28, 0.05);
 
+  /* Workspace identity swatches (decorative, categorical — NOT the accent theme).
+     Each workspace card picks one deterministically by id. Light-mode values. */
+  --ws-swatch-1-from: #34d399; --ws-swatch-1-to: #14b8a6; /* emerald → teal */
+  --ws-swatch-2-from: #a78bfa; --ws-swatch-2-to: #d946ef; /* violet → fuchsia */
+  --ws-swatch-3-from: #38bdf8; --ws-swatch-3-to: #6366f1; /* sky → indigo */
+  --ws-swatch-4-from: #fbbf24; --ws-swatch-4-to: #f97316; /* amber → orange */
+  --ws-swatch-5-from: #fb7185; --ws-swatch-5-to: #ec4899; /* rose → pink */
+  --ws-swatch-6-from: #22d3ee; --ws-swatch-6-to: #3b82f6; /* cyan → blue */
+
   /* Theme / Red */
   --theme-red-05: var(--red-50);
   --theme-red-04: var(--red-50);
@@ -554,6 +563,14 @@
   --virtualai-accent-glow: rgba(99, 102, 241, 0.20);
   --virtualai-accent-glow-strong: rgba(99, 102, 241, 0.30);
   --virtualai-accent-subtle: rgba(99, 102, 241, 0.08);
+
+  /* Workspace identity swatches — dark-mode values (brighter, per design-system rule 4). */
+  --ws-swatch-1-from: #6ee7b7; --ws-swatch-1-to: #2dd4bf; /* emerald → teal */
+  --ws-swatch-2-from: #c4b5fd; --ws-swatch-2-to: #e879f9; /* violet → fuchsia */
+  --ws-swatch-3-from: #7dd3fc; --ws-swatch-3-to: #818cf8; /* sky → indigo */
+  --ws-swatch-4-from: #fcd34d; --ws-swatch-4-to: #fb923c; /* amber → orange */
+  --ws-swatch-5-from: #fda4af; --ws-swatch-5-to: #f472b6; /* rose → pink */
+  --ws-swatch-6-from: #67e8f9; --ws-swatch-6-to: #60a5fa; /* cyan → blue */
 
   /* Theme / Red */
   --theme-red-05: var(--red-45);

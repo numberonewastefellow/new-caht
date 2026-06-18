@@ -345,6 +345,7 @@ class FileOrigin(str, Enum):
     QUERY_HISTORY_CSV = "query_history_csv"
     SANDBOX_SNAPSHOT = "sandbox_snapshot"
     USER_FILE = "user_file"
+    WORKFLOW_TRACE = "workflow_trace"
 
 
 class FileType(str, Enum):

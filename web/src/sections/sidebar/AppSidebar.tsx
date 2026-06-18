@@ -3,6 +3,7 @@
 import { useCallback, memo, useMemo, useState, useEffect, useRef } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
+import type { Route } from "next";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import Text from "@/refresh-components/texts/Text";
@@ -59,6 +60,7 @@ import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import { useModalContext } from "@/components/context/ModalContext";
 import useScreenSize from "@/hooks/useScreenSize";
 import {
+  SvgDashboard,
   SvgDevKit,
   SvgEditBig,
   SvgFolderPlus,
@@ -67,6 +69,7 @@ import {
   SvgSearchMenu,
   SvgSettings,
 } from "@opal/icons";
+import { usePageVersion } from "@/hooks/usePageVersion";
 import { makeColorfulIcon, makeAccentColorfulIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
 
 // Colorful sidebar icons — colored rounded squares with white icons
@@ -184,6 +187,7 @@ interface AppSidebarInnerProps {
 const MemoizedAppSidebarInner = memo(
   ({ folded, onFoldClick }: AppSidebarInnerProps) => {
     const router = useRouter();
+    const { isLegacy: wsLegacy } = usePageVersion("workspace-ui");
     const combinedSettings = useSettingsContext();
     const posthog = usePostHog();
     const { newTenantInfo, invitationInfo } = useModalContext();
@@ -726,13 +730,26 @@ const MemoizedAppSidebarInner = memo(
                     collapsed={projectsCollapsed}
                     onToggle={() => setProjectsCollapsed((prev) => !prev)}
                     action={
-                      <OpalButton
-                        icon={SvgFolderPlus}
-                        prominence="tertiary"
-                        size="sm"
-                        tooltip="New Workspace"
-                        onClick={() => createProjectModal.toggle(true)}
-                      />
+                      <div className="flex items-center gap-0.5">
+                        {!wsLegacy && (
+                          <OpalButton
+                            icon={SvgDashboard}
+                            prominence="tertiary"
+                            size="sm"
+                            tooltip="All workspaces"
+                            onClick={() =>
+                              router.push("/app/workspaces" as Route)
+                            }
+                          />
+                        )}
+                        <OpalButton
+                          icon={SvgFolderPlus}
+                          prominence="tertiary"
+                          size="sm"
+                          tooltip="New Workspace"
+                          onClick={() => createProjectModal.toggle(true)}
+                        />
+                      </div>
                     }
                   >
                     {projects.map((project) => (

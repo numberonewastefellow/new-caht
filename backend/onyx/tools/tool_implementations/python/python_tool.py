@@ -1,7 +1,9 @@
 import mimetypes
+import time
 from io import BytesIO
 from typing import Any
 from typing import cast
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 import requests
@@ -14,6 +16,7 @@ from onyx.chat.emitter import Emitter
 from onyx.configs.app_configs import CODE_INTERPRETER_BASE_URL
 from onyx.configs.app_configs import CODE_INTERPRETER_DEFAULT_TIMEOUT_MS
 from onyx.configs.app_configs import CODE_INTERPRETER_MAX_OUTPUT_LENGTH
+from onyx.configs.app_configs import CODE_INTERPRETER_MAX_SELF_HEAL_ATTEMPTS
 from onyx.configs.constants import FileOrigin
 from onyx.file_store.utils import build_full_frontend_file_url
 from onyx.file_store.utils import get_default_file_store
@@ -34,10 +37,37 @@ from onyx.tools.tool_implementations.python.code_interpreter_client import (
 from onyx.tools.tool_implementations.python.code_interpreter_client import FileInput
 from onyx.utils.logger import setup_logger
 
+if TYPE_CHECKING:
+    from onyx.llm.interfaces import LLM
+    from onyx.tools.tool_implementations.python.code_interpreter_client import (
+        ExecuteResponse,
+    )
+
 
 logger = setup_logger()
 
 CODE_FIELD = "code"
+
+# Hard wall-clock budget for the entire run() (including self-heal retries, LLM
+# fix calls, and file downloads). Kept comfortably under tool_runner's
+# TOOL_EXECUTION_TIMEOUT_SECONDS (600s) so the tool always returns a real result
+# (success or error) before the threadpool abandons our thread without emitting a
+# terminal SectionEnd packet.
+SELF_HEAL_TOTAL_DEADLINE_SECONDS = 480
+
+# Bound for each LLM "fix my code" call so a hung secondary call can't eat the
+# whole budget.
+SELF_HEAL_LLM_TIMEOUT_SECONDS = 60
+
+# Max chars of traceback fed into the self-heal fix prompt. Kept small and
+# tail-biased: a Python traceback's actual exception lives at the END, and the
+# full output cap (CODE_INTERPRETER_MAX_OUTPUT_LENGTH, 50k) is far more than the
+# fixer needs.
+SELF_HEAL_MAX_ERROR_CHARS = 4000
+
+# Stop starting new self-heal work (LLM fix call or re-execute) once fewer than
+# this many seconds of the wall-clock budget remain.
+DEADLINE_GUARD_SECONDS = 5
 
 
 def _truncate_output(output: str, max_length: int, label: str = "output") -> str:
@@ -63,6 +93,36 @@ def _truncate_output(output: str, max_length: int, label: str = "output") -> str
     return truncated
 
 
+def _truncate_tail(output: str, max_length: int) -> str:
+    """Truncate keeping the TAIL of the string (with a leading marker).
+
+    Used for tracebacks fed to the self-heal fixer: the exception type/message
+    lives at the end, so we keep the last `max_length` chars rather than the head.
+    """
+    if len(output) <= max_length:
+        return output
+    omitted = len(output) - max_length
+    return f"[... {omitted} characters omitted ...]\n{output[-max_length:]}"
+
+
+def _strip_code_fences(text: str) -> str:
+    """Remove a surrounding markdown code fence (```python ... ```), if present.
+
+    The self-heal prompt asks for raw code, but models sometimes wrap it anyway.
+    """
+    stripped = text.strip()
+    if not stripped.startswith("```"):
+        return stripped
+
+    lines = stripped.splitlines()
+    # Drop the opening fence line (``` or ```python)
+    lines = lines[1:]
+    # Drop the closing fence line if present
+    if lines and lines[-1].strip().startswith("```"):
+        lines = lines[:-1]
+    return "\n".join(lines).strip()
+
+
 class PythonTool(Tool[PythonToolOverrideKwargs]):
     """
     Python code execution tool using an external Code Interpreter service.
@@ -81,11 +141,16 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
         emitter: Emitter,
         db_session: Session | None = None,
         chat_session_id: str | None = None,
+        llm: "LLM | None" = None,
     ) -> None:
         super().__init__(emitter=emitter)
         self._id = tool_id
         self._db_session = db_session
         self._chat_session_id = chat_session_id
+        # Optional LLM used by the in-tool self-heal loop to repair failing code.
+        # When None, self-heal is skipped and the agent loop remains the only retry
+        # mechanism (see PYTHON_TOOL_GUIDANCE).
+        self._llm = llm
         # Cached session_id for reuse across multiple tool calls in the same message
         self._session_id: str | None = None
 
@@ -237,6 +302,170 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                 session_id=new_session_id,
             )
 
+    def _request_code_fix(
+        self,
+        code: str,
+        error: str,
+        timeout_s: int = SELF_HEAL_LLM_TIMEOUT_SECONDS,
+    ) -> str | None:
+        """Ask the LLM to repair failing code given the traceback.
+
+        Returns corrected Python source, or None if no LLM is available or the
+        call fails. Defensively strips markdown code fences in case the model
+        wraps its answer despite instructions. `timeout_s` bounds the LLM call
+        (clamped by the caller to the remaining wall-clock budget).
+        """
+        if self._llm is None:
+            return None
+
+        from onyx.llm.models import UserMessage
+        from onyx.prompts.tool_prompts import PYTHON_TOOL_SELF_HEAL_PROMPT
+
+        prompt = PYTHON_TOOL_SELF_HEAL_PROMPT.format(
+            code=code,
+            # Keep the TAIL of the traceback (the actual exception) and cap it
+            # small — feeding the full 50k output cap here is needless token cost.
+            error=_truncate_tail(error, SELF_HEAL_MAX_ERROR_CHARS),
+        )
+        try:
+            response = self._llm.invoke(
+                prompt=[UserMessage(content=prompt)],
+                timeout_override=timeout_s,
+            )
+            fixed = response.choice.message.content
+        except Exception:
+            logger.exception("Self-heal: LLM call to fix Python code failed")
+            return None
+
+        if not fixed or not fixed.strip():
+            return None
+
+        return _strip_code_fences(fixed)
+
+    def _execute_with_self_heal(
+        self,
+        client: CodeInterpreterClient,
+        placement: Placement,
+        code: str,
+        files: list[FileInput] | None,
+        session_id: str | None,
+        deadline: float,
+    ) -> "tuple[ExecuteResponse, str]":
+        """Execute code, repairing and re-running it via the LLM on failure.
+
+        On a non-zero exit code, the failing code + traceback are sent back to the
+        LLM (up to CODE_INTERPRETER_MAX_SELF_HEAL_ATTEMPTS times) to produce
+        corrected code, which is re-executed in the SAME persistent session so
+        prior state is preserved.
+
+        Every LLM fix call and execute is clamped to the remaining wall-clock
+        budget (`deadline`) so the whole loop returns before tool_runner's
+        threadpool cap can abandon the thread. Returns (final_response,
+        self_heal_note) where self_heal_note is a short human/LLM-readable summary
+        of the retries (empty if none happened). Progress is streamed to the UI via
+        stdout deltas so the section never appears to hang; intermediate failures
+        are NOT emitted as stderr so the section status stays accurate (an eventual
+        success is shown as success).
+        """
+        current_code = code
+
+        # Clamp the per-call execute timeout to the remaining budget so a single
+        # call can't push the whole run past the threadpool cap.
+        first_timeout_ms = min(
+            CODE_INTERPRETER_DEFAULT_TIMEOUT_MS,
+            max(1, int((deadline - time.monotonic()) * 1000)),
+        )
+        response = self._execute_with_retry(
+            client=client,
+            code=current_code,
+            timeout_ms=first_timeout_ms,
+            files=files,
+            session_id=session_id,
+        )
+
+        # Each entry: the error from an attempt that we then tried to repair.
+        attempt_errors: list[str] = []
+
+        attempt = 0
+        while (
+            response.exit_code != 0
+            and attempt < CODE_INTERPRETER_MAX_SELF_HEAL_ATTEMPTS
+            and self._llm is not None
+            and (deadline - time.monotonic()) > DEADLINE_GUARD_SECONDS
+        ):
+            attempt += 1
+            attempt_errors.append(response.stderr)
+
+            # Real-time UI feedback (stdout, not stderr, so status stays correct)
+            self.emitter.emit(
+                Packet(
+                    placement=placement,
+                    obj=PythonToolDelta(
+                        stdout=(
+                            f"⚠️ Attempt {attempt} failed with an error. "
+                            f"Asking the model to fix the code and retrying "
+                            f"({attempt}/{CODE_INTERPRETER_MAX_SELF_HEAL_ATTEMPTS})...\n"
+                        ),
+                        stderr="",
+                        file_ids=[],
+                    ),
+                )
+            )
+
+            # Bound the fix call to what's left of the budget.
+            fix_timeout_s = min(
+                SELF_HEAL_LLM_TIMEOUT_SECONDS,
+                max(1, int(deadline - time.monotonic())),
+            )
+            fixed_code = self._request_code_fix(
+                current_code, response.stderr, fix_timeout_s
+            )
+            if not fixed_code or fixed_code.strip() == current_code.strip():
+                # Could not get a (different) fix — stop retrying.
+                logger.info(
+                    "Self-heal: no usable fix produced on attempt "
+                    f"{attempt}; giving up."
+                )
+                break
+
+            # The fix call may have consumed most of the budget — don't start a
+            # re-execute we can't finish before the threadpool cap.
+            if (deadline - time.monotonic()) <= DEADLINE_GUARD_SECONDS:
+                logger.info(
+                    "Self-heal: out of time budget before re-execute; stopping."
+                )
+                break
+
+            current_code = fixed_code
+            logger.info(f"Self-heal: re-executing corrected code (attempt {attempt})")
+            retry_timeout_ms = min(
+                CODE_INTERPRETER_DEFAULT_TIMEOUT_MS,
+                max(1, int((deadline - time.monotonic()) * 1000)),
+            )
+            # Files were staged into the persistent session on the first run, so
+            # don't re-upload them on retries (same session_id keeps the workspace).
+            response = self._execute_with_retry(
+                client=client,
+                code=current_code,
+                timeout_ms=retry_timeout_ms,
+                files=None,
+                session_id=session_id,
+            )
+
+        self_heal_note = ""
+        if attempt_errors:
+            if response.exit_code == 0:
+                self_heal_note = (
+                    f"[self-heal: succeeded after {attempt} automatic fix attempt(s)]"
+                )
+            else:
+                self_heal_note = (
+                    f"[self-heal: {attempt} automatic fix attempt(s) made, "
+                    f"all failed]"
+                )
+
+        return response, self_heal_note
+
     def emit_start(self, placement: Placement) -> None:
         """Emit start packet for this tool. Code will be emitted in run() method."""
         # Note: PythonToolStart requires code, but we don't have it in emit_start
@@ -310,19 +539,23 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
             except Exception as e:
                 logger.warning(f"Failed to stage file {file_name}: {e}")
 
+        # Wall-clock budget for the whole run so we never get abandoned by the
+        # threadpool timeout in tool_runner without emitting a terminal packet.
+        deadline = time.monotonic() + SELF_HEAL_TOTAL_DEADLINE_SECONDS
+
         try:
             logger.debug(f"Executing code: {code}")
 
-            # Execute code with retry on session/connection failure.
-            # If the code-interpreter service restarted or the session was
-            # reaped (idle > 30 min), the first call will fail.  We detect
-            # that, create a fresh session, and retry exactly once.
-            response = self._execute_with_retry(
+            # Execute code, repairing and re-running it via the LLM on failure
+            # (self-heal). Connection/session failures are still retried inside
+            # _execute_with_retry; this adds code-error repair on top.
+            response, self_heal_note = self._execute_with_self_heal(
                 client=client,
+                placement=placement,
                 code=code,
-                timeout_ms=CODE_INTERPRETER_DEFAULT_TIMEOUT_MS,
                 files=files_to_stage or None,
                 session_id=session_id,
+                deadline=deadline,
             )
 
             # Truncate output for LLM consumption
@@ -405,6 +638,25 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                 for file_id, gen_file in zip(generated_file_ids, generated_files)
             ]
 
+            # Fold the self-heal summary into the streams so both the UI and the
+            # agent can see that automatic repair happened. On success it goes to
+            # stdout (keeps the section status as "completed"); on failure it goes
+            # to stderr alongside the real traceback.
+            succeeded = response.exit_code == 0
+            if self_heal_note:
+                if succeeded:
+                    truncated_stdout = (
+                        f"{self_heal_note}\n{truncated_stdout}"
+                        if truncated_stdout
+                        else self_heal_note
+                    )
+                else:
+                    truncated_stderr = (
+                        f"{truncated_stderr}\n{self_heal_note}"
+                        if truncated_stderr
+                        else self_heal_note
+                    )
+
             # Emit delta with stdout/stderr and generated files
             self.emitter.emit(
                 Packet(
@@ -425,7 +677,7 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                 exit_code=response.exit_code,
                 timed_out=response.timed_out,
                 generated_files=generated_files,
-                error=None if response.exit_code == 0 else truncated_stderr,
+                error=None if succeeded else truncated_stderr,
             )
 
             # Serialize result for LLM

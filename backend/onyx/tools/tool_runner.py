@@ -1,6 +1,7 @@
 import traceback
 from collections import defaultdict
 from typing import Any
+from typing import cast
 
 import onyx.tracing.framework._error_tracing as _error_tracing
 from onyx.chat.models import ChatMessageSimple
@@ -219,6 +220,60 @@ def _safe_run_single_tool(
     return tool_response
 
 
+def _on_tool_timeout(
+    index: int,
+    func: Any,
+    args: tuple[Any, ...],
+) -> ToolResponse:
+    """Handle a tool whose execution exceeded TOOL_EXECUTION_TIMEOUT_SECONDS.
+
+    The threadpool abandons the still-running thread, so the SectionEnd that
+    _safe_run_single_tool would normally emit never fires — leaving the UI stuck
+    showing the tool as "running" forever and the agent with no result. This
+    callback emits a terminal SectionEnd (so the UI completes) and returns a real
+    timeout error message (so the agent sees what happened and can react), instead
+    of the default None that gets silently dropped.
+
+    `args` is the tuple passed to _safe_run_single_tool: (tool, tool_call, override_kwargs).
+    """
+    tool = cast(Tool, args[0])
+    tool_call = cast(ToolCallKickoff, args[1])
+    timeout_minutes = TOOL_EXECUTION_TIMEOUT_SECONDS // 60
+    logger.error(
+        f"Tool {tool.name} timed out after {TOOL_EXECUTION_TIMEOUT_SECONDS}s "
+        f"(tool_call_id={tool_call.tool_call_id})"
+    )
+
+    # Emit a terminal packet so the frontend stops showing the tool as running.
+    # Note: the original hung tool thread is abandoned, not killed — if it later
+    # unblocks it may emit a late delta / second SectionEnd to this same
+    # placement. That's tolerated: the frontend keys off the FIRST terminal
+    # packet (`.find()`), so the late packets are effectively ignored.
+    try:
+        tool.emitter.emit(
+            Packet(
+                placement=tool_call.placement,
+                obj=SectionEnd(),
+            )
+        )
+    except Exception:
+        logger.exception(
+            f"Failed to emit SectionEnd for timed-out tool {tool.name}"
+        )
+
+    timeout_msg = (
+        f"The '{tool.name}' tool timed out after {timeout_minutes} minutes and "
+        f"was stopped before it returned a result. The operation may have hung or "
+        f"been too slow. If retrying, simplify the request or break it into smaller steps."
+    )
+    response = ToolResponse(
+        rich_response=None,
+        llm_facing_response=GENERIC_TOOL_ERROR_MESSAGE.format(error=timeout_msg),
+    )
+    response.tool_call = tool_call
+    return response
+
+
 def run_tool_calls(
     tool_calls: list[ToolCallKickoff],
     tools: list[Tool],
@@ -421,6 +476,9 @@ def run_tool_calls(
         allow_failures=True,  # Continue even if some tools fail
         max_workers=max_concurrent_tools,
         timeout=TOOL_EXECUTION_TIMEOUT_SECONDS,
+        # On timeout, emit a terminal packet + return a real error so the UI
+        # doesn't hang and the agent isn't left with a generic failure message.
+        timeout_callback=_on_tool_timeout,
     )
 
     # Process results and update citation_mapping

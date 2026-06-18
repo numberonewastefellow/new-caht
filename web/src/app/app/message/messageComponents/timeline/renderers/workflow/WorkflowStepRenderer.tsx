@@ -17,11 +17,12 @@ import {
   mutedTextMarkdownComponents,
   collapsedMarkdownComponents,
 } from "@/app/app/message/messageComponents/timeline/renderers/sharedMarkdownComponents";
+import { WorkflowTraceButton } from "./WorkflowTraceGraph";
 
 export const WorkflowStepRenderer: MessageRenderer<
   WorkflowStepPacket,
   FullChatState
-> = ({ packets, stopPacketSeen, children }) => {
+> = ({ packets, state, stopPacketSeen, isLastStep, children }) => {
   // Extract step metadata from the start packet
   const startPacket = packets.find(
     (p) => p.obj.type === PacketType.WORKFLOW_STEP_START
@@ -63,18 +64,28 @@ export const WorkflowStepRenderer: MessageRenderer<
     []
   );
 
-  const stepContent = fullContent ? (
-    <div className="pl-[var(--timeline-common-text-padding)]">
-      <ExpandableTextDisplay
-        title={`${personaName}: ${stepName}`}
-        content={fullContent}
-        renderContent={renderMarkdown}
-        isStreaming={!isComplete && !stopPacketSeen}
-      />
-    </div>
-  ) : (
-    <></>
-  );
+  // Show the "View execution trace" entry point once per run — on the last
+  // step, after it completes (covers completed runs; pauses are handled by
+  // WorkflowPauseRenderer).
+  const showTrace =
+    (Boolean(isLastStep) || stepStart?.promote_output === true) && isComplete;
+
+  const stepContent =
+    fullContent || showTrace ? (
+      <div className="pl-[var(--timeline-common-text-padding)]">
+        {fullContent ? (
+          <ExpandableTextDisplay
+            title={`${personaName}: ${stepName}`}
+            content={fullContent}
+            renderContent={renderMarkdown}
+            isStreaming={!isComplete && !stopPacketSeen}
+          />
+        ) : null}
+        {showTrace ? <WorkflowTraceButton messageId={state?.messageId} /> : null}
+      </div>
+    ) : (
+      <></>
+    );
 
   return children([
     {

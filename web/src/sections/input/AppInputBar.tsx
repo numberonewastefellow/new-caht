@@ -170,6 +170,10 @@ const AppInputBar = React.memo(
     // Internal message state - kept local to avoid parent re-renders on every keystroke
     const [message, setMessage] = useState(initialMessage);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
+    // Track the last value injected from `initialMessage` and the live message,
+    // so a quick-action prompt never clobbers a draft the user has typed.
+    const lastInjectedRef = useRef<string>(initialMessage);
+    const messageRef = useRef<string>(message);
     const containerRef = useRef<HTMLDivElement>(null);
     const { user } = useUser();
     const { isClassifying, classification } = useQueryController();
@@ -178,6 +182,7 @@ const AppInputBar = React.memo(
     React.useImperativeHandle(ref, () => ({
       reset: () => {
         setMessage("");
+        lastInjectedRef.current = "";
       },
       focus: () => {
         textAreaRef.current?.focus();
@@ -277,7 +282,16 @@ const AppInputBar = React.memo(
     }, [message, isSearchMode]);
 
     useEffect(() => {
-      if (initialMessage) {
+      messageRef.current = message;
+    }, [message]);
+
+    useEffect(() => {
+      if (!initialMessage || initialMessage === lastInjectedRef.current) return;
+      const current = messageRef.current;
+      // Only inject when the box is empty or still shows our previous injection —
+      // never overwrite text the user typed themselves.
+      if (current === "" || current === lastInjectedRef.current) {
+        lastInjectedRef.current = initialMessage;
         setMessage(initialMessage);
       }
     }, [initialMessage]);

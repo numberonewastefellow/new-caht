@@ -243,6 +243,7 @@ const AgentMessage = React.memo(function AgentMessage({
     () => ({
       ...chatState,
       citations: mergedCitations,
+      messageId,
     }),
     [
       chatState.assistant,
@@ -251,6 +252,7 @@ const AgentMessage = React.memo(function AgentMessage({
       chatState.overriddenModel,
       chatState.researchType,
       mergedCitations,
+      messageId,
     ]
   );
 

@@ -341,6 +341,16 @@ class AgentTool(Tool[None]):
                     self._chat_files, token_counter
                 )
 
+        logger.info(
+            "[Trace] agent='%s' has_python_tool=%s files=%d branch=%s",
+            self._persona.name,
+            has_python_tool,
+            len(self._chat_files),
+            ("sandbox" if has_python_tool else "inlined")
+            if self._chat_files
+            else "none",
+        )
+
         system_prompt = ChatMessageSimple(
             message=system_prompt_text,
             token_count=token_counter(system_prompt_text),

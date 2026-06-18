@@ -2,6 +2,7 @@
 
 import json
 from collections.abc import Generator
+from uuid import UUID
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -19,6 +20,7 @@ from onyx.db.models import User
 from onyx.db.workflow import create_or_update_workflow_persona
 from onyx.db.workflow import create_workflow
 from onyx.db.workflow import delete_workflow
+from onyx.db.workflow import get_latest_execution_by_chat_session
 from onyx.db.workflow import get_workflow_by_id
 from onyx.db.workflow import list_workflow_executions
 from onyx.db.workflow import list_workflows
@@ -26,6 +28,8 @@ from onyx.db.workflow import update_workflow
 from onyx.server.utils import get_json_line
 from onyx.utils.logger import setup_logger
 from onyx.workflows.models import CONDITION_OPERATORS
+from onyx.workflows.trace_models import load_workflow_trace
+from onyx.workflows.trace_models import load_workflow_trace_by_message
 from onyx.workflows.models import WorkflowCreate
 from onyx.workflows.models import WorkflowExecutionResponse
 from onyx.workflows.models import WorkflowResponse
@@ -109,6 +113,51 @@ def get_condition_operators(
 ) -> list[str]:
     """Return the list of valid condition operators for conditional router steps."""
     return CONDITION_OPERATORS
+
+
+@router.get("/chat-session/{chat_session_id}/trace")
+def get_workflow_trace(
+    chat_session_id: UUID,
+    user: User | None = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> dict:
+    """Return the execution trace graph for the latest workflow run in a chat session."""
+    execution = get_latest_execution_by_chat_session(db_session, chat_session_id)
+    if execution is None:
+        raise HTTPException(
+            status_code=404, detail="No workflow execution for this chat session"
+        )
+    if (
+        user is not None
+        and execution.user_id is not None
+        and execution.user_id != user.id
+    ):
+        raise HTTPException(status_code=403, detail="Not authorized")
+    trace = load_workflow_trace(execution.id)
+    if trace is None:
+        raise HTTPException(
+            status_code=404, detail="No trace available for this execution"
+        )
+    return trace.model_dump()
+
+
+@router.get("/message/{message_id}/trace")
+def get_workflow_trace_by_message(
+    message_id: int,
+    _: User | None = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> dict:
+    """Return the execution trace graph for a specific assistant message.
+
+    Lets the UI show the trace for *that* message's run, even when a chat
+    session has multiple workflow runs.
+    """
+    trace = load_workflow_trace_by_message(message_id)
+    if trace is None:
+        raise HTTPException(
+            status_code=404, detail="No trace available for this message"
+        )
+    return trace.model_dump()
 
 
 # ========================

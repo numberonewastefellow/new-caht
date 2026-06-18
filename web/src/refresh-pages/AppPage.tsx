@@ -58,6 +58,10 @@ import {
   getMaxSelectedDocumentTokens,
 } from "@/app/app/projects/projectsService";
 import ProjectChatSessionList from "@/app/app/components/projects/ProjectChatSessionList";
+import WorkspaceDetailHeader from "@/app/app/components/projects/workspace-v2/WorkspaceDetailHeader";
+import WorkspaceDetailBody from "@/app/app/components/projects/workspace-v2/WorkspaceDetailBody";
+import { type WorkspaceTab } from "@/app/app/components/projects/workspace-v2/workspaceTheme";
+import { usePageVersion } from "@/hooks/usePageVersion";
 import { cn } from "@/lib/utils";
 import Suggestions from "@/sections/Suggestions";
 import OnboardingFlow from "@/refresh-components/onboarding/OnboardingFlow";
@@ -134,6 +138,14 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   const appFocus = useAppFocus();
   const { setAppMode } = useAppMode();
   const searchParams = useSearchParams();
+
+  // Workspace UI version switch (dual-version, web-only). When "new", the
+  // workspace detail uses the upgraded header/body; "legacy" keeps the classic
+  // ProjectContextPanel + ProjectChatSessionList. Mirrors the Agentic AI pattern.
+  const { isLegacy: wsLegacy, setVersion: setWorkspaceVersion } =
+    usePageVersion("workspace-ui", "new");
+  const [wsTab, setWsTab] = useState<WorkspaceTab>("overview");
+  const useNewWorkspace = appFocus.isProject() && !wsLegacy;
 
   // Use SWR hooks for data fetching
   const {
@@ -292,6 +304,10 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   }, [lastFailedFiles, clearLastFailedFiles]);
 
   const chatInputBarRef = useRef<AppInputBarHandle>(null);
+
+  // Focus the message composer (used by the new workspace "New chat" quick action,
+  // since the composer is already on screen in workspace/project mode).
+  const focusComposer = useCallback(() => chatInputBarRef.current?.focus(), []);
 
   const filterManager = useFilters();
 
@@ -800,16 +816,29 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                     </div>
                   )}
 
-                  {/* ProjectUI */}
-                  {appFocus.isProject() && (
-                    <div className="w-full max-h-[50vh] overflow-y-auto overscroll-y-none">
-                      <ProjectContextPanel
-                        projectTokenCount={projectContextTokenCount}
-                        availableContextTokens={availableContextTokens}
-                        setPresentingDocument={setPresentingDocument}
-                      />
-                    </div>
-                  )}
+                  {/* ProjectUI — new workspace detail header (title + tabs) */}
+                  {appFocus.isProject() &&
+                    (useNewWorkspace ? (
+                      <div className="w-full">
+                        <WorkspaceDetailHeader tab={wsTab} setTab={setWsTab} />
+                      </div>
+                    ) : (
+                      <div className="w-full max-h-[50vh] overflow-y-auto overscroll-y-none">
+                        <div className="w-full max-w-[var(--app-page-main-content-width)] mx-auto flex justify-end px-4 pt-2">
+                          <button
+                            onClick={() => setWorkspaceVersion("new")}
+                            className="text-[11px] text-text-03 hover:text-text-05 transition-colors"
+                          >
+                            Try the new workspace view
+                          </button>
+                        </div>
+                        <ProjectContextPanel
+                          projectTokenCount={projectContextTokenCount}
+                          availableContextTokens={availableContextTokens}
+                          setPresentingDocument={setPresentingDocument}
+                        />
+                      </div>
+                    ))}
 
                   {/* WelcomeMessageUI */}
                   <Fade
@@ -830,7 +859,14 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
 
                 {/* ── Middle-center: AppInputBar ── */}
                 <div className="row-start-2 flex flex-col items-center">
-                  <div className="relative w-full max-w-[var(--app-page-main-content-width)] flex flex-col">
+                  <div
+                    className={cn(
+                      "relative w-full flex flex-col",
+                      useNewWorkspace
+                        ? "max-w-[72rem] px-4"
+                        : "max-w-[var(--app-page-main-content-width)]"
+                    )}
+                  >
                     {/* Scroll to bottom button - positioned absolutely above AppInputBar */}
                     {appFocus.isChat() && showScrollButton && (
                       <div className="absolute top-[-3.5rem] self-center">
@@ -931,12 +967,24 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
 
                 {/* ── Bottom: SearchResults + SourceFilter / Suggestions / ProjectChatList ── */}
                 <div className="row-start-3 min-h-0 overflow-hidden flex flex-col items-center w-full">
-                  {/* ProjectChatSessionList */}
-                  {appFocus.isProject() && (
-                    <div className="w-full max-w-[var(--app-page-main-content-width)] h-full overflow-y-auto overscroll-y-none mx-auto">
-                      <ProjectChatSessionList />
-                    </div>
-                  )}
+                  {/* ProjectUI — new workspace detail body, or legacy chat list */}
+                  {appFocus.isProject() &&
+                    (useNewWorkspace ? (
+                      <div className="w-full h-full overflow-y-auto overscroll-y-none">
+                        <WorkspaceDetailBody
+                          tab={wsTab}
+                          setTab={setWsTab}
+                          setPresentingDocument={setPresentingDocument}
+                          projectTokenCount={projectContextTokenCount}
+                          availableContextTokens={availableContextTokens}
+                          onNewChat={focusComposer}
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full max-w-[var(--app-page-main-content-width)] h-full overflow-y-auto overscroll-y-none mx-auto">
+                        <ProjectChatSessionList />
+                      </div>
+                    ))}
 
                   {/* SuggestionsUI */}
                   <Fade

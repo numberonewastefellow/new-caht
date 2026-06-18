@@ -860,6 +860,13 @@ CODE_INTERPRETER_MAX_OUTPUT_LENGTH = int(
     os.environ.get("CODE_INTERPRETER_MAX_OUTPUT_LENGTH") or 50_000
 )
 
+# Max number of automatic "self-heal" attempts the Python tool makes when the
+# generated code raises an error: it feeds the failing code + traceback back to
+# the LLM, asks for corrected code, and re-runs it in the same sandbox session.
+CODE_INTERPRETER_MAX_SELF_HEAL_ATTEMPTS = int(
+    os.environ.get("CODE_INTERPRETER_MAX_SELF_HEAL_ATTEMPTS") or 3
+)
+
 
 #####
 # Miscellaneous

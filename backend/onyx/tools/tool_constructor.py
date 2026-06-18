@@ -255,6 +255,7 @@ def construct_tools(
                         emitter=emitter,
                         db_session=db_session,
                         chat_session_id=chat_session_id,
+                        llm=llm,
                     )
                 ]
 

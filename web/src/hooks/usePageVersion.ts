@@ -27,7 +27,10 @@ function readStored(key: string): PageVersion | null {
   return v === "new" || v === "legacy" ? v : null;
 }
 
-export function usePageVersion(key: string): {
+export function usePageVersion(
+  key: string,
+  defaultVersion?: PageVersion
+): {
   version: PageVersion;
   setVersion: (next: PageVersion) => void;
   isLegacy: boolean;
@@ -53,7 +56,7 @@ export function usePageVersion(key: string): {
   }, [key]);
 
   const version: PageVersion =
-    paramVersion ?? stored ?? defaultUiVersion ?? "new";
+    paramVersion ?? stored ?? defaultVersion ?? defaultUiVersion ?? "new";
 
   const setVersion = useCallback(
     (next: PageVersion) => {

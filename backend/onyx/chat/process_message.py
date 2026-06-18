@@ -472,6 +472,11 @@ def _run_workflow_and_save(
     # Pause tracking
     pause_data: dict | None = None
 
+    logger.info(
+        "[Trace] workflow hand-off: chat_files=%d names=%s",
+        len(chat_files or []),
+        [f.filename for f in (chat_files or [])],
+    )
     for packet in run_workflow(
         workflow=workflow,
         user_message=user_message,
@@ -482,6 +487,7 @@ def _run_workflow_and_save(
         chat_session_id=chat_session_id,
         chat_files=chat_files,
         sandbox_session_id=sandbox_session_id,
+        assistant_message_id=assistant_message.id,
     ):
         yield packet
 

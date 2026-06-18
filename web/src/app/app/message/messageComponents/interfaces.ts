@@ -24,6 +24,8 @@ export type TimelineLayout = "timeline" | "content";
 
 export interface FullChatState {
   assistant: MinimalPersonaSnapshot;
+  // Backend assistant message id (for per-message lookups, e.g. workflow trace)
+  messageId?: number;
   // Document-related context for citations
   docs?: OnyxDocument[] | null;
   userFiles?: ProjectFile[];

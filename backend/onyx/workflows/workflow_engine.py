@@ -29,6 +29,9 @@ from onyx.db.models import Persona
 from onyx.db.models import User
 from onyx.db.models import WorkflowExecution
 from onyx.db.workflow import create_workflow_execution
+from onyx.workflows.trace_models import load_workflow_trace
+from onyx.workflows.trace_models import persist_workflow_trace
+from onyx.workflows.trace_models import WorkflowTraceBuilder
 from onyx.db.workflow import get_paused_execution
 from onyx.db.workflow import load_checkpoint
 from onyx.db.workflow import save_checkpoint
@@ -1263,6 +1266,7 @@ def run_workflow_llm_decision(
     paused_execution: WorkflowExecution | None = None,
     chat_files: list[ChatFile] | None = None,
     sandbox_session_id: str | None = None,
+    assistant_message_id: int | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in LLM-decision mode — orchestrator LLM decides which agent to call.
 
@@ -1458,6 +1462,31 @@ def run_workflow_llm_decision(
     cancelled = False
     final_answer_emitted = False
     promoted_output_emitted = False
+    final_answer_text = ""
+
+    # --- Execution trace graph (best-effort observability) ---
+    _trace_file_names = [f.filename for f in (chat_files or [])]
+    trace_builder = WorkflowTraceBuilder(
+        execution_id=execution.id,
+        workflow_id=workflow.id,
+        workflow_name=workflow.name,
+        chat_session_id=str(chat_session_id) if chat_session_id else None,
+        mode="llm_decision",
+        message_id=assistant_message_id,
+    )
+    if paused_execution is not None:
+        _prior_trace = load_workflow_trace(execution.id)
+        if _prior_trace is not None:
+            trace_builder.restore(_prior_trace)
+    else:
+        trace_builder.set_start(user_message, _trace_file_names)
+    logger.info(
+        "[Trace] workflow start execution_id=%d chat_files=%d names=%s resume=%s",
+        execution.id,
+        len(_trace_file_names),
+        _trace_file_names,
+        paused_execution is not None,
+    )
 
     try:
         # ================================================================
@@ -1856,8 +1885,13 @@ def run_workflow_llm_decision(
                 dict(agent_call_counts),
             )
 
+            # Trace: record the orchestrator decision for this cycle
+            if llm_step_result.tool_calls:
+                trace_builder.add_orchestrator(cycle + 1, llm_step_result.answer)
+
             # If orchestrator produced a final answer (no tool calls)
             if llm_step_result.answer and not llm_step_result.tool_calls:
+                final_answer_text = llm_step_result.answer
                 # Yield the final synthesis answer so the frontend can display it
                 final_placement = Placement(turn_index=turn_index)
                 yield Packet(
@@ -2092,6 +2126,28 @@ def run_workflow_llm_decision(
                             total_tokens=total_tokens,
                             total_duration_ms=total_duration_ms,
                         )
+                        # Trace: record the paused agent + persist
+                        trace_builder.add_agent(
+                            step_id=agent_tool.step_id,
+                            name=agent_tool.display_name,
+                            persona_id=agent_tool.id,
+                            input_text=json.dumps(tool_call.tool_args),
+                            output_text=_strip_needs_input_prefix(agent_output),
+                            status="paused",
+                            file_names=_trace_file_names,
+                            call_index=agent_call_counts.get(tool_call.tool_name),
+                        )
+                        trace_builder.finalize(
+                            "paused", total_tokens, total_duration_ms
+                        )
+                        persist_workflow_trace(trace_builder.trace, include_message_key=True)
+                        logger.info(
+                            "[Trace] PAUSE agent='%s' files_available=%d "
+                            "execution_id=%d",
+                            agent_tool.display_name,
+                            len(_trace_file_names),
+                            execution.id,
+                        )
                         # Close the step
                         yield Packet(
                             placement=agent_placement,
@@ -2180,6 +2236,19 @@ def run_workflow_llm_decision(
                         "tokens_used": step_tokens,
                     })
 
+                    trace_builder.add_agent(
+                        step_id=agent_tool.step_id,
+                        name=agent_tool.display_name,
+                        persona_id=agent_tool.id,
+                        input_text=task_input,
+                        output_text=agent_output,
+                        status="completed",
+                        duration_ms=step_duration_ms,
+                        tokens=step_tokens,
+                        file_names=_trace_file_names,
+                        call_index=agent_call_counts.get(tool_call.tool_name),
+                    )
+
                     # Add tool result to orchestrator history
                     tool_call_msg = ChatMessageSimple(
                         message=json.dumps({
@@ -2228,6 +2297,10 @@ def run_workflow_llm_decision(
                     save_checkpoint(
                         db_session, execution.id, step_checkpoint
                     )
+                    # Trace: persist after each step (crash resilience — a hard
+                    # kill skips the except/finalize blocks). Execution-keyed
+                    # only; the message-keyed copy is written at terminal points.
+                    persist_workflow_trace(trace_builder.trace)
 
                     # Emit step end BEFORE promote_output so no tool
                     # packet follows the promoted message_start (which
@@ -2297,6 +2370,12 @@ def run_workflow_llm_decision(
             total_duration_ms=total_duration_ms,
         )
 
+        # Trace: record final answer + persist the completed graph
+        if final_answer_text:
+            trace_builder.add_finish(final_answer_text)
+        trace_builder.finalize(final_status, total_tokens, total_duration_ms)
+        persist_workflow_trace(trace_builder.trace, include_message_key=True)
+
     except Exception as e:
         logger.exception("[LLM-Decision] Workflow execution failed")
         total_duration_ms = int((time.monotonic() - start_time) * 1000)
@@ -2309,6 +2388,11 @@ def run_workflow_llm_decision(
             total_duration_ms=total_duration_ms,
             error_message=str(e),
         )
+        try:
+            trace_builder.finalize("failed", total_tokens, total_duration_ms)
+            persist_workflow_trace(trace_builder.trace, include_message_key=True)
+        except Exception:
+            logger.debug("[Trace] failed-path persist error", exc_info=True)
         raise
 
     # Fallback: if the orchestrator loop ended without producing a final
@@ -2359,6 +2443,7 @@ def run_workflow(
     chat_session_id: UUID | None = None,
     chat_files: list[ChatFile] | None = None,
     sandbox_session_id: str | None = None,
+    assistant_message_id: int | None = None,
 ) -> Generator[Packet, None, None]:
     """Main entry point — dispatches to the appropriate orchestration mode.
 
@@ -2416,6 +2501,7 @@ def run_workflow(
             paused_execution=paused_execution,
             chat_files=chat_files,
             sandbox_session_id=sandbox_session_id,
+            assistant_message_id=assistant_message_id,
         )
     else:
         raise ValueError(f"Unsupported orchestration mode: {mode}")

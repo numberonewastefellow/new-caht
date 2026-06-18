@@ -399,6 +399,19 @@ def get_workflow_execution(
     return db_session.get(WorkflowExecution, execution_id)
 
 
+def get_latest_execution_by_chat_session(
+    db_session: Session,
+    chat_session_id: UUID,
+) -> WorkflowExecution | None:
+    """Most recent workflow execution for a chat session (for trace lookup)."""
+    return db_session.execute(
+        select(WorkflowExecution)
+        .where(WorkflowExecution.chat_session_id == chat_session_id)
+        .order_by(WorkflowExecution.started_at.desc())
+        .limit(1)
+    ).scalar_one_or_none()
+
+
 def list_workflow_executions(
     db_session: Session,
     workflow_id: int,
