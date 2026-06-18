@@ -227,7 +227,7 @@ function Header() {
             icon={SvgFolderIn}
             onClick={noProp(() => setShowMoveOptions(true))}
           >
-            Move to Project
+            Move to Workspace
           </LineItem>,
           <LineItem
             key="delete"

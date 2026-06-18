@@ -6,6 +6,7 @@ but generalized to support any Persona as a sub-agent.
 
 import json
 import re
+from collections.abc import Callable
 from typing import Any
 from typing import TYPE_CHECKING
 
@@ -36,6 +37,75 @@ def _sanitize_tool_name(name: str) -> str:
     sanitized = re.sub(r"[^a-zA-Z0-9_]", "_", name.lower().strip())
     sanitized = re.sub(r"_+", "_", sanitized).strip("_")
     return f"delegate_to_{sanitized}"
+
+
+# Max tokens of extracted attached-file text to inline into a NON-PythonTool
+# agent's prompt. PythonTool agents read the bytes in their sandbox instead, so
+# this budget only applies to agents that cannot open files themselves.
+_MAX_ATTACHED_FILE_TEXT_TOKENS = 50000
+
+# Image files have no useful extractable text — list them by name only.
+_IMAGE_SUFFIXES = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp")
+
+
+def _build_attached_files_section(
+    chat_files: list["ChatFile"],
+    token_counter: Callable[[str], int],
+) -> str:
+    """Inline the *content* of attached files for a NON-PythonTool agent.
+
+    Such agents (e.g. Policy Coverage Analyst) cannot open files themselves —
+    without this they only ever see filenames. We extract each document's text
+    with the production extractor and inline it under a token budget so the agent
+    can actually read e.g. a policy ``.docx``.
+
+    - Image files → listed by name only (no useful text).
+    - Document/data files → extracted to text and inlined until the budget is
+      hit; overflow and extraction failures fall back to filename-only so one
+      large/bad file can't overflow context or break the prompt.
+    """
+    from io import BytesIO
+
+    from onyx.file_processing.extract_file_text import extract_text_and_images
+
+    inlined: list[str] = []
+    listed_only: list[str] = []
+    used_tokens = 0
+
+    for f in chat_files:
+        if f.filename.lower().endswith(_IMAGE_SUFFIXES):
+            listed_only.append(f"{f.filename} (image)")
+            continue
+        try:
+            result = extract_text_and_images(BytesIO(f.content), f.filename)
+            text = (result.text_content or "").strip()
+        except Exception:
+            listed_only.append(f"{f.filename} (could not extract text)")
+            continue
+        if not text:
+            listed_only.append(f"{f.filename} (no extractable text)")
+            continue
+        tokens = token_counter(text)
+        if used_tokens + tokens > _MAX_ATTACHED_FILE_TEXT_TOKENS:
+            listed_only.append(f"{f.filename} (content omitted — exceeds context budget)")
+            continue
+        used_tokens += tokens
+        inlined.append(f"### {f.filename}\n{text}")
+
+    parts = [
+        "\n\n## Attached Document Contents\n"
+        "The user attached the documents below; their extracted text follows. "
+        "Treat this as the authoritative source data — do NOT ask the user to "
+        "upload or re-send these, and do NOT generate synthetic data."
+    ]
+    if inlined:
+        parts.append("\n\n".join(inlined))
+    if listed_only:
+        parts.append(
+            "Files referenced by name only (no inlined text):\n"
+            + "\n".join(f"- {n}" for n in listed_only)
+        )
+    return "\n\n".join(parts)
 
 
 class AgentTool(Tool[None]):
@@ -248,20 +318,28 @@ class AgentTool(Tool[None]):
 
         # Append tool-specific guidance (mirrors prompt_utils.py behaviour)
         from onyx.tools.tool_implementations.python.python_tool import PythonTool
-        if any(isinstance(t, PythonTool) for t in tools):
+        has_python_tool = any(isinstance(t, PythonTool) for t in tools)
+        if has_python_tool:
             from onyx.prompts.tool_prompts import PYTHON_TOOL_GUIDANCE
             system_prompt_text += PYTHON_TOOL_GUIDANCE
 
-        # Tell the agent about pre-loaded files in the sandbox
+        # Give the agent its attached files. PythonTool agents read the bytes
+        # pre-loaded in their sandbox; agents without a PythonTool can't open
+        # files, so we inline the extracted document text instead.
         if self._chat_files:
-            file_names = [f.filename for f in self._chat_files]
-            system_prompt_text += (
-                "\n\n## Available Files\n"
-                "The following files are pre-loaded in your working directory and can be "
-                f"read directly (e.g., `pd.read_csv('{file_names[0]}')`):\n"
-                + "\n".join(f"- {name}" for name in file_names)
-                + "\n\nDo NOT generate synthetic data — use these real files instead."
-            )
+            if has_python_tool:
+                file_names = [f.filename for f in self._chat_files]
+                system_prompt_text += (
+                    "\n\n## Available Files\n"
+                    "The following files are pre-loaded in your working directory and can be "
+                    f"read directly (e.g., `pd.read_csv('{file_names[0]}')`):\n"
+                    + "\n".join(f"- {name}" for name in file_names)
+                    + "\n\nDo NOT generate synthetic data — use these real files instead."
+                )
+            else:
+                system_prompt_text += _build_attached_files_section(
+                    self._chat_files, token_counter
+                )
 
         system_prompt = ChatMessageSimple(
             message=system_prompt_text,

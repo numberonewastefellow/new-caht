@@ -37,7 +37,7 @@ export default function CreateProjectModal({
       route({ projectId: newProject.id });
       modal.toggle(false);
     } catch (e) {
-      toast.error(`Failed to create the project ${name}`);
+      toast.error(`Failed to create the workspace ${name}`);
     }
   }
 
@@ -48,7 +48,7 @@ export default function CreateProjectModal({
       <Modal.Content width="sm">
         {/* Clean header — title + close X inline (no icon, no description) */}
         <Modal.Header
-          title="Create project"
+          title="Create workspace"
           onClose={() => modal.toggle(false)}
         />
 
@@ -62,7 +62,7 @@ export default function CreateProjectModal({
               type="text"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
-              placeholder="What are you working on?"
+              placeholder="Name your workspace"
               className="flex-1 bg-transparent outline-none text-text-05 placeholder:text-text-02 text-sm"
               autoFocus
             />
@@ -72,15 +72,15 @@ export default function CreateProjectModal({
           <div className="flex items-start gap-2.5 px-3 py-2.5 bg-background-neutral-01 rounded-12">
             <SvgSparkle className="w-4 h-4 stroke-text-03 flex-shrink-0 mt-0.5" />
             <Text as="p" secondaryBody text03>
-              Projects keep chats, files, and custom instructions in one place.
-              Use them for ongoing work, or just to keep things tidy.
+              Workspaces keep chats, files, and custom instructions in one
+              place. Use them for ongoing work, or just to keep things tidy.
             </Text>
           </div>
         </Modal.Body>
 
         <Modal.Footer>
           <Button onClick={handleSubmit} disabled={!projectName.trim()}>
-            Create project
+            Create workspace
           </Button>
         </Modal.Footer>
       </Modal.Content>

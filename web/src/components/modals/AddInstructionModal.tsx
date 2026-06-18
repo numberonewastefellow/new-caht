@@ -34,8 +34,8 @@ export default function AddInstructionModal() {
       <Modal.Content width="sm">
         <Modal.Header
           icon={SvgAddLines}
-          title="Set Project Instructions"
-          description="Specify the behaviors or tone for the chat sessions in this project."
+          title="Set Workspace Instructions"
+          description="Specify the behaviors or tone for the chat sessions in this workspace."
           onClose={() => modal.toggle(false)}
         />
         <Modal.Body>

@@ -30,7 +30,8 @@ export default function MoveCustomAgentChatModal({
     >
       <div className="flex flex-col gap-4">
         <Text as="p" text03>
-          This chat uses a <b>custom agent</b> and moving it to a <b>project</b>{" "}
+          This chat uses a <b>custom agent</b> and moving it to a{" "}
+          <b>workspace</b>{" "}
           will not override the agent&apos;s prompt or knowledge configurations.
           This should only be used for organization purposes.
         </Text>

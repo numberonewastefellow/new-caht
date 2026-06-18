@@ -73,7 +73,7 @@ def create_chat_session_from_request(
     project_id = chat_session_request.project_id
     if project_id:
         if not check_project_ownership(project_id, user_id, db_session):
-            raise ValueError("User does not have access to project")
+            raise ValueError("User does not have access to workspace")
 
     return create_chat_session(
         db_session=db_session,

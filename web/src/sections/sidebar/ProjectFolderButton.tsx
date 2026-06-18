@@ -125,7 +125,7 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
       icon={SvgEdit}
       onClick={noProp(() => setIsEditing(true))}
     >
-      Rename Project
+      Rename Workspace
     </LineItem>,
     null,
     <LineItem
@@ -134,7 +134,7 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
       onClick={noProp(() => setDeleteConfirmationModalOpen(true))}
       danger
     >
-      Delete Project
+      Delete Workspace
     </LineItem>,
   ];
 
@@ -149,7 +149,7 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
       {/* Confirmation Modal (only for deletion) */}
       {deleteConfirmationModalOpen && (
         <ConfirmationModalLayout
-          title="Delete Project"
+          title="Delete Workspace"
           icon={SvgTrash}
           onClose={() => setDeleteConfirmationModalOpen(false)}
           submit={
@@ -164,7 +164,7 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
             </Button>
           }
         >
-          Are you sure you want to delete this project? This action cannot be
+          Are you sure you want to delete this workspace? This action cannot be
           undone.
         </ConfirmationModalLayout>
       )}

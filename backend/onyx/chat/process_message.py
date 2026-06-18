@@ -1067,7 +1067,7 @@ def handle_stream_message_objects(
 
         elif new_msg_req.deep_research:
             if chat_session.project_id:
-                raise RuntimeError("Deep research is not supported for projects")
+                raise RuntimeError("Deep research is not supported for workspaces")
 
             # Skip clarification if the last assistant message was a clarification
             # (user has already responded to a clarification question)

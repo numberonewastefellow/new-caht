@@ -66,7 +66,7 @@ def create_project(
     db_session: Session = Depends(get_session),
 ) -> UserProjectSnapshot:
     if name == "":
-        raise HTTPException(status_code=400, detail="Project name cannot be empty")
+        raise HTTPException(status_code=400, detail="Workspace name cannot be empty")
     user_id = user.id
     project = UserProject(name=name, user_id=user_id)
     db_session.add(project)
@@ -128,7 +128,7 @@ def get_project(
         .one_or_none()
     )
     if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail="Workspace not found")
     return UserProjectSnapshot.from_model(project)
 
 
@@ -160,7 +160,7 @@ def unlink_user_file_from_project(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> Response:
-    """Unlink an existing user file from a specific project for the current user.
+    """Unlink an existing user file from a specific workspace for the current user.
 
     Does not delete the underlying file; only removes the association.
     """
@@ -171,7 +171,7 @@ def unlink_user_file_from_project(
         .one_or_none()
     )
     if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail="Workspace not found")
 
     user_id = user.id
     user_file = (
@@ -196,7 +196,7 @@ def unlink_user_file_from_project(
         priority=OnyxCeleryPriority.HIGHEST,
     )
     logger.info(
-        f"Triggered project sync for user_file_id={user_file.id} with task_id={task.id}"
+        f"Triggered workspace sync for user_file_id={user_file.id} with task_id={task.id}"
     )
 
     return Response(status_code=204)
@@ -213,7 +213,7 @@ def link_user_file_to_project(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> UserFileSnapshot:
-    """Link an existing user file to a specific project for the current user.
+    """Link an existing user file to a specific workspace for the current user.
 
     Creates the association in the Project__UserFile join table if it does not exist.
     Returns the linked user file snapshot.
@@ -225,7 +225,7 @@ def link_user_file_to_project(
         .one_or_none()
     )
     if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail="Workspace not found")
 
     user_file = (
         db_session.query(UserFile)
@@ -248,7 +248,7 @@ def link_user_file_to_project(
         priority=OnyxCeleryPriority.HIGHEST,
     )
     logger.info(
-        f"Triggered project sync for user_file_id={user_file.id} with task_id={task.id}"
+        f"Triggered workspace sync for user_file_id={user_file.id} with task_id={task.id}"
     )
 
     return UserFileSnapshot.from_model(user_file)
@@ -276,7 +276,7 @@ def get_project_instructions(
     )
 
     if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail="Workspace not found")
 
     return ProjectInstructionsResponse(instructions=project.instructions)
 
@@ -296,8 +296,8 @@ def upsert_project_instructions(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> ProjectInstructionsResponse:
-    """Create or update this project's instructions stored on the project itself."""
-    # Ensure the project exists and belongs to the user
+    """Create or update this workspace's instructions stored on the workspace itself."""
+    # Ensure the workspace exists and belongs to the user
     user_id = user.id
     project = (
         db_session.query(UserProject)
@@ -305,7 +305,7 @@ def upsert_project_instructions(
         .one_or_none()
     )
     if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail="Workspace not found")
     project.instructions = body.instructions
 
     db_session.commit()
@@ -364,7 +364,7 @@ def update_project(
         .one_or_none()
     )
     if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail="Workspace not found")
 
     if body.name is not None:
         project.name = body.name
@@ -389,9 +389,9 @@ def delete_project(
         .one_or_none()
     )
     if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail="Workspace not found")
 
-    # Unlink chat sessions from this project
+    # Unlink chat sessions from this workspace
     for chat in project.chat_sessions:
         chat.project_id = None
 
@@ -412,7 +412,7 @@ def delete_user_file(
 ) -> UserFileDeleteResult:
     """Delete a user file belonging to the current user.
 
-    This will also remove any project associations for the file.
+    This will also remove any workspace associations for the file.
     """
     user_id = user.id
     user_file = (
@@ -423,7 +423,7 @@ def delete_user_file(
     if user_file is None:
         raise HTTPException(status_code=404, detail="File not found")
 
-    # Check associations with projects and assistants (personas)
+    # Check associations with workspaces and assistants (personas)
     project_names = [project.name for project in user_file.projects]
     assistant_names = [assistant.name for assistant in user_file.assistants]
 
@@ -551,9 +551,9 @@ def get_chat_session_project_token_count(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> TokenCountResponse:
-    """Return sum of token_count for all user files in the project linked to the given chat session.
+    """Return sum of token_count for all user files in the workspace linked to the given chat session.
 
-    If the chat session has no project, returns 0.
+    If the chat session has no workspace, returns 0.
     """
     user_id = user.id
     chat_session = (
@@ -579,9 +579,9 @@ def get_chat_session_project_files(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> list[UserFileSnapshot]:
-    """Return user files for the project linked to the given chat session.
+    """Return user files for the workspace linked to the given chat session.
 
-    If the chat session has no project, returns an empty list.
+    If the chat session has no workspace, returns an empty list.
     Only returns files owned by the current user and not FAILED.
     """
     user_id = user.id
@@ -617,9 +617,9 @@ def get_project_total_token_count(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> TokenCountResponse:
-    """Return sum of token_count for all user files in the given project for the current user."""
+    """Return sum of token_count for all user files in the given workspace for the current user."""
 
-    # Verify the project belongs to the current user
+    # Verify the workspace belongs to the current user
     user_id = user.id
     project = (
         db_session.query(UserProject)
@@ -627,7 +627,7 @@ def get_project_total_token_count(
         .one_or_none()
     )
     if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail="Workspace not found")
 
     total_tokens = get_project_token_count(
         project_id=project_id,

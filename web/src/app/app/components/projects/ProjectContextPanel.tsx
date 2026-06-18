@@ -161,7 +161,7 @@ export default function ProjectContextPanel({
 
   // Project name
   const currentProject = projects.find((p) => p.id === currentProjectId);
-  const projectName = currentProject?.name || "Loading project...";
+  const projectName = currentProject?.name || "Loading workspace...";
 
   // Save guidelines inline
   async function handleSaveGuidelines() {
@@ -184,8 +184,8 @@ export default function ProjectContextPanel({
     <>
       <projectFilesModal.Provider>
         <UserFilesModal
-          title="Project Files"
-          description="Sessions in this project can access the files here."
+          title="Workspace Files"
+          description="Sessions in this workspace can access the files here."
           recentFiles={[...allCurrentProjectFiles]}
           onView={handleOnView}
           handleUploadChange={handleUploadChange}
@@ -223,7 +223,7 @@ export default function ProjectContextPanel({
                   internal
                   onClick={() => setIsEditingName(true)}
                   className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
-                  tooltip="Rename project"
+                  tooltip="Rename workspace"
                 />
               </>
             )}
@@ -238,7 +238,7 @@ export default function ProjectContextPanel({
             >
               <Chevron expanded={guidelinesExpanded} />
               <span className="text-[13px] font-medium text-text-03">
-                Project Guidelines
+                Workspace Instructions
               </span>
             </button>
 
@@ -253,7 +253,7 @@ export default function ProjectContextPanel({
                   </p>
                 ) : (
                   <p className="text-[13px] text-text-02 italic">
-                    No guidelines set. Click to add.
+                    No instructions set. Click to add.
                   </p>
                 )}
               </div>
@@ -265,7 +265,7 @@ export default function ProjectContextPanel({
                 <InputTextArea
                   value={guidelinesText}
                   onChange={(e) => setGuidelinesText(e.target.value)}
-                  placeholder="Specify behaviors, tone, or context for chats in this project..."
+                  placeholder="Specify behaviors, tone, or context for chats in this workspace..."
                 />
                 <div className="flex gap-2 mt-2 justify-end">
                   <Button
@@ -416,7 +416,7 @@ export default function ProjectContextPanel({
                     </div>
                     {projectTokenCount > availableContextTokens && (
                       <Text as="p" text02 secondaryBody className="mt-2">
-                        This project exceeds the model&apos;s context limits.
+                        This workspace exceeds the model&apos;s context limits.
                         Sessions will automatically search for relevant files
                         first before generating response.
                       </Text>
@@ -444,7 +444,7 @@ export default function ProjectContextPanel({
                       )}
                     >
                       {isDragActive
-                        ? "Drop files here to add to this project"
+                        ? "Drop files here to add to this workspace"
                         : "Attach documents, texts, or images. Drag & drop supported."}
                     </p>
                   </div>

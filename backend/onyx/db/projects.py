@@ -106,10 +106,10 @@ def upload_files_to_user_files_with_indexing(
     temp_id_map: dict[str, str] | None,
     db_session: Session,
 ) -> CategorizedFilesResult:
-    # Validate project ownership if a project_id is provided
+    # Validate workspace ownership if a project_id is provided
     if project_id is not None and user is not None:
         if not check_project_ownership(project_id, user.id, db_session):
-            raise HTTPException(status_code=404, detail="Project not found")
+            raise HTTPException(status_code=404, detail="Workspace not found")
 
     categorized_files_result = create_user_files(
         files,
@@ -148,9 +148,9 @@ def upload_files_to_user_files_with_indexing(
 def check_project_ownership(
     project_id: int, user_id: UUID | None, db_session: Session
 ) -> bool:
-    # In no-auth mode, all projects are accessible
+    # In no-auth mode, all workspaces are accessible
     if user_id is None:
-        # Verify project exists
+        # Verify workspace exists
         return (
             db_session.query(UserProject).filter(UserProject.id == project_id).first()
             is not None
@@ -167,7 +167,7 @@ def check_project_ownership(
 def get_user_files_from_project(
     project_id: int, user_id: UUID | None, db_session: Session
 ) -> list[UserFile]:
-    # First check if the user owns the project
+    # First check if the user owns the workspace
     if not check_project_ownership(project_id, user_id, db_session):
         return []
 
@@ -180,7 +180,7 @@ def get_user_files_from_project(
 
 
 def get_project_instructions(db_session: Session, project_id: int | None) -> str | None:
-    """Return the project's instruction text from the project, else None.
+    """Return the workspace's instruction text from the workspace, else None.
 
     Safe helper that swallows DB errors and returns None on any failure.
     """
@@ -205,7 +205,7 @@ def get_project_token_count(
     user_id: UUID | None,
     db_session: Session,
 ) -> int:
-    """Return sum of token_count for all user files in the given project.
+    """Return sum of token_count for all user files in the given workspace.
 
     If project_id is None, returns 0.
     """

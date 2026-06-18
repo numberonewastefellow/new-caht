@@ -143,7 +143,7 @@ export default function ChatSearchCommandMenu({
       return [{ id: "chats", label: "Sessions" }];
     }
     if (activeFilter === "projects") {
-      return [{ id: "projects", label: "Projects" }];
+      return [{ id: "projects", label: "Workspaces" }];
     }
     return [];
   }, [activeFilter]);
@@ -216,7 +216,7 @@ export default function ChatSearchCommandMenu({
       <CommandMenu open={open} onOpenChange={handleOpenChange}>
         <CommandMenu.Content>
           <CommandMenu.Header
-            placeholder="Search chat sessions, projects..."
+            placeholder="Search chat sessions, workspaces..."
             value={searchValue}
             onValueChange={setSearchValue}
             filters={headerFilters}
@@ -227,7 +227,7 @@ export default function ChatSearchCommandMenu({
 
           <CommandMenu.List
             emptyMessage={
-              hasSearchValue ? "No results found" : "No chats or projects yet"
+              hasSearchValue ? "No results found" : "No chats or workspaces yet"
             }
           >
             {/* New Session action - always visible in "all" filter, even during search */}
@@ -303,7 +303,7 @@ export default function ChatSearchCommandMenu({
                     filteredProjects.length <= PREVIEW_PROJECTS_LIMIT
                   }
                 >
-                  Projects
+                  Workspaces
                 </CommandMenu.Filter>
                 {/* New Project action - shown after Projects filter when no search term */}
                 {!hasSearchValue && activeFilter === "all" && (
@@ -312,7 +312,7 @@ export default function ChatSearchCommandMenu({
                     icon={SvgFolderPlus}
                     onSelect={() => handleNewProject()}
                   >
-                    New Project
+                    New Workspace
                   </CommandMenu.Action>
                 )}
                 {displayedProjects.map((project) => (
@@ -348,7 +348,7 @@ export default function ChatSearchCommandMenu({
                   onSelect={() => handleNewProject(searchValue.trim())}
                 >
                   <>
-                    Create New Project "
+                    Create New Workspace "
                     <span className="text-text-05">{searchValue.trim()}</span>"
                   </>
                 </CommandMenu.Action>

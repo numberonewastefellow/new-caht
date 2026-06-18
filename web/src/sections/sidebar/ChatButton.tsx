@@ -86,7 +86,7 @@ export function PopoverSearchInput({
         value={searchTerm}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder="Search Projects"
+        placeholder="Search Workspaces"
         onClick={noProp()}
         variant="internal"
         autoFocus
@@ -209,7 +209,7 @@ const ChatButton = memo(
             icon={SvgFolderIn}
             onClick={noProp(() => setShowMoveOptions(true))}
           >
-            Move to Project
+            Move to Workspace
           </LineItem>,
           project && (
             <LineItem
@@ -388,7 +388,7 @@ const ChatButton = memo(
         setNavigateAfterMoveProjectId(null);
       } catch (error) {
         console.error("Failed to create project and move chat:", error);
-        showErrorNotification("Failed to create project. Please try again.");
+        showErrorNotification("Failed to create workspace. Please try again.");
         setNavigateAfterMoveProjectId(null);
       }
     }

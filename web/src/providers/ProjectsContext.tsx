@@ -197,7 +197,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
   const upsertInstructions = useCallback(
     async (instructions: string) => {
       if (!currentProjectId) {
-        throw new Error("No project selected");
+        throw new Error("No workspace selected");
       }
       await svcUpsertProjectInstructions(currentProjectId, instructions);
       await refreshCurrentProjectDetails();
@@ -216,7 +216,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
         return project;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : "Failed to create project";
+          err instanceof Error ? err.message : "Failed to create workspace";
         throw err;
       }
     },
@@ -247,7 +247,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
           await refreshCurrentProjectDetails();
         }
         const message =
-          err instanceof Error ? err.message : "Failed to rename project";
+          err instanceof Error ? err.message : "Failed to rename workspace";
         throw err;
       }
     },

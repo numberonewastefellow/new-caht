@@ -558,7 +558,7 @@ const MemoizedAppSidebarInner = memo(
           folded={folded}
           lowlight={!folded}
         >
-          New Project
+          New Workspace
         </SidebarTab>
       ),
       [folded, createProjectModal.toggle, createProjectModal.isOpen]
@@ -721,7 +721,7 @@ const MemoizedAppSidebarInner = memo(
                 >
                   {/* Projects */}
                   <SidebarSection
-                    title="Projects"
+                    title="Workspaces"
                     collapsible
                     collapsed={projectsCollapsed}
                     onToggle={() => setProjectsCollapsed((prev) => !prev)}
@@ -730,7 +730,7 @@ const MemoizedAppSidebarInner = memo(
                         icon={SvgFolderPlus}
                         prominence="tertiary"
                         size="sm"
-                        tooltip="New Project"
+                        tooltip="New Workspace"
                         onClick={() => createProjectModal.toggle(true)}
                       />
                     }

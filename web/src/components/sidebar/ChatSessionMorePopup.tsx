@@ -150,7 +150,7 @@ export function ChatSessionMorePopup({
           icon={SvgFolderIn}
           onClick={noProp(() => setShowMoveOptions(true))}
         >
-          Move to Project
+          Move to Workspace
         </LineItem>,
         projectId && (
           <LineItem
@@ -159,7 +159,7 @@ export function ChatSessionMorePopup({
             onClick={noProp(() => handleRemoveChatSessionFromProject())}
           >
             {`Remove from ${
-              projects.find((p) => p.id === projectId)?.name ?? "Project"
+              projects.find((p) => p.id === projectId)?.name ?? "Workspace"
             }`}
           </LineItem>
         ),
