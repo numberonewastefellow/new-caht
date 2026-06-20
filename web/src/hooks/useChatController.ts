@@ -370,16 +370,9 @@ export default function useChatController({
       regenerationRequest,
     }: OnSubmitProps) => {
       const projectId = params(SEARCH_PARAM_NAMES.PROJECT_ID);
-      {
-        const params = new URLSearchParams(searchParams?.toString() || "");
-        if (params.has(SEARCH_PARAM_NAMES.PROJECT_ID)) {
-          params.delete(SEARCH_PARAM_NAMES.PROJECT_ID);
-          const newUrl = params.toString()
-            ? `${pathname}?${params.toString()}`
-            : pathname;
-          router.replace(newUrl as Route, { scroll: false });
-        }
-      }
+      // NOTE: we intentionally KEEP the `projectId` URL param for workspace
+      // chats so the workspace context (files / instructions / banner) stays
+      // loaded. AppPage keeps the param in sync with the chat's project_id.
 
       updateSubmittedMessage(getCurrentSessionId(), message);
 

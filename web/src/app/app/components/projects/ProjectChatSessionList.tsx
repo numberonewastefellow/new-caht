@@ -14,7 +14,11 @@ import { UNNAMED_CHAT } from "@/lib/constants";
 import ChatSessionSkeleton from "@/refresh-components/skeletons/ChatSessionSkeleton";
 import { SvgBubbleText } from "@opal/icons";
 
-export default function ProjectChatSessionList() {
+export default function ProjectChatSessionList({
+  searchQuery,
+}: {
+  searchQuery?: string;
+} = {}) {
   const {
     currentProjectDetails,
     currentProjectId,
@@ -29,11 +33,15 @@ export default function ProjectChatSessionList() {
 
   const projectChats: ChatSession[] = useMemo(() => {
     const sessions = currentProjectDetails?.project?.chat_sessions || [];
-    return [...sessions].sort(
+    const sorted = [...sessions].sort(
       (a, b) =>
         new Date(b.time_updated).getTime() - new Date(a.time_updated).getTime()
     );
-  }, [currentProjectDetails?.project?.chat_sessions]);
+    const q = searchQuery?.trim().toLowerCase();
+    return q
+      ? sorted.filter((c) => (c.name || "").toLowerCase().includes(q))
+      : sorted;
+  }, [currentProjectDetails?.project?.chat_sessions, searchQuery]);
 
   if (!currentProjectId) return null;
 
@@ -60,7 +68,10 @@ export default function ProjectChatSessionList() {
           {projectChats.map((chat) => (
             <Link
               key={chat.id}
-              href={{ pathname: "/app", query: { chatId: chat.id } }}
+              href={{
+                pathname: "/app",
+                query: { chatId: chat.id, projectId: currentProjectId },
+              }}
               className="relative flex w-full"
               onMouseEnter={() => setHoveredChatId(chat.id)}
               onMouseLeave={() => setHoveredChatId(null)}

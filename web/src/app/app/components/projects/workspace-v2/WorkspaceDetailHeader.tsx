@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import type { Route } from "next";
 import { useProjectsContext } from "@/providers/ProjectsContext";
-import { usePageVersion } from "@/hooks/usePageVersion";
 import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "../project_utils";
 import { workspaceUpdatedAt, type WorkspaceTab } from "./workspaceTheme";
@@ -12,7 +9,6 @@ import WorkspaceGlyph from "./WorkspaceGlyph";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import ButtonRenaming from "@/refresh-components/buttons/ButtonRenaming";
 import {
-  SvgChevronLeft,
   SvgEdit,
   SvgFileText,
   SvgBubbleText,
@@ -53,7 +49,6 @@ export default function WorkspaceDetailHeader({
     renameProject,
     allCurrentProjectFiles,
   } = useProjectsContext();
-  const { setVersion } = usePageVersion("workspace-ui", "new");
   const [isEditingName, setIsEditingName] = useState(false);
 
   if (!currentProjectId) return null;
@@ -68,22 +63,7 @@ export default function WorkspaceDetailHeader({
 
   return (
     <div className="mx-auto w-full max-w-[72rem] px-4 pt-6">
-      {/* Breadcrumb */}
-      <div className="flex items-center justify-between">
-        <Link
-          href={"/app/workspaces" as Route}
-          className="flex items-center gap-1 text-xs text-text-03 hover:text-text-05 transition-colors"
-        >
-          <SvgChevronLeft className="h-3.5 w-3.5 stroke-current" /> Workspaces
-        </Link>
-        <button
-          onClick={() => setVersion("legacy")}
-          className="text-[11px] text-text-03 hover:text-text-05 transition-colors"
-        >
-          Classic view
-        </button>
-      </div>
-
+      {/* Breadcrumb + Classic-view toggle now live in the workspace top banner */}
       {/* Title block */}
       <div className="mt-4 rounded-2xl border border-border-01 bg-background-tint-01 p-5">
         <div className="group flex items-start gap-4">

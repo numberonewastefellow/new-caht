@@ -1,6 +1,14 @@
 "use client";
 
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import {
+  redirect,
+  useRouter,
+  useSearchParams,
+  usePathname,
+} from "next/navigation";
+import type { Route } from "next";
+import WorkspaceContextPanel from "@/app/app/components/projects/workspace-v2/WorkspaceContextPanel";
+import { useWorkspacePanelStore } from "@/app/app/stores/useWorkspacePanelStore";
 import { HealthCheckBanner } from "@/components/health/healthcheck";
 import {
   personaIncludesRetrieval,
@@ -377,6 +385,9 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   const updateCurrentDocumentSidebarVisible = useChatSessionStore(
     (state) => state.updateCurrentDocumentSidebarVisible
   );
+  const pathname = usePathname();
+  const workspacePanelOpen = useWorkspacePanelStore((s) => s.open);
+  const setWorkspacePanelOpen = useWorkspacePanelStore((s) => s.setOpen);
   const messageHistory = useCurrentMessageHistory();
 
   // Determine anchor: second-to-last message (last user message before current response)
@@ -478,11 +489,49 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
 
   const toggleDocumentSidebar = useCallback(() => {
     if (!documentSidebarVisible) {
+      // Sources and the workspace panel are separate, mutually-exclusive docks.
+      setWorkspacePanelOpen(false);
       updateCurrentDocumentSidebarVisible(true);
     } else {
       updateCurrentDocumentSidebarVisible(false);
     }
-  }, [documentSidebarVisible, updateCurrentDocumentSidebarVisible]);
+  }, [
+    documentSidebarVisible,
+    updateCurrentDocumentSidebarVisible,
+    setWorkspacePanelOpen,
+  ]);
+
+  // Mutual exclusivity (other direction): opening the workspace panel closes Sources.
+  useEffect(() => {
+    if (workspacePanelOpen && documentSidebarVisible) {
+      updateCurrentDocumentSidebarVisible(false);
+    }
+  }, [workspacePanelOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keep the `projectId` URL param in sync with the active chat's workspace so
+  // workspace context (files/instructions/name) is loaded in a workspace chat.
+  // (See plan: "keep projectId in the chat URL".)
+  useEffect(() => {
+    if (!appFocus.isChat() || !currentChatSession) return;
+    const desired =
+      currentChatSession.project_id != null
+        ? String(currentChatSession.project_id)
+        : null;
+    const current = searchParams.get(SEARCH_PARAM_NAMES.PROJECT_ID);
+    if (current === desired) return;
+    const sp = new URLSearchParams(searchParams.toString());
+    if (desired) sp.set(SEARCH_PARAM_NAMES.PROJECT_ID, desired);
+    else sp.delete(SEARCH_PARAM_NAMES.PROJECT_ID);
+    const qs = sp.toString();
+    router.replace((qs ? `${pathname}?${qs}` : pathname) as Route, {
+      scroll: false,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    currentChatSession?.id,
+    currentChatSession?.project_id,
+    appFocus.isChat(),
+  ]);
 
   if (!user) {
     redirect("/auth/login");
@@ -601,6 +650,24 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
             closeSidebar={handleDesktopDocumentSidebarClose}
             selectedDocuments={selectedDocuments}
           />
+        </div>
+      </div>
+    ) : null;
+
+  // New workspace UI: right-side context dock (History / Files / Instructions)
+  // for workspace chats. Separate from, and mutually exclusive with, Sources.
+  const isWorkspaceChat =
+    appFocus.isChat() && currentChatSession?.project_id != null && !wsLegacy;
+  const workspaceContextPanel =
+    isWorkspaceChat && !settings.isMobile ? (
+      <div
+        className={cn(
+          "flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
+          workspacePanelOpen ? "w-[22rem]" : "w-[0rem]"
+        )}
+      >
+        <div className="h-full w-[22rem]">
+          <WorkspaceContextPanel setPresentingDocument={setPresentingDocument} />
         </div>
       </div>
     ) : null;
@@ -1014,6 +1081,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
       </AppLayouts.Root>
 
       {desktopDocumentSidebar}
+      {workspaceContextPanel}
     </>
   );
 }

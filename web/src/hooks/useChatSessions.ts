@@ -7,6 +7,7 @@ import { errorHandlingFetcher } from "@/lib/fetcher";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import useAppFocus from "./useAppFocus";
 import { useAgents } from "./useAgents";
+import { useProjects } from "@/lib/hooks/useProjects";
 import { DEFAULT_ASSISTANT_ID } from "@/lib/constants";
 
 interface ChatSessionsResponse {
@@ -151,10 +152,28 @@ export default function useChatSessions(): UseChatSessionsOutput {
   }, [fetchedSessions, pendingSessions]);
 
   const currentChatSessionId = appFocus.isChat() ? appFocus.getId() : null;
-  const currentChatSession =
-    chatSessions.find(
+
+  // Workspace (project) chats are excluded from `get-user-chat-sessions`
+  // (only_non_project_chats=True) and the API doesn't carry `project_id`. The
+  // projects list, however, includes each workspace's chat_sessions — so when
+  // the current chat isn't in the main list, resolve it from there and stamp
+  // the owning `project_id`. This lets the rest of the app know a chat's
+  // workspace without any backend change.
+  const { projects } = useProjects();
+  const currentChatSession = useMemo<ChatSession | null>(() => {
+    if (!currentChatSessionId) return null;
+    const fromList = chatSessions.find(
       (chatSession) => chatSession.id === currentChatSessionId
-    ) ?? null;
+    );
+    if (fromList) return fromList;
+    for (const project of projects) {
+      const chat = project.chat_sessions?.find(
+        (cs) => cs.id === currentChatSessionId
+      );
+      if (chat) return { ...chat, project_id: project.id };
+    }
+    return null;
+  }, [chatSessions, currentChatSessionId, projects]);
 
   const agentForCurrentChatSession =
     useFindAgentForCurrentChatSession(currentChatSession);

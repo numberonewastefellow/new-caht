@@ -61,7 +61,7 @@ function SectionIcon({
 }
 
 /* ── Instructions ── */
-function InstructionsSection() {
+export function InstructionsSection() {
   const {
     currentProjectId,
     currentProjectDetails,
@@ -142,7 +142,7 @@ function InstructionsSection() {
 }
 
 /* ── Files ── */
-function FilesSection({
+export function FilesSection({
   variant,
   setPresentingDocument,
 }: {

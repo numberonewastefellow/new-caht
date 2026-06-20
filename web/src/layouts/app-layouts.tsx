@@ -66,6 +66,8 @@ import { AppMode, useAppMode } from "@/providers/AppModeProvider";
 import useAppFocus from "@/hooks/useAppFocus";
 import { useQueryController } from "@/providers/QueryControllerProvider";
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { usePageVersion } from "@/hooks/usePageVersion";
+import WorkspaceTopBanner from "@/app/app/components/projects/workspace-v2/WorkspaceTopBanner";
 
 /**
  * App Header Component
@@ -109,6 +111,15 @@ function Header() {
   const router = useRouter();
   const appFocus = useAppFocus();
   const { classification } = useQueryController();
+  const { isLegacy: wsLegacy } = usePageVersion("workspace-ui", "new");
+
+  // New workspace UI: render the full-width top banner (and let it own the
+  // breadcrumb / workspace meta / chat title / chips) for workspace detail and
+  // workspace chats. Normal chats/agents/settings keep the default header.
+  const isWorkspaceContext =
+    !wsLegacy &&
+    (appFocus.isProject() ||
+      (appFocus.isChat() && currentChatSession?.project_id != null));
 
   const customHeaderContent =
     settings?.enterpriseSettings?.custom_header_content;
@@ -248,6 +259,27 @@ function Header() {
     handleMoveClick,
   ]);
 
+  const moreMenu = (
+    <SimplePopover
+      trigger={
+        <IconButton
+          icon={SvgMoreHorizontal}
+          className="ml-2"
+          transient={popoverOpen}
+          tertiary
+        />
+      }
+      onOpenChange={(state) => {
+        setPopoverOpen(state);
+        if (!state) setShowMoveOptions(false);
+      }}
+      side="bottom"
+      align="end"
+    >
+      <PopoverMenu>{popoverItems}</PopoverMenu>
+    </SimplePopover>
+  );
+
   return (
     <>
       {showShareModal && currentChatSession && (
@@ -290,7 +322,15 @@ function Header() {
         </ConfirmationModalLayout>
       )}
 
-      <div
+      {isWorkspaceContext ? (
+        <WorkspaceTopBanner
+          onShare={() => setShowShareModal(true)}
+          moreMenu={moreMenu}
+          isMobile={isMobile}
+          onOpenMobileSidebar={() => setFolded(false)}
+        />
+      ) : (
+        <div
         className={cn(
           "w-full flex flex-row flex-wrap justify-center items-center px-4",
           // # Note (@raunakab):
@@ -391,28 +431,12 @@ function Header() {
               >
                 {isMobile ? "" : "Share Chat"}
               </Button>
-              <SimplePopover
-                trigger={
-                  <IconButton
-                    icon={SvgMoreHorizontal}
-                    className="ml-2"
-                    transient={popoverOpen}
-                    tertiary
-                  />
-                }
-                onOpenChange={(state) => {
-                  setPopoverOpen(state);
-                  if (!state) setShowMoveOptions(false);
-                }}
-                side="bottom"
-                align="end"
-              >
-                <PopoverMenu>{popoverItems}</PopoverMenu>
-              </SimplePopover>
+              {moreMenu}
             </FrostedDiv>
           )}
         </div>
       </div>
+      )}
     </>
   );
 }
