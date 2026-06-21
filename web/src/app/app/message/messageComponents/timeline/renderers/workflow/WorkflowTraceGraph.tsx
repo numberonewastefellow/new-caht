@@ -16,9 +16,29 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
+import { Button } from "@opal/components";
+
 import Modal from "@/refresh-components/Modal";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import { useChatSessionStore } from "@/app/app/stores/useChatSessionStore";
+
+// Graph/flow glyph used for the "View execution trace" trigger.
+function TraceGraphIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      {...props}
+    >
+      <circle cx="5" cy="6" r="2" />
+      <circle cx="5" cy="18" r="2" />
+      <circle cx="19" cy="12" r="2" />
+      <path d="M7 6h6M7 18h6M13 6c4 0 4 6 4 6M13 18c4 0 4-6 4-6" />
+    </svg>
+  );
+}
 
 // ── Trace data shape (mirrors backend onyx/workflows/trace_models.py) ────────
 
@@ -263,26 +283,41 @@ function TraceGraphBody({
 
 // ── Public: the "View execution trace" button ────────────────────────────────
 
-export function WorkflowTraceButton({ messageId }: { messageId?: number }) {
+export function WorkflowTraceButton({
+  messageId,
+  compact,
+}: {
+  messageId?: number;
+  compact?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const chatId = useChatSessionStore((s) => s.currentSessionId);
   if (!chatId && messageId == null) return null;
 
+  const trigger = compact ? (
+    // Icon-only trigger that matches the timeline header's chevron buttons.
+    <Button
+      prominence="tertiary"
+      size="md"
+      icon={TraceGraphIcon}
+      onClick={() => setOpen(true)}
+      tooltip="View execution trace"
+      aria-label="View execution trace"
+    />
+  ) : (
+    <button
+      type="button"
+      onClick={() => setOpen(true)}
+      className="flex items-center gap-1.5 text-[11px] text-text-03 hover:text-text-05 mt-1"
+    >
+      <TraceGraphIcon width={14} height={14} />
+      View execution trace
+    </button>
+  );
+
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 text-[11px] text-text-03 hover:text-text-05 mt-1"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="5" cy="6" r="2" />
-          <circle cx="5" cy="18" r="2" />
-          <circle cx="19" cy="12" r="2" />
-          <path d="M7 6h6M7 18h6M13 6c4 0 4 6 4 6M13 18c4 0 4-6 4-6" />
-        </svg>
-        View execution trace
-      </button>
+      {trigger}
       <Modal open={open} onOpenChange={setOpen}>
         <Modal.Content width="lg" height="lg">
           <Modal.Header title="Workflow execution trace" onClose={() => setOpen(false)} />

@@ -25,6 +25,18 @@ export function swatchForId(id: number): Swatch {
   };
 }
 
+/**
+ * Deterministic swatch index (1..SWATCH_COUNT) for an arbitrary string key (e.g.
+ * a chat UUID), so the same key always maps to the same `--ws-swatch-N-*` color.
+ */
+export function swatchIndexForKey(key: string): number {
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 31 + key.charCodeAt(i)) | 0;
+  }
+  return (Math.abs(hash) % SWATCH_COUNT) + 1;
+}
+
 /** Inline gradient background for a workspace glyph/icon. */
 export function swatchGradientStyle(id: number): CSSProperties {
   const { from, to } = swatchForId(id);

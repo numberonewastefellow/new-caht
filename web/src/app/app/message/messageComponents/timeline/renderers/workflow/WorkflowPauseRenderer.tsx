@@ -10,12 +10,11 @@ import {
   MessageRenderer,
   FullChatState,
 } from "@/app/app/message/messageComponents/interfaces";
-import { WorkflowTraceButton } from "./WorkflowTraceGraph";
 
 export const WorkflowPauseRenderer: MessageRenderer<
   WorkflowPausePacket,
   FullChatState
-> = ({ packets, state, children }) => {
+> = ({ packets, children }) => {
   // Extract pause metadata
   const pausePacket = packets.find(
     (p) => p.obj.type === PacketType.WORKFLOW_PAUSE_FOR_INPUT
@@ -25,16 +24,12 @@ export const WorkflowPauseRenderer: MessageRenderer<
 
   // The full questions text is emitted as main message content
   // (AgentResponseStart/Delta), so the timeline only shows a compact status.
-  // The trace IS persisted on pause, so surface the entry point here too.
+  // The "View execution trace" entry point lives in the timeline header.
   return children([
     {
       icon: SvgCircle,
       status: `${personaName} — Waiting for input`,
-      content: (
-        <div className="pl-[var(--timeline-common-text-padding)]">
-          <WorkflowTraceButton messageId={state?.messageId} />
-        </div>
-      ),
+      content: <></>,
       accent: "blue",
     },
   ]);

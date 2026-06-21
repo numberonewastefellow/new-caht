@@ -7,12 +7,14 @@ import { useProjectsContext } from "@/providers/ProjectsContext";
 import { ChatSession } from "@/app/app/interfaces";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import { useAgents } from "@/hooks/useAgents";
+import useAppFocus from "@/hooks/useAppFocus";
 import { formatRelativeTime } from "./project_utils";
+import { swatchIndexForKey } from "./workspace-v2/workspaceTheme";
 import Text from "@/refresh-components/texts/Text";
 import { cn } from "@/lib/utils";
 import { UNNAMED_CHAT } from "@/lib/constants";
 import ChatSessionSkeleton from "@/refresh-components/skeletons/ChatSessionSkeleton";
-import { SvgBubbleText } from "@opal/icons";
+import { SvgBubbleText, SvgClock } from "@opal/icons";
 
 export default function ProjectChatSessionList({
   searchQuery,
@@ -26,6 +28,8 @@ export default function ProjectChatSessionList({
     isLoadingProjectDetails,
   } = useProjectsContext();
   const { agents: assistants } = useAgents();
+  const appFocus = useAppFocus();
+  const activeChatId = appFocus.isChat() ? appFocus.getId() : null;
   const [isRenamingChat, setIsRenamingChat] = React.useState<string | null>(
     null
   );
@@ -64,98 +68,102 @@ export default function ProjectChatSessionList({
           No chats yet.
         </Text>
       ) : (
-        <div className="flex flex-col gap-2">
-          {projectChats.map((chat) => (
-            <Link
-              key={chat.id}
-              href={{
-                pathname: "/app",
-                query: { chatId: chat.id, projectId: currentProjectId },
-              }}
-              className="relative flex w-full"
-              onMouseEnter={() => setHoveredChatId(chat.id)}
-              onMouseLeave={() => setHoveredChatId(null)}
-            >
-              <div
-                className={cn(
-                  "w-full rounded-08 py-2 transition-colors p-1.5",
-                  hoveredChatId === chat.id && "bg-background-tint-02"
-                )}
+        <div className="flex flex-col gap-0.5">
+          {projectChats.map((chat) => {
+            const isActive = chat.id === activeChatId;
+            const personaIdToDefault =
+              currentProjectDetails?.persona_id_to_is_default || {};
+            const isCustomAgent =
+              personaIdToDefault[chat.persona_id] === false;
+            const assistant = isCustomAgent
+              ? assistants.find((a) => a.id === chat.persona_id)
+              : undefined;
+            const n = swatchIndexForKey(chat.id);
+            return (
+              <Link
+                key={chat.id}
+                href={{
+                  pathname: "/app",
+                  query: { chatId: chat.id, projectId: currentProjectId },
+                }}
+                className="relative block w-full"
+                onMouseEnter={() => setHoveredChatId(chat.id)}
+                onMouseLeave={() => setHoveredChatId(null)}
               >
-                <div className="flex gap-3 min-w-0 w-full">
-                  <div className="flex h-full w-fit pt-1 pl-1">
-                    {(() => {
-                      const personaIdToDefault =
-                        currentProjectDetails?.persona_id_to_is_default || {};
-                      const isDefault = personaIdToDefault[chat.persona_id];
-                      if (isDefault === false) {
-                        const assistant = assistants.find(
-                          (a) => a.id === chat.persona_id
-                        );
-                        if (assistant) {
-                          return (
-                            <div className="h-full pt-1">
-                              <AgentAvatar agent={assistant} size={18} />
-                            </div>
-                          );
-                        }
-                      }
-                      return (
-                        <SvgBubbleText className="h-4 w-4 stroke-text-02" />
-                      );
-                    })()}
-                  </div>
-                  <div className="flex flex-col w-full">
-                    <div className="flex items-center gap-1 w-full justify-between">
-                      <div className="flex items-center gap-1">
-                        <Text
-                          as="p"
-                          text03
-                          mainUiBody
-                          nowrap
-                          className="truncate"
-                          title={chat.name}
-                        >
-                          {chat.name || UNNAMED_CHAT}
-                        </Text>
-                      </div>
-                      <div className="flex items-center">
-                        <ChatSessionMorePopup
-                          chatSession={chat}
-                          projectId={currentProjectId}
-                          isRenamingChat={isRenamingChat === chat.id}
-                          setIsRenamingChat={(value) =>
-                            setIsRenamingChat(value ? chat.id : null)
-                          }
-                          search={false}
-                          afterDelete={() => {
-                            refreshCurrentProjectDetails();
-                          }}
-                          afterMove={() => {
-                            refreshCurrentProjectDetails();
-                          }}
-                          afterRemoveFromProject={() => {
-                            refreshCurrentProjectDetails();
-                          }}
-                          iconSize={20}
-                          isVisible={hoveredChatId === chat.id}
-                        />
-                      </div>
+                <div
+                  className={cn(
+                    "flex items-center gap-2.5 rounded-10 px-2 py-1.5 transition-colors",
+                    !isActive &&
+                      hoveredChatId === chat.id &&
+                      "bg-background-tint-02"
+                  )}
+                  style={
+                    isActive
+                      ? { backgroundColor: "var(--virtualai-accent-subtle)" }
+                      : undefined
+                  }
+                >
+                  {/* Per-chat colored icon tile (custom-agent chats keep the avatar) */}
+                  {assistant ? (
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center">
+                      <AgentAvatar agent={assistant} size={20} />
                     </div>
-                    <Text
-                      as="p"
-                      text03
-                      secondaryBody
-                      nowrap
-                      className="truncate"
+                  ) : (
+                    <span
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
+                      style={{
+                        backgroundColor: `color-mix(in srgb, var(--ws-swatch-${n}-from) 16%, transparent)`,
+                      }}
                     >
-                      Last message {formatRelativeTime(chat.time_updated)}
-                    </Text>
+                      <SvgBubbleText
+                        className="h-3.5 w-3.5 stroke-current"
+                        style={{ color: `var(--ws-swatch-${n}-from)` }}
+                      />
+                    </span>
+                  )}
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-1">
+                      <Text
+                        as="p"
+                        text04
+                        mainUiBody
+                        nowrap
+                        className="truncate"
+                        title={chat.name}
+                      >
+                        {chat.name || UNNAMED_CHAT}
+                      </Text>
+                      <ChatSessionMorePopup
+                        chatSession={chat}
+                        projectId={currentProjectId}
+                        isRenamingChat={isRenamingChat === chat.id}
+                        setIsRenamingChat={(value) =>
+                          setIsRenamingChat(value ? chat.id : null)
+                        }
+                        search={false}
+                        afterDelete={() => {
+                          refreshCurrentProjectDetails();
+                        }}
+                        afterMove={() => {
+                          refreshCurrentProjectDetails();
+                        }}
+                        afterRemoveFromProject={() => {
+                          refreshCurrentProjectDetails();
+                        }}
+                        iconSize={20}
+                        isVisible={hoveredChatId === chat.id}
+                      />
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] text-text-03">
+                      <SvgClock className="h-3 w-3 stroke-text-02" />
+                      {formatRelativeTime(chat.time_updated)}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>

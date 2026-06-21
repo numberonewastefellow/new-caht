@@ -657,7 +657,9 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   // New workspace UI: right-side context dock (History / Files / Instructions)
   // for workspace chats. Separate from, and mutually exclusive with, Sources.
   const isWorkspaceChat =
-    appFocus.isChat() && currentChatSession?.project_id != null && !wsLegacy;
+    appFocus.isChat() &&
+    (currentChatSession?.project_id != null || currentProjectId != null) &&
+    !wsLegacy;
   const workspaceContextPanel =
     isWorkspaceChat && !settings.isMobile ? (
       <div

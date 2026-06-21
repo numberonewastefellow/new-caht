@@ -395,9 +395,9 @@ const PARAMS_TO_SKIP = [
   // only use these if explicitly passed in
   SEARCH_PARAM_NAMES.CHAT_ID,
   SEARCH_PARAM_NAMES.PERSONA_ID,
-  SEARCH_PARAM_NAMES.PROJECT_ID,
-  // do not persist project context in the URL after navigation
-  "projectid",
+  // NOTE: PROJECT_ID is intentionally NOT skipped — a new chat started inside a
+  // workspace keeps `projectId` so the workspace banner/context shows on the
+  // first message. The AppPage URL-sync effect corrects stale params later.
 ];
 
 export function buildChatUrl(

@@ -18,9 +18,12 @@ import {
   isResearchAgentPackets,
   isSearchToolPackets,
   isWorkflowPausePackets,
+  isWorkflowStepPackets,
+  isWorkflowOrchestratorPackets,
   stepSupportsCollapsedStreaming,
   stepHasCollapsedStreamingContent,
 } from "@/app/app/message/messageComponents/timeline/packetHelpers";
+import { WorkflowTraceButton } from "@/app/app/message/messageComponents/timeline/renderers/workflow/WorkflowTraceGraph";
 import { useTimelineStepState } from "@/app/app/message/messageComponents/timeline/hooks/useTimelineStepState";
 import { StreamingHeader } from "@/app/app/message/messageComponents/timeline/headers/StreamingHeader";
 import { CompletedHeader } from "@/app/app/message/messageComponents/timeline/headers/CompletedHeader";
@@ -166,6 +169,23 @@ export const AgentTimeline = React.memo(function AgentTimeline({
   const lastStepIsPause = useMemo(
     () => (lastStep ? isWorkflowPausePackets(lastStep.packets) : false),
     [lastStep]
+  );
+
+  // Whether this timeline belongs to a workflow run (any step is a workflow
+  // step / orchestrator / pause). Drives the always-visible "View execution
+  // trace" button in the header — works live and from history (history
+  // reconstructs WorkflowStepStart / WorkflowPauseForInput packets).
+  const isWorkflowTimeline = useMemo(
+    () =>
+      turnGroups.some((tg) =>
+        tg.steps.some(
+          (s) =>
+            isWorkflowStepPackets(s.packets) ||
+            isWorkflowOrchestratorPackets(s.packets) ||
+            isWorkflowPausePackets(s.packets)
+        )
+      ),
+    [turnGroups]
   );
 
   const { isExpanded, handleToggle, parallelActiveTab, setParallelActiveTab } =
@@ -387,13 +407,18 @@ export const AgentTimeline = React.memo(function AgentTimeline({
       headerContent={
         <div
           className={cn(
-            "flex flex-1 min-w-0 h-full items-center justify-between p-1 rounded-t-12 transition-colors duration-300",
+            "flex flex-1 min-w-0 h-full items-center gap-1 p-1 rounded-t-12 transition-colors duration-300",
             headerIsInteractive && "hover:bg-background-tint-00",
             showTintedBackground && "bg-background-tint-00",
             showRoundedBottom && "rounded-b-12"
           )}
         >
-          {renderHeader()}
+          <div className="flex items-center justify-between flex-1 min-w-0 h-full">
+            {renderHeader()}
+          </div>
+          {isWorkflowTimeline && (
+            <WorkflowTraceButton compact messageId={chatState.messageId} />
+          )}
         </div>
       }
     >

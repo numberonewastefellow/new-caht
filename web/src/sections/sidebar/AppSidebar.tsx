@@ -67,10 +67,9 @@ import {
   SvgMoreHorizontal,
   SvgOnyxOctagon,
   SvgSearchMenu,
-  SvgSettings,
 } from "@opal/icons";
 import { usePageVersion } from "@/hooks/usePageVersion";
-import { makeColorfulIcon, makeAccentColorfulIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
+import { makeColorfulIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
 
 // Colorful sidebar icons — colored rounded squares with white icons
 const ColorfulNewSession = makeColorfulIcon(SvgEditBig, "sidebar_new_session");
@@ -79,7 +78,6 @@ const ColorfulCraft = makeColorfulIcon(SvgDevKit, "sidebar_craft");
 const ColorfulExploreAgents = makeColorfulIcon(SvgOnyxOctagon, "sidebar_agents");
 const ColorfulMoreAgents = makeColorfulIcon(SvgMoreHorizontal, "sidebar_agents");
 const ColorfulNewProject = makeColorfulIcon(SvgFolderPlus, "sidebar_projects");
-const ColorfulSettings = makeAccentColorfulIcon(SvgSettings);
 import BuildModeIntroBackground from "@/app/craft/components/IntroBackground";
 import BuildModeIntroContent from "@/app/craft/components/IntroContent";
 import { CRAFT_PATH } from "@/app/craft/v1/constants";
@@ -468,7 +466,7 @@ const MemoizedAppSidebarInner = memo(
       ]
     );
 
-    const { isAdmin, isCurator, user } = useUser();
+    const { user } = useUser();
     const activeSidebarTab = useAppFocus();
     const createProjectModal = useCreateModal();
     const defaultAppMode =
@@ -571,40 +569,18 @@ const MemoizedAppSidebarInner = memo(
       setShowIntroAnimation(true);
     }, []);
 
-    const vectorDbEnabled =
-      combinedSettings?.settings?.vector_db_enabled !== false;
-    const adminDefaultHref = vectorDbEnabled
-      ? "/admin/workflows"
-      : "/admin/assistants";
-
+    // The admin/curator entry now lives inside the unified user menu
+    // (UserAvatarPopover), gated by role — so the footer is a single row.
     const settingsButton = useMemo(
       () => (
-        <div>
-          {(isAdmin || isCurator) && (
-            <SidebarTab
-              href={adminDefaultHref}
-              leftIcon={ColorfulSettings}
-              folded={folded}
-            >
-              {isAdmin ? "Admin Panel" : "Curator Panel"}
-            </SidebarTab>
-          )}
-          <UserAvatarPopover
-            folded={folded}
-            onShowBuildIntro={
-              isOnyxCraftEnabled ? handleShowBuildIntro : undefined
-            }
-          />
-        </div>
+        <UserAvatarPopover
+          folded={folded}
+          onShowBuildIntro={
+            isOnyxCraftEnabled ? handleShowBuildIntro : undefined
+          }
+        />
       ),
-      [
-        folded,
-        isAdmin,
-        isCurator,
-        handleShowBuildIntro,
-        isOnyxCraftEnabled,
-        adminDefaultHref,
-      ]
+      [folded, handleShowBuildIntro, isOnyxCraftEnabled]
     );
 
     return (

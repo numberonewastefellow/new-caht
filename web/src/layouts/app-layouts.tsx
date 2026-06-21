@@ -119,7 +119,8 @@ function Header() {
   const isWorkspaceContext =
     !wsLegacy &&
     (appFocus.isProject() ||
-      (appFocus.isChat() && currentChatSession?.project_id != null));
+      (appFocus.isChat() &&
+        (currentChatSession?.project_id != null || currentProjectId != null)));
 
   const customHeaderContent =
     settings?.enterpriseSettings?.custom_header_content;
