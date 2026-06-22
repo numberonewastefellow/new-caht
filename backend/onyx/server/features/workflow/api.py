@@ -8,6 +8,7 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from onyx.auth.users import current_admin_user
@@ -15,6 +16,7 @@ from onyx.auth.users import current_user
 from onyx.chat.emitter import Emitter
 from onyx.chat.emitter import get_default_emitter
 from onyx.db.engine.sql_engine import get_session
+from onyx.db.models import ChatMessage
 from onyx.db.models import Persona
 from onyx.db.models import User
 from onyx.db.workflow import create_or_update_workflow_persona
@@ -153,6 +155,19 @@ def get_workflow_trace_by_message(
     session has multiple workflow runs.
     """
     trace = load_workflow_trace_by_message(message_id)
+    if trace is None:
+        # Fallback: some pause/resume turns historically did not write a
+        # per-message blob. Resolve via the message's chat session → latest
+        # execution → execution-keyed trace so the graph still shows.
+        chat_session_id = db_session.execute(
+            select(ChatMessage.chat_session_id).where(ChatMessage.id == message_id)
+        ).scalar_one_or_none()
+        if chat_session_id is not None:
+            execution = get_latest_execution_by_chat_session(
+                db_session, chat_session_id
+            )
+            if execution is not None:
+                trace = load_workflow_trace(execution.id)
     if trace is None:
         raise HTTPException(
             status_code=404, detail="No trace available for this message"

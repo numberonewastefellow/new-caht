@@ -1641,6 +1641,31 @@ def run_workflow_llm_decision(
                         total_tokens=total_tokens,
                         total_duration_ms=total_duration_ms,
                     )
+                    # Trace: record the re-paused agent + persist (per-message
+                    # key) so this resume turn's message resolves to a graph.
+                    trace_builder.add_agent(
+                        step_id=_direct_resume_tool.step_id,
+                        name=_direct_resume_tool.display_name,
+                        persona_id=_direct_resume_tool.id,
+                        input_text=json.dumps({"task": _direct_resume_task}),
+                        output_text=_strip_needs_input_prefix(agent_output),
+                        status="paused",
+                        file_names=_trace_file_names,
+                        call_index=agent_call_counts.get(_direct_resume_tool.name),
+                    )
+                    trace_builder.finalize(
+                        "paused", total_tokens, total_duration_ms
+                    )
+                    persist_workflow_trace(
+                        trace_builder.trace, include_message_key=True
+                    )
+                    logger.info(
+                        "[Trace] RESUME-PAUSE agent='%s' execution_id=%d "
+                        "msg_id=%s",
+                        _direct_resume_tool.display_name,
+                        execution.id,
+                        assistant_message_id,
+                    )
 
                     # Close step + emit pause
                     yield Packet(

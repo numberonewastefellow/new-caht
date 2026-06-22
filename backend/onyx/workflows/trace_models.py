@@ -45,6 +45,20 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _edge_label(reason: str | None, limit: int = 120) -> str | None:
+    """Short, single-line summary for an on-graph edge label.
+
+    The full rationale is kept on the node (``reason`` / ``output``) for the
+    inspector; this just keeps the canvas readable.
+    """
+    if not reason:
+        return None
+    first_line = reason.strip().splitlines()[0].strip()
+    if len(first_line) <= limit:
+        return first_line
+    return first_line[: limit - 1].rstrip() + "…"
+
+
 def _trace_file_id(execution_id: int) -> str:
     return f"wftrace_{execution_id}"
 
@@ -227,7 +241,7 @@ class WorkflowTraceBuilder:
                         from_id=src,
                         to_id=node_id,
                         type="delegation",
-                        label=self._pending_reason,
+                        label=_edge_label(self._pending_reason),
                     )
                 )
             self._prev_id = node_id

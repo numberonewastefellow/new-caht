@@ -417,7 +417,11 @@ export const AgentTimeline = React.memo(function AgentTimeline({
             {renderHeader()}
           </div>
           {isWorkflowTimeline && (
-            <WorkflowTraceButton compact messageId={chatState.messageId} />
+            <WorkflowTraceButton
+              compact
+              live={!stopPacketSeen}
+              messageId={chatState.messageId}
+            />
           )}
         </div>
       }

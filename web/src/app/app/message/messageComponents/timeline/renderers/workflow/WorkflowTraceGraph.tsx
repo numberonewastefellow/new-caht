@@ -227,9 +227,11 @@ function Inspector({ node }: { node: TraceNode }) {
 function TraceGraphBody({
   messageId,
   chatId,
+  live,
 }: {
   messageId?: number;
   chatId: string | null;
+  live?: boolean;
 }) {
   // Prefer the per-message trace (so multiple runs in one session each resolve
   // to their own graph); fall back to the latest run for the session.
@@ -239,9 +241,19 @@ function TraceGraphBody({
       : chatId
         ? `/api/workflow/chat-session/${chatId}/trace`
         : null;
+  // Poll only while the run is live AND this modal is open (this hook only
+  // mounts when the modal is open), and stop once the run reaches a terminal
+  // status — keeps polling tightly scoped.
   const { data, error, isLoading } = useSWR<WorkflowTrace>(
     url,
-    errorHandlingFetcher
+    errorHandlingFetcher,
+    {
+      // While live, keep polling every 2s (even before the first blob exists)
+      // until the run reaches a terminal status; otherwise never poll.
+      refreshInterval: (latest) =>
+        live && (!latest || latest.status === "running") ? 2000 : 0,
+      shouldRetryOnError: live ?? false,
+    }
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -286,9 +298,11 @@ function TraceGraphBody({
 export function WorkflowTraceButton({
   messageId,
   compact,
+  live,
 }: {
   messageId?: number;
   compact?: boolean;
+  live?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const chatId = useChatSessionStore((s) => s.currentSessionId);
@@ -325,6 +339,7 @@ export function WorkflowTraceButton({
             <TraceGraphBody
               messageId={messageId}
               chatId={chatId ? String(chatId) : null}
+              live={live}
             />
           </Modal.Body>
         </Modal.Content>
