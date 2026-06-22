@@ -42,7 +42,13 @@ function TraceGraphIcon(props: React.SVGProps<SVGSVGElement>) {
 
 // ── Trace data shape (mirrors backend onyx/workflows/trace_models.py) ────────
 
-type TraceNodeType = "start" | "orchestrator" | "agent" | "pause" | "finish";
+type TraceNodeType =
+  | "start"
+  | "orchestrator"
+  | "agent"
+  | "pause"
+  | "finish"
+  | "router";
 type TraceStatus = "running" | "completed" | "paused" | "failed";
 
 interface TraceNode {
@@ -104,6 +110,7 @@ const TYPE_LABEL: Record<TraceNodeType, string> = {
   agent: "Agent",
   pause: "Paused",
   finish: "Final answer",
+  router: "Decision",
 };
 
 // ── Custom ReactFlow node ────────────────────────────────────────────────────
@@ -160,6 +167,7 @@ function buildFlow(trace: WorkflowTrace): { nodes: Node[]; edges: Edge[] } {
     agent: 130,
     pause: 130,
     finish: 60,
+    router: 0,
   };
   const nodes: Node[] = trace.nodes.map((n, i) => ({
     id: n.id,

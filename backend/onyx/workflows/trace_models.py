@@ -36,7 +36,7 @@ from onyx.utils.logger import setup_logger
 
 logger = setup_logger()
 
-NodeType = Literal["start", "orchestrator", "agent", "pause", "finish"]
+NodeType = Literal["start", "orchestrator", "agent", "pause", "finish", "router"]
 EdgeType = Literal["delegation", "return", "sequence"]
 NodeStatus = Literal["running", "completed", "paused", "failed"]
 
@@ -248,6 +248,127 @@ class WorkflowTraceBuilder:
             return node_id
         except Exception:
             logger.debug("[Trace] add_agent failed", exc_info=True)
+            return None
+
+    def start_agent(
+        self,
+        step_id: int | None,
+        name: str,
+        persona_id: int | None,
+        input_text: str,
+        file_names: list[str] | None = None,
+        call_index: int | None = None,
+    ) -> str | None:
+        """Append an agent node in the ``running`` state and return its id.
+
+        Pair with ``finish_agent`` once the agent completes / pauses so the
+        live graph can show an in-progress node before its output exists.
+        """
+        try:
+            self._agent_count += 1
+            node_id = f"agent_{self._agent_count}"
+            node = TraceNode(
+                id=node_id,
+                type="agent",
+                name=name,
+                status="running",
+                input=input_text or "",
+                output="",
+                reason=self._pending_reason,
+                step_id=step_id,
+                persona_id=persona_id,
+                call_index=call_index,
+                file_names=file_names or [],
+                started_at=_now_iso(),
+            )
+            self.trace.nodes.append(node)
+            src = self._last_orch_id or self._prev_id
+            if src:
+                self.trace.edges.append(
+                    TraceEdge(
+                        from_id=src,
+                        to_id=node_id,
+                        type="delegation",
+                        label=_edge_label(self._pending_reason),
+                    )
+                )
+            self._prev_id = node_id
+            return node_id
+        except Exception:
+            logger.debug("[Trace] start_agent failed", exc_info=True)
+            return None
+
+    def finish_agent(
+        self,
+        node_id: str | None,
+        output_text: str,
+        status: NodeStatus = "completed",
+        duration_ms: int | None = None,
+        tokens: int | None = None,
+        file_ids: list[str] | None = None,
+        file_names: list[str] | None = None,
+    ) -> None:
+        """Update a node previously created by ``start_agent``.
+
+        Falls back to ``add_agent`` if the node can't be found (defensive)."""
+        try:
+            for node in self.trace.nodes:
+                if node.id == node_id:
+                    node.output = output_text or node.output
+                    node.status = status
+                    if duration_ms is not None:
+                        node.duration_ms = duration_ms
+                    if tokens is not None:
+                        node.tokens = tokens
+                    if file_ids:
+                        node.file_ids = file_ids
+                    if file_names:
+                        node.file_names = file_names
+                    node.ended_at = _now_iso()
+                    return
+            # Node not found — create it fresh so nothing is lost.
+            self.add_agent(
+                step_id=None,
+                name="Agent",
+                persona_id=None,
+                input_text="",
+                output_text=output_text,
+                status=status,
+                duration_ms=duration_ms,
+                tokens=tokens,
+                file_ids=file_ids,
+                file_names=file_names,
+            )
+        except Exception:
+            logger.debug("[Trace] finish_agent failed", exc_info=True)
+
+    def add_router(
+        self, name: str, explanation: str | None, branch_taken: str
+    ) -> str | None:
+        """Append a conditional-router decision node (sequential mode)."""
+        try:
+            node_id = f"router_{len(self.trace.nodes)}"
+            node = TraceNode(
+                id=node_id,
+                type="router",
+                name=name,
+                status="completed",
+                output=f"branch: {branch_taken}",
+                reason=explanation,
+                started_at=_now_iso(),
+                ended_at=_now_iso(),
+            )
+            self.trace.nodes.append(node)
+            if self._prev_id:
+                self.trace.edges.append(
+                    TraceEdge(
+                        from_id=self._prev_id, to_id=node_id, type="sequence"
+                    )
+                )
+            self._prev_id = node_id
+            return node_id
+        except Exception:
+            logger.debug("[Trace] add_router failed", exc_info=True)
             return None
 
     def mark_paused(self, node_id: str | None, questions: str) -> None:

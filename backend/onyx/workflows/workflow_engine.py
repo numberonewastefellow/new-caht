@@ -589,6 +589,7 @@ def run_workflow_sequential(
     paused_execution: WorkflowExecution | None = None,
     chat_files: list[ChatFile] | None = None,
     sandbox_session_id: str | None = None,
+    assistant_message_id: int | None = None,
 ) -> Generator[Packet, None, None]:
     """Run a workflow in sequential mode — fixed order, no LLM routing.
 
@@ -714,6 +715,28 @@ def run_workflow_sequential(
     start_time = time.monotonic()
     cancelled = False
 
+    # Trace graph (best-effort; never breaks a run). Same builder as
+    # llm_decision — sequential has no orchestrator, so decisions show up as
+    # conditional_router nodes instead.
+    _trace_file_names = [f.filename for f in (chat_files or [])]
+    trace_builder = WorkflowTraceBuilder(
+        execution.id,
+        workflow.id,
+        workflow.name,
+        str(chat_session_id) if chat_session_id else None,
+        mode="sequential",
+        message_id=assistant_message_id,
+    )
+    try:
+        if paused_execution:
+            _prior_trace = load_workflow_trace(execution.id)
+            if _prior_trace:
+                trace_builder.restore(_prior_trace)
+        else:
+            trace_builder.set_start(user_message, _trace_file_names)
+    except Exception:
+        logger.debug("[Trace] sequential init failed", exc_info=True)
+
     # Pre-build agent tools with cached LLMs + user (Tier 1.5 performance)
     # Skip non-agent steps (e.g. conditional_router has no persona)
     agent_tools_by_step: dict[int, AgentTool] = {}
@@ -795,6 +818,17 @@ def run_workflow_sequential(
                 else:
                     true_steps = condition_config.get("true_steps", [])
                     skip_step_orders.update(int(s) for s in true_steps)
+
+                # Trace: record the branch decision (best-effort)
+                try:
+                    trace_builder.add_router(
+                        step.step_name,
+                        explanation,
+                        "true" if result else "false",
+                    )
+                    persist_workflow_trace(trace_builder.trace)
+                except Exception:
+                    logger.debug("[Trace] router node failed", exc_info=True)
 
                 placement = Placement(turn_index=turn_index)
 
@@ -887,6 +921,20 @@ def run_workflow_sequential(
                 task_input = resume_task_override
             else:
                 task_input = _apply_input_mapping(step.input_mapping, context)
+
+            # Trace: open the agent node in the running state (best-effort)
+            trace_node_id: str | None = None
+            try:
+                trace_node_id = trace_builder.start_agent(
+                    step_id=step.id,
+                    name=step.step_name,
+                    persona_id=step.persona_id,
+                    input_text=task_input,
+                    file_names=_trace_file_names,
+                )
+                persist_workflow_trace(trace_builder.trace)
+            except Exception:
+                logger.debug("[Trace] start_agent failed", exc_info=True)
 
             streaming_result = _StreamingAgentResult(start_turn_index=turn_index)
             yield from _stream_agent_packets(
@@ -1003,6 +1051,28 @@ def run_workflow_sequential(
                     total_tokens=total_tokens,
                     total_duration_ms=total_duration_ms,
                 )
+                # Trace: mark the agent paused + persist (per-message key) so
+                # this turn's message resolves to a graph (best-effort).
+                try:
+                    trace_builder.finish_agent(
+                        trace_node_id,
+                        _strip_needs_input_prefix(agent_output),
+                        status="paused",
+                    )
+                    trace_builder.finalize(
+                        "paused", total_tokens, total_duration_ms
+                    )
+                    persist_workflow_trace(
+                        trace_builder.trace, include_message_key=True
+                    )
+                    logger.info(
+                        "[Trace] SEQ-PAUSE step='%s' execution_id=%d msg_id=%s",
+                        step.step_name,
+                        execution.id,
+                        assistant_message_id,
+                    )
+                except Exception:
+                    logger.debug("[Trace] seq pause persist failed", exc_info=True)
                 # Close the step
                 yield Packet(
                     placement=placement,
@@ -1110,6 +1180,19 @@ def run_workflow_sequential(
                 "duration_ms": step_duration_ms,
                 "tokens_used": step_tokens,
             })
+
+            # Trace: close the running agent node (best-effort)
+            try:
+                trace_builder.finish_agent(
+                    trace_node_id,
+                    agent_output,
+                    status="completed",
+                    duration_ms=step_duration_ms,
+                    tokens=step_tokens,
+                )
+                persist_workflow_trace(trace_builder.trace)
+            except Exception:
+                logger.debug("[Trace] finish_agent failed", exc_info=True)
 
             # Output promotion: emit as MESSAGE packets so the frontend
             # renders it as main content outside the timeline.
@@ -1231,6 +1314,20 @@ def run_workflow_sequential(
             total_duration_ms=total_duration_ms,
         )
 
+        # Trace: record final answer + persist the completed graph (best-effort)
+        try:
+            if not cancelled and context.step_outputs:
+                _final_text = list(context.step_outputs.values())[-1]
+                trace_builder.add_finish(_final_text)
+            trace_builder.finalize(
+                final_status, total_tokens, total_duration_ms
+            )
+            persist_workflow_trace(
+                trace_builder.trace, include_message_key=True
+            )
+        except Exception:
+            logger.debug("[Trace] sequential complete persist failed", exc_info=True)
+
     except Exception as e:
         logger.exception("[Sequential] Workflow execution failed")
         total_duration_ms = int((time.monotonic() - start_time) * 1000)
@@ -1243,6 +1340,13 @@ def run_workflow_sequential(
             total_duration_ms=total_duration_ms,
             error_message=str(e),
         )
+        try:
+            trace_builder.finalize("failed", total_tokens, total_duration_ms)
+            persist_workflow_trace(
+                trace_builder.trace, include_message_key=True
+            )
+        except Exception:
+            logger.debug("[Trace] sequential failed persist failed", exc_info=True)
         raise
 
     # Emit overall stop
@@ -2517,6 +2621,7 @@ def run_workflow(
             paused_execution=paused_execution,
             chat_files=chat_files,
             sandbox_session_id=sandbox_session_id,
+            assistant_message_id=assistant_message_id,
         )
     elif mode == "llm_decision":
         yield from run_workflow_llm_decision(
