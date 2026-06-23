@@ -3,7 +3,6 @@
 import { useCallback, memo, useMemo, useState, useEffect, useRef } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
-import type { Route } from "next";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import Text from "@/refresh-components/texts/Text";
@@ -35,14 +34,12 @@ import useChatSessions from "@/hooks/useChatSessions";
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useAgents, useCurrentAgent, usePinnedAgents } from "@/hooks/useAgents";
 import { useAppSidebarContext } from "@/providers/AppSidebarProvider";
-import ProjectFolderButton from "@/sections/sidebar/ProjectFolderButton";
 import CreateProjectModal from "@/components/modals/CreateProjectModal";
 import MoveCustomAgentChatModal from "@/components/modals/MoveCustomAgentChatModal";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import { removeChatSessionFromProject } from "@/app/app/projects/projectsService";
 import type { Project } from "@/app/app/projects/projectsService";
 import SidebarWrapper from "@/sections/sidebar/SidebarWrapper";
-import { Button as OpalButton } from "@opal/components";
 import { cn } from "@/lib/utils";
 import {
   DRAG_TYPES,
@@ -68,7 +65,6 @@ import {
   SvgOnyxOctagon,
   SvgSearchMenu,
 } from "@opal/icons";
-import { usePageVersion } from "@/hooks/usePageVersion";
 import { makeColorfulIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
 
 // Colorful sidebar icons — colored rounded squares with white icons
@@ -78,6 +74,7 @@ const ColorfulCraft = makeColorfulIcon(SvgDevKit, "sidebar_craft");
 const ColorfulExploreAgents = makeColorfulIcon(SvgOnyxOctagon, "sidebar_agents");
 const ColorfulMoreAgents = makeColorfulIcon(SvgMoreHorizontal, "sidebar_agents");
 const ColorfulNewProject = makeColorfulIcon(SvgFolderPlus, "sidebar_projects");
+const ColorfulWorkspaces = makeColorfulIcon(SvgDashboard, "sidebar_projects");
 import BuildModeIntroBackground from "@/app/craft/components/IntroBackground";
 import BuildModeIntroContent from "@/app/craft/components/IntroContent";
 import { CRAFT_PATH } from "@/app/craft/v1/constants";
@@ -185,7 +182,6 @@ interface AppSidebarInnerProps {
 const MemoizedAppSidebarInner = memo(
   ({ folded, onFoldClick }: AppSidebarInnerProps) => {
     const router = useRouter();
-    const { isLegacy: wsLegacy } = usePageVersion("workspace-ui");
     const combinedSettings = useSettingsContext();
     const posthog = usePostHog();
     const { newTenantInfo, invitationInfo } = useModalContext();
@@ -198,11 +194,7 @@ const MemoizedAppSidebarInner = memo(
       refreshChatSessions,
       isLoading: isLoadingChatSessions,
     } = useChatSessions();
-    const {
-      projects,
-      refreshProjects,
-      isLoading: isLoadingProjects,
-    } = useProjects();
+    const { refreshProjects, isLoading: isLoadingProjects } = useProjects();
     const { isLoading: isLoadingAgents } = useAgents();
     const currentAgent = useCurrentAgent();
     const {
@@ -230,7 +222,6 @@ const MemoizedAppSidebarInner = memo(
     >(null);
     const [showMoveCustomAgentModal, setShowMoveCustomAgentModal] =
       useState(false);
-    const [projectsCollapsed, setProjectsCollapsed] = useState(true);
 
     // Fetch notifications for build mode intro
     const { data: notifications, mutate: mutateNotifications } = useSWR<
@@ -531,6 +522,21 @@ const MemoizedAppSidebarInner = memo(
       ),
       [folded]
     );
+    const workspacesButton = useMemo(
+      () => (
+        <div data-testid="AppSidebar/workspaces">
+          <SidebarTab
+            leftIcon={ColorfulWorkspaces}
+            folded={folded}
+            href="/app/workspaces"
+            transient={activeSidebarTab.isWorkspacesDashboard()}
+          >
+            Workspaces
+          </SidebarTab>
+        </div>
+      ),
+      [folded, activeSidebarTab]
+    );
     const moreAgentsButton = useMemo(
       () => (
         <div data-testid="AppSidebar/more-agents">
@@ -655,16 +661,15 @@ const MemoizedAppSidebarInner = memo(
               <div className="flex flex-col gap-0.5">
                 {newSessionButton}
                 {searchChatsButton}
+                {workspacesButton}
+                {newProjectButton}
                 {isOnyxCraftEnabled && buildButton}
               </div>
             }
           >
             {/* When folded, show icons immediately without waiting for data */}
             {folded ? (
-              <>
-                {moreAgentsButton}
-                {newProjectButton}
-              </>
+              <>{moreAgentsButton}</>
             ) : isLoadingDynamicContent ? null : (
               <>
                 {/* Agents */}
@@ -699,41 +704,6 @@ const MemoizedAppSidebarInner = memo(
                   ]}
                   onDragEnd={handleChatProjectDragEnd}
                 >
-                  {/* Projects */}
-                  <SidebarSection
-                    title="Workspaces"
-                    collapsible
-                    collapsed={projectsCollapsed}
-                    onToggle={() => setProjectsCollapsed((prev) => !prev)}
-                    action={
-                      <div className="flex items-center gap-0.5">
-                        {!wsLegacy && (
-                          <OpalButton
-                            icon={SvgDashboard}
-                            prominence="tertiary"
-                            size="sm"
-                            tooltip="All workspaces"
-                            onClick={() =>
-                              router.push("/app/workspaces" as Route)
-                            }
-                          />
-                        )}
-                        <OpalButton
-                          icon={SvgFolderPlus}
-                          prominence="tertiary"
-                          size="sm"
-                          tooltip="New Workspace"
-                          onClick={() => createProjectModal.toggle(true)}
-                        />
-                      </div>
-                    }
-                  >
-                    {projects.map((project) => (
-                      <ProjectFolderButton key={project.id} project={project} />
-                    ))}
-                    {projects.length === 0 && newProjectButton}
-                  </SidebarSection>
-
                   {/* Recents */}
                   <RecentsSection chatSessions={chatSessions} />
                 </DndContext>
