@@ -155,6 +155,20 @@ def update_user_chat_background(
     db_session.commit()
 
 
+def update_user_font_preference(
+    user_id: UUID,
+    font_preference: str | None,
+    db_session: Session,
+) -> None:
+    """Update user's font preference setting."""
+    db_session.execute(
+        update(User)
+        .where(User.id == user_id)  # type: ignore
+        .values(font_preference=font_preference)
+    )
+    db_session.commit()
+
+
 def update_user_default_app_mode(
     user_id: UUID,
     default_app_mode: DefaultAppMode,

@@ -44,6 +44,7 @@ interface UserContextType {
     themePreference: ThemePreference
   ) => Promise<void>;
   updateUserChatBackground: (chatBackground: string | null) => Promise<void>;
+  updateUserFontPreference: (font: string) => Promise<void>;
   updateUserDefaultModel: (defaultModel: string | null) => Promise<void>;
   updateUserDefaultAppMode: (mode: "CHAT" | "SEARCH") => Promise<void>;
 }
@@ -400,6 +401,45 @@ export function UserProvider({
     }
   };
 
+  const updateUserFontPreference = async (font: string) => {
+    try {
+      setUpToDateUser((prevUser) => {
+        if (prevUser) {
+          return {
+            ...prevUser,
+            preferences: {
+              ...prevUser.preferences,
+              font_preference: font,
+            },
+          };
+        }
+        return prevUser;
+      });
+
+      // Keep the localStorage fast-path in sync so first paint uses the latest
+      // choice (VirtualAIThemeProvider reads this key on mount).
+      if (typeof window !== "undefined") {
+        localStorage.setItem("virtualai-font-preference", font);
+      }
+
+      const response = await fetch(`/api/user/font-preference`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ font_preference: font }),
+      });
+
+      if (!response.ok) {
+        await refreshUser();
+        throw new Error("Failed to update font preference");
+      }
+    } catch (error) {
+      console.error("Error updating font preference:", error);
+      throw error;
+    }
+  };
+
   const updateUserDefaultModel = async (defaultModel: string | null) => {
     try {
       setUpToDateUser((prevUser) => {
@@ -482,6 +522,7 @@ export function UserProvider({
         updateUserPersonalization,
         updateUserThemePreference,
         updateUserChatBackground,
+        updateUserFontPreference,
         updateUserDefaultModel,
         updateUserDefaultAppMode,
         toggleAssistantPinnedStatus,

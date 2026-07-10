@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import useChatSessions from "@/hooks/useChatSessions";
 import useAppFocus from "@/hooks/useAppFocus";
-import { usePageVersion } from "@/hooks/usePageVersion";
 import { useWorkspacePanelStore } from "@/app/app/stores/useWorkspacePanelStore";
 import { UNNAMED_CHAT } from "@/lib/constants";
 import WorkspaceGlyph from "./WorkspaceGlyph";
@@ -54,7 +53,6 @@ export default function WorkspaceTopBanner({
   } = useProjectsContext();
   const { currentChatSession } = useChatSessions();
   const appFocus = useAppFocus();
-  const { setVersion } = usePageVersion("workspace-ui", "new");
   const { open: panelOpen, toggle: togglePanel } = useWorkspacePanelStore();
 
   const chatMode = appFocus.isChat();
@@ -131,12 +129,6 @@ export default function WorkspaceTopBanner({
 
         {/* Right actions */}
         <div className="ml-auto flex items-center gap-1.5">
-          <button
-            onClick={() => setVersion("legacy")}
-            className="text-[11px] text-text-03 transition-colors hover:text-text-05"
-          >
-            Classic view
-          </button>
           {chatMode && currentChatSession && (
             <>
               <Button leftIcon={SvgShare} tertiary onClick={onShare}>

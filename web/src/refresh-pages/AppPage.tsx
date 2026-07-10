@@ -9,6 +9,8 @@ import {
 import type { Route } from "next";
 import WorkspaceContextPanel from "@/app/app/components/projects/workspace-v2/WorkspaceContextPanel";
 import { useWorkspacePanelStore } from "@/app/app/stores/useWorkspacePanelStore";
+import { useAgentPanelStore } from "@/app/app/stores/useAgentPanelStore";
+import AgentPanelDock from "@/app/app/message/messageComponents/timeline/AgentPanelDock";
 import { HealthCheckBanner } from "@/components/health/healthcheck";
 import {
   personaIncludesRetrieval,
@@ -64,6 +66,7 @@ import { useProjectsContext } from "@/providers/ProjectsContext";
 import {
   getProjectTokenCount,
   getMaxSelectedDocumentTokens,
+  UserFileStatus,
 } from "@/app/app/projects/projectsService";
 import ProjectChatSessionList from "@/app/app/components/projects/ProjectChatSessionList";
 import WorkspaceDetailHeader from "@/app/app/components/projects/workspace-v2/WorkspaceDetailHeader";
@@ -150,10 +153,12 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   // Workspace UI version switch (dual-version, web-only). When "new", the
   // workspace detail uses the upgraded header/body; "legacy" keeps the classic
   // ProjectContextPanel + ProjectChatSessionList. Mirrors the Agentic AI pattern.
-  const { isLegacy: wsLegacy, setVersion: setWorkspaceVersion } =
-    usePageVersion("workspace-ui", "new");
+  const { setVersion: setWorkspaceVersion } = usePageVersion(
+    "workspace-ui",
+    "new"
+  );
   const [wsTab, setWsTab] = useState<WorkspaceTab>("overview");
-  const useNewWorkspace = appFocus.isProject() && !wsLegacy;
+  const useNewWorkspace = appFocus.isProject();
 
   // Use SWR hooks for data fetching
   const {
@@ -388,6 +393,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   const pathname = usePathname();
   const workspacePanelOpen = useWorkspacePanelStore((s) => s.open);
   const setWorkspacePanelOpen = useWorkspacePanelStore((s) => s.setOpen);
+  const agentPanelOpen = useAgentPanelStore((s) => s.open);
   const messageHistory = useCurrentMessageHistory();
 
   // Determine anchor: second-to-last message (last user message before current response)
@@ -507,6 +513,16 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
       updateCurrentDocumentSidebarVisible(false);
     }
   }, [workspacePanelOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // The live "Agents thinking" dock is mutually exclusive with the Sources and
+  // Workspace docks (only one right-side dock at a time). Opening the agent panel
+  // closes the others.
+  useEffect(() => {
+    if (agentPanelOpen) {
+      setWorkspacePanelOpen(false);
+      if (documentSidebarVisible) updateCurrentDocumentSidebarVisible(false);
+    }
+  }, [agentPanelOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keep the `projectId` URL param in sync with the active chat's workspace so
   // workspace context (files/instructions/name) is loaded in a workspace chat.
@@ -658,8 +674,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   // for workspace chats. Separate from, and mutually exclusive with, Sources.
   const isWorkspaceChat =
     appFocus.isChat() &&
-    (currentChatSession?.project_id != null || currentProjectId != null) &&
-    !wsLegacy;
+    (currentChatSession?.project_id != null || currentProjectId != null);
   const workspaceContextPanel =
     isWorkspaceChat && !settings.isMobile ? (
       <div
@@ -1064,7 +1079,12 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                     className="h-full flex-1 w-full max-w-[var(--app-page-main-content-width)]"
                   >
                     <Spacer rem={0.5} />
-                    <Suggestions onSubmit={onSubmit} />
+                    <Suggestions
+                      onSubmit={onChat}
+                      disabled={currentMessageFiles.some(
+                        (file) => file.status === UserFileStatus.UPLOADING
+                      )}
+                    />
                   </Fade>
 
                   {/* SearchUI */}
@@ -1084,6 +1104,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
 
       {desktopDocumentSidebar}
       {workspaceContextPanel}
+      <AgentPanelDock />
     </>
   );
 }

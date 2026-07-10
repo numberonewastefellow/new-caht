@@ -43,7 +43,22 @@ function applyAccentClass(accent: VirtualAIAccent) {
 
 // ─── Font Preference ─────────────────────────────────────────────────────
 
-export type VirtualAIFont = "inter" | "geist" | "system";
+export type VirtualAIFont =
+  | "inter"
+  | "geist"
+  | "system"
+  | "plus-jakarta"
+  | "hanken"
+  | "space-grotesk";
+
+export const VIRTUALAI_FONTS: VirtualAIFont[] = [
+  "inter",
+  "geist",
+  "system",
+  "plus-jakarta",
+  "hanken",
+  "space-grotesk",
+];
 
 const FONT_STORAGE_KEY = "virtualai-font-preference";
 const FONT_CLASS_PREFIX = "font-pref-";
@@ -51,8 +66,8 @@ const FONT_CLASS_PREFIX = "font-pref-";
 function getStoredFont(): VirtualAIFont {
   if (typeof window === "undefined") return "inter";
   const stored = localStorage.getItem(FONT_STORAGE_KEY);
-  if (stored === "inter" || stored === "geist" || stored === "system") {
-    return stored;
+  if (stored && (VIRTUALAI_FONTS as string[]).includes(stored)) {
+    return stored as VirtualAIFont;
   }
   return "inter";
 }

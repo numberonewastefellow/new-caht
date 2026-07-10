@@ -75,7 +75,9 @@ module.exports = {
         "very-short": { raw: "(max-height: 600px)" },
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        // Points at the active-font indirection variable (not Inter directly) so
+        // the `font-sans` utility follows the user's font preference.
+        sans: ["var(--font-hanken-grotesk)", "system-ui", "sans-serif"],
       },
       width: {
         "message-xs": "450px",

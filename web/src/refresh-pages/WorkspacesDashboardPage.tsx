@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useAppRouter } from "@/hooks/appNavigation";
-import { usePageVersion } from "@/hooks/usePageVersion";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import CreateProjectModal from "@/components/modals/CreateProjectModal";
 import type { Project } from "@/app/app/projects/projectsService";
@@ -36,9 +34,7 @@ function updatedMs(project: Project): number {
 }
 
 export default function WorkspacesDashboardPage() {
-  const router = useRouter();
   const route = useAppRouter();
-  const { isLegacy, setVersion } = usePageVersion("workspace-ui", "new");
   const { projects, isLoading } = useProjects();
   const { isPinned, togglePin, prune } = usePinnedWorkspaces();
   const createModal = useCreateModal();
@@ -46,11 +42,6 @@ export default function WorkspacesDashboardPage() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<WorkspaceFilter>("all");
   const [view, setView] = useState<"grid" | "list">("grid");
-
-  // No legacy dashboard exists — bounce back to the classic app surface.
-  useEffect(() => {
-    if (isLegacy) router.replace("/app");
-  }, [isLegacy, router]);
 
   // Once workspaces have loaded, drop pins for any that were deleted.
   useEffect(() => {
@@ -81,8 +72,6 @@ export default function WorkspacesDashboardPage() {
     () => [...filtered].sort((a, b) => updatedMs(b) - updatedMs(a)),
     [filtered]
   );
-
-  if (isLegacy) return null;
 
   const openWorkspace = (p: Project) => route({ projectId: p.id });
 
@@ -168,16 +157,6 @@ export default function WorkspacesDashboardPage() {
       </createModal.Provider>
 
       <div className="mx-auto max-w-[1200px] px-8 py-10">
-        {/* Classic-view toggle */}
-        <div className="flex justify-end">
-          <button
-            onClick={() => setVersion("legacy")}
-            className="text-[11px] text-text-03 hover:text-text-05 transition-colors"
-          >
-            Classic view
-          </button>
-        </div>
-
         {/* Hero / search */}
         <div className="flex flex-col items-center text-center">
           <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border-01 bg-background-tint-01/60 px-3 py-1 text-[11px] text-text-03 backdrop-blur">

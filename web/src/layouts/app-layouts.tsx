@@ -66,7 +66,6 @@ import { AppMode, useAppMode } from "@/providers/AppModeProvider";
 import useAppFocus from "@/hooks/useAppFocus";
 import { useQueryController } from "@/providers/QueryControllerProvider";
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
-import { usePageVersion } from "@/hooks/usePageVersion";
 import WorkspaceTopBanner from "@/app/app/components/projects/workspace-v2/WorkspaceTopBanner";
 
 /**
@@ -111,16 +110,14 @@ function Header() {
   const router = useRouter();
   const appFocus = useAppFocus();
   const { classification } = useQueryController();
-  const { isLegacy: wsLegacy } = usePageVersion("workspace-ui", "new");
 
   // New workspace UI: render the full-width top banner (and let it own the
   // breadcrumb / workspace meta / chat title / chips) for workspace detail and
   // workspace chats. Normal chats/agents/settings keep the default header.
   const isWorkspaceContext =
-    !wsLegacy &&
-    (appFocus.isProject() ||
-      (appFocus.isChat() &&
-        (currentChatSession?.project_id != null || currentProjectId != null)));
+    appFocus.isProject() ||
+    (appFocus.isChat() &&
+      (currentChatSession?.project_id != null || currentProjectId != null));
 
   const customHeaderContent =
     settings?.enterpriseSettings?.custom_header_content;

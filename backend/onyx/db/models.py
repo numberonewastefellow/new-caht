@@ -249,6 +249,7 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
         default=None,
     )
     chat_background: Mapped[str | None] = mapped_column(String, nullable=True)
+    font_preference: Mapped[str | None] = mapped_column(String, nullable=True)
     default_app_mode: Mapped[DefaultAppMode] = mapped_column(
         Enum(DefaultAppMode, native_enum=False),
         nullable=False,

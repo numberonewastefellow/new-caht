@@ -987,15 +987,23 @@ export default function useChatController({
         );
         return;
       }
-      updateChatStateAction(getCurrentSessionId(), "uploading");
+      const uploadSessionId = getCurrentSessionId();
+      updateChatStateAction(uploadSessionId, "uploading");
+      // beginUpload returns optimistic temp-id files synchronously and finishes
+      // the real upload in the background, resolving the real ids via the
+      // onSuccess/onFailure callbacks. Keep the composer in "uploading" until
+      // then so the send guard ("Please wait for the content to upload") blocks
+      // a send that would otherwise serialize unresolved temp ids — which the
+      // backend can't resolve, so the workflow receives 0 files.
       const uploadedMessageFiles = await beginUpload(
         Array.from(acceptedFiles),
         // When inside a project, link the chat-attached file to it (same as the
         // project panel "Attach"); null in a normal chat keeps it ephemeral.
-        currentProjectId
+        currentProjectId,
+        () => updateChatStateAction(uploadSessionId, "input"),
+        () => updateChatStateAction(uploadSessionId, "input")
       );
       setCurrentMessageFiles((prev) => [...prev, ...uploadedMessageFiles]);
-      updateChatStateAction(getCurrentSessionId(), "input");
     },
     [liveAssistant, llmManager, forcedToolIds, currentProjectId]
   );

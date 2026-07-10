@@ -60,6 +60,7 @@ from onyx.db.user_preferences import update_user_auto_scroll
 from onyx.db.user_preferences import update_user_chat_background
 from onyx.db.user_preferences import update_user_default_app_mode
 from onyx.db.user_preferences import update_user_default_model
+from onyx.db.user_preferences import update_user_font_preference
 from onyx.db.user_preferences import update_user_personalization
 from onyx.db.user_preferences import update_user_pinned_assistants
 from onyx.db.user_preferences import update_user_role
@@ -80,6 +81,7 @@ from onyx.server.manage.models import AllUsersResponse
 from onyx.server.manage.models import AutoScrollRequest
 from onyx.server.manage.models import ChatBackgroundRequest
 from onyx.server.manage.models import DefaultAppModeRequest
+from onyx.server.manage.models import FontPreferenceRequest
 from onyx.server.manage.models import MemoryItem
 from onyx.server.manage.models import PersonalizationUpdateRequest
 from onyx.server.manage.models import TenantInfo
@@ -828,6 +830,15 @@ def update_user_chat_background_api(
     db_session: Session = Depends(get_session),
 ) -> None:
     update_user_chat_background(user.id, request.chat_background, db_session)
+
+
+@router.patch("/user/font-preference")
+def update_user_font_preference_api(
+    request: FontPreferenceRequest,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> None:
+    update_user_font_preference(user.id, request.font_preference, db_session)
 
 
 @router.patch("/user/default-app-mode")

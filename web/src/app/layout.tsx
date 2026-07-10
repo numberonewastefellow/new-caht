@@ -57,6 +57,39 @@ const geist = localFont({
   display: "swap",
 });
 
+const plusJakarta = localFont({
+  src: [
+    { path: "../../public/fonts/plus-jakarta-sans-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/plus-jakarta-sans-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../public/fonts/plus-jakarta-sans-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../../public/fonts/plus-jakarta-sans-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-plus-jakarta",
+  display: "swap",
+});
+
+const hanken = localFont({
+  src: [
+    { path: "../../public/fonts/hanken-grotesk-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/hanken-grotesk-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../public/fonts/hanken-grotesk-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../../public/fonts/hanken-grotesk-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-hanken",
+  display: "swap",
+});
+
+const spaceGrotesk = localFont({
+  src: [
+    { path: "../../public/fonts/space-grotesk-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/space-grotesk-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../public/fonts/space-grotesk-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../../public/fonts/space-grotesk-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+
 export async function generateMetadata(): Promise<Metadata> {
   let logoLocation = buildClientUrl("/vertuelai-favicon.svg");
   let enterpriseSettings: EnterpriseSettings | null = null;
@@ -111,13 +144,21 @@ export default async function RootLayout({
   const getPageContent = async (content: React.ReactNode) => (
     <html
       lang="en"
-      className={`${inter.variable} ${geist.variable}`}
+      className={`${inter.variable} ${geist.variable} ${plusJakarta.variable} ${hanken.variable} ${spaceGrotesk.variable}`}
       suppressHydrationWarning
     >
       <head>
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, interactive-widget=resizes-content"
+        />
+        {/* Apply the stored font preference before first paint to avoid a flash
+            (mirrors how next-themes applies the color scheme). The provider and
+            the account preference reconcile this on hydration. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var f=localStorage.getItem('virtualai-font-preference');if(f&&f!=='inter'){document.documentElement.classList.add('font-pref-'+f);}}catch(e){}})();`,
+          }}
         />
         {CUSTOM_ANALYTICS_ENABLED &&
           combinedSettings?.customAnalyticsScript && (
@@ -146,7 +187,7 @@ export default async function RootLayout({
         )}
       </head>
 
-      <body className={`relative ${inter.variable} ${inter.className}`}>
+      <body className={`relative ${inter.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

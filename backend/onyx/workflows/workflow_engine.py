@@ -1625,6 +1625,21 @@ def run_workflow_llm_decision(
                 ),
             )
 
+            # Trace: open the resumed agent node in the running state
+            resume_node_id: str | None = None
+            try:
+                resume_node_id = trace_builder.start_agent(
+                    step_id=_direct_resume_tool.step_id,
+                    name=_direct_resume_tool.display_name,
+                    persona_id=_direct_resume_tool.id,
+                    input_text=_direct_resume_task,
+                    file_names=_trace_file_names,
+                    call_index=agent_call_counts.get(_direct_resume_tool.name),
+                )
+                persist_workflow_trace(trace_builder.trace)
+            except Exception:
+                logger.debug("[Trace] resume start_agent failed", exc_info=True)
+
             # Run the agent directly with the clarification task
             streaming_result = _StreamingAgentResult(
                 start_turn_index=turn_index
@@ -1647,6 +1662,14 @@ def run_workflow_llm_decision(
                     ),
                 )
                 yield Packet(placement=agent_placement, obj=SectionEnd())
+                # Trace: don't leave the node stuck in "running"
+                try:
+                    trace_builder.finish_agent(
+                        resume_node_id, "", status="failed"
+                    )
+                    persist_workflow_trace(trace_builder.trace)
+                except Exception:
+                    logger.debug("[Trace] resume cancel close failed", exc_info=True)
                 cancelled = True
                 turn_index = streaming_result.max_turn_index + 1
             else:
@@ -1745,24 +1768,22 @@ def run_workflow_llm_decision(
                         total_tokens=total_tokens,
                         total_duration_ms=total_duration_ms,
                     )
-                    # Trace: record the re-paused agent + persist (per-message
+                    # Trace: close the running node as paused + persist (per-message
                     # key) so this resume turn's message resolves to a graph.
-                    trace_builder.add_agent(
-                        step_id=_direct_resume_tool.step_id,
-                        name=_direct_resume_tool.display_name,
-                        persona_id=_direct_resume_tool.id,
-                        input_text=json.dumps({"task": _direct_resume_task}),
-                        output_text=_strip_needs_input_prefix(agent_output),
-                        status="paused",
-                        file_names=_trace_file_names,
-                        call_index=agent_call_counts.get(_direct_resume_tool.name),
-                    )
-                    trace_builder.finalize(
-                        "paused", total_tokens, total_duration_ms
-                    )
-                    persist_workflow_trace(
-                        trace_builder.trace, include_message_key=True
-                    )
+                    try:
+                        trace_builder.finish_agent(
+                            resume_node_id,
+                            _strip_needs_input_prefix(agent_output),
+                            status="paused",
+                        )
+                        trace_builder.finalize(
+                            "paused", total_tokens, total_duration_ms
+                        )
+                        persist_workflow_trace(
+                            trace_builder.trace, include_message_key=True
+                        )
+                    except Exception:
+                        logger.debug("[Trace] resume re-pause persist failed", exc_info=True)
                     logger.info(
                         "[Trace] RESUME-PAUSE agent='%s' execution_id=%d "
                         "msg_id=%s",
@@ -1864,6 +1885,21 @@ def run_workflow_llm_decision(
                     "duration_ms": direct_elapsed_ms,
                     "tokens_used": step_tokens,
                 })
+
+                # Trace: close the resumed agent node as completed. Previously
+                # this path recorded nothing, so a resumed agent that finished
+                # was missing from the graph entirely.
+                try:
+                    trace_builder.finish_agent(
+                        resume_node_id,
+                        agent_output,
+                        status="completed",
+                        duration_ms=direct_elapsed_ms,
+                        tokens=step_tokens,
+                    )
+                    persist_workflow_trace(trace_builder.trace)
+                except Exception:
+                    logger.debug("[Trace] resume finish_agent failed", exc_info=True)
 
                 # Emit step content and close
                 yield Packet(
@@ -2014,9 +2050,15 @@ def run_workflow_llm_decision(
                 dict(agent_call_counts),
             )
 
-            # Trace: record the orchestrator decision for this cycle
+            # Trace: record the orchestrator decision for this cycle and
+            # persist immediately so the live graph shows the routing choice
+            # before the delegated agent finishes (best-effort).
             if llm_step_result.tool_calls:
-                trace_builder.add_orchestrator(cycle + 1, llm_step_result.answer)
+                try:
+                    trace_builder.add_orchestrator(cycle + 1, llm_step_result.answer)
+                    persist_workflow_trace(trace_builder.trace)
+                except Exception:
+                    logger.debug("[Trace] orchestrator persist failed", exc_info=True)
 
             # If orchestrator produced a final answer (no tool calls)
             if llm_step_result.answer and not llm_step_result.tool_calls:
@@ -2123,6 +2165,22 @@ def run_workflow_llm_decision(
                         ),
                     )
 
+                    # Trace: open the agent node in the running state so the
+                    # live graph shows it while it works (best-effort).
+                    agent_node_id: str | None = None
+                    try:
+                        agent_node_id = trace_builder.start_agent(
+                            step_id=agent_tool.step_id,
+                            name=agent_tool.display_name,
+                            persona_id=agent_tool.id,
+                            input_text=json.dumps(tool_call.tool_args),
+                            file_names=_trace_file_names,
+                            call_index=agent_call_counts.get(tool_call.tool_name),
+                        )
+                        persist_workflow_trace(trace_builder.trace)
+                    except Exception:
+                        logger.debug("[Trace] start_agent failed", exc_info=True)
+
                     # Run the agent with real-time streaming
                     streaming_result = _StreamingAgentResult(
                         start_turn_index=turn_index
@@ -2147,6 +2205,14 @@ def run_workflow_llm_decision(
                             ),
                         )
                         yield Packet(placement=agent_placement, obj=SectionEnd())
+                        # Trace: don't leave the node stuck in "running"
+                        try:
+                            trace_builder.finish_agent(
+                                agent_node_id, "", status="failed"
+                            )
+                            persist_workflow_trace(trace_builder.trace)
+                        except Exception:
+                            logger.debug("[Trace] cancel close failed", exc_info=True)
                         cancelled = True
                         turn_index = streaming_result.max_turn_index + 1
                         break
@@ -2255,21 +2321,21 @@ def run_workflow_llm_decision(
                             total_tokens=total_tokens,
                             total_duration_ms=total_duration_ms,
                         )
-                        # Trace: record the paused agent + persist
-                        trace_builder.add_agent(
-                            step_id=agent_tool.step_id,
-                            name=agent_tool.display_name,
-                            persona_id=agent_tool.id,
-                            input_text=json.dumps(tool_call.tool_args),
-                            output_text=_strip_needs_input_prefix(agent_output),
-                            status="paused",
-                            file_names=_trace_file_names,
-                            call_index=agent_call_counts.get(tool_call.tool_name),
-                        )
-                        trace_builder.finalize(
-                            "paused", total_tokens, total_duration_ms
-                        )
-                        persist_workflow_trace(trace_builder.trace, include_message_key=True)
+                        # Trace: close the running agent node as paused + persist
+                        try:
+                            trace_builder.finish_agent(
+                                agent_node_id,
+                                _strip_needs_input_prefix(agent_output),
+                                status="paused",
+                            )
+                            trace_builder.finalize(
+                                "paused", total_tokens, total_duration_ms
+                            )
+                            persist_workflow_trace(
+                                trace_builder.trace, include_message_key=True
+                            )
+                        except Exception:
+                            logger.debug("[Trace] pause persist failed", exc_info=True)
                         logger.info(
                             "[Trace] PAUSE agent='%s' files_available=%d "
                             "execution_id=%d",
@@ -2365,18 +2431,17 @@ def run_workflow_llm_decision(
                         "tokens_used": step_tokens,
                     })
 
-                    trace_builder.add_agent(
-                        step_id=agent_tool.step_id,
-                        name=agent_tool.display_name,
-                        persona_id=agent_tool.id,
-                        input_text=task_input,
-                        output_text=agent_output,
-                        status="completed",
-                        duration_ms=step_duration_ms,
-                        tokens=step_tokens,
-                        file_names=_trace_file_names,
-                        call_index=agent_call_counts.get(tool_call.tool_name),
-                    )
+                    # Trace: close the running agent node as completed
+                    try:
+                        trace_builder.finish_agent(
+                            agent_node_id,
+                            agent_output,
+                            status="completed",
+                            duration_ms=step_duration_ms,
+                            tokens=step_tokens,
+                        )
+                    except Exception:
+                        logger.debug("[Trace] finish_agent failed", exc_info=True)
 
                     # Add tool result to orchestrator history
                     tool_call_msg = ChatMessageSimple(

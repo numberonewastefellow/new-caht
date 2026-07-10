@@ -13,6 +13,7 @@ export type AppFocusType =
   | "new-session"
   | "more-agents"
   | "workspaces-dashboard"
+  | "workflows-gallery"
   | "user-settings"
   | "shared-chat";
 
@@ -47,6 +48,10 @@ export class AppFocus {
     return this.value === "workspaces-dashboard";
   }
 
+  isWorkflowsGallery(): boolean {
+    return this.value === "workflows-gallery";
+  }
+
   isUserSettings(): boolean {
     return this.value === "user-settings";
   }
@@ -63,6 +68,7 @@ export class AppFocus {
     | "new-session"
     | "more-agents"
     | "workspaces-dashboard"
+    | "workflows-gallery"
     | "user-settings" {
     return typeof this.value === "object" ? this.value.type : this.value;
   }
@@ -90,6 +96,11 @@ export default function useAppFocus(): AppFocus {
   // Check if we're on the workspaces dashboard
   if (pathname.startsWith("/app/workspaces")) {
     return new AppFocus("workspaces-dashboard");
+  }
+
+  // Check if we're on the workflows gallery
+  if (pathname.startsWith("/app/workflows")) {
+    return new AppFocus("workflows-gallery");
   }
 
   // Check search params for chat, agent, or project

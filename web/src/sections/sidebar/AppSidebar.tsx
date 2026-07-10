@@ -64,6 +64,7 @@ import {
   SvgMoreHorizontal,
   SvgOnyxOctagon,
   SvgSearchMenu,
+  SvgSparkle,
 } from "@opal/icons";
 import { makeColorfulIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
 
@@ -75,6 +76,7 @@ const ColorfulExploreAgents = makeColorfulIcon(SvgOnyxOctagon, "sidebar_agents")
 const ColorfulMoreAgents = makeColorfulIcon(SvgMoreHorizontal, "sidebar_agents");
 const ColorfulNewProject = makeColorfulIcon(SvgFolderPlus, "sidebar_projects");
 const ColorfulWorkspaces = makeColorfulIcon(SvgDashboard, "sidebar_projects");
+const ColorfulWorkflows = makeColorfulIcon(SvgSparkle, "sidebar_agents");
 import BuildModeIntroBackground from "@/app/craft/components/IntroBackground";
 import BuildModeIntroContent from "@/app/craft/components/IntroContent";
 import { CRAFT_PATH } from "@/app/craft/v1/constants";
@@ -537,6 +539,21 @@ const MemoizedAppSidebarInner = memo(
       ),
       [folded, activeSidebarTab]
     );
+    const workflowsButton = useMemo(
+      () => (
+        <div data-testid="AppSidebar/workflows">
+          <SidebarTab
+            leftIcon={ColorfulWorkflows}
+            folded={folded}
+            href="/app/workflows"
+            transient={activeSidebarTab.isWorkflowsGallery()}
+          >
+            Workflows
+          </SidebarTab>
+        </div>
+      ),
+      [folded, activeSidebarTab]
+    );
     const moreAgentsButton = useMemo(
       () => (
         <div data-testid="AppSidebar/more-agents">
@@ -662,6 +679,7 @@ const MemoizedAppSidebarInner = memo(
                 {newSessionButton}
                 {searchChatsButton}
                 {workspacesButton}
+                {workflowsButton}
                 {newProjectButton}
                 {isOnyxCraftEnabled && buildButton}
               </div>

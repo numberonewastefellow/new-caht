@@ -188,6 +188,7 @@ function GeneralSettings() {
     updateUserPersonalization,
     updateUserThemePreference,
     updateUserChatBackground,
+    updateUserFontPreference,
   } = useUser();
   const { theme, setTheme, systemTheme } = useTheme();
   const { accent, setAccent, font, setFont } = useVirtualAITheme();
@@ -500,13 +501,35 @@ function GeneralSettings() {
                       description: "Native OS",
                       sampleClass: "font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]",
                     },
+                    {
+                      id: "plus-jakarta" as VirtualAIFont,
+                      label: "Jakarta",
+                      description: "Geometric",
+                      sampleClass: "font-[var(--font-plus-jakarta),sans-serif]",
+                    },
+                    {
+                      id: "hanken" as VirtualAIFont,
+                      label: "Hanken",
+                      description: "Grotesk",
+                      sampleClass: "font-[var(--font-hanken),sans-serif]",
+                    },
+                    {
+                      id: "space-grotesk" as VirtualAIFont,
+                      label: "Space",
+                      description: "Techy",
+                      sampleClass: "font-[var(--font-space-grotesk),sans-serif]",
+                    },
                   ] as const
                 ).map((fontOption) => {
                   const isSelected = font === fontOption.id;
                   return (
                     <button
                       key={fontOption.id}
-                      onClick={() => setFont(fontOption.id)}
+                      onClick={() => {
+                        // Instant local apply + persist to the account.
+                        setFont(fontOption.id);
+                        void updateUserFontPreference(fontOption.id);
+                      }}
                       className="relative overflow-hidden rounded-lg transition-all w-[90px] h-[68px] cursor-pointer border-none p-0 bg-transparent group"
                       title={fontOption.label}
                       aria-label={`${fontOption.label} font${isSelected ? " (selected)" : ""}`}
@@ -607,6 +630,7 @@ function GeneralSettings() {
                   updateUserThemePreference("system" as ThemePreference);
                   setAccent("none");
                   setFont("inter");
+                  void updateUserFontPreference("inter");
                   updateUserChatBackground(null);
                   toast.success("Appearance reset to defaults");
                 }}

@@ -71,6 +71,7 @@ class UserPreferences(BaseModel):
     temperature_override_enabled: bool | None = None
     theme_preference: ThemePreference | None = None
     chat_background: str | None = None
+    font_preference: str | None = None
     default_app_mode: DefaultAppMode = DefaultAppMode.CHAT
 
     # controls which tools are enabled for the user for a specific assistant
@@ -151,6 +152,7 @@ class UserInfo(BaseModel):
                     temperature_override_enabled=user.temperature_override_enabled,
                     theme_preference=user.theme_preference,
                     chat_background=user.chat_background,
+                    font_preference=user.font_preference,
                     default_app_mode=user.default_app_mode,
                     assistant_specific_configs=assistant_specific_configs,
                 )
@@ -226,6 +228,10 @@ class DefaultAppModeRequest(BaseModel):
 
 class ChatBackgroundRequest(BaseModel):
     chat_background: str | None
+
+
+class FontPreferenceRequest(BaseModel):
+    font_preference: str | None
 
 
 class PersonalizationUpdateRequest(BaseModel):

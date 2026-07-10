@@ -48,6 +48,9 @@ export interface AgentMessageProps {
   parentMessage?: Message | null;
   // Duration in seconds for processing this message (assistant messages only)
   processingDurationSeconds?: number;
+  // Disable the right-side workflow dock (e.g. shared chat, where no dock is
+  // mounted) — workflow runs then fall back to the inline expanded timeline.
+  disableAgentDock?: boolean;
   // For code execution "Run" button
   chatSessionId?: string;
   onCodeExecutionResult?: (
@@ -171,7 +174,8 @@ function arePropsEqual(
     prev.parentMessage?.messageId === next.parentMessage?.messageId &&
     prev.llmManager?.isLoadingProviders ===
       next.llmManager?.isLoadingProviders &&
-    prev.processingDurationSeconds === next.processingDurationSeconds
+    prev.processingDurationSeconds === next.processingDurationSeconds &&
+    prev.disableAgentDock === next.disableAgentDock
     // Skip: chatState.regenerate, chatState.setPresentingDocument,
     //       most of llmManager, onMessageSelection (function/object props)
   );
@@ -191,6 +195,7 @@ const AgentMessage = React.memo(function AgentMessage({
   processingDurationSeconds,
   chatSessionId,
   onCodeExecutionResult,
+  disableAgentDock,
 }: AgentMessageProps) {
   const markdownRef = useRef<HTMLDivElement>(null);
   const finalAnswerRef = useRef<HTMLDivElement>(null);
@@ -301,6 +306,8 @@ const AgentMessage = React.memo(function AgentMessage({
         generatedImageCount={generatedImageCount}
         finalAnswerComing={pacedFinalAnswerComing}
         toolProcessingDuration={toolProcessingDuration}
+        nodeId={nodeId}
+        agentDockEnabled={!disableAgentDock}
       />
 
       {/* Row 2: Display content + MessageToolbar */}

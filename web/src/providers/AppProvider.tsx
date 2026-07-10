@@ -67,6 +67,7 @@ import { AuthTypeMetadata } from "@/lib/userSS";
 import { AppSidebarProvider } from "@/providers/AppSidebarProvider";
 import { AppModeProvider } from "@/providers/AppModeProvider";
 import { AppBackgroundProvider } from "@/providers/AppBackgroundProvider";
+import FontPreferenceSync from "@/providers/FontPreferenceSync";
 import { QueryControllerProvider } from "@/providers/QueryControllerProvider";
 import ToastProvider from "@/providers/ToastProvider";
 
@@ -92,6 +93,7 @@ export default function AppProvider({
         user={user}
         authTypeMetadata={authTypeMetadata}
       >
+        <FontPreferenceSync />
         <AppBackgroundProvider>
           <ProviderContextProvider>
             <ModalProvider user={user}>

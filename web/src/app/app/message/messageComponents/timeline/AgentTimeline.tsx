@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { StopReason } from "@/app/app/services/streamingModels";
 import { FullChatState, RenderType } from "../interfaces";
 import { TurnGroup } from "./transformers";
@@ -38,6 +39,17 @@ import { ExpandedTimelineContent } from "./ExpandedTimelineContent";
 import { CollapsedStreamingContent } from "./CollapsedStreamingContent";
 import { TimelineRoot } from "@/app/app/message/messageComponents/timeline/primitives/TimelineRoot";
 import { TimelineHeaderRow } from "@/app/app/message/messageComponents/timeline/primitives/TimelineHeaderRow";
+import { formatDurationSeconds } from "@/lib/time";
+import { SvgActivity, SvgChevronRight } from "@opal/icons";
+import { useAgentPanelStore } from "@/app/app/stores/useAgentPanelStore";
+import { useSettingsContext } from "@/providers/SettingsProvider";
+import { useStreamingDuration } from "@/app/app/message/messageComponents/timeline/hooks/useStreamingDuration";
+import AgentRunPanel from "./AgentRunPanel";
+import { AGENT_PANEL_SLOT_ID } from "./AgentPanelDock";
+
+// Theme-accent CSS variables (design-system rule: never hardcode accent colors).
+const PANEL_ACCENT = "var(--virtualai-accent, var(--theme-primary-05))";
+const PANEL_ACCENT_SUBTLE = "var(--virtualai-accent-subtle, var(--theme-primary-04))";
 
 // =============================================================================
 // Private Wrapper Components
@@ -61,6 +73,65 @@ function TimelineContainer({
       </TimelineHeaderRow>
       {children}
     </TimelineRoot>
+  );
+}
+
+/**
+ * Inline trigger chip shown in the chat for a multi-agent workflow run. Clicking
+ * it opens/closes the right-side dock panel (the live agents view). Keeps the
+ * execution-trace button reachable even while the panel is closed.
+ */
+function WorkflowTriggerChip({
+  title,
+  isLive,
+  totalSteps,
+  panelOpen,
+  onToggle,
+  messageId,
+}: {
+  title: string;
+  isLive: boolean;
+  totalSteps: number;
+  panelOpen: boolean;
+  onToggle: () => void;
+  messageId?: number;
+}) {
+  return (
+    <div className="flex flex-1 min-w-0 items-center justify-between gap-2 p-1">
+      <div
+        role="button"
+        onClick={onToggle}
+        className="flex min-w-0 cursor-pointer items-center gap-2"
+      >
+        <Text mainUiAction text03 nowrap className="truncate">
+          {title}
+        </Text>
+        {isLive && (
+          <span
+            className="inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium"
+            style={{ backgroundColor: PANEL_ACCENT_SUBTLE, color: PANEL_ACCENT }}
+          >
+            <SvgActivity className="h-2.5 w-2.5" style={{ stroke: PANEL_ACCENT }} />
+            live
+          </span>
+        )}
+        <Text secondaryBody text03 nowrap className="hidden shrink-0 sm:inline">
+          · {totalSteps} {totalSteps === 1 ? "agent" : "agents"}
+        </Text>
+      </div>
+      <div className="flex shrink-0 items-center gap-1">
+        <WorkflowTraceButton compact live={isLive} messageId={messageId} />
+        <button
+          type="button"
+          onClick={onToggle}
+          className="inline-flex shrink-0 items-center gap-0.5 text-[11px] font-medium hover:underline"
+          style={{ color: PANEL_ACCENT }}
+        >
+          {panelOpen ? "Hide" : "View"}
+          <SvgChevronRight className="h-3 w-3" style={{ stroke: PANEL_ACCENT }} />
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -97,6 +168,14 @@ export interface AgentTimelineProps {
   generatedImageCount?: number;
   /** Tool processing duration from backend (via MESSAGE_START packet) */
   toolProcessingDuration?: number;
+  /** Message-tree node id — stable panel identity for the workflow dock. */
+  nodeId?: number;
+  /**
+   * Whether the right-side workflow dock is available in this render context.
+   * False for surfaces without an `AgentPanelDock` (e.g. shared chat) so workflow
+   * runs fall back to the inline expanded timeline.
+   */
+  agentDockEnabled?: boolean;
 }
 
 /**
@@ -119,7 +198,9 @@ function areAgentTimelinePropsEqual(
     prev.chatState === next.chatState &&
     prev.isGeneratingImage === next.isGeneratingImage &&
     prev.generatedImageCount === next.generatedImageCount &&
-    prev.toolProcessingDuration === next.toolProcessingDuration
+    prev.toolProcessingDuration === next.toolProcessingDuration &&
+    prev.nodeId === next.nodeId &&
+    prev.agentDockEnabled === next.agentDockEnabled
   );
 }
 
@@ -137,6 +218,8 @@ export const AgentTimeline = React.memo(function AgentTimeline({
   isGeneratingImage = false,
   generatedImageCount = 0,
   toolProcessingDuration,
+  nodeId,
+  agentDockEnabled = true,
 }: AgentTimelineProps) {
   // Header text and state flags
   const { headerText, hasPackets, userStopped } = useTimelineHeader(
@@ -269,6 +352,94 @@ export const AgentTimeline = React.memo(function AgentTimeline({
     lastStepIsPause,
   });
 
+  // ── Multi-agent workflow → side dock panel ────────────────────────────────
+  // Workflow runs move out of the inline stack into the right-side dock; the
+  // inline chat keeps only a trigger chip. Non-workflow timelines are untouched.
+  // Keyed on nodeId (always present, stable) — NOT messageId, which is undefined
+  // during the first streaming window. messageId is used only for the trace API.
+  const messageId = chatState.messageId;
+  const panelOpen = useAgentPanelStore((s) => s.open);
+  const panelNodeId = useAgentPanelStore((s) => s.nodeId);
+  const openPanelFor = useAgentPanelStore((s) => s.openFor);
+  const togglePanelFor = useAgentPanelStore((s) => s.toggleFor);
+  const closePanel = useAgentPanelStore((s) => s.close);
+  const scheduleAutoClose = useAgentPanelStore((s) => s.scheduleAutoClose);
+  const isMobile = useSettingsContext().isMobile;
+
+  // Whether this timeline should use the dock (vs. the inline fallback).
+  const dockActive = agentDockEnabled && isWorkflowTimeline && nodeId != null;
+
+  const isThisPanelOpen = dockActive && panelOpen && panelNodeId === nodeId;
+
+  // Auto-open the dock once when a live workflow run begins streaming. Skipped on
+  // mobile, where the panel is a full-screen overlay — the user opens it explicitly.
+  const autoOpenedRef = useRef(false);
+  useEffect(() => {
+    if (!dockActive || nodeId == null || isMobile) return;
+    if (!stopPacketSeen && hasPackets && !autoOpenedRef.current) {
+      autoOpenedRef.current = true;
+      openPanelFor(nodeId, { userInitiated: false });
+    }
+  }, [dockActive, nodeId, stopPacketSeen, hasPackets, isMobile, openPanelFor]);
+
+  // HITL pause: force the panel open (desktop AND mobile, overriding a prior
+  // manual close) so the user can see and answer the workflow's questions.
+  // Fires once per pause transition.
+  const pauseForcedRef = useRef(false);
+  useEffect(() => {
+    if (!dockActive || nodeId == null) return;
+    if (lastStepIsPause && !pauseForcedRef.current) {
+      pauseForcedRef.current = true;
+      openPanelFor(nodeId, { userInitiated: false });
+    } else if (!lastStepIsPause) {
+      pauseForcedRef.current = false;
+    }
+  }, [dockActive, nodeId, lastStepIsPause, openPanelFor]);
+
+  // Auto-close ~10s after the run completes (cancelled if the user interacts).
+  useEffect(() => {
+    if (!dockActive || nodeId == null) return;
+    if (stopPacketSeen) scheduleAutoClose(nodeId);
+  }, [dockActive, nodeId, stopPacketSeen, scheduleAutoClose]);
+
+  // Resolve the dock's portal target while this message owns the open panel.
+  const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!isThisPanelOpen) {
+      setSlotEl(null);
+      return;
+    }
+    setSlotEl(document.getElementById(AGENT_PANEL_SLOT_ID));
+  }, [isThisPanelOpen]);
+
+  // Live elapsed time for the panel header (ticks while streaming, freezes to the
+  // final backend duration when done). Reuses the same hook StreamingHeader uses.
+  const panelElapsedSeconds = useStreamingDuration(
+    !stopPacketSeen,
+    streamingStartTime,
+    stopPacketSeen
+      ? (toolProcessingDuration ?? processingDurationSeconds)
+      : undefined
+  );
+
+  // done/total for the panel progress bar. A step is "done" once it is no longer
+  // the actively-streaming step; when the run stops, everything is done.
+  const panelDoneCount = useMemo(() => {
+    if (stopPacketSeen) return totalSteps;
+    const activeCount = lastTurnGroup?.isParallel
+      ? lastTurnGroup.steps.length
+      : 1;
+    return Math.max(0, totalSteps - activeCount);
+  }, [stopPacketSeen, totalSteps, lastTurnGroup]);
+
+  const panelTitle = useMemo(() => {
+    if (!stopPacketSeen) return "Agents thinking";
+    const dur = toolProcessingDuration ?? processingDurationSeconds;
+    return dur
+      ? `Thought for ${formatDurationSeconds(dur)}`
+      : "Thought for some time";
+  }, [stopPacketSeen, toolProcessingDuration, processingDurationSeconds]);
+
   const headerIsInteractive = useMemo(() => {
     if (!collapsible || isMemoryOnly) {
       return false;
@@ -399,6 +570,58 @@ export const AgentTimeline = React.memo(function AgentTimeline({
   // Display content only (no timeline steps) - but show header for image generation
   if (uiState === TimelineUIState.DISPLAY_CONTENT_ONLY) {
     return <TimelineContainer agent={chatState.assistant} />;
+  }
+
+  // Multi-agent workflow run (with the dock available): render a compact trigger
+  // chip inline and portal the live streaming cards into the right-side dock. When
+  // the dock is disabled (e.g. shared chat), fall through to the inline path below.
+  if (dockActive && nodeId != null) {
+    const isLive = !stopPacketSeen;
+    const handleChipToggle = () => togglePanelFor(nodeId);
+    return (
+      <>
+        <TimelineContainer
+          agent={chatState.assistant}
+          headerContent={
+            <WorkflowTriggerChip
+              title={panelTitle}
+              isLive={isLive}
+              totalSteps={totalSteps}
+              panelOpen={isThisPanelOpen}
+              onToggle={handleChipToggle}
+              messageId={messageId}
+            />
+          }
+        />
+        {isThisPanelOpen &&
+          slotEl &&
+          createPortal(
+            <AgentRunPanel
+              agent={chatState.assistant}
+              isLive={isLive}
+              title={panelTitle}
+              doneCount={panelDoneCount}
+              totalCount={totalSteps}
+              elapsedSeconds={panelElapsedSeconds}
+              messageId={messageId}
+              onClose={() => closePanel({ userInitiated: true })}
+            >
+              <ExpandedTimelineContent
+                turnGroups={turnGroups}
+                chatState={chatState}
+                stopPacketSeen={stopPacketSeen}
+                stopReason={stopReason}
+                isSingleStep={isSingleStep}
+                userStopped={userStopped}
+                showDoneStep={stopPacketSeen && !userStopped}
+                showStoppedStep={userStopped}
+                hasDoneIndicator={stopPacketSeen && !userStopped}
+              />
+            </AgentRunPanel>,
+            slotEl
+          )}
+      </>
+    );
   }
 
   return (

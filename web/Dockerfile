@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM node:20.15-alpine AS base
 
 LABEL com.vertualai.maintainer="founders@vertualai.com"
 LABEL com.vertualai.description="This image is the web/frontend container of VertualAI which \

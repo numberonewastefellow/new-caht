@@ -116,6 +116,7 @@ export default function SharedChatDisplay({
                       llmManager={null}
                       otherMessagesCanSwitchTo={undefined}
                       onMessageSelection={undefined}
+                      disableAgentDock
                     />
                   );
                 } else {

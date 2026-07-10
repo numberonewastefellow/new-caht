@@ -156,6 +156,8 @@ module.exports = {
         "**/src/components/**/*.test.tsx",
         "**/src/lib/**/*.test.tsx",
         "**/src/refresh-components/**/*.test.tsx",
+        // Migration-safety import tests (run in jsdom since they import components)
+        "**/src/__migration__/**/*.test.tsx",
         // Add more patterns here as you add more integration tests
       ],
     },

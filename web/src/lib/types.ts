@@ -30,6 +30,7 @@ interface UserPreferences {
   temperature_override_enabled: boolean;
   theme_preference: ThemePreference | null;
   chat_background: string | null;
+  font_preference: string | null;
   default_app_mode: "AUTO" | "CHAT" | "SEARCH";
 }
 
