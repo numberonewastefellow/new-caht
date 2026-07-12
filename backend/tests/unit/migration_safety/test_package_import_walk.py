@@ -11,20 +11,21 @@ the golden-snapshot tier is what proves the importable SET is unchanged.
 from __future__ import annotations
 
 import importlib
-import pkgutil
 
 from tests.unit.migration_safety.conftest import is_namespace_import_error
+from tests.unit.migration_safety.conftest import iter_package_modules
 from tests.unit.migration_safety.conftest import package_source_root
 from tests.unit.migration_safety.conftest import ROOT_PACKAGE
 
 
 def _walk_module_names() -> list[str]:
-    root = importlib.import_module(ROOT_PACKAGE)
-    names: list[str] = []
-    for _finder, name, _ispkg in pkgutil.walk_packages(
-        root.__path__, prefix=root.__name__ + "."
-    ):
-        names.append(name)
+    """All modules under the root package + the EE mirror (if present).
+
+    File-based (see conftest.iter_package_modules) because pkgutil skips the many
+    namespace-package dirs here (e.g. the whole background/celery tree).
+    """
+    names = iter_package_modules(ROOT_PACKAGE)
+    names += iter_package_modules("ee")  # EE mirror; empty list once EE is removed
     return names
 
 

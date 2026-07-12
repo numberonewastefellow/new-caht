@@ -15,6 +15,19 @@ import importlib
 from tests.unit.migration_safety.conftest import qualified
 
 
+# Known pre-existing orphans: scheduled by beat, but the consumer task does not exist.
+# NOT caused by the rename -- these are broken on main today and must be allowlisted so
+# the suite still catches NEW orphans introduced by the migration.
+#
+#   cleanup_old_snapshots: the consumer `cleanup_old_snapshots_task`
+#   (om/onyx/server/features/build/sandbox/tasks/tasks.py) is entirely COMMENTED OUT, and
+#   has been since the commit that introduced it (7f0ce0531 "feat: Onyx Craft (#7484)") --
+#   it has never had a consumer on any commit. Beat still dispatches it every 24h to the
+#   SANDBOX queue, where nothing handles it. Fix = delete the beat entry (or re-enable the
+#   task); tracked separately, deliberately NOT changed by the rename migration.
+KNOWN_ORPHAN_BEAT_TASKS = {"cleanup_old_snapshots"}
+
+
 def _beat_module():  # type: ignore[no-untyped-def]
     return importlib.import_module(qualified("background.celery.tasks.beat_schedule"))
 
@@ -27,11 +40,23 @@ def test_regular_beat_tasks_have_registered_consumers(
     assert entries, "get_tasks_to_schedule() returned no entries"
 
     missing: list[str] = []
+    known_orphans: list[str] = []
     for entry in entries:
         task_name = entry["task"]
         assert isinstance(task_name, str) and task_name, f"Bad beat entry: {entry!r}"
-        if task_name not in union_task_registry:
-            missing.append(f"{entry.get('name', '?')} -> {task_name}")
+        if task_name in union_task_registry:
+            continue
+        label = f"{entry.get('name', '?')} -> {task_name}"
+        if task_name in KNOWN_ORPHAN_BEAT_TASKS:
+            known_orphans.append(label)
+        else:
+            missing.append(label)
+
+    if known_orphans:
+        print(
+            "[beat] known pre-existing orphans (broken on main, not by the rename): "
+            + ", ".join(known_orphans)
+        )
 
     assert not missing, (
         "Scheduled beat tasks with no registered consumer (module not discovered?):\n"

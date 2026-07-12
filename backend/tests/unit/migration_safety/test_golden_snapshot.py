@@ -22,12 +22,12 @@ import ast
 import importlib
 import json
 import os
-import pkgutil
 from pathlib import Path
 
 import pytest
 from celery import Celery
 
+from tests.unit.migration_safety.conftest import iter_package_modules
 from tests.unit.migration_safety.conftest import iter_source_files
 from tests.unit.migration_safety.conftest import parse_source
 from tests.unit.migration_safety.conftest import ROOT_PACKAGE
@@ -45,10 +45,15 @@ _FETCH_FUNCS = {
 
 
 def _importable_module_suffixes() -> list[str]:
-    """Root-stripped names of every submodule that imports cleanly."""
-    root = importlib.import_module(ROOT_PACKAGE)
+    """Root-stripped names of every submodule that imports cleanly.
+
+    File-based walk (conftest.iter_package_modules) -- pkgutil would skip the namespace
+    dirs that hold the entire background/celery tree. Includes the EE mirror so the
+    rename of `ee.onyx` -> `ee.om` is snapshot-covered too.
+    """
+    names = iter_package_modules(ROOT_PACKAGE) + iter_package_modules("ee")
     ok: list[str] = []
-    for _f, name, _p in pkgutil.walk_packages(root.__path__, prefix=root.__name__ + "."):
+    for name in names:
         try:
             importlib.import_module(name)
         except Exception:  # noqa: BLE001 - env-dependent; snapshot only the importable set

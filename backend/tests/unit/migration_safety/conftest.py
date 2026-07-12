@@ -23,9 +23,12 @@ from typing import Iterator
 # `onyx.utils.variable_functionality` reads LICENSE_ENFORCEMENT_ENABLED at import
 # time; setting it here (conftest loads before test modules) pins the MIT/non-EE
 # resolution path -- the exact path that must keep working after EE removal.
+# Force (not setdefault) -- the backend image may already export these, and the EE/MIT
+# resolution path must be pinned identically for the "before" and "after" runs or the
+# golden-snapshot diff is meaningless.
 os.environ["LICENSE_ENFORCEMENT_ENABLED"] = "false"
-os.environ.setdefault("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "false")
-os.environ.setdefault("DISABLE_TELEMETRY", "true")
+os.environ["ENABLE_PAID_ENTERPRISE_EDITION_FEATURES"] = "false"
+os.environ["DISABLE_TELEMETRY"] = "true"
 
 import pytest  # noqa: E402
 from celery import Celery  # noqa: E402
@@ -173,6 +176,50 @@ def resolve_symbol(module: str, attribute: str | None = None) -> str:
     return "namespace"
 
 
+# Non-importable scaffolding shipped inside the package (standalone scripts/templates
+# for the sandbox container). Excluded from mypy in pyproject.toml for the same reason.
+_NON_IMPORTABLE_SUBPATHS = (
+    "server/features/build/sandbox/kubernetes/docker/skills/",
+    "server/features/build/sandbox/kubernetes/docker/templates/",
+)
+
+
+def iter_package_modules(root_pkg: str) -> list[str]:
+    """Every importable dotted module under a package, INCLUDING namespace dirs.
+
+    `pkgutil.walk_packages` only recurses into dirs that have `__init__.py`. Large parts
+    of this codebase are implicit namespace packages with NO `__init__.py` -- notably the
+    whole `background/celery/**` tree (apps, configs, tasks, versioned_apps). Walking with
+    pkgutil silently MISSES ~339 files there, i.e. exactly the code this migration is most
+    likely to break. So enumerate .py files on disk and derive module names instead.
+    """
+    try:
+        pkg = importlib.import_module(root_pkg)
+    except ImportError:
+        return []
+    pkg_file = getattr(pkg, "__file__", None)
+    if not pkg_file:
+        return []
+    root_dir = Path(pkg_file).parent
+
+    modules: list[str] = []
+    for path in sorted(root_dir.rglob("*.py")):
+        if "__pycache__" in path.parts:
+            continue
+        rel = path.relative_to(root_dir).as_posix()
+        if any(rel.startswith(skip) for skip in _NON_IMPORTABLE_SUBPATHS):
+            continue
+        if rel.endswith("__init__.py"):
+            rel = rel[: -len("/__init__.py")] if "/" in rel else ""
+            if not rel:
+                continue  # the package root itself
+            dotted = f"{root_pkg}." + rel.replace("/", ".")
+        else:
+            dotted = f"{root_pkg}." + rel[: -len(".py")].replace("/", ".")
+        modules.append(dotted)
+    return modules
+
+
 def iter_source_files() -> Iterator[Path]:
     """Every .py file under the root package (excludes __pycache__)."""
     for path in package_source_root().rglob("*.py"):
@@ -247,13 +294,20 @@ def worker_celery_apps() -> list[tuple[str, Celery]]:
         app = celery_app_from_module(mod)  # type: ignore[arg-type]
         assert app is not None, f"No Celery app exposed by {qualified(suffix)}"
         try:
+            # `autodiscover_tasks(force=False)` does NOT import on finalize() -- it
+            # defers to the `import_modules` signal, which only fires on worker boot.
+            # `import_default_modules()` sends that signal, which is what actually
+            # imports every STRING module path in the autodiscover lists (the whole
+            # point of this suite). Without it the task registry comes back empty.
+            app.loader.import_default_modules()
             app.finalize()
         except Exception as exc:  # noqa: BLE001
             if is_namespace_import_error(exc):
                 raise AssertionError(
-                    f"Namespace/rename error finalizing {qualified(suffix)}: {exc}"
+                    f"Namespace/rename error discovering tasks for "
+                    f"{qualified(suffix)}: {exc}"
                 ) from exc
-            pytest.skip(f"Env gap finalizing {qualified(suffix)}: {exc}")
+            pytest.skip(f"Env gap discovering tasks for {qualified(suffix)}: {exc}")
         apps.append((suffix, app))
     return apps
 
