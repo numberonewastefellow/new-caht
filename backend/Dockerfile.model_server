@@ -51,7 +51,7 @@ COPY ./om/utils/middleware.py /app/om/utils/middleware.py
 COPY ./om/utils/tenant.py /app/om/utils/tenant.py
 
 # Place to fetch version information
-COPY ./onyx/__init__.py /app/onyx/__init__.py
+COPY ./om/__init__.py /app/om/__init__.py
 
 # Shared between Onyx Backend and Model Server
 COPY ./shared_configs /app/shared_configs

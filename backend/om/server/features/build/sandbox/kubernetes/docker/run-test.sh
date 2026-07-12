@@ -22,7 +22,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../../../../../.." && pwd)"
 NAMESPACE="onyx-sandboxes"
 POD_NAME="sandbox-test"
 IMAGE_NAME="onyxdotapp/onyx-backend:latest"
-TEST_FILE="onyx/server/features/build/sandbox/kubernetes/test_kubernetes_sandbox.py"
+TEST_FILE="om/server/features/build/sandbox/kubernetes/test_kubernetes_sandbox.py"
 ENV_FILE="$PROJECT_ROOT/.vscode/.env"
 
 ORIGINAL_TEST_FILE="$PROJECT_ROOT/backend/tests/external_dependency_unit/craft/test_kubernetes_sandbox.py"
