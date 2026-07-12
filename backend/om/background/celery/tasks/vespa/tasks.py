@@ -174,9 +174,6 @@ def check_for_vespa_sync_task(self: Task, *, tenant_id: str) -> bool | None:
                 with get_session_with_current_tenant() as db_session:
                     monitor_document_set_taskset(tenant_id, key_bytes, r, db_session)
             elif key_str.startswith(RedisUserGroup.FENCE_PREFIX):
-                monitor_usergroup_taskset = (
-                    monitor_usergroup_taskset
-                )
                 with get_session_with_current_tenant() as db_session:
                     monitor_usergroup_taskset(tenant_id, key_bytes, r, db_session)
 
