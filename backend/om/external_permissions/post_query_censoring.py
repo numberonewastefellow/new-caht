@@ -34,13 +34,17 @@ def _get_all_censoring_enabled_sources() -> set[DocumentSource]:
 # NOTE: This is only called if ee is enabled.
 def _post_query_chunk_censoring(
     chunks: list[InferenceChunk],
-    user: User,
+    user: User | None,
 ) -> list[InferenceChunk]:
     """
     This function checks all chunks to see if they need to be sent to a censoring
     function. If they do, it sends them to the censoring function and returns the
     censored chunks. If they don't, it returns the original chunks.
     """
+    if user is None:
+        # No user means auth is disabled, so there is nothing to censor against.
+        return chunks
+
     sources_to_censor = _get_all_censoring_enabled_sources()
 
     # Anonymous users can only access public (non-permission-synced) content

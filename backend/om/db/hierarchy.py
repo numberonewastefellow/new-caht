@@ -519,12 +519,11 @@ def get_accessible_hierarchy_nodes_for_source(
     """
     Get hierarchy nodes for a source that are accessible to the user.
 
-    Uses fetch_versioned_implementation to get the appropriate version:
-    - MIT version: Returns all nodes (no permission filtering)
-    - EE version: Filters based on user email and external group IDs
+    Filters based on user email and external group IDs.
     """
-    versioned_fn = _get_accessible_hierarchy_nodes_for_source
-    return versioned_fn(db_session, source, user_email, external_group_ids)
+    return _get_accessible_hierarchy_nodes_for_source(
+        db_session, source, user_email, external_group_ids
+    )
 
 
 def get_document_parent_hierarchy_node_ids(

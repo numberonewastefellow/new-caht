@@ -77,7 +77,7 @@ class TestYieldDocBatches:
 
     @pytest.fixture
     def mock_sf_db(self) -> MagicMock:
-        """Create a mock OnyxSalesforceSQLite object."""
+        """Create a mock OmSalesforceSQLite object."""
         return MagicMock()
 
     def _create_salesforce_object(

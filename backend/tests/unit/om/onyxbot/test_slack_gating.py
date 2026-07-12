@@ -16,6 +16,12 @@ from om.server.settings.models import ApplicationStatus
 _HANDLE_MSG = "om.onyxbot.slack.handlers.handle_message"
 _LISTENER = "om.onyxbot.slack.listener"
 
+# The production code imports these symbols locally (at call time) from their
+# source modules, so patches must target the source module + symbol.
+_IS_TENANT_GATED = "om.server.tenants.product_gating.is_tenant_gated"
+_GET_CACHED_LICENSE_METADATA = "om.db.license.get_cached_license_metadata"
+_CHECK_SEAT_AVAILABILITY = "om.db.license.check_seat_availability"
+
 
 def _make_socket_request(
     req_type: str = "events_api",
@@ -42,20 +48,6 @@ def _make_license_metadata(
     metadata = MagicMock()
     metadata.status = status
     return metadata
-
-
-def _ee_side_effect(
-    is_gated: bool = False,
-    metadata: Any = None,
-) -> list:
-    """Build fetch_ee_implementation_or_noop side_effect for gating tests.
-
-    Returns callables for: [is_tenant_gated, get_cached_license_metadata].
-    """
-    return [
-        lambda *_a, **_kw: is_gated,
-        lambda *_a, **_kw: metadata,
-    ]
 
 
 def _make_message_info(email: str = "user@test.com") -> MagicMock:
@@ -93,11 +85,7 @@ class TestCheckTenantGated:
         with patch(f"{_LISTENER}.get_current_tenant_id", return_value="public"):
             yield
 
-    def _call(
-        self,
-        _mock_fetch_ee: MagicMock,
-        event: dict | None = None,
-    ) -> tuple[bool, MagicMock]:
+    def _call(self, event: dict | None = None) -> tuple[bool, MagicMock]:
         """Call _check_tenant_gated with a fresh client + request."""
         from om.onyxbot.slack.listener import _check_tenant_gated
 
@@ -107,36 +95,45 @@ class TestCheckTenantGated:
         result = _check_tenant_gated(client, req)
         return result, client
 
-    @patch(f"{_LISTENER}.fetch_ee_implementation_or_noop")
-    def test_active_license_not_gated(self, mock_fetch_ee: MagicMock) -> None:
-        metadata = _make_license_metadata()
-        mock_fetch_ee.side_effect = _ee_side_effect(metadata=metadata)
+    @patch(_GET_CACHED_LICENSE_METADATA)
+    @patch(_IS_TENANT_GATED, return_value=False)
+    def test_active_license_not_gated(
+        self, _mock_is_gated: MagicMock, mock_metadata: MagicMock
+    ) -> None:
+        mock_metadata.return_value = _make_license_metadata()
 
-        result, _ = self._call(mock_fetch_ee)
+        result, _ = self._call()
         assert result is False
 
     @patch(f"{_LISTENER}.respond_in_thread_or_channel")
-    @patch(f"{_LISTENER}.fetch_ee_implementation_or_noop")
+    @patch(_GET_CACHED_LICENSE_METADATA, return_value=None)
+    @patch(_IS_TENANT_GATED, return_value=True)
     def test_multi_tenant_gated_blocks_and_responds(
-        self, mock_fetch_ee: MagicMock, mock_respond: MagicMock
+        self,
+        _mock_is_gated: MagicMock,
+        _mock_metadata: MagicMock,
+        mock_respond: MagicMock,
     ) -> None:
-        mock_fetch_ee.side_effect = _ee_side_effect(is_gated=True)
-
-        result, _ = self._call(mock_fetch_ee)
+        result, _ = self._call()
 
         assert result is True
         mock_respond.assert_called_once()
         assert "subscription has expired" in mock_respond.call_args[1]["text"]
 
     @patch(f"{_LISTENER}.respond_in_thread_or_channel")
-    @patch(f"{_LISTENER}.fetch_ee_implementation_or_noop")
+    @patch(_GET_CACHED_LICENSE_METADATA)
+    @patch(_IS_TENANT_GATED, return_value=False)
     def test_gated_access_status_blocks(
-        self, mock_fetch_ee: MagicMock, mock_respond: MagicMock
+        self,
+        _mock_is_gated: MagicMock,
+        mock_metadata: MagicMock,
+        mock_respond: MagicMock,
     ) -> None:
-        metadata = _make_license_metadata(status=ApplicationStatus.GATED_ACCESS)
-        mock_fetch_ee.side_effect = _ee_side_effect(metadata=metadata)
+        mock_metadata.return_value = _make_license_metadata(
+            status=ApplicationStatus.GATED_ACCESS
+        )
 
-        result, _ = self._call(mock_fetch_ee)
+        result, _ = self._call()
 
         assert result is True
         mock_respond.assert_called_once()
@@ -156,51 +153,57 @@ class TestCheckTenantGated:
         ids=["bot_id", "bot_profile", "subtype_bot_message"],
     )
     @patch(f"{_LISTENER}.respond_in_thread_or_channel")
-    @patch(f"{_LISTENER}.fetch_ee_implementation_or_noop")
+    @patch(_GET_CACHED_LICENSE_METADATA, return_value=None)
+    @patch(_IS_TENANT_GATED, return_value=True)
     def test_bot_message_no_response_sent(
-        self, mock_fetch_ee: MagicMock, mock_respond: MagicMock, event: dict
+        self,
+        _mock_is_gated: MagicMock,
+        _mock_metadata: MagicMock,
+        mock_respond: MagicMock,
+        event: dict,
     ) -> None:
         """Bot messages are blocked but no response is sent (prevents loop)."""
-        mock_fetch_ee.side_effect = _ee_side_effect(is_gated=True)
-
-        result, _ = self._call(mock_fetch_ee, event=event)
+        result, _ = self._call(event=event)
 
         assert result is True
         mock_respond.assert_not_called()
 
     @patch(f"{_LISTENER}.respond_in_thread_or_channel")
-    @patch(f"{_LISTENER}.fetch_ee_implementation_or_noop")
+    @patch(_GET_CACHED_LICENSE_METADATA, return_value=None)
+    @patch(_IS_TENANT_GATED, return_value=True)
     def test_app_mention_no_response_sent(
-        self, mock_fetch_ee: MagicMock, mock_respond: MagicMock
+        self,
+        _mock_is_gated: MagicMock,
+        _mock_metadata: MagicMock,
+        mock_respond: MagicMock,
     ) -> None:
         """app_mention events are blocked silently (dedup with message event)."""
-        mock_fetch_ee.side_effect = _ee_side_effect(is_gated=True)
-
         result, _ = self._call(
-            mock_fetch_ee,
             event={"type": "app_mention", "channel": "C123", "ts": "1"},
         )
 
         assert result is True
         mock_respond.assert_not_called()
 
-    @patch(f"{_LISTENER}.fetch_ee_implementation_or_noop")
-    def test_no_license_metadata_not_gated(self, mock_fetch_ee: MagicMock) -> None:
-        """No license metadata (CE mode) means not gated."""
-        mock_fetch_ee.side_effect = _ee_side_effect(metadata=None)
-
-        result, _ = self._call(mock_fetch_ee)
+    @patch(_GET_CACHED_LICENSE_METADATA, return_value=None)
+    @patch(_IS_TENANT_GATED, return_value=False)
+    def test_no_license_metadata_not_gated(
+        self, _mock_is_gated: MagicMock, _mock_metadata: MagicMock
+    ) -> None:
+        """An unlicensed self-hosted install has no cached metadata: not gated."""
+        result, _ = self._call()
         assert result is False
 
     @patch(f"{_LISTENER}.respond_in_thread_or_channel")
-    @patch(f"{_LISTENER}.fetch_ee_implementation_or_noop")
+    @patch(_GET_CACHED_LICENSE_METADATA, return_value=None)
+    @patch(_IS_TENANT_GATED, return_value=True)
     def test_response_uses_thread_ts(
-        self, mock_fetch_ee: MagicMock, mock_respond: MagicMock
+        self,
+        _mock_is_gated: MagicMock,
+        _mock_metadata: MagicMock,
+        mock_respond: MagicMock,
     ) -> None:
-        mock_fetch_ee.side_effect = _ee_side_effect(is_gated=True)
-
         self._call(
-            mock_fetch_ee,
             event={
                 "type": "message",
                 "channel": "C123",
@@ -279,16 +282,17 @@ class TestHandleMessageSeatCheck:
 
     @pytest.mark.usefixtures("db_session")
     @patch(f"{_HANDLE_MSG}.respond_in_thread_or_channel")
-    @patch(f"{_HANDLE_MSG}.fetch_ee_implementation_or_noop")
+    @patch(_CHECK_SEAT_AVAILABILITY)
     @patch(f"{_HANDLE_MSG}.get_user_by_email", return_value=None)
     def test_new_user_blocked_when_seats_exceeded(
         self,
         _mock_get_user: MagicMock,
-        mock_fetch_ee: MagicMock,
+        mock_check_seats: MagicMock,
         mock_respond: MagicMock,
     ) -> None:
-        seat_result = MagicMock(available=False, error_message="Seat limit exceeded")
-        mock_fetch_ee.return_value = lambda **_kw: seat_result
+        mock_check_seats.return_value = MagicMock(
+            available=False, error_message="Seat limit exceeded"
+        )
 
         result = self._call_handle_message()
 
@@ -300,12 +304,12 @@ class TestHandleMessageSeatCheck:
     @patch(f"{_HANDLE_MSG}.handle_regular_answer", return_value=False)
     @patch(f"{_HANDLE_MSG}.handle_standard_answers", return_value=False)
     @patch(f"{_HANDLE_MSG}.add_slack_user_if_not_exists")
-    @patch(f"{_HANDLE_MSG}.fetch_ee_implementation_or_noop")
+    @patch(_CHECK_SEAT_AVAILABILITY)
     @patch(f"{_HANDLE_MSG}.get_user_by_email")
     def test_existing_user_bypasses_seat_check(
         self,
         mock_get_user: MagicMock,
-        mock_fetch_ee: MagicMock,
+        mock_check_seats: MagicMock,
         _mock_add_user: MagicMock,
         _mock_standard: MagicMock,
         _mock_regular: MagicMock,
@@ -314,44 +318,23 @@ class TestHandleMessageSeatCheck:
 
         self._call_handle_message()
 
-        mock_fetch_ee.assert_not_called()
+        mock_check_seats.assert_not_called()
 
     @patch(f"{_HANDLE_MSG}.handle_regular_answer", return_value=False)
     @patch(f"{_HANDLE_MSG}.handle_standard_answers", return_value=False)
     @patch(f"{_HANDLE_MSG}.add_slack_user_if_not_exists")
-    @patch(f"{_HANDLE_MSG}.fetch_ee_implementation_or_noop")
+    @patch(_CHECK_SEAT_AVAILABILITY)
     @patch(f"{_HANDLE_MSG}.get_user_by_email", return_value=None)
     def test_new_user_allowed_when_seats_available(
         self,
         _mock_get_user: MagicMock,
-        mock_fetch_ee: MagicMock,
+        mock_check_seats: MagicMock,
         mock_add_user: MagicMock,
         _mock_standard: MagicMock,
         _mock_regular: MagicMock,
         db_session: MagicMock,
     ) -> None:
-        mock_fetch_ee.return_value = lambda **_kw: MagicMock(available=True)
-
-        self._call_handle_message(email="new@test.com")
-
-        mock_add_user.assert_called_once_with(db_session, "new@test.com")
-
-    @patch(f"{_HANDLE_MSG}.handle_regular_answer", return_value=False)
-    @patch(f"{_HANDLE_MSG}.handle_standard_answers", return_value=False)
-    @patch(f"{_HANDLE_MSG}.add_slack_user_if_not_exists")
-    @patch(f"{_HANDLE_MSG}.fetch_ee_implementation_or_noop")
-    @patch(f"{_HANDLE_MSG}.get_user_by_email", return_value=None)
-    def test_noop_seat_check_allows_new_user(
-        self,
-        _mock_get_user: MagicMock,
-        mock_fetch_ee: MagicMock,
-        mock_add_user: MagicMock,
-        _mock_standard: MagicMock,
-        _mock_regular: MagicMock,
-        db_session: MagicMock,
-    ) -> None:
-        """CE mode: noop returns None, user is allowed."""
-        mock_fetch_ee.return_value = lambda **_kw: None
+        mock_check_seats.return_value = MagicMock(available=True)
 
         self._call_handle_message(email="new@test.com")
 

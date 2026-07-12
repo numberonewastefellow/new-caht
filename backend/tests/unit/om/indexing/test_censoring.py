@@ -6,9 +6,14 @@ import pytest
 from om.configs.constants import DocumentSource
 from om.context.search.models import InferenceChunk
 from om.db.models import User
-from om.external_permissions.post_query_censoring import _post_query_chunk_censoring as _impl__post_query_chunk_censoring
+from om.external_permissions.post_query_censoring import _post_query_chunk_censoring
 
-_post_query_chunk_censoring = _impl__post_query_chunk_censoring
+
+def _mock_sync_config(chunk_censoring_func: MagicMock) -> MagicMock:
+    """Build a SourcePermissionSyncConfig stub exposing a chunk censoring func."""
+    sync_config = MagicMock()
+    sync_config.censoring_config.chunk_censoring_func = chunk_censoring_func
+    return sync_config
 
 
 class TestPostQueryChunkCensoring:
@@ -110,17 +115,15 @@ class TestPostQueryChunkCensoring:
     @patch(
         "om.external_permissions.post_query_censoring._get_all_censoring_enabled_sources"
     )
-    @patch(
-        "om.external_permissions.post_query_censoring.DOC_SOURCE_TO_CHUNK_CENSORING_FUNCTION"
-    )
+    @patch("om.external_permissions.post_query_censoring.get_source_perm_sync_config")
     def test_post_query_chunk_censoring_salesforce_censored(
-        self, mock_censor_func: MagicMock, mock_get_sources: MagicMock
+        self, mock_get_sync_config: MagicMock, mock_get_sources: MagicMock
     ) -> None:
         mock_get_sources.return_value = {DocumentSource.SALESFORCE}
         mock_censor_func_impl = MagicMock(
             return_value=[self.mock_chunk_1]
         )  # Only return chunk 1
-        mock_censor_func.__getitem__.return_value = mock_censor_func_impl
+        mock_get_sync_config.return_value = _mock_sync_config(mock_censor_func_impl)
 
         chunks = [self.mock_chunk_1, self.mock_chunk_2, self.mock_chunk_3]
         result = _post_query_chunk_censoring(chunks, self.mock_user)
@@ -133,15 +136,13 @@ class TestPostQueryChunkCensoring:
     @patch(
         "om.external_permissions.post_query_censoring._get_all_censoring_enabled_sources"
     )
-    @patch(
-        "om.external_permissions.post_query_censoring.DOC_SOURCE_TO_CHUNK_CENSORING_FUNCTION"
-    )
+    @patch("om.external_permissions.post_query_censoring.get_source_perm_sync_config")
     def test_post_query_chunk_censoring_salesforce_error(
-        self, mock_censor_func: MagicMock, mock_get_sources: MagicMock
+        self, mock_get_sync_config: MagicMock, mock_get_sources: MagicMock
     ) -> None:
         mock_get_sources.return_value = {DocumentSource.SALESFORCE}
         mock_censor_func_impl = MagicMock(side_effect=Exception("Censoring error"))
-        mock_censor_func.__getitem__.return_value = mock_censor_func_impl
+        mock_get_sync_config.return_value = _mock_sync_config(mock_censor_func_impl)
 
         chunks = [self.mock_chunk_1, self.mock_chunk_2, self.mock_chunk_3]
         result = _post_query_chunk_censoring(chunks, self.mock_user)
@@ -152,15 +153,13 @@ class TestPostQueryChunkCensoring:
     @patch(
         "om.external_permissions.post_query_censoring._get_all_censoring_enabled_sources"
     )
-    @patch(
-        "om.external_permissions.post_query_censoring.DOC_SOURCE_TO_CHUNK_CENSORING_FUNCTION"
-    )
+    @patch("om.external_permissions.post_query_censoring.get_source_perm_sync_config")
     def test_post_query_chunk_censoring_no_censoring(
-        self, mock_censor_func: MagicMock, mock_get_sources: MagicMock
+        self, mock_get_sync_config: MagicMock, mock_get_sources: MagicMock
     ) -> None:
         mock_get_sources.return_value = set()  # No sources to censor
         mock_censor_func_impl = MagicMock()
-        mock_censor_func.__getitem__.return_value = mock_censor_func_impl
+        mock_get_sync_config.return_value = _mock_sync_config(mock_censor_func_impl)
 
         chunks = [self.mock_chunk_1, self.mock_chunk_2, self.mock_chunk_3]
         result = _post_query_chunk_censoring(chunks, self.mock_user)
@@ -170,17 +169,15 @@ class TestPostQueryChunkCensoring:
     @patch(
         "om.external_permissions.post_query_censoring._get_all_censoring_enabled_sources"
     )
-    @patch(
-        "om.external_permissions.post_query_censoring.DOC_SOURCE_TO_CHUNK_CENSORING_FUNCTION"
-    )
+    @patch("om.external_permissions.post_query_censoring.get_source_perm_sync_config")
     def test_post_query_chunk_censoring_order_maintained(
-        self, mock_censor_func: MagicMock, mock_get_sources: MagicMock
+        self, mock_get_sync_config: MagicMock, mock_get_sources: MagicMock
     ) -> None:
         mock_get_sources.return_value = {DocumentSource.SALESFORCE}
         mock_censor_func_impl = MagicMock(
             return_value=[self.mock_chunk_3, self.mock_chunk_1]
         )  # Return chunk 3 and 1
-        mock_censor_func.__getitem__.return_value = mock_censor_func_impl
+        mock_get_sync_config.return_value = _mock_sync_config(mock_censor_func_impl)
 
         chunks = [
             self.mock_chunk_1,

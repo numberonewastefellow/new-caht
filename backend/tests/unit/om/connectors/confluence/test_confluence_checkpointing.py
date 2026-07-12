@@ -385,7 +385,7 @@ def test_validate_connector_settings_errors(
     error = HTTPError(response=MagicMock(status_code=status_code))
 
     with patch(
-        "om.connectors.confluence.onyx_confluence.OnyxConfluence.retrieve_confluence_spaces"
+        "om.connectors.confluence.onyx_confluence.OmConfluence.retrieve_confluence_spaces"
     ) as mock_retrieve:
         mock_retrieve.side_effect = error
 

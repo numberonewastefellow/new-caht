@@ -72,14 +72,17 @@ class TestDisposableEmailValidation:
 
     @pytest.mark.asyncio
     @patch("om.auth.users.is_disposable_email")
-    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch(
+        "om.server.tenants.provisioning.get_or_provision_tenant",
+        new_callable=AsyncMock,
+    )
     @patch("om.auth.users.get_async_session_context_manager")
     @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
     async def test_blocks_disposable_email_before_tenant_provision(
         self,
         mock_get_user_count: MagicMock,  # noqa: ARG002
         mock_session_manager: MagicMock,  # noqa: ARG002
-        mock_fetch_ee: MagicMock,
+        mock_get_or_provision_tenant: AsyncMock,
         mock_is_disposable: MagicMock,
         mock_user_create: UserCreate,
     ) -> None:
@@ -95,12 +98,15 @@ class TestDisposableEmailValidation:
         assert exc.value.status_code == 400
         assert "Disposable email" in str(exc.value.detail)
         # Verify we never got to tenant provisioning
-        mock_fetch_ee.assert_not_called()
+        mock_get_or_provision_tenant.assert_not_called()
 
     @pytest.mark.asyncio
     @patch("om.auth.users.is_disposable_email")
     @patch("om.auth.users.verify_email_domain")
-    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch(
+        "om.server.tenants.provisioning.get_or_provision_tenant",
+        new_callable=AsyncMock,
+    )
     @patch("om.auth.users.get_async_session_context_manager")
     @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
     @patch("om.auth.users.MULTI_TENANT", False)
@@ -108,7 +114,7 @@ class TestDisposableEmailValidation:
         self,
         mock_get_user_count: MagicMock,
         mock_session_manager: MagicMock,
-        mock_fetch_ee: MagicMock,
+        mock_get_or_provision_tenant: AsyncMock,
         mock_verify_domain: MagicMock,
         mock_is_disposable: MagicMock,
         mock_user_create: UserCreate,
@@ -118,7 +124,7 @@ class TestDisposableEmailValidation:
         # Setup
         mock_is_disposable.return_value = False
         mock_verify_domain.return_value = None  # No exception = valid
-        mock_fetch_ee.return_value = AsyncMock(return_value="default_schema")
+        mock_get_or_provision_tenant.return_value = "default_schema"
         mock_session_manager.return_value = _AsyncSessionContextManager(
             mock_async_session
         )
@@ -147,7 +153,10 @@ class TestMultiTenantInviteLogic:
     @patch("om.auth.users.SQLAlchemyUserAdminDB")
     @patch("om.auth.users.is_disposable_email", return_value=False)
     @patch("om.auth.users.verify_email_domain")
-    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch(
+        "om.server.tenants.provisioning.get_or_provision_tenant",
+        new_callable=AsyncMock,
+    )
     @patch("om.auth.users.get_async_session_context_manager")
     @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
     @patch("om.auth.users.verify_email_is_invited")
@@ -160,7 +169,7 @@ class TestMultiTenantInviteLogic:
         mock_verify_invited: MagicMock,
         mock_get_user_count: MagicMock,
         mock_session_manager: MagicMock,
-        mock_fetch_ee: MagicMock,
+        mock_get_or_provision_tenant: AsyncMock,
         mock_verify_domain: MagicMock,  # noqa: ARG002
         mock_is_disposable: MagicMock,  # noqa: ARG002
         mock_sql_alchemy_db: MagicMock,
@@ -170,7 +179,7 @@ class TestMultiTenantInviteLogic:
         """First user in tenant should not require invite."""
         # Setup: No existing users
         mock_get_user_count.return_value = 0
-        mock_fetch_ee.return_value = AsyncMock(return_value="tenant_123")
+        mock_get_or_provision_tenant.return_value = "tenant_123"
         mock_session_manager.return_value = _AsyncSessionContextManager(
             mock_async_session
         )
@@ -195,7 +204,10 @@ class TestMultiTenantInviteLogic:
     @patch("om.auth.users.SQLAlchemyUserAdminDB")
     @patch("om.auth.users.is_disposable_email", return_value=False)
     @patch("om.auth.users.verify_email_domain")
-    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch(
+        "om.server.tenants.provisioning.get_or_provision_tenant",
+        new_callable=AsyncMock,
+    )
     @patch("om.auth.users.get_async_session_context_manager")
     @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
     @patch("om.auth.users.verify_email_is_invited")
@@ -208,7 +220,7 @@ class TestMultiTenantInviteLogic:
         mock_verify_invited: MagicMock,
         mock_get_user_count: MagicMock,
         mock_session_manager: MagicMock,
-        mock_fetch_ee: MagicMock,
+        mock_get_or_provision_tenant: AsyncMock,
         mock_verify_domain: MagicMock,  # noqa: ARG002
         mock_is_disposable: MagicMock,  # noqa: ARG002
         mock_sql_alchemy_db: MagicMock,
@@ -218,7 +230,7 @@ class TestMultiTenantInviteLogic:
         """Subsequent users in existing tenant should require invite."""
         # Setup: Existing tenant with users
         mock_get_user_count.return_value = 5
-        mock_fetch_ee.return_value = AsyncMock(return_value="tenant_123")
+        mock_get_or_provision_tenant.return_value = "tenant_123"
         mock_session_manager.return_value = _AsyncSessionContextManager(
             mock_async_session
         )
@@ -246,7 +258,10 @@ class TestSingleTenantInviteLogic:
 
     @patch("om.auth.users.is_disposable_email", return_value=False)
     @patch("om.auth.users.verify_email_domain")
-    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch(
+        "om.server.tenants.provisioning.get_or_provision_tenant",
+        new_callable=AsyncMock,
+    )
     @patch("om.auth.users.get_async_session_context_manager")
     @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
     @patch("om.auth.users.verify_email_is_invited")
@@ -259,7 +274,7 @@ class TestSingleTenantInviteLogic:
         mock_verify_invited: MagicMock,
         mock_get_user_count: MagicMock,
         mock_session_manager: MagicMock,
-        mock_fetch_ee: MagicMock,
+        mock_get_or_provision_tenant: AsyncMock,
         mock_verify_domain: MagicMock,  # noqa: ARG002
         mock_is_disposable: MagicMock,  # noqa: ARG002
         mock_user_create: UserCreate,
@@ -267,7 +282,7 @@ class TestSingleTenantInviteLogic:
     ) -> None:
         """Single-tenant should always check invite list."""
         # Setup
-        mock_fetch_ee.return_value = AsyncMock(return_value="default_schema")
+        mock_get_or_provision_tenant.return_value = "default_schema"
         mock_session_manager.return_value = _AsyncSessionContextManager(
             mock_async_session
         )
@@ -417,8 +432,8 @@ class TestSeatLimitEnforcement:
 
         seat_result = MagicMock(available=False, error_message="Seat limit reached")
         with patch(
-            "om.auth.users.fetch_ee_implementation_or_noop",
-            return_value=lambda *_a, **_kw: seat_result,
+            "om.db.license.check_seat_availability",
+            return_value=seat_result,
         ):
             with pytest.raises(HTTPException) as exc:
                 enforce_seat_limit(MagicMock())
@@ -437,7 +452,10 @@ class TestCaseInsensitiveEmailMatching:
 
     @patch("om.auth.users.is_disposable_email", return_value=False)
     @patch("om.auth.users.verify_email_domain")
-    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch(
+        "om.server.tenants.provisioning.get_or_provision_tenant",
+        new_callable=AsyncMock,
+    )
     @patch("om.auth.users.get_async_session_context_manager")
     @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
     @patch("om.auth.users.SQLAlchemyUserAdminDB")
@@ -450,7 +468,7 @@ class TestCaseInsensitiveEmailMatching:
         mock_sql_alchemy_db: MagicMock,
         mock_get_user_count: MagicMock,
         mock_session_manager: MagicMock,
-        mock_fetch_ee: MagicMock,
+        mock_get_or_provision_tenant: AsyncMock,
         mock_verify_domain: MagicMock,
         mock_is_disposable: MagicMock,  # noqa: ARG002
         mock_async_session: MagicMock,
@@ -459,7 +477,7 @@ class TestCaseInsensitiveEmailMatching:
 
         # Setup
         mock_get_user_count.return_value = 0  # First user - no invite needed
-        mock_fetch_ee.return_value = AsyncMock(return_value="tenant_123")
+        mock_get_or_provision_tenant.return_value = "tenant_123"
         mock_session_manager.return_value = _AsyncSessionContextManager(
             mock_async_session
         )
@@ -494,7 +512,10 @@ class TestCaseInsensitiveEmailMatching:
 
     @patch("om.auth.users.is_disposable_email")
     @patch("om.auth.users.verify_email_domain")
-    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch(
+        "om.server.tenants.provisioning.get_or_provision_tenant",
+        new_callable=AsyncMock,
+    )
     @patch("om.auth.users.get_async_session_context_manager")
     @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
     @patch("om.auth.users.verify_email_is_invited")
@@ -509,7 +530,7 @@ class TestCaseInsensitiveEmailMatching:
         mock_verify_invited: MagicMock,
         mock_get_user_count: MagicMock,
         mock_session_manager: MagicMock,
-        mock_fetch_ee: MagicMock,
+        mock_get_or_provision_tenant: AsyncMock,
         mock_verify_domain: MagicMock,
         mock_is_disposable: MagicMock,
         mock_user_create: UserCreate,
@@ -520,7 +541,7 @@ class TestCaseInsensitiveEmailMatching:
         mock_is_disposable.return_value = False
         mock_verify_domain.return_value = None
         mock_get_user_count.return_value = 10  # Existing tenant
-        mock_fetch_ee.return_value = AsyncMock(return_value="existing_tenant_789")
+        mock_get_or_provision_tenant.return_value = "existing_tenant_789"
         mock_session_manager.return_value = _AsyncSessionContextManager(
             mock_async_session
         )

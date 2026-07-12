@@ -48,7 +48,7 @@ def mock_cache_manager() -> MagicMock:
 
 @pytest.fixture
 def mock_api_client() -> MagicMock:
-    """Mock OnyxAPIClient."""
+    """Mock OmAPIClient."""
     client = MagicMock()
     client.initialize = AsyncMock()
     client.close = AsyncMock()
@@ -150,7 +150,7 @@ def mock_discord_bot(
     mock_api_client: MagicMock,
     mock_bot_user: MagicMock,
 ) -> MagicMock:
-    """Mock OnyxDiscordClient."""
+    """Mock OmDiscordClient."""
     bot = MagicMock()
     bot.user = mock_bot_user
     bot.cache = mock_cache_manager

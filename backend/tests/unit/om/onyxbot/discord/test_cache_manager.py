@@ -41,8 +41,8 @@ class TestCacheInitialization:
                 return_value=["tenant1"],
             ),
             patch(
-                "om.onyxbot.discord.cache.fetch_ee_implementation_or_noop",
-                return_value=lambda: set(),
+                "om.server.tenants.product_gating.get_gated_tenants",
+                return_value=set(),
             ),
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
@@ -81,8 +81,8 @@ class TestCacheInitialization:
                 return_value=["tenant1"],
             ),
             patch(
-                "om.onyxbot.discord.cache.fetch_ee_implementation_or_noop",
-                return_value=lambda: set(),
+                "om.server.tenants.product_gating.get_gated_tenants",
+                return_value=set(),
             ),
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
@@ -252,8 +252,8 @@ class TestThreadSafety:
                 return_value=["tenant1"],
             ),
             patch(
-                "om.onyxbot.discord.cache.fetch_ee_implementation_or_noop",
-                return_value=lambda: set(),
+                "om.server.tenants.product_gating.get_gated_tenants",
+                return_value=set(),
             ),
             patch.object(cache, "_load_tenant_data", side_effect=slow_refresh),
         ):
@@ -305,8 +305,8 @@ class TestAPIKeyProvisioning:
                 return_value=["tenant1"],
             ),
             patch(
-                "om.onyxbot.discord.cache.fetch_ee_implementation_or_noop",
-                return_value=lambda: set(),
+                "om.server.tenants.product_gating.get_gated_tenants",
+                return_value=set(),
             ),
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
@@ -343,8 +343,8 @@ class TestAPIKeyProvisioning:
                 return_value=["tenant1"],
             ),
             patch(
-                "om.onyxbot.discord.cache.fetch_ee_implementation_or_noop",
-                return_value=lambda: set(),
+                "om.server.tenants.product_gating.get_gated_tenants",
+                return_value=set(),
             ),
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
@@ -396,8 +396,8 @@ class TestGatedTenantHandling:
                 return_value=["tenant1", "tenant2"],
             ),
             patch(
-                "om.onyxbot.discord.cache.fetch_ee_implementation_or_noop",
-                return_value=lambda: gated_tenants,
+                "om.server.tenants.product_gating.get_gated_tenants",
+                return_value=gated_tenants,
             ),
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
@@ -421,8 +421,8 @@ class TestGatedTenantHandling:
         assert "tenant2" not in cache._api_keys and 222222 not in cache._guild_tenants
 
     @pytest.mark.asyncio
-    async def test_gated_check_calls_ee_function(self) -> None:
-        """Refresh all tenants calls fetch_ee_implementation_or_noop."""
+    async def test_refresh_all_consults_gated_tenants_once(self) -> None:
+        """Refresh all tenants looks up the gated tenant set exactly once."""
         cache = DiscordCacheManager()
 
         with (
@@ -431,9 +431,9 @@ class TestGatedTenantHandling:
                 return_value=["tenant1"],
             ),
             patch(
-                "om.onyxbot.discord.cache.fetch_ee_implementation_or_noop",
-                return_value=lambda: set(),
-            ) as mock_ee,
+                "om.server.tenants.product_gating.get_gated_tenants",
+                return_value=set(),
+            ) as mock_get_gated,
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
                 "om.onyxbot.discord.cache.get_guild_configs",
@@ -446,7 +446,7 @@ class TestGatedTenantHandling:
 
             await cache.refresh_all()
 
-        mock_ee.assert_called_once()
+        mock_get_gated.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_ungated_tenant_included(self) -> None:
@@ -463,8 +463,8 @@ class TestGatedTenantHandling:
                 return_value=["tenant1"],
             ),
             patch(
-                "om.onyxbot.discord.cache.fetch_ee_implementation_or_noop",
-                return_value=lambda: set(),  # No gated tenants
+                "om.server.tenants.product_gating.get_gated_tenants",
+                return_value=set(),  # No gated tenants
             ),
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
@@ -508,8 +508,8 @@ class TestCacheErrorHandling:
                 return_value=["tenant1", "tenant2"],
             ),
             patch(
-                "om.onyxbot.discord.cache.fetch_ee_implementation_or_noop",
-                return_value=lambda: set(),
+                "om.server.tenants.product_gating.get_gated_tenants",
+                return_value=set(),
             ),
             patch.object(cache, "_load_tenant_data", side_effect=mock_load),
         ):

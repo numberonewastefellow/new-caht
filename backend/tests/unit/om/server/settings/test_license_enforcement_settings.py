@@ -83,14 +83,13 @@ class TestApplyLicenseStatusToSettings:
         assert result.application_status == expected_app_status
         assert result.ee_features_enabled is expected_ee_enabled
 
-    @patch("om.server.settings.api.ENTERPRISE_EDITION_ENABLED", True)
     @patch("om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
     @patch("om.server.settings.api.MULTI_TENANT", False)
     @patch("om.server.settings.api.refresh_license_cache", return_value=None)
     @patch("om.server.settings.api.get_session_with_current_tenant")
     @patch("om.server.settings.api.get_current_tenant_id")
     @patch("om.server.settings.api.get_cached_license_metadata")
-    def test_no_license_with_ee_flag_gates_access(
+    def test_no_license_gates_access(
         self,
         mock_get_metadata: MagicMock,
         mock_get_tenant: MagicMock,
@@ -98,7 +97,15 @@ class TestApplyLicenseStatusToSettings:
         _mock_refresh: MagicMock,
         base_settings: Settings,
     ) -> None:
-        """No license + ENTERPRISE_EDITION_ENABLED=true → GATED_ACCESS."""
+        """No license, with enforcement on -> GATED_ACCESS.
+
+        This used to be conditional on ENTERPRISE_EDITION_ENABLED, and its sibling test
+        (`test_no_license_without_ee_flag_allows_community`) covered the other branch:
+        flag off -> ACTIVE, i.e. "community mode". That branch is GONE. There is one
+        edition and every deployment ships the full feature set, so an unlicensed
+        install with enforcement on is always gated -- there is no lesser edition to
+        fall back to. The deleted test asserted a mode that can no longer happen.
+        """
         from om.server.settings.api import apply_license_status_to_settings
 
         mock_get_tenant.return_value = "test_tenant"
@@ -106,31 +113,6 @@ class TestApplyLicenseStatusToSettings:
 
         result = apply_license_status_to_settings(base_settings)
         assert result.application_status == ApplicationStatus.GATED_ACCESS
-        assert result.ee_features_enabled is False
-
-    @patch("om.server.settings.api.ENTERPRISE_EDITION_ENABLED", False)
-    @patch("om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
-    @patch("om.server.settings.api.MULTI_TENANT", False)
-    @patch("om.server.settings.api.refresh_license_cache", return_value=None)
-    @patch("om.server.settings.api.get_session_with_current_tenant")
-    @patch("om.server.settings.api.get_current_tenant_id")
-    @patch("om.server.settings.api.get_cached_license_metadata")
-    def test_no_license_without_ee_flag_allows_community(
-        self,
-        mock_get_metadata: MagicMock,
-        mock_get_tenant: MagicMock,
-        _mock_get_session: MagicMock,
-        _mock_refresh: MagicMock,
-        base_settings: Settings,
-    ) -> None:
-        """No license + ENTERPRISE_EDITION_ENABLED=false → community mode (no gating)."""
-        from om.server.settings.api import apply_license_status_to_settings
-
-        mock_get_tenant.return_value = "test_tenant"
-        mock_get_metadata.return_value = None
-
-        result = apply_license_status_to_settings(base_settings)
-        assert result.application_status == ApplicationStatus.ACTIVE
         assert result.ee_features_enabled is False
 
     @patch("om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)

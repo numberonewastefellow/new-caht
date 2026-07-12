@@ -136,7 +136,7 @@ def _get_access_for_documents(
         # A top-level import here is a hard circular import (get_acl_for_user cannot be
         # resolved from the partially-initialized module) and takes down every celery
         # worker at autodiscovery. The pre-merge code dodged this by reaching
-        # sync_params only through fetch_versioned_implementation, i.e. at call time.
+        # sync_params only through the dynamic-dispatch hub, i.e. at call time.
         from om.external_permissions.sync_params import get_source_perm_sync_config
 
         perm_sync_config = get_source_perm_sync_config(source)
@@ -208,10 +208,7 @@ def _get_acl_for_user(user: User, db_session: Session) -> set[str]:
     """Returns a list of ACL entries that the user has access to. This is meant to be
     used downstream to filter out documents that the user does not have access to. The
     user should have access to a document if at least one entry in the document's ACL
-    matches one entry in the returned set.
-
-    NOTE: is imported in om.access.access by `fetch_versioned_implementation`
-    DO NOT REMOVE."""
+    matches one entry in the returned set."""
     # Lazy import -- om.db.user_group closes an import cycle back into this module.
     from om.db.user_group import fetch_user_groups_for_user
 

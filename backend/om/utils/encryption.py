@@ -32,7 +32,6 @@ def _get_trimmed_key(key: str) -> bytes:
     return encoded_key
 
 
-# IMPORTANT DO NOT DELETE, THIS IS USED BY fetch_versioned_implementation
 def _encrypt_string(input_str: str) -> bytes:
     if not ENCRYPTION_KEY_SECRET:
         return input_str.encode()
@@ -49,7 +48,6 @@ def _encrypt_string(input_str: str) -> bytes:
     return iv + encrypted_data
 
 
-# IMPORTANT DO NOT DELETE, THIS IS USED BY fetch_versioned_implementation
 def _decrypt_bytes(input_bytes: bytes) -> str:
     if not ENCRYPTION_KEY_SECRET:
         return input_bytes.decode()
@@ -131,13 +129,11 @@ def _mask_list(items: list[Any]) -> list[Any]:
 
 
 def encrypt_string_to_bytes(intput_str: str) -> bytes:
-    versioned_encryption_fn = _encrypt_string
-    return versioned_encryption_fn(intput_str)
+    return _encrypt_string(intput_str)
 
 
 def decrypt_bytes_to_string(intput_bytes: bytes) -> str:
-    versioned_decryption_fn = _decrypt_bytes
-    return versioned_decryption_fn(intput_bytes)
+    return _decrypt_bytes(intput_bytes)
 
 
 def test_encryption() -> None:

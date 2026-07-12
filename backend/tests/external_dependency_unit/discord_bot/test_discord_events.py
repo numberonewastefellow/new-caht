@@ -554,7 +554,7 @@ class TestBotLifecycle:
                 return_value=mock_cache_manager,
             ),
             patch(
-                "om.onyxbot.discord.client.OnyxAPIClient",
+                "om.onyxbot.discord.client.OmAPIClient",
                 return_value=mock_api_client,
             ),
         ):
