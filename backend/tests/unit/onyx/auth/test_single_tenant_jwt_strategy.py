@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 import jwt
 import pytest
 
-from onyx.auth.users import SingleTenantJWTStrategy
+from om.auth.users import SingleTenantJWTStrategy
 
 
 _TEST_SECRET = "test-secret-key-for-jwt-unit-tests"

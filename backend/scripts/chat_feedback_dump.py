@@ -8,9 +8,9 @@ from uuid import UUID
 
 import requests
 
-from ee.onyx.server.query_history.api import ChatSessionSnapshot
-from onyx.server.manage.models import AllUsersResponse
-from onyx.server.query_and_chat.models import ChatSessionsResponse
+from ee.om.server.query_history.api import ChatSessionSnapshot
+from om.server.manage.models import AllUsersResponse
+from om.server.query_and_chat.models import ChatSessionsResponse
 
 # Configure the logger
 logging.basicConfig(

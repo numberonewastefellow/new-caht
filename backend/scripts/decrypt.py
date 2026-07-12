@@ -2,7 +2,7 @@ import binascii
 import json
 import sys
 
-from onyx.utils.encryption import decrypt_bytes_to_string
+from om.utils.encryption import decrypt_bytes_to_string
 
 
 def decrypt_raw_credential(encrypted_value: str) -> None:

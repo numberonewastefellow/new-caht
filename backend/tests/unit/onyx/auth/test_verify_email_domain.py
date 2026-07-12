@@ -1,8 +1,8 @@
 import pytest
 from fastapi import HTTPException
 
-import onyx.auth.users as users
-from onyx.auth.users import verify_email_domain
+import om.auth.users as users
+from om.auth.users import verify_email_domain
 
 
 def test_verify_email_domain_allows_case_insensitive_match(

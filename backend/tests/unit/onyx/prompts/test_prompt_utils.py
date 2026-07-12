@@ -1,5 +1,5 @@
-from onyx.prompts.constants import REMINDER_TAG_DESCRIPTION
-from onyx.prompts.prompt_utils import replace_reminder_tag
+from om.prompts.constants import REMINDER_TAG_DESCRIPTION
+from om.prompts.prompt_utils import replace_reminder_tag
 
 
 def test_replace_reminder_tag_pattern() -> None:

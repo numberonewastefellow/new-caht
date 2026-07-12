@@ -10,17 +10,17 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.db.models import OAuthConfig
-from onyx.db.models import Tool
-from onyx.db.oauth_config import create_oauth_config
-from onyx.db.oauth_config import delete_oauth_config
-from onyx.db.oauth_config import delete_user_oauth_token
-from onyx.db.oauth_config import get_oauth_config
-from onyx.db.oauth_config import get_oauth_configs
-from onyx.db.oauth_config import get_tools_by_oauth_config
-from onyx.db.oauth_config import get_user_oauth_token
-from onyx.db.oauth_config import update_oauth_config
-from onyx.db.oauth_config import upsert_user_oauth_token
+from om.db.models import OAuthConfig
+from om.db.models import Tool
+from om.db.oauth_config import create_oauth_config
+from om.db.oauth_config import delete_oauth_config
+from om.db.oauth_config import delete_user_oauth_token
+from om.db.oauth_config import get_oauth_config
+from om.db.oauth_config import get_oauth_configs
+from om.db.oauth_config import get_tools_by_oauth_config
+from om.db.oauth_config import get_user_oauth_token
+from om.db.oauth_config import update_oauth_config
+from om.db.oauth_config import upsert_user_oauth_token
 from tests.external_dependency_unit.conftest import create_test_user
 
 

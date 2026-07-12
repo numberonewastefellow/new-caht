@@ -4,10 +4,10 @@ from unittest.mock import patch
 
 import pytest
 
-from onyx.connectors.airtable.airtable_connector import AirtableConnector
-from onyx.connectors.airtable.airtable_connector import parse_airtable_url
-from onyx.connectors.exceptions import ConnectorValidationError
-from onyx.connectors.models import Document
+from om.connectors.airtable.airtable_connector import AirtableConnector
+from om.connectors.airtable.airtable_connector import parse_airtable_url
+from om.connectors.exceptions import ConnectorValidationError
+from om.connectors.models import Document
 
 
 def _make_field_schema(field_id: str, name: str, field_type: str) -> MagicMock:

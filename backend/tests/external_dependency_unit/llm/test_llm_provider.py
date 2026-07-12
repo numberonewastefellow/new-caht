@@ -14,23 +14,23 @@ import pytest
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from onyx.db.enums import LLMModelFlowType
-from onyx.db.llm import fetch_existing_llm_provider
-from onyx.db.llm import remove_llm_provider
-from onyx.db.llm import update_default_provider
-from onyx.db.llm import upsert_llm_provider
-from onyx.db.models import UserRole
-from onyx.llm.constants import LlmProviderNames
-from onyx.llm.interfaces import LLM
-from onyx.server.manage.llm.api import (
+from om.db.enums import LLMModelFlowType
+from om.db.llm import fetch_existing_llm_provider
+from om.db.llm import remove_llm_provider
+from om.db.llm import update_default_provider
+from om.db.llm import upsert_llm_provider
+from om.db.models import UserRole
+from om.llm.constants import LlmProviderNames
+from om.llm.interfaces import LLM
+from om.server.manage.llm.api import (
     test_default_provider as run_test_default_provider,
 )
-from onyx.server.manage.llm.api import (
+from om.server.manage.llm.api import (
     test_llm_configuration as run_test_llm_configuration,
 )
-from onyx.server.manage.llm.models import LLMProviderUpsertRequest
-from onyx.server.manage.llm.models import ModelConfigurationUpsertRequest
-from onyx.server.manage.llm.models import TestLLMRequest as LLMTestRequest
+from om.server.manage.llm.models import LLMProviderUpsertRequest
+from om.server.manage.llm.models import ModelConfigurationUpsertRequest
+from om.server.manage.llm.models import TestLLMRequest as LLMTestRequest
 
 
 def _create_mock_admin() -> MagicMock:
@@ -97,7 +97,7 @@ class TestLLMConfigurationEndpoint:
 
         try:
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_success
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_success
             ):
                 # This should complete without exception
                 run_test_llm_configuration(
@@ -147,7 +147,7 @@ class TestLLMConfigurationEndpoint:
 
         try:
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_failure
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_failure
             ):
                 with pytest.raises(HTTPException) as exc_info:
                     run_test_llm_configuration(
@@ -197,7 +197,7 @@ class TestLLMConfigurationEndpoint:
             _create_test_provider(db_session, provider_name, api_key=original_api_key)
 
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
             ):
                 # Test with api_key_changed=False - should use stored key
                 run_test_llm_configuration(
@@ -249,7 +249,7 @@ class TestLLMConfigurationEndpoint:
             _create_test_provider(db_session, provider_name, api_key=original_api_key)
 
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
             ):
                 # Test with api_key_changed=True - should use new key
                 run_test_llm_configuration(
@@ -316,7 +316,7 @@ class TestLLMConfigurationEndpoint:
             )
 
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
             ):
                 # Test with custom_config_changed=False - should use stored config
                 run_test_llm_configuration(
@@ -363,7 +363,7 @@ class TestLLMConfigurationEndpoint:
 
         try:
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
             ):
                 for model_name in test_models:
                     run_test_llm_configuration(
@@ -456,7 +456,7 @@ class TestDefaultProviderEndpoint:
 
             # Step 2: Call run_test_default_provider - should use provider 1's default model
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
             ):
                 run_test_default_provider(_=_create_mock_admin())
 
@@ -487,7 +487,7 @@ class TestDefaultProviderEndpoint:
 
             # Step 4: Call run_test_default_provider - should still use provider 1
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
             ):
                 run_test_default_provider(_=_create_mock_admin())
 
@@ -514,7 +514,7 @@ class TestDefaultProviderEndpoint:
 
             # Step 6: Call run_test_default_provider - should use new model on provider 1
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
             ):
                 run_test_default_provider(_=_create_mock_admin())
 
@@ -528,7 +528,7 @@ class TestDefaultProviderEndpoint:
 
             # Step 8: Call run_test_default_provider - should use provider 2
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
             ):
                 run_test_default_provider(_=_create_mock_admin())
 
@@ -549,7 +549,7 @@ class TestDefaultProviderEndpoint:
         Test that when no default provider exists, the endpoint raises an exception.
         """
         # Clear any existing providers to ensure no default exists
-        from onyx.db.llm import fetch_existing_llm_providers
+        from om.db.llm import fetch_existing_llm_providers
 
         try:
             existing_providers = fetch_existing_llm_providers(
@@ -609,7 +609,7 @@ class TestDefaultProviderEndpoint:
 
             # Test should fail
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_failure
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_failure
             ):
                 with pytest.raises(HTTPException) as exc_info:
                     run_test_default_provider(_=_create_mock_admin())

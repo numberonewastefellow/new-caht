@@ -1,10 +1,10 @@
 import requests
 from retry import retry
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import InputType
-from onyx.db.enums import IndexingStatus
-from onyx.server.documents.models import ConnectorBase
+from om.configs.constants import DocumentSource
+from om.connectors.models import InputType
+from om.db.enums import IndexingStatus
+from om.server.documents.models import ConnectorBase
 from tests.regression.answer_quality.cli_utils import get_api_server_host_port
 
 GENERAL_HEADERS = {"Content-Type": "application/json"}

@@ -8,8 +8,8 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.schema import SchemaItem
 
 from alembic import context
-from onyx.db.engine.sql_engine import build_connection_string
-from onyx.db.models import PublicBase
+from om.db.engine.sql_engine import build_connection_string
+from om.db.models import PublicBase
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

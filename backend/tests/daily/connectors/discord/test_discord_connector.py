@@ -3,10 +3,10 @@ import time
 
 import pytest
 
-from onyx.connectors.discord.connector import DiscordConnector
-from onyx.connectors.models import Document
-from onyx.connectors.models import DocumentSource
-from onyx.connectors.models import HierarchyNode
+from om.connectors.discord.connector import DiscordConnector
+from om.connectors.models import Document
+from om.connectors.models import DocumentSource
+from om.connectors.models import HierarchyNode
 
 
 @pytest.fixture

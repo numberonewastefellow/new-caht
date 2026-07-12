@@ -1,6 +1,6 @@
 import time
 
-from onyx.connectors.cross_connector_utils.rate_limit_wrapper import (
+from om.connectors.cross_connector_utils.rate_limit_wrapper import (
     rate_limit_builder,
 )
 

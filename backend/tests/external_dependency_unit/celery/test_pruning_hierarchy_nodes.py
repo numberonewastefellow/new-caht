@@ -15,21 +15,21 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from onyx.access.models import ExternalAccess
-from onyx.background.celery.celery_utils import extract_ids_from_runnable_connector
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.interfaces import GenerateSlimDocumentOutput
-from onyx.connectors.interfaces import SecondsSinceUnixEpoch
-from onyx.connectors.interfaces import SlimConnectorWithPermSync
-from onyx.connectors.models import HierarchyNode as PydanticHierarchyNode
-from onyx.connectors.models import SlimDocument
-from onyx.db.enums import HierarchyNodeType
-from onyx.db.hierarchy import ensure_source_node_exists
-from onyx.db.hierarchy import get_all_hierarchy_nodes_for_source
-from onyx.db.hierarchy import get_hierarchy_node_by_raw_id
-from onyx.db.hierarchy import upsert_hierarchy_nodes_batch
-from onyx.db.models import HierarchyNode as DBHierarchyNode
-from onyx.indexing.indexing_heartbeat import IndexingHeartbeatInterface
+from om.access.models import ExternalAccess
+from om.background.celery.celery_utils import extract_ids_from_runnable_connector
+from om.configs.constants import DocumentSource
+from om.connectors.interfaces import GenerateSlimDocumentOutput
+from om.connectors.interfaces import SecondsSinceUnixEpoch
+from om.connectors.interfaces import SlimConnectorWithPermSync
+from om.connectors.models import HierarchyNode as PydanticHierarchyNode
+from om.connectors.models import SlimDocument
+from om.db.enums import HierarchyNodeType
+from om.db.hierarchy import ensure_source_node_exists
+from om.db.hierarchy import get_all_hierarchy_nodes_for_source
+from om.db.hierarchy import get_hierarchy_node_by_raw_id
+from om.db.hierarchy import upsert_hierarchy_nodes_batch
+from om.db.models import HierarchyNode as DBHierarchyNode
+from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 
 # ---------------------------------------------------------------------------
 # Constants

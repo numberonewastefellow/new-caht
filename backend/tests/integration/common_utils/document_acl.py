@@ -8,15 +8,15 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ee.onyx.access.access import _get_access_for_documents
-from ee.onyx.db.external_perm import fetch_external_groups_for_user
-from onyx.access.utils import prefix_external_group
-from onyx.access.utils import prefix_user_email
-from onyx.configs.constants import PUBLIC_DOC_PAT
-from onyx.db.models import DocumentByConnectorCredentialPair
-from onyx.db.models import User
-from onyx.db.users import fetch_user_by_id
-from onyx.utils.logger import setup_logger
+from ee.om.access.access import _get_access_for_documents
+from ee.om.db.external_perm import fetch_external_groups_for_user
+from om.access.utils import prefix_external_group
+from om.access.utils import prefix_user_email
+from om.configs.constants import PUBLIC_DOC_PAT
+from om.db.models import DocumentByConnectorCredentialPair
+from om.db.models import User
+from om.db.users import fetch_user_by_id
+from om.utils.logger import setup_logger
 from tests.integration.common_utils.test_models import DATestCCPair
 from tests.integration.common_utils.test_models import DATestUser
 

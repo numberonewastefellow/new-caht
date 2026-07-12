@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.jira.connector import JiraConnector
-from onyx.connectors.models import Document
+from om.configs.constants import DocumentSource
+from om.connectors.jira.connector import JiraConnector
+from om.connectors.models import Document
 from tests.daily.connectors.utils import load_all_from_connector
 
 
@@ -59,7 +59,7 @@ def jira_connector_with_jql() -> JiraConnector:
 
 
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 def test_jira_connector_basic(
@@ -69,7 +69,7 @@ def test_jira_connector_basic(
 
 
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 def test_jira_connector_basic_scoped(
@@ -162,7 +162,7 @@ def _test_jira_connector_basic(jira_connector: JiraConnector) -> None:
 
 
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 def test_jira_connector_with_jql(

@@ -6,8 +6,8 @@ import pytest
 from pytest import FixtureRequest
 from slack_sdk import WebClient
 
-from onyx.connectors.credentials_provider import OnyxStaticCredentialsProvider
-from onyx.connectors.slack.connector import SlackConnector
+from om.connectors.credentials_provider import OnyxStaticCredentialsProvider
+from om.connectors.slack.connector import SlackConnector
 from shared_configs.contextvars import get_current_tenant_id
 
 

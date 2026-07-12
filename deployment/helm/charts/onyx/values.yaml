@@ -499,7 +499,7 @@ celery_shared:
   startupProbe:
     # startupProbe fails after 2m
     exec:
-      command: ["test", "-f", "/app/onyx/main.py"]
+      command: ["test", "-f", "/app/om/main.py"]
     failureThreshold: 24
     periodSeconds: 5
     timeoutSeconds: 3

@@ -30,7 +30,7 @@ if str(_backend_root) not in sys.path:
     sys.path.insert(0, str(_backend_root))
 
 
-from onyx.tools.tool_implementations.open_url.virtualai_web_crawler import (
+from om.tools.tool_implementations.open_url.virtualai_web_crawler import (
     VirtualAIWebCrawler,
 )
 

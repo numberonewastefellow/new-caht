@@ -1,9 +1,9 @@
 import pytest
 from fastapi import HTTPException
 
-import onyx.auth.users as users
-from onyx.auth.users import verify_email_is_invited
-from onyx.configs.constants import AuthType
+import om.auth.users as users
+from om.auth.users import verify_email_is_invited
+from om.configs.constants import AuthType
 
 
 @pytest.mark.parametrize("auth_type", [AuthType.SAML, AuthType.OIDC])

@@ -1,12 +1,12 @@
 from unittest.mock import patch
 
-from onyx.llm.constants import LlmProviderNames
-from onyx.llm.factory import _build_provider_extra_headers
-from onyx.llm.factory import get_llm
-from onyx.llm.factory import llm_from_provider
-from onyx.llm.well_known_providers.constants import OLLAMA_API_KEY_CONFIG_KEY
-from onyx.server.manage.llm.models import LLMProviderView
-from onyx.server.manage.llm.models import ModelConfigurationView
+from om.llm.constants import LlmProviderNames
+from om.llm.factory import _build_provider_extra_headers
+from om.llm.factory import get_llm
+from om.llm.factory import llm_from_provider
+from om.llm.well_known_providers.constants import OLLAMA_API_KEY_CONFIG_KEY
+from om.server.manage.llm.models import LLMProviderView
+from om.server.manage.llm.models import ModelConfigurationView
 
 
 def test_build_provider_extra_headers_adds_bearer_for_ollama_api_key() -> None:
@@ -67,7 +67,7 @@ def _build_provider_view(
 
 
 def test_get_llm_sets_ollama_num_ctx_model_kwarg() -> None:
-    with patch("onyx.llm.factory.LitellmLLM") as mock_litellm_llm:
+    with patch("om.llm.factory.LitellmLLM") as mock_litellm_llm:
         get_llm(
             provider=LlmProviderNames.OLLAMA_CHAT,
             model="test-model",
@@ -81,7 +81,7 @@ def test_get_llm_sets_ollama_num_ctx_model_kwarg() -> None:
 
 
 def test_get_llm_does_not_set_ollama_num_ctx_for_non_ollama_provider() -> None:
-    with patch("onyx.llm.factory.LitellmLLM") as mock_litellm_llm:
+    with patch("om.llm.factory.LitellmLLM") as mock_litellm_llm:
         get_llm(
             provider=LlmProviderNames.OPENAI,
             model="gpt-4o-mini",
@@ -99,7 +99,7 @@ def test_llm_from_provider_passes_configured_ollama_num_ctx() -> None:
         max_input_tokens=16384,
     )
 
-    with patch("onyx.llm.factory.get_llm") as mock_get_llm:
+    with patch("om.llm.factory.get_llm") as mock_get_llm:
         llm_from_provider(
             model_name="test-model",
             llm_provider=provider,
@@ -118,10 +118,10 @@ def test_llm_from_provider_omits_ollama_num_ctx_when_model_context_unknown() -> 
 
     with (
         patch(
-            "onyx.llm.factory.get_max_input_tokens_from_llm_provider",
+            "om.llm.factory.get_max_input_tokens_from_llm_provider",
             return_value=32000,
         ),
-        patch("onyx.llm.factory.get_llm") as mock_get_llm,
+        patch("om.llm.factory.get_llm") as mock_get_llm,
     ):
         llm_from_provider(
             model_name="test-model",
@@ -139,7 +139,7 @@ def test_llm_from_provider_never_sets_ollama_num_ctx_for_non_ollama_provider() -
         max_input_tokens=16384,
     )
 
-    with patch("onyx.llm.factory.get_llm") as mock_get_llm:
+    with patch("om.llm.factory.get_llm") as mock_get_llm:
         llm_from_provider(
             model_name="test-model",
             llm_provider=provider,

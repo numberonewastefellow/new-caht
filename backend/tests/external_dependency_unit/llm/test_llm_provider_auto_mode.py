@@ -14,25 +14,25 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.db.enums import LLMModelFlowType
-from onyx.db.llm import fetch_default_llm_model
-from onyx.db.llm import fetch_existing_llm_provider
-from onyx.db.llm import fetch_existing_llm_providers
-from onyx.db.llm import remove_llm_provider
-from onyx.db.llm import sync_auto_mode_models
-from onyx.db.llm import update_default_provider
-from onyx.db.models import UserRole
-from onyx.llm.constants import LlmProviderNames
-from onyx.llm.interfaces import LLM
-from onyx.llm.well_known_providers.auto_update_models import LLMProviderRecommendation
-from onyx.llm.well_known_providers.auto_update_models import LLMRecommendations
-from onyx.llm.well_known_providers.models import SimpleKnownModel
-from onyx.server.manage.llm.api import put_llm_provider
-from onyx.server.manage.llm.api import (
+from om.db.enums import LLMModelFlowType
+from om.db.llm import fetch_default_llm_model
+from om.db.llm import fetch_existing_llm_provider
+from om.db.llm import fetch_existing_llm_providers
+from om.db.llm import remove_llm_provider
+from om.db.llm import sync_auto_mode_models
+from om.db.llm import update_default_provider
+from om.db.models import UserRole
+from om.llm.constants import LlmProviderNames
+from om.llm.interfaces import LLM
+from om.llm.well_known_providers.auto_update_models import LLMProviderRecommendation
+from om.llm.well_known_providers.auto_update_models import LLMRecommendations
+from om.llm.well_known_providers.models import SimpleKnownModel
+from om.server.manage.llm.api import put_llm_provider
+from om.server.manage.llm.api import (
     test_default_provider as run_test_default_provider,
 )
-from onyx.server.manage.llm.models import LLMProviderUpsertRequest
-from onyx.server.manage.llm.models import ModelConfigurationUpsertRequest
+from om.server.manage.llm.models import LLMProviderUpsertRequest
+from om.server.manage.llm.models import ModelConfigurationUpsertRequest
 
 
 def _create_mock_admin() -> MagicMock:
@@ -122,7 +122,7 @@ class TestAutoModeSyncFeature:
 
         try:
             with patch(
-                "onyx.server.manage.llm.api.fetch_llm_recommendations_from_github",
+                "om.server.manage.llm.api.fetch_llm_recommendations_from_github",
                 return_value=mock_recommendations,
             ):
                 # Step 1-2: Upload provider with auto mode on and no model configs
@@ -227,7 +227,7 @@ class TestAutoModeSyncFeature:
 
         try:
             with patch(
-                "onyx.server.manage.llm.api.fetch_llm_recommendations_from_github",
+                "om.server.manage.llm.api.fetch_llm_recommendations_from_github",
                 return_value=mock_recommendations,
             ):
                 # Upload an OpenAI provider with auto mode
@@ -339,7 +339,7 @@ class TestAutoModeSyncFeature:
 
             # Step 2: Update provider to enable auto mode
             with patch(
-                "onyx.server.manage.llm.api.fetch_llm_recommendations_from_github",
+                "om.server.manage.llm.api.fetch_llm_recommendations_from_github",
                 return_value=mock_recommendations,
             ):
                 put_llm_provider(
@@ -421,7 +421,7 @@ class TestAutoModeSyncFeature:
 
         try:
             with patch(
-                "onyx.server.manage.llm.api.fetch_llm_recommendations_from_github",
+                "om.server.manage.llm.api.fetch_llm_recommendations_from_github",
                 return_value=mock_recommendations,
             ):
                 # Upload an OpenAI provider (not in config)
@@ -524,7 +524,7 @@ class TestAutoModeSyncFeature:
 
         try:
             with patch(
-                "onyx.server.manage.llm.api.fetch_llm_recommendations_from_github",
+                "om.server.manage.llm.api.fetch_llm_recommendations_from_github",
                 return_value=mock_recommendations,
             ):
                 # Step 1: Create provider 1 (OpenAI) with auto mode
@@ -552,7 +552,7 @@ class TestAutoModeSyncFeature:
             update_default_provider(provider_1.id, db_session)
 
             with patch(
-                "onyx.server.manage.llm.api.fetch_llm_recommendations_from_github",
+                "om.server.manage.llm.api.fetch_llm_recommendations_from_github",
                 return_value=mock_recommendations,
             ):
                 # Step 2: Create provider 2 (Anthropic) with auto mode
@@ -596,7 +596,7 @@ class TestAutoModeSyncFeature:
 
             # Step 6: Run test_default_provider and verify it uses provider 2's model
             with patch(
-                "onyx.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
+                "om.server.manage.llm.api.test_llm", side_effect=mock_test_llm_capture
             ):
                 run_test_default_provider(_=_create_mock_admin())
 

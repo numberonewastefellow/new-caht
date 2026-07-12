@@ -29,9 +29,9 @@ import sys
 
 from sqlalchemy import select
 
-from onyx.db.engine.sql_engine import get_session_with_tenant
-from onyx.db.engine.sql_engine import SqlEngine
-from onyx.db.models import ConnectorCredentialPair
+from om.db.engine.sql_engine import get_session_with_tenant
+from om.db.engine.sql_engine import SqlEngine
+from om.db.models import ConnectorCredentialPair
 
 
 def get_tenant_connectors(tenant_id: str) -> dict:

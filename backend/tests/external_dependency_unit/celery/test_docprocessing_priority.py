@@ -16,20 +16,20 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.background.indexing.run_docfetching import connector_document_extraction
-from onyx.configs.constants import DocumentSource
-from onyx.configs.constants import OnyxCeleryPriority
-from onyx.connectors.models import InputType
-from onyx.db.enums import AccessType
-from onyx.db.enums import ConnectorCredentialPairStatus
-from onyx.db.enums import EmbeddingPrecision
-from onyx.db.enums import IndexingStatus
-from onyx.db.enums import IndexModelStatus
-from onyx.db.models import Connector
-from onyx.db.models import ConnectorCredentialPair
-from onyx.db.models import Credential
-from onyx.db.models import IndexAttempt
-from onyx.db.models import SearchSettings
+from om.background.indexing.run_docfetching import connector_document_extraction
+from om.configs.constants import DocumentSource
+from om.configs.constants import OnyxCeleryPriority
+from om.connectors.models import InputType
+from om.db.enums import AccessType
+from om.db.enums import ConnectorCredentialPairStatus
+from om.db.enums import EmbeddingPrecision
+from om.db.enums import IndexingStatus
+from om.db.enums import IndexModelStatus
+from om.db.models import Connector
+from om.db.models import ConnectorCredentialPair
+from om.db.models import Credential
+from om.db.models import IndexAttempt
+from om.db.models import SearchSettings
 from tests.external_dependency_unit.constants import TEST_TENANT_ID
 
 
@@ -142,22 +142,22 @@ class TestDocprocessingPriorityInDocumentExtraction:
             (True, OnyxCeleryPriority.MEDIUM),
         ],
     )
-    @patch("onyx.background.indexing.run_docfetching.get_document_batch_storage")
-    @patch("onyx.background.indexing.run_docfetching.MemoryTracer")
-    @patch("onyx.background.indexing.run_docfetching._get_connector_runner")
+    @patch("om.background.indexing.run_docfetching.get_document_batch_storage")
+    @patch("om.background.indexing.run_docfetching.MemoryTracer")
+    @patch("om.background.indexing.run_docfetching._get_connector_runner")
     @patch(
-        "onyx.background.indexing.run_docfetching.get_recent_completed_attempts_for_cc_pair"
+        "om.background.indexing.run_docfetching.get_recent_completed_attempts_for_cc_pair"
     )
     @patch(
-        "onyx.background.indexing.run_docfetching.get_last_successful_attempt_poll_range_end"
+        "om.background.indexing.run_docfetching.get_last_successful_attempt_poll_range_end"
     )
-    @patch("onyx.background.indexing.run_docfetching.save_checkpoint")
-    @patch("onyx.background.indexing.run_docfetching.get_latest_valid_checkpoint")
-    @patch("onyx.background.indexing.run_docfetching.get_redis_client")
-    @patch("onyx.background.indexing.run_docfetching.ensure_source_node_exists")
-    @patch("onyx.background.indexing.run_docfetching.get_source_node_id_from_cache")
-    @patch("onyx.background.indexing.run_docfetching.get_node_id_from_raw_id")
-    @patch("onyx.background.indexing.run_docfetching.cache_hierarchy_nodes_batch")
+    @patch("om.background.indexing.run_docfetching.save_checkpoint")
+    @patch("om.background.indexing.run_docfetching.get_latest_valid_checkpoint")
+    @patch("om.background.indexing.run_docfetching.get_redis_client")
+    @patch("om.background.indexing.run_docfetching.ensure_source_node_exists")
+    @patch("om.background.indexing.run_docfetching.get_source_node_id_from_cache")
+    @patch("om.background.indexing.run_docfetching.get_node_id_from_raw_id")
+    @patch("om.background.indexing.run_docfetching.cache_hierarchy_nodes_batch")
     def test_docprocessing_priority_based_on_last_successful_index_time(
         self,
         mock_cache_hierarchy_nodes_batch: MagicMock,  # noqa: ARG002

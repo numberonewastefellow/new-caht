@@ -3,8 +3,8 @@ from __future__ import annotations
 import pytest
 from pydantic import BaseModel
 
-import onyx.tools.tool_implementations.open_url.onyx_web_crawler as crawler_module
-from onyx.tools.tool_implementations.open_url.onyx_web_crawler import OnyxWebCrawler
+import om.tools.tool_implementations.open_url.onyx_web_crawler as crawler_module
+from om.tools.tool_implementations.open_url.onyx_web_crawler import OnyxWebCrawler
 
 
 class FakeResponse(BaseModel):

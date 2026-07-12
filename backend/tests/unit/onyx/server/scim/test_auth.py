@@ -3,10 +3,10 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi import HTTPException
 
-from ee.onyx.server.scim.auth import _hash_scim_token
-from ee.onyx.server.scim.auth import generate_scim_token
-from ee.onyx.server.scim.auth import SCIM_TOKEN_PREFIX
-from ee.onyx.server.scim.auth import verify_scim_token
+from ee.om.server.scim.auth import _hash_scim_token
+from ee.om.server.scim.auth import generate_scim_token
+from ee.om.server.scim.auth import SCIM_TOKEN_PREFIX
+from ee.om.server.scim.auth import verify_scim_token
 
 
 class TestGenerateScimToken:

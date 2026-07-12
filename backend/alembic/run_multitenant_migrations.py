@@ -27,9 +27,9 @@ from alembic.config import Config
 from alembic.script import ScriptDirectory
 from sqlalchemy import text
 
-from onyx.db.engine.sql_engine import is_valid_schema_name
-from onyx.db.engine.sql_engine import SqlEngine
-from onyx.db.engine.tenant_utils import get_all_tenant_ids
+from om.db.engine.sql_engine import is_valid_schema_name
+from om.db.engine.sql_engine import SqlEngine
+from om.db.engine.tenant_utils import get_all_tenant_ids
 from shared_configs.configs import TENANT_ID_PREFIX
 
 

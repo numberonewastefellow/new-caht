@@ -7,14 +7,14 @@ from unittest.mock import patch
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from onyx.configs.constants import DocumentSource
-from onyx.context.search.models import ChunkSearchRequest
-from onyx.context.search.models import InferenceChunk
-from onyx.context.search.models import SearchDoc
-from onyx.db.models import Persona
-from onyx.db.models import User
-from onyx.document_index.interfaces_new import DocumentIndex
-from onyx.llm.interfaces import LLM
+from om.configs.constants import DocumentSource
+from om.context.search.models import ChunkSearchRequest
+from om.context.search.models import InferenceChunk
+from om.context.search.models import SearchDoc
+from om.db.models import Persona
+from om.db.models import User
+from om.document_index.interfaces_new import DocumentIndex
+from om.llm.interfaces import LLM
 
 
 def run_functions_tuples_sequential(
@@ -144,43 +144,43 @@ def use_mock_search_pipeline(
 
     with (
         patch(
-            "onyx.tools.tool_implementations.search.search_tool.search_pipeline",
+            "om.tools.tool_implementations.search.search_tool.search_pipeline",
             new=override_search_pipeline,
         ),
         patch(
-            "onyx.tools.tool_implementations.search.search_tool.check_connectors_exist",
+            "om.tools.tool_implementations.search.search_tool.check_connectors_exist",
             new=mock_check_connectors_exist,
         ),
         patch(
-            "onyx.tools.tool_implementations.search.search_tool.check_federated_connectors_exist",
+            "om.tools.tool_implementations.search.search_tool.check_federated_connectors_exist",
             new=mock_check_federated_connectors_exist,
         ),
         patch(
-            "onyx.tools.tool_implementations.search.search_tool.semantic_query_rephrase",
+            "om.tools.tool_implementations.search.search_tool.semantic_query_rephrase",
             return_value="",
         ),
         patch(
-            "onyx.tools.tool_implementations.search.search_tool.keyword_query_expansion",
+            "om.tools.tool_implementations.search.search_tool.keyword_query_expansion",
             return_value=[],
         ),
         patch(
-            "onyx.tools.tool_runner.run_functions_tuples_in_parallel",
+            "om.tools.tool_runner.run_functions_tuples_in_parallel",
             new=run_functions_tuples_sequential,
         ),
         patch(
-            "onyx.db.connector.check_connectors_exist",
+            "om.db.connector.check_connectors_exist",
             new=mock_check_connectors_exist,
         ),
         patch(
-            "onyx.db.connector.check_federated_connectors_exist",
+            "om.db.connector.check_federated_connectors_exist",
             new=mock_check_federated_connectors_exist,
         ),
         patch(
-            "onyx.db.connector.check_user_files_exist",
+            "om.db.connector.check_user_files_exist",
             new=mock_check_user_files_exist,
         ),
         patch(
-            "onyx.db.connector.fetch_unique_document_sources",
+            "om.db.connector.fetch_unique_document_sources",
             new=mock_fetch_unique_document_sources,
         ),
     ):

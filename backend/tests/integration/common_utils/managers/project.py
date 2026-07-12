@@ -2,9 +2,9 @@ from typing import List
 
 import requests
 
-from onyx.server.features.projects.models import CategorizedFilesSnapshot
-from onyx.server.features.projects.models import UserFileSnapshot
-from onyx.server.features.projects.models import UserProjectSnapshot
+from om.server.features.projects.models import CategorizedFilesSnapshot
+from om.server.features.projects.models import UserFileSnapshot
+from om.server.features.projects.models import UserProjectSnapshot
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import GENERAL_HEADERS
 from tests.integration.common_utils.test_models import DATestUser

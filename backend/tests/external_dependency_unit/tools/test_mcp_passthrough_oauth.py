@@ -20,22 +20,22 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.chat.emitter import get_default_emitter
-from onyx.context.search.enums import RecencyBiasSetting
-from onyx.db.enums import MCPAuthenticationPerformer
-from onyx.db.enums import MCPAuthenticationType
-from onyx.db.enums import MCPTransport
-from onyx.db.mcp import create_mcp_server__no_commit
-from onyx.db.models import OAuthAccount
-from onyx.db.models import Persona
-from onyx.db.models import Tool
-from onyx.db.models import User
-from onyx.llm.factory import get_default_llm
-from onyx.server.query_and_chat.placement import Placement
-from onyx.tools.models import CustomToolCallSummary
-from onyx.tools.tool_constructor import construct_tools
-from onyx.tools.tool_constructor import SearchToolConfig
-from onyx.tools.tool_implementations.mcp.mcp_tool import MCPTool
+from om.chat.emitter import get_default_emitter
+from om.context.search.enums import RecencyBiasSetting
+from om.db.enums import MCPAuthenticationPerformer
+from om.db.enums import MCPAuthenticationType
+from om.db.enums import MCPTransport
+from om.db.mcp import create_mcp_server__no_commit
+from om.db.models import OAuthAccount
+from om.db.models import Persona
+from om.db.models import Tool
+from om.db.models import User
+from om.llm.factory import get_default_llm
+from om.server.query_and_chat.placement import Placement
+from om.tools.models import CustomToolCallSummary
+from om.tools.tool_constructor import construct_tools
+from om.tools.tool_constructor import SearchToolConfig
+from om.tools.tool_implementations.mcp.mcp_tool import MCPTool
 from tests.external_dependency_unit.answer.conftest import ensure_default_llm_provider
 from tests.external_dependency_unit.conftest import create_test_user
 
@@ -383,7 +383,7 @@ class TestMCPPassThroughOAuth:
             return mocked_response
 
         with patch(
-            "onyx.tools.tool_implementations.mcp.mcp_tool.call_mcp_tool",
+            "om.tools.tool_implementations.mcp.mcp_tool.call_mcp_tool",
             side_effect=mock_call_mcp_tool,
         ):
             # Run the tool

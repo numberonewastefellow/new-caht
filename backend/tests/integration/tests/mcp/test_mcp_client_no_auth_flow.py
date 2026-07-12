@@ -9,9 +9,9 @@ from pathlib import Path
 import pytest
 import requests
 
-from onyx.db.enums import MCPAuthenticationPerformer
-from onyx.db.enums import MCPAuthenticationType
-from onyx.db.enums import MCPTransport
+from om.db.enums import MCPAuthenticationPerformer
+from om.db.enums import MCPAuthenticationType
+from om.db.enums import MCPTransport
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.managers.persona import PersonaManager
 from tests.integration.common_utils.test_models import DATestLLMProvider

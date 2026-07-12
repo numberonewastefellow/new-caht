@@ -6,15 +6,15 @@ from uuid import uuid4
 import requests
 
 import generated.onyx_openapi_client.onyx_openapi_client as api  # type: ignore[import-untyped,unused-ignore]
-from onyx.connectors.models import InputType
-from onyx.db.enums import AccessType
-from onyx.db.enums import ConnectorCredentialPairStatus
-from onyx.server.documents.models import CCPairFullInfo
-from onyx.server.documents.models import ConnectorCredentialPairIdentifier
-from onyx.server.documents.models import ConnectorIndexingStatusLite
-from onyx.server.documents.models import ConnectorStatus
-from onyx.server.documents.models import DocumentSource
-from onyx.server.documents.models import DocumentSyncStatus
+from om.connectors.models import InputType
+from om.db.enums import AccessType
+from om.db.enums import ConnectorCredentialPairStatus
+from om.server.documents.models import CCPairFullInfo
+from om.server.documents.models import ConnectorCredentialPairIdentifier
+from om.server.documents.models import ConnectorIndexingStatusLite
+from om.server.documents.models import ConnectorStatus
+from om.server.documents.models import DocumentSource
+from om.server.documents.models import DocumentSyncStatus
 from tests.integration.common_utils.config import api_config
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import GENERAL_HEADERS

@@ -3,18 +3,18 @@ from typing import Any
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from ee.onyx.external_permissions.jira.doc_sync import jira_doc_sync
-from onyx.access.models import DocExternalAccess
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import InputType
-from onyx.db.enums import AccessType
-from onyx.db.enums import ConnectorCredentialPairStatus
-from onyx.db.models import Connector
-from onyx.db.models import ConnectorCredentialPair
-from onyx.db.models import Credential
-from onyx.db.utils import DocumentRow
-from onyx.db.utils import SortOrder
-from onyx.utils.variable_functionality import global_version
+from ee.om.external_permissions.jira.doc_sync import jira_doc_sync
+from om.access.models import DocExternalAccess
+from om.configs.constants import DocumentSource
+from om.connectors.models import InputType
+from om.db.enums import AccessType
+from om.db.enums import ConnectorCredentialPairStatus
+from om.db.models import Connector
+from om.db.models import ConnectorCredentialPair
+from om.db.models import Credential
+from om.db.utils import DocumentRow
+from om.db.utils import SortOrder
+from om.utils.variable_functionality import global_version
 
 
 # In order to get these tests to run, use the credentials from Bitwarden.

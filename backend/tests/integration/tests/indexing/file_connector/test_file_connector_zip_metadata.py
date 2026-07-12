@@ -5,11 +5,11 @@ from datetime import timezone
 
 import pytest
 
-from onyx.connectors.models import InputType
-from onyx.db.document import get_documents_for_cc_pair
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.enums import AccessType
-from onyx.server.documents.models import DocumentSource
+from om.connectors.models import InputType
+from om.db.document import get_documents_for_cc_pair
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.enums import AccessType
+from om.server.documents.models import DocumentSource
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.connector import ConnectorManager
 from tests.integration.common_utils.managers.credential import CredentialManager

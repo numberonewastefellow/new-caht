@@ -16,18 +16,18 @@ from unittest.mock import patch
 
 from pydantic import BaseModel
 
-from onyx.llm.interfaces import LanguageModelInput
-from onyx.llm.interfaces import LLM
-from onyx.llm.interfaces import LLMConfig
-from onyx.llm.interfaces import LLMUserIdentity
-from onyx.llm.interfaces import ReasoningEffort
-from onyx.llm.interfaces import ToolChoiceOptions
-from onyx.llm.model_response import ChatCompletionDeltaToolCall
-from onyx.llm.model_response import Delta
-from onyx.llm.model_response import FunctionCall
-from onyx.llm.model_response import ModelResponse
-from onyx.llm.model_response import ModelResponseStream
-from onyx.llm.model_response import StreamingChoice
+from om.llm.interfaces import LanguageModelInput
+from om.llm.interfaces import LLM
+from om.llm.interfaces import LLMConfig
+from om.llm.interfaces import LLMUserIdentity
+from om.llm.interfaces import ReasoningEffort
+from om.llm.interfaces import ToolChoiceOptions
+from om.llm.model_response import ChatCompletionDeltaToolCall
+from om.llm.model_response import Delta
+from om.llm.model_response import FunctionCall
+from om.llm.model_response import ModelResponse
+from om.llm.model_response import ModelResponseStream
+from om.llm.model_response import StreamingChoice
 
 T = TypeVar("T")
 
@@ -401,5 +401,5 @@ class SyncStreamController(Generic[T]):
 def use_mock_llm() -> Generator[MockLLMController, None, None]:
     mock_llm = MockLLM()
 
-    with patch("onyx.chat.process_message.get_llm_for_persona", return_value=mock_llm):
+    with patch("om.chat.process_message.get_llm_for_persona", return_value=mock_llm):
         yield mock_llm

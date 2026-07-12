@@ -3,8 +3,8 @@ import os
 import pytest
 from requests.exceptions import HTTPError
 
-from onyx.db.enums import AccessType
-from onyx.server.documents.models import DocumentSource
+from om.db.enums import AccessType
+from om.server.documents.models import DocumentSource
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.document_set import DocumentSetManager
 from tests.integration.common_utils.managers.user import DATestUser

@@ -21,7 +21,7 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
 
-from onyx.db.engine.sql_engine import SqlEngine
+from om.db.engine.sql_engine import SqlEngine
 
 # Resolve the backend/ directory once so every helper can use it as cwd.
 _BACKEND_DIR = os.path.normpath(

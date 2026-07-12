@@ -23,18 +23,18 @@ import os
 from datetime import datetime
 from datetime import timezone
 
-from onyx.access.models import default_public_access
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import Document
-from onyx.connectors.models import TextSection
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.engine.sql_engine import SqlEngine
-from onyx.db.search_settings import get_current_search_settings
-from onyx.document_index.interfaces_new import IndexingMetadata
-from onyx.indexing.models import ChunkEmbedding
-from onyx.indexing.models import DocMetadataAwareIndexChunk
-from onyx.indexing.models import IndexChunk
-from onyx.natural_language_processing.search_nlp_models import EmbeddingModel
+from om.access.models import default_public_access
+from om.configs.constants import DocumentSource
+from om.connectors.models import Document
+from om.connectors.models import TextSection
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.engine.sql_engine import SqlEngine
+from om.db.search_settings import get_current_search_settings
+from om.document_index.interfaces_new import IndexingMetadata
+from om.indexing.models import ChunkEmbedding
+from om.indexing.models import DocMetadataAwareIndexChunk
+from om.indexing.models import IndexChunk
+from om.natural_language_processing.search_nlp_models import EmbeddingModel
 from shared_configs.configs import MODEL_SERVER_HOST
 from shared_configs.configs import MODEL_SERVER_PORT
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
@@ -209,7 +209,7 @@ def verify_in_engine(per_doc: dict[str, int], engine: str) -> None:
         return
 
     # OpenSearch: confirm the index exists and report id-based chunk counts.
-    from onyx.document_index.opensearch.client import OpenSearchIndexClient
+    from om.document_index.opensearch.client import OpenSearchIndexClient
 
     with get_session_with_current_tenant() as db_session:
         index_name = get_current_search_settings(db_session).index_name

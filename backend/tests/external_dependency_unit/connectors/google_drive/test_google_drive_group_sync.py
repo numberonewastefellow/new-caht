@@ -5,20 +5,20 @@ from unittest.mock import patch
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ee.onyx.background.celery.tasks.external_group_syncing.tasks import (
+from ee.om.background.celery.tasks.external_group_syncing.tasks import (
     _perform_external_group_sync,
 )
-from ee.onyx.db.external_perm import ExternalUserGroup
-from onyx.access.utils import build_ext_group_name_for_onyx
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import InputType
-from onyx.db.enums import AccessType
-from onyx.db.enums import ConnectorCredentialPairStatus
-from onyx.db.models import Connector
-from onyx.db.models import ConnectorCredentialPair
-from onyx.db.models import Credential
-from onyx.db.models import PublicExternalUserGroup
-from onyx.db.models import User__ExternalUserGroupId
+from ee.om.db.external_perm import ExternalUserGroup
+from om.access.utils import build_ext_group_name_for_onyx
+from om.configs.constants import DocumentSource
+from om.connectors.models import InputType
+from om.db.enums import AccessType
+from om.db.enums import ConnectorCredentialPairStatus
+from om.db.models import Connector
+from om.db.models import ConnectorCredentialPair
+from om.db.models import Credential
+from om.db.models import PublicExternalUserGroup
+from om.db.models import User__ExternalUserGroupId
 from tests.external_dependency_unit.conftest import create_test_user
 from tests.external_dependency_unit.constants import TEST_TENANT_ID
 
@@ -126,7 +126,7 @@ class TestPerformExternalGroupSync:
         assert len(_get_public_external_groups(db_session, cc_pair.id)) == 0
 
         with patch(
-            "ee.onyx.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
+            "ee.om.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
         ) as mock_config:
             # Mock sync config
             mock_group_config = Mock()
@@ -191,7 +191,7 @@ class TestPerformExternalGroupSync:
         assert len(_get_user_external_groups(db_session, cc_pair.id)) == 0
 
         with patch(
-            "ee.onyx.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
+            "ee.om.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
         ) as mock_config:
             # Mock sync config
             mock_group_config = Mock()
@@ -288,7 +288,7 @@ class TestPerformExternalGroupSync:
         assert len(_get_public_external_groups(db_session, cc_pair.id)) == 0
 
         with patch(
-            "ee.onyx.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
+            "ee.om.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
         ) as mock_config:
             # Mock sync config
             mock_group_config = Mock()
@@ -363,7 +363,7 @@ class TestPerformExternalGroupSync:
             yield ExternalUserGroup(id="group1", user_emails=[user1.email])
 
         with patch(
-            "ee.onyx.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
+            "ee.om.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
         ) as mock_config:
             # Mock sync config
             mock_group_config = Mock()
@@ -420,7 +420,7 @@ class TestPerformExternalGroupSync:
             )
 
         with patch(
-            "ee.onyx.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
+            "ee.om.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
         ) as mock_config:
             # Mock sync config
             mock_group_config = Mock()
@@ -465,7 +465,7 @@ class TestPerformExternalGroupSync:
             )
 
         with patch(
-            "ee.onyx.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
+            "ee.om.background.celery.tasks.external_group_syncing.tasks.get_source_perm_sync_config"
         ) as mock_config:
             # Mock sync config
             mock_group_config = Mock()

@@ -10,20 +10,20 @@ from unittest.mock import patch
 import pytest
 from requests.exceptions import HTTPError
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.confluence.connector import ConfluenceCheckpoint
-from onyx.connectors.confluence.connector import ConfluenceConnector
-from onyx.connectors.confluence.onyx_confluence import OnyxConfluence
-from onyx.connectors.exceptions import CredentialExpiredError
-from onyx.connectors.exceptions import InsufficientPermissionsError
-from onyx.connectors.exceptions import UnexpectedValidationError
-from onyx.connectors.models import ConnectorFailure
-from onyx.connectors.models import Document
-from onyx.connectors.models import DocumentFailure
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.models import SlimDocument
-from tests.unit.onyx.connectors.utils import load_everything_from_checkpoint_connector
-from tests.unit.onyx.connectors.utils import (
+from om.configs.constants import DocumentSource
+from om.connectors.confluence.connector import ConfluenceCheckpoint
+from om.connectors.confluence.connector import ConfluenceConnector
+from om.connectors.confluence.onyx_confluence import OnyxConfluence
+from om.connectors.exceptions import CredentialExpiredError
+from om.connectors.exceptions import InsufficientPermissionsError
+from om.connectors.exceptions import UnexpectedValidationError
+from om.connectors.models import ConnectorFailure
+from om.connectors.models import Document
+from om.connectors.models import DocumentFailure
+from om.connectors.models import HierarchyNode
+from om.connectors.models import SlimDocument
+from tests.unit.om.connectors.utils import load_everything_from_checkpoint_connector
+from tests.unit.om.connectors.utils import (
     load_everything_from_checkpoint_connector_from_checkpoint,
 )
 
@@ -68,7 +68,7 @@ def confluence_connector(
     # Initialize the client directly
     connector._confluence_client = mock_confluence_client
     connector._low_timeout_confluence_client = mock_confluence_client
-    with patch("onyx.connectors.confluence.connector._SLIM_DOC_BATCH_SIZE", 2):
+    with patch("om.connectors.confluence.connector._SLIM_DOC_BATCH_SIZE", 2):
         yield connector
 
 
@@ -274,7 +274,7 @@ def test_load_from_checkpoint_with_page_processing_error(
             )
 
     with patch(
-        "onyx.connectors.confluence.connector.ConfluenceConnector._convert_page_to_document",
+        "om.connectors.confluence.connector.ConfluenceConnector._convert_page_to_document",
         side_effect=mock_convert_side_effect,
     ):
         # Call load_from_checkpoint
@@ -385,7 +385,7 @@ def test_validate_connector_settings_errors(
     error = HTTPError(response=MagicMock(status_code=status_code))
 
     with patch(
-        "onyx.connectors.confluence.onyx_confluence.OnyxConfluence.retrieve_confluence_spaces"
+        "om.connectors.confluence.onyx_confluence.OnyxConfluence.retrieve_confluence_spaces"
     ) as mock_retrieve:
         mock_retrieve.side_effect = error
 

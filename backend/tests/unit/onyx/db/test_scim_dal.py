@@ -4,11 +4,11 @@ from uuid import uuid4
 
 import pytest
 
-from ee.onyx.db.scim import ScimDAL
-from onyx.db.models import ScimGroupMapping
-from onyx.db.models import ScimToken
-from onyx.db.models import ScimUserMapping
-from tests.unit.onyx.db.conftest import model_attrs
+from ee.om.db.scim import ScimDAL
+from om.db.models import ScimGroupMapping
+from om.db.models import ScimToken
+from om.db.models import ScimUserMapping
+from tests.unit.om.db.conftest import model_attrs
 
 
 class TestScimDALTokens:

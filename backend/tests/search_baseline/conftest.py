@@ -13,10 +13,10 @@ import httpx
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.engine.sql_engine import SqlEngine
-from onyx.db.search_settings import get_current_search_settings
-from onyx.document_index.vespa_constants import VESPA_APPLICATION_ENDPOINT
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.engine.sql_engine import SqlEngine
+from om.db.search_settings import get_current_search_settings
+from om.document_index.vespa_constants import VESPA_APPLICATION_ENDPOINT
 from shared_configs.configs import MODEL_SERVER_HOST
 from shared_configs.configs import MODEL_SERVER_PORT
 from tests.search_baseline.corpus import CORPUS
@@ -103,7 +103,7 @@ def seeded_corpus(require_services: None) -> None:
 
 def _opensearch_up() -> bool:
     try:
-        from onyx.document_index.opensearch.client import OpenSearchIndexClient
+        from om.document_index.opensearch.client import OpenSearchIndexClient
 
         with get_session_with_current_tenant() as session:
             index_name = get_current_search_settings(session).index_name

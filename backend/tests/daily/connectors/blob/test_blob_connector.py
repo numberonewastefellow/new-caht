@@ -7,13 +7,13 @@ from urllib.parse import urlparse
 
 import pytest
 
-from onyx.configs.constants import BlobType
-from onyx.connectors.blob.connector import BlobStorageConnector
-from onyx.connectors.models import Document
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.models import TextSection
-from onyx.file_processing.extract_file_text import get_file_ext
-from onyx.file_processing.file_types import OnyxFileExtensions
+from om.configs.constants import BlobType
+from om.connectors.blob.connector import BlobStorageConnector
+from om.connectors.models import Document
+from om.connectors.models import HierarchyNode
+from om.connectors.models import TextSection
+from om.file_processing.extract_file_text import get_file_ext
+from om.file_processing.file_types import OnyxFileExtensions
 
 
 @pytest.fixture
@@ -80,7 +80,7 @@ def blob_connector(request: pytest.FixtureRequest) -> BlobStorageConnector:
 
 
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 @pytest.mark.parametrize(
@@ -122,7 +122,7 @@ def test_blob_s3_connector(
 
 
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 @pytest.mark.parametrize(
@@ -176,7 +176,7 @@ def test_blob_s3_cross_region_and_citation_link(
 
 
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 @pytest.mark.parametrize(
@@ -199,7 +199,7 @@ def test_blob_r2_connector(
 
 
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 @pytest.mark.parametrize(
@@ -224,7 +224,7 @@ def test_blob_r2_eu_residency_connector(
 
 
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 @pytest.mark.parametrize(

@@ -3,10 +3,10 @@ import time
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import Document
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.notion.connector import NotionConnector
+from om.configs.constants import DocumentSource
+from om.connectors.models import Document
+from om.connectors.models import HierarchyNode
+from om.connectors.notion.connector import NotionConnector
 
 
 def compare_hierarchy_nodes(

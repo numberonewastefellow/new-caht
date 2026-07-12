@@ -4,10 +4,10 @@ from collections.abc import Generator
 
 import pytest
 
-from onyx.access.models import ExternalAccess
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.teams.connector import TeamsConnector
-from onyx.utils.variable_functionality import global_version
+from om.access.models import ExternalAccess
+from om.connectors.models import HierarchyNode
+from om.connectors.teams.connector import TeamsConnector
+from om.utils.variable_functionality import global_version
 from tests.daily.connectors.teams.models import TeamsThread
 from tests.daily.connectors.utils import load_all_from_connector
 

@@ -6,7 +6,7 @@ from tenacity import retry_if_exception_type
 from tenacity import stop_after_attempt
 from tenacity import wait_exponential
 
-from onyx.natural_language_processing.search_nlp_models import EmbeddingModel
+from om.natural_language_processing.search_nlp_models import EmbeddingModel
 from shared_configs.enums import EmbedTextType
 from shared_configs.model_server_models import EmbeddingProvider
 

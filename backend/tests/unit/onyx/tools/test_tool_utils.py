@@ -1,7 +1,7 @@
 import pytest
 
-from onyx.llm.constants import LlmProviderNames
-from onyx.tools.utils import explicit_tool_calling_supported
+from om.llm.constants import LlmProviderNames
+from om.tools.utils import explicit_tool_calling_supported
 
 
 @pytest.mark.parametrize(

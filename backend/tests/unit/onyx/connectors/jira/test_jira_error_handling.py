@@ -7,11 +7,11 @@ import pytest
 from jira import JIRA
 from jira import JIRAError
 
-from onyx.connectors.exceptions import ConnectorValidationError
-from onyx.connectors.exceptions import CredentialExpiredError
-from onyx.connectors.exceptions import InsufficientPermissionsError
-from onyx.connectors.jira.connector import JiraConnector
-from tests.unit.onyx.connectors.utils import load_everything_from_checkpoint_connector
+from om.connectors.exceptions import ConnectorValidationError
+from om.connectors.exceptions import CredentialExpiredError
+from om.connectors.exceptions import InsufficientPermissionsError
+from om.connectors.jira.connector import JiraConnector
+from tests.unit.om.connectors.utils import load_everything_from_checkpoint_connector
 
 
 @pytest.fixture

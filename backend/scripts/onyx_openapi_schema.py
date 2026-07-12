@@ -11,7 +11,7 @@ import sys
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
-from onyx.main import app as app_fn
+from om.main import app as app_fn
 
 OPENAPI_VERSION = "3.1.0"
 

@@ -4,7 +4,7 @@ import os
 import pytest
 import requests
 
-from onyx.configs.constants import MessageType
+from om.configs.constants import MessageType
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import NUM_DOCS
 from tests.integration.common_utils.test_models import DATestLLMProvider

@@ -996,6 +996,7 @@
     "<root>.workflows.step_runners.conditional_router",
     "<root>.workflows.trace_models",
     "<root>.workflows.workflow_engine",
+    "ee.<root>",
     "ee.<root>.access.access",
     "ee.<root>.access.hierarchy_access",
     "ee.<root>.auth",
@@ -1168,7 +1169,6 @@
     "ee.<root>.utils.encryption",
     "ee.<root>.utils.license",
     "ee.<root>.utils.posthog_client",
-    "ee.<root>.utils.telemetry",
-    "ee.onyx"
+    "ee.<root>.utils.telemetry"
   ]
 }

@@ -3,9 +3,9 @@ import time
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.bitbucket.connector import BitbucketConnector
-from onyx.connectors.models import HierarchyNode
+from om.configs.constants import DocumentSource
+from om.connectors.bitbucket.connector import BitbucketConnector
+from om.connectors.models import HierarchyNode
 from tests.daily.connectors.utils import load_all_from_connector
 
 

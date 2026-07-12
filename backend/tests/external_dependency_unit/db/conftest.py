@@ -16,9 +16,9 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from ee.onyx.db.scim import ScimDAL
-from onyx.db.models import ScimToken
-from onyx.db.models import UserGroup
+from ee.om.db.scim import ScimDAL
+from om.db.models import ScimToken
+from om.db.models import UserGroup
 
 
 @pytest.fixture

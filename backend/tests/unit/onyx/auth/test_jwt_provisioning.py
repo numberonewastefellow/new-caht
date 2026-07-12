@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from onyx.auth import users as users_module
+from om.auth import users as users_module
 
 
 def test_extract_email_requires_valid_format() -> None:

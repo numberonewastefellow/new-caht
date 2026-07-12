@@ -15,20 +15,20 @@ from datetime import datetime
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from onyx.configs.chat_configs import NUM_RETURNED_HITS
-from onyx.configs.constants import DocumentSource
-from onyx.context.search.models import ChunkIndexRequest
-from onyx.context.search.models import IndexFilters
-from onyx.context.search.retrieval.search_runner import search_chunks
-from onyx.db.search_settings import get_current_search_settings
-from onyx.document_index.factory import get_default_document_index
-from onyx.document_index.interfaces_new import DocumentIndex
-from onyx.document_index.interfaces_new import TenantState
-from onyx.document_index.opensearch.opensearch_document_index import (
+from om.configs.chat_configs import NUM_RETURNED_HITS
+from om.configs.constants import DocumentSource
+from om.context.search.models import ChunkIndexRequest
+from om.context.search.models import IndexFilters
+from om.context.search.retrieval.search_runner import search_chunks
+from om.db.search_settings import get_current_search_settings
+from om.document_index.factory import get_default_document_index
+from om.document_index.interfaces_new import DocumentIndex
+from om.document_index.interfaces_new import TenantState
+from om.document_index.opensearch.opensearch_document_index import (
     OpenSearchDocumentIndex,
 )
-from onyx.document_index.vespa.vespa_document_index import VespaDocumentIndex
-from onyx.indexing.models import IndexingSetting
+from om.document_index.vespa.vespa_document_index import VespaDocumentIndex
+from om.indexing.models import IndexingSetting
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import get_current_tenant_id
 
@@ -177,7 +177,7 @@ def ensure_index_ready(engine: str, db_session: Session) -> None:
 
 def refresh_opensearch(db_session: Session) -> None:
     """Force an OpenSearch refresh so freshly-indexed docs are searchable now."""
-    from onyx.document_index.opensearch.client import OpenSearchIndexClient
+    from om.document_index.opensearch.client import OpenSearchIndexClient
 
     index_name = get_current_search_settings(db_session).index_name
     OpenSearchIndexClient(index_name=index_name).refresh_index()

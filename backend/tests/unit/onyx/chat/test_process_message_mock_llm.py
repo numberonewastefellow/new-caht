@@ -2,9 +2,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from onyx.chat import process_message
-from onyx.configs import app_configs
-from onyx.server.query_and_chat.models import SendMessageRequest
+from om.chat import process_message
+from om.configs import app_configs
+from om.server.query_and_chat.models import SendMessageRequest
 
 
 def test_mock_llm_response_requires_integration_mode() -> None:

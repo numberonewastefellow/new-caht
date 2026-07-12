@@ -13,8 +13,8 @@ Tests cover:
 
 import pytest
 
-from onyx.workflows.models import WorkflowContext
-from onyx.workflows.step_runners.conditional_router import (
+from om.workflows.models import WorkflowContext
+from om.workflows.step_runners.conditional_router import (
     OPERATORS,
     MAX_REGEX_PATTERN_LENGTH,
     _apply_operator,

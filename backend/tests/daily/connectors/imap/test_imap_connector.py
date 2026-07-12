@@ -3,9 +3,9 @@ import time
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.credentials_provider import OnyxStaticCredentialsProvider
-from onyx.connectors.imap.connector import ImapConnector
+from om.configs.constants import DocumentSource
+from om.connectors.credentials_provider import OnyxStaticCredentialsProvider
+from om.connectors.imap.connector import ImapConnector
 from tests.daily.connectors.imap.models import EmailDoc
 from tests.daily.connectors.utils import (
     load_all_from_connector,

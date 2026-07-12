@@ -30,10 +30,10 @@ services:
     volumes:
       - E:/temp/vert/api_server_logs:/var/log/onyx
       - E:/temp/vert/file-system:/app/file-system
-      - craft-templates:/app/onyx/server/features/build/sandbox/kubernetes/docker/templates
+      - craft-templates:/app/om/server/features/build/sandbox/kubernetes/docker/templates
       # Dev bind mounts: local source → container (restart to pick up changes, no rebuild needed)
       # Do NOT bind-mount scripts/ — they need CRLF stripping done at build time
-      - ../../backend/onyx:/app/onyx
+      - ../../backend/om:/app/om
       - ../../backend/ee:/app/ee
       - ../../backend/shared_configs:/app/shared_configs
       - ../../backend/alembic:/app/alembic
@@ -61,9 +61,9 @@ services:
     volumes:
       - E:/temp/vert/background_logs:/var/log/onyx
       - E:/temp/vert/file-system:/app/file-system
-      - craft-templates:/app/onyx/server/features/build/sandbox/kubernetes/docker/templates
+      - craft-templates:/app/om/server/features/build/sandbox/kubernetes/docker/templates
       # Dev bind mounts: same as api_server
-      - ../../backend/onyx:/app/onyx
+      - ../../backend/om:/app/om
       - ../../backend/ee:/app/ee
       - ../../backend/shared_configs:/app/shared_configs
       - ../../backend/alembic:/app/alembic

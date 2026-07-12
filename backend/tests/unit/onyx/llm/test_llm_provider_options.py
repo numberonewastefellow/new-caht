@@ -3,16 +3,16 @@ from datetime import timezone
 
 import pytest
 
-from onyx.llm.well_known_providers.auto_update_models import (
+from om.llm.well_known_providers.auto_update_models import (
     LLMProviderRecommendation,
 )
-from onyx.llm.well_known_providers.auto_update_models import LLMRecommendations
-from onyx.llm.well_known_providers.constants import OPENAI_PROVIDER_NAME
-from onyx.llm.well_known_providers.constants import VERTEXAI_PROVIDER_NAME
-from onyx.llm.well_known_providers.llm_provider_options import (
+from om.llm.well_known_providers.auto_update_models import LLMRecommendations
+from om.llm.well_known_providers.constants import OPENAI_PROVIDER_NAME
+from om.llm.well_known_providers.constants import VERTEXAI_PROVIDER_NAME
+from om.llm.well_known_providers.llm_provider_options import (
     model_configurations_for_provider,
 )
-from onyx.llm.well_known_providers.models import SimpleKnownModel
+from om.llm.well_known_providers.models import SimpleKnownModel
 
 
 def _build_recommendations(
@@ -37,15 +37,15 @@ def test_model_configurations_vertex_are_sorted_by_name(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "onyx.llm.well_known_providers.llm_provider_options.fetch_models_for_provider",
+        "om.llm.well_known_providers.llm_provider_options.fetch_models_for_provider",
         lambda _provider_name: ["zeta-model", "alpha-model", "Beta-model"],
     )
     monkeypatch.setattr(
-        "onyx.llm.well_known_providers.llm_provider_options.get_max_input_tokens",
+        "om.llm.well_known_providers.llm_provider_options.get_max_input_tokens",
         lambda _model_name, _provider_name: None,
     )
     monkeypatch.setattr(
-        "onyx.llm.well_known_providers.llm_provider_options.model_supports_image_input",
+        "om.llm.well_known_providers.llm_provider_options.model_supports_image_input",
         lambda _model_name, _provider_name: False,
     )
 
@@ -75,15 +75,15 @@ def test_model_configurations_non_vertex_preserve_provider_order(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "onyx.llm.well_known_providers.llm_provider_options.fetch_models_for_provider",
+        "om.llm.well_known_providers.llm_provider_options.fetch_models_for_provider",
         lambda _provider_name: ["model-b", "model-a"],
     )
     monkeypatch.setattr(
-        "onyx.llm.well_known_providers.llm_provider_options.get_max_input_tokens",
+        "om.llm.well_known_providers.llm_provider_options.get_max_input_tokens",
         lambda _model_name, _provider_name: None,
     )
     monkeypatch.setattr(
-        "onyx.llm.well_known_providers.llm_provider_options.model_supports_image_input",
+        "om.llm.well_known_providers.llm_provider_options.model_supports_image_input",
         lambda _model_name, _provider_name: False,
     )
 

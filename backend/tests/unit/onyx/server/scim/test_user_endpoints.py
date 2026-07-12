@@ -9,22 +9,22 @@ from uuid import uuid4
 from fastapi import Response
 from sqlalchemy.exc import IntegrityError
 
-from ee.onyx.server.scim.api import create_user
-from ee.onyx.server.scim.api import delete_user
-from ee.onyx.server.scim.api import get_user
-from ee.onyx.server.scim.api import list_users
-from ee.onyx.server.scim.api import patch_user
-from ee.onyx.server.scim.api import replace_user
-from ee.onyx.server.scim.models import ScimListResponse
-from ee.onyx.server.scim.models import ScimName
-from ee.onyx.server.scim.models import ScimPatchOperation
-from ee.onyx.server.scim.models import ScimPatchOperationType
-from ee.onyx.server.scim.models import ScimPatchRequest
-from ee.onyx.server.scim.models import ScimUserResource
-from ee.onyx.server.scim.patch import ScimPatchError
-from tests.unit.onyx.server.scim.conftest import assert_scim_error
-from tests.unit.onyx.server.scim.conftest import make_db_user
-from tests.unit.onyx.server.scim.conftest import make_scim_user
+from ee.om.server.scim.api import create_user
+from ee.om.server.scim.api import delete_user
+from ee.om.server.scim.api import get_user
+from ee.om.server.scim.api import list_users
+from ee.om.server.scim.api import patch_user
+from ee.om.server.scim.api import replace_user
+from ee.om.server.scim.models import ScimListResponse
+from ee.om.server.scim.models import ScimName
+from ee.om.server.scim.models import ScimPatchOperation
+from ee.om.server.scim.models import ScimPatchOperationType
+from ee.om.server.scim.models import ScimPatchRequest
+from ee.om.server.scim.models import ScimUserResource
+from ee.om.server.scim.patch import ScimPatchError
+from tests.unit.om.server.scim.conftest import assert_scim_error
+from tests.unit.om.server.scim.conftest import make_db_user
+from tests.unit.om.server.scim.conftest import make_scim_user
 
 
 class TestListUsers:
@@ -168,7 +168,7 @@ class TestGetUser:
 class TestCreateUser:
     """Tests for POST /scim/v2/Users."""
 
-    @patch("ee.onyx.server.scim.api._check_seat_availability", return_value=None)
+    @patch("ee.om.server.scim.api._check_seat_availability", return_value=None)
     def test_success(
         self,
         mock_seats: MagicMock,  # noqa: ARG002
@@ -206,7 +206,7 @@ class TestCreateUser:
 
         assert_scim_error(result, 400)
 
-    @patch("ee.onyx.server.scim.api._check_seat_availability", return_value=None)
+    @patch("ee.om.server.scim.api._check_seat_availability", return_value=None)
     def test_duplicate_email_returns_409(
         self,
         mock_seats: MagicMock,  # noqa: ARG002
@@ -225,7 +225,7 @@ class TestCreateUser:
 
         assert_scim_error(result, 409)
 
-    @patch("ee.onyx.server.scim.api._check_seat_availability", return_value=None)
+    @patch("ee.om.server.scim.api._check_seat_availability", return_value=None)
     def test_integrity_error_returns_409(
         self,
         mock_seats: MagicMock,  # noqa: ARG002
@@ -246,7 +246,7 @@ class TestCreateUser:
         assert_scim_error(result, 409)
         mock_dal.rollback.assert_called_once()
 
-    @patch("ee.onyx.server.scim.api._check_seat_availability")
+    @patch("ee.om.server.scim.api._check_seat_availability")
     def test_seat_limit_returns_403(
         self,
         mock_seats: MagicMock,
@@ -265,7 +265,7 @@ class TestCreateUser:
 
         assert_scim_error(result, 403)
 
-    @patch("ee.onyx.server.scim.api._check_seat_availability", return_value=None)
+    @patch("ee.om.server.scim.api._check_seat_availability", return_value=None)
     def test_creates_external_id_mapping(
         self,
         mock_seats: MagicMock,  # noqa: ARG002
@@ -331,7 +331,7 @@ class TestReplaceUser:
 
         assert_scim_error(result, 404)
 
-    @patch("ee.onyx.server.scim.api._check_seat_availability")
+    @patch("ee.om.server.scim.api._check_seat_availability")
     def test_reactivation_checks_seats(
         self,
         mock_seats: MagicMock,
@@ -433,7 +433,7 @@ class TestPatchUser:
 
         assert_scim_error(result, 404)
 
-    @patch("ee.onyx.server.scim.api.apply_user_patch")
+    @patch("ee.om.server.scim.api.apply_user_patch")
     def test_patch_error_returns_error_response(
         self,
         mock_apply: MagicMock,

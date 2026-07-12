@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock
 
-from onyx.connectors.teams.connector import _collect_all_teams
+from om.connectors.teams.connector import _collect_all_teams
 
 
 def test_special_characters_in_team_names() -> None:
@@ -74,7 +74,7 @@ def test_single_quote_escaping() -> None:
 
 def test_helper_functions() -> None:
     """Test the helper functions for team name processing."""
-    from onyx.connectors.teams.connector import (
+    from om.connectors.teams.connector import (
         _escape_odata_string,
         _has_odata_incompatible_chars,
         _can_use_odata_filter,

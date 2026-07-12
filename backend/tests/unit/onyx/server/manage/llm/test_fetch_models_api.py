@@ -10,10 +10,10 @@ from unittest.mock import patch
 
 import pytest
 
-from onyx.server.manage.llm.models import OllamaFinalModelResponse
-from onyx.server.manage.llm.models import OllamaModelsRequest
-from onyx.server.manage.llm.models import OpenRouterFinalModelResponse
-from onyx.server.manage.llm.models import OpenRouterModelsRequest
+from om.server.manage.llm.models import OllamaFinalModelResponse
+from om.server.manage.llm.models import OllamaModelsRequest
+from om.server.manage.llm.models import OpenRouterFinalModelResponse
+from om.server.manage.llm.models import OpenRouterModelsRequest
 
 
 class TestGetOllamaAvailableModels:
@@ -48,11 +48,11 @@ class TestGetOllamaAvailableModels:
         self, mock_ollama_tags_response: dict, mock_ollama_show_response: dict
     ) -> None:
         """Test that endpoint returns properly formatted model list."""
-        from onyx.server.manage.llm.api import get_ollama_available_models
+        from om.server.manage.llm.api import get_ollama_available_models
 
         mock_session = MagicMock()
 
-        with patch("onyx.server.manage.llm.api.httpx") as mock_httpx:
+        with patch("om.server.manage.llm.api.httpx") as mock_httpx:
             # Mock GET for /api/tags
             mock_get_response = MagicMock()
             mock_get_response.json.return_value = mock_ollama_tags_response
@@ -82,7 +82,7 @@ class TestGetOllamaAvailableModels:
         self, mock_ollama_tags_response: dict, mock_ollama_show_response: dict
     ) -> None:
         """Test that models are synced to DB when provider_name is given."""
-        from onyx.server.manage.llm.api import get_ollama_available_models
+        from om.server.manage.llm.api import get_ollama_available_models
 
         mock_session = MagicMock()
         mock_provider = MagicMock()
@@ -90,9 +90,9 @@ class TestGetOllamaAvailableModels:
         mock_provider.model_configurations = []
 
         with (
-            patch("onyx.server.manage.llm.api.httpx") as mock_httpx,
+            patch("om.server.manage.llm.api.httpx") as mock_httpx,
             patch(
-                "onyx.db.llm.fetch_existing_llm_provider", return_value=mock_provider
+                "om.db.llm.fetch_existing_llm_provider", return_value=mock_provider
             ),
         ):
             mock_get_response = MagicMock()
@@ -119,11 +119,11 @@ class TestGetOllamaAvailableModels:
         self, mock_ollama_tags_response: dict, mock_ollama_show_response: dict
     ) -> None:
         """Test that models are NOT synced when provider_name is None."""
-        from onyx.server.manage.llm.api import get_ollama_available_models
+        from om.server.manage.llm.api import get_ollama_available_models
 
         mock_session = MagicMock()
 
-        with patch("onyx.server.manage.llm.api.httpx") as mock_httpx:
+        with patch("om.server.manage.llm.api.httpx") as mock_httpx:
             mock_get_response = MagicMock()
             mock_get_response.json.return_value = mock_ollama_tags_response
             mock_get_response.raise_for_status = MagicMock()
@@ -173,11 +173,11 @@ class TestGetOpenRouterAvailableModels:
 
     def test_returns_model_list(self, mock_openrouter_response: dict) -> None:
         """Test that endpoint returns properly formatted model list."""
-        from onyx.server.manage.llm.api import get_openrouter_available_models
+        from om.server.manage.llm.api import get_openrouter_available_models
 
         mock_session = MagicMock()
 
-        with patch("onyx.server.manage.llm.api.httpx.get") as mock_get:
+        with patch("om.server.manage.llm.api.httpx.get") as mock_get:
             mock_response = MagicMock()
             mock_response.json.return_value = mock_openrouter_response
             mock_response.raise_for_status = MagicMock()
@@ -199,11 +199,11 @@ class TestGetOpenRouterAvailableModels:
 
     def test_infers_vision_support(self, mock_openrouter_response: dict) -> None:
         """Test that vision support is correctly inferred from modality."""
-        from onyx.server.manage.llm.api import get_openrouter_available_models
+        from om.server.manage.llm.api import get_openrouter_available_models
 
         mock_session = MagicMock()
 
-        with patch("onyx.server.manage.llm.api.httpx.get") as mock_get:
+        with patch("om.server.manage.llm.api.httpx.get") as mock_get:
             mock_response = MagicMock()
             mock_response.json.return_value = mock_openrouter_response
             mock_response.raise_for_status = MagicMock()
@@ -228,7 +228,7 @@ class TestGetOpenRouterAvailableModels:
         self, mock_openrouter_response: dict
     ) -> None:
         """Test that models are synced to DB when provider_name is given."""
-        from onyx.server.manage.llm.api import get_openrouter_available_models
+        from om.server.manage.llm.api import get_openrouter_available_models
 
         mock_session = MagicMock()
         mock_provider = MagicMock()
@@ -236,9 +236,9 @@ class TestGetOpenRouterAvailableModels:
         mock_provider.model_configurations = []
 
         with (
-            patch("onyx.server.manage.llm.api.httpx.get") as mock_get,
+            patch("om.server.manage.llm.api.httpx.get") as mock_get,
             patch(
-                "onyx.db.llm.fetch_existing_llm_provider", return_value=mock_provider
+                "om.db.llm.fetch_existing_llm_provider", return_value=mock_provider
             ),
         ):
             mock_response = MagicMock()
@@ -261,7 +261,7 @@ class TestGetOpenRouterAvailableModels:
         self, mock_openrouter_response: dict
     ) -> None:
         """Test that existing models are not overwritten during sync."""
-        from onyx.server.manage.llm.api import get_openrouter_available_models
+        from om.server.manage.llm.api import get_openrouter_available_models
 
         mock_session = MagicMock()
 
@@ -274,9 +274,9 @@ class TestGetOpenRouterAvailableModels:
         mock_provider.model_configurations = [existing_model]
 
         with (
-            patch("onyx.server.manage.llm.api.httpx.get") as mock_get,
+            patch("om.server.manage.llm.api.httpx.get") as mock_get,
             patch(
-                "onyx.db.llm.fetch_existing_llm_provider", return_value=mock_provider
+                "om.db.llm.fetch_existing_llm_provider", return_value=mock_provider
             ),
         ):
             mock_response = MagicMock()
@@ -298,11 +298,11 @@ class TestGetOpenRouterAvailableModels:
         self, mock_openrouter_response: dict
     ) -> None:
         """Test that models are NOT synced when provider_name is None."""
-        from onyx.server.manage.llm.api import get_openrouter_available_models
+        from om.server.manage.llm.api import get_openrouter_available_models
 
         mock_session = MagicMock()
 
-        with patch("onyx.server.manage.llm.api.httpx.get") as mock_get:
+        with patch("om.server.manage.llm.api.httpx.get") as mock_get:
             mock_response = MagicMock()
             mock_response.json.return_value = mock_openrouter_response
             mock_response.raise_for_status = MagicMock()

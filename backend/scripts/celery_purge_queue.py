@@ -7,9 +7,9 @@ from logging import getLogger
 
 from redis import Redis
 
-from onyx.background.celery.celery_redis import celery_get_queue_length
-from onyx.configs.app_configs import REDIS_DB_NUMBER_CELERY
-from onyx.redis.redis_pool import RedisPool
+from om.background.celery.celery_redis import celery_get_queue_length
+from om.configs.app_configs import REDIS_DB_NUMBER_CELERY
+from om.redis.redis_pool import RedisPool
 
 # Configure the logger
 logging.basicConfig(

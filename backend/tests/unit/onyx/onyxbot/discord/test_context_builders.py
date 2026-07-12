@@ -10,14 +10,14 @@ from unittest.mock import MagicMock
 import discord
 import pytest
 
-from onyx.onyxbot.discord.constants import MAX_CONTEXT_MESSAGES
-from onyx.onyxbot.discord.handle_message import _build_conversation_context
-from onyx.onyxbot.discord.handle_message import _build_reply_chain_context
-from onyx.onyxbot.discord.handle_message import _build_thread_context
-from onyx.onyxbot.discord.handle_message import _format_messages_as_context
-from onyx.onyxbot.discord.handle_message import format_message_content
-from tests.unit.onyx.onyxbot.discord.conftest import AsyncIteratorMock
-from tests.unit.onyx.onyxbot.discord.conftest import mock_message
+from om.onyxbot.discord.constants import MAX_CONTEXT_MESSAGES
+from om.onyxbot.discord.handle_message import _build_conversation_context
+from om.onyxbot.discord.handle_message import _build_reply_chain_context
+from om.onyxbot.discord.handle_message import _build_thread_context
+from om.onyxbot.discord.handle_message import _format_messages_as_context
+from om.onyxbot.discord.handle_message import format_message_content
+from tests.unit.om.onyxbot.discord.conftest import AsyncIteratorMock
+from tests.unit.om.onyxbot.discord.conftest import mock_message
 
 
 class TestThreadContextBuilder:

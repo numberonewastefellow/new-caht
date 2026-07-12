@@ -2,11 +2,11 @@ import uuid
 from datetime import datetime
 from datetime import timezone
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import ConnectorFailure
-from onyx.connectors.models import Document
-from onyx.connectors.models import DocumentFailure
-from onyx.connectors.models import TextSection
+from om.configs.constants import DocumentSource
+from om.connectors.models import ConnectorFailure
+from om.connectors.models import Document
+from om.connectors.models import DocumentFailure
+from om.connectors.models import TextSection
 
 
 def create_test_document(

@@ -2,12 +2,12 @@
 
 `connectors/factory.py` and `federated_connectors/factory.py` build connectors by
 `importlib.import_module(mapping.module_path)` + `getattr(module, class_name)` at
-RUNTIME. The registries hold ~105 (+ federated) `module_path="onyx.connectors...."`
+RUNTIME. The registries hold ~105 (+ federated) `module_path="om.connectors...."`
 strings that never fail at startup -- only when that connector is instantiated. This
 resolves every one (rename-agnostic, MIT-or-EE + env tolerant).
 
 Complements the existing `tests/unit/onyx/connectors/test_connector_factory.py`, whose
-`module_path.startswith("onyx.connectors.")` literal must flip to the new root at
+`module_path.startswith("om.connectors.")` literal must flip to the new root at
 rename time; this suite instead reads the current registry with no hardcoded root.
 """
 

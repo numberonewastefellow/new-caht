@@ -3,9 +3,9 @@ import os
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.gitlab.connector import GitlabConnector
-from onyx.connectors.models import HierarchyNode
+from om.configs.constants import DocumentSource
+from om.connectors.gitlab.connector import GitlabConnector
+from om.connectors.models import HierarchyNode
 
 
 @pytest.fixture

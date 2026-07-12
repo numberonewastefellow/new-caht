@@ -16,8 +16,8 @@ from unittest.mock import patch
 import pytest
 import requests
 
-from onyx.tools.models import ToolCallException
-from onyx.utils.url import SSRFException
+from om.tools.models import ToolCallException
+from om.utils.url import SSRFException
 
 
 # ---------------------------------------------------------------------------
@@ -26,7 +26,7 @@ from onyx.utils.url import SSRFException
 
 def _make_tool():
     """Create an HttpRequestTool with a mock emitter."""
-    from onyx.tools.tool_implementations.http_request.http_request_tool import (
+    from om.tools.tool_implementations.http_request.http_request_tool import (
         HttpRequestTool,
     )
 
@@ -35,7 +35,7 @@ def _make_tool():
 
 
 def _make_placement():
-    from onyx.server.query_and_chat.placement import Placement
+    from om.server.query_and_chat.placement import Placement
 
     return Placement(turn_index=0, chat_session_id=1, message_id=1)
 
@@ -49,7 +49,7 @@ class TestSSRFProtection:
     """Verify that the tool blocks SSRF-targeted URLs."""
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_blocks_private_ip(self, mock_req: MagicMock) -> None:
         mock_req.side_effect = SSRFException(
@@ -65,7 +65,7 @@ class TestSSRFProtection:
         assert parsed["status_code"] is None
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_blocks_metadata_endpoint(self, mock_req: MagicMock) -> None:
         mock_req.side_effect = SSRFException("blocked")
@@ -78,7 +78,7 @@ class TestSSRFProtection:
         assert "Blocked by security policy" in resp.llm_facing_response
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_blocks_localhost(self, mock_req: MagicMock) -> None:
         mock_req.side_effect = SSRFException("blocked")
@@ -98,7 +98,7 @@ class TestHeaderSanitization:
     """Verify that dangerous headers are stripped before the request."""
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_authorization_header_blocked(self, mock_req: MagicMock) -> None:
         mock_response = MagicMock()
@@ -134,7 +134,7 @@ class TestHeaderSanitization:
 class TestResponseTruncation:
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_json_response_truncated(self, mock_req: MagicMock) -> None:
         """JSON responses exceeding MAX_RESPONSE_LENGTH should be truncated."""
@@ -155,7 +155,7 @@ class TestResponseTruncation:
         assert "truncated" in str(body)
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_text_response_truncated(self, mock_req: MagicMock) -> None:
         """Text responses exceeding MAX_RESPONSE_LENGTH should be truncated."""
@@ -175,7 +175,7 @@ class TestResponseTruncation:
         assert "truncated" in parsed["body"]
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_small_response_not_truncated(self, mock_req: MagicMock) -> None:
         mock_response = MagicMock()
@@ -202,7 +202,7 @@ class TestResponseTruncation:
 class TestErrorHandling:
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_timeout_error(self, mock_req: MagicMock) -> None:
         mock_req.side_effect = requests.exceptions.Timeout("timed out")
@@ -216,7 +216,7 @@ class TestErrorHandling:
         assert parsed["status_code"] is None
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_connection_error(self, mock_req: MagicMock) -> None:
         mock_req.side_effect = requests.exceptions.ConnectionError("refused")
@@ -229,7 +229,7 @@ class TestErrorHandling:
         assert "Connection error" in parsed["error"]
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_response_too_large(self, mock_req: MagicMock) -> None:
         mock_req.side_effect = requests.exceptions.ContentDecodingError(
@@ -262,7 +262,7 @@ class TestErrorHandling:
 class TestResponseFormat:
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_success_response_has_error_null(self, mock_req: MagicMock) -> None:
         mock_response = MagicMock()
@@ -283,7 +283,7 @@ class TestResponseFormat:
         assert parsed["body"] == {"result": 42}
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_error_response_has_status_null(self, mock_req: MagicMock) -> None:
         mock_req.side_effect = requests.exceptions.Timeout("timeout")
@@ -306,7 +306,7 @@ class TestResponseFormat:
 class TestBodyHandling:
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_post_with_json_string_body(self, mock_req: MagicMock) -> None:
         mock_response = MagicMock()
@@ -328,7 +328,7 @@ class TestBodyHandling:
         assert call_kwargs["data"] is None
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_post_with_dict_body(self, mock_req: MagicMock) -> None:
         mock_response = MagicMock()
@@ -349,7 +349,7 @@ class TestBodyHandling:
         assert call_kwargs["json_body"] == {"name": "test"}
 
     @patch(
-        "onyx.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
+        "om.tools.tool_implementations.http_request.http_request_tool.ssrf_safe_request"
     )
     def test_post_with_plain_text_body(self, mock_req: MagicMock) -> None:
         mock_response = MagicMock()
@@ -390,7 +390,7 @@ class TestToolDefinition:
         assert params["required"] == ["method", "url"]
 
     def test_is_available(self) -> None:
-        from onyx.tools.tool_implementations.http_request.http_request_tool import (
+        from om.tools.tool_implementations.http_request.http_request_tool import (
             HttpRequestTool,
         )
 

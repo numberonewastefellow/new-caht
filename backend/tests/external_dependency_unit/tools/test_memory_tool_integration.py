@@ -4,13 +4,13 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from onyx.db.memory import add_memory
-from onyx.db.memory import get_memories
-from onyx.db.memory import MAX_MEMORIES_PER_USER
-from onyx.db.memory import update_memory_at_index
-from onyx.db.models import Memory
-from onyx.db.models import User
-from onyx.tools.tool_implementations.memory.models import MemoryToolResponse
+from om.db.memory import add_memory
+from om.db.memory import get_memories
+from om.db.memory import MAX_MEMORIES_PER_USER
+from om.db.memory import update_memory_at_index
+from om.db.models import Memory
+from om.db.models import User
+from om.tools.tool_implementations.memory.models import MemoryToolResponse
 from tests.external_dependency_unit.conftest import create_test_user
 
 

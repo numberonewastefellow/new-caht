@@ -1,7 +1,7 @@
 """Every module path in docker-compose service commands must resolve.
 
 Compose `command:`/`entrypoint:` strings launch the app processes and embed module
-paths (`uvicorn onyx.main:app`, `python -m onyx.mcp_server_main`, `celery -A ...`).
+paths (`uvicorn om.main:app`, `python -m om.mcp_server_main`, `celery -A ...`).
 Like supervisord, a missed rename here fails only at container start, not at import.
 This parses every `deployment/docker_compose/docker-compose*.yml` and resolves the
 embedded modules. Rename-agnostic + env-tolerant.
@@ -22,8 +22,8 @@ yaml = pytest.importorskip("yaml")
 _COMPOSE_DIR = repo_root() / "deployment" / "docker_compose"
 
 _PATTERNS = [
-    re.compile(r"uvicorn\s+([A-Za-z_][\w.]+):"),  # uvicorn onyx.main:app
-    re.compile(r"python\s+-m\s+([A-Za-z_][\w.]+)"),  # python -m onyx.mcp_server_main
+    re.compile(r"uvicorn\s+([A-Za-z_][\w.]+):"),  # uvicorn om.main:app
+    re.compile(r"python\s+-m\s+([A-Za-z_][\w.]+)"),  # python -m om.mcp_server_main
     re.compile(r"celery\s+-A\s+([A-Za-z_][\w.]+)"),  # celery -A onyx....
 ]
 _PY_SCRIPT = re.compile(r"python\s+([\w./\\-]+\.py)")

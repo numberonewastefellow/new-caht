@@ -15,17 +15,17 @@ from ragas.metrics import Faithfulness  # type: ignore[import-not-found,unused-i
 from ragas.metrics import ResponseRelevancy  # type: ignore[import-not-found,unused-ignore]
 from sqlalchemy.orm import Session
 
-from onyx.configs.constants import DocumentSource
-from onyx.context.search.models import IndexFilters
-from onyx.context.search.models import SavedSearchDoc
-from onyx.db.engine.sql_engine import get_session_with_tenant
-from onyx.db.models import Document
-from onyx.db.models import FederatedConnector
-from onyx.db.search_settings import get_current_search_settings
-from onyx.document_index.factory import get_default_document_index
-from onyx.document_index.interfaces_new import DocumentSectionRequest
-from onyx.prompts.prompt_utils import build_doc_context_str
-from onyx.utils.logger import setup_logger
+from om.configs.constants import DocumentSource
+from om.context.search.models import IndexFilters
+from om.context.search.models import SavedSearchDoc
+from om.db.engine.sql_engine import get_session_with_tenant
+from om.db.models import Document
+from om.db.models import FederatedConnector
+from om.db.search_settings import get_current_search_settings
+from om.document_index.factory import get_default_document_index
+from om.document_index.interfaces_new import DocumentSectionRequest
+from om.prompts.prompt_utils import build_doc_context_str
+from om.utils.logger import setup_logger
 from tests.regression.search_quality.models import CombinedMetrics
 from tests.regression.search_quality.models import GroundTruth
 from tests.regression.search_quality.models import RetrievedDocument

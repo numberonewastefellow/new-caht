@@ -7,8 +7,8 @@ import json
 import pytest
 from sqlalchemy import text
 
-from onyx.configs.constants import DEFAULT_BOOST
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
+from om.configs.constants import DEFAULT_BOOST
+from om.db.engine.sql_engine import get_session_with_current_tenant
 from tests.integration.common_utils.reset import downgrade_postgres
 from tests.integration.common_utils.reset import upgrade_postgres
 

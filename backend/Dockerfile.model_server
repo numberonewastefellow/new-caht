@@ -46,9 +46,9 @@ COPY --chown=onyx:onyx --from=embedding-models /app/.cache/huggingface /app/.cac
 WORKDIR /app
 
 # Utils used by model server
-COPY ./onyx/utils/logger.py /app/onyx/utils/logger.py
-COPY ./onyx/utils/middleware.py /app/onyx/utils/middleware.py
-COPY ./onyx/utils/tenant.py /app/onyx/utils/tenant.py
+COPY ./om/utils/logger.py /app/om/utils/logger.py
+COPY ./om/utils/middleware.py /app/om/utils/middleware.py
+COPY ./om/utils/tenant.py /app/om/utils/tenant.py
 
 # Place to fetch version information
 COPY ./onyx/__init__.py /app/onyx/__init__.py

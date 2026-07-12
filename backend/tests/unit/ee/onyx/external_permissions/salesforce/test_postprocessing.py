@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from ee.onyx.external_permissions.salesforce.postprocessing import (
+from ee.om.external_permissions.salesforce.postprocessing import (
     censor_salesforce_chunks,
 )
-from onyx.configs.app_configs import BLURB_SIZE
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.salesforce.utils import BASE_DATA_PATH
-from onyx.context.search.models import InferenceChunk
+from om.configs.app_configs import BLURB_SIZE
+from om.configs.constants import DocumentSource
+from om.connectors.salesforce.utils import BASE_DATA_PATH
+from om.context.search.models import InferenceChunk
 
 SQLITE_DIR = BASE_DATA_PATH
 

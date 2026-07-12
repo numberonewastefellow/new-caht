@@ -14,8 +14,8 @@ from typing import Any
 
 def demonstrate_correct_usage() -> None:
     """Shows correct patterns that pass type checking."""
-    from onyx.utils.sensitive import SensitiveValue
-    from onyx.utils.encryption import encrypt_string_to_bytes, decrypt_bytes_to_string
+    from om.utils.sensitive import SensitiveValue
+    from om.utils.encryption import encrypt_string_to_bytes, decrypt_bytes_to_string
 
     # Create a SensitiveValue
     encrypted = encrypt_string_to_bytes('{"api_key": "secret"}')
@@ -42,8 +42,8 @@ def demonstrate_correct_usage() -> None:
 """
 def demonstrate_incorrect_usage() -> None:
     '''Shows patterns that mypy will flag as errors.'''
-    from onyx.utils.sensitive import SensitiveValue
-    from onyx.utils.encryption import encrypt_string_to_bytes, decrypt_bytes_to_string
+    from om.utils.sensitive import SensitiveValue
+    from om.utils.encryption import encrypt_string_to_bytes, decrypt_bytes_to_string
 
     encrypted = encrypt_string_to_bytes('{"api_key": "secret"}')
     sensitive: SensitiveValue[dict[str, Any]] = SensitiveValue(

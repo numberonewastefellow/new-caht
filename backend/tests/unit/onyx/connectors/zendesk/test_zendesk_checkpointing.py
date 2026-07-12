@@ -10,14 +10,14 @@ from unittest.mock import patch
 import pytest
 from requests.exceptions import HTTPError
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.exceptions import ConnectorValidationError
-from onyx.connectors.exceptions import CredentialExpiredError
-from onyx.connectors.exceptions import InsufficientPermissionsError
-from onyx.connectors.models import Document
-from onyx.connectors.zendesk.connector import ZendeskClient
-from onyx.connectors.zendesk.connector import ZendeskConnector
-from tests.unit.onyx.connectors.utils import load_everything_from_checkpoint_connector
+from om.configs.constants import DocumentSource
+from om.connectors.exceptions import ConnectorValidationError
+from om.connectors.exceptions import CredentialExpiredError
+from om.connectors.exceptions import InsufficientPermissionsError
+from om.connectors.models import Document
+from om.connectors.zendesk.connector import ZendeskClient
+from om.connectors.zendesk.connector import ZendeskConnector
+from tests.unit.om.connectors.utils import load_everything_from_checkpoint_connector
 
 
 @pytest.fixture
@@ -277,7 +277,7 @@ def test_load_from_checkpoint_with_rate_limit(
     }
 
     # Mock requests.get to simulate rate limit then success
-    with patch("onyx.connectors.zendesk.connector.requests.get") as mock_get:
+    with patch("om.connectors.zendesk.connector.requests.get") as mock_get:
         mock_get.side_effect = [
             # First call: content tags
             MagicMock(
@@ -294,7 +294,7 @@ def test_load_from_checkpoint_with_rate_limit(
 
         # Call load_from_checkpoint
         end_time = time.time()
-        with patch("onyx.connectors.zendesk.connector.time.sleep") as mock_sleep:
+        with patch("om.connectors.zendesk.connector.time.sleep") as mock_sleep:
             outputs = load_everything_from_checkpoint_connector(
                 zendesk_connector, 0, end_time
             )

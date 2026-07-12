@@ -2,7 +2,7 @@
 
 `backend/supervisord.conf` is what actually launches the Celery workers and helper
 processes in the container. Its `command=` lines embed module paths as STRINGS
-(`celery -A onyx.background.celery.versioned_apps.X`, `python onyx/utils/...py`).
+(`celery -A om.background.celery.versioned_apps.X`, `python onyx/utils/...py`).
 A missed rename here doesn't fail any Python import at build time -- the worker just
 fails to start. This test parses the file and resolves each embedded module.
 

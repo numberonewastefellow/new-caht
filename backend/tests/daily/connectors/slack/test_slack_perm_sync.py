@@ -3,10 +3,10 @@ from collections.abc import Generator
 
 import pytest
 
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.models import SlimDocument
-from onyx.connectors.slack.connector import SlackConnector
-from onyx.utils.variable_functionality import global_version
+from om.connectors.models import HierarchyNode
+from om.connectors.models import SlimDocument
+from om.connectors.slack.connector import SlackConnector
+from om.utils.variable_functionality import global_version
 from tests.daily.connectors.utils import load_all_from_connector
 
 

@@ -1,11 +1,11 @@
 import pytest
 
-from onyx.auth.email_utils import build_user_email_invite
-from onyx.auth.email_utils import send_email
-from onyx.configs.constants import AuthType
-from onyx.configs.constants import ONYX_DEFAULT_APPLICATION_NAME
-from onyx.db.engine.sql_engine import SqlEngine
-from onyx.server.runtime.onyx_runtime import OnyxRuntime
+from om.auth.email_utils import build_user_email_invite
+from om.auth.email_utils import send_email
+from om.configs.constants import AuthType
+from om.configs.constants import ONYX_DEFAULT_APPLICATION_NAME
+from om.db.engine.sql_engine import SqlEngine
+from om.server.runtime.onyx_runtime import OnyxRuntime
 
 
 @pytest.mark.skip(

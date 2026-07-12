@@ -5,12 +5,12 @@ import pytest
 import requests
 from requests.models import Response
 
-from onyx.llm.constants import LlmProviderNames
-from onyx.llm.model_name_parser import parse_litellm_model_name
-from onyx.llm.utils import get_max_input_tokens
-from onyx.llm.utils import litellm_thinks_model_supports_image_input
-from onyx.llm.utils import model_is_reasoning_model
-from onyx.server.manage.llm.models import ModelConfigurationUpsertRequest
+from om.llm.constants import LlmProviderNames
+from om.llm.model_name_parser import parse_litellm_model_name
+from om.llm.utils import get_max_input_tokens
+from om.llm.utils import litellm_thinks_model_supports_image_input
+from om.llm.utils import model_is_reasoning_model
+from om.server.manage.llm.models import ModelConfigurationUpsertRequest
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.test_models import DATestUser
@@ -736,7 +736,7 @@ def test_default_model_persistence_and_update(reset: None) -> None:  # noqa: ARG
     6. Both admin and basic endpoints reflect the new default model
     7. Non-admin user sees the updated default model
     """
-    from onyx.auth.schemas import UserRole
+    from om.auth.schemas import UserRole
 
     admin_user = UserManager.create(name="admin_user")
 
@@ -949,7 +949,7 @@ def test_multiple_providers_default_switching(reset: None) -> None:  # noqa: ARG
     6. Admin switches to a different provider that has a model with the same name
     7. Both users should see the new provider as default with the same model name
     """
-    from onyx.auth.schemas import UserRole
+    from om.auth.schemas import UserRole
 
     admin_user = UserManager.create(name="admin_user")
 
@@ -1287,7 +1287,7 @@ def test_default_provider_and_vision_provider_selection(
     5. Verify both admin and basic users see correct default provider and vision provider
     6. Verify model configurations show correct image support capabilities
     """
-    from onyx.auth.schemas import UserRole
+    from om.auth.schemas import UserRole
 
     admin_user = UserManager.create(name="admin_user")
 
@@ -1685,7 +1685,7 @@ def test_all_three_provider_types_no_mixup(reset: None) -> None:  # noqa: ARG001
     6. Verify image gen config doesn't appear in LLM provider lists
     7. Verify LLM providers don't appear in image gen config list
     """
-    from onyx.auth.schemas import UserRole
+    from om.auth.schemas import UserRole
 
     admin_user = UserManager.create(name="admin_user")
 

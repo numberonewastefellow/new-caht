@@ -15,11 +15,11 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from onyx.auth.users import current_admin_user
-from onyx.db.engine.sql_engine import get_session
-from onyx.db.models import UserRole
-from onyx.main import fetch_versioned_implementation
-from onyx.utils.logger import setup_logger
+from om.auth.users import current_admin_user
+from om.db.engine.sql_engine import get_session
+from om.db.models import UserRole
+from om.main import fetch_versioned_implementation
+from om.utils.logger import setup_logger
 
 logger = setup_logger()
 
@@ -48,7 +48,7 @@ def mock_current_admin_user() -> MagicMock:
 def client() -> Generator[TestClient, None, None]:
     # Initialize TestClient with the FastAPI app using a no-op test lifespan
     get_app = fetch_versioned_implementation(
-        module="onyx.main", attribute="get_application"
+        module="om.main", attribute="get_application"
     )
     app: FastAPI = get_app(lifespan_override=test_lifespan)
 

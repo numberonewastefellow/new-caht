@@ -17,15 +17,15 @@ from typing import List
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.configs.constants import FileOrigin
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.file_content import get_file_content_by_file_id
-from onyx.db.file_content import get_file_content_by_file_id_optional
-from onyx.file_store.postgres_file_store import _get_raw_connection
-from onyx.file_store.postgres_file_store import _read_large_object
-from onyx.file_store.postgres_file_store import POSTGRES_BUCKET_SENTINEL
-from onyx.file_store.postgres_file_store import PostgresBackedFileStore
-from onyx.utils.logger import setup_logger
+from om.configs.constants import FileOrigin
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.file_content import get_file_content_by_file_id
+from om.db.file_content import get_file_content_by_file_id_optional
+from om.file_store.postgres_file_store import _get_raw_connection
+from om.file_store.postgres_file_store import _read_large_object
+from om.file_store.postgres_file_store import POSTGRES_BUCKET_SENTINEL
+from om.file_store.postgres_file_store import PostgresBackedFileStore
+from om.utils.logger import setup_logger
 
 logger = setup_logger()
 

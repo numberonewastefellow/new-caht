@@ -14,24 +14,24 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.engine.sql_engine import SqlEngine
-from onyx.db.models import AgentWorkflow
-from onyx.db.models import AgentWorkflowStep
-from onyx.db.models import Persona
-from onyx.db.models import User
-from onyx.db.models import UserRole
-from onyx.db.persona import upsert_persona
-from onyx.db.workflow import create_workflow
-from onyx.db.workflow import delete_workflow
-from onyx.db.workflow import get_workflow_by_id
-from onyx.db.workflow import list_workflows
-from onyx.db.workflow import update_workflow
-from onyx.server.features.persona.models import PersonaSnapshot
-from onyx.server.manage.models import RecencyBiasSetting
-from onyx.workflows.models import WorkflowCreate
-from onyx.workflows.models import WorkflowStepCreate
-from onyx.workflows.models import WorkflowUpdate
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.engine.sql_engine import SqlEngine
+from om.db.models import AgentWorkflow
+from om.db.models import AgentWorkflowStep
+from om.db.models import Persona
+from om.db.models import User
+from om.db.models import UserRole
+from om.db.persona import upsert_persona
+from om.db.workflow import create_workflow
+from om.db.workflow import delete_workflow
+from om.db.workflow import get_workflow_by_id
+from om.db.workflow import list_workflows
+from om.db.workflow import update_workflow
+from om.server.features.persona.models import PersonaSnapshot
+from om.server.manage.models import RecencyBiasSetting
+from om.workflows.models import WorkflowCreate
+from om.workflows.models import WorkflowStepCreate
+from om.workflows.models import WorkflowUpdate
 from shared_configs.contextvars import CURRENT_TENANT_ID_CONTEXTVAR
 from tests.external_dependency_unit.constants import TEST_TENANT_ID
 
@@ -417,7 +417,7 @@ class TestAgentTool:
         """AgentTool produces a valid OpenAI function-call tool definition."""
         from unittest.mock import MagicMock
 
-        from onyx.tools.tool_implementations.agent_tool import AgentTool
+        from om.tools.tool_implementations.agent_tool import AgentTool
 
         mock_emitter = MagicMock()
         tool = AgentTool(
@@ -445,7 +445,7 @@ class TestAgentTool:
 
     def test_agent_tool_name_sanitization(self) -> None:
         """Tool names are properly sanitized for LLM function calls."""
-        from onyx.tools.tool_implementations.agent_tool import _sanitize_tool_name
+        from om.tools.tool_implementations.agent_tool import _sanitize_tool_name
 
         assert _sanitize_tool_name("Math Solver") == "delegate_to_math_solver"
         assert _sanitize_tool_name("Agent #1 (test)") == "delegate_to_agent_1_test"
@@ -460,8 +460,8 @@ class TestAgentTool:
         """AgentTool.run() with empty task returns error ToolResponse."""
         from unittest.mock import MagicMock
 
-        from onyx.server.query_and_chat.placement import Placement
-        from onyx.tools.tool_implementations.agent_tool import AgentTool
+        from om.server.query_and_chat.placement import Placement
+        from om.tools.tool_implementations.agent_tool import AgentTool
 
         mock_emitter = MagicMock()
         tool = AgentTool(
@@ -518,7 +518,7 @@ class TestWorkflowEngine:
         """AgentTool instances are correctly created from workflow steps."""
         from unittest.mock import MagicMock
 
-        from onyx.tools.tool_implementations.agent_tool import AgentTool
+        from om.tools.tool_implementations.agent_tool import AgentTool
 
         workflow = get_workflow_by_id(
             db_session=db_session,
@@ -556,9 +556,9 @@ class TestWorkflowEngine:
         test_user: User,
     ) -> None:
         """Workflow execution records are properly created and tracked."""
-        from onyx.db.workflow import create_workflow_execution
-        from onyx.db.workflow import list_workflow_executions
-        from onyx.db.workflow import update_workflow_execution
+        from om.db.workflow import create_workflow_execution
+        from om.db.workflow import list_workflow_executions
+        from om.db.workflow import update_workflow_execution
 
         execution = create_workflow_execution(
             db_session=db_session,

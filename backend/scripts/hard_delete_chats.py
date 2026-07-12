@@ -7,10 +7,10 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 print(parent_dir)
 sys.path.append(parent_dir)
 
-from onyx.db.engine.sql_engine import get_session_with_current_tenant  # noqa: E402
-from onyx.db.engine.sql_engine import SqlEngine  # noqa: E402
-from onyx.db.models import ChatSession  # noqa: E402
-from onyx.db.chat import delete_chat_session  # noqa: E402
+from om.db.engine.sql_engine import get_session_with_current_tenant  # noqa: E402
+from om.db.engine.sql_engine import SqlEngine  # noqa: E402
+from om.db.models import ChatSession  # noqa: E402
+from om.db.chat import delete_chat_session  # noqa: E402
 
 
 def main() -> None:

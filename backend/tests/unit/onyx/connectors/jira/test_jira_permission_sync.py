@@ -3,11 +3,11 @@ from unittest.mock import patch
 
 import pytest
 
-from ee.onyx.external_permissions.jira.doc_sync import jira_doc_sync
-from onyx.connectors.jira.connector import JiraConnector
-from onyx.connectors.jira.utils import JIRA_SERVER_API_VERSION
-from onyx.db.models import ConnectorCredentialPair
-from onyx.utils.sensitive import make_mock_sensitive_value
+from ee.om.external_permissions.jira.doc_sync import jira_doc_sync
+from om.connectors.jira.connector import JiraConnector
+from om.connectors.jira.utils import JIRA_SERVER_API_VERSION
+from om.db.models import ConnectorCredentialPair
+from om.utils.sensitive import make_mock_sensitive_value
 
 
 @pytest.fixture
@@ -49,7 +49,7 @@ def test_jira_permission_sync(
     mock_fetch_all_existing_docs_fn: MagicMock,
     mock_fetch_all_existing_docs_ids_fn: MagicMock,
 ) -> None:
-    with patch("onyx.connectors.jira.connector.build_jira_client") as mock_build_client:
+    with patch("om.connectors.jira.connector.build_jira_client") as mock_build_client:
         mock_build_client.return_value = jira_connector._jira_client
         assert jira_connector._jira_client is not None
         jira_connector._jira_client._options = MagicMock()

@@ -4,10 +4,10 @@ from datetime import timezone
 
 import pytest
 
-from onyx.connectors.models import InputType
-from onyx.connectors.slack.models import ChannelType
-from onyx.db.enums import AccessType
-from onyx.server.documents.models import DocumentSource
+from om.connectors.models import InputType
+from om.connectors.slack.models import ChannelType
+from om.db.enums import AccessType
+from om.server.documents.models import DocumentSource
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.connector import ConnectorManager
 from tests.integration.common_utils.managers.credential import CredentialManager

@@ -10,7 +10,7 @@ services:
       /bin/sh -c "
       alembic -n schema_private upgrade head &&
       echo \"Starting Onyx Api Server\" &&
-      uvicorn onyx.main:app --host 0.0.0.0 --port 8080"
+      uvicorn om.main:app --host 0.0.0.0 --port 8080"
     depends_on:
       - relational_db
       - index
@@ -301,7 +301,7 @@ services:
   #       echo 'MCP server is disabled (MCP_SERVER_ENABLED=false), skipping...';
   #       exit 0;
   #     else
-  #       exec python -m onyx.mcp_server_main;
+  #       exec python -m om.mcp_server_main;
   #     fi"
   #   ports:
   #     - "8090:8090"

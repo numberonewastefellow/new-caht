@@ -130,7 +130,7 @@ COPY --chown=onyx:onyx ./ee /app/ee
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Set up application files
-COPY --chown=onyx:onyx ./onyx /app/onyx
+COPY --chown=onyx:onyx ./om /app/om
 COPY --chown=onyx:onyx ./shared_configs /app/shared_configs
 COPY --chown=onyx:onyx ./alembic /app/alembic
 COPY --chown=onyx:onyx ./alembic_tenants /app/alembic_tenants
@@ -159,8 +159,8 @@ RUN if [ "$ENABLE_CRAFT" = "true" ] && [ "$PREBAKE_CRAFT_TEMPLATES" = "true" ]; 
 
 # Set Craft template paths to the in-image locations
 # These match the paths where setup_craft_templates.sh creates the templates
-ENV OUTPUTS_TEMPLATE_PATH=/app/onyx/server/features/build/sandbox/kubernetes/docker/templates/outputs
-ENV VENV_TEMPLATE_PATH=/app/onyx/server/features/build/sandbox/kubernetes/docker/templates/venv
+ENV OUTPUTS_TEMPLATE_PATH=/app/om/server/features/build/sandbox/kubernetes/docker/templates/outputs
+ENV VENV_TEMPLATE_PATH=/app/om/server/features/build/sandbox/kubernetes/docker/templates/venv
 
 # Put logo in assets
 COPY --chown=onyx:onyx ./assets /app/assets

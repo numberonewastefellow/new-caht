@@ -3,7 +3,7 @@ import os
 import pytest
 import requests
 
-from onyx.auth.schemas import UserRole
+from om.auth.schemas import UserRole
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.test_models import DATestUser

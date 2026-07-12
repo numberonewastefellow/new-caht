@@ -15,7 +15,7 @@ from dataclasses import field
 from datetime import datetime
 from datetime import timezone
 
-from onyx.configs.constants import DocumentSource
+from om.configs.constants import DocumentSource
 
 
 # Knowledge base (document set) names used throughout the baseline tests.

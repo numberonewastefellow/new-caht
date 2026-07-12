@@ -4,13 +4,13 @@ from typing import Any
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.exceptions import ConnectorValidationError
-from onyx.connectors.exceptions import CredentialExpiredError
-from onyx.connectors.models import ConnectorMissingCredentialError
-from onyx.connectors.models import Document
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.outline.connector import OutlineConnector
+from om.configs.constants import DocumentSource
+from om.connectors.exceptions import ConnectorValidationError
+from om.connectors.exceptions import CredentialExpiredError
+from om.connectors.models import ConnectorMissingCredentialError
+from om.connectors.models import Document
+from om.connectors.models import HierarchyNode
+from om.connectors.outline.connector import OutlineConnector
 
 
 class TestOutlineConnector:

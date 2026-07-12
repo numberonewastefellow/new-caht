@@ -9,27 +9,27 @@ import pytest
 
 from .conftest import make_mock_http_client
 from .conftest import make_mock_response
-from ee.onyx.server.billing.models import BillingInformationResponse
-from ee.onyx.server.billing.models import CreateCheckoutSessionResponse
-from ee.onyx.server.billing.models import CreateCustomerPortalSessionResponse
-from ee.onyx.server.billing.models import SeatUpdateResponse
-from ee.onyx.server.billing.models import SubscriptionStatusResponse
-from ee.onyx.server.billing.service import BillingServiceError
+from ee.om.server.billing.models import BillingInformationResponse
+from ee.om.server.billing.models import CreateCheckoutSessionResponse
+from ee.om.server.billing.models import CreateCustomerPortalSessionResponse
+from ee.om.server.billing.models import SeatUpdateResponse
+from ee.om.server.billing.models import SubscriptionStatusResponse
+from ee.om.server.billing.service import BillingServiceError
 
 
 class TestMakeBillingRequest:
     """Tests for the _make_billing_request helper."""
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._get_headers")
-    @patch("ee.onyx.server.billing.service._get_base_url")
+    @patch("ee.om.server.billing.service._get_headers")
+    @patch("ee.om.server.billing.service._get_base_url")
     async def test_makes_post_request(
         self,
         mock_base_url: MagicMock,
         mock_headers: MagicMock,
     ) -> None:
         """Should make POST request with body."""
-        from ee.onyx.server.billing.service import _make_billing_request
+        from ee.om.server.billing.service import _make_billing_request
 
         mock_base_url.return_value = "https://api.example.com"
         mock_headers.return_value = {"Authorization": "Bearer token"}
@@ -46,15 +46,15 @@ class TestMakeBillingRequest:
         assert result == {"success": True}
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._get_headers")
-    @patch("ee.onyx.server.billing.service._get_base_url")
+    @patch("ee.om.server.billing.service._get_headers")
+    @patch("ee.om.server.billing.service._get_base_url")
     async def test_makes_get_request(
         self,
         mock_base_url: MagicMock,
         mock_headers: MagicMock,
     ) -> None:
         """Should make GET request with params."""
-        from ee.onyx.server.billing.service import _make_billing_request
+        from ee.om.server.billing.service import _make_billing_request
 
         mock_base_url.return_value = "https://api.example.com"
         mock_headers.return_value = {"Authorization": "Bearer token"}
@@ -71,15 +71,15 @@ class TestMakeBillingRequest:
         assert result == {"data": "test"}
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._get_headers")
-    @patch("ee.onyx.server.billing.service._get_base_url")
+    @patch("ee.om.server.billing.service._get_headers")
+    @patch("ee.om.server.billing.service._get_base_url")
     async def test_raises_on_http_error(
         self,
         mock_base_url: MagicMock,
         mock_headers: MagicMock,
     ) -> None:
         """Should raise BillingServiceError on HTTP error."""
-        from ee.onyx.server.billing.service import _make_billing_request
+        from ee.om.server.billing.service import _make_billing_request
 
         mock_base_url.return_value = "https://api.example.com"
         mock_headers.return_value = {}
@@ -102,8 +102,8 @@ class TestMakeBillingRequest:
         assert "Bad request" in exc_info.value.message
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._get_headers")
-    @patch("ee.onyx.server.billing.service._get_base_url")
+    @patch("ee.om.server.billing.service._get_headers")
+    @patch("ee.om.server.billing.service._get_base_url")
     async def test_follows_redirects(
         self,
         mock_base_url: MagicMock,
@@ -116,7 +116,7 @@ class TestMakeBillingRequest:
         (HTTP→HTTPS). httpx does not follow redirects by default,
         so we must explicitly opt in.
         """
-        from ee.onyx.server.billing.service import _make_billing_request
+        from ee.om.server.billing.service import _make_billing_request
 
         mock_base_url.return_value = "http://api.example.com"
         mock_headers.return_value = {"Authorization": "Bearer token"}
@@ -129,15 +129,15 @@ class TestMakeBillingRequest:
         mock_client.assert_called_once_with(timeout=30.0, follow_redirects=True)
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._get_headers")
-    @patch("ee.onyx.server.billing.service._get_base_url")
+    @patch("ee.om.server.billing.service._get_headers")
+    @patch("ee.om.server.billing.service._get_base_url")
     async def test_raises_on_connection_error(
         self,
         mock_base_url: MagicMock,
         mock_headers: MagicMock,
     ) -> None:
         """Should raise BillingServiceError on connection error."""
-        from ee.onyx.server.billing.service import _make_billing_request
+        from ee.om.server.billing.service import _make_billing_request
 
         mock_base_url.return_value = "https://api.example.com"
         mock_headers.return_value = {}
@@ -156,13 +156,13 @@ class TestCreateCheckoutSession:
     """Tests for create_checkout_session service function."""
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._make_billing_request")
+    @patch("ee.om.server.billing.service._make_billing_request")
     async def test_creates_checkout_session(
         self,
         mock_request: AsyncMock,
     ) -> None:
         """Should create checkout session and return URL."""
-        from ee.onyx.server.billing.service import create_checkout_session
+        from ee.om.server.billing.service import create_checkout_session
 
         mock_request.return_value = {"url": "https://checkout.stripe.com/session"}
 
@@ -187,13 +187,13 @@ class TestCreateCustomerPortalSession:
     """Tests for create_customer_portal_session service function."""
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._make_billing_request")
+    @patch("ee.om.server.billing.service._make_billing_request")
     async def test_creates_portal_session(
         self,
         mock_request: AsyncMock,
     ) -> None:
         """Should create portal session and return URL."""
-        from ee.onyx.server.billing.service import create_customer_portal_session
+        from ee.om.server.billing.service import create_customer_portal_session
 
         mock_request.return_value = {"url": "https://billing.stripe.com/portal"}
 
@@ -210,13 +210,13 @@ class TestGetBillingInformation:
     """Tests for get_billing_information service function."""
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._make_billing_request")
+    @patch("ee.om.server.billing.service._make_billing_request")
     async def test_returns_billing_info(
         self,
         mock_request: AsyncMock,
     ) -> None:
         """Should return billing information."""
-        from ee.onyx.server.billing.service import get_billing_information
+        from ee.om.server.billing.service import get_billing_information
 
         mock_request.return_value = {
             "tenant_id": "tenant_123",
@@ -233,13 +233,13 @@ class TestGetBillingInformation:
         assert result.seats == 10
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._make_billing_request")
+    @patch("ee.om.server.billing.service._make_billing_request")
     async def test_returns_not_subscribed(
         self,
         mock_request: AsyncMock,
     ) -> None:
         """Should return SubscriptionStatusResponse when not subscribed."""
-        from ee.onyx.server.billing.service import get_billing_information
+        from ee.om.server.billing.service import get_billing_information
 
         mock_request.return_value = {"subscribed": False}
 
@@ -253,13 +253,13 @@ class TestUpdateSeatCount:
     """Tests for update_seat_count service function."""
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._make_billing_request")
+    @patch("ee.om.server.billing.service._make_billing_request")
     async def test_updates_seats(
         self,
         mock_request: AsyncMock,
     ) -> None:
         """Should update seat count and return response."""
-        from ee.onyx.server.billing.service import update_seat_count
+        from ee.om.server.billing.service import update_seat_count
 
         mock_request.return_value = {
             "success": True,
@@ -282,13 +282,13 @@ class TestUpdateSeatCount:
         assert call_kwargs["body"]["new_seat_count"] == 15
 
     @pytest.mark.asyncio
-    @patch("ee.onyx.server.billing.service._make_billing_request")
+    @patch("ee.om.server.billing.service._make_billing_request")
     async def test_includes_tenant_id_for_cloud(
         self,
         mock_request: AsyncMock,
     ) -> None:
         """Should include tenant_id in body for cloud deployments."""
-        from ee.onyx.server.billing.service import update_seat_count
+        from ee.om.server.billing.service import update_seat_count
 
         mock_request.return_value = {
             "success": True,
@@ -296,7 +296,7 @@ class TestUpdateSeatCount:
             "used_seats": 5,
         }
 
-        with patch("ee.onyx.server.billing.service.MULTI_TENANT", True):
+        with patch("ee.om.server.billing.service.MULTI_TENANT", True):
             await update_seat_count(
                 new_seat_count=10,
                 tenant_id="tenant_123",

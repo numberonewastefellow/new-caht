@@ -11,13 +11,13 @@ from typing import Optional
 
 import requests
 
-from onyx.configs.constants import FASTAPI_USERS_AUTH_COOKIE_NAME
+from om.configs.constants import FASTAPI_USERS_AUTH_COOKIE_NAME
 
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
 
-from onyx.configs.app_configs import DOCUMENT_INDEX_NAME  # noqa: E402
-from onyx.configs.constants import SOURCE_TYPE  # noqa: E402
+from om.configs.app_configs import DOCUMENT_INDEX_NAME  # noqa: E402
+from om.configs.constants import SOURCE_TYPE  # noqa: E402
 
 ANALYSIS_FOLDER = f"{parent_dir}/scripts/.analysisfiles/"
 

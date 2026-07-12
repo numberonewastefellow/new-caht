@@ -2,14 +2,14 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from ee.onyx.external_permissions.jira.group_sync import jira_group_sync
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import InputType
-from onyx.db.enums import AccessType
-from onyx.db.enums import ConnectorCredentialPairStatus
-from onyx.db.models import Connector
-from onyx.db.models import ConnectorCredentialPair
-from onyx.db.models import Credential
+from ee.om.external_permissions.jira.group_sync import jira_group_sync
+from om.configs.constants import DocumentSource
+from om.connectors.models import InputType
+from om.db.enums import AccessType
+from om.db.enums import ConnectorCredentialPairStatus
+from om.db.models import Connector
+from om.db.models import ConnectorCredentialPair
+from om.db.models import Credential
 from shared_configs.contextvars import get_current_tenant_id
 from tests.daily.connectors.confluence.models import ExternalUserGroupSet
 

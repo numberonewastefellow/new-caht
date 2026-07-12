@@ -15,18 +15,18 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.db.enums import BuildSessionStatus
-from onyx.db.enums import SandboxStatus
-from onyx.db.models import BuildSession
-from onyx.db.models import Sandbox
-from onyx.db.models import User
-from onyx.server.features.build.configs import ATTACHMENTS_DIRECTORY
-from onyx.server.features.build.configs import MAX_TOTAL_UPLOAD_SIZE_BYTES
-from onyx.server.features.build.configs import MAX_UPLOAD_FILES_PER_SESSION
-from onyx.server.features.build.session.manager import UploadLimitExceededError
+from om.db.enums import BuildSessionStatus
+from om.db.enums import SandboxStatus
+from om.db.models import BuildSession
+from om.db.models import Sandbox
+from om.db.models import User
+from om.server.features.build.configs import ATTACHMENTS_DIRECTORY
+from om.server.features.build.configs import MAX_TOTAL_UPLOAD_SIZE_BYTES
+from om.server.features.build.configs import MAX_UPLOAD_FILES_PER_SESSION
+from om.server.features.build.session.manager import UploadLimitExceededError
 
 if TYPE_CHECKING:
-    from onyx.server.features.build.session.manager import SessionManager
+    from om.server.features.build.session.manager import SessionManager
 
 
 @pytest.fixture(scope="function")
@@ -78,10 +78,10 @@ def session_manager_with_mock(
     """Create a SessionManager with mocked sandbox manager."""
     # Import here to avoid module-level initialization issues
     with patch(
-        "onyx.server.features.build.session.manager.get_sandbox_manager",
+        "om.server.features.build.session.manager.get_sandbox_manager",
         return_value=mock_sandbox_manager,
     ):
-        from onyx.server.features.build.session.manager import SessionManager
+        from om.server.features.build.session.manager import SessionManager
 
         manager = SessionManager(db_session)
         yield manager

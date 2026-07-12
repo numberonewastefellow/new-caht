@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import cast
 
-from onyx.chat.models import AnswerStreamPart
-from onyx.chat.models import CreateChatSessionID
-from onyx.context.search.models import SearchDoc
-from onyx.server.query_and_chat.models import MessageResponseIDInfo
-from onyx.server.query_and_chat.streaming_models import AgentResponseStart
-from onyx.server.query_and_chat.streaming_models import ImageGenerationFinal
-from onyx.server.query_and_chat.streaming_models import OpenUrlDocuments
-from onyx.server.query_and_chat.streaming_models import Packet
-from onyx.server.query_and_chat.streaming_models import SearchToolDocumentsDelta
+from om.chat.models import AnswerStreamPart
+from om.chat.models import CreateChatSessionID
+from om.context.search.models import SearchDoc
+from om.server.query_and_chat.models import MessageResponseIDInfo
+from om.server.query_and_chat.streaming_models import AgentResponseStart
+from om.server.query_and_chat.streaming_models import ImageGenerationFinal
+from om.server.query_and_chat.streaming_models import OpenUrlDocuments
+from om.server.query_and_chat.streaming_models import Packet
+from om.server.query_and_chat.streaming_models import SearchToolDocumentsDelta
 
 
 def assert_answer_stream_part_correct(

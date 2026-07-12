@@ -17,9 +17,9 @@ from unittest.mock import patch
 import pytest
 from fastapi import HTTPException
 
-from onyx.auth.schemas import UserCreate
-from onyx.auth.users import UserManager
-from onyx.configs.constants import AuthType
+from om.auth.schemas import UserCreate
+from om.auth.users import UserManager
+from om.configs.constants import AuthType
 
 # Note: Only async test methods are marked with @pytest.mark.asyncio individually
 # to avoid warnings on synchronous tests
@@ -71,10 +71,10 @@ class TestDisposableEmailValidation:
     """Test disposable email validation before tenant provisioning."""
 
     @pytest.mark.asyncio
-    @patch("onyx.auth.users.is_disposable_email")
-    @patch("onyx.auth.users.fetch_ee_implementation_or_noop")
-    @patch("onyx.auth.users.get_async_session_context_manager")
-    @patch("onyx.auth.users.get_user_count", new_callable=AsyncMock)
+    @patch("om.auth.users.is_disposable_email")
+    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch("om.auth.users.get_async_session_context_manager")
+    @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
     async def test_blocks_disposable_email_before_tenant_provision(
         self,
         mock_get_user_count: MagicMock,  # noqa: ARG002
@@ -98,12 +98,12 @@ class TestDisposableEmailValidation:
         mock_fetch_ee.assert_not_called()
 
     @pytest.mark.asyncio
-    @patch("onyx.auth.users.is_disposable_email")
-    @patch("onyx.auth.users.verify_email_domain")
-    @patch("onyx.auth.users.fetch_ee_implementation_or_noop")
-    @patch("onyx.auth.users.get_async_session_context_manager")
-    @patch("onyx.auth.users.get_user_count", new_callable=AsyncMock)
-    @patch("onyx.auth.users.MULTI_TENANT", False)
+    @patch("om.auth.users.is_disposable_email")
+    @patch("om.auth.users.verify_email_domain")
+    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch("om.auth.users.get_async_session_context_manager")
+    @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
+    @patch("om.auth.users.MULTI_TENANT", False)
     async def test_allows_valid_email_domain(
         self,
         mock_get_user_count: MagicMock,
@@ -144,15 +144,15 @@ class TestDisposableEmailValidation:
 class TestMultiTenantInviteLogic:
     """Test invite logic for multi-tenant environments."""
 
-    @patch("onyx.auth.users.SQLAlchemyUserAdminDB")
-    @patch("onyx.auth.users.is_disposable_email", return_value=False)
-    @patch("onyx.auth.users.verify_email_domain")
-    @patch("onyx.auth.users.fetch_ee_implementation_or_noop")
-    @patch("onyx.auth.users.get_async_session_context_manager")
-    @patch("onyx.auth.users.get_user_count", new_callable=AsyncMock)
-    @patch("onyx.auth.users.verify_email_is_invited")
-    @patch("onyx.auth.users.MULTI_TENANT", True)
-    @patch("onyx.auth.users.CURRENT_TENANT_ID_CONTEXTVAR")
+    @patch("om.auth.users.SQLAlchemyUserAdminDB")
+    @patch("om.auth.users.is_disposable_email", return_value=False)
+    @patch("om.auth.users.verify_email_domain")
+    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch("om.auth.users.get_async_session_context_manager")
+    @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
+    @patch("om.auth.users.verify_email_is_invited")
+    @patch("om.auth.users.MULTI_TENANT", True)
+    @patch("om.auth.users.CURRENT_TENANT_ID_CONTEXTVAR")
     @pytest.mark.asyncio
     async def test_first_user_no_invite_required(
         self,
@@ -192,15 +192,15 @@ class TestMultiTenantInviteLogic:
         # Verify invite check was NOT called (user_count = 0)
         mock_verify_invited.assert_not_called()
 
-    @patch("onyx.auth.users.SQLAlchemyUserAdminDB")
-    @patch("onyx.auth.users.is_disposable_email", return_value=False)
-    @patch("onyx.auth.users.verify_email_domain")
-    @patch("onyx.auth.users.fetch_ee_implementation_or_noop")
-    @patch("onyx.auth.users.get_async_session_context_manager")
-    @patch("onyx.auth.users.get_user_count", new_callable=AsyncMock)
-    @patch("onyx.auth.users.verify_email_is_invited")
-    @patch("onyx.auth.users.MULTI_TENANT", True)
-    @patch("onyx.auth.users.CURRENT_TENANT_ID_CONTEXTVAR")
+    @patch("om.auth.users.SQLAlchemyUserAdminDB")
+    @patch("om.auth.users.is_disposable_email", return_value=False)
+    @patch("om.auth.users.verify_email_domain")
+    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch("om.auth.users.get_async_session_context_manager")
+    @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
+    @patch("om.auth.users.verify_email_is_invited")
+    @patch("om.auth.users.MULTI_TENANT", True)
+    @patch("om.auth.users.CURRENT_TENANT_ID_CONTEXTVAR")
     @pytest.mark.asyncio
     async def test_subsequent_user_requires_invite(
         self,
@@ -244,14 +244,14 @@ class TestMultiTenantInviteLogic:
 class TestSingleTenantInviteLogic:
     """Test invite logic for single-tenant environments."""
 
-    @patch("onyx.auth.users.is_disposable_email", return_value=False)
-    @patch("onyx.auth.users.verify_email_domain")
-    @patch("onyx.auth.users.fetch_ee_implementation_or_noop")
-    @patch("onyx.auth.users.get_async_session_context_manager")
-    @patch("onyx.auth.users.get_user_count", new_callable=AsyncMock)
-    @patch("onyx.auth.users.verify_email_is_invited")
-    @patch("onyx.auth.users.MULTI_TENANT", False)
-    @patch("onyx.auth.users.CURRENT_TENANT_ID_CONTEXTVAR")
+    @patch("om.auth.users.is_disposable_email", return_value=False)
+    @patch("om.auth.users.verify_email_domain")
+    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch("om.auth.users.get_async_session_context_manager")
+    @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
+    @patch("om.auth.users.verify_email_is_invited")
+    @patch("om.auth.users.MULTI_TENANT", False)
+    @patch("om.auth.users.CURRENT_TENANT_ID_CONTEXTVAR")
     @pytest.mark.asyncio
     async def test_always_checks_invite_list(
         self,
@@ -295,9 +295,9 @@ class TestSAMLOIDCBehavior:
     """Test SSO (SAML/OIDC) bypass of invite whitelist."""
 
     @pytest.mark.parametrize("auth_type", [AuthType.SAML, AuthType.OIDC])
-    @patch("onyx.auth.users.get_invited_users")
-    @patch("onyx.auth.users.workspace_invite_only_enabled", return_value=True)
-    @patch("onyx.auth.users.AUTH_TYPE")
+    @patch("om.auth.users.get_invited_users")
+    @patch("om.auth.users.workspace_invite_only_enabled", return_value=True)
+    @patch("om.auth.users.AUTH_TYPE")
     def test_sso_bypasses_whitelist(
         self,
         mock_auth_type: MagicMock,
@@ -306,26 +306,26 @@ class TestSAMLOIDCBehavior:
         auth_type: AuthType,
     ) -> None:
         """SAML/OIDC should bypass invite whitelist."""
-        from onyx.auth.users import verify_email_is_invited
+        from om.auth.users import verify_email_is_invited
 
         # Setup
         mock_auth_type.return_value = auth_type
         mock_get_invited.return_value = ["allowed@example.com"]
 
         # Execute - should not raise even with populated whitelist
-        with patch("onyx.auth.users.AUTH_TYPE", auth_type):
+        with patch("om.auth.users.AUTH_TYPE", auth_type):
             verify_email_is_invited("newuser@example.com")  # Should not raise
 
-    @patch("onyx.auth.users.get_invited_users")
-    @patch("onyx.auth.users.workspace_invite_only_enabled", return_value=True)
-    @patch("onyx.auth.users.AUTH_TYPE", AuthType.BASIC)
+    @patch("om.auth.users.get_invited_users")
+    @patch("om.auth.users.workspace_invite_only_enabled", return_value=True)
+    @patch("om.auth.users.AUTH_TYPE", AuthType.BASIC)
     def test_basic_auth_enforces_whitelist(
         self,
         mock_get_invited: MagicMock,
         _mock_invite_only: MagicMock,
     ) -> None:
         """Basic auth should enforce invite whitelist."""
-        from onyx.auth.users import verify_email_is_invited
+        from om.auth.users import verify_email_is_invited
 
         # Setup
         mock_get_invited.return_value = ["allowed@example.com"]
@@ -339,16 +339,16 @@ class TestSAMLOIDCBehavior:
 class TestWhitelistBehavior:
     """Test invite whitelist scenarios."""
 
-    @patch("onyx.auth.users.workspace_invite_only_enabled", return_value=False)
-    @patch("onyx.auth.users.get_invited_users")
-    @patch("onyx.auth.users.AUTH_TYPE", AuthType.BASIC)
+    @patch("om.auth.users.workspace_invite_only_enabled", return_value=False)
+    @patch("om.auth.users.get_invited_users")
+    @patch("om.auth.users.AUTH_TYPE", AuthType.BASIC)
     def test_empty_whitelist_allows_all(
         self,
         mock_get_invited: MagicMock,
         _mock_invite_only: MagicMock,
     ) -> None:
         """Empty whitelist should allow all users."""
-        from onyx.auth.users import verify_email_is_invited
+        from om.auth.users import verify_email_is_invited
 
         # Setup: Empty whitelist
         mock_get_invited.return_value = []
@@ -356,30 +356,30 @@ class TestWhitelistBehavior:
         # Execute - should not raise
         verify_email_is_invited("anyone@example.com")
 
-    @patch("onyx.auth.users.workspace_invite_only_enabled", return_value=False)
-    @patch("onyx.auth.users.get_invited_users")
-    @patch("onyx.auth.users.AUTH_TYPE", AuthType.BASIC)
+    @patch("om.auth.users.workspace_invite_only_enabled", return_value=False)
+    @patch("om.auth.users.get_invited_users")
+    @patch("om.auth.users.AUTH_TYPE", AuthType.BASIC)
     def test_invite_only_disabled_allows_non_invited_users(
         self,
         mock_get_invited: MagicMock,
         _mock_invite_only: MagicMock,
     ) -> None:
-        from onyx.auth.users import verify_email_is_invited
+        from om.auth.users import verify_email_is_invited
 
         mock_get_invited.return_value = ["allowed@example.com"]
 
         verify_email_is_invited("notallowed@example.com")
 
-    @patch("onyx.auth.users.workspace_invite_only_enabled", return_value=True)
-    @patch("onyx.auth.users.get_invited_users")
-    @patch("onyx.auth.users.AUTH_TYPE", AuthType.BASIC)
+    @patch("om.auth.users.workspace_invite_only_enabled", return_value=True)
+    @patch("om.auth.users.get_invited_users")
+    @patch("om.auth.users.AUTH_TYPE", AuthType.BASIC)
     def test_whitelist_blocks_non_invited(
         self,
         mock_get_invited: MagicMock,
         _mock_invite_only: MagicMock,
     ) -> None:
         """Populated whitelist should block non-invited users."""
-        from onyx.auth.users import verify_email_is_invited
+        from om.auth.users import verify_email_is_invited
 
         # Setup
         mock_get_invited.return_value = ["allowed@example.com"]
@@ -390,16 +390,16 @@ class TestWhitelistBehavior:
 
         assert exc.value.status_code == 403
 
-    @patch("onyx.auth.users.workspace_invite_only_enabled", return_value=True)
-    @patch("onyx.auth.users.get_invited_users")
-    @patch("onyx.auth.users.AUTH_TYPE", AuthType.BASIC)
+    @patch("om.auth.users.workspace_invite_only_enabled", return_value=True)
+    @patch("om.auth.users.get_invited_users")
+    @patch("om.auth.users.AUTH_TYPE", AuthType.BASIC)
     def test_whitelist_allows_invited_case_insensitive(
         self,
         mock_get_invited: MagicMock,
         _mock_invite_only: MagicMock,
     ) -> None:
         """Whitelist should match emails case-insensitively."""
-        from onyx.auth.users import verify_email_is_invited
+        from om.auth.users import verify_email_is_invited
 
         # Setup
         mock_get_invited.return_value = ["allowed@example.com"]
@@ -413,11 +413,11 @@ class TestSeatLimitEnforcement:
     """Seat limits block new user creation on self-hosted deployments."""
 
     def test_adding_user_fails_when_seats_full(self) -> None:
-        from onyx.auth.users import enforce_seat_limit
+        from om.auth.users import enforce_seat_limit
 
         seat_result = MagicMock(available=False, error_message="Seat limit reached")
         with patch(
-            "onyx.auth.users.fetch_ee_implementation_or_noop",
+            "om.auth.users.fetch_ee_implementation_or_noop",
             return_value=lambda *_a, **_kw: seat_result,
         ):
             with pytest.raises(HTTPException) as exc:
@@ -426,23 +426,23 @@ class TestSeatLimitEnforcement:
             assert exc.value.status_code == 402
 
     def test_seat_limit_only_enforced_for_self_hosted(self) -> None:
-        from onyx.auth.users import enforce_seat_limit
+        from om.auth.users import enforce_seat_limit
 
-        with patch("onyx.auth.users.MULTI_TENANT", True):
+        with patch("om.auth.users.MULTI_TENANT", True):
             enforce_seat_limit(MagicMock())  # should not raise
 
 
 class TestCaseInsensitiveEmailMatching:
     """Test case-insensitive email matching for existing user checks."""
 
-    @patch("onyx.auth.users.is_disposable_email", return_value=False)
-    @patch("onyx.auth.users.verify_email_domain")
-    @patch("onyx.auth.users.fetch_ee_implementation_or_noop")
-    @patch("onyx.auth.users.get_async_session_context_manager")
-    @patch("onyx.auth.users.get_user_count", new_callable=AsyncMock)
-    @patch("onyx.auth.users.SQLAlchemyUserAdminDB")
-    @patch("onyx.auth.users.MULTI_TENANT", True)
-    @patch("onyx.auth.users.CURRENT_TENANT_ID_CONTEXTVAR")
+    @patch("om.auth.users.is_disposable_email", return_value=False)
+    @patch("om.auth.users.verify_email_domain")
+    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch("om.auth.users.get_async_session_context_manager")
+    @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
+    @patch("om.auth.users.SQLAlchemyUserAdminDB")
+    @patch("om.auth.users.MULTI_TENANT", True)
+    @patch("om.auth.users.CURRENT_TENANT_ID_CONTEXTVAR")
     @pytest.mark.asyncio
     async def test_existing_user_check_case_insensitive(
         self,
@@ -492,15 +492,15 @@ class TestCaseInsensitiveEmailMatching:
         # Verify flow
         mock_verify_domain.assert_called_once_with(user_create.email)
 
-    @patch("onyx.auth.users.is_disposable_email")
-    @patch("onyx.auth.users.verify_email_domain")
-    @patch("onyx.auth.users.fetch_ee_implementation_or_noop")
-    @patch("onyx.auth.users.get_async_session_context_manager")
-    @patch("onyx.auth.users.get_user_count", new_callable=AsyncMock)
-    @patch("onyx.auth.users.verify_email_is_invited")
-    @patch("onyx.auth.users.SQLAlchemyUserAdminDB")
-    @patch("onyx.auth.users.MULTI_TENANT", True)
-    @patch("onyx.auth.users.CURRENT_TENANT_ID_CONTEXTVAR")
+    @patch("om.auth.users.is_disposable_email")
+    @patch("om.auth.users.verify_email_domain")
+    @patch("om.auth.users.fetch_ee_implementation_or_noop")
+    @patch("om.auth.users.get_async_session_context_manager")
+    @patch("om.auth.users.get_user_count", new_callable=AsyncMock)
+    @patch("om.auth.users.verify_email_is_invited")
+    @patch("om.auth.users.SQLAlchemyUserAdminDB")
+    @patch("om.auth.users.MULTI_TENANT", True)
+    @patch("om.auth.users.CURRENT_TENANT_ID_CONTEXTVAR")
     @pytest.mark.asyncio
     async def test_full_registration_flow_existing_tenant(
         self,

@@ -37,15 +37,15 @@ load_dotenv(env_path)
 # pylint: disable=E402
 # flake8: noqa: E402
 
-from ee.onyx.server.query_and_chat.models import SearchFullResponse
-from ee.onyx.server.query_and_chat.models import SendSearchQueryRequest
-from onyx.configs.app_configs import POSTGRES_API_SERVER_POOL_OVERFLOW
-from onyx.configs.app_configs import POSTGRES_API_SERVER_POOL_SIZE
-from onyx.context.search.models import BaseFilters
-from onyx.context.search.models import SavedSearchDoc
-from onyx.db.engine.sql_engine import get_session_with_tenant
-from onyx.db.engine.sql_engine import SqlEngine
-from onyx.utils.logger import setup_logger
+from ee.om.server.query_and_chat.models import SearchFullResponse
+from ee.om.server.query_and_chat.models import SendSearchQueryRequest
+from om.configs.app_configs import POSTGRES_API_SERVER_POOL_OVERFLOW
+from om.configs.app_configs import POSTGRES_API_SERVER_POOL_SIZE
+from om.context.search.models import BaseFilters
+from om.context.search.models import SavedSearchDoc
+from om.db.engine.sql_engine import get_session_with_tenant
+from om.db.engine.sql_engine import SqlEngine
+from om.utils.logger import setup_logger
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA_STANDARD_VALUE
 from tests.regression.search_quality.models import AnalysisSummary

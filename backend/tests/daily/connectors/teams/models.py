@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from onyx.access.models import ExternalAccess
-from onyx.connectors.models import Document
+from om.access.models import ExternalAccess
+from om.connectors.models import Document
 
 
 class TeamsThread(BaseModel):

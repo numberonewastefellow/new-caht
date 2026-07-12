@@ -9,12 +9,12 @@ import pytest
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from ee.onyx.db.scim import ScimDAL
-from ee.onyx.server.enterprise_settings.api import create_scim_token
-from ee.onyx.server.enterprise_settings.api import get_active_scim_token
-from ee.onyx.server.scim.models import ScimTokenCreate
-from onyx.db.models import ScimToken
-from onyx.db.models import User
+from ee.om.db.scim import ScimDAL
+from ee.om.server.enterprise_settings.api import create_scim_token
+from ee.om.server.enterprise_settings.api import get_active_scim_token
+from ee.om.server.scim.models import ScimTokenCreate
+from om.db.models import ScimToken
+from om.db.models import User
 
 
 @pytest.fixture
@@ -70,7 +70,7 @@ class TestGetActiveToken:
 
 
 class TestCreateToken:
-    @patch("ee.onyx.server.enterprise_settings.api.generate_scim_token")
+    @patch("ee.om.server.enterprise_settings.api.generate_scim_token")
     def test_creates_token_and_revokes_previous(
         self,
         mock_generate: MagicMock,
@@ -105,7 +105,7 @@ class TestCreateToken:
         # Session was committed
         scim_dal._session.commit.assert_called_once()  # type: ignore[attr-defined]
 
-    @patch("ee.onyx.server.enterprise_settings.api.generate_scim_token")
+    @patch("ee.om.server.enterprise_settings.api.generate_scim_token")
     def test_creates_first_token_when_none_exist(
         self,
         mock_generate: MagicMock,

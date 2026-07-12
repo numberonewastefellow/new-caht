@@ -8,17 +8,17 @@ import httpx
 import pytest
 from sqlalchemy import select
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.mock_connector.connector import EXTERNAL_USER_EMAILS
-from onyx.connectors.mock_connector.connector import EXTERNAL_USER_GROUP_IDS
-from onyx.connectors.mock_connector.connector import MockConnectorCheckpoint
-from onyx.connectors.models import InputType
-from onyx.db.document import get_documents_by_ids
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.enums import AccessType
-from onyx.db.enums import IndexingStatus
-from onyx.db.enums import PermissionSyncStatus
-from onyx.db.models import DocPermissionSyncAttempt
+from om.configs.constants import DocumentSource
+from om.connectors.mock_connector.connector import EXTERNAL_USER_EMAILS
+from om.connectors.mock_connector.connector import EXTERNAL_USER_GROUP_IDS
+from om.connectors.mock_connector.connector import MockConnectorCheckpoint
+from om.connectors.models import InputType
+from om.db.document import get_documents_by_ids
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.enums import AccessType
+from om.db.enums import IndexingStatus
+from om.db.enums import PermissionSyncStatus
+from om.db.models import DocPermissionSyncAttempt
 from tests.integration.common_utils.constants import MOCK_CONNECTOR_SERVER_HOST
 from tests.integration.common_utils.constants import MOCK_CONNECTOR_SERVER_PORT
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
@@ -272,7 +272,7 @@ def test_permission_sync_attempt_tracking_with_mocked_failure(
 
     # Mock the permission sync to force a failure and verify attempt tracking
     with patch(
-        "ee.onyx.background.celery.tasks.doc_permission_syncing.tasks.validate_ccpair_for_user"
+        "ee.om.background.celery.tasks.doc_permission_syncing.tasks.validate_ccpair_for_user"
     ) as mock_validate:
         mock_validate.side_effect = Exception("Validation failed for testing")
 

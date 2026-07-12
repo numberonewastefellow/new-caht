@@ -4,19 +4,19 @@ import pytest
 import requests
 from sqlalchemy.orm import Session
 
-from onyx.context.search.enums import RecencyBiasSetting
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.llm import can_user_access_llm_provider
-from onyx.db.llm import fetch_user_group_ids
-from onyx.db.models import LLMProvider as LLMProviderModel
-from onyx.db.models import LLMProvider__Persona
-from onyx.db.models import LLMProvider__UserGroup
-from onyx.db.models import Persona
-from onyx.db.models import User
-from onyx.db.models import User__UserGroup
-from onyx.db.models import UserGroup
-from onyx.llm.constants import LlmProviderNames
-from onyx.llm.factory import get_llm_for_persona
+from om.context.search.enums import RecencyBiasSetting
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.llm import can_user_access_llm_provider
+from om.db.llm import fetch_user_group_ids
+from om.db.models import LLMProvider as LLMProviderModel
+from om.db.models import LLMProvider__Persona
+from om.db.models import LLMProvider__UserGroup
+from om.db.models import Persona
+from om.db.models import User
+from om.db.models import User__UserGroup
+from om.db.models import UserGroup
+from om.llm.constants import LlmProviderNames
+from om.llm.factory import get_llm_for_persona
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager
 from tests.integration.common_utils.managers.persona import PersonaManager

@@ -20,7 +20,7 @@ from types import ModuleType
 from typing import Iterator
 
 # --- Force non-EE, quiet telemetry BEFORE any backend module is imported. -------
-# `onyx.utils.variable_functionality` reads LICENSE_ENFORCEMENT_ENABLED at import
+# `om.utils.variable_functionality` reads LICENSE_ENFORCEMENT_ENABLED at import
 # time; setting it here (conftest loads before test modules) pins the MIT/non-EE
 # resolution path -- the exact path that must keep working after EE removal.
 # Force (not setdefault) -- the backend image may already export these, and the EE/MIT
@@ -76,7 +76,7 @@ def repo_root() -> Path:
 def path_to_module(rel_path: str) -> str:
     """Convert a repo/backend-relative script path to a dotted module.
 
-    e.g. "onyx/utils/supervisord_watchdog.py" -> "onyx.utils.supervisord_watchdog".
+    e.g. "onyx/utils/supervisord_watchdog.py" -> "om.utils.supervisord_watchdog".
     """
     p = rel_path.strip().replace("\\", "/")
     if p.endswith(".py"):
@@ -93,6 +93,10 @@ def strip_root(dotted: str) -> str:
     for root in _CANDIDATE_ROOTS:
         if dotted == root:
             return "<root>"
+        # The EE mirror's package ROOT itself (`ee.onyx` / `ee.om`) -- must be handled
+        # before the `root + "."` case, and separately from `ee.<root>.<sub>`.
+        if dotted == "ee." + root:
+            return "ee.<root>"
         if dotted.startswith(root + "."):
             return "<root>." + dotted[len(root) + 1 :]
         if dotted.startswith("ee." + root + "."):

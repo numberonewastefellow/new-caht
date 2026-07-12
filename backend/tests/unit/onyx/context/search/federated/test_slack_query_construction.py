@@ -1,10 +1,10 @@
 from unittest.mock import MagicMock
 
-from onyx.context.search.federated.slack_search_utils import (
+from om.context.search.federated.slack_search_utils import (
     build_channel_query_filter,
 )
-from onyx.context.search.federated.slack_search_utils import matches_exclude_pattern
-from onyx.onyxbot.slack.models import ChannelType
+from om.context.search.federated.slack_search_utils import matches_exclude_pattern
+from om.onyxbot.slack.models import ChannelType
 
 
 class TestChannelPatternMatching:
@@ -186,7 +186,7 @@ class TestDateExtraction:
 
     def test_extract_explicit_days(self) -> None:
         """Test extracting explicit day ranges"""
-        from onyx.context.search.federated.slack_search_utils import (
+        from om.context.search.federated.slack_search_utils import (
             extract_date_range_from_query,
         )
 
@@ -204,7 +204,7 @@ class TestDateExtraction:
 
     def test_enforce_default_search_days_limit(self) -> None:
         """Test that default_search_days is enforced as hard limit"""
-        from onyx.context.search.federated.slack_search_utils import (
+        from om.context.search.federated.slack_search_utils import (
             extract_date_range_from_query,
         )
 
@@ -223,7 +223,7 @@ class TestDateExtraction:
 
     def test_no_date_mentioned(self) -> None:
         """Test when no date is mentioned in query"""
-        from onyx.context.search.federated.slack_search_utils import (
+        from om.context.search.federated.slack_search_utils import (
             extract_date_range_from_query,
         )
 
@@ -240,7 +240,7 @@ class TestDateExtraction:
 
     def test_llm_failure_fallback(self) -> None:
         """Test fallback when LLM fails"""
-        from onyx.context.search.federated.slack_search_utils import (
+        from om.context.search.federated.slack_search_utils import (
             extract_date_range_from_query,
         )
 
@@ -260,7 +260,7 @@ class TestChannelTypeFiltering:
 
     def test_include_public_channels_always(self) -> None:
         """Test that public channels are always included"""
-        from onyx.context.search.federated.slack_search_utils import (
+        from om.context.search.federated.slack_search_utils import (
             should_include_message,
         )
 
@@ -273,7 +273,7 @@ class TestChannelTypeFiltering:
 
     def test_filter_dm_based_on_entities(self) -> None:
         """Test DM filtering based on include_dm setting"""
-        from onyx.context.search.federated.slack_search_utils import (
+        from om.context.search.federated.slack_search_utils import (
             should_include_message,
         )
 
@@ -287,7 +287,7 @@ class TestChannelTypeFiltering:
 
     def test_filter_group_dm(self) -> None:
         """Test group DM (MPIM) filtering uses include_group_dm setting"""
-        from onyx.context.search.federated.slack_search_utils import (
+        from om.context.search.federated.slack_search_utils import (
             should_include_message,
         )
 
@@ -300,7 +300,7 @@ class TestChannelTypeFiltering:
 
     def test_filter_private_channels(self) -> None:
         """Test private channel filtering"""
-        from onyx.context.search.federated.slack_search_utils import (
+        from om.context.search.federated.slack_search_utils import (
             should_include_message,
         )
 
@@ -320,7 +320,7 @@ class TestChannelTypeFiltering:
 
     def test_invalid_entities_default_behavior(self) -> None:
         """Test that invalid entities default to including messages"""
-        from onyx.context.search.federated.slack_search_utils import (
+        from om.context.search.federated.slack_search_utils import (
             should_include_message,
         )
 

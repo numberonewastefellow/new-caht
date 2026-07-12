@@ -85,7 +85,7 @@ spec:
                 - /bin/bash
                 - -c
                 - >
-                    python onyx/background/celery/celery_k8s_probe.py
+                    python om/background/celery/celery_k8s_probe.py
                     --probe readiness
                     --filename /tmp/onyx_k8s_beat_readiness.txt
           livenessProbe:
@@ -95,7 +95,7 @@ spec:
                 - /bin/bash
                 - -c
                 - >
-                    python onyx/background/celery/celery_k8s_probe.py
+                    python om/background/celery/celery_k8s_probe.py
                     --probe liveness
                     --filename /tmp/onyx_k8s_beat_liveness.txt
       {{- with .Values.celery_beat.volumes }}

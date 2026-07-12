@@ -19,19 +19,19 @@ from collections import Counter
 
 from sqlalchemy.orm import Session
 
-from onyx.access.models import default_public_access
-from onyx.connectors.models import Document
-from onyx.connectors.models import TextSection
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.search_settings import get_current_search_settings
-from onyx.document_index.factory import get_all_document_indices
-from onyx.document_index.interfaces_new import DocumentIndex
-from onyx.document_index.interfaces_new import IndexingMetadata
-from onyx.indexing.models import ChunkEmbedding
-from onyx.indexing.models import DocMetadataAwareIndexChunk
-from onyx.indexing.models import IndexChunk
-from onyx.natural_language_processing.search_nlp_models import EmbeddingModel
-from onyx.utils.logger import setup_logger
+from om.access.models import default_public_access
+from om.connectors.models import Document
+from om.connectors.models import TextSection
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.search_settings import get_current_search_settings
+from om.document_index.factory import get_all_document_indices
+from om.document_index.interfaces_new import DocumentIndex
+from om.document_index.interfaces_new import IndexingMetadata
+from om.indexing.models import ChunkEmbedding
+from om.indexing.models import DocMetadataAwareIndexChunk
+from om.indexing.models import IndexChunk
+from om.natural_language_processing.search_nlp_models import EmbeddingModel
+from om.utils.logger import setup_logger
 from shared_configs.configs import MODEL_SERVER_HOST
 from shared_configs.configs import MODEL_SERVER_PORT
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
@@ -185,7 +185,7 @@ def main() -> None:
 
     # Verify the docs landed in Vespa.
     try:
-        from onyx.db.engine.sql_engine import get_session_with_current_tenant as _s
+        from om.db.engine.sql_engine import get_session_with_current_tenant as _s
         from tests.integration.common_utils.vespa import vespa_fixture
 
         with _s() as db_session:

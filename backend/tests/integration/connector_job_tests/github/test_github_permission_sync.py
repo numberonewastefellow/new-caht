@@ -5,8 +5,8 @@ from datetime import timezone
 import pytest
 from github import Github
 
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.utils.logger import setup_logger
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.utils.logger import setup_logger
 from tests.integration.common_utils.document_acl import (
     get_all_connector_documents,
 )

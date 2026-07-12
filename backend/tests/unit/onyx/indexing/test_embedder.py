@@ -4,20 +4,20 @@ from unittest.mock import patch
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import Document
-from onyx.connectors.models import TextSection
-from onyx.indexing.embedder import DefaultIndexingEmbedder
-from onyx.indexing.models import ChunkEmbedding
-from onyx.indexing.models import DocAwareChunk
-from onyx.indexing.models import IndexChunk
+from om.configs.constants import DocumentSource
+from om.connectors.models import Document
+from om.connectors.models import TextSection
+from om.indexing.embedder import DefaultIndexingEmbedder
+from om.indexing.models import ChunkEmbedding
+from om.indexing.models import DocAwareChunk
+from om.indexing.models import IndexChunk
 from shared_configs.enums import EmbeddingProvider
 from shared_configs.enums import EmbedTextType
 
 
 @pytest.fixture
 def mock_embedding_model() -> Generator[Mock, None, None]:
-    with patch("onyx.indexing.embedder.EmbeddingModel") as mock:
+    with patch("om.indexing.embedder.EmbeddingModel") as mock:
         yield mock
 
 

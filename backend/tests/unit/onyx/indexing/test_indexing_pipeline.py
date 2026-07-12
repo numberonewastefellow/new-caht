@@ -7,21 +7,21 @@ from unittest.mock import patch
 
 import pytest
 
-from onyx.configs.app_configs import MAX_DOCUMENT_CHARS
-from onyx.connectors.models import Document
-from onyx.connectors.models import DocumentSource
-from onyx.connectors.models import ImageSection
-from onyx.connectors.models import TextSection
-from onyx.indexing.chunker import Chunker
-from onyx.indexing.embedder import DefaultIndexingEmbedder
-from onyx.indexing.indexing_pipeline import add_contextual_summaries
-from onyx.indexing.indexing_pipeline import filter_documents
-from onyx.indexing.indexing_pipeline import process_image_sections
-from onyx.llm.constants import LlmProviderNames
-from onyx.llm.model_response import Choice
-from onyx.llm.model_response import Message
-from onyx.llm.model_response import ModelResponse
-from onyx.llm.utils import get_max_input_tokens
+from om.configs.app_configs import MAX_DOCUMENT_CHARS
+from om.connectors.models import Document
+from om.connectors.models import DocumentSource
+from om.connectors.models import ImageSection
+from om.connectors.models import TextSection
+from om.indexing.chunker import Chunker
+from om.indexing.embedder import DefaultIndexingEmbedder
+from om.indexing.indexing_pipeline import add_contextual_summaries
+from om.indexing.indexing_pipeline import filter_documents
+from om.indexing.indexing_pipeline import process_image_sections
+from om.llm.constants import LlmProviderNames
+from om.llm.model_response import Choice
+from om.llm.model_response import Message
+from om.llm.model_response import ModelResponse
+from om.llm.utils import get_max_input_tokens
 
 
 def create_test_document(
@@ -140,7 +140,7 @@ def test_filter_documents_empty_batch() -> None:
     assert len(result) == 0
 
 
-@patch("onyx.llm.utils.GEN_AI_MAX_TOKENS", 4096)
+@patch("om.llm.utils.GEN_AI_MAX_TOKENS", 4096)
 @pytest.mark.parametrize("enable_contextual_rag", [True, False])
 def test_contextual_rag(
     embedder: DefaultIndexingEmbedder, enable_contextual_rag: bool

@@ -5,7 +5,7 @@ discovers tasks or beat builds its schedule. This is the core of the rename/
 EE-removal safety net:
 
   * versioned_apps stubs resolve their real app via
-    `fetch_versioned_implementation("onyx.background.celery.apps.X", "celery_app")`
+    `fetch_versioned_implementation("om.background.celery.apps.X", "celery_app")`
     plus `config_from_object("onyx...configs.X")` -- both STRINGS.
   * each app's `autodiscover_tasks([...])` takes a LIST OF STRING module paths;
     finalizing the app forces every one of them to import.

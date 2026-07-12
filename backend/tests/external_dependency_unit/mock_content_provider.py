@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 from pydantic import BaseModel
 
-from onyx.tools.tool_implementations.open_url.models import WebContent
-from onyx.tools.tool_implementations.open_url.models import WebContentProvider
+from om.tools.tool_implementations.open_url.models import WebContent
+from om.tools.tool_implementations.open_url.models import WebContentProvider
 
 
 class MockWebContent(BaseModel):
@@ -53,7 +53,7 @@ def use_mock_content_provider() -> Generator[ContentProviderController, None, No
     content_provider = MockContentProvider()
 
     with patch(
-        "onyx.tools.tool_implementations.open_url.open_url_tool.get_default_content_provider",
+        "om.tools.tool_implementations.open_url.open_url_tool.get_default_content_provider",
         return_value=content_provider,
     ):
         yield content_provider

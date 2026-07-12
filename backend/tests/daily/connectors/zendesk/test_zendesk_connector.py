@@ -6,10 +6,10 @@ from typing import cast
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import Document
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.zendesk.connector import ZendeskConnector
+from om.configs.constants import DocumentSource
+from om.connectors.models import Document
+from om.connectors.models import HierarchyNode
+from om.connectors.zendesk.connector import ZendeskConnector
 from tests.daily.connectors.utils import load_all_from_connector
 
 

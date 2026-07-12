@@ -2,8 +2,8 @@
 Tests for disposable email validation.
 """
 
-from onyx.auth.disposable_email_validator import DisposableEmailValidator
-from onyx.auth.disposable_email_validator import is_disposable_email
+from om.auth.disposable_email_validator import DisposableEmailValidator
+from om.auth.disposable_email_validator import is_disposable_email
 
 
 class TestDisposableEmailValidator:

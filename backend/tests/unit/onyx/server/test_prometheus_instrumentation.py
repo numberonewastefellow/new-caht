@@ -10,8 +10,8 @@ from fastapi.testclient import TestClient
 from prometheus_client import CollectorRegistry
 from prometheus_client import Gauge
 
-from onyx.server.metrics.prometheus_setup import setup_prometheus_metrics
-from onyx.server.metrics.slow_requests import slow_request_callback
+from om.server.metrics.prometheus_setup import setup_prometheus_metrics
+from om.server.metrics.slow_requests import slow_request_callback
 
 
 def _make_info(
@@ -30,7 +30,7 @@ def _make_info(
 
 
 def test_slow_request_callback_increments_above_threshold() -> None:
-    with patch("onyx.server.metrics.slow_requests._slow_requests") as mock_counter:
+    with patch("om.server.metrics.slow_requests._slow_requests") as mock_counter:
         mock_labels = MagicMock()
         mock_counter.labels.return_value = mock_labels
 
@@ -46,7 +46,7 @@ def test_slow_request_callback_increments_above_threshold() -> None:
 
 
 def test_slow_request_callback_skips_below_threshold() -> None:
-    with patch("onyx.server.metrics.slow_requests._slow_requests") as mock_counter:
+    with patch("om.server.metrics.slow_requests._slow_requests") as mock_counter:
         info = _make_info(duration=0.5)
         slow_request_callback(info)
 
@@ -55,8 +55,8 @@ def test_slow_request_callback_skips_below_threshold() -> None:
 
 def test_slow_request_callback_skips_at_exact_threshold() -> None:
     with (
-        patch("onyx.server.metrics.slow_requests.SLOW_REQUEST_THRESHOLD_SECONDS", 1.0),
-        patch("onyx.server.metrics.slow_requests._slow_requests") as mock_counter,
+        patch("om.server.metrics.slow_requests.SLOW_REQUEST_THRESHOLD_SECONDS", 1.0),
+        patch("om.server.metrics.slow_requests._slow_requests") as mock_counter,
     ):
         info = _make_info(duration=1.0)
         slow_request_callback(info)
@@ -65,7 +65,7 @@ def test_slow_request_callback_skips_at_exact_threshold() -> None:
 
 
 def test_setup_attaches_instrumentator_to_app() -> None:
-    with patch("onyx.server.metrics.prometheus_setup.Instrumentator") as mock_cls:
+    with patch("om.server.metrics.prometheus_setup.Instrumentator") as mock_cls:
         mock_instance = MagicMock()
         mock_instance.instrument.return_value = mock_instance
         mock_cls.return_value = mock_instance

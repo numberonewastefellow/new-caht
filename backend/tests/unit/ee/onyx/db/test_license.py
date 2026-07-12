@@ -2,10 +2,10 @@
 
 from unittest.mock import MagicMock
 
-from ee.onyx.db.license import delete_license
-from ee.onyx.db.license import get_license
-from ee.onyx.db.license import upsert_license
-from onyx.db.models import License
+from ee.om.db.license import delete_license
+from ee.om.db.license import get_license
+from ee.om.db.license import upsert_license
+from om.db.models import License
 
 
 class TestGetLicense:

@@ -10,10 +10,10 @@ from unittest.mock import patch
 
 import pytest
 
-from onyx.utils.url import _is_ip_private_or_reserved
-from onyx.utils.url import _validate_and_resolve_url
-from onyx.utils.url import ssrf_safe_get
-from onyx.utils.url import SSRFException
+from om.utils.url import _is_ip_private_or_reserved
+from om.utils.url import _validate_and_resolve_url
+from om.utils.url import ssrf_safe_get
+from om.utils.url import SSRFException
 
 
 class TestIsIpPrivateOrReserved:
@@ -102,7 +102,7 @@ class TestValidateAndResolveUrl:
 
     def test_valid_http_scheme(self) -> None:
         """Test that http scheme is accepted for public URLs."""
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             mock_getaddrinfo.return_value = [
                 (2, 1, 6, "", ("93.184.216.34", 80))  # example.com's IP
             ]
@@ -113,7 +113,7 @@ class TestValidateAndResolveUrl:
 
     def test_valid_https_scheme(self) -> None:
         """Test that https scheme is accepted for public URLs."""
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 443))]
             ip, hostname, port = _validate_and_resolve_url("https://example.com/")
             assert ip == "93.184.216.34"
@@ -127,7 +127,7 @@ class TestValidateAndResolveUrl:
 
     def test_localhost_hostname(self) -> None:
         """Test that 'localhost' hostname is blocked."""
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             mock_getaddrinfo.return_value = [(2, 1, 6, "", ("127.0.0.1", 80))]
             with pytest.raises(
                 SSRFException, match="Access to hostname 'localhost' is not allowed."
@@ -178,7 +178,7 @@ class TestValidateAndResolveUrl:
             _validate_and_resolve_url("http://127.0.0.1:8080/metrics")
 
         # Public IP with custom port should be allowed
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 8080))]
             ip, hostname, port = _validate_and_resolve_url("http://example.com:8080/")
             assert ip == "93.184.216.34"
@@ -186,14 +186,14 @@ class TestValidateAndResolveUrl:
 
     def test_hostname_resolving_to_private_ip(self) -> None:
         """Test that hostnames resolving to private IPs are blocked."""
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             mock_getaddrinfo.return_value = [(2, 1, 6, "", ("192.168.1.100", 80))]
             with pytest.raises(SSRFException, match="internal/private IP"):
                 _validate_and_resolve_url("http://internal-service.company.com/")
 
     def test_multiple_dns_records_one_private(self) -> None:
         """Test that a hostname with mixed public/private IPs is blocked."""
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             mock_getaddrinfo.return_value = [
                 (2, 1, 6, "", ("93.184.216.34", 80)),  # Public
                 (2, 1, 6, "", ("10.0.0.1", 80)),  # Private
@@ -203,7 +203,7 @@ class TestValidateAndResolveUrl:
 
     def test_dns_resolution_failure(self) -> None:
         """Test that DNS resolution failures are handled safely."""
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             import socket
 
             mock_getaddrinfo.side_effect = socket.gaierror("Name resolution failed")
@@ -237,10 +237,10 @@ class TestSsrfSafeGet:
         mock_response.status_code = 200
         mock_response.is_redirect = False
 
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 80))]
 
-            with patch("onyx.utils.url.requests.get") as mock_get:
+            with patch("om.utils.url.requests.get") as mock_get:
                 mock_get.return_value = mock_response
 
                 response = ssrf_safe_get("http://example.com/path")
@@ -259,10 +259,10 @@ class TestSsrfSafeGet:
         mock_response.status_code = 200
         mock_response.is_redirect = False
 
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 443))]
 
-            with patch("onyx.utils.url.requests.get") as mock_get:
+            with patch("om.utils.url.requests.get") as mock_get:
                 mock_get.return_value = mock_response
 
                 response = ssrf_safe_get("https://example.com/path")
@@ -278,10 +278,10 @@ class TestSsrfSafeGet:
         mock_response = MagicMock()
         mock_response.is_redirect = False
 
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 80))]
 
-            with patch("onyx.utils.url.requests.get") as mock_get:
+            with patch("om.utils.url.requests.get") as mock_get:
                 mock_get.return_value = mock_response
 
                 custom_headers = {"User-Agent": "TestBot/1.0"}
@@ -295,10 +295,10 @@ class TestSsrfSafeGet:
         mock_response = MagicMock()
         mock_response.is_redirect = False
 
-        with patch("onyx.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
+        with patch("om.utils.url.socket.getaddrinfo") as mock_getaddrinfo:
             mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 80))]
 
-            with patch("onyx.utils.url.requests.get") as mock_get:
+            with patch("om.utils.url.requests.get") as mock_get:
                 mock_get.return_value = mock_response
 
                 ssrf_safe_get("http://example.com/", timeout=30)

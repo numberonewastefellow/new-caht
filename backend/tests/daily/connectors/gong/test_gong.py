@@ -5,9 +5,9 @@ from unittest.mock import patch
 
 import pytest
 
-from onyx.connectors.gong.connector import GongConnector
-from onyx.connectors.models import Document
-from onyx.connectors.models import HierarchyNode
+from om.connectors.gong.connector import GongConnector
+from om.connectors.models import Document
+from om.connectors.models import HierarchyNode
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def gong_connector() -> GongConnector:
 
 
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 def test_gong_basic(

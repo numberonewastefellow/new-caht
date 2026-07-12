@@ -8,14 +8,14 @@ from uuid import UUID
 import requests
 from requests.models import Response
 
-from onyx.context.search.models import SavedSearchDoc
-from onyx.context.search.models import SearchDoc
-from onyx.file_store.models import FileDescriptor
-from onyx.llm.override_models import LLMOverride
-from onyx.server.query_and_chat.models import AUTO_PLACE_AFTER_LATEST_MESSAGE
-from onyx.server.query_and_chat.models import ChatSessionCreationRequest
-from onyx.server.query_and_chat.models import SendMessageRequest
-from onyx.server.query_and_chat.streaming_models import StreamingType
+from om.context.search.models import SavedSearchDoc
+from om.context.search.models import SearchDoc
+from om.file_store.models import FileDescriptor
+from om.llm.override_models import LLMOverride
+from om.server.query_and_chat.models import AUTO_PLACE_AFTER_LATEST_MESSAGE
+from om.server.query_and_chat.models import ChatSessionCreationRequest
+from om.server.query_and_chat.models import SendMessageRequest
+from om.server.query_and_chat.streaming_models import StreamingType
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import GENERAL_HEADERS
 from tests.integration.common_utils.test_models import DATestChatMessage

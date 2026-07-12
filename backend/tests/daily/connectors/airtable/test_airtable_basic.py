@@ -5,12 +5,12 @@ from unittest.mock import MagicMock
 import pytest
 from pydantic import BaseModel
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.airtable.airtable_connector import AirtableConnector
-from onyx.connectors.models import Document
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.models import ImageSection
-from onyx.connectors.models import TextSection
+from om.configs.constants import DocumentSource
+from om.connectors.airtable.airtable_connector import AirtableConnector
+from om.connectors.models import Document
+from om.connectors.models import HierarchyNode
+from om.connectors.models import ImageSection
+from om.connectors.models import TextSection
 
 BASE_VIEW_ID = "viwVUEJjWPd8XYjh8"
 

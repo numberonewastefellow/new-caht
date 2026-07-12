@@ -4,9 +4,9 @@ import pytest
 import pytz
 import timeago  # type: ignore
 
-from onyx.configs.constants import DocumentSource
-from onyx.context.search.models import SavedSearchDoc
-from onyx.onyxbot.slack.blocks import _build_documents_blocks
+from om.configs.constants import DocumentSource
+from om.context.search.models import SavedSearchDoc
+from om.onyxbot.slack.blocks import _build_documents_blocks
 
 
 def _make_saved_doc(updated_at: datetime | None) -> SavedSearchDoc:
@@ -48,7 +48,7 @@ def test_build_documents_blocks_formats_naive_timestamp(
         return result
 
     monkeypatch.setattr(
-        "onyx.onyxbot.slack.blocks.timeago.format",
+        "om.onyxbot.slack.blocks.timeago.format",
         fake_timeago_format,
     )
 

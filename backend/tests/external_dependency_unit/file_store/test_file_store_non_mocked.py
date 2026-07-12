@@ -17,10 +17,10 @@ import pytest
 from botocore.exceptions import ClientError
 from sqlalchemy.orm import Session
 
-from onyx.configs.constants import FileOrigin
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.file_store.file_store import S3BackedFileStore
-from onyx.utils.logger import setup_logger
+from om.configs.constants import FileOrigin
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.file_store.file_store import S3BackedFileStore
+from om.utils.logger import setup_logger
 from shared_configs.contextvars import CURRENT_TENANT_ID_CONTEXTVAR
 from tests.external_dependency_unit.constants import TEST_TENANT_ID
 
@@ -57,7 +57,7 @@ class WorkerResult(TypedDict):
 
 def _get_all_backend_configs() -> List[BackendConfig]:
     """Get configurations for all available backends"""
-    from onyx.configs.app_configs import (
+    from om.configs.app_configs import (
         S3_ENDPOINT_URL,
         AWS_REGION_NAME,
     )

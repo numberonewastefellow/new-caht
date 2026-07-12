@@ -43,8 +43,8 @@ from types import ModuleType
 
 _MOCK_MODULES = [
     "puremagic",
-    "onyx.file_store.file_store",
-    "onyx.file_processing.image_utils",
+    "om.file_store.file_store",
+    "om.file_processing.image_utils",
 ]
 
 _original_modules: dict[str, ModuleType | None] = {}
@@ -56,12 +56,12 @@ for _mod_name in _MOCK_MODULES:
         _original_modules[_mod_name] = sys.modules[_mod_name]
 
 # Now safe to import the connector and its helpers
-from onyx.configs.constants import DocumentSource  # noqa: E402
-from onyx.connectors.folder.connector import _compute_doc_id  # noqa: E402
-from onyx.connectors.folder.connector import _get_file_external_access  # noqa: E402
-from onyx.connectors.folder.connector import _is_path_allowed  # noqa: E402
-from onyx.connectors.folder.connector import LocalFolderConnector  # noqa: E402
-from onyx.connectors.folder.doc_sync import folder_doc_sync  # noqa: E402
+from om.configs.constants import DocumentSource  # noqa: E402
+from om.connectors.folder.connector import _compute_doc_id  # noqa: E402
+from om.connectors.folder.connector import _get_file_external_access  # noqa: E402
+from om.connectors.folder.connector import _is_path_allowed  # noqa: E402
+from om.connectors.folder.connector import LocalFolderConnector  # noqa: E402
+from om.connectors.folder.doc_sync import folder_doc_sync  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -110,8 +110,8 @@ def _mock_process_file(
     default_source: DocumentSource = DocumentSource.FILE,
     doc_id_prefix: str = "FILE_CONNECTOR__",
 ) -> list:
-    from onyx.connectors.models import Document
-    from onyx.connectors.models import TextSection
+    from om.connectors.models import Document
+    from om.connectors.models import TextSection
 
     text = ""
     try:
@@ -136,7 +136,7 @@ def _mock_process_file(
     return [doc]
 
 
-PROCESS_FILE_PATCH = "onyx.connectors.folder.connector._process_file"
+PROCESS_FILE_PATCH = "om.connectors.folder.connector._process_file"
 
 
 # ===========================================================================
@@ -385,13 +385,13 @@ class TestParallelAndErrorHandling:
 class TestPathSecurity:
     def test_is_path_allowed_no_restriction(self) -> None:
         with patch(
-            "onyx.connectors.folder.connector.FOLDER_CONNECTOR_ALLOWED_DIRECTORIES", ""
+            "om.connectors.folder.connector.FOLDER_CONNECTOR_ALLOWED_DIRECTORIES", ""
         ):
             assert _is_path_allowed("/any/path") is True
 
     def test_is_path_allowed_within_whitelist(self) -> None:
         with patch(
-            "onyx.connectors.folder.connector.FOLDER_CONNECTOR_ALLOWED_DIRECTORIES",
+            "om.connectors.folder.connector.FOLDER_CONNECTOR_ALLOWED_DIRECTORIES",
             "/data/docs,/mnt/shared",
         ):
             assert _is_path_allowed("/data/docs/report.txt") is True
@@ -399,7 +399,7 @@ class TestPathSecurity:
 
     def test_is_path_allowed_outside_whitelist(self) -> None:
         with patch(
-            "onyx.connectors.folder.connector.FOLDER_CONNECTOR_ALLOWED_DIRECTORIES",
+            "om.connectors.folder.connector.FOLDER_CONNECTOR_ALLOWED_DIRECTORIES",
             "/data/docs",
         ):
             assert _is_path_allowed("/etc/passwd") is False
@@ -408,7 +408,7 @@ class TestPathSecurity:
     def test_validate_connector_settings_rejects_disallowed(self, tmp_path: Path) -> None:
         c = LocalFolderConnector(folder_paths=[str(tmp_path)])
         with patch(
-            "onyx.connectors.folder.connector.FOLDER_CONNECTOR_ALLOWED_DIRECTORIES",
+            "om.connectors.folder.connector.FOLDER_CONNECTOR_ALLOWED_DIRECTORIES",
             "/only/this/dir",
         ):
             with pytest.raises(ValueError, match="not within allowed"):
@@ -417,7 +417,7 @@ class TestPathSecurity:
     def test_validate_connector_settings_rejects_nonexistent(self) -> None:
         c = LocalFolderConnector(folder_paths=["/this/path/does/not/exist"])
         with patch(
-            "onyx.connectors.folder.connector.FOLDER_CONNECTOR_ALLOWED_DIRECTORIES", ""
+            "om.connectors.folder.connector.FOLDER_CONNECTOR_ALLOWED_DIRECTORIES", ""
         ):
             with pytest.raises(ValueError, match="does not exist"):
                 c.validate_connector_settings()

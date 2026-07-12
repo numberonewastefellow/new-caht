@@ -14,9 +14,9 @@ Run from ``backend/``:
 from dataclasses import dataclass
 from typing import Any
 
-from onyx.configs.constants import DocumentSource
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.engine.sql_engine import SqlEngine
+from om.configs.constants import DocumentSource
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.engine.sql_engine import SqlEngine
 from tests.search_baseline import corpus
 from tests.search_baseline.harness import BaselineHit
 from tests.search_baseline.harness import get_index

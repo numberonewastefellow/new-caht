@@ -13,19 +13,19 @@ from jira import JIRA
 from jira import JIRAError
 from jira.resources import Issue
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.exceptions import ConnectorValidationError
-from onyx.connectors.exceptions import CredentialExpiredError
-from onyx.connectors.exceptions import InsufficientPermissionsError
-from onyx.connectors.exceptions import UnexpectedValidationError
-from onyx.connectors.jira.connector import JiraConnector
-from onyx.connectors.jira.connector import JiraConnectorCheckpoint
-from onyx.connectors.jira.utils import JIRA_SERVER_API_VERSION
-from onyx.connectors.models import ConnectorFailure
-from onyx.connectors.models import Document
-from onyx.connectors.models import SlimDocument
-from onyx.utils.logger import setup_logger
-from tests.unit.onyx.connectors.utils import load_everything_from_checkpoint_connector
+from om.configs.constants import DocumentSource
+from om.connectors.exceptions import ConnectorValidationError
+from om.connectors.exceptions import CredentialExpiredError
+from om.connectors.exceptions import InsufficientPermissionsError
+from om.connectors.exceptions import UnexpectedValidationError
+from om.connectors.jira.connector import JiraConnector
+from om.connectors.jira.connector import JiraConnectorCheckpoint
+from om.connectors.jira.utils import JIRA_SERVER_API_VERSION
+from om.connectors.models import ConnectorFailure
+from om.connectors.models import Document
+from om.connectors.models import SlimDocument
+from om.utils.logger import setup_logger
+from tests.unit.om.connectors.utils import load_everything_from_checkpoint_connector
 
 logger = setup_logger()
 PAGE_SIZE = 2
@@ -47,7 +47,7 @@ def jira_connector(
     connector._jira_client._options.return_value = {
         "rest_api_version": JIRA_SERVER_API_VERSION
     }
-    with patch("onyx.connectors.jira.connector._JIRA_FULL_PAGE_SIZE", 2):
+    with patch("om.connectors.jira.connector._JIRA_FULL_PAGE_SIZE", 2):
         yield connector
 
 
@@ -126,7 +126,7 @@ def create_mock_issue() -> Callable[..., MagicMock]:
 
 def test_load_credentials(jira_connector: JiraConnector) -> None:
     """Test loading credentials"""
-    with patch("onyx.connectors.jira.connector.build_jira_client") as mock_build_client:
+    with patch("om.connectors.jira.connector.build_jira_client") as mock_build_client:
         mock_build_client.return_value = jira_connector._jira_client
         credentials = {
             "jira_user_email": "user@example.com",
@@ -271,7 +271,7 @@ def test_load_from_checkpoint_with_issue_processing_error(
         else:
             raise Exception(f"Processing error for {issue.key}")
 
-    with patch("onyx.connectors.jira.connector.process_jira_issue") as mock_process:
+    with patch("om.connectors.jira.connector.process_jira_issue") as mock_process:
         mock_process.side_effect = mock_process_side_effect
 
         # Call load_from_checkpoint

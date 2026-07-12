@@ -1,6 +1,6 @@
 """Tests for license API utilities."""
 
-from ee.onyx.server.license.api import _strip_pem_delimiters
+from ee.om.server.license.api import _strip_pem_delimiters
 
 
 class TestStripPemDelimiters:

@@ -7,16 +7,16 @@ from uuid import uuid4
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.google_utils.resources import GoogleDriveService
-from onyx.connectors.google_utils.shared_constants import (
+from om.configs.constants import DocumentSource
+from om.connectors.google_utils.resources import GoogleDriveService
+from om.connectors.google_utils.shared_constants import (
     DB_CREDENTIALS_DICT_SERVICE_ACCOUNT_KEY,
 )
-from onyx.connectors.google_utils.shared_constants import (
+from om.connectors.google_utils.shared_constants import (
     DB_CREDENTIALS_PRIMARY_ADMIN_KEY,
 )
-from onyx.connectors.models import InputType
-from onyx.db.enums import AccessType
+from om.connectors.models import InputType
+from om.db.enums import AccessType
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.connector import ConnectorManager
 from tests.integration.common_utils.managers.credential import CredentialManager

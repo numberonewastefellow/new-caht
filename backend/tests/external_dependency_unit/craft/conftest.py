@@ -7,12 +7,12 @@ import pytest
 from fastapi_users.password import PasswordHelper
 from sqlalchemy.orm import Session
 
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.engine.sql_engine import SqlEngine
-from onyx.db.enums import BuildSessionStatus
-from onyx.db.models import BuildSession
-from onyx.db.models import User
-from onyx.db.models import UserRole
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.engine.sql_engine import SqlEngine
+from om.db.enums import BuildSessionStatus
+from om.db.models import BuildSession
+from om.db.models import User
+from om.db.models import UserRole
 from shared_configs.contextvars import CURRENT_TENANT_ID_CONTEXTVAR
 from tests.external_dependency_unit.constants import TEST_TENANT_ID
 

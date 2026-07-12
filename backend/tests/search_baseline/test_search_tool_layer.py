@@ -18,11 +18,11 @@ from datetime import timezone
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.context.search.models import InferenceChunk
-from onyx.context.search.models import InferenceSection
-from onyx.context.search.retrieval.search_runner import combine_retrieval_results
-from onyx.secondary_llm_flows.document_filter import select_chunks_for_relevance
+from om.configs.constants import DocumentSource
+from om.context.search.models import InferenceChunk
+from om.context.search.models import InferenceSection
+from om.context.search.retrieval.search_runner import combine_retrieval_results
+from om.secondary_llm_flows.document_filter import select_chunks_for_relevance
 
 
 def _chunk(doc_id: str, chunk_id: int, score: float | None) -> InferenceChunk:
@@ -121,10 +121,10 @@ def test_llm_section_selection_plumbing() -> None:
 
     Skipped unless a default LLM provider is configured in the DB.
     """
-    from onyx.secondary_llm_flows.document_filter import select_sections_for_expansion
+    from om.secondary_llm_flows.document_filter import select_sections_for_expansion
 
     try:
-        from onyx.llm.factory import get_default_llm
+        from om.llm.factory import get_default_llm
 
         llm = get_default_llm()
     except Exception as e:  # pragma: no cover - depends on env config
@@ -155,7 +155,7 @@ def test_llm_section_selection_plumbing() -> None:
 
 def test_no_cross_encoder_rerank_columns() -> None:
     """SearchSettings must not carry rerank config (removed in migration 78ebc66946a0)."""
-    from onyx.db.models import SearchSettings
+    from om.db.models import SearchSettings
 
     column_names = {c.name for c in SearchSettings.__table__.columns}
     rerank_cols = {c for c in column_names if "rerank" in c.lower()}

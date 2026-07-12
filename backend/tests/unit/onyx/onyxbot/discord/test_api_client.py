@@ -11,12 +11,12 @@ from unittest.mock import patch
 import aiohttp
 import pytest
 
-from onyx.chat.models import ChatFullResponse
-from onyx.onyxbot.discord.api_client import OnyxAPIClient
-from onyx.onyxbot.discord.constants import API_REQUEST_TIMEOUT
-from onyx.onyxbot.discord.exceptions import APIConnectionError
-from onyx.onyxbot.discord.exceptions import APIResponseError
-from onyx.onyxbot.discord.exceptions import APITimeoutError
+from om.chat.models import ChatFullResponse
+from om.onyxbot.discord.api_client import OnyxAPIClient
+from om.onyxbot.discord.constants import API_REQUEST_TIMEOUT
+from om.onyxbot.discord.exceptions import APIConnectionError
+from om.onyxbot.discord.exceptions import APIResponseError
+from om.onyxbot.discord.exceptions import APITimeoutError
 
 
 class MockAsyncContextManager:

@@ -6,21 +6,21 @@ from datetime import timezone
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from onyx.chat.compression import _build_llm_messages_for_summarization
-from onyx.chat.compression import find_summary_for_branch
-from onyx.chat.compression import generate_summary
-from onyx.chat.compression import get_compression_params
-from onyx.chat.compression import get_messages_to_summarize
-from onyx.chat.compression import SummaryContent
-from onyx.configs.constants import MessageType
-from onyx.llm.models import AssistantMessage
-from onyx.llm.models import SystemMessage
-from onyx.llm.models import UserMessage
-from onyx.prompts.compression_prompts import PROGRESSIVE_SUMMARY_SYSTEM_PROMPT_BLOCK
-from onyx.prompts.compression_prompts import PROGRESSIVE_USER_REMINDER
-from onyx.prompts.compression_prompts import SUMMARIZATION_CUTOFF_MARKER
-from onyx.prompts.compression_prompts import SUMMARIZATION_PROMPT
-from onyx.prompts.compression_prompts import USER_REMINDER
+from om.chat.compression import _build_llm_messages_for_summarization
+from om.chat.compression import find_summary_for_branch
+from om.chat.compression import generate_summary
+from om.chat.compression import get_compression_params
+from om.chat.compression import get_messages_to_summarize
+from om.chat.compression import SummaryContent
+from om.configs.constants import MessageType
+from om.llm.models import AssistantMessage
+from om.llm.models import SystemMessage
+from om.llm.models import UserMessage
+from om.prompts.compression_prompts import PROGRESSIVE_SUMMARY_SYSTEM_PROMPT_BLOCK
+from om.prompts.compression_prompts import PROGRESSIVE_USER_REMINDER
+from om.prompts.compression_prompts import SUMMARIZATION_CUTOFF_MARKER
+from om.prompts.compression_prompts import SUMMARIZATION_PROMPT
+from om.prompts.compression_prompts import USER_REMINDER
 
 # Base time for generating sequential timestamps
 BASE_TIME = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
@@ -338,7 +338,7 @@ def test_generate_summary_initial_system_prompt() -> None:
     mock_response.choice.message.content = "Summary of conversation"
     mock_llm.invoke.return_value = mock_response
 
-    with patch("onyx.chat.compression.llm_generation_span"):
+    with patch("om.chat.compression.llm_generation_span"):
         result = generate_summary(
             older_messages=older_messages,  # type: ignore[arg-type]
             recent_messages=recent_messages,  # type: ignore[arg-type]
@@ -384,7 +384,7 @@ def test_generate_summary_progressive_system_prompt() -> None:
     mock_response.choice.message.content = "Updated summary"
     mock_llm.invoke.return_value = mock_response
 
-    with patch("onyx.chat.compression.llm_generation_span"):
+    with patch("om.chat.compression.llm_generation_span"):
         result = generate_summary(
             older_messages=older_messages,  # type: ignore[arg-type]
             recent_messages=recent_messages,  # type: ignore[arg-type]
@@ -427,7 +427,7 @@ def test_generate_summary_cutoff_marker_as_separate_message() -> None:
     mock_response.choice.message.content = "Summary"
     mock_llm.invoke.return_value = mock_response
 
-    with patch("onyx.chat.compression.llm_generation_span"):
+    with patch("om.chat.compression.llm_generation_span"):
         generate_summary(
             older_messages=older_messages,  # type: ignore[arg-type]
             recent_messages=recent_messages,  # type: ignore[arg-type]
@@ -464,7 +464,7 @@ def test_generate_summary_messages_are_separate() -> None:
     mock_response.choice.message.content = "Summary"
     mock_llm.invoke.return_value = mock_response
 
-    with patch("onyx.chat.compression.llm_generation_span"):
+    with patch("om.chat.compression.llm_generation_span"):
         generate_summary(
             older_messages=older_messages,  # type: ignore[arg-type]
             recent_messages=recent_messages,  # type: ignore[arg-type]

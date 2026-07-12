@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from onyx.llm.model_response import ChatCompletionDeltaToolCall
-from onyx.llm.model_response import from_litellm_model_response
-from onyx.llm.model_response import from_litellm_model_response_stream
-from onyx.llm.model_response import FunctionCall
-from onyx.llm.model_response import ModelResponse
-from onyx.llm.model_response import ModelResponseStream
+from om.llm.model_response import ChatCompletionDeltaToolCall
+from om.llm.model_response import from_litellm_model_response
+from om.llm.model_response import from_litellm_model_response_stream
+from om.llm.model_response import FunctionCall
+from om.llm.model_response import ModelResponse
+from om.llm.model_response import ModelResponseStream
 
 if TYPE_CHECKING:
     from litellm.types.utils import (

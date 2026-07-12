@@ -6,11 +6,11 @@ import pytest
 import requests
 from requests import HTTPError
 
-from onyx.connectors.confluence.onyx_confluence import (
+from om.connectors.confluence.onyx_confluence import (
     _DEFAULT_PAGINATION_LIMIT,
 )
-from onyx.connectors.confluence.onyx_confluence import OnyxConfluence
-from onyx.connectors.interfaces import CredentialsProviderInterface
+from om.connectors.confluence.onyx_confluence import OnyxConfluence
+from om.connectors.interfaces import CredentialsProviderInterface
 
 
 # Helper to create mock responses

@@ -3,7 +3,7 @@ import os
 import pytest
 import requests
 
-from onyx.configs.constants import MessageType
+from om.configs.constants import MessageType
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.managers.api_key import APIKeyManager
 from tests.integration.common_utils.managers.cc_pair import CCPairManager

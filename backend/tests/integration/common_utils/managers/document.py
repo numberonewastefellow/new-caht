@@ -5,10 +5,10 @@ from sqlalchemy import and_
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from onyx.configs.constants import DocumentSource
-from onyx.db.enums import AccessType
-from onyx.db.models import ConnectorCredentialPair
-from onyx.db.models import DocumentByConnectorCredentialPair
+from om.configs.constants import DocumentSource
+from om.db.enums import AccessType
+from om.db.models import ConnectorCredentialPair
+from om.db.models import DocumentByConnectorCredentialPair
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import GENERAL_HEADERS
 from tests.integration.common_utils.constants import NUM_DOCS

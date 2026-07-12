@@ -3,16 +3,16 @@ from unittest.mock import Mock
 
 import pytest
 
-from onyx.configs.app_configs import USE_CHUNK_SUMMARY
-from onyx.configs.app_configs import USE_DOCUMENT_SUMMARY
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import Document
-from onyx.connectors.models import TextSection
-from onyx.indexing.chunker import Chunker
-from onyx.indexing.embedder import DefaultIndexingEmbedder
-from onyx.indexing.indexing_pipeline import process_image_sections
-from onyx.llm.utils import MAX_CONTEXT_TOKENS
-from tests.unit.onyx.indexing.conftest import MockHeartbeat
+from om.configs.app_configs import USE_CHUNK_SUMMARY
+from om.configs.app_configs import USE_DOCUMENT_SUMMARY
+from om.configs.constants import DocumentSource
+from om.connectors.models import Document
+from om.connectors.models import TextSection
+from om.indexing.chunker import Chunker
+from om.indexing.embedder import DefaultIndexingEmbedder
+from om.indexing.indexing_pipeline import process_image_sections
+from om.llm.utils import MAX_CONTEXT_TOKENS
+from tests.unit.om.indexing.conftest import MockHeartbeat
 
 
 @pytest.mark.parametrize("enable_contextual_rag", [True, False])

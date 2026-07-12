@@ -6,10 +6,10 @@ from typing import Any
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.fireflies.connector import FirefliesConnector
-from onyx.connectors.models import Document
-from onyx.connectors.models import HierarchyNode
+from om.configs.constants import DocumentSource
+from om.connectors.fireflies.connector import FirefliesConnector
+from om.connectors.models import Document
+from om.connectors.models import HierarchyNode
 
 
 def load_test_data(file_name: str = "test_fireflies_data.json") -> dict[str, Any]:

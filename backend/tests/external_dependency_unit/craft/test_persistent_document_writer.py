@@ -17,14 +17,14 @@ import boto3
 import pytest
 from botocore.exceptions import ClientError
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import Document
-from onyx.connectors.models import TextSection
-from onyx.server.features.build.configs import SANDBOX_S3_BUCKET
-from onyx.server.features.build.indexing.persistent_document_writer import (
+from om.configs.constants import DocumentSource
+from om.connectors.models import Document
+from om.connectors.models import TextSection
+from om.server.features.build.configs import SANDBOX_S3_BUCKET
+from om.server.features.build.indexing.persistent_document_writer import (
     PersistentDocumentWriter,
 )
-from onyx.server.features.build.indexing.persistent_document_writer import (
+from om.server.features.build.indexing.persistent_document_writer import (
     S3PersistentDocumentWriter,
 )
 from tests.external_dependency_unit.constants import TEST_TENANT_ID

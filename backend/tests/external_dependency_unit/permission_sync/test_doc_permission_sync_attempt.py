@@ -11,22 +11,22 @@ from datetime import timezone
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import InputType
-from onyx.db.enums import AccessType
-from onyx.db.enums import ConnectorCredentialPairStatus
-from onyx.db.enums import PermissionSyncStatus
-from onyx.db.models import Connector
-from onyx.db.models import ConnectorCredentialPair
-from onyx.db.models import Credential
-from onyx.db.permission_sync_attempt import complete_doc_permission_sync_attempt
-from onyx.db.permission_sync_attempt import create_doc_permission_sync_attempt
-from onyx.db.permission_sync_attempt import get_doc_permission_sync_attempt
-from onyx.db.permission_sync_attempt import (
+from om.configs.constants import DocumentSource
+from om.connectors.models import InputType
+from om.db.enums import AccessType
+from om.db.enums import ConnectorCredentialPairStatus
+from om.db.enums import PermissionSyncStatus
+from om.db.models import Connector
+from om.db.models import ConnectorCredentialPair
+from om.db.models import Credential
+from om.db.permission_sync_attempt import complete_doc_permission_sync_attempt
+from om.db.permission_sync_attempt import create_doc_permission_sync_attempt
+from om.db.permission_sync_attempt import get_doc_permission_sync_attempt
+from om.db.permission_sync_attempt import (
     get_recent_doc_permission_sync_attempts_for_cc_pair,
 )
-from onyx.db.permission_sync_attempt import mark_doc_permission_sync_attempt_failed
-from onyx.db.permission_sync_attempt import (
+from om.db.permission_sync_attempt import mark_doc_permission_sync_attempt_failed
+from om.db.permission_sync_attempt import (
     mark_doc_permission_sync_attempt_in_progress,
 )
 from tests.external_dependency_unit.conftest import create_test_user

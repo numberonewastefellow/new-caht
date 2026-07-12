@@ -13,16 +13,16 @@ from unittest.mock import patch
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.factory import _connector_cache
-from onyx.connectors.factory import _load_connector_class
-from onyx.connectors.factory import ConnectorMissingException
-from onyx.connectors.factory import identify_connector_class
-from onyx.connectors.factory import instantiate_connector
-from onyx.connectors.interfaces import BaseConnector
-from onyx.connectors.models import InputType
-from onyx.connectors.registry import CONNECTOR_CLASS_MAP
-from onyx.connectors.registry import ConnectorMapping
+from om.configs.constants import DocumentSource
+from om.connectors.factory import _connector_cache
+from om.connectors.factory import _load_connector_class
+from om.connectors.factory import ConnectorMissingException
+from om.connectors.factory import identify_connector_class
+from om.connectors.factory import instantiate_connector
+from om.connectors.interfaces import BaseConnector
+from om.connectors.models import InputType
+from om.connectors.registry import CONNECTOR_CLASS_MAP
+from om.connectors.registry import ConnectorMapping
 
 
 class TestConnectorMappingValidation:
@@ -77,7 +77,7 @@ class TestConnectorMappingValidation:
         ]
 
         expected_mapping = ConnectorMapping(
-            module_path="onyx.connectors.blob.connector",
+            module_path="om.connectors.blob.connector",
             class_name="BlobStorageConnector",
         )
 
@@ -126,7 +126,7 @@ class TestConnectorClassLoading:
             _load_connector_class(DocumentSource.WEB)
 
         assert (
-            "Failed to import WebConnector from onyx.connectors.web.connector"
+            "Failed to import WebConnector from om.connectors.web.connector"
             in str(exc_info.value)
         )
 
@@ -147,7 +147,7 @@ class TestConnectorClassLoading:
             _load_connector_class(DocumentSource.WEB)
 
         assert (
-            "Failed to import WebConnector from onyx.connectors.web.connector"
+            "Failed to import WebConnector from om.connectors.web.connector"
             in str(exc_info.value)
         )
 
@@ -232,8 +232,8 @@ class TestConnectorMappingIntegrity:
                 mapping.class_name, str
             ), f"{source.value} class_name is not a string"
             assert mapping.module_path.startswith(
-                "onyx.connectors."
-            ), f"{source.value} module_path doesn't start with onyx.connectors."
+                "om.connectors."
+            ), f"{source.value} module_path doesn't start with om.connectors."
             assert mapping.class_name.endswith(
                 "Connector"
             ), f"{source.value} class_name doesn't end with Connector"
@@ -248,7 +248,7 @@ class TestInstantiateConnectorIntegration:
 
     def test_instantiate_connector_loads_class_lazily(self) -> None:
         """Test that instantiate_connector triggers lazy loading."""
-        from onyx.utils.sensitive import make_mock_sensitive_value
+        from om.utils.sensitive import make_mock_sensitive_value
 
         # Mock the database session and credential
         mock_session = MagicMock()

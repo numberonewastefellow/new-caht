@@ -7,21 +7,21 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.context.search.models import SavedSearchSettings
-from onyx.context.search.models import SearchSettingsCreationRequest
-from onyx.db.enums import EmbeddingPrecision
-from onyx.db.llm import fetch_default_contextual_rag_model
-from onyx.db.llm import update_default_contextual_model
-from onyx.db.llm import upsert_llm_provider
-from onyx.db.models import IndexModelStatus
-from onyx.db.search_settings import create_search_settings
-from onyx.db.swap_index import check_and_perform_index_swap
-from onyx.indexing.indexing_pipeline import IndexingPipelineResult
-from onyx.indexing.indexing_pipeline import run_indexing_pipeline
-from onyx.server.manage.llm.models import LLMProviderUpsertRequest
-from onyx.server.manage.llm.models import ModelConfigurationUpsertRequest
-from onyx.server.manage.search_settings import set_new_search_settings
-from onyx.server.manage.search_settings import update_saved_search_settings
+from om.context.search.models import SavedSearchSettings
+from om.context.search.models import SearchSettingsCreationRequest
+from om.db.enums import EmbeddingPrecision
+from om.db.llm import fetch_default_contextual_rag_model
+from om.db.llm import update_default_contextual_model
+from om.db.llm import upsert_llm_provider
+from om.db.models import IndexModelStatus
+from om.db.search_settings import create_search_settings
+from om.db.swap_index import check_and_perform_index_swap
+from om.indexing.indexing_pipeline import IndexingPipelineResult
+from om.indexing.indexing_pipeline import run_indexing_pipeline
+from om.server.manage.llm.models import LLMProviderUpsertRequest
+from om.server.manage.llm.models import ModelConfigurationUpsertRequest
+from om.server.manage.search_settings import set_new_search_settings
+from om.server.manage.search_settings import update_saved_search_settings
 
 
 TEST_CONTEXTUAL_RAG_LLM_NAME = "test-contextual-model"
@@ -148,10 +148,10 @@ def baseline_search_settings(
 
 
 @pytest.mark.skip(reason="Set new search settings is temporarily disabled.")
-@patch("onyx.db.swap_index.get_all_document_indices")
-@patch("onyx.server.manage.search_settings.get_default_document_index")
-@patch("onyx.indexing.indexing_pipeline.get_llm_for_contextual_rag")
-@patch("onyx.indexing.indexing_pipeline.index_doc_batch_with_handler")
+@patch("om.db.swap_index.get_all_document_indices")
+@patch("om.server.manage.search_settings.get_default_document_index")
+@patch("om.indexing.indexing_pipeline.get_llm_for_contextual_rag")
+@patch("om.indexing.indexing_pipeline.index_doc_batch_with_handler")
 def test_indexing_pipeline_uses_contextual_rag_settings_from_create(
     mock_index_handler: MagicMock,
     mock_get_llm: MagicMock,
@@ -198,10 +198,10 @@ def test_indexing_pipeline_uses_contextual_rag_settings_from_create(
 
 
 @pytest.mark.skip(reason="Set new search settings is temporarily disabled.")
-@patch("onyx.db.swap_index.get_all_document_indices")
-@patch("onyx.server.manage.search_settings.get_default_document_index")
-@patch("onyx.indexing.indexing_pipeline.get_llm_for_contextual_rag")
-@patch("onyx.indexing.indexing_pipeline.index_doc_batch_with_handler")
+@patch("om.db.swap_index.get_all_document_indices")
+@patch("om.server.manage.search_settings.get_default_document_index")
+@patch("om.indexing.indexing_pipeline.get_llm_for_contextual_rag")
+@patch("om.indexing.indexing_pipeline.index_doc_batch_with_handler")
 def test_indexing_pipeline_uses_updated_contextual_rag_settings(
     mock_index_handler: MagicMock,
     mock_get_llm: MagicMock,
@@ -268,9 +268,9 @@ def test_indexing_pipeline_uses_updated_contextual_rag_settings(
 
 
 @pytest.mark.skip(reason="Set new search settings is temporarily disabled.")
-@patch("onyx.server.manage.search_settings.get_default_document_index")
-@patch("onyx.indexing.indexing_pipeline.get_llm_for_contextual_rag")
-@patch("onyx.indexing.indexing_pipeline.index_doc_batch_with_handler")
+@patch("om.server.manage.search_settings.get_default_document_index")
+@patch("om.indexing.indexing_pipeline.get_llm_for_contextual_rag")
+@patch("om.indexing.indexing_pipeline.index_doc_batch_with_handler")
 def test_indexing_pipeline_skips_llm_when_contextual_rag_disabled(
     mock_index_handler: MagicMock,
     mock_get_llm: MagicMock,

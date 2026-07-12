@@ -4,13 +4,13 @@ from unittest.mock import patch
 from uuid import UUID
 from uuid import uuid4
 
-from onyx.db.models import DocumentSet
-from onyx.db.models import DocumentSet__User
-from onyx.db.models import Persona
-from onyx.db.models import Persona__User
-from onyx.db.models import SamlAccount
-from onyx.db.models import User__UserGroup
-from onyx.db.users import delete_user_from_db
+from om.db.models import DocumentSet
+from om.db.models import DocumentSet__User
+from om.db.models import Persona
+from om.db.models import Persona__User
+from om.db.models import SamlAccount
+from om.db.models import User__UserGroup
+from om.db.users import delete_user_from_db
 
 
 def _mock_user(
@@ -30,9 +30,9 @@ def _make_query_chain() -> MagicMock:
     return chain
 
 
-@patch("onyx.db.users.remove_user_from_invited_users")
+@patch("om.db.users.remove_user_from_invited_users")
 @patch(
-    "onyx.db.users.fetch_ee_implementation_or_noop",
+    "om.db.users.fetch_ee_implementation_or_noop",
     return_value=lambda **_kwargs: None,
 )
 def test_delete_user_nulls_out_document_set_ownership(
@@ -67,9 +67,9 @@ def test_delete_user_nulls_out_document_set_ownership(
     )
 
 
-@patch("onyx.db.users.remove_user_from_invited_users")
+@patch("om.db.users.remove_user_from_invited_users")
 @patch(
-    "onyx.db.users.fetch_ee_implementation_or_noop",
+    "om.db.users.fetch_ee_implementation_or_noop",
     return_value=lambda **_kwargs: None,
 )
 def test_delete_user_cleans_up_join_tables(
@@ -95,9 +95,9 @@ def test_delete_user_cleans_up_join_tables(
         chain.filter.return_value.delete.assert_called_once()
 
 
-@patch("onyx.db.users.remove_user_from_invited_users")
+@patch("om.db.users.remove_user_from_invited_users")
 @patch(
-    "onyx.db.users.fetch_ee_implementation_or_noop",
+    "om.db.users.fetch_ee_implementation_or_noop",
     return_value=lambda **_kwargs: None,
 )
 def test_delete_user_commits_and_removes_invited(
@@ -114,9 +114,9 @@ def test_delete_user_commits_and_removes_invited(
     mock_remove_invited.assert_called_once_with("deleted@example.com")
 
 
-@patch("onyx.db.users.remove_user_from_invited_users")
+@patch("om.db.users.remove_user_from_invited_users")
 @patch(
-    "onyx.db.users.fetch_ee_implementation_or_noop",
+    "om.db.users.fetch_ee_implementation_or_noop",
     return_value=lambda **_kwargs: None,
 )
 def test_delete_user_deletes_oauth_accounts(

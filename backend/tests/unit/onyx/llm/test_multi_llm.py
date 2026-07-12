@@ -11,19 +11,19 @@ from litellm.types.utils import ChatCompletionDeltaToolCall
 from litellm.types.utils import Delta
 from litellm.types.utils import Function as LiteLLMFunction
 
-from onyx.configs.app_configs import MOCK_LLM_RESPONSE
-from onyx.llm.constants import LlmProviderNames
-from onyx.llm.interfaces import LLMUserIdentity
-from onyx.llm.model_response import ModelResponse
-from onyx.llm.model_response import ModelResponseStream
-from onyx.llm.models import AssistantMessage
-from onyx.llm.models import FunctionCall
-from onyx.llm.models import LanguageModelInput
-from onyx.llm.models import ReasoningEffort
-from onyx.llm.models import ToolCall
-from onyx.llm.models import UserMessage
-from onyx.llm.multi_llm import LitellmLLM
-from onyx.llm.utils import get_max_input_tokens
+from om.configs.app_configs import MOCK_LLM_RESPONSE
+from om.llm.constants import LlmProviderNames
+from om.llm.interfaces import LLMUserIdentity
+from om.llm.model_response import ModelResponse
+from om.llm.model_response import ModelResponseStream
+from om.llm.models import AssistantMessage
+from om.llm.models import FunctionCall
+from om.llm.models import LanguageModelInput
+from om.llm.models import ReasoningEffort
+from om.llm.models import ToolCall
+from om.llm.models import UserMessage
+from om.llm.multi_llm import LitellmLLM
+from om.llm.utils import get_max_input_tokens
 
 VERTEX_OPUS_MODELS_REJECTING_OUTPUT_CONFIG = [
     "claude-opus-4-5@20251101",
@@ -462,8 +462,8 @@ def test_openai_auto_reasoning_effort_maps_to_medium() -> None:
 
     with (
         patch("litellm.completion") as mock_completion,
-        patch("onyx.llm.multi_llm.model_is_reasoning_model", return_value=True),
-        patch("onyx.llm.multi_llm.is_true_openai_model", return_value=True),
+        patch("om.llm.multi_llm.model_is_reasoning_model", return_value=True),
+        patch("om.llm.multi_llm.is_true_openai_model", return_value=True),
     ):
         mock_completion.return_value = []
 
@@ -489,7 +489,7 @@ def test_vertex_opus_omits_reasoning_effort(model_name: str) -> None:
 
     with (
         patch("litellm.completion") as mock_completion,
-        patch("onyx.llm.multi_llm.model_is_reasoning_model", return_value=True),
+        patch("om.llm.multi_llm.model_is_reasoning_model", return_value=True),
     ):
         mock_completion.return_value = []
 
@@ -515,10 +515,10 @@ def test_openai_chat_omits_reasoning_params() -> None:
     with (
         patch("litellm.completion") as mock_completion,
         patch(
-            "onyx.llm.multi_llm.model_is_reasoning_model", return_value=True
+            "om.llm.multi_llm.model_is_reasoning_model", return_value=True
         ) as mock_is_reasoning,
         patch(
-            "onyx.llm.multi_llm.is_true_openai_model", return_value=True
+            "om.llm.multi_llm.is_true_openai_model", return_value=True
         ) as mock_is_openai,
     ):
         mock_stream_chunks = [
@@ -550,7 +550,7 @@ def test_openai_chat_omits_reasoning_params() -> None:
 def test_user_identity_metadata_enabled(default_multi_llm: LitellmLLM) -> None:
     with (
         patch("litellm.completion") as mock_completion,
-        patch("onyx.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", True),
+        patch("om.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", True),
     ):
         mock_stream_chunks = [
             litellm.ModelResponse(
@@ -583,7 +583,7 @@ def test_user_identity_user_id_truncated_to_64_chars(
 ) -> None:
     with (
         patch("litellm.completion") as mock_completion,
-        patch("onyx.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", True),
+        patch("om.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", True),
     ):
         mock_stream_chunks = [
             litellm.ModelResponse(
@@ -616,7 +616,7 @@ def test_user_identity_metadata_disabled_omits_identity(
 ) -> None:
     with (
         patch("litellm.completion") as mock_completion,
-        patch("onyx.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", False),
+        patch("om.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", False),
     ):
         mock_stream_chunks = [
             litellm.ModelResponse(
@@ -662,7 +662,7 @@ def test_existing_metadata_pass_through_when_identity_disabled() -> None:
 
     with (
         patch("litellm.completion") as mock_completion,
-        patch("onyx.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", False),
+        patch("om.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", False),
     ):
         mock_stream_chunks = [
             litellm.ModelResponse(
@@ -908,7 +908,7 @@ def test_temporary_env_cleanup(monkeypatch: pytest.MonkeyPatch) -> None:
 
     with (
         patch("litellm.completion") as mock_completion,
-        patch("onyx.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", False),
+        patch("om.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", False),
     ):
         mock_completion.side_effect = on_litellm_completion
 
@@ -977,7 +977,7 @@ def test_temporary_env_cleanup_on_exception(monkeypatch: pytest.MonkeyPatch) -> 
 
     with (
         patch("litellm.completion") as mock_completion,
-        patch("onyx.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", False),
+        patch("om.llm.utils.SEND_USER_METADATA_TO_LLM_PROVIDER", False),
     ):
         mock_completion.side_effect = on_litellm_completion_raises
 
@@ -1132,7 +1132,7 @@ def test_multithreaded_invoke_without_custom_config_skips_env_lock() -> None:
     Both should run with stream=False, never touch the env lock, and complete
     without blocking each other.
     """
-    from onyx.llm import multi_llm as multi_llm_module
+    from om.llm import multi_llm as multi_llm_module
 
     model_provider = LlmProviderNames.OPENAI
     model_name = "gpt-3.5-turbo"

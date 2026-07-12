@@ -19,7 +19,7 @@ if ! command -v opencode >/dev/null 2>&1; then
     exit 1
 fi
 
-CRAFT_BASE="/app/onyx/server/features/build/sandbox/kubernetes/docker"
+CRAFT_BASE="/app/om/server/features/build/sandbox/kubernetes/docker"
 DEMO_DATA_ZIP="${CRAFT_BASE}/demo_data.zip"
 DEMO_DATA_DIR="${CRAFT_BASE}/demo_data"
 # Use environment variables if set, otherwise use defaults

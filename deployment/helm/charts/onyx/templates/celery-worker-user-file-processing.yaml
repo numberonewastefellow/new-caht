@@ -90,7 +90,7 @@ spec:
                 - /bin/bash
                 - -c
                 - >
-                    python onyx/background/celery/celery_k8s_probe.py
+                    python om/background/celery/celery_k8s_probe.py
                     --probe readiness
                     --filename /tmp/onyx_k8s_userfileprocessing_readiness.txt
           livenessProbe:
@@ -100,7 +100,7 @@ spec:
                 - /bin/bash
                 - -c
                 - >
-                    python onyx/background/celery/celery_k8s_probe.py
+                    python om/background/celery/celery_k8s_probe.py
                     --probe liveness
                     --filename /tmp/onyx_k8s_userfileprocessing_liveness.txt
       {{- with .Values.celery_worker_user_file_processing.volumes }}

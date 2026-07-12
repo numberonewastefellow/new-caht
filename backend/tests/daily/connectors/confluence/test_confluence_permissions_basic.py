@@ -5,15 +5,15 @@ from unittest.mock import patch
 
 import pytest
 
-from ee.onyx.external_permissions.confluence.doc_sync import confluence_doc_sync
-from onyx.access.models import DocExternalAccess
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.confluence.connector import ConfluenceConnector
-from onyx.connectors.credentials_provider import OnyxStaticCredentialsProvider
-from onyx.connectors.models import HierarchyNode
-from onyx.db.models import ConnectorCredentialPair
-from onyx.db.utils import DocumentRow
-from onyx.db.utils import SortOrder
+from ee.om.external_permissions.confluence.doc_sync import confluence_doc_sync
+from om.access.models import DocExternalAccess
+from om.configs.constants import DocumentSource
+from om.connectors.confluence.connector import ConfluenceConnector
+from om.connectors.credentials_provider import OnyxStaticCredentialsProvider
+from om.connectors.models import HierarchyNode
+from om.db.models import ConnectorCredentialPair
+from om.db.utils import DocumentRow
+from om.db.utils import SortOrder
 from tests.daily.connectors.utils import load_all_from_connector
 
 
@@ -39,7 +39,7 @@ def confluence_connector() -> ConfluenceConnector:
 # This should never fail because even if the docs in the cloud change,
 # the full doc ids retrieved should always be a subset of the slim doc ids
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 def test_confluence_connector_permissions(
@@ -85,9 +85,9 @@ def test_confluence_connector_permissions(
     ), f"Full doc IDs are not a subset of slim doc IDs. Found {len(difference)} IDs in full docs but not in slim docs."
 
 
-@patch("ee.onyx.external_permissions.confluence.doc_sync.OnyxDBCredentialsProvider")
+@patch("ee.om.external_permissions.confluence.doc_sync.OnyxDBCredentialsProvider")
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key",
+    "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,
 )
 def test_confluence_connector_restriction_handling(

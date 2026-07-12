@@ -18,28 +18,28 @@ Run inside the backend container:
 
 from sqlalchemy.orm import Session
 
-from onyx.configs.constants import MessageType
-from onyx.context.search.models import ChunkIndexRequest
-from onyx.context.search.models import IndexFilters
-from onyx.context.search.models import InferenceChunk
-from onyx.context.search.models import InferenceSection
-from onyx.context.search.pipeline import merge_individual_chunks
-from onyx.context.search.retrieval.search_runner import search_chunks
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.engine.sql_engine import SqlEngine
-from onyx.llm.factory import get_default_llm
-from onyx.llm.interfaces import LLM
-from onyx.secondary_llm_flows.document_filter import classify_section_relevance
-from onyx.secondary_llm_flows.document_filter import select_sections_for_expansion
-from onyx.secondary_llm_flows.query_expansion import keyword_query_expansion
-from onyx.secondary_llm_flows.query_expansion import semantic_query_rephrase
-from onyx.tools.models import ChatMinimalTextMessage
-from onyx.tools.tool_implementations.search.constants import KEYWORD_QUERY_HYBRID_ALPHA
-from onyx.tools.tool_implementations.search.constants import LLM_KEYWORD_QUERY_WEIGHT
-from onyx.tools.tool_implementations.search.constants import LLM_SEMANTIC_QUERY_WEIGHT
-from onyx.tools.tool_implementations.search.constants import MAX_CHUNKS_FOR_RELEVANCE
-from onyx.tools.tool_implementations.search.constants import ORIGINAL_QUERY_WEIGHT
-from onyx.tools.tool_implementations.search.search_utils import (
+from om.configs.constants import MessageType
+from om.context.search.models import ChunkIndexRequest
+from om.context.search.models import IndexFilters
+from om.context.search.models import InferenceChunk
+from om.context.search.models import InferenceSection
+from om.context.search.pipeline import merge_individual_chunks
+from om.context.search.retrieval.search_runner import search_chunks
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.engine.sql_engine import SqlEngine
+from om.llm.factory import get_default_llm
+from om.llm.interfaces import LLM
+from om.secondary_llm_flows.document_filter import classify_section_relevance
+from om.secondary_llm_flows.document_filter import select_sections_for_expansion
+from om.secondary_llm_flows.query_expansion import keyword_query_expansion
+from om.secondary_llm_flows.query_expansion import semantic_query_rephrase
+from om.tools.models import ChatMinimalTextMessage
+from om.tools.tool_implementations.search.constants import KEYWORD_QUERY_HYBRID_ALPHA
+from om.tools.tool_implementations.search.constants import LLM_KEYWORD_QUERY_WEIGHT
+from om.tools.tool_implementations.search.constants import LLM_SEMANTIC_QUERY_WEIGHT
+from om.tools.tool_implementations.search.constants import MAX_CHUNKS_FOR_RELEVANCE
+from om.tools.tool_implementations.search.constants import ORIGINAL_QUERY_WEIGHT
+from om.tools.tool_implementations.search.search_utils import (
     weighted_reciprocal_rank_fusion,
 )
 from tests.search_baseline.harness import get_index

@@ -1,13 +1,13 @@
 [project]
-name = "onyx-backend"
+name = "om-backend"
 version = "0.0.0"
 requires-python = ">=3.11"
 dependencies = [
-    "onyx[backend,dev,ee]",
+    "om[backend,dev,ee]",
 ]
 
 [tool.uv.sources]
-onyx = { workspace = true }
+om = { workspace = true }
 
 [tool.mypy]
 plugins = "sqlalchemy.ext.mypy.plugin"
@@ -21,8 +21,8 @@ strict_equality = true
 exclude = [
   "(?:^|/)generated/",
   "(?:^|/)\\.venv/",
-  "(?:^|/)onyx/server/features/build/sandbox/kubernetes/docker/skills/",
-  "(?:^|/)onyx/server/features/build/sandbox/kubernetes/docker/templates/",
+  "(?:^|/)om/server/features/build/sandbox/kubernetes/docker/skills/",
+  "(?:^|/)om/server/features/build/sandbox/kubernetes/docker/templates/",
 ]
 
 [[tool.mypy.overrides]]

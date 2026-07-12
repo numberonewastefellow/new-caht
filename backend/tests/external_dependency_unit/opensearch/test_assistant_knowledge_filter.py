@@ -13,10 +13,10 @@ attached documents or hierarchy nodes (since no document could match both).
 from typing import Any
 from uuid import UUID
 
-from onyx.configs.constants import DocumentSource
-from onyx.document_index.interfaces_new import TenantState
-from onyx.document_index.opensearch.schema import DOCUMENT_ID_FIELD_NAME
-from onyx.document_index.opensearch.search import DocumentQuery
+from om.configs.constants import DocumentSource
+from om.document_index.interfaces_new import TenantState
+from om.document_index.opensearch.schema import DOCUMENT_ID_FIELD_NAME
+from om.document_index.opensearch.search import DocumentQuery
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
 
 USER_FILE_ID = UUID("6ad84e45-4450-406c-9d36-fcb5e74aca6b")

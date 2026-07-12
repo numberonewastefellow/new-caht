@@ -16,7 +16,7 @@ Usage:
 import os
 from typing import Any
 
-from onyx.llm.litellm_singleton import litellm
+from om.llm.litellm_singleton import litellm
 
 # Optional: enable LiteLLM debug logs (set `LITELLM_DEBUG=1`)
 if os.getenv("LITELLM_DEBUG") == "1":

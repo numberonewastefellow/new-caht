@@ -2,22 +2,22 @@
 
 import pytest
 
-from onyx.chat.llm_loop import _should_keep_bedrock_tool_definitions
-from onyx.chat.llm_loop import _try_fallback_tool_extraction
-from onyx.chat.llm_loop import construct_message_history
-from onyx.chat.models import ChatLoadedFile
-from onyx.chat.models import ChatMessageSimple
-from onyx.chat.models import ExtractedProjectFiles
-from onyx.chat.models import FileToolMetadata
-from onyx.chat.models import LlmStepResult
-from onyx.chat.models import ProjectFileMetadata
-from onyx.chat.models import ToolCallSimple
-from onyx.configs.constants import MessageType
-from onyx.file_store.models import ChatFileType
-from onyx.llm.constants import LlmProviderNames
-from onyx.llm.interfaces import ToolChoiceOptions
-from onyx.server.query_and_chat.placement import Placement
-from onyx.tools.models import ToolCallKickoff
+from om.chat.llm_loop import _should_keep_bedrock_tool_definitions
+from om.chat.llm_loop import _try_fallback_tool_extraction
+from om.chat.llm_loop import construct_message_history
+from om.chat.models import ChatLoadedFile
+from om.chat.models import ChatMessageSimple
+from om.chat.models import ExtractedProjectFiles
+from om.chat.models import FileToolMetadata
+from om.chat.models import LlmStepResult
+from om.chat.models import ProjectFileMetadata
+from om.chat.models import ToolCallSimple
+from om.configs.constants import MessageType
+from om.file_store.models import ChatFileType
+from om.llm.constants import LlmProviderNames
+from om.llm.interfaces import ToolChoiceOptions
+from om.server.query_and_chat.placement import Placement
+from om.tools.models import ToolCallKickoff
 
 
 class _StubConfig:

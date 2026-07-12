@@ -5,10 +5,10 @@ from uuid import UUID
 import requests
 from requests.models import CaseInsensitiveDict
 
-from ee.onyx.server.query_history.models import ChatSessionMinimal
-from ee.onyx.server.query_history.models import ChatSessionSnapshot
-from onyx.configs.constants import QAFeedbackType
-from onyx.server.documents.models import PaginatedReturn
+from ee.om.server.query_history.models import ChatSessionMinimal
+from ee.om.server.query_history.models import ChatSessionSnapshot
+from om.configs.constants import QAFeedbackType
+from om.server.documents.models import PaginatedReturn
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import GENERAL_HEADERS
 from tests.integration.common_utils.test_models import DATestUser

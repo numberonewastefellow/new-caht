@@ -9,13 +9,13 @@ import requests
 
 from alembic import command
 from alembic.config import Config
-from onyx.configs.app_configs import POSTGRES_DB
-from onyx.configs.app_configs import POSTGRES_HOST
-from onyx.configs.app_configs import POSTGRES_PASSWORD
-from onyx.configs.app_configs import POSTGRES_PORT
-from onyx.configs.app_configs import POSTGRES_USER
-from onyx.document_index.vespa_constants import DOCUMENT_ID_ENDPOINT
-from onyx.utils.logger import setup_logger
+from om.configs.app_configs import POSTGRES_DB
+from om.configs.app_configs import POSTGRES_HOST
+from om.configs.app_configs import POSTGRES_PASSWORD
+from om.configs.app_configs import POSTGRES_PORT
+from om.configs.app_configs import POSTGRES_USER
+from om.document_index.vespa_constants import DOCUMENT_ID_ENDPOINT
+from om.utils.logger import setup_logger
 
 logger = setup_logger()
 

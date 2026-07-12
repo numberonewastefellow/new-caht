@@ -5,11 +5,11 @@ from dataclasses import field
 from dataclasses import replace
 from urllib.parse import urlparse
 
-from onyx.connectors.google_drive.connector import GoogleDriveConnector
-from onyx.connectors.models import Document
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.models import TextSection
-from onyx.db.enums import HierarchyNodeType
+from om.connectors.google_drive.connector import GoogleDriveConnector
+from om.connectors.models import Document
+from om.connectors.models import HierarchyNode
+from om.connectors.models import TextSection
+from om.db.enums import HierarchyNodeType
 from tests.daily.connectors.utils import ConnectorOutput
 from tests.daily.connectors.utils import load_all_from_connector
 

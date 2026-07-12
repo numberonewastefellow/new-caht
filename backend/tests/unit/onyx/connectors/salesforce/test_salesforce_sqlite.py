@@ -12,27 +12,27 @@ from typing import cast
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.cross_connector_utils.miscellaneous_utils import time_str_to_utc
-from onyx.connectors.models import BasicExpertInfo
-from onyx.connectors.models import Document
-from onyx.connectors.models import ImageSection
-from onyx.connectors.models import TextSection
-from onyx.connectors.salesforce.doc_conversion import _extract_section
-from onyx.connectors.salesforce.doc_conversion import ID_PREFIX
-from onyx.connectors.salesforce.onyx_salesforce import OnyxSalesforce
-from onyx.connectors.salesforce.salesforce_calls import _bulk_retrieve_from_salesforce
-from onyx.connectors.salesforce.salesforce_calls import _make_time_filter_for_sf_type
-from onyx.connectors.salesforce.salesforce_calls import _make_time_filtered_query
-from onyx.connectors.salesforce.salesforce_calls import get_object_by_id_query
-from onyx.connectors.salesforce.sqlite_functions import OnyxSalesforceSQLite
-from onyx.connectors.salesforce.utils import ACCOUNT_OBJECT_TYPE
-from onyx.connectors.salesforce.utils import MODIFIED_FIELD
-from onyx.connectors.salesforce.utils import USER_OBJECT_TYPE
-from onyx.utils.logger import setup_logger
+from om.configs.constants import DocumentSource
+from om.connectors.cross_connector_utils.miscellaneous_utils import time_str_to_utc
+from om.connectors.models import BasicExpertInfo
+from om.connectors.models import Document
+from om.connectors.models import ImageSection
+from om.connectors.models import TextSection
+from om.connectors.salesforce.doc_conversion import _extract_section
+from om.connectors.salesforce.doc_conversion import ID_PREFIX
+from om.connectors.salesforce.onyx_salesforce import OnyxSalesforce
+from om.connectors.salesforce.salesforce_calls import _bulk_retrieve_from_salesforce
+from om.connectors.salesforce.salesforce_calls import _make_time_filter_for_sf_type
+from om.connectors.salesforce.salesforce_calls import _make_time_filtered_query
+from om.connectors.salesforce.salesforce_calls import get_object_by_id_query
+from om.connectors.salesforce.sqlite_functions import OnyxSalesforceSQLite
+from om.connectors.salesforce.utils import ACCOUNT_OBJECT_TYPE
+from om.connectors.salesforce.utils import MODIFIED_FIELD
+from om.connectors.salesforce.utils import USER_OBJECT_TYPE
+from om.utils.logger import setup_logger
 
-# from onyx.connectors.salesforce.onyx_salesforce_type import OnyxSalesforceType
-# from onyx.connectors.salesforce.salesforce_calls import get_children_of_sf_type
+# from om.connectors.salesforce.onyx_salesforce_type import OnyxSalesforceType
+# from om.connectors.salesforce.salesforce_calls import get_children_of_sf_type
 
 logger = setup_logger()
 

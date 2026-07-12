@@ -17,7 +17,7 @@ from datetime import timezone
 
 import requests
 
-from onyx.auth.schemas import UserRole
+from om.auth.schemas import UserRole
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.managers.pat import PATManager
 from tests.integration.common_utils.managers.user import UserManager

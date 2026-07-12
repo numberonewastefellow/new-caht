@@ -19,7 +19,7 @@ identical cases can be replayed against OpenSearch and diffed (see compare_engin
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.configs.constants import DocumentSource
+from om.configs.constants import DocumentSource
 from tests.search_baseline import corpus
 from tests.search_baseline.harness import BaselineHit
 from tests.search_baseline.harness import get_index

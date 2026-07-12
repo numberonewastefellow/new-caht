@@ -51,10 +51,10 @@ def api_client(request: pytest.FixtureRequest) -> object:
         os.environ.setdefault("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "True")
         from fastapi.testclient import TestClient
 
-        from onyx.main import fetch_versioned_implementation
+        from om.main import fetch_versioned_implementation
 
         app = fetch_versioned_implementation(
-            module="onyx.main", attribute="get_application"
+            module="om.main", attribute="get_application"
         )()
         client = TestClient(app)
         yield client

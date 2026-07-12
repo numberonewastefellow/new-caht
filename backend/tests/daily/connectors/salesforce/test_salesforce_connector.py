@@ -8,11 +8,11 @@ from typing import cast
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import Document
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.salesforce.connector import SalesforceConnector
-from onyx.connectors.salesforce.utils import ACCOUNT_OBJECT_TYPE
+from om.configs.constants import DocumentSource
+from om.connectors.models import Document
+from om.connectors.models import HierarchyNode
+from om.connectors.salesforce.connector import SalesforceConnector
+from om.connectors.salesforce.utils import ACCOUNT_OBJECT_TYPE
 
 
 def extract_key_value_pairs_to_set(

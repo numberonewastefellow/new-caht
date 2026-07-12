@@ -17,11 +17,11 @@ from transformers import logging as transformer_logging
 from model_server.encoders import router as encoders_router
 from model_server.management_endpoints import router as management_router
 from model_server.utils import get_gpu_type
-from onyx import __version__
-from onyx.utils.logger import setup_logger
-from onyx.utils.logger import setup_uvicorn_logger
-from onyx.utils.middleware import add_onyx_request_id_middleware
-from onyx.utils.middleware import add_onyx_tenant_id_middleware
+from om import __version__
+from om.utils.logger import setup_logger
+from om.utils.logger import setup_uvicorn_logger
+from om.utils.middleware import add_onyx_request_id_middleware
+from om.utils.middleware import add_onyx_tenant_id_middleware
 from shared_configs.configs import INDEXING_ONLY
 from shared_configs.configs import MIN_THREADS_ML_MODELS
 from shared_configs.configs import MODEL_SERVER_ALLOWED_HOST

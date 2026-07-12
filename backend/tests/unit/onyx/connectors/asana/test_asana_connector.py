@@ -2,7 +2,7 @@
 
 import pytest
 
-from onyx.connectors.asana.connector import AsanaConnector
+from om.connectors.asana.connector import AsanaConnector
 
 
 @pytest.mark.parametrize(

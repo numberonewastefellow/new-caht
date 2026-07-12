@@ -8,13 +8,13 @@ from unittest.mock import patch
 from fastapi import FastAPI
 from sqlalchemy.pool import NullPool
 
-from onyx.server.metrics.postgres_connection_pool import _register_pool_events
-from onyx.server.metrics.postgres_connection_pool import PoolStateCollector
-from onyx.server.metrics.postgres_connection_pool import (
+from om.server.metrics.postgres_connection_pool import _register_pool_events
+from om.server.metrics.postgres_connection_pool import PoolStateCollector
+from om.server.metrics.postgres_connection_pool import (
     setup_postgres_connection_pool_metrics,
 )
-from onyx.utils.middleware import _build_route_map
-from onyx.utils.middleware import _match_route
+from om.utils.middleware import _build_route_map
+from om.utils.middleware import _match_route
 
 
 # --- PoolStateCollector tests ---
@@ -88,7 +88,7 @@ def test_checkout_event_stores_endpoint_and_increments_gauge() -> None:
     listeners: dict[str, Any] = {}
 
     # Capture event listeners
-    with patch("onyx.server.metrics.postgres_connection_pool.event") as mock_event:
+    with patch("om.server.metrics.postgres_connection_pool.event") as mock_event:
 
         def capture_listener(target: Any, event_name: str) -> Any:  # noqa: ARG001
             def decorator(fn: Any) -> Any:
@@ -104,12 +104,12 @@ def test_checkout_event_stores_endpoint_and_increments_gauge() -> None:
 
     with (
         patch(
-            "onyx.server.metrics.postgres_connection_pool.CURRENT_ENDPOINT_CONTEXTVAR"
+            "om.server.metrics.postgres_connection_pool.CURRENT_ENDPOINT_CONTEXTVAR"
         ) as mock_ctx,
         patch(
-            "onyx.server.metrics.postgres_connection_pool._connections_held"
+            "om.server.metrics.postgres_connection_pool._connections_held"
         ) as mock_gauge,
-        patch("onyx.server.metrics.postgres_connection_pool._checkout_total"),
+        patch("om.server.metrics.postgres_connection_pool._checkout_total"),
     ):
         mock_labels = MagicMock()
         mock_gauge.labels.return_value = mock_labels
@@ -130,7 +130,7 @@ def test_checkin_event_observes_hold_duration() -> None:
     engine.pool = MagicMock()
     listeners: dict[str, Any] = {}
 
-    with patch("onyx.server.metrics.postgres_connection_pool.event") as mock_event:
+    with patch("om.server.metrics.postgres_connection_pool.event") as mock_event:
 
         def capture_listener(target: Any, event_name: str) -> Any:  # noqa: ARG001
             def decorator(fn: Any) -> Any:
@@ -148,12 +148,12 @@ def test_checkin_event_observes_hold_duration() -> None:
 
     with (
         patch(
-            "onyx.server.metrics.postgres_connection_pool._connections_held"
+            "om.server.metrics.postgres_connection_pool._connections_held"
         ) as mock_gauge,
         patch(
-            "onyx.server.metrics.postgres_connection_pool._hold_seconds"
+            "om.server.metrics.postgres_connection_pool._hold_seconds"
         ) as mock_hist,
-        patch("onyx.server.metrics.postgres_connection_pool._checkin_total"),
+        patch("om.server.metrics.postgres_connection_pool._checkin_total"),
     ):
         mock_labels = MagicMock()
         mock_gauge.labels.return_value = mock_labels
@@ -181,7 +181,7 @@ def test_checkin_with_missing_endpoint_uses_unknown() -> None:
     engine.pool = MagicMock()
     listeners: dict[str, Any] = {}
 
-    with patch("onyx.server.metrics.postgres_connection_pool.event") as mock_event:
+    with patch("om.server.metrics.postgres_connection_pool.event") as mock_event:
 
         def capture_listener(target: Any, event_name: str) -> Any:  # noqa: ARG001
             def decorator(fn: Any) -> Any:
@@ -197,10 +197,10 @@ def test_checkin_with_missing_endpoint_uses_unknown() -> None:
 
     with (
         patch(
-            "onyx.server.metrics.postgres_connection_pool._connections_held"
+            "om.server.metrics.postgres_connection_pool._connections_held"
         ) as mock_gauge,
-        patch("onyx.server.metrics.postgres_connection_pool._hold_seconds"),
-        patch("onyx.server.metrics.postgres_connection_pool._checkin_total"),
+        patch("om.server.metrics.postgres_connection_pool._hold_seconds"),
+        patch("om.server.metrics.postgres_connection_pool._checkin_total"),
     ):
         mock_labels = MagicMock()
         mock_gauge.labels.return_value = mock_labels
@@ -216,9 +216,9 @@ def test_checkin_with_missing_endpoint_uses_unknown() -> None:
 def test_setup_skips_null_pool_engines() -> None:
     """Verify setup_postgres_connection_pool_metrics skips engines with NullPool."""
     with (
-        patch("onyx.server.metrics.postgres_connection_pool.REGISTRY"),
+        patch("om.server.metrics.postgres_connection_pool.REGISTRY"),
         patch(
-            "onyx.server.metrics.postgres_connection_pool._register_pool_events"
+            "om.server.metrics.postgres_connection_pool._register_pool_events"
         ) as mock_register,
     ):
         null_engine = MagicMock()

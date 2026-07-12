@@ -11,12 +11,12 @@ Tests the new packet storage behavior:
 
 from sqlalchemy.orm import Session
 
-from onyx.configs.constants import MessageType
-from onyx.db.models import BuildSession
-from onyx.server.features.build.db.build_session import create_message
-from onyx.server.features.build.db.build_session import get_session_messages
-from onyx.server.features.build.db.build_session import upsert_agent_plan
-from onyx.server.features.build.session.manager import BuildStreamingState
+from om.configs.constants import MessageType
+from om.db.models import BuildSession
+from om.server.features.build.db.build_session import create_message
+from om.server.features.build.db.build_session import get_session_messages
+from om.server.features.build.db.build_session import upsert_agent_plan
+from om.server.features.build.session.manager import BuildStreamingState
 
 
 class TestBuildMessageStorage:

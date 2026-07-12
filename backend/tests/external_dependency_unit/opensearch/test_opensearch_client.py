@@ -14,26 +14,26 @@ from datetime import timezone
 import pytest
 from opensearchpy import NotFoundError
 
-from onyx.access.models import DocumentAccess
-from onyx.access.utils import prefix_user_email
-from onyx.configs.constants import DocumentSource
-from onyx.context.search.models import IndexFilters
-from onyx.document_index.interfaces_new import TenantState
-from onyx.document_index.opensearch.client import OpenSearchClient
-from onyx.document_index.opensearch.client import wait_for_opensearch_with_timeout
-from onyx.document_index.opensearch.constants import DEFAULT_MAX_CHUNK_SIZE
-from onyx.document_index.opensearch.opensearch_document_index import (
+from om.access.models import DocumentAccess
+from om.access.utils import prefix_user_email
+from om.configs.constants import DocumentSource
+from om.context.search.models import IndexFilters
+from om.document_index.interfaces_new import TenantState
+from om.document_index.opensearch.client import OpenSearchClient
+from om.document_index.opensearch.client import wait_for_opensearch_with_timeout
+from om.document_index.opensearch.constants import DEFAULT_MAX_CHUNK_SIZE
+from om.document_index.opensearch.opensearch_document_index import (
     generate_opensearch_filtered_access_control_list,
 )
-from onyx.document_index.opensearch.schema import CONTENT_FIELD_NAME
-from onyx.document_index.opensearch.schema import DocumentChunk
-from onyx.document_index.opensearch.schema import DocumentSchema
-from onyx.document_index.opensearch.schema import get_opensearch_doc_chunk_id
-from onyx.document_index.opensearch.search import DocumentQuery
-from onyx.document_index.opensearch.search import (
+from om.document_index.opensearch.schema import CONTENT_FIELD_NAME
+from om.document_index.opensearch.schema import DocumentChunk
+from om.document_index.opensearch.schema import DocumentSchema
+from om.document_index.opensearch.schema import get_opensearch_doc_chunk_id
+from om.document_index.opensearch.search import DocumentQuery
+from om.document_index.opensearch.search import (
     MIN_MAX_NORMALIZATION_PIPELINE_CONFIG,
 )
-from onyx.document_index.opensearch.search import MIN_MAX_NORMALIZATION_PIPELINE_NAME
+from om.document_index.opensearch.search import MIN_MAX_NORMALIZATION_PIPELINE_NAME
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
 
 
@@ -46,7 +46,7 @@ def _patch_global_tenant_state(monkeypatch: pytest.MonkeyPatch, state: bool) -> 
         state: The intended state of MULTI_TENANT.
     """
     monkeypatch.setattr("shared_configs.configs.MULTI_TENANT", state)
-    monkeypatch.setattr("onyx.document_index.opensearch.schema.MULTI_TENANT", state)
+    monkeypatch.setattr("om.document_index.opensearch.schema.MULTI_TENANT", state)
 
 
 def _create_test_document_chunk(

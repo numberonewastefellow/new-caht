@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import requests
 
-from onyx.utils.gpu_utils import _get_gpu_status_from_model_server
+from om.utils.gpu_utils import _get_gpu_status_from_model_server
 
 
 class TestGPUUtils(TestCase):

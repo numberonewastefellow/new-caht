@@ -19,18 +19,18 @@ import pytest
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from onyx.db.llm import fetch_existing_llm_provider
-from onyx.db.llm import remove_llm_provider
-from onyx.db.llm import upsert_llm_provider
-from onyx.db.models import UserRole
-from onyx.llm.constants import LlmProviderNames
-from onyx.server.manage.llm.api import _mask_string
-from onyx.server.manage.llm.api import put_llm_provider
-from onyx.server.manage.llm.api import test_llm_configuration as run_llm_config_test
-from onyx.server.manage.llm.models import LLMProviderUpsertRequest
-from onyx.server.manage.llm.models import LLMProviderView
-from onyx.server.manage.llm.models import ModelConfigurationUpsertRequest
-from onyx.server.manage.llm.models import TestLLMRequest as LLMTestRequest
+from om.db.llm import fetch_existing_llm_provider
+from om.db.llm import remove_llm_provider
+from om.db.llm import upsert_llm_provider
+from om.db.models import UserRole
+from om.llm.constants import LlmProviderNames
+from om.server.manage.llm.api import _mask_string
+from om.server.manage.llm.api import put_llm_provider
+from om.server.manage.llm.api import test_llm_configuration as run_llm_config_test
+from om.server.manage.llm.models import LLMProviderUpsertRequest
+from om.server.manage.llm.models import LLMProviderView
+from om.server.manage.llm.models import ModelConfigurationUpsertRequest
+from om.server.manage.llm.models import TestLLMRequest as LLMTestRequest
 from tests.external_dependency_unit.mock_llm import LLM
 
 
@@ -93,7 +93,7 @@ class TestLLMProviderChanges:
         try:
             _create_test_provider(db_session, provider_name)
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", True):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", True):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -127,7 +127,7 @@ class TestLLMProviderChanges:
         try:
             _create_test_provider(db_session, provider_name)
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", True):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", True):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -161,7 +161,7 @@ class TestLLMProviderChanges:
         try:
             _create_test_provider(db_session, provider_name, api_base=original_api_base)
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", True):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", True):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -192,7 +192,7 @@ class TestLLMProviderChanges:
         try:
             _create_test_provider(db_session, provider_name, api_base=None)
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", True):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", True):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -225,7 +225,7 @@ class TestLLMProviderChanges:
         try:
             _create_test_provider(db_session, provider_name, api_base=original_api_base)
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", True):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", True):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -261,7 +261,7 @@ class TestLLMProviderChanges:
         try:
             _create_test_provider(db_session, provider_name)
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", False):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", False):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -290,7 +290,7 @@ class TestLLMProviderChanges:
         api_key_changed (since there's no existing key to protect).
         """
         try:
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", True):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", True):
                 create_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -328,7 +328,7 @@ class TestLLMProviderChanges:
                 custom_config={"SOME_CONFIG": "original_value"},
             )
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", True):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", True):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -364,7 +364,7 @@ class TestLLMProviderChanges:
         try:
             _create_test_provider(db_session, provider_name)
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", True):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", True):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -405,7 +405,7 @@ class TestLLMProviderChanges:
                 custom_config={"AWS_REGION_NAME": "us-east-1"},
             )
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", True):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", True):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -442,7 +442,7 @@ class TestLLMProviderChanges:
                 db_session, provider_name, custom_config=original_config
             )
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", True):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", True):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -480,7 +480,7 @@ class TestLLMProviderChanges:
                 custom_config={"AWS_REGION_NAME": "us-east-1"},
             )
 
-            with patch("onyx.server.manage.llm.api.MULTI_TENANT", False):
+            with patch("om.server.manage.llm.api.MULTI_TENANT", False):
                 update_request = LLMProviderUpsertRequest(
                     name=provider_name,
                     provider=LlmProviderNames.OPENAI,
@@ -527,7 +527,7 @@ def test_upload_with_custom_config_then_change(
 
     try:
         # Patch the test_llm method
-        with patch("onyx.server.manage.llm.api.test_llm", side_effect=capture_test_llm):
+        with patch("om.server.manage.llm.api.test_llm", side_effect=capture_test_llm):
             run_llm_config_test(
                 LLMTestRequest(
                     name=name,
@@ -662,7 +662,7 @@ def test_preserves_masked_sensitive_custom_config_on_provider_update(
             db_session=db_session,
         )
 
-        with patch("onyx.server.manage.llm.api.MULTI_TENANT", False):
+        with patch("om.server.manage.llm.api.MULTI_TENANT", False):
             put_llm_provider(
                 llm_provider_upsert_request=LLMProviderUpsertRequest(
                     name=name,
@@ -739,7 +739,7 @@ def test_preserves_masked_sensitive_custom_config_on_test_request(
             db_session=db_session,
         )
 
-        with patch("onyx.server.manage.llm.api.test_llm", side_effect=capture_test_llm):
+        with patch("om.server.manage.llm.api.test_llm", side_effect=capture_test_llm):
             run_llm_config_test(
                 LLMTestRequest(
                     name=name,

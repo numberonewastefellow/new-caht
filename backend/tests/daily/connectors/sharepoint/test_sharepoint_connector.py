@@ -8,12 +8,12 @@ from unittest.mock import patch
 
 import pytest
 
-from onyx.configs.constants import DocumentSource
-from onyx.connectors.models import Document
-from onyx.connectors.models import HierarchyNode
-from onyx.connectors.models import ImageSection
-from onyx.connectors.sharepoint.connector import SharepointConnector
-from onyx.db.enums import HierarchyNodeType
+from om.configs.constants import DocumentSource
+from om.connectors.models import Document
+from om.connectors.models import HierarchyNode
+from om.connectors.models import ImageSection
+from om.connectors.sharepoint.connector import SharepointConnector
+from om.db.enums import HierarchyNodeType
 from tests.daily.connectors.utils import load_all_from_connector
 
 # NOTE: Sharepoint site for tests is "sharepoint-tests"
@@ -152,7 +152,7 @@ def test_sharepoint_connector_all_sites__docs_only(
     sharepoint_credentials: dict[str, str],
 ) -> None:
     with patch(
-        "onyx.connectors.sharepoint.connector.store_image_and_create_section",
+        "om.connectors.sharepoint.connector.store_image_and_create_section",
         mock_store_image,
     ):
         # Initialize connector with no sites
@@ -179,7 +179,7 @@ def test_sharepoint_connector_all_sites__pages_only(
     sharepoint_credentials: dict[str, str],
 ) -> None:
     with patch(
-        "onyx.connectors.sharepoint.connector.store_image_and_create_section",
+        "om.connectors.sharepoint.connector.store_image_and_create_section",
         mock_store_image,
     ):
         # Initialize connector with no docs
@@ -206,7 +206,7 @@ def test_sharepoint_connector_specific_folder(
     sharepoint_credentials: dict[str, str],
 ) -> None:
     with patch(
-        "onyx.connectors.sharepoint.connector.store_image_and_create_section",
+        "om.connectors.sharepoint.connector.store_image_and_create_section",
         mock_store_image,
     ):
         # Initialize connector with the test site URL and specific folder
@@ -248,7 +248,7 @@ def test_sharepoint_connector_root_folder__docs_only(
     sharepoint_credentials: dict[str, str],
 ) -> None:
     with patch(
-        "onyx.connectors.sharepoint.connector.store_image_and_create_section",
+        "om.connectors.sharepoint.connector.store_image_and_create_section",
         mock_store_image,
     ):
         # Initialize connector with the base site URL
@@ -284,7 +284,7 @@ def test_sharepoint_connector_other_library(
     sharepoint_credentials: dict[str, str],
 ) -> None:
     with patch(
-        "onyx.connectors.sharepoint.connector.store_image_and_create_section",
+        "om.connectors.sharepoint.connector.store_image_and_create_section",
         mock_store_image,
     ):
         # Initialize connector with the other library
@@ -326,7 +326,7 @@ def test_sharepoint_connector_poll(
     sharepoint_credentials: dict[str, str],
 ) -> None:
     with patch(
-        "onyx.connectors.sharepoint.connector.store_image_and_create_section",
+        "om.connectors.sharepoint.connector.store_image_and_create_section",
         mock_store_image,
     ):
         # Initialize connector with the base site URL
@@ -368,7 +368,7 @@ def test_sharepoint_connector_pages(
     sharepoint_credentials: dict[str, str],
 ) -> None:
     with patch(
-        "onyx.connectors.sharepoint.connector.store_image_and_create_section",
+        "om.connectors.sharepoint.connector.store_image_and_create_section",
         mock_store_image,
     ):
         connector = SharepointConnector(
@@ -472,7 +472,7 @@ def test_sharepoint_connector_hierarchy_nodes(
 ) -> None:
     """Test that the SharePoint connector yields proper hierarchy nodes."""
     with patch(
-        "onyx.connectors.sharepoint.connector.store_image_and_create_section",
+        "om.connectors.sharepoint.connector.store_image_and_create_section",
         mock_store_image,
     ):
         site_url = os.environ["SHAREPOINT_SITE"]

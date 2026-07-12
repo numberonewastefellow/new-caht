@@ -1,6 +1,6 @@
-from onyx.server.query_and_chat.placement import Placement
-from onyx.tools.models import ToolCallKickoff
-from onyx.tools.tool_runner import _merge_tool_calls
+from om.server.query_and_chat.placement import Placement
+from om.tools.models import ToolCallKickoff
+from om.tools.tool_runner import _merge_tool_calls
 
 
 def _make_tool_call(

@@ -17,8 +17,8 @@ import os
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.engine.sql_engine import SqlEngine
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.engine.sql_engine import SqlEngine
 from tests.search_baseline.demo_reranking_layers import demonstrate
 from tests.search_baseline.ingest_index_rest import ingest
 
@@ -45,7 +45,7 @@ def db_session() -> Session:
 @pytest.mark.llm
 def test_reranking_pipeline_sports_query(db_session: Session) -> None:
     try:
-        from onyx.llm.factory import get_default_llm
+        from om.llm.factory import get_default_llm
 
         llm = get_default_llm()
     except Exception as e:  # pragma: no cover - depends on env config

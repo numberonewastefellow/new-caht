@@ -2,12 +2,12 @@ import json
 
 import pytest
 
-from onyx.image_gen.exceptions import ImageProviderCredentialsError
-from onyx.image_gen.factory import get_image_generation_provider
-from onyx.image_gen.interfaces import ImageGenerationProviderCredentials
-from onyx.image_gen.providers.azure_img_gen import AzureImageGenerationProvider
-from onyx.image_gen.providers.openai_img_gen import OpenAIImageGenerationProvider
-from onyx.image_gen.providers.vertex_img_gen import VertexImageGenerationProvider
+from om.image_gen.exceptions import ImageProviderCredentialsError
+from om.image_gen.factory import get_image_generation_provider
+from om.image_gen.interfaces import ImageGenerationProviderCredentials
+from om.image_gen.providers.azure_img_gen import AzureImageGenerationProvider
+from om.image_gen.providers.openai_img_gen import OpenAIImageGenerationProvider
+from om.image_gen.providers.vertex_img_gen import VertexImageGenerationProvider
 
 OPENAI_PROVIDER = "openai"
 AZURE_PROVIDER = "azure"

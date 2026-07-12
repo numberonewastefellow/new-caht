@@ -8,26 +8,26 @@ from collections.abc import Generator
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.context.search.enums import RecencyBiasSetting
-from onyx.db.discord_bot import bulk_create_channel_configs
-from onyx.db.discord_bot import create_discord_bot_config
-from onyx.db.discord_bot import create_guild_config
-from onyx.db.discord_bot import delete_discord_bot_config
-from onyx.db.discord_bot import delete_discord_service_api_key
-from onyx.db.discord_bot import delete_guild_config
-from onyx.db.discord_bot import get_channel_configs
-from onyx.db.discord_bot import get_discord_bot_config
-from onyx.db.discord_bot import get_discord_service_api_key
-from onyx.db.discord_bot import get_guild_config_by_internal_id
-from onyx.db.discord_bot import get_guild_config_by_registration_key
-from onyx.db.discord_bot import get_guild_configs
-from onyx.db.discord_bot import get_or_create_discord_service_api_key
-from onyx.db.discord_bot import sync_channel_configs
-from onyx.db.discord_bot import update_discord_channel_config
-from onyx.db.discord_bot import update_guild_config
-from onyx.db.models import Persona
-from onyx.db.utils import DiscordChannelView
-from onyx.server.manage.discord_bot.utils import generate_discord_registration_key
+from om.context.search.enums import RecencyBiasSetting
+from om.db.discord_bot import bulk_create_channel_configs
+from om.db.discord_bot import create_discord_bot_config
+from om.db.discord_bot import create_guild_config
+from om.db.discord_bot import delete_discord_bot_config
+from om.db.discord_bot import delete_discord_service_api_key
+from om.db.discord_bot import delete_guild_config
+from om.db.discord_bot import get_channel_configs
+from om.db.discord_bot import get_discord_bot_config
+from om.db.discord_bot import get_discord_service_api_key
+from om.db.discord_bot import get_guild_config_by_internal_id
+from om.db.discord_bot import get_guild_config_by_registration_key
+from om.db.discord_bot import get_guild_configs
+from om.db.discord_bot import get_or_create_discord_service_api_key
+from om.db.discord_bot import sync_channel_configs
+from om.db.discord_bot import update_discord_channel_config
+from om.db.discord_bot import update_guild_config
+from om.db.models import Persona
+from om.db.utils import DiscordChannelView
+from om.server.manage.discord_bot.utils import generate_discord_registration_key
 
 
 def _create_test_persona(db_session: Session, persona_id: int, name: str) -> Persona:
@@ -661,8 +661,8 @@ class TestServiceApiKeyAPI:
 @pytest.fixture
 def db_session() -> Generator[Session, None, None]:
     """Create database session for tests."""
-    from onyx.db.engine.sql_engine import get_session_with_current_tenant
-    from onyx.db.engine.sql_engine import SqlEngine
+    from om.db.engine.sql_engine import get_session_with_current_tenant
+    from om.db.engine.sql_engine import SqlEngine
     from shared_configs.contextvars import CURRENT_TENANT_ID_CONTEXTVAR
 
     SqlEngine.init_engine(pool_size=10, max_overflow=5)

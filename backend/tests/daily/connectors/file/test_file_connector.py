@@ -7,8 +7,8 @@ from uuid import uuid4
 
 import pytest
 
-from onyx.connectors.file.connector import LocalFileConnector
-from onyx.connectors.models import HierarchyNode
+from om.connectors.file.connector import LocalFileConnector
+from om.connectors.models import HierarchyNode
 
 
 @pytest.fixture
@@ -30,9 +30,9 @@ def mock_filestore_record() -> MagicMock:
     return record
 
 
-@patch("onyx.connectors.file.connector.get_default_file_store")
+@patch("om.connectors.file.connector.get_default_file_store")
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key", return_value=None
+    "om.file_processing.extract_file_text.get_unstructured_api_key", return_value=None
 )
 def test_single_text_file_with_metadata(
     mock_get_unstructured_api_key: MagicMock,  # noqa: ARG001
@@ -54,7 +54,7 @@ def test_single_text_file_with_metadata(
     mock_file_store.read_file.return_value = file_content
 
     with patch(
-        "onyx.connectors.file.connector.get_default_file_store",
+        "om.connectors.file.connector.get_default_file_store",
         return_value=mock_file_store,
     ):
         connector = LocalFileConnector(
@@ -77,7 +77,7 @@ def test_single_text_file_with_metadata(
 
 
 @patch(
-    "onyx.file_processing.extract_file_text.get_unstructured_api_key", return_value=None
+    "om.file_processing.extract_file_text.get_unstructured_api_key", return_value=None
 )
 def test_two_text_files_with_zip_metadata(
     mock_get_unstructured_api_key: MagicMock,  # noqa: ARG001
@@ -113,7 +113,7 @@ def test_two_text_files_with_zip_metadata(
     }
 
     with patch(
-        "onyx.connectors.file.connector.get_default_file_store",
+        "om.connectors.file.connector.get_default_file_store",
         return_value=mock_file_store,
     ):
         connector = LocalFileConnector(

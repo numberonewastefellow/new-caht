@@ -9,7 +9,7 @@ from typing import NamedTuple
 
 import pytest
 
-from onyx.file_store.models import FileDescriptor
+from om.file_store.models import FileDescriptor
 from tests.integration.common_utils.managers.chat import ChatSessionManager
 from tests.integration.common_utils.managers.file import FileManager
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager

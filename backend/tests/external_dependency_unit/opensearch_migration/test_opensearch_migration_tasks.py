@@ -17,55 +17,55 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.background.celery.tasks.opensearch_migration.tasks import (
+from om.background.celery.tasks.opensearch_migration.tasks import (
     is_continuation_token_done_for_all_slices,
 )
-from onyx.background.celery.tasks.opensearch_migration.tasks import (
+from om.background.celery.tasks.opensearch_migration.tasks import (
     migrate_chunks_from_vespa_to_opensearch_task,
 )
-from onyx.background.celery.tasks.opensearch_migration.transformer import (
+from om.background.celery.tasks.opensearch_migration.transformer import (
     transform_vespa_chunks_to_opensearch_chunks,
 )
-from onyx.configs.constants import PUBLIC_DOC_PAT
-from onyx.configs.constants import SOURCE_TYPE
-from onyx.context.search.models import IndexFilters
-from onyx.db.engine.sql_engine import get_session_with_current_tenant
-from onyx.db.models import Document
-from onyx.db.models import OpenSearchDocumentMigrationRecord
-from onyx.db.models import OpenSearchTenantMigrationRecord
-from onyx.db.opensearch_migration import build_sanitized_to_original_doc_id_mapping
-from onyx.db.search_settings import get_active_search_settings
-from onyx.document_index.interfaces_new import TenantState
-from onyx.document_index.opensearch.client import OpenSearchClient
-from onyx.document_index.opensearch.client import wait_for_opensearch_with_timeout
-from onyx.document_index.opensearch.constants import DEFAULT_MAX_CHUNK_SIZE
-from onyx.document_index.opensearch.schema import DocumentChunk
-from onyx.document_index.opensearch.search import DocumentQuery
-from onyx.document_index.vespa.shared_utils.utils import wait_for_vespa_with_timeout
-from onyx.document_index.vespa.vespa_document_index import VespaDocumentIndex
-from onyx.document_index.vespa_constants import ACCESS_CONTROL_LIST
-from onyx.document_index.vespa_constants import BLURB
-from onyx.document_index.vespa_constants import BOOST
-from onyx.document_index.vespa_constants import CHUNK_CONTEXT
-from onyx.document_index.vespa_constants import CHUNK_ID
-from onyx.document_index.vespa_constants import CONTENT
-from onyx.document_index.vespa_constants import DOC_SUMMARY
-from onyx.document_index.vespa_constants import DOC_UPDATED_AT
-from onyx.document_index.vespa_constants import DOCUMENT_ID
-from onyx.document_index.vespa_constants import DOCUMENT_SETS
-from onyx.document_index.vespa_constants import EMBEDDINGS
-from onyx.document_index.vespa_constants import FULL_CHUNK_EMBEDDING_KEY
-from onyx.document_index.vespa_constants import HIDDEN
-from onyx.document_index.vespa_constants import IMAGE_FILE_NAME
-from onyx.document_index.vespa_constants import METADATA_LIST
-from onyx.document_index.vespa_constants import METADATA_SUFFIX
-from onyx.document_index.vespa_constants import PRIMARY_OWNERS
-from onyx.document_index.vespa_constants import SECONDARY_OWNERS
-from onyx.document_index.vespa_constants import SEMANTIC_IDENTIFIER
-from onyx.document_index.vespa_constants import SOURCE_LINKS
-from onyx.document_index.vespa_constants import TITLE
-from onyx.document_index.vespa_constants import TITLE_EMBEDDING
-from onyx.document_index.vespa_constants import USER_PROJECT
+from om.configs.constants import PUBLIC_DOC_PAT
+from om.configs.constants import SOURCE_TYPE
+from om.context.search.models import IndexFilters
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.models import Document
+from om.db.models import OpenSearchDocumentMigrationRecord
+from om.db.models import OpenSearchTenantMigrationRecord
+from om.db.opensearch_migration import build_sanitized_to_original_doc_id_mapping
+from om.db.search_settings import get_active_search_settings
+from om.document_index.interfaces_new import TenantState
+from om.document_index.opensearch.client import OpenSearchClient
+from om.document_index.opensearch.client import wait_for_opensearch_with_timeout
+from om.document_index.opensearch.constants import DEFAULT_MAX_CHUNK_SIZE
+from om.document_index.opensearch.schema import DocumentChunk
+from om.document_index.opensearch.search import DocumentQuery
+from om.document_index.vespa.shared_utils.utils import wait_for_vespa_with_timeout
+from om.document_index.vespa.vespa_document_index import VespaDocumentIndex
+from om.document_index.vespa_constants import ACCESS_CONTROL_LIST
+from om.document_index.vespa_constants import BLURB
+from om.document_index.vespa_constants import BOOST
+from om.document_index.vespa_constants import CHUNK_CONTEXT
+from om.document_index.vespa_constants import CHUNK_ID
+from om.document_index.vespa_constants import CONTENT
+from om.document_index.vespa_constants import DOC_SUMMARY
+from om.document_index.vespa_constants import DOC_UPDATED_AT
+from om.document_index.vespa_constants import DOCUMENT_ID
+from om.document_index.vespa_constants import DOCUMENT_SETS
+from om.document_index.vespa_constants import EMBEDDINGS
+from om.document_index.vespa_constants import FULL_CHUNK_EMBEDDING_KEY
+from om.document_index.vespa_constants import HIDDEN
+from om.document_index.vespa_constants import IMAGE_FILE_NAME
+from om.document_index.vespa_constants import METADATA_LIST
+from om.document_index.vespa_constants import METADATA_SUFFIX
+from om.document_index.vespa_constants import PRIMARY_OWNERS
+from om.document_index.vespa_constants import SECONDARY_OWNERS
+from om.document_index.vespa_constants import SEMANTIC_IDENTIFIER
+from om.document_index.vespa_constants import SOURCE_LINKS
+from om.document_index.vespa_constants import TITLE
+from om.document_index.vespa_constants import TITLE_EMBEDDING
+from om.document_index.vespa_constants import USER_PROJECT
 from shared_configs.contextvars import get_current_tenant_id
 from tests.external_dependency_unit.full_setup import ensure_full_deployment_setup
 
@@ -241,10 +241,10 @@ def full_deployment_setup() -> Generator[None, None, None]:
     # TODO(andrei): Remove this once CI enables OpenSearch for all tests.
     with (
         patch(
-            "onyx.configs.app_configs.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX",
+            "om.configs.app_configs.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX",
             True,
         ),
-        patch("onyx.document_index.factory.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX", True),
+        patch("om.document_index.factory.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX", True),
     ):
         ensure_full_deployment_setup(opensearch_available=True)
         yield  # Test runs here.
@@ -320,7 +320,7 @@ def test_embedding_dimension(db_session: Session) -> Generator[int, None, None]:
 def patch_get_vespa_chunks_page_size() -> Generator[int, None, None]:
     test_page_size = 5
     with patch(
-        "onyx.background.celery.tasks.opensearch_migration.tasks.GET_VESPA_CHUNKS_PAGE_SIZE",
+        "om.background.celery.tasks.opensearch_migration.tasks.GET_VESPA_CHUNKS_PAGE_SIZE",
         test_page_size,
     ):
         yield test_page_size  # Test runs here.
@@ -388,7 +388,7 @@ def clean_migration_tables(db_session: Session) -> Generator[None, None, None]:
 @pytest.fixture(scope="function")
 def enable_opensearch_indexing_for_onyx() -> Generator[None, None, None]:
     with patch(
-        "onyx.background.celery.tasks.opensearch_migration.tasks.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX",
+        "om.background.celery.tasks.opensearch_migration.tasks.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX",
         True,
     ):
         yield  # Test runs here.
@@ -397,7 +397,7 @@ def enable_opensearch_indexing_for_onyx() -> Generator[None, None, None]:
 @pytest.fixture(scope="function")
 def disable_opensearch_indexing_for_onyx() -> Generator[None, None, None]:
     with patch(
-        "onyx.background.celery.tasks.opensearch_migration.tasks.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX",
+        "om.background.celery.tasks.opensearch_migration.tasks.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX",
         False,
     ):
         yield  # Test runs here.
@@ -520,7 +520,7 @@ class TestMigrateChunksFromVespaToOpenSearchTask:
         mock_lock.acquire.return_value = True
         mock_redis_client.lock.return_value = mock_lock
         with patch(
-            "onyx.background.celery.tasks.opensearch_migration.tasks.get_redis_client",
+            "om.background.celery.tasks.opensearch_migration.tasks.get_redis_client",
             return_value=mock_redis_client,
         ):
             result_1 = migrate_chunks_from_vespa_to_opensearch_task(

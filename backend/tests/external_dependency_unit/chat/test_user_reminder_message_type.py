@@ -10,16 +10,16 @@ These tests verify that:
 
 import pytest
 
-from onyx.chat.llm_step import translate_history_to_llm_format
-from onyx.chat.models import ChatMessageSimple
-from onyx.configs.constants import MessageType
-from onyx.llm.interfaces import LLMConfig
-from onyx.llm.models import ChatCompletionMessage
-from onyx.llm.models import SystemMessage
-from onyx.llm.models import UserMessage
-from onyx.prompts.chat_prompts import CODE_BLOCK_MARKDOWN
-from onyx.prompts.constants import SYSTEM_REMINDER_TAG_CLOSE
-from onyx.prompts.constants import SYSTEM_REMINDER_TAG_OPEN
+from om.chat.llm_step import translate_history_to_llm_format
+from om.chat.models import ChatMessageSimple
+from om.configs.constants import MessageType
+from om.llm.interfaces import LLMConfig
+from om.llm.models import ChatCompletionMessage
+from om.llm.models import SystemMessage
+from om.llm.models import UserMessage
+from om.prompts.chat_prompts import CODE_BLOCK_MARKDOWN
+from om.prompts.constants import SYSTEM_REMINDER_TAG_CLOSE
+from om.prompts.constants import SYSTEM_REMINDER_TAG_OPEN
 
 
 def _ensure_list(

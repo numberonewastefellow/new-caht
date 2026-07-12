@@ -7,18 +7,18 @@ from uuid import UUID
 from pydantic import BaseModel
 from pydantic import Field
 
-from onyx.auth.schemas import UserRole
-from onyx.configs.constants import MessageType
-from onyx.configs.constants import QAFeedbackType
-from onyx.context.search.enums import RecencyBiasSetting
-from onyx.context.search.models import SavedSearchDoc
-from onyx.context.search.models import SearchDoc
-from onyx.db.enums import AccessType
-from onyx.server.documents.models import DocumentSource
-from onyx.server.documents.models import IndexAttemptSnapshot
-from onyx.server.documents.models import IndexingStatus
-from onyx.server.documents.models import InputType
-from onyx.server.query_and_chat.streaming_models import GeneratedImage
+from om.auth.schemas import UserRole
+from om.configs.constants import MessageType
+from om.configs.constants import QAFeedbackType
+from om.context.search.enums import RecencyBiasSetting
+from om.context.search.models import SavedSearchDoc
+from om.context.search.models import SearchDoc
+from om.db.enums import AccessType
+from om.server.documents.models import DocumentSource
+from om.server.documents.models import IndexAttemptSnapshot
+from om.server.documents.models import IndexingStatus
+from om.server.documents.models import InputType
+from om.server.query_and_chat.streaming_models import GeneratedImage
 
 """
 These data models are used to represent the data on the testing side of things.

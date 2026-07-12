@@ -23,8 +23,8 @@ PYTHONPATH=. python scripts/debugging/onyx_list_tenants.py --csv -n 5
 import argparse
 import sys
 
-from onyx.db.engine.sql_engine import SqlEngine
-from onyx.db.engine.tenant_utils import get_all_tenant_ids
+from om.db.engine.sql_engine import SqlEngine
+from om.db.engine.tenant_utils import get_all_tenant_ids
 from shared_configs.configs import TENANT_ID_PREFIX
 
 

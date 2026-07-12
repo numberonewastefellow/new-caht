@@ -9,10 +9,10 @@ exactly which fields and associations (child objects) to retrieve for each objec
 import json
 from typing import Any
 
-from onyx.connectors.salesforce.connector import _validate_custom_query_config
-from onyx.connectors.salesforce.connector import SalesforceConnector
-from onyx.connectors.salesforce.utils import ACCOUNT_OBJECT_TYPE
-from onyx.connectors.salesforce.utils import MODIFIED_FIELD
+from om.connectors.salesforce.connector import _validate_custom_query_config
+from om.connectors.salesforce.connector import SalesforceConnector
+from om.connectors.salesforce.utils import ACCOUNT_OBJECT_TYPE
+from om.connectors.salesforce.utils import MODIFIED_FIELD
 
 
 def test_custom_query_config() -> None:

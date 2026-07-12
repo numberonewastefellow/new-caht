@@ -4,18 +4,18 @@ import sys
 import psycopg2
 from sqlalchemy.orm import Session
 
-from onyx.db.engine.sql_engine import get_sqlalchemy_engine
+from om.db.engine.sql_engine import get_sqlalchemy_engine
 
 # makes it so `PYTHONPATH=.` is not required when running this script
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
 
-from onyx.configs.app_configs import POSTGRES_DB  # noqa: E402
-from onyx.configs.app_configs import POSTGRES_HOST  # noqa: E402
-from onyx.configs.app_configs import POSTGRES_PASSWORD  # noqa: E402
-from onyx.configs.app_configs import POSTGRES_PORT  # noqa: E402
-from onyx.configs.app_configs import POSTGRES_USER  # noqa: E402
-from onyx.db.credentials import create_initial_public_credential  # noqa: E402
+from om.configs.app_configs import POSTGRES_DB  # noqa: E402
+from om.configs.app_configs import POSTGRES_HOST  # noqa: E402
+from om.configs.app_configs import POSTGRES_PASSWORD  # noqa: E402
+from om.configs.app_configs import POSTGRES_PORT  # noqa: E402
+from om.configs.app_configs import POSTGRES_USER  # noqa: E402
+from om.db.credentials import create_initial_public_credential  # noqa: E402
 
 
 def wipe_all_rows(database: str) -> None:

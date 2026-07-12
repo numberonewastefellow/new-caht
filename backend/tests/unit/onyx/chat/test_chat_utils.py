@@ -2,8 +2,8 @@
 
 from unittest.mock import MagicMock
 
-from onyx.chat.chat_utils import get_custom_agent_prompt
-from onyx.configs.constants import DEFAULT_PERSONA_ID
+from om.chat.chat_utils import get_custom_agent_prompt
+from om.configs.constants import DEFAULT_PERSONA_ID
 
 
 class TestGetCustomAgentPrompt:

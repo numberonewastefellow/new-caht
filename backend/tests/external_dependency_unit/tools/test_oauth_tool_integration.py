@@ -16,19 +16,19 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from onyx.chat.emitter import get_default_emitter
-from onyx.context.search.enums import RecencyBiasSetting
-from onyx.db.models import OAuthAccount
-from onyx.db.models import OAuthConfig
-from onyx.db.models import Persona
-from onyx.db.models import Tool
-from onyx.db.models import User
-from onyx.db.oauth_config import create_oauth_config
-from onyx.db.oauth_config import upsert_user_oauth_token
-from onyx.llm.factory import get_default_llm
-from onyx.tools.tool_constructor import construct_tools
-from onyx.tools.tool_constructor import SearchToolConfig
-from onyx.tools.tool_implementations.custom.custom_tool import CustomTool
+from om.chat.emitter import get_default_emitter
+from om.context.search.enums import RecencyBiasSetting
+from om.db.models import OAuthAccount
+from om.db.models import OAuthConfig
+from om.db.models import Persona
+from om.db.models import Tool
+from om.db.models import User
+from om.db.oauth_config import create_oauth_config
+from om.db.oauth_config import upsert_user_oauth_token
+from om.llm.factory import get_default_llm
+from om.tools.tool_constructor import construct_tools
+from om.tools.tool_constructor import SearchToolConfig
+from om.tools.tool_implementations.custom.custom_tool import CustomTool
 from tests.external_dependency_unit.answer.conftest import ensure_default_llm_provider
 from tests.external_dependency_unit.conftest import create_test_user
 
@@ -416,7 +416,7 @@ class TestOAuthToolIntegrationPriority:
         }
         mock_response.raise_for_status = Mock()
 
-        with patch("onyx.auth.oauth_token_manager.requests.post") as mock_post:
+        with patch("om.auth.oauth_token_manager.requests.post") as mock_post:
             mock_post.return_value = mock_response
 
             # Construct tools
