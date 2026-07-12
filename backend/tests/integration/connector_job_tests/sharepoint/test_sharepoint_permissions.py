@@ -1,4 +1,3 @@
-import os
 
 import pytest
 
@@ -20,10 +19,6 @@ from tests.integration.connector_job_tests.sharepoint.conftest import (
 logger = setup_logger()
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Permission tests are enterprise only",
-)
 def test_public_documents_accessible_by_all_users(
     sharepoint_test_env_setup: SharepointTestEnvSetupTuple,
 ) -> None:
@@ -75,10 +70,6 @@ def test_public_documents_accessible_by_all_users(
         )
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Permission tests are enterprise only",
-)
 def test_group_based_permissions(
     sharepoint_test_env_setup: SharepointTestEnvSetupTuple,
 ) -> None:

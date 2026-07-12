@@ -19,22 +19,16 @@ from pathlib import Path
 from types import ModuleType
 from typing import Iterator
 
-# --- Force EE-ON, quiet telemetry BEFORE any backend module is imported. --------
-# `om.utils.variable_functionality` reads LICENSE_ENFORCEMENT_ENABLED at import time;
-# setting it here (conftest loads before test modules) pins the EE resolution path.
+# --- Quiet telemetry BEFORE any backend module is imported. ---------------------
+# This used to also force ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true, to pin the EE
+# resolution path for the golden snapshot: the baseline had to capture TODAY'S EE-ON
+# runtime inventory (every EE celery task, every EE beat entry), because snapshotting
+# with EE OFF would have captured the MIT-only subset and happily "passed" while the
+# merged tree silently dropped EE tasks on the floor.
 #
-# WHY EE-ON (this flipped for Stage 2 -- it was EE-OFF for the rename):
-# EE removal's end state is "EE is always on, unconditionally". So the inventory this
-# suite must hold invariant is TODAY'S EE-ON RUNTIME inventory -- every EE celery task,
-# every EE beat entry, every EE implementation that `fetch_versioned_implementation`
-# resolves to. Snapshotting with EE OFF would capture the MIT-only subset and would
-# happily "pass" while the merged tree silently dropped EE tasks on the floor.
-#
-# Force (not setdefault) -- the backend image exports these itself, and the resolution
-# path must be pinned identically for the "before" and "after" runs or the golden-
-# snapshot diff is meaningless.
-os.environ["LICENSE_ENFORCEMENT_ENABLED"] = "true"
-os.environ["ENABLE_PAID_ENTERPRISE_EDITION_FEATURES"] = "true"
+# That flag is gone. There is one edition and it is always on, so there is no longer an
+# EE/non-EE resolution path to pin -- the baseline it produced (980 modules / 55 celery
+# tasks / 22 beat tasks) is simply what the tree does now.
 os.environ["DISABLE_TELEMETRY"] = "true"
 
 import pytest  # noqa: E402

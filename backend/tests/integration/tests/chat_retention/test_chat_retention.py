@@ -1,7 +1,5 @@
-import os
 import time
 
-import pytest
 import requests
 
 from tests.integration.common_utils.managers.chat import ChatSessionManager
@@ -10,10 +8,6 @@ from tests.integration.common_utils.test_models import DATestSettings
 from tests.integration.common_utils.test_models import DATestUser
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Chat retention tests are enterprise only",
-)
 def test_chat_retention(reset: None, admin_user: DATestUser) -> None:  # noqa: ARG001
     """Test that chat sessions are deleted after the retention period expires."""
 

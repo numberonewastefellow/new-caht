@@ -15,7 +15,7 @@ import Button from "@/refresh-components/buttons/Button";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import DocumentSetCard from "@/sections/cards/DocumentSetCard";
 import CollapsibleSection from "@/app/admin/assistants/CollapsibleSection";
-import { StandardAnswerCategoryResponse } from "@/components/standardAnswers/getStandardAnswerCategoriesIfEE";
+import { StandardAnswerCategoryResponse } from "@/components/standardAnswers/getStandardAnswerCategories";
 import { StandardAnswerCategoryDropdownField } from "@/components/standardAnswers/StandardAnswerCategoryDropdown";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { RadioGroupItemField } from "@/components/ui/RadioGroupItemField";

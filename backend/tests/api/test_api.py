@@ -1,4 +1,3 @@
-import os
 from collections.abc import Generator
 from typing import Any
 
@@ -17,7 +16,6 @@ logger = setup_logger()
 def client() -> Generator[TestClient, Any, None]:
     # Set environment variables
     from om.main import get_application as _impl_get_application
-    os.environ["ENABLE_PAID_ENTERPRISE_EDITION_FEATURES"] = "True"
 
     # Initialize TestClient with the FastAPI app
     app: FastAPI = _impl_get_application()

@@ -1,5 +1,4 @@
 import csv
-import os
 import time
 from datetime import datetime
 from datetime import timedelta
@@ -8,7 +7,6 @@ from io import BytesIO
 from io import StringIO
 from zipfile import ZipFile
 
-import pytest
 import requests
 
 from om.db.usage_export import UsageReportMetadata
@@ -17,10 +15,6 @@ from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.test_models import DATestUser
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Usage export is an enterprise feature",
-)
 class TestUsageExportAPI:
     def test_generate_usage_report(
         self, reset: None, admin_user: DATestUser  # noqa: ARG002

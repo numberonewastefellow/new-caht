@@ -2,7 +2,6 @@
 Integration tests for LLM Provider persona access authorization.
 """
 
-import os
 
 import pytest
 import requests
@@ -16,10 +15,6 @@ from tests.integration.common_utils.managers.user_group import UserGroupManager
 from tests.integration.common_utils.test_models import DATestUser
 
 
-pytestmark = pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="LLM provider persona access is enterprise only",
-)
 
 
 @pytest.fixture()

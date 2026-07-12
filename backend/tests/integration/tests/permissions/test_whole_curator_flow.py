@@ -2,9 +2,7 @@
 This test tests the happy path for curator permissions
 """
 
-import os
 
-import pytest
 
 from om.db.enums import AccessType
 from om.db.models import UserRole
@@ -17,10 +15,6 @@ from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.managers.user_group import UserGroupManager
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Curator tests are enterprise only",
-)
 def test_whole_curator_flow(reset: None) -> None:  # noqa: ARG001
     # Creating an admin user (first user created is automatically an admin)
     admin_user: DATestUser = UserManager.create(name="admin_user")
@@ -98,10 +92,6 @@ def test_whole_curator_flow(reset: None) -> None:  # noqa: ARG001
     )
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Curator tests are enterprise only",
-)
 def test_global_curator_flow(reset: None) -> None:  # noqa: ARG001
     # Creating an admin user (first user created is automatically an admin)
     admin_user: DATestUser = UserManager.create(name="admin_user")

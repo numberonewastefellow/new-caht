@@ -11,7 +11,6 @@ from om.auth.users import current_admin_user
 from om.auth.users import current_user
 from om.auth.users import is_user_admin
 from om.configs.app_configs import DISABLE_VECTOR_DB
-from om.configs.app_configs import ENTERPRISE_EDITION_ENABLED
 from om.configs.constants import KV_REINDEX_KEY
 from om.configs.constants import NotificationType
 from om.db.engine.sql_engine import get_session
@@ -107,12 +106,11 @@ def apply_license_status_to_settings(settings: Settings) -> Settings:
     For multi-tenant (cloud), the settings already have the correct status
     from the control plane, so no override is needed.
 
-    If LICENSE_ENFORCEMENT_ENABLED is false, ee_features_enabled is set to True
-    (since EE code was loaded via ENABLE_PAID_ENTERPRISE_EDITION_FEATURES).
+    If LICENSE_ENFORCEMENT_ENABLED is false, ee_features_enabled is True: there is one
+    edition and every deployment ships the full feature set, so with enforcement off
+    there is nothing that could turn a feature off.
     """
     if not LICENSE_ENFORCEMENT_ENABLED:
-        # License enforcement disabled - EE code is loaded via
-        # ENABLE_PAID_ENTERPRISE_EDITION_FEATURES, so EE features are on
         settings.ee_features_enabled = True
         return settings
 
@@ -144,11 +142,10 @@ def apply_license_status_to_settings(settings: Settings) -> Settings:
                 # Has a valid license (GRACE_PERIOD/PAYMENT_REMINDER still allow EE features)
                 settings.ee_features_enabled = True
         else:
-            # No license found in cache or DB.
-            if ENTERPRISE_EDITION_ENABLED:
-                # Legacy EE flag is set → prior EE usage (e.g. permission
-                # syncing) means indexed data may need protection.
-                settings.application_status = _BLOCKING_STATUS
+            # No license found in cache or DB. Every deployment now runs the full
+            # feature set (there is one edition), so prior use of features like
+            # permission syncing means indexed data may need protection.
+            settings.application_status = _BLOCKING_STATUS
             settings.ee_features_enabled = False
     except RedisError as e:
         logger.warning(f"Failed to check license metadata for settings: {e}")

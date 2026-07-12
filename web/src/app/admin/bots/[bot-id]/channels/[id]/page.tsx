@@ -11,7 +11,7 @@ import {
 import BackButton from "@/refresh-components/buttons/BackButton";
 import { InstantSSRAutoRefresh } from "@/components/SSRAutoRefresh";
 import { FetchAssistantsResponse, fetchAssistantsSS } from "@/lib/agentsSS";
-import { getStandardAnswerCategoriesIfEE } from "@/components/standardAnswers/getStandardAnswerCategoriesIfEE";
+import { getStandardAnswerCategories } from "@/components/standardAnswers/getStandardAnswerCategories";
 
 async function EditslackChannelConfigPage(props: {
   params: Promise<{ id: number }>;
@@ -34,7 +34,7 @@ async function EditslackChannelConfigPage(props: {
   ];
 
   const eeStandardAnswerCategoryResponse =
-    await getStandardAnswerCategoriesIfEE();
+    await getStandardAnswerCategories();
 
   if (!slackChannelsResponse.ok) {
     return (

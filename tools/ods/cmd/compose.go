@@ -23,7 +23,6 @@ type ComposeOptions struct {
 	Wait          bool
 	ForceRecreate bool
 	Tag           string
-	NoEE          bool
 }
 
 // NewComposeCommand creates a new compose command for launching docker containers
@@ -52,9 +51,6 @@ Examples:
   # Start containers with multitenant configuration
   ods compose multitenant
 
-  # Start containers without Enterprise Edition features
-  ods compose --no-ee
-
   # Stop running containers
   ods compose --down
   ods compose dev --down
@@ -82,7 +78,6 @@ Examples:
 	cmd.Flags().BoolVar(&opts.Wait, "wait", true, "Wait for services to be healthy before returning")
 	cmd.Flags().BoolVar(&opts.ForceRecreate, "force-recreate", false, "Force recreate containers even if unchanged")
 	cmd.Flags().StringVar(&opts.Tag, "tag", "", "Set the IMAGE_TAG for docker compose (e.g. edge, v2.10.4)")
-	cmd.Flags().BoolVar(&opts.NoEE, "no-ee", false, "Disable Enterprise Edition features (enabled by default)")
 
 	return cmd
 }
@@ -237,14 +232,7 @@ func runCompose(profile string, opts *ComposeOptions) {
 	validateProfile(profile)
 
 	if !opts.Down {
-		eeValue := "true"
-		if opts.NoEE {
-			eeValue = "false"
-		}
-		setEnvValue("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", eeValue)
-		if !opts.NoEE {
-			setEnvValue("LICENSE_ENFORCEMENT_ENABLED", "false")
-		}
+		setEnvValue("LICENSE_ENFORCEMENT_ENABLED", "false")
 	}
 
 	args := baseArgs(profile)
@@ -266,9 +254,6 @@ func runCompose(profile string, opts *ComposeOptions) {
 		action = "Stopping"
 	}
 	log.Infof("%s containers with %s configuration...", action, profileLabel(profile))
-	if !opts.Down && !opts.NoEE {
-		log.Info("Enterprise Edition features enabled (use --no-ee to disable)")
-	}
 
 	execDockerCompose(args, envForTag(opts.Tag))
 

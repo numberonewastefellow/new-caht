@@ -20,13 +20,11 @@ import { getAdminNavGroups } from "./adminNavItems";
 
 export interface ClientLayoutProps {
   children: React.ReactNode;
-  enableEnterprise: boolean;
   enableCloud: boolean;
 }
 
 export function ClientLayout({
   children,
-  enableEnterprise: enableEnterpriseSS,
   enableCloud,
 }: ClientLayoutProps) {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
@@ -49,9 +47,6 @@ export function ClientLayout({
   const groups = getAdminNavGroups({
     isCurator,
     enableCloud,
-    // TODO: `enableEnterprise` is now always true — remove this param from
-    // `getAdminNavGroups` (and from `ClientLayoutProps`) once all call sites are updated.
-    enableEnterprise: true,
     settings,
     kgExposed,
     customAnalyticsEnabled,

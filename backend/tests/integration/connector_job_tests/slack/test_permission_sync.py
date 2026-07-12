@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from datetime import timezone
 
-import pytest
 
 from om.connectors.models import InputType
 from om.connectors.slack.models import ChannelType
@@ -27,10 +26,6 @@ from tests.integration.connector_job_tests.slack.slack_api_utils import SlackMan
 
 # NOTE(rkuo): it isn't yet clear if the reason these were previously xfail'd
 # still exists. May need to xfail again if flaky (DAN-789)
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Permission tests are enterprise only",
-)
 def test_slack_permission_sync(
     reset: None,  # noqa: ARG001
     vespa_client: vespa_fixture,  # noqa: ARG001
@@ -228,10 +223,6 @@ def test_slack_permission_sync(
 
 # NOTE(rkuo): it isn't yet clear if the reason these were previously xfail'd
 # still exists. May need to xfail again if flaky (DAN-789)
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Permission tests are enterprise only",
-)
 def test_slack_group_permission_sync(
     reset: None,  # noqa: ARG001
     vespa_client: vespa_fixture,  # noqa: ARG001

@@ -1,7 +1,5 @@
-import os
 from uuid import uuid4
 
-import pytest
 import requests
 
 from tests.integration.common_utils.constants import API_SERVER_URL
@@ -12,10 +10,6 @@ from tests.integration.common_utils.test_models import DATestUser
 from tests.integration.common_utils.test_models import DATestUserGroup
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="User group tests are enterprise only",
-)
 def test_add_users_to_group(reset: None) -> None:  # noqa: ARG001
     admin_user: DATestUser = UserManager.create(name="admin_for_add_user")
     user_to_add: DATestUser = UserManager.create(name="basic_user_to_add")
@@ -42,10 +36,6 @@ def test_add_users_to_group(reset: None) -> None:  # noqa: ARG001
     assert user_to_add.id in fetched_user_ids
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="User group tests are enterprise only",
-)
 def test_add_users_to_group_invalid_user(reset: None) -> None:  # noqa: ARG001
     admin_user: DATestUser = UserManager.create(name="admin_for_add_user_invalid")
 

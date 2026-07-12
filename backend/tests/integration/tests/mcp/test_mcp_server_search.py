@@ -4,14 +4,12 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 from collections.abc import Awaitable
 from collections.abc import Callable
 from datetime import datetime
 from datetime import timezone
 from typing import Any
 
-import pytest
 from mcp import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
 from mcp.types import CallToolResult
@@ -182,10 +180,6 @@ def test_mcp_document_search_flow(
         assert "source_type" in doc
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="User group permissions are Enterprise-only",
-)
 def test_mcp_search_respects_acl_filters(
     reset: None, admin_user: DATestUser  # noqa: ARG001
 ) -> None:

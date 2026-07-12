@@ -61,7 +61,6 @@ export interface AdminNavGroup {
 export function getAdminNavGroups(opts: {
   isCurator: boolean;
   enableCloud: boolean;
-  enableEnterprise: boolean;
   settings: CombinedSettings | null;
   kgExposed: boolean;
   customAnalyticsEnabled: boolean;
@@ -70,7 +69,6 @@ export function getAdminNavGroups(opts: {
   const {
     isCurator,
     enableCloud,
-    enableEnterprise,
     settings,
     kgExposed,
     customAnalyticsEnabled,
@@ -161,13 +159,11 @@ export function getAdminNavGroups(opts: {
     }
   );
 
-  if (enableEnterprise) {
-    agentItems.push({
-      name: "Curated Responses",
-      icon: ClipboardIcon,
-      link: "/admin/standard-answer",
-    });
-  }
+  agentItems.push({
+    name: "Curated Responses",
+    icon: ClipboardIcon,
+    link: "/admin/standard-answer",
+  });
 
   groups.push({
     id: "agents",
@@ -243,7 +239,7 @@ export function getAdminNavGroups(opts: {
   // ── Governance (was: User Management / Access) ──
   const governanceItems: AdminNavItem[] = [];
 
-  if (isCurator && enableEnterprise) {
+  if (isCurator) {
     governanceItems.push({
       name: "Access Groups",
       icon: SvgUsers,
@@ -258,15 +254,11 @@ export function getAdminNavGroups(opts: {
         icon: SvgUser,
         link: "/admin/users",
       },
-      ...(enableEnterprise
-        ? [
-            {
-              name: "Access Groups",
-              icon: SvgUsers,
-              link: "/admin/groups",
-            },
-          ]
-        : []),
+      {
+        name: "Access Groups",
+        icon: SvgUsers,
+        link: "/admin/groups",
+      },
       {
         name: "API Credentials",
         icon: SvgKey,
@@ -300,13 +292,11 @@ export function getAdminNavGroups(opts: {
       },
     ];
 
-    if (enableEnterprise) {
-      workspaceItems.push({
-        name: "Branding",
-        icon: SvgPaintBrush,
-        link: "/admin/theme",
-      });
-    }
+    workspaceItems.push({
+      name: "Branding",
+      icon: SvgPaintBrush,
+      link: "/admin/theme",
+    });
 
     if (hasSubscription) {
       workspaceItems.push({
@@ -338,29 +328,27 @@ export function getAdminNavGroups(opts: {
       }
     );
 
-    // Performance / Observability items (enterprise only)
-    if (enableEnterprise) {
+    // Performance / Observability items
+    workspaceItems.push({
+      name: "Analytics",
+      icon: SvgActivity,
+      link: "/admin/performance/usage",
+    });
+
+    if (settings?.settings.query_history_type !== "disabled") {
       workspaceItems.push({
-        name: "Analytics",
-        icon: SvgActivity,
-        link: "/admin/performance/usage",
+        name: "Query Logs",
+        icon: SvgServer,
+        link: "/admin/performance/query-history",
       });
+    }
 
-      if (settings?.settings.query_history_type !== "disabled") {
-        workspaceItems.push({
-          name: "Query Logs",
-          icon: SvgServer,
-          link: "/admin/performance/query-history",
-        });
-      }
-
-      if (!enableCloud && customAnalyticsEnabled) {
-        workspaceItems.push({
-          name: "Custom Reports",
-          icon: SvgBarChart,
-          link: "/admin/performance/custom-analytics",
-        });
-      }
+    if (!enableCloud && customAnalyticsEnabled) {
+      workspaceItems.push({
+        name: "Custom Reports",
+        icon: SvgBarChart,
+        link: "/admin/performance/custom-analytics",
+      });
     }
 
     groups.push({

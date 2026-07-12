@@ -330,7 +330,6 @@ jobs:
           # EE-only config
           if [ "$EDITION" = "ee" ]; then
             cat <<EOF >> deployment/docker_compose/.env
-          ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true
           # TODO(Nik): https://linear.app/onyx-app/issue/ENG-1/update-test-infra-to-use-test-license
           LICENSE_ENFORCEMENT_ENABLED=false
           CHECK_TTL_MANAGEMENT_TASK_FREQUENCY_IN_HOURS=0.001
@@ -499,7 +498,6 @@ jobs:
         run: |
           cat <<EOF > deployment/docker_compose/.env
           COMPOSE_PROFILES=s3-filestore
-          ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true
           LICENSE_ENFORCEMENT_ENABLED=false
           AUTH_TYPE=basic
           POSTGRES_POOL_PRE_PING=true
@@ -632,7 +630,6 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           cd deployment/docker_compose
-          ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true \
           LICENSE_ENFORCEMENT_ENABLED=false \
           MULTI_TENANT=true \
           AUTH_TYPE=cloud \

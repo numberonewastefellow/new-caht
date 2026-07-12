@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { StandardAnswerCategoryResponse } from "./getStandardAnswerCategoriesIfEE";
+import { StandardAnswerCategoryResponse } from "./getStandardAnswerCategories";
 import { Label } from "@/components/Field";
 import MultiSelectDropdown from "../MultiSelectDropdown";
 import { StandardAnswerCategory } from "@/lib/types";
@@ -15,10 +15,6 @@ interface StandardAnswerCategoryDropdownFieldProps {
 export const StandardAnswerCategoryDropdownField: FC<
   StandardAnswerCategoryDropdownFieldProps
 > = ({ standardAnswerCategoryResponse, categories, setCategories }) => {
-  if (!standardAnswerCategoryResponse.paidEnterpriseFeaturesEnabled) {
-    return null;
-  }
-
   if (standardAnswerCategoryResponse.error != null) {
     return (
       <ErrorCallout

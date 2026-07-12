@@ -21,7 +21,6 @@ services:
       - DISABLE_TELEMETRY=true
       - SENTRY_DSN=
       # Disable enterprise/payment/license
-      - ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true
       - STRIPE_SECRET_KEY=
       - STRIPE_PUBLISHABLE_KEY=
       - LICENSE_ENFORCEMENT_ENABLED=false
@@ -54,7 +53,6 @@ services:
       - DISABLE_TELEMETRY=true
       - SENTRY_DSN=
       # Disable enterprise/payment/license
-      - ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true
       - STRIPE_SECRET_KEY=
       - STRIPE_PUBLISHABLE_KEY=
       - LICENSE_ENFORCEMENT_ENABLED=false

@@ -5,7 +5,7 @@ import { ErrorCallout } from "@/components/ErrorCallout";
 import { DocumentSetSummary, ValidSources } from "@/lib/types";
 import BackButton from "@/refresh-components/buttons/BackButton";
 import { fetchAssistantsSS } from "@/lib/agentsSS";
-import { getStandardAnswerCategoriesIfEE } from "@/components/standardAnswers/getStandardAnswerCategoriesIfEE";
+import { getStandardAnswerCategories } from "@/components/standardAnswers/getStandardAnswerCategories";
 import { redirect } from "next/navigation";
 import { SourceIcon } from "@/components/SourceIcon";
 
@@ -29,7 +29,7 @@ async function NewChannelConfigPage(props: {
   ] = await Promise.all([
     fetchSS("/nexus/document-set") as Promise<Response>,
     fetchAssistantsSS(),
-    getStandardAnswerCategoriesIfEE(),
+    getStandardAnswerCategories(),
   ]);
 
   if (!documentSetsResponse.ok) {

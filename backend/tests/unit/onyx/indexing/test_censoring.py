@@ -1,4 +1,3 @@
-import os
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -12,10 +11,6 @@ from om.external_permissions.post_query_censoring import _post_query_chunk_censo
 _post_query_chunk_censoring = _impl__post_query_chunk_censoring
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Permissions tests are enterprise only",
-)
 class TestPostQueryChunkCensoring:
     @pytest.fixture(autouse=True)
     def setUp(self) -> None:

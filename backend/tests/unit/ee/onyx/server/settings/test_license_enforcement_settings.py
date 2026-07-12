@@ -29,8 +29,8 @@ class TestApplyLicenseStatusToSettings:
     ) -> None:
         """When LICENSE_ENFORCEMENT_ENABLED=False, EE features are enabled.
 
-        If we're running the EE apply function, EE code was loaded via
-        ENABLE_PAID_ENTERPRISE_EDITION_FEATURES, so features should be on.
+        There is one edition and every deployment ships the full feature set, so
+        with license enforcement off there is nothing that could turn a feature off.
         """
         from om.server.settings.api import apply_license_status_to_settings
 

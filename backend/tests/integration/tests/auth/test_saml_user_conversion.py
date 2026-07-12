@@ -1,6 +1,4 @@
-import os
 
-import pytest
 import requests
 
 from om.auth.schemas import UserRole
@@ -9,10 +7,6 @@ from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.test_models import DATestUser
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="SAML tests are enterprise only",
-)
 def test_saml_user_conversion(reset: None) -> None:  # noqa: ARG001
     """
     Test that SAML login correctly converts users with non-authenticated roles

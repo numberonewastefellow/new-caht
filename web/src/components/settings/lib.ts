@@ -8,7 +8,6 @@ import {
 import {
   CUSTOM_ANALYTICS_ENABLED,
   HOST_URL,
-  SERVER_SIDE_ONLY__PAID_ENTERPRISE_FEATURES_ENABLED,
 } from "@/lib/constants";
 import { fetchSS } from "@/lib/utilsSS";
 import { getWebVersion } from "@/lib/version";
@@ -33,7 +32,7 @@ export async function fetchSettingsSS(): Promise<CombinedSettings | null> {
   const tasks = [fetchStandardSettingsSS()];
   // Always fetch enterprise settings regardless of EE flag
   tasks.push(fetchEnterpriseSettingsSS());
-  if (SERVER_SIDE_ONLY__PAID_ENTERPRISE_FEATURES_ENABLED && CUSTOM_ANALYTICS_ENABLED) {
+  if (CUSTOM_ANALYTICS_ENABLED) {
     tasks.push(fetchCustomAnalyticsScriptSS());
   }
 

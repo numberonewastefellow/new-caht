@@ -1,5 +1,4 @@
 import json
-import os
 
 import pytest
 import requests
@@ -12,10 +11,6 @@ from tests.integration.common_utils.test_models import DATestUser
 from tests.integration.conftest import DocumentBuilderType
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="/chat/send-message-simple-with-history tests are enterprise only",
-)
 def test_send_message_simple_with_history(
     reset: None,  # noqa: ARG001
     admin_user: DATestUser,
@@ -57,10 +52,6 @@ def test_send_message_simple_with_history(
         assert found_doc["metadata"]["document_id"] == doc.id
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="/chat/send-message-simple-with-history tests are enterprise only",
-)
 def test_using_reference_docs_with_simple_with_history_api_flow(
     reset: None,  # noqa: ARG001
     admin_user: DATestUser,
@@ -123,10 +114,6 @@ def test_using_reference_docs_with_simple_with_history_api_flow(
 
 
 @pytest.mark.skip(reason="We don't support this anymore with the DR flow :(")
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="/chat/send-message-simple-with-history tests are enterprise only",
-)
 def test_send_message_simple_with_history_strict_json(
     reset: None,  # noqa: ARG001
     admin_user: DATestUser,
@@ -208,10 +195,6 @@ def test_send_message_simple_with_history_strict_json(
         assert False, "The answer_citationless is not a valid JSON object"
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="/query/answer-with-citation tests are enterprise only",
-)
 def test_answer_with_citation_api(
     reset: None,  # noqa: ARG001
     admin_user: DATestUser,

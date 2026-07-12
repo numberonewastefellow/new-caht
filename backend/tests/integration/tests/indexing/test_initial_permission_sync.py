@@ -1,11 +1,9 @@
-import os
 import uuid
 from datetime import datetime
 from datetime import timezone
 from unittest.mock import patch
 
 import httpx
-import pytest
 from sqlalchemy import select
 
 from om.configs.constants import DocumentSource
@@ -29,10 +27,6 @@ from tests.integration.common_utils.test_models import DATestUser
 from tests.integration.common_utils.vespa import vespa_fixture
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Permission sync is enterprise only",
-)
 def test_mock_connector_initial_permission_sync(
     mock_server_client: httpx.Client,
     vespa_client: vespa_fixture,
@@ -136,10 +130,6 @@ def test_mock_connector_initial_permission_sync(
     assert updated_cc_pair_info.last_full_permission_sync is not None
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Permission sync attempt tracking is enterprise only",
-)
 def test_permission_sync_attempt_tracking_integration(
     mock_server_client: httpx.Client,
     vespa_client: vespa_fixture,  # noqa: ARG001
@@ -219,10 +209,6 @@ def test_permission_sync_attempt_tracking_integration(
         )
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Permission sync attempt tracking is enterprise only",
-)
 def test_permission_sync_attempt_tracking_with_mocked_failure(
     mock_server_client: httpx.Client,
     vespa_client: vespa_fixture,  # noqa: ARG001
@@ -301,10 +287,6 @@ def test_permission_sync_attempt_tracking_with_mocked_failure(
         assert attempt.status == PermissionSyncStatus.FAILED
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="Permission sync attempt tracking is enterprise only",
-)
 def test_permission_sync_attempt_status_success(
     mock_server_client: httpx.Client,
     vespa_client: vespa_fixture,  # noqa: ARG001

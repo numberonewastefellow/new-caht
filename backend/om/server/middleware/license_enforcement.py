@@ -4,21 +4,13 @@ NOTE: This middleware is NOT used for multi-tenant (cloud) deployments.
 Multi-tenant gating is handled separately by the control plane via the
 /tenants/product-gating endpoint and is_tenant_gated() checks.
 
-IMPORTANT: Mutual Exclusivity with ENTERPRISE_EDITION_ENABLED
-============================================================
-This middleware is controlled by LICENSE_ENFORCEMENT_ENABLED env var.
-It works alongside the legacy ENTERPRISE_EDITION_ENABLED system:
+Controlled solely by the LICENSE_ENFORCEMENT_ENABLED env var.
 
-- LICENSE_ENFORCEMENT_ENABLED=false (default):
-  Middleware is disabled. EE features are controlled solely by
-  ENTERPRISE_EDITION_ENABLED. This preserves legacy behavior.
-
-- LICENSE_ENFORCEMENT_ENABLED=true:
-  Middleware actively enforces license status. EE features require
-  a valid license, regardless of ENTERPRISE_EDITION_ENABLED.
-
-Eventually, ENTERPRISE_EDITION_ENABLED will be removed and license
-enforcement will be the only mechanism for gating EE features.
+The old ENTERPRISE_EDITION_ENABLED flag it used to interact with is GONE. There is one
+edition now -- every deployment ships the full feature set -- so there is nothing to
+switch on, and this middleware is the only remaining gate. Note what it gates: an
+EXPIRED or absent LICENSE, not an "edition". Licensing is orthogonal to the EE/CE split
+that was removed, which is why it survives.
 
 License Enforcement States (when enabled)
 =========================================

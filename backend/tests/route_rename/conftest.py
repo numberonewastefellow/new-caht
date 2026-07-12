@@ -49,7 +49,6 @@ def api_client(request: pytest.FixtureRequest) -> object:
     mode = request.config.getoption("--api-mode")
 
     if mode == "testclient":
-        os.environ.setdefault("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "True")
         from fastapi.testclient import TestClient
 
 

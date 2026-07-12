@@ -7,7 +7,6 @@ from typing import cast
 import requests
 
 from om.configs.app_configs import DISABLE_TELEMETRY
-from om.configs.app_configs import ENTERPRISE_EDITION_ENABLED
 from om.configs.constants import KV_CUSTOMER_UUID_KEY
 from om.configs.constants import KV_INSTANCE_DOMAIN_KEY
 from om.configs.constants import MilestoneRecordType
@@ -118,8 +117,7 @@ def optional_telemetry(
                     "customer_uuid": customer_uuid,
                     "is_cloud": MULTI_TENANT,
                 }
-                if ENTERPRISE_EDITION_ENABLED:
-                    payload["instance_domain"] = _get_or_generate_instance_domain()
+                payload["instance_domain"] = _get_or_generate_instance_domain()
                 requests.post(
                     _DANSWER_TELEMETRY_ENDPOINT,
                     headers={"Content-Type": "application/json"},

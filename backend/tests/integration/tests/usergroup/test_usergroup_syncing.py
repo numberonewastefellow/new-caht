@@ -1,6 +1,4 @@
-import os
 
-import pytest
 
 from om.server.documents.models import DocumentSource
 from tests.integration.common_utils.constants import NUM_DOCS
@@ -15,10 +13,6 @@ from tests.integration.common_utils.test_models import DATestUserGroup
 from tests.integration.common_utils.vespa import vespa_fixture
 
 
-@pytest.mark.skipif(
-    os.environ.get("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "").lower() != "true",
-    reason="User group tests are enterprise only",
-)
 def test_removing_connector(
     reset: None, vespa_client: vespa_fixture  # noqa: ARG001
 ) -> None:
