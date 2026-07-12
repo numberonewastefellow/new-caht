@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from ee.om.external_permissions.confluence.doc_sync import confluence_doc_sync
+from om.external_permissions.confluence.doc_sync import confluence_doc_sync
 from om.access.models import DocExternalAccess
 from om.configs.constants import DocumentSource
 from om.connectors.confluence.connector import ConfluenceConnector
@@ -85,7 +85,7 @@ def test_confluence_connector_permissions(
     ), f"Full doc IDs are not a subset of slim doc IDs. Found {len(difference)} IDs in full docs but not in slim docs."
 
 
-@patch("ee.om.external_permissions.confluence.doc_sync.OnyxDBCredentialsProvider")
+@patch("om.external_permissions.confluence.doc_sync.OnyxDBCredentialsProvider")
 @patch(
     "om.file_processing.extract_file_text.get_unstructured_api_key",
     return_value=None,

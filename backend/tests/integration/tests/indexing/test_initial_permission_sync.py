@@ -272,7 +272,7 @@ def test_permission_sync_attempt_tracking_with_mocked_failure(
 
     # Mock the permission sync to force a failure and verify attempt tracking
     with patch(
-        "ee.om.background.celery.tasks.doc_permission_syncing.tasks.validate_ccpair_for_user"
+        "om.background.celery.tasks.doc_permission_syncing.tasks.validate_ccpair_for_user"
     ) as mock_validate:
         mock_validate.side_effect = Exception("Validation failed for testing")
 

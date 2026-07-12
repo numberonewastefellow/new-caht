@@ -3,10 +3,10 @@ from typing import cast
 from redis import Redis
 from sqlalchemy.orm import Session
 
-from ee.om.db.user_group import delete_user_group
-from ee.om.db.user_group import fetch_user_group
-from ee.om.db.user_group import mark_user_group_as_synced
-from ee.om.db.user_group import prepare_user_group_for_deletion
+from om.db.user_group import delete_user_group
+from om.db.user_group import fetch_user_group
+from om.db.user_group import mark_user_group_as_synced
+from om.db.user_group import prepare_user_group_for_deletion
 from om.background.celery.apps.app_base import task_logger
 from om.db.enums import SyncStatus
 from om.db.enums import SyncType

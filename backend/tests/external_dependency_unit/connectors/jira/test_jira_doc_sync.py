@@ -3,7 +3,7 @@ from typing import Any
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from ee.om.external_permissions.jira.doc_sync import jira_doc_sync
+from om.external_permissions.jira.doc_sync import jira_doc_sync
 from om.access.models import DocExternalAccess
 from om.configs.constants import DocumentSource
 from om.connectors.models import InputType

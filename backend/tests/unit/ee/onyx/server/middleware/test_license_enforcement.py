@@ -10,12 +10,12 @@ import pytest
 from starlette.requests import Request
 from starlette.responses import Response
 
-from ee.om.configs.license_enforcement_config import EE_ONLY_PATH_PREFIXES
-from ee.om.configs.license_enforcement_config import (
+from om.configs.license_enforcement_config import EE_ONLY_PATH_PREFIXES
+from om.configs.license_enforcement_config import (
     LICENSE_ENFORCEMENT_ALLOWED_PREFIXES,
 )
-from ee.om.server.middleware.license_enforcement import _is_ee_only_path
-from ee.om.server.middleware.license_enforcement import _is_path_allowed
+from om.server.middleware.license_enforcement import _is_ee_only_path
+from om.server.middleware.license_enforcement import _is_path_allowed
 from om.server.settings.models import ApplicationStatus
 
 # Type alias for the middleware harness tuple
@@ -89,7 +89,7 @@ class TestLicenseEnforcementMiddleware:
     @pytest.fixture
     def middleware_harness(self) -> MiddlewareHarness:
         """Create a test harness for the middleware."""
-        from ee.om.server.middleware.license_enforcement import (
+        from om.server.middleware.license_enforcement import (
             add_license_enforcement_middleware,
         )
 
@@ -119,11 +119,11 @@ class TestLicenseEnforcementMiddleware:
 
     @pytest.mark.asyncio
     @patch(
-        "ee.om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
+        "om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
         True,
     )
-    @patch("ee.om.server.middleware.license_enforcement.get_current_tenant_id")
-    @patch("ee.om.server.middleware.license_enforcement.get_cached_license_metadata")
+    @patch("om.server.middleware.license_enforcement.get_current_tenant_id")
+    @patch("om.server.middleware.license_enforcement.get_cached_license_metadata")
     async def test_gated_access_status_gets_402(
         self,
         mock_get_metadata: MagicMock,
@@ -145,11 +145,11 @@ class TestLicenseEnforcementMiddleware:
 
     @pytest.mark.asyncio
     @patch(
-        "ee.om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
+        "om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
         True,
     )
-    @patch("ee.om.server.middleware.license_enforcement.get_current_tenant_id")
-    @patch("ee.om.server.middleware.license_enforcement.get_cached_license_metadata")
+    @patch("om.server.middleware.license_enforcement.get_current_tenant_id")
+    @patch("om.server.middleware.license_enforcement.get_cached_license_metadata")
     async def test_grace_period_allows_access(
         self,
         mock_get_metadata: MagicMock,
@@ -173,15 +173,15 @@ class TestLicenseEnforcementMiddleware:
 
     @pytest.mark.asyncio
     @patch(
-        "ee.om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
+        "om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
         True,
     )
     @patch(
-        "ee.om.server.middleware.license_enforcement.get_session_with_current_tenant"
+        "om.server.middleware.license_enforcement.get_session_with_current_tenant"
     )
-    @patch("ee.om.server.middleware.license_enforcement.refresh_license_cache")
-    @patch("ee.om.server.middleware.license_enforcement.get_current_tenant_id")
-    @patch("ee.om.server.middleware.license_enforcement.get_cached_license_metadata")
+    @patch("om.server.middleware.license_enforcement.refresh_license_cache")
+    @patch("om.server.middleware.license_enforcement.get_current_tenant_id")
+    @patch("om.server.middleware.license_enforcement.get_cached_license_metadata")
     async def test_no_license_blocks_ee_only_paths(
         self,
         mock_get_metadata: MagicMock,
@@ -204,15 +204,15 @@ class TestLicenseEnforcementMiddleware:
 
     @pytest.mark.asyncio
     @patch(
-        "ee.om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
+        "om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
         True,
     )
     @patch(
-        "ee.om.server.middleware.license_enforcement.get_session_with_current_tenant"
+        "om.server.middleware.license_enforcement.get_session_with_current_tenant"
     )
-    @patch("ee.om.server.middleware.license_enforcement.refresh_license_cache")
-    @patch("ee.om.server.middleware.license_enforcement.get_current_tenant_id")
-    @patch("ee.om.server.middleware.license_enforcement.get_cached_license_metadata")
+    @patch("om.server.middleware.license_enforcement.refresh_license_cache")
+    @patch("om.server.middleware.license_enforcement.get_current_tenant_id")
+    @patch("om.server.middleware.license_enforcement.get_cached_license_metadata")
     async def test_no_license_allows_community_paths(
         self,
         mock_get_metadata: MagicMock,
@@ -235,11 +235,11 @@ class TestLicenseEnforcementMiddleware:
 
     @pytest.mark.asyncio
     @patch(
-        "ee.om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
+        "om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
         True,
     )
-    @patch("ee.om.server.middleware.license_enforcement.get_current_tenant_id")
-    @patch("ee.om.server.middleware.license_enforcement.get_cached_license_metadata")
+    @patch("om.server.middleware.license_enforcement.get_current_tenant_id")
+    @patch("om.server.middleware.license_enforcement.get_cached_license_metadata")
     async def test_redis_error_fails_open(
         self,
         mock_get_metadata: MagicMock,
@@ -261,7 +261,7 @@ class TestLicenseEnforcementMiddleware:
 
     @pytest.mark.asyncio
     @patch(
-        "ee.om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
+        "om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
         False,
     )
     async def test_disabled_enforcement_allows_all(
@@ -278,11 +278,11 @@ class TestLicenseEnforcementMiddleware:
 
     @pytest.mark.asyncio
     @patch(
-        "ee.om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
+        "om.server.middleware.license_enforcement.LICENSE_ENFORCEMENT_ENABLED",
         True,
     )
-    @patch("ee.om.server.middleware.license_enforcement.get_current_tenant_id")
-    @patch("ee.om.server.middleware.license_enforcement.get_cached_license_metadata")
+    @patch("om.server.middleware.license_enforcement.get_current_tenant_id")
+    @patch("om.server.middleware.license_enforcement.get_cached_license_metadata")
     async def test_seat_limit_exceeded_gets_402(
         self,
         mock_get_metadata: MagicMock,

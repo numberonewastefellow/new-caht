@@ -10,9 +10,9 @@ from datetime import timedelta
 import redis
 import requests
 
-from ee.om.server.license.models import LicenseMetadata
-from ee.om.server.license.models import LicenseSource
-from ee.om.server.license.models import PlanType
+from om.server.license.models import LicenseMetadata
+from om.server.license.models import LicenseSource
+from om.server.license.models import PlanType
 from om.configs.app_configs import REDIS_DB_NUMBER
 from om.configs.app_configs import REDIS_HOST
 from om.configs.app_configs import REDIS_PORT

@@ -10,7 +10,7 @@ from uuid import UUID
 
 from redis import Redis
 
-from ee.om.server.tenants.user_mapping import get_tenant_id_for_email
+from om.server.tenants.user_mapping import get_tenant_id_for_email
 from om.auth.invited_users import get_invited_users
 from om.auth.invited_users import write_invited_users
 from om.configs.app_configs import REDIS_AUTH_KEY_PREFIX

@@ -5,39 +5,39 @@ from fastapi import FastAPI
 from httpx_oauth.clients.google import GoogleOAuth2
 
 from ee.om.configs.app_configs import LICENSE_ENFORCEMENT_ENABLED
-from ee.om.server.analytics.api import router as analytics_router
+from om.server.analytics.api import router as analytics_router
 from ee.om.server.auth_check import check_ee_router_auth
-from ee.om.server.billing.api import router as billing_router
+from om.server.billing.api import router as billing_router
 from ee.om.server.documents.cc_pair import router as ee_document_cc_pair_router
-from ee.om.server.enterprise_settings.api import (
+from om.server.enterprise_settings.api import (
     admin_router as enterprise_settings_admin_router,
 )
-from ee.om.server.enterprise_settings.api import (
+from om.server.enterprise_settings.api import (
     basic_router as enterprise_settings_router,
 )
-from ee.om.server.evals.api import router as evals_router
-from ee.om.server.license.api import router as license_router
-from ee.om.server.manage.standard_answer import router as standard_answer_router
-from ee.om.server.middleware.license_enforcement import (
+from om.server.evals.api import router as evals_router
+from om.server.license.api import router as license_router
+from om.server.manage.standard_answer import router as standard_answer_router
+from om.server.middleware.license_enforcement import (
     add_license_enforcement_middleware,
 )
-from ee.om.server.middleware.tenant_tracking import (
+from om.server.middleware.tenant_tracking import (
     add_api_server_tenant_id_middleware,
 )
-from ee.om.server.oauth.api import router as ee_oauth_router
+from om.server.oauth.api import router as ee_oauth_router
 from ee.om.server.query_and_chat.query_backend import (
     basic_router as ee_query_router,
 )
-from ee.om.server.query_and_chat.search_backend import router as search_router
-from ee.om.server.query_history.api import router as query_history_router
-from ee.om.server.reporting.usage_export_api import router as usage_export_router
-from ee.om.server.scim.api import scim_router
-from ee.om.server.seeding import seed_db
-from ee.om.server.tenants.api import router as tenants_router
+from om.server.query_and_chat.search_backend import router as search_router
+from om.server.query_history.api import router as query_history_router
+from om.server.reporting.usage_export_api import router as usage_export_router
+from om.server.scim.api import scim_router
+from om.server.seeding import seed_db
+from om.server.tenants.api import router as tenants_router
 from ee.om.server.token_rate_limits.api import (
     router as token_rate_limit_settings_router,
 )
-from ee.om.server.user_group.api import router as user_group_router
+from om.server.user_group.api import router as user_group_router
 from ee.om.utils.encryption import test_encryption
 from om.auth.users import auth_backend
 from om.auth.users import create_onyx_oauth_router

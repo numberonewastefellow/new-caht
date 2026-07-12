@@ -7,7 +7,7 @@ PostHog integration when available, and fallback behavior otherwise.
 
 from uuid import UUID
 
-from ee.om.feature_flags.posthog_provider import PostHogFeatureFlagProvider
+from om.feature_flags.posthog_provider import PostHogFeatureFlagProvider
 from om.feature_flags.factory import get_default_feature_flag_provider
 from om.feature_flags.interface import FeatureFlagProvider
 from om.feature_flags.interface import NoOpFeatureFlagProvider

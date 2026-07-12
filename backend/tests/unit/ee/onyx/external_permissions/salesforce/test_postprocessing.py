@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from ee.om.external_permissions.salesforce.postprocessing import (
+from om.external_permissions.salesforce.postprocessing import (
     censor_salesforce_chunks,
 )
 from om.configs.app_configs import BLURB_SIZE

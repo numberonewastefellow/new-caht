@@ -4,8 +4,8 @@ from om.background.celery.apps.light import celery_app
 celery_app.autodiscover_tasks(
     app_base.filter_task_modules(
         [
-            "ee.om.background.celery.tasks.doc_permission_syncing",
-            "ee.om.background.celery.tasks.external_group_syncing",
+            "om.background.celery.tasks.doc_permission_syncing",
+            "om.background.celery.tasks.external_group_syncing",
         ]
     )
 )

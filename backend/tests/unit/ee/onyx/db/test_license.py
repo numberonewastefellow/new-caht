@@ -2,9 +2,9 @@
 
 from unittest.mock import MagicMock
 
-from ee.om.db.license import delete_license
-from ee.om.db.license import get_license
-from ee.om.db.license import upsert_license
+from om.db.license import delete_license
+from om.db.license import get_license
+from om.db.license import upsert_license
 from om.db.models import License
 
 

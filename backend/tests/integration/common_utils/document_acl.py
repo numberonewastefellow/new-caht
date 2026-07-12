@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ee.om.access.access import _get_access_for_documents
-from ee.om.db.external_perm import fetch_external_groups_for_user
+from om.db.external_perm import fetch_external_groups_for_user
 from om.access.utils import prefix_external_group
 from om.access.utils import prefix_user_email
 from om.configs.constants import PUBLIC_DOC_PAT

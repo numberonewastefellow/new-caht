@@ -4,7 +4,7 @@ import time
 
 import requests
 
-from ee.om.server.tenants.access import generate_data_plane_token
+from om.server.tenants.access import generate_data_plane_token
 from om.configs.app_configs import CONTROL_PLANE_API_BASE_URL
 from om.configs.app_configs import DEV_MODE
 from om.server.tenant_usage_limits import TenantUsageLimitOverrides

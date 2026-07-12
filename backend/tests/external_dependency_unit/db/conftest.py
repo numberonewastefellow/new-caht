@@ -16,7 +16,7 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from ee.om.db.scim import ScimDAL
+from om.db.scim import ScimDAL
 from om.db.models import ScimToken
 from om.db.models import UserGroup
 

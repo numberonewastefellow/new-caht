@@ -18,7 +18,7 @@ class TestIsTenantGated:
             (0, False),
         ],
     )
-    @patch("ee.om.server.tenants.product_gating.get_redis_replica_client")
+    @patch("om.server.tenants.product_gating.get_redis_replica_client")
     def test_tenant_gated_status(
         self,
         mock_get_redis: MagicMock,
@@ -26,7 +26,7 @@ class TestIsTenantGated:
         expected: bool,
     ) -> None:
         """is_tenant_gated correctly interprets Redis sismember result."""
-        from ee.om.server.tenants.product_gating import is_tenant_gated
+        from om.server.tenants.product_gating import is_tenant_gated
 
         mock_redis = MagicMock()
         mock_redis.sismember.return_value = redis_result
@@ -45,7 +45,7 @@ class TestUpdateTenantGating:
             ("active", False),  # All other statuses remove from set
         ],
     )
-    @patch("ee.om.server.tenants.product_gating.get_redis_client")
+    @patch("om.server.tenants.product_gating.get_redis_client")
     def test_gating_set_modification(
         self,
         mock_get_redis: MagicMock,
@@ -53,7 +53,7 @@ class TestUpdateTenantGating:
         should_add_to_set: bool,
     ) -> None:
         """update_tenant_gating adds tenant to set only for GATED_ACCESS status."""
-        from ee.om.server.tenants.product_gating import update_tenant_gating
+        from om.server.tenants.product_gating import update_tenant_gating
         from om.server.settings.models import ApplicationStatus
 
         mock_redis = MagicMock()

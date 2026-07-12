@@ -4,7 +4,7 @@ from uuid import uuid4
 
 import pytest
 
-from ee.om.db.scim import ScimDAL
+from om.db.scim import ScimDAL
 from om.db.models import ScimGroupMapping
 from om.db.models import ScimToken
 from om.db.models import ScimUserMapping

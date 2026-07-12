@@ -6,8 +6,8 @@ from collections.abc import Callable
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from ee.om.external_permissions.google_drive.doc_sync import gdrive_doc_sync
-from ee.om.external_permissions.google_drive.group_sync import gdrive_group_sync
+from om.external_permissions.google_drive.doc_sync import gdrive_doc_sync
+from om.external_permissions.google_drive.group_sync import gdrive_group_sync
 from om.access.models import DocExternalAccess
 from om.connectors.google_drive.connector import GoogleDriveConnector
 from om.db.models import ConnectorCredentialPair
@@ -133,7 +133,7 @@ def test_gdrive_perm_sync_with_real_data(
 
     # Use the connector directly without mocking Google Drive API calls
     with patch(
-        "ee.om.external_permissions.google_drive.doc_sync.GoogleDriveConnector",
+        "om.external_permissions.google_drive.doc_sync.GoogleDriveConnector",
         return_value=_build_connector(google_drive_service_acct_connector_factory),
     ):
         # Call the function under test
@@ -159,7 +159,7 @@ def test_gdrive_perm_sync_with_real_data(
 
     # create new connector
     with patch(
-        "ee.om.external_permissions.google_drive.group_sync.GoogleDriveConnector",
+        "om.external_permissions.google_drive.group_sync.GoogleDriveConnector",
         return_value=_build_connector(google_drive_service_acct_connector_factory),
     ):
         external_user_group_generator = gdrive_group_sync("test_tenant", mock_cc_pair)

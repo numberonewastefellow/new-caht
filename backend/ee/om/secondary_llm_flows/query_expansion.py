@@ -1,6 +1,6 @@
 import re
 
-from ee.om.prompts.query_expansion import KEYWORD_EXPANSION_PROMPT
+from om.prompts.query_expansion import KEYWORD_EXPANSION_PROMPT
 from om.llm.interfaces import LLM
 from om.llm.models import LanguageModelInput
 from om.llm.models import ReasoningEffort

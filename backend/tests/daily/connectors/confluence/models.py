@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from ee.om.db.external_perm import ExternalUserGroup
+from om.db.external_perm import ExternalUserGroup
 
 
 class ExternalUserGroupSet(BaseModel):

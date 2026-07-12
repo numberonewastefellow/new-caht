@@ -1,4 +1,4 @@
-from ee.om.utils.posthog_client import posthog
+from om.utils.posthog_client import posthog
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

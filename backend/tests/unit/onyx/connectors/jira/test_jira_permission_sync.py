@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from ee.om.external_permissions.jira.doc_sync import jira_doc_sync
+from om.external_permissions.jira.doc_sync import jira_doc_sync
 from om.connectors.jira.connector import JiraConnector
 from om.connectors.jira.utils import JIRA_SERVER_API_VERSION
 from om.db.models import ConnectorCredentialPair

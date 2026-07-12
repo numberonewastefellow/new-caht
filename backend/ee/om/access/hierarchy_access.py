@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from ee.om.db.external_perm import fetch_external_groups_for_user
+from om.db.external_perm import fetch_external_groups_for_user
 from om.db.models import User
 
 

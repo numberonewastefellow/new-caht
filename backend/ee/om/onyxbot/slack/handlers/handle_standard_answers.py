@@ -5,8 +5,8 @@ from slack_sdk.models.blocks import ButtonElement
 from slack_sdk.models.blocks import SectionBlock
 from sqlalchemy.orm import Session
 
-from ee.om.db.standard_answer import fetch_standard_answer_categories_by_names
-from ee.om.db.standard_answer import find_matching_standard_answers
+from om.db.standard_answer import fetch_standard_answer_categories_by_names
+from om.db.standard_answer import find_matching_standard_answers
 from om.configs.constants import MessageType
 from om.configs.onyxbot_configs import OM_BOT_REACT_EMOJI
 from om.db.chat import create_chat_session

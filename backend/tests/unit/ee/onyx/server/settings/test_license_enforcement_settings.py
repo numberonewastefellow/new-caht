@@ -23,7 +23,7 @@ def base_settings() -> Settings:
 class TestApplyLicenseStatusToSettings:
     """Tests for apply_license_status_to_settings function."""
 
-    @patch("ee.om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", False)
+    @patch("om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", False)
     def test_enforcement_disabled_enables_ee_features(
         self, base_settings: Settings
     ) -> None:
@@ -32,18 +32,18 @@ class TestApplyLicenseStatusToSettings:
         If we're running the EE apply function, EE code was loaded via
         ENABLE_PAID_ENTERPRISE_EDITION_FEATURES, so features should be on.
         """
-        from ee.om.server.settings.api import apply_license_status_to_settings
+        from om.server.settings.api import apply_license_status_to_settings
 
         assert base_settings.ee_features_enabled is False
         result = apply_license_status_to_settings(base_settings)
         assert result.application_status == ApplicationStatus.ACTIVE
         assert result.ee_features_enabled is True
 
-    @patch("ee.om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
-    @patch("ee.om.server.settings.api.MULTI_TENANT", True)
+    @patch("om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
+    @patch("om.server.settings.api.MULTI_TENANT", True)
     def test_multi_tenant_enables_ee_features(self, base_settings: Settings) -> None:
         """Cloud mode always enables EE features."""
-        from ee.om.server.settings.api import apply_license_status_to_settings
+        from om.server.settings.api import apply_license_status_to_settings
 
         result = apply_license_status_to_settings(base_settings)
         assert result.ee_features_enabled is True
@@ -55,10 +55,10 @@ class TestApplyLicenseStatusToSettings:
             (ApplicationStatus.ACTIVE, ApplicationStatus.ACTIVE, True),
         ],
     )
-    @patch("ee.om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
-    @patch("ee.om.server.settings.api.MULTI_TENANT", False)
-    @patch("ee.om.server.settings.api.get_current_tenant_id")
-    @patch("ee.om.server.settings.api.get_cached_license_metadata")
+    @patch("om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
+    @patch("om.server.settings.api.MULTI_TENANT", False)
+    @patch("om.server.settings.api.get_current_tenant_id")
+    @patch("om.server.settings.api.get_cached_license_metadata")
     def test_self_hosted_license_status_propagation(
         self,
         mock_get_metadata: MagicMock,
@@ -69,7 +69,7 @@ class TestApplyLicenseStatusToSettings:
         base_settings: Settings,
     ) -> None:
         """Self-hosted: license status controls both application_status and ee_features_enabled."""
-        from ee.om.server.settings.api import apply_license_status_to_settings
+        from om.server.settings.api import apply_license_status_to_settings
 
         mock_get_tenant.return_value = "test_tenant"
         if license_status is None:
@@ -83,13 +83,13 @@ class TestApplyLicenseStatusToSettings:
         assert result.application_status == expected_app_status
         assert result.ee_features_enabled is expected_ee_enabled
 
-    @patch("ee.om.server.settings.api.ENTERPRISE_EDITION_ENABLED", True)
-    @patch("ee.om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
-    @patch("ee.om.server.settings.api.MULTI_TENANT", False)
-    @patch("ee.om.server.settings.api.refresh_license_cache", return_value=None)
-    @patch("ee.om.server.settings.api.get_session_with_current_tenant")
-    @patch("ee.om.server.settings.api.get_current_tenant_id")
-    @patch("ee.om.server.settings.api.get_cached_license_metadata")
+    @patch("om.server.settings.api.ENTERPRISE_EDITION_ENABLED", True)
+    @patch("om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
+    @patch("om.server.settings.api.MULTI_TENANT", False)
+    @patch("om.server.settings.api.refresh_license_cache", return_value=None)
+    @patch("om.server.settings.api.get_session_with_current_tenant")
+    @patch("om.server.settings.api.get_current_tenant_id")
+    @patch("om.server.settings.api.get_cached_license_metadata")
     def test_no_license_with_ee_flag_gates_access(
         self,
         mock_get_metadata: MagicMock,
@@ -99,7 +99,7 @@ class TestApplyLicenseStatusToSettings:
         base_settings: Settings,
     ) -> None:
         """No license + ENTERPRISE_EDITION_ENABLED=true → GATED_ACCESS."""
-        from ee.om.server.settings.api import apply_license_status_to_settings
+        from om.server.settings.api import apply_license_status_to_settings
 
         mock_get_tenant.return_value = "test_tenant"
         mock_get_metadata.return_value = None
@@ -108,13 +108,13 @@ class TestApplyLicenseStatusToSettings:
         assert result.application_status == ApplicationStatus.GATED_ACCESS
         assert result.ee_features_enabled is False
 
-    @patch("ee.om.server.settings.api.ENTERPRISE_EDITION_ENABLED", False)
-    @patch("ee.om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
-    @patch("ee.om.server.settings.api.MULTI_TENANT", False)
-    @patch("ee.om.server.settings.api.refresh_license_cache", return_value=None)
-    @patch("ee.om.server.settings.api.get_session_with_current_tenant")
-    @patch("ee.om.server.settings.api.get_current_tenant_id")
-    @patch("ee.om.server.settings.api.get_cached_license_metadata")
+    @patch("om.server.settings.api.ENTERPRISE_EDITION_ENABLED", False)
+    @patch("om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
+    @patch("om.server.settings.api.MULTI_TENANT", False)
+    @patch("om.server.settings.api.refresh_license_cache", return_value=None)
+    @patch("om.server.settings.api.get_session_with_current_tenant")
+    @patch("om.server.settings.api.get_current_tenant_id")
+    @patch("om.server.settings.api.get_cached_license_metadata")
     def test_no_license_without_ee_flag_allows_community(
         self,
         mock_get_metadata: MagicMock,
@@ -124,7 +124,7 @@ class TestApplyLicenseStatusToSettings:
         base_settings: Settings,
     ) -> None:
         """No license + ENTERPRISE_EDITION_ENABLED=false → community mode (no gating)."""
-        from ee.om.server.settings.api import apply_license_status_to_settings
+        from om.server.settings.api import apply_license_status_to_settings
 
         mock_get_tenant.return_value = "test_tenant"
         mock_get_metadata.return_value = None
@@ -133,10 +133,10 @@ class TestApplyLicenseStatusToSettings:
         assert result.application_status == ApplicationStatus.ACTIVE
         assert result.ee_features_enabled is False
 
-    @patch("ee.om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
-    @patch("ee.om.server.settings.api.MULTI_TENANT", False)
-    @patch("ee.om.server.settings.api.get_current_tenant_id")
-    @patch("ee.om.server.settings.api.get_cached_license_metadata")
+    @patch("om.server.settings.api.LICENSE_ENFORCEMENT_ENABLED", True)
+    @patch("om.server.settings.api.MULTI_TENANT", False)
+    @patch("om.server.settings.api.get_current_tenant_id")
+    @patch("om.server.settings.api.get_cached_license_metadata")
     def test_redis_error_disables_ee_features(
         self,
         mock_get_metadata: MagicMock,
@@ -144,7 +144,7 @@ class TestApplyLicenseStatusToSettings:
         base_settings: Settings,
     ) -> None:
         """Redis errors fail closed - disable EE features."""
-        from ee.om.server.settings.api import apply_license_status_to_settings
+        from om.server.settings.api import apply_license_status_to_settings
 
         mock_get_tenant.return_value = "test_tenant"
         mock_get_metadata.side_effect = RedisError("Connection failed")

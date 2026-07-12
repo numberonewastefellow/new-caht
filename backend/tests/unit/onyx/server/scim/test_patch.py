@@ -1,14 +1,14 @@
 import pytest
 
-from ee.om.server.scim.models import ScimGroupMember
-from ee.om.server.scim.models import ScimGroupResource
-from ee.om.server.scim.models import ScimName
-from ee.om.server.scim.models import ScimPatchOperation
-from ee.om.server.scim.models import ScimPatchOperationType
-from ee.om.server.scim.models import ScimUserResource
-from ee.om.server.scim.patch import apply_group_patch
-from ee.om.server.scim.patch import apply_user_patch
-from ee.om.server.scim.patch import ScimPatchError
+from om.server.scim.models import ScimGroupMember
+from om.server.scim.models import ScimGroupResource
+from om.server.scim.models import ScimName
+from om.server.scim.models import ScimPatchOperation
+from om.server.scim.models import ScimPatchOperationType
+from om.server.scim.models import ScimUserResource
+from om.server.scim.patch import apply_group_patch
+from om.server.scim.patch import apply_user_patch
+from om.server.scim.patch import ScimPatchError
 
 
 def _make_user(**kwargs: object) -> ScimUserResource:

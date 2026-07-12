@@ -7,8 +7,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from ee.om.server.license.models import LicensePayload
-from ee.om.server.license.models import PlanType
+from om.server.license.models import LicensePayload
+from om.server.license.models import PlanType
 
 
 @pytest.fixture

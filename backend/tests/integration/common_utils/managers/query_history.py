@@ -5,8 +5,8 @@ from uuid import UUID
 import requests
 from requests.models import CaseInsensitiveDict
 
-from ee.om.server.query_history.models import ChatSessionMinimal
-from ee.om.server.query_history.models import ChatSessionSnapshot
+from om.server.query_history.models import ChatSessionMinimal
+from om.server.query_history.models import ChatSessionSnapshot
 from om.configs.constants import QAFeedbackType
 from om.server.documents.models import PaginatedReturn
 from tests.integration.common_utils.constants import API_SERVER_URL

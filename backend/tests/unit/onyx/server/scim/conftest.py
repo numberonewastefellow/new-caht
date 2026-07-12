@@ -12,9 +12,9 @@ import pytest
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from ee.om.server.scim.models import ScimGroupResource
-from ee.om.server.scim.models import ScimName
-from ee.om.server.scim.models import ScimUserResource
+from om.server.scim.models import ScimGroupResource
+from om.server.scim.models import ScimName
+from om.server.scim.models import ScimUserResource
 from om.db.models import ScimToken
 from om.db.models import User
 from om.db.models import UserGroup
@@ -38,7 +38,7 @@ def mock_token() -> MagicMock:
 @pytest.fixture
 def mock_dal() -> Generator[MagicMock, None, None]:
     """Patch ScimDAL construction in api module and yield the mock instance."""
-    with patch("ee.om.server.scim.api.ScimDAL") as cls:
+    with patch("om.server.scim.api.ScimDAL") as cls:
         dal = cls.return_value
         # User defaults
         dal.get_user.return_value = None

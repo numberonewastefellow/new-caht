@@ -2,8 +2,8 @@
 
 import pytest
 
-from ee.om.server.tenants.schema_management import drop_schema
-from ee.om.server.tenants.schema_management import validate_tenant_id
+from om.server.tenants.schema_management import drop_schema
+from om.server.tenants.schema_management import validate_tenant_id
 
 
 class TestValidateTenantId:

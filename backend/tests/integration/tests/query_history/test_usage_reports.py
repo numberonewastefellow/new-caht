@@ -2,7 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 
-from ee.om.db.usage_export import get_all_empty_chat_message_entries
+from om.db.usage_export import get_all_empty_chat_message_entries
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.seeding.chat_history_seeding import seed_chat_history
 

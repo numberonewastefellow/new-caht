@@ -8,7 +8,7 @@ from uuid import UUID
 
 import requests
 
-from ee.om.server.query_history.api import ChatSessionSnapshot
+from om.server.query_history.api import ChatSessionSnapshot
 from om.server.manage.models import AllUsersResponse
 from om.server.query_and_chat.models import ChatSessionsResponse
 

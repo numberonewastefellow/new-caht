@@ -4,8 +4,8 @@ from redis.exceptions import RedisError
 from sqlalchemy.exc import SQLAlchemyError
 
 from ee.om.configs.app_configs import LICENSE_ENFORCEMENT_ENABLED
-from ee.om.db.license import get_cached_license_metadata
-from ee.om.db.license import refresh_license_cache
+from om.db.license import get_cached_license_metadata
+from om.db.license import refresh_license_cache
 from om.configs.app_configs import ENTERPRISE_EDITION_ENABLED
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.server.settings.models import ApplicationStatus

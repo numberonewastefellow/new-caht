@@ -1,8 +1,8 @@
 import pytest
 
-from ee.om.server.scim.filtering import parse_scim_filter
-from ee.om.server.scim.filtering import ScimFilter
-from ee.om.server.scim.filtering import ScimFilterOperator
+from om.server.scim.filtering import parse_scim_filter
+from om.server.scim.filtering import ScimFilter
+from om.server.scim.filtering import ScimFilterOperator
 
 
 class TestParseScimFilter:

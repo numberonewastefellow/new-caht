@@ -2,7 +2,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from ee.om.external_permissions.confluence.group_sync import confluence_group_sync
+from om.external_permissions.confluence.group_sync import confluence_group_sync
 from om.configs.constants import DocumentSource
 from om.connectors.models import InputType
 from om.db.enums import AccessType

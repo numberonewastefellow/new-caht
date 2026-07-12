@@ -8,7 +8,7 @@ from fastapi import status
 
 from ee.om.configs.app_configs import SUPER_CLOUD_API_KEY
 from ee.om.configs.app_configs import SUPER_USERS
-from ee.om.server.seeding import get_seed_config
+from om.server.seeding import get_seed_config
 from om.auth.users import current_admin_user
 from om.configs.app_configs import AUTH_TYPE
 from om.configs.app_configs import USER_AUTH_SECRET

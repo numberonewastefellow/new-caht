@@ -1,8 +1,8 @@
 """EE Usage limits - trial detection via billing information."""
 
-from ee.om.server.tenants.billing import fetch_billing_information
-from ee.om.server.tenants.models import BillingInformation
-from ee.om.server.tenants.models import SubscriptionStatusResponse
+from om.server.tenants.billing import fetch_billing_information
+from om.server.tenants.models import BillingInformation
+from om.server.tenants.models import SubscriptionStatusResponse
 from om.utils.logger import setup_logger
 from shared_configs.configs import MULTI_TENANT
 

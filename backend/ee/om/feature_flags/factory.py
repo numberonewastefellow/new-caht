@@ -1,4 +1,4 @@
-from ee.om.feature_flags.posthog_provider import PostHogFeatureFlagProvider
+from om.feature_flags.posthog_provider import PostHogFeatureFlagProvider
 from om.feature_flags.interface import FeatureFlagProvider
 
 

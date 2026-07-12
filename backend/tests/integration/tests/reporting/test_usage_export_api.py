@@ -11,7 +11,7 @@ from zipfile import ZipFile
 import pytest
 import requests
 
-from ee.om.db.usage_export import UsageReportMetadata
+from om.db.usage_export import UsageReportMetadata
 from om.db.seeding.chat_history_seeding import seed_chat_history
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.test_models import DATestUser

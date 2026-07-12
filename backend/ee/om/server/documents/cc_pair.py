@@ -6,10 +6,10 @@ from fastapi import Depends
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from ee.om.background.celery.tasks.doc_permission_syncing.tasks import (
+from om.background.celery.tasks.doc_permission_syncing.tasks import (
     try_creating_permissions_sync_task,
 )
-from ee.om.background.celery.tasks.external_group_syncing.tasks import (
+from om.background.celery.tasks.external_group_syncing.tasks import (
     try_creating_external_group_sync_task,
 )
 from om.auth.users import current_curator_or_admin_user

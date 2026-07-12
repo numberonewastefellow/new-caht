@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 
-from ee.om.db.external_perm import fetch_external_groups_for_user
-from ee.om.db.external_perm import fetch_public_external_group_ids
-from ee.om.db.user_group import fetch_user_groups_for_documents
-from ee.om.db.user_group import fetch_user_groups_for_user
-from ee.om.external_permissions.sync_params import get_source_perm_sync_config
+from om.db.external_perm import fetch_external_groups_for_user
+from om.db.external_perm import fetch_public_external_group_ids
+from om.db.user_group import fetch_user_groups_for_documents
+from om.db.user_group import fetch_user_groups_for_user
+from om.external_permissions.sync_params import get_source_perm_sync_config
 from om.access.access import (
     _get_access_for_documents as get_access_for_documents_without_groups,
 )
