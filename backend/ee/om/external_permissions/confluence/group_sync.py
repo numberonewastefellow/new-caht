@@ -7,8 +7,8 @@ from om.configs.app_configs import CONFLUENCE_USE_ONYX_USERS_FOR_GROUP_SYNC
 from om.connectors.confluence.onyx_confluence import (
     get_user_email_from_username__server,
 )
-from om.connectors.confluence.onyx_confluence import OnyxConfluence
-from om.connectors.credentials_provider import OnyxDBCredentialsProvider
+from om.connectors.confluence.onyx_confluence import OmConfluence
+from om.connectors.credentials_provider import OmDBCredentialsProvider
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.models import ConnectorCredentialPair
 from om.db.users import get_all_users
@@ -18,7 +18,7 @@ logger = setup_logger()
 
 
 def _build_group_member_email_map(
-    confluence_client: OnyxConfluence, cc_pair_id: int
+    confluence_client: OmConfluence, cc_pair_id: int
 ) -> dict[str, set[str]]:
     group_member_emails: dict[str, set[str]] = {}
     for user in confluence_client.paginated_cql_user_retrieval():
@@ -70,7 +70,7 @@ def _build_group_member_email_map(
 
 
 def _build_group_member_email_map_from_onyx_users(
-    confluence_client: OnyxConfluence,
+    confluence_client: OmConfluence,
 ) -> dict[str, set[str]]:
     """Hacky, but it's the only way to do this as long as the
     Confluence APIs are broken.
@@ -121,7 +121,7 @@ def _build_group_member_email_map_from_onyx_users(
 
 
 def _build_final_group_to_member_email_map(
-    confluence_client: OnyxConfluence,
+    confluence_client: OmConfluence,
     cc_pair_id: int,
     # if set, will infer confluence usernames from onyx users in addition to using the
     # confluence users API. This is a hacky workaround for the fact that the Confluence
@@ -159,7 +159,7 @@ def confluence_group_sync(
     tenant_id: str,
     cc_pair: ConnectorCredentialPair,
 ) -> Generator[ExternalUserGroup, None, None]:
-    provider = OnyxDBCredentialsProvider(tenant_id, "confluence", cc_pair.credential_id)
+    provider = OmDBCredentialsProvider(tenant_id, "confluence", cc_pair.credential_id)
     is_cloud = cc_pair.connector.connector_specific_config.get("is_cloud", False)
     wiki_base: str = cc_pair.connector.connector_specific_config["wiki_base"]
     url = wiki_base.rstrip("/")
@@ -174,7 +174,7 @@ def confluence_group_sync(
         "max_backoff_seconds": 60,
     }
 
-    confluence_client = OnyxConfluence(is_cloud, url, provider)
+    confluence_client = OmConfluence(is_cloud, url, provider)
     confluence_client._probe_connection(**probe_kwargs)
     confluence_client._initialize_connection(**final_kwargs)
 

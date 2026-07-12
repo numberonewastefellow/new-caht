@@ -10,10 +10,10 @@ from sqlalchemy.orm import Session
 
 from om.configs.app_configs import DB_YIELD_PER_DEFAULT
 from om.configs.constants import CELERY_VESPA_SYNC_BEAT_LOCK_TIMEOUT
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisConstants
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisConstants
 from om.redis.redis_object_helper import RedisObjectHelper
 from om.utils.variable_functionality import fetch_versioned_implementation
 from om.utils.variable_functionality import global_version
@@ -38,12 +38,12 @@ class RedisUserGroup(RedisObjectHelper):
 
     def set_fence(self, payload: int | None) -> None:
         if payload is None:
-            self.redis.srem(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+            self.redis.srem(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
             self.redis.delete(self.fence_key)
             return
 
         self.redis.set(self.fence_key, payload, ex=self.FENCE_TTL)
-        self.redis.sadd(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+        self.redis.sadd(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
 
     @property
     def payload(self) -> int | None:
@@ -101,11 +101,11 @@ class RedisUserGroup(RedisObjectHelper):
             redis_client.expire(self.taskset_key, self.TASKSET_TTL)
 
             celery_app.send_task(
-                OnyxCeleryTask.VESPA_METADATA_SYNC_TASK,
+                OmCeleryTask.VESPA_METADATA_SYNC_TASK,
                 kwargs=dict(document_id=doc_id, tenant_id=tenant_id),
-                queue=OnyxCeleryQueues.VESPA_METADATA_SYNC,
+                queue=OmCeleryQueues.VESPA_METADATA_SYNC,
                 task_id=custom_task_id,
-                priority=OnyxCeleryPriority.MEDIUM,
+                priority=OmCeleryPriority.MEDIUM,
             )
 
             num_tasks_sent += 1
@@ -113,7 +113,7 @@ class RedisUserGroup(RedisObjectHelper):
         return num_tasks_sent, num_tasks_sent
 
     def reset(self) -> None:
-        self.redis.srem(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+        self.redis.srem(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
         self.redis.delete(self.taskset_key)
         self.redis.delete(self.fence_key)
 

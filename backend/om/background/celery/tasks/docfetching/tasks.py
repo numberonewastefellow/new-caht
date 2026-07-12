@@ -23,7 +23,7 @@ from om.background.indexing.job_client import SimpleJobClient
 from om.background.indexing.job_client import SimpleJobException
 from om.background.indexing.run_docfetching import run_docfetching_entrypoint
 from om.configs.constants import CELERY_INDEXING_WATCHDOG_CONNECTOR_TIMEOUT
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryTask
 from om.connectors.exceptions import ConnectorValidationError
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
 from om.db.engine.sql_engine import get_session_with_current_tenant
@@ -305,7 +305,7 @@ def process_job_result(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CONNECTOR_DOC_FETCHING_TASK,
+    name=OmCeleryTask.CONNECTOR_DOC_FETCHING_TASK,
     bind=True,
     acks_late=False,
     track_started=True,

@@ -17,8 +17,8 @@ from om.background.celery.tasks.pruning.tasks import (
 )
 from om.background.celery.versioned_apps.client import app as client_app
 from om.background.indexing.models import IndexAttemptErrorPydantic
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryTask
 from om.configs.constants import PUBLIC_API_TAGS
 from om.connectors.exceptions import ValidationError
 from om.connectors.factory import validate_ccpair_for_user
@@ -315,9 +315,9 @@ def update_cc_pair_status(
 
     # this speeds up the start of indexing by firing the check immediately
     client_app.send_task(
-        OnyxCeleryTask.CHECK_FOR_INDEXING,
+        OmCeleryTask.CHECK_FOR_INDEXING,
         kwargs=dict(tenant_id=tenant_id),
-        priority=OnyxCeleryPriority.HIGH,
+        priority=OmCeleryPriority.HIGH,
     )
 
     return JSONResponse(
@@ -569,8 +569,8 @@ def associate_credential_to_connector(
 
         # trigger indexing immediately
         client_app.send_task(
-            OnyxCeleryTask.CHECK_FOR_INDEXING,
-            priority=OnyxCeleryPriority.HIGH,
+            OmCeleryTask.CHECK_FOR_INDEXING,
+            priority=OmCeleryPriority.HIGH,
             kwargs={"tenant_id": tenant_id},
         )
 

@@ -8,10 +8,10 @@ from redis.lock import Lock as RedisLock
 from om.background.celery.apps.app_base import task_logger
 from om.background.celery.tasks.beat_schedule import BEAT_EXPIRES_DEFAULT
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
-from om.configs.constants import ONYX_CLOUD_TENANT_ID
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OM_CLOUD_TENANT_ID
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisLocks
 from om.db.engine.tenant_utils import get_all_tenant_ids
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import redis_lock_dump
@@ -19,7 +19,7 @@ from shared_configs.configs import IGNORED_SYNCING_TENANT_LIST
 
 
 @shared_task(
-    name=OnyxCeleryTask.CLOUD_BEAT_TASK_GENERATOR,
+    name=OmCeleryTask.CLOUD_BEAT_TASK_GENERATOR,
     ignore_result=True,
     trail=False,
     bind=True,
@@ -27,17 +27,17 @@ from shared_configs.configs import IGNORED_SYNCING_TENANT_LIST
 def cloud_beat_task_generator(
     self: Task,
     task_name: str,
-    queue: str = OnyxCeleryTask.DEFAULT,
-    priority: int = OnyxCeleryPriority.MEDIUM,
+    queue: str = OmCeleryTask.DEFAULT,
+    priority: int = OmCeleryPriority.MEDIUM,
     expires: int = BEAT_EXPIRES_DEFAULT,
 ) -> bool | None:
     """a lightweight task used to kick off individual beat tasks per tenant."""
     time_start = time.monotonic()
 
-    redis_client = get_redis_client(tenant_id=ONYX_CLOUD_TENANT_ID)
+    redis_client = get_redis_client(tenant_id=OM_CLOUD_TENANT_ID)
 
     lock_beat: RedisLock = redis_client.lock(
-        f"{OnyxRedisLocks.CLOUD_BEAT_TASK_GENERATOR_LOCK}:{task_name}",
+        f"{OmRedisLocks.CLOUD_BEAT_TASK_GENERATOR_LOCK}:{task_name}",
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 

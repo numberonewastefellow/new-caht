@@ -68,7 +68,7 @@ SHOW_EXTRA_CONNECTORS = os.environ.get("SHOW_EXTRA_CONNECTORS", "").lower() == "
 # 1. associated user emails
 # 2. anonymized user emails
 # 3. no queries
-ONYX_QUERY_HISTORY_TYPE = QueryHistoryType(
+OM_QUERY_HISTORY_TYPE = QueryHistoryType(
     (os.environ.get("ONYX_QUERY_HISTORY_TYPE") or QueryHistoryType.NORMAL.value).lower()
 )
 
@@ -303,7 +303,7 @@ DISABLE_OPENSEARCH_MIGRATION_TASK = (
 # OpenSearch. Defaults to "false" so Vespa stays the default engine for this
 # deployment (upstream defaults this to "true"; do not copy that default here or
 # Vespa silently turns off).
-ONYX_DISABLE_VESPA = os.environ.get("ONYX_DISABLE_VESPA", "false").lower() == "true"
+OM_DISABLE_VESPA = os.environ.get("ONYX_DISABLE_VESPA", "false").lower() == "true"
 
 # --- Config vars required by the upgraded document_index module ---
 OPENSEARCH_USE_SSL = os.environ.get("OPENSEARCH_USE_SSL", "true").lower() == "true"

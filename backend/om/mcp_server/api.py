@@ -16,7 +16,7 @@ from starlette.types import Scope
 from starlette.types import Send
 
 from om.configs.app_configs import MCP_SERVER_CORS_ORIGINS
-from om.mcp_server.auth import OnyxTokenVerifier
+from om.mcp_server.auth import OmTokenVerifier
 from om.mcp_server.utils import shutdown_http_client
 from om.utils.logger import setup_logger
 
@@ -27,7 +27,7 @@ logger.info("Creating VertualAI MCP Server...")
 mcp_server = FastMCP(
     name="VertualAI MCP Server",
     version="1.0.0",
-    auth=OnyxTokenVerifier(),
+    auth=OmTokenVerifier(),
 )
 
 # Import tools and resources AFTER mcp_server is created to avoid circular imports

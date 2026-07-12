@@ -49,12 +49,12 @@ from om.configs.constants import AuthType
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import CELERY_INDEXING_LOCK_TIMEOUT
 from om.configs.constants import MilestoneRecordType
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisConstants
-from om.configs.constants import OnyxRedisLocks
-from om.configs.constants import OnyxRedisSignals
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisConstants
+from om.configs.constants import OmRedisLocks
+from om.configs.constants import OmRedisSignals
 from om.connectors.models import ConnectorFailure
 from om.connectors.models import Document
 from om.connectors.models import IndexAttemptMetadata
@@ -104,7 +104,7 @@ from om.redis.redis_pool import get_redis_replica_client
 from om.redis.redis_pool import redis_lock_dump
 from om.redis.redis_pool import SCAN_ITER_COUNT_DEFAULT
 from om.redis.redis_utils import is_fence
-from om.server.runtime.onyx_runtime import OnyxRuntime
+from om.server.runtime.onyx_runtime import OmRuntime
 from om.utils.logger import setup_logger
 from om.utils.middleware import make_randomized_onyx_request_id
 from om.utils.telemetry import mt_cloud_telemetry
@@ -138,7 +138,7 @@ def _get_fence_validation_block_expiration() -> int:
         return base_expiration
 
     try:
-        beat_multiplier = OnyxRuntime.get_beat_multiplier()
+        beat_multiplier = OmRuntime.get_beat_multiplier()
     except Exception:
         beat_multiplier = CLOUD_BEAT_MULTIPLIER_DEFAULT
 
@@ -459,11 +459,11 @@ def check_indexing_completion(
                 redis_celery = task.app.broker_connection().channel().client  # type: ignore
                 task_exists = celery_find_task(
                     attempt.celery_task_id,
-                    OnyxCeleryQueues.CONNECTOR_DOC_FETCHING,
+                    OmCeleryQueues.CONNECTOR_DOC_FETCHING,
                     redis_celery,
                 )
                 unacked_task_ids = celery_get_unacked_task_ids(
-                    OnyxCeleryQueues.CONNECTOR_DOC_FETCHING, redis_celery
+                    OmCeleryQueues.CONNECTOR_DOC_FETCHING, redis_celery
                 )
 
                 if not task_exists and attempt.celery_task_id not in unacked_task_ids:
@@ -712,7 +712,7 @@ def _kickoff_indexing_tasks(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_INDEXING,
+    name=OmCeleryTask.CHECK_FOR_INDEXING,
     soft_time_limit=300,
     bind=True,
 )
@@ -743,7 +743,7 @@ def check_for_indexing(self: Task, *, tenant_id: str) -> int | None:
     # redis_client_celery: Redis = self.app.broker_connection().channel().client  # type: ignore
 
     lock_beat: RedisLock = redis_client.lock(
-        OnyxRedisLocks.CHECK_INDEXING_BEAT_LOCK,
+        OmRedisLocks.CHECK_INDEXING_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -756,7 +756,7 @@ def check_for_indexing(self: Task, *, tenant_id: str) -> int | None:
 
         # SPECIAL 0/3: sync lookup table for active fences
         # we want to run this less frequently than the overall task
-        if not redis_client.exists(OnyxRedisSignals.BLOCK_BUILD_FENCE_LOOKUP_TABLE):
+        if not redis_client.exists(OmRedisSignals.BLOCK_BUILD_FENCE_LOOKUP_TABLE):
             # build a lookup table of existing fences
             # this is just a migration concern and should be unnecessary once
             # lookup tables are rolled out
@@ -764,15 +764,15 @@ def check_for_indexing(self: Task, *, tenant_id: str) -> int | None:
                 count=SCAN_ITER_COUNT_DEFAULT
             ):
                 if is_fence(key_bytes) and not redis_client.sismember(
-                    OnyxRedisConstants.ACTIVE_FENCES, key_bytes
+                    OmRedisConstants.ACTIVE_FENCES, key_bytes
                 ):
                     logger.warning(f"Adding {key_bytes} to the lookup table.")
-                    redis_client.sadd(OnyxRedisConstants.ACTIVE_FENCES, key_bytes)
+                    redis_client.sadd(OmRedisConstants.ACTIVE_FENCES, key_bytes)
 
             redis_client.set(
-                OnyxRedisSignals.BLOCK_BUILD_FENCE_LOOKUP_TABLE,
+                OmRedisSignals.BLOCK_BUILD_FENCE_LOOKUP_TABLE,
                 1,
-                ex=OnyxRuntime.get_build_fence_lookup_table_interval(),
+                ex=OmRuntime.get_build_fence_lookup_table_interval(),
             )
 
         # 1/3: KICKOFF
@@ -949,7 +949,7 @@ def check_for_indexing(self: Task, *, tenant_id: str) -> int | None:
 
         lock_beat.reacquire()
         # we want to run this less frequently than the overall task
-        if not redis_client.exists(OnyxRedisSignals.BLOCK_VALIDATE_INDEXING_FENCES):
+        if not redis_client.exists(OmRedisSignals.BLOCK_VALIDATE_INDEXING_FENCES):
             # Check for orphaned index attempts that have Celery task IDs but no actual running tasks
             # This can happen if workers crash or tasks are terminated unexpectedly
             # We reuse the same Redis signal name for backwards compatibility
@@ -961,7 +961,7 @@ def check_for_indexing(self: Task, *, tenant_id: str) -> int | None:
                 )
 
             redis_client.set(
-                OnyxRedisSignals.BLOCK_VALIDATE_INDEXING_FENCES,
+                OmRedisSignals.BLOCK_VALIDATE_INDEXING_FENCES,
                 1,
                 ex=_get_fence_validation_block_expiration(),
             )
@@ -1017,7 +1017,7 @@ def check_for_indexing(self: Task, *, tenant_id: str) -> int | None:
 
 # primary
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_CHECKPOINT_CLEANUP,
+    name=OmCeleryTask.CHECK_FOR_CHECKPOINT_CLEANUP,
     soft_time_limit=300,
     bind=True,
 )
@@ -1026,7 +1026,7 @@ def check_for_checkpoint_cleanup(self: Task, *, tenant_id: str) -> None:
     locked = False
     redis_client = get_redis_client(tenant_id=tenant_id)
     lock: RedisLock = redis_client.lock(
-        OnyxRedisLocks.CHECK_CHECKPOINT_CLEANUP_BEAT_LOCK,
+        OmRedisLocks.CHECK_CHECKPOINT_CLEANUP_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -1043,13 +1043,13 @@ def check_for_checkpoint_cleanup(self: Task, *, tenant_id: str) -> None:
                     f"Cleaning up checkpoint for index attempt {attempt.id}"
                 )
                 self.app.send_task(
-                    OnyxCeleryTask.CLEANUP_CHECKPOINT,
+                    OmCeleryTask.CLEANUP_CHECKPOINT,
                     kwargs={
                         "index_attempt_id": attempt.id,
                         "tenant_id": tenant_id,
                     },
-                    queue=OnyxCeleryQueues.CHECKPOINT_CLEANUP,
-                    priority=OnyxCeleryPriority.MEDIUM,
+                    queue=OmCeleryQueues.CHECKPOINT_CLEANUP,
+                    priority=OmCeleryPriority.MEDIUM,
                 )
     except Exception:
         task_logger.exception("Unexpected exception during checkpoint cleanup")
@@ -1067,7 +1067,7 @@ def check_for_checkpoint_cleanup(self: Task, *, tenant_id: str) -> None:
 
 # light worker
 @shared_task(
-    name=OnyxCeleryTask.CLEANUP_CHECKPOINT,
+    name=OmCeleryTask.CLEANUP_CHECKPOINT,
     bind=True,
 )
 def cleanup_checkpoint_task(
@@ -1092,7 +1092,7 @@ def cleanup_checkpoint_task(
 
 # primary
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_INDEX_ATTEMPT_CLEANUP,
+    name=OmCeleryTask.CHECK_FOR_INDEX_ATTEMPT_CLEANUP,
     soft_time_limit=300,
     bind=True,
 )
@@ -1101,7 +1101,7 @@ def check_for_index_attempt_cleanup(self: Task, *, tenant_id: str) -> None:
     locked = False
     redis_client = get_redis_client(tenant_id=tenant_id)
     lock: RedisLock = redis_client.lock(
-        OnyxRedisLocks.CHECK_INDEX_ATTEMPT_CLEANUP_BEAT_LOCK,
+        OmRedisLocks.CHECK_INDEX_ATTEMPT_CLEANUP_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -1132,13 +1132,13 @@ def check_for_index_attempt_cleanup(self: Task, *, tenant_id: str) -> None:
                     f"check_for_index_attempt_cleanup - Cleaning up index attempts {len(batch)}"
                 )
                 self.app.send_task(
-                    OnyxCeleryTask.CLEANUP_INDEX_ATTEMPT,
+                    OmCeleryTask.CLEANUP_INDEX_ATTEMPT,
                     kwargs={
                         "index_attempt_ids": [attempt.id for attempt in batch],
                         "tenant_id": tenant_id,
                     },
-                    queue=OnyxCeleryQueues.INDEX_ATTEMPT_CLEANUP,
-                    priority=OnyxCeleryPriority.MEDIUM,
+                    queue=OmCeleryQueues.INDEX_ATTEMPT_CLEANUP,
+                    priority=OmCeleryPriority.MEDIUM,
                 )
     except Exception:
         task_logger.exception("Unexpected exception during index attempt cleanup check")
@@ -1156,7 +1156,7 @@ def check_for_index_attempt_cleanup(self: Task, *, tenant_id: str) -> None:
 
 # light worker
 @shared_task(
-    name=OnyxCeleryTask.CLEANUP_INDEX_ATTEMPT,
+    name=OmCeleryTask.CLEANUP_INDEX_ATTEMPT,
     bind=True,
 )
 def cleanup_index_attempt_task(
@@ -1262,7 +1262,7 @@ def _resolve_indexing_document_errors(
 
 
 @shared_task(
-    name=OnyxCeleryTask.DOCPROCESSING_TASK,
+    name=OmCeleryTask.DOCPROCESSING_TASK,
     bind=True,
 )
 def docprocessing_task(

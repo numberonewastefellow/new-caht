@@ -10,8 +10,8 @@ from om.db.models import User
 from om.db.notification import create_notification
 from om.feature_flags.factory import get_default_feature_flag_provider
 from om.feature_flags.interface import NoOpFeatureFlagProvider
-from om.file_processing.file_types import OnyxFileExtensions
-from om.file_processing.file_types import OnyxMimeTypes
+from om.file_processing.file_types import OmFileExtensions
+from om.file_processing.file_types import OmMimeTypes
 from om.server.features.build.configs import ENABLE_CRAFT
 from om.server.features.build.configs import MAX_UPLOAD_FILE_SIZE_BYTES
 from om.utils.logger import setup_logger
@@ -73,11 +73,11 @@ CODE_MIME_TYPES: set[str] = {
 
 # Combine base Onyx extensions with code file extensions
 ALLOWED_EXTENSIONS: set[str] = (
-    OnyxFileExtensions.ALL_ALLOWED_EXTENSIONS | CODE_FILE_EXTENSIONS
+    OmFileExtensions.ALL_ALLOWED_EXTENSIONS | CODE_FILE_EXTENSIONS
 )
 
 # Combine base Onyx MIME types with code MIME types
-ALLOWED_MIME_TYPES: set[str] = OnyxMimeTypes.ALLOWED_MIME_TYPES | CODE_MIME_TYPES
+ALLOWED_MIME_TYPES: set[str] = OmMimeTypes.ALLOWED_MIME_TYPES | CODE_MIME_TYPES
 
 # Blocked extensions (executable/dangerous files)
 BLOCKED_EXTENSIONS: set[str] = {
@@ -266,7 +266,7 @@ def validate_file(
 
 # PostHog feature flag key for enabling Onyx Craft (cloud rollout control)
 # Flag logic: True = enabled, False/null/not found = disabled
-ONYX_CRAFT_ENABLED_FLAG = "onyx-craft-enabled"
+OM_CRAFT_ENABLED_FLAG = "onyx-craft-enabled"
 
 # PostHog feature flag key for controlling whether a user has usage limits
 # Flag logic: True = user has usage limits (rate limits apply), False/null/not found = no limits (unlimited usage)
@@ -295,7 +295,7 @@ def is_onyx_craft_enabled(user: User) -> bool:
 
     # Use the feature flag provider
     is_enabled = feature_flag_provider.feature_enabled(
-        ONYX_CRAFT_ENABLED_FLAG,
+        OM_CRAFT_ENABLED_FLAG,
         user.id,
     )
 

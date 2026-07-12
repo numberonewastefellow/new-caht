@@ -20,12 +20,12 @@ from om.connectors.models import ImageSection
 from om.connectors.models import TextSection
 from om.connectors.salesforce.doc_conversion import _extract_section
 from om.connectors.salesforce.doc_conversion import ID_PREFIX
-from om.connectors.salesforce.onyx_salesforce import OnyxSalesforce
+from om.connectors.salesforce.onyx_salesforce import OmSalesforce
 from om.connectors.salesforce.salesforce_calls import _bulk_retrieve_from_salesforce
 from om.connectors.salesforce.salesforce_calls import _make_time_filter_for_sf_type
 from om.connectors.salesforce.salesforce_calls import _make_time_filtered_query
 from om.connectors.salesforce.salesforce_calls import get_object_by_id_query
-from om.connectors.salesforce.sqlite_functions import OnyxSalesforceSQLite
+from om.connectors.salesforce.sqlite_functions import OmSalesforceSQLite
 from om.connectors.salesforce.utils import ACCOUNT_OBJECT_TYPE
 from om.connectors.salesforce.utils import MODIFIED_FIELD
 from om.connectors.salesforce.utils import USER_OBJECT_TYPE
@@ -147,7 +147,7 @@ def _clear_sf_db(directory: str) -> None:
 
 
 def _create_csv_file_and_update_db(
-    sf_db: OnyxSalesforceSQLite,
+    sf_db: OmSalesforceSQLite,
     object_type: str,
     records: list[dict],
     filename: str = "test_data.csv",
@@ -182,7 +182,7 @@ def _create_csv_file_and_update_db(
         sf_db.update_from_csv(object_type, csv_path)
 
 
-def _create_csv_with_example_data(sf_db: OnyxSalesforceSQLite) -> None:
+def _create_csv_with_example_data(sf_db: OmSalesforceSQLite) -> None:
     """
     Creates CSV files with example data, organized by object type.
     """
@@ -375,7 +375,7 @@ def _create_csv_with_example_data(sf_db: OnyxSalesforceSQLite) -> None:
         _create_csv_file_and_update_db(sf_db, object_type, records)
 
 
-def _test_query(sf_db: OnyxSalesforceSQLite) -> None:
+def _test_query(sf_db: OmSalesforceSQLite) -> None:
     """
     Tests querying functionality by verifying:
     1. All expected Account IDs are found
@@ -458,7 +458,7 @@ def _test_query(sf_db: OnyxSalesforceSQLite) -> None:
     print("All query tests passed successfully!")
 
 
-def _test_upsert(sf_db: OnyxSalesforceSQLite) -> None:
+def _test_upsert(sf_db: OmSalesforceSQLite) -> None:
     """
     Tests upsert functionality by:
     1. Updating an existing account
@@ -504,7 +504,7 @@ def _test_upsert(sf_db: OnyxSalesforceSQLite) -> None:
     print("All upsert tests passed successfully!")
 
 
-def _test_relationships(sf_db: OnyxSalesforceSQLite) -> None:
+def _test_relationships(sf_db: OmSalesforceSQLite) -> None:
     """
     Tests relationship shelf updates and queries by:
     1. Creating test data with relationships
@@ -569,7 +569,7 @@ def _test_relationships(sf_db: OnyxSalesforceSQLite) -> None:
     print("All relationship tests passed successfully!")
 
 
-def _test_account_with_children(sf_db: OnyxSalesforceSQLite) -> None:
+def _test_account_with_children(sf_db: OmSalesforceSQLite) -> None:
     """
     Tests querying all accounts and retrieving their child objects.
     This test verifies that:
@@ -633,7 +633,7 @@ def _test_account_with_children(sf_db: OnyxSalesforceSQLite) -> None:
     print("All account with children tests passed successfully!")
 
 
-def _test_relationship_updates(sf_db: OnyxSalesforceSQLite) -> None:
+def _test_relationship_updates(sf_db: OmSalesforceSQLite) -> None:
     """
     Tests that relationships are properly updated when a child object's parent reference changes.
     This test verifies:
@@ -686,7 +686,7 @@ def _test_relationship_updates(sf_db: OnyxSalesforceSQLite) -> None:
     print("All relationship update tests passed successfully!")
 
 
-def _test_get_affected_parent_ids(sf_db: OnyxSalesforceSQLite) -> None:
+def _test_get_affected_parent_ids(sf_db: OmSalesforceSQLite) -> None:
     """
     Tests get_affected_parent_ids functionality by verifying:
     1. IDs that are directly in the parent_types list are included
@@ -790,7 +790,7 @@ def test_salesforce_sqlite() -> None:
         _clear_sf_db(directory)
 
         filename = os.path.join(directory, "salesforce_db.sqlite")
-        sf_db = OnyxSalesforceSQLite(filename)
+        sf_db = OmSalesforceSQLite(filename)
         sf_db.connect()
         sf_db.apply_schema()
 
@@ -820,7 +820,7 @@ def test_salesforce_bulk_retrieve() -> None:
     password = os.environ["SF_PASSWORD"]
     security_token = os.environ["SF_SECURITY_TOKEN"]
 
-    sf_client = OnyxSalesforce(
+    sf_client = OmSalesforce(
         username=username,
         password=password,
         security_token=security_token,
@@ -929,7 +929,7 @@ def test_normalize_record() -> None:
         for row in reader:
             assert len(row) == 64
 
-            normalized_record, parent_ids = OnyxSalesforceSQLite.normalize_record(row)
+            normalized_record, parent_ids = OmSalesforceSQLite.normalize_record(row)
             normalized_record_json_str = json.dumps(normalized_record)
             assert normalized_record_json_str == expected_str
             assert "005bm000002bBHtAAM" in parent_ids
@@ -981,7 +981,7 @@ def test_salesforce_connector_single() -> None:
     password = os.environ["SF_PASSWORD"]
     security_token = os.environ["SF_SECURITY_TOKEN"]
 
-    sf_client = OnyxSalesforce(
+    sf_client = OmSalesforce(
         username=username,
         password=password,
         security_token=security_token,
@@ -1051,7 +1051,7 @@ def test_salesforce_connector_single() -> None:
     parent_semantic_identifier = record.get("Name", "Unknown Object")
     parent_last_modified_by_id = record.get("LastModifiedById")
 
-    normalized_record, _ = OnyxSalesforceSQLite.normalize_record(record)
+    normalized_record, _ = OmSalesforceSQLite.normalize_record(record)
     parent_text_section = _extract_section(
         normalized_record, f"https://{sf_client.sf_instance}/{parent_id}"
     )

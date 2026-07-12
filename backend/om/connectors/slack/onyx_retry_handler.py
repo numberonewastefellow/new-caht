@@ -13,7 +13,7 @@ from om.utils.logger import setup_logger
 logger = setup_logger()
 
 
-class OnyxRedisSlackRetryHandler(RetryHandler):
+class OmRedisSlackRetryHandler(RetryHandler):
     """
     This class uses Redis to share a rate limit among multiple threads.
 

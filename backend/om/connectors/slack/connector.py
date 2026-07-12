@@ -59,8 +59,8 @@ from om.connectors.slack.access import get_channel_access
 from om.connectors.slack.models import ChannelType
 from om.connectors.slack.models import MessageType
 from om.connectors.slack.models import ThreadType
-from om.connectors.slack.onyx_retry_handler import OnyxRedisSlackRetryHandler
-from om.connectors.slack.onyx_slack_web_client import OnyxSlackWebClient
+from om.connectors.slack.onyx_retry_handler import OmRedisSlackRetryHandler
+from om.connectors.slack.onyx_slack_web_client import OmSlackWebClient
 from om.connectors.slack.utils import (
     expert_info_from_slack_id,
 )
@@ -762,7 +762,7 @@ class SlackConnector(
             ],
         )
 
-        onyx_rate_limit_error_retry_handler = OnyxRedisSlackRetryHandler(
+        onyx_rate_limit_error_retry_handler = OmRedisSlackRetryHandler(
             max_retry_count=max_retry_count,
             delay_key=delay_key,
             r=r,
@@ -772,7 +772,7 @@ class SlackConnector(
             onyx_rate_limit_error_retry_handler,
         ]
 
-        client = OnyxSlackWebClient(
+        client = OmSlackWebClient(
             delay_lock=delay_lock,
             delay_key=delay_key,
             r=r,
@@ -1276,7 +1276,7 @@ class SlackConnector(
 if __name__ == "__main__":
     import os
     import time
-    from om.connectors.credentials_provider import OnyxStaticCredentialsProvider
+    from om.connectors.credentials_provider import OmStaticCredentialsProvider
     from shared_configs.contextvars import get_current_tenant_id
 
     slack_channel = os.environ.get("SLACK_CHANNEL")
@@ -1284,7 +1284,7 @@ if __name__ == "__main__":
         channels=[slack_channel] if slack_channel else None,
     )
 
-    provider = OnyxStaticCredentialsProvider(
+    provider = OmStaticCredentialsProvider(
         tenant_id=get_current_tenant_id(),
         connector_name="slack",
         credential_json={

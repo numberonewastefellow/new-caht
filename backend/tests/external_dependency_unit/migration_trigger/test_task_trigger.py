@@ -69,7 +69,7 @@ def _union_registry(apps: list[Celery]) -> dict[str, object]:
 
 def _task_names() -> object:
     constants = importlib.import_module(qualified("configs.constants"))
-    return constants.OnyxCeleryTask
+    return constants.OmCeleryTask
 
 
 def test_representative_task_bindings_resolve() -> None:

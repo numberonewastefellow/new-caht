@@ -173,7 +173,7 @@ def build_content_provider_from_config(
     api_key: str,
     config: WebContentProviderConfig,
 ) -> WebContentProvider | None:
-    if provider_type == WebContentProviderType.ONYX_WEB_CRAWLER:
+    if provider_type == WebContentProviderType.OM_WEB_CRAWLER:
         if config.timeout_seconds is not None:
             return VirtualAIWebCrawler(
                 timeout_seconds=config.timeout_seconds,

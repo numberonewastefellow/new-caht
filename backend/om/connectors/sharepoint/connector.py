@@ -63,8 +63,8 @@ from om.connectors.sharepoint.connector_utils import get_sharepoint_external_acc
 from om.db.enums import HierarchyNodeType
 from om.file_processing.extract_file_text import extract_text_and_images
 from om.file_processing.extract_file_text import get_file_ext
-from om.file_processing.file_types import OnyxFileExtensions
-from om.file_processing.file_types import OnyxMimeTypes
+from om.file_processing.file_types import OmFileExtensions
+from om.file_processing.file_types import OmMimeTypes
 from om.file_processing.image_utils import store_image_and_create_section
 from om.utils.b64 import get_image_type_from_bytes
 from om.utils.logger import setup_logger
@@ -422,7 +422,7 @@ def _convert_driveitem_to_document_with_permissions(
         raise ValueError("ClientContext is required for permissions")
 
     mime_type = driveitem.mime_type
-    if not mime_type or mime_type in OnyxMimeTypes.EXCLUDED_IMAGE_TYPES:
+    if not mime_type or mime_type in OmMimeTypes.EXCLUDED_IMAGE_TYPES:
         logger.debug(
             f"Skipping malformed or excluded mime type {mime_type} for {driveitem.name}"
         )
@@ -487,7 +487,7 @@ def _convert_driveitem_to_document_with_permissions(
         logger.warning(
             f"Zero-length content for '{driveitem.name}'. Skipping text/image extraction."
         )
-    elif file_ext in OnyxFileExtensions.IMAGE_EXTENSIONS:
+    elif file_ext in OmFileExtensions.IMAGE_EXTENSIONS:
         image_section, _ = store_image_and_create_section(
             image_data=content_bytes,
             file_id=driveitem.id,
@@ -508,7 +508,7 @@ def _convert_driveitem_to_document_with_permissions(
                 )
                 return
 
-            if img_mime in OnyxMimeTypes.EXCLUDED_IMAGE_TYPES:
+            if img_mime in OmMimeTypes.EXCLUDED_IMAGE_TYPES:
                 logger.debug(
                     "Skipping embedded image of excluded type %s for %s",
                     img_mime,
@@ -1915,14 +1915,14 @@ class SharepointConnector(
             for driveitem in driveitems:
                 item_count += 1
                 driveitem_extension = get_file_ext(driveitem.name)
-                if driveitem_extension not in OnyxFileExtensions.ALL_ALLOWED_EXTENSIONS:
+                if driveitem_extension not in OmFileExtensions.ALL_ALLOWED_EXTENSIONS:
                     logger.warning(
                         f"Skipping {driveitem.web_url} as it is not a supported file type"
                     )
                     continue
 
                 should_yield_if_empty = (
-                    driveitem_extension in OnyxFileExtensions.IMAGE_EXTENSIONS
+                    driveitem_extension in OmFileExtensions.IMAGE_EXTENSIONS
                     or driveitem_extension == ".pdf"
                 )
 

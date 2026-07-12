@@ -19,7 +19,7 @@ from om.chat.models import ChatBasicResponse
 from om.configs.app_configs import WEB_DOMAIN
 from om.configs.constants import DocumentSource
 from om.configs.constants import SearchFeedbackType
-from om.configs.onyxbot_configs import ONYX_BOT_NUM_DOCS_TO_DISPLAY
+from om.configs.onyxbot_configs import OM_BOT_NUM_DOCS_TO_DISPLAY
 from om.context.search.models import SearchDoc
 from om.db.chat import get_chat_session_by_message_id
 from om.db.engine.sql_engine import get_session_with_current_tenant
@@ -252,7 +252,7 @@ def get_restate_blocks(
 def _build_documents_blocks(
     documents: list[SearchDoc],
     message_id: int | None,
-    num_docs_to_display: int = ONYX_BOT_NUM_DOCS_TO_DISPLAY,
+    num_docs_to_display: int = OM_BOT_NUM_DOCS_TO_DISPLAY,
 ) -> list[Block]:
     header_text = "Reference Documents"
     seen_docs_identifiers = set()
@@ -308,7 +308,7 @@ def _build_documents_blocks(
 
 def _build_sources_blocks(
     cited_documents: list[tuple[int, SearchDoc]],
-    num_docs_to_display: int = ONYX_BOT_NUM_DOCS_TO_DISPLAY,
+    num_docs_to_display: int = OM_BOT_NUM_DOCS_TO_DISPLAY,
 ) -> list[Block]:
     if not cited_documents:
         return [

@@ -25,13 +25,13 @@ from om.auth.users import get_display_email
 from om.background.celery.versioned_apps.client import app as client_app
 from om.background.task_utils import construct_query_history_report_name
 from om.chat.chat_utils import create_chat_history_chain
-from om.configs.app_configs import ONYX_QUERY_HISTORY_TYPE
+from om.configs.app_configs import OM_QUERY_HISTORY_TYPE
 from om.configs.constants import FileOrigin
 from om.configs.constants import FileType
 from om.configs.constants import MessageType
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
 from om.configs.constants import PUBLIC_API_TAGS
 from om.configs.constants import QAFeedbackType
 from om.configs.constants import QueryHistoryType
@@ -54,13 +54,13 @@ from shared_configs.contextvars import get_current_tenant_id
 
 router = APIRouter()
 
-ONYX_ANONYMIZED_EMAIL = "anonymous@anonymous.invalid"
+OM_ANONYMIZED_EMAIL = "anonymous@anonymous.invalid"
 
 
 def ensure_query_history_is_enabled(
     disallowed: list[QueryHistoryType],
 ) -> None:
-    if ONYX_QUERY_HISTORY_TYPE in disallowed:
+    if OM_QUERY_HISTORY_TYPE in disallowed:
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN,
             detail="Query history has been disabled by the administrator.",
@@ -221,8 +221,8 @@ def get_chat_session_history(
 
     for chat_session in page_of_chat_sessions:
         minimal_chat_session = ChatSessionMinimal.from_chat_session(chat_session)
-        if ONYX_QUERY_HISTORY_TYPE == QueryHistoryType.ANONYMIZED:
-            minimal_chat_session.user_email = ONYX_ANONYMIZED_EMAIL
+        if OM_QUERY_HISTORY_TYPE == QueryHistoryType.ANONYMIZED:
+            minimal_chat_session.user_email = OM_ANONYMIZED_EMAIL
         minimal_chat_sessions.append(minimal_chat_session)
 
     return PaginatedReturn(
@@ -261,8 +261,8 @@ def get_chat_session_admin(
             f"Could not create snapshot for chat session with id '{chat_session_id}'",
         )
 
-    if ONYX_QUERY_HISTORY_TYPE == QueryHistoryType.ANONYMIZED:
-        snapshot.user_email = ONYX_ANONYMIZED_EMAIL
+    if OM_QUERY_HISTORY_TYPE == QueryHistoryType.ANONYMIZED:
+        snapshot.user_email = OM_ANONYMIZED_EMAIL
 
     return snapshot
 
@@ -326,10 +326,10 @@ def start_query_history_export(
     )
 
     client_app.send_task(
-        OnyxCeleryTask.EXPORT_QUERY_HISTORY_TASK,
+        OmCeleryTask.EXPORT_QUERY_HISTORY_TASK,
         task_id=task_id,
-        priority=OnyxCeleryPriority.MEDIUM,
-        queue=OnyxCeleryQueues.CSV_GENERATION,
+        priority=OmCeleryPriority.MEDIUM,
+        queue=OmCeleryQueues.CSV_GENERATION,
         kwargs={
             "start": start,
             "end": end,

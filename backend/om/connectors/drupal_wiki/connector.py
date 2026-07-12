@@ -36,7 +36,7 @@ from om.connectors.models import SlimDocument
 from om.connectors.models import TextSection
 from om.file_processing.extract_file_text import extract_text_and_images
 from om.file_processing.extract_file_text import get_file_ext
-from om.file_processing.file_types import OnyxFileExtensions
+from om.file_processing.file_types import OmFileExtensions
 from om.file_processing.html_utils import parse_html_page_basic
 from om.file_processing.image_utils import store_image_and_create_section
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
@@ -189,7 +189,7 @@ class DrupalWikiConnector(
         # Get file extension
         file_extension = get_file_ext(file_name)
 
-        if file_extension in OnyxFileExtensions.ALL_ALLOWED_EXTENSIONS:
+        if file_extension in OmFileExtensions.ALL_ALLOWED_EXTENSIONS:
             return True
 
         logger.warning(f"Unsupported file type: {file_extension} for {file_name}")

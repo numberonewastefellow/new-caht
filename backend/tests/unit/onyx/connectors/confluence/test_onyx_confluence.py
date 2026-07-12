@@ -9,7 +9,7 @@ from requests import HTTPError
 from om.connectors.confluence.onyx_confluence import (
     _DEFAULT_PAGINATION_LIMIT,
 )
-from om.connectors.confluence.onyx_confluence import OnyxConfluence
+from om.connectors.confluence.onyx_confluence import OmConfluence
 from om.connectors.interfaces import CredentialsProviderInterface
 
 
@@ -53,8 +53,8 @@ def mock_credentials_provider() -> mock.Mock:
 
 
 @pytest.fixture
-def confluence_server_client(mock_credentials_provider: mock.Mock) -> OnyxConfluence:
-    confluence = OnyxConfluence(
+def confluence_server_client(mock_credentials_provider: mock.Mock) -> OmConfluence:
+    confluence = OmConfluence(
         is_cloud=False,
         url="http://fake-confluence.com",
         credentials_provider=mock_credentials_provider,
@@ -72,7 +72,7 @@ def confluence_server_client(mock_credentials_provider: mock.Mock) -> OnyxConflu
 
 
 def test_cql_paginate_all_expansions_handles_internal_pagination_error(
-    confluence_server_client: OnyxConfluence, caplog: pytest.LogCaptureFixture
+    confluence_server_client: OmConfluence, caplog: pytest.LogCaptureFixture
 ) -> None:
     """
     Tests that cql_paginate_all_expansions correctly handles HTTP 500 errors
@@ -358,7 +358,7 @@ def test_cql_paginate_all_expansions_handles_internal_pagination_error(
 
 
 def test_paginated_cql_retrieval_handles_pagination_error(
-    confluence_server_client: OnyxConfluence, caplog: pytest.LogCaptureFixture
+    confluence_server_client: OmConfluence, caplog: pytest.LogCaptureFixture
 ) -> None:
     """
     Tests that paginated_cql_retrieval correctly handles HTTP 500 errors
@@ -555,7 +555,7 @@ def test_paginated_cql_retrieval_handles_pagination_error(
 
 
 def test_paginated_cql_retrieval_skips_completely_failing_page(
-    confluence_server_client: OnyxConfluence, caplog: pytest.LogCaptureFixture
+    confluence_server_client: OmConfluence, caplog: pytest.LogCaptureFixture
 ) -> None:
     """
     Tests that paginated_cql_retrieval skips an entire page if the initial
@@ -688,7 +688,7 @@ def test_paginated_cql_retrieval_cloud_no_retry_on_error(
     does NOT retry on pagination errors and raises HTTPError immediately.
     """
     # Setup Confluence Cloud Client
-    confluence_cloud_client = OnyxConfluence(
+    confluence_cloud_client = OmConfluence(
         is_cloud=True,  # Key difference: Cloud instance
         url="https://fake-cloud.atlassian.net",
         credentials_provider=mock_credentials_provider,

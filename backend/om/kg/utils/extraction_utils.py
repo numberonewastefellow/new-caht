@@ -1,7 +1,7 @@
 import json
 
 from om.configs.constants import DocumentSource
-from om.configs.constants import OnyxCallTypes
+from om.configs.constants import OmCallTypes
 from om.configs.kg_configs import KG_METADATA_TRACKING_THRESHOLD
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.entities import get_kg_entity_by_document
@@ -197,7 +197,7 @@ def kg_implied_extraction(
     # Chunk treatment variables
 
     document_is_from_call = document_entity_type.lower() in (
-        call_type.value.lower() for call_type in OnyxCallTypes
+        call_type.value.lower() for call_type in OmCallTypes
     )
 
     # Get core entity
@@ -391,7 +391,7 @@ def kg_classify_document(
     # currently, classification is only done for calls
     # TODO: add support (or use same prompt and format) for non-call documents
     entity_type = get_entity_type(document_entity)
-    if entity_type not in (call_type.value for call_type in OnyxCallTypes):
+    if entity_type not in (call_type.value for call_type in OmCallTypes):
         return None
 
     # prepare prompt
@@ -458,7 +458,7 @@ def kg_deep_extract_chunks(
     # currently, calls are treated differently
     # TODO: either treat some other documents differently too, or ideally all the same way
     entity_type = get_entity_type(document_entity)
-    is_call = entity_type in (call_type.value for call_type in OnyxCallTypes)
+    is_call = entity_type in (call_type.value for call_type in OmCallTypes)
 
     content = "\n".join(chunk.content for chunk in chunk_batch)
 

@@ -13,7 +13,7 @@ from om.configs.app_configs import REDIS_SSL
 from om.configs.app_configs import REDIS_SSL_CA_CERTS
 from om.configs.app_configs import REDIS_SSL_CERT_REQS
 from om.configs.app_configs import USE_REDIS_IAM_AUTH
-from om.configs.constants import OnyxCeleryPriority
+from om.configs.constants import OmCeleryPriority
 from om.configs.constants import REDIS_SOCKET_KEEPALIVE_OPTIONS
 
 CELERY_SEPARATOR = ":"
@@ -42,7 +42,7 @@ broker_pool_limit = CELERY_BROKER_POOL_LIMIT
 # redis broker settings
 # https://docs.celeryq.dev/projects/kombu/en/stable/reference/kombu.transport.redis.html
 broker_transport_options = {
-    "priority_steps": list(range(len(OnyxCeleryPriority))),
+    "priority_steps": list(range(len(OmCeleryPriority))),
     "sep": CELERY_SEPARATOR,
     "queue_order_strategy": "priority",
     "retry_on_timeout": True,
@@ -61,7 +61,7 @@ redis_retry_on_timeout = True
 redis_backend_health_check_interval = REDIS_HEALTH_CHECK_INTERVAL
 
 
-task_default_priority = OnyxCeleryPriority.MEDIUM
+task_default_priority = OmCeleryPriority.MEDIUM
 task_acks_late = True
 
 # region Task result backend settings

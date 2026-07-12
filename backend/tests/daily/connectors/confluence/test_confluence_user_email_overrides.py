@@ -2,7 +2,7 @@ import types
 from unittest.mock import patch
 
 from om.connectors.confluence.onyx_confluence import ConfluenceUser
-from om.connectors.confluence.onyx_confluence import OnyxConfluence
+from om.connectors.confluence.onyx_confluence import OmConfluence
 from om.connectors.interfaces import CredentialsProviderInterface
 
 
@@ -58,7 +58,7 @@ def test_paginated_cql_user_retrieval_with_overrides() -> None:
     ]
     expected_users = [ConfluenceUser(**user_data) for user_data in overrides]
 
-    confluence_client = OnyxConfluence(
+    confluence_client = OmConfluence(
         is_cloud=False,  # Overrides are primarily for Server/DC
         url="http://dummy-confluence.com",
         credentials_provider=mock_provider,
@@ -80,7 +80,7 @@ def test_paginated_cql_user_retrieval_no_overrides_server() -> None:
     API pagination when no overrides are provided for Server/DC.
     """
     mock_provider = MockCredentialsProvider()
-    confluence_client = OnyxConfluence(
+    confluence_client = OmConfluence(
         is_cloud=False,
         url="http://dummy-confluence.com",
         credentials_provider=mock_provider,
@@ -102,7 +102,7 @@ def test_paginated_cql_user_retrieval_no_overrides_cloud() -> None:
     API pagination when no overrides are provided for Cloud.
     """
     mock_provider = MockCredentialsProvider()
-    confluence_client = OnyxConfluence(
+    confluence_client = OmConfluence(
         is_cloud=True,
         url="http://dummy-confluence.com",  # URL doesn't matter much here due to mocking
         credentials_provider=mock_provider,

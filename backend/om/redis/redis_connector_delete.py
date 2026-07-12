@@ -11,10 +11,10 @@ from sqlalchemy.orm import Session
 
 from om.configs.app_configs import DB_YIELD_PER_DEFAULT
 from om.configs.constants import CELERY_VESPA_SYNC_BEAT_LOCK_TIMEOUT
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisConstants
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisConstants
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
 from om.db.document import construct_document_id_select_for_connector_credential_pair
 
@@ -76,12 +76,12 @@ class RedisConnectorDelete:
 
     def set_fence(self, payload: RedisConnectorDeletePayload | None) -> None:
         if not payload:
-            self.redis.srem(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+            self.redis.srem(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
             self.redis.delete(self.fence_key)
             return
 
         self.redis.set(self.fence_key, payload.model_dump_json(), ex=self.FENCE_TTL)
-        self.redis.sadd(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+        self.redis.sadd(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
 
     def set_active(self) -> None:
         """This sets a signal to keep the permissioning flow from getting cleaned up within
@@ -141,16 +141,16 @@ class RedisConnectorDelete:
 
             # Priority on sync's triggered by new indexing should be medium
             celery_app.send_task(
-                OnyxCeleryTask.DOCUMENT_BY_CC_PAIR_CLEANUP_TASK,
+                OmCeleryTask.DOCUMENT_BY_CC_PAIR_CLEANUP_TASK,
                 kwargs=dict(
                     document_id=doc_id,
                     connector_id=cc_pair.connector_id,
                     credential_id=cc_pair.credential_id,
                     tenant_id=self.tenant_id,
                 ),
-                queue=OnyxCeleryQueues.CONNECTOR_DELETION,
+                queue=OmCeleryQueues.CONNECTOR_DELETION,
                 task_id=custom_task_id,
-                priority=OnyxCeleryPriority.MEDIUM,
+                priority=OmCeleryPriority.MEDIUM,
                 ignore_result=True,
             )
 
@@ -159,7 +159,7 @@ class RedisConnectorDelete:
         return num_tasks_sent
 
     def reset(self) -> None:
-        self.redis.srem(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+        self.redis.srem(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
         self.redis.delete(self.active_key)
         self.redis.delete(self.taskset_key)
         self.redis.delete(self.fence_key)

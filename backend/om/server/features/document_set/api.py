@@ -8,8 +8,8 @@ from om.auth.users import current_curator_or_admin_user
 from om.auth.users import current_user
 from om.background.celery.versioned_apps.client import app as client_app
 from om.configs.app_configs import DISABLE_VECTOR_DB
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryTask
 from om.db.document_set import check_document_sets_are_public
 from om.db.document_set import fetch_all_document_sets_for_user
 from om.db.document_set import get_document_set_by_id
@@ -57,9 +57,9 @@ def create_document_set(
 
     if not DISABLE_VECTOR_DB:
         client_app.send_task(
-            OnyxCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
+            OmCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
             kwargs={"tenant_id": tenant_id},
-            priority=OnyxCeleryPriority.HIGH,
+            priority=OmCeleryPriority.HIGH,
         )
 
     return document_set_db_model.id
@@ -100,9 +100,9 @@ def patch_document_set(
 
     if not DISABLE_VECTOR_DB:
         client_app.send_task(
-            OnyxCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
+            OmCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
             kwargs={"tenant_id": tenant_id},
-            priority=OnyxCeleryPriority.HIGH,
+            priority=OmCeleryPriority.HIGH,
         )
 
 
@@ -144,9 +144,9 @@ def delete_document_set(
 
     if not DISABLE_VECTOR_DB:
         client_app.send_task(
-            OnyxCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
+            OmCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
             kwargs={"tenant_id": tenant_id},
-            priority=OnyxCeleryPriority.HIGH,
+            priority=OmCeleryPriority.HIGH,
         )
 
 

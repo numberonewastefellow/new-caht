@@ -13,10 +13,10 @@ from om.chat.process_message import gather_stream
 from om.chat.process_message import handle_stream_message_objects
 from om.configs.constants import DEFAULT_PERSONA_ID
 from om.configs.constants import MessageType
-from om.configs.onyxbot_configs import ONYX_BOT_DISABLE_DOCS_ONLY_ANSWER
-from om.configs.onyxbot_configs import ONYX_BOT_DISPLAY_ERROR_MSGS
-from om.configs.onyxbot_configs import ONYX_BOT_NUM_RETRIES
-from om.configs.onyxbot_configs import ONYX_BOT_REACT_EMOJI
+from om.configs.onyxbot_configs import OM_BOT_DISABLE_DOCS_ONLY_ANSWER
+from om.configs.onyxbot_configs import OM_BOT_DISPLAY_ERROR_MSGS
+from om.configs.onyxbot_configs import OM_BOT_NUM_RETRIES
+from om.configs.onyxbot_configs import OM_BOT_REACT_EMOJI
 from om.context.search.models import BaseFilters
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.models import SlackChannelConfig
@@ -34,7 +34,7 @@ from om.onyxbot.slack.utils import update_emote_react
 from om.server.query_and_chat.models import ChatSessionCreationRequest
 from om.server.query_and_chat.models import MessageOrigin
 from om.server.query_and_chat.models import SendMessageRequest
-from om.utils.logger import OnyxLoggingAdapter
+from om.utils.logger import OmLoggingAdapter
 
 srl = SlackRateLimiter()
 
@@ -92,11 +92,11 @@ def handle_regular_answer(
     receiver_ids: list[str] | None,
     client: WebClient,
     channel: str,
-    logger: OnyxLoggingAdapter,
+    logger: OmLoggingAdapter,
     feedback_reminder_id: str | None,
-    num_retries: int = ONYX_BOT_NUM_RETRIES,
-    should_respond_with_error_msgs: bool = ONYX_BOT_DISPLAY_ERROR_MSGS,
-    disable_docs_only_answer: bool = ONYX_BOT_DISABLE_DOCS_ONLY_ANSWER,
+    num_retries: int = OM_BOT_NUM_RETRIES,
+    should_respond_with_error_msgs: bool = OM_BOT_DISPLAY_ERROR_MSGS,
+    disable_docs_only_answer: bool = OM_BOT_DISABLE_DOCS_ONLY_ANSWER,
 ) -> bool:
     channel_conf = slack_channel_config.channel_config
 
@@ -250,7 +250,7 @@ def handle_regular_answer(
 
         # In case of failures, don't keep the reaction there permanently
         update_emote_react(
-            emoji=ONYX_BOT_REACT_EMOJI,
+            emoji=OM_BOT_REACT_EMOJI,
             channel=message_info.channel_to_respond,
             message_ts=message_info.msg_to_respond,
             remove=True,
@@ -262,7 +262,7 @@ def handle_regular_answer(
     # Got an answer at this point, can remove reaction and give results
     if not is_slash_command:  # Slash commands don't have reactions
         update_emote_react(
-            emoji=ONYX_BOT_REACT_EMOJI,
+            emoji=OM_BOT_REACT_EMOJI,
             channel=message_info.channel_to_respond,
             message_ts=message_info.msg_to_respond,
             remove=True,

@@ -11,7 +11,7 @@ from om.db.discord_bot import get_guild_config_by_discord_id
 from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.models import DiscordChannelConfig
 from om.db.models import DiscordGuildConfig
-from om.onyxbot.discord.api_client import OnyxAPIClient
+from om.onyxbot.discord.api_client import OmAPIClient
 from om.onyxbot.discord.constants import MAX_CONTEXT_MESSAGES
 from om.onyxbot.discord.constants import MAX_MESSAGE_LENGTH
 from om.onyxbot.discord.constants import THINKING_EMOJI
@@ -160,7 +160,7 @@ async def process_chat_message(
     api_key: str,
     persona_id: int | None,
     thread_only_mode: bool,
-    api_client: OnyxAPIClient,
+    api_client: OmAPIClient,
     bot_user: discord.ClientUser,
 ) -> None:
     """Process a message and send response."""

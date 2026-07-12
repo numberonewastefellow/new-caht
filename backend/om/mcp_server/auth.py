@@ -12,7 +12,7 @@ from om.utils.variable_functionality import build_api_server_url_for_http_reques
 logger = setup_logger()
 
 
-class OnyxTokenVerifier(TokenVerifier):
+class OmTokenVerifier(TokenVerifier):
     """Validates bearer tokens by delegating to the API server."""
 
     async def verify_token(self, token: str) -> Optional[AccessToken]:

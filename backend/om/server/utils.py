@@ -14,7 +14,7 @@ class BasicAuthenticationError(HTTPException):
         super().__init__(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
 
 
-class OnyxJSONEncoder(json.JSONEncoder):
+class OmJSONEncoder(json.JSONEncoder):
     """Custom JSON encoder that converts datetime and UUID objects to strings."""
 
     def default(self, obj: Any) -> Any:
@@ -26,7 +26,7 @@ class OnyxJSONEncoder(json.JSONEncoder):
 
 
 def get_json_line(
-    json_dict: dict[str, Any], encoder: type[json.JSONEncoder] = OnyxJSONEncoder
+    json_dict: dict[str, Any], encoder: type[json.JSONEncoder] = OmJSONEncoder
 ) -> str:
     """
     Convert a dictionary to a JSON string with custom type handling, and add a newline.

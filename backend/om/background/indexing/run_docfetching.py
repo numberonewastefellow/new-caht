@@ -20,9 +20,9 @@ from om.configs.app_configs import INTEGRATION_TESTS_MODE
 from om.configs.app_configs import LEAVE_CONNECTOR_ACTIVE_ON_INITIALIZATION_FAILURE
 from om.configs.app_configs import MAX_FILE_SIZE_BYTES
 from om.configs.app_configs import POLL_CONNECTOR_OFFSET
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
 from om.connectors.connector_runner import ConnectorRunner
 from om.connectors.exceptions import ConnectorValidationError
 from om.connectors.exceptions import UnexpectedValidationError
@@ -396,9 +396,9 @@ def connector_document_extraction(
         # Use higher priority for first-time indexing to ensure new connectors
         # get processed before re-indexing of existing connectors
         docprocessing_priority = (
-            OnyxCeleryPriority.MEDIUM
+            OmCeleryPriority.MEDIUM
             if has_successful_attempt
-            else OnyxCeleryPriority.HIGH
+            else OmCeleryPriority.HIGH
         )
 
         earliest_index_time = (
@@ -761,9 +761,9 @@ def connector_document_extraction(
 
                     # Queue document processing task
                     app.send_task(
-                        OnyxCeleryTask.DOCPROCESSING_TASK,
+                        OmCeleryTask.DOCPROCESSING_TASK,
                         kwargs=processing_batch_data,
-                        queue=OnyxCeleryQueues.DOCPROCESSING,
+                        queue=OmCeleryQueues.DOCPROCESSING,
                         priority=docprocessing_priority,
                     )
 
@@ -818,13 +818,13 @@ def connector_document_extraction(
             if creator_id:
                 source_value = db_connector.source.value
                 app.send_task(
-                    OnyxCeleryTask.SANDBOX_FILE_SYNC,
+                    OmCeleryTask.SANDBOX_FILE_SYNC,
                     kwargs={
                         "user_id": str(creator_id),
                         "tenant_id": tenant_id,
                         "source": source_value,
                     },
-                    queue=OnyxCeleryQueues.SANDBOX,
+                    queue=OmCeleryQueues.SANDBOX,
                 )
                 logger.info(
                     f"Triggered sandbox file sync for user {creator_id} "
@@ -935,7 +935,7 @@ def reissue_old_batches(
     tenant_id: str,
     app: Celery,
     most_recent_attempt: IndexAttempt | None,
-    priority: OnyxCeleryPriority,
+    priority: OmCeleryPriority,
 ) -> tuple[int, int]:
     # When loading from a checkpoint, we need to start new docprocessing tasks
     # tied to the new index attempt for any batches left over in the file store
@@ -955,14 +955,14 @@ def reissue_old_batches(
             raise RuntimeError(f"Batch {batch_id} is not for cc pair {cc_pair_id}")
 
         app.send_task(
-            OnyxCeleryTask.DOCPROCESSING_TASK,
+            OmCeleryTask.DOCPROCESSING_TASK,
             kwargs={
                 "index_attempt_id": index_attempt_id,
                 "cc_pair_id": cc_pair_id,
                 "tenant_id": tenant_id,
                 "batch_num": path_info.batch_num,  # use same batch num as previously
             },
-            queue=OnyxCeleryQueues.DOCPROCESSING,
+            queue=OmCeleryQueues.DOCPROCESSING,
             priority=priority,
         )
     recent_batches = most_recent_attempt.completed_batches if most_recent_attempt else 0

@@ -35,9 +35,9 @@ from om.configs.app_configs import MOCK_CONNECTOR_FILE_PATH
 from om.configs.constants import DocumentSource
 from om.configs.constants import FileOrigin
 from om.configs.constants import MilestoneRecordType
-from om.configs.constants import ONYX_METADATA_FILENAME
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OM_METADATA_FILENAME
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryTask
 from om.configs.constants import PUBLIC_API_TAGS
 from om.connectors.exceptions import ConnectorValidationError
 from om.connectors.factory import validate_ccpair_for_user
@@ -429,7 +429,7 @@ def save_zip_metadata_to_file_store(
     Returns the file_id or None if no metadata file exists.
     """
     try:
-        metadata_file_info = zf.getinfo(ONYX_METADATA_FILENAME)
+        metadata_file_info = zf.getinfo(OM_METADATA_FILENAME)
         with zf.open(metadata_file_info, "r") as metadata_file:
             metadata_bytes = metadata_file.read()
 
@@ -437,22 +437,22 @@ def save_zip_metadata_to_file_store(
             try:
                 json.loads(metadata_bytes)
             except json.JSONDecodeError as e:
-                logger.warning(f"Unable to load {ONYX_METADATA_FILENAME}: {e}")
+                logger.warning(f"Unable to load {OM_METADATA_FILENAME}: {e}")
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Unable to load {ONYX_METADATA_FILENAME}: {e}",
+                    detail=f"Unable to load {OM_METADATA_FILENAME}: {e}",
                 )
 
             # Save to file store
             file_id = file_store.save_file(
                 content=BytesIO(metadata_bytes),
-                display_name=ONYX_METADATA_FILENAME,
+                display_name=OM_METADATA_FILENAME,
                 file_origin=FileOrigin.CONNECTOR_METADATA,
                 file_type="application/json",
             )
             return file_id
     except KeyError:
-        logger.info(f"No {ONYX_METADATA_FILENAME} file")
+        logger.info(f"No {OM_METADATA_FILENAME} file")
         return None
 
 
@@ -778,7 +778,7 @@ def update_connector_files(
     if final_zip_metadata:
         final_zip_metadata_file_id = file_store.save_file(
             content=BytesIO(json.dumps(final_zip_metadata).encode("utf-8")),
-            display_name=ONYX_METADATA_FILENAME,
+            display_name=OM_METADATA_FILENAME,
             file_origin=FileOrigin.CONNECTOR_METADATA,
             file_type="application/json",
         )
@@ -821,9 +821,9 @@ def update_connector_files(
 
             # Send task to check for indexing immediately
             client_app.send_task(
-                OnyxCeleryTask.CHECK_FOR_INDEXING,
+                OmCeleryTask.CHECK_FOR_INDEXING,
                 kwargs={"tenant_id": tenant_id},
-                priority=OnyxCeleryPriority.HIGH,
+                priority=OmCeleryPriority.HIGH,
             )
             logger.info(
                 f"Marked cc_pair {cc_pair.id} for UPDATE indexing (new files) for connector {connector_id}"
@@ -1527,8 +1527,8 @@ def create_connector_with_mock_credential(
 
         # trigger indexing immediately
         client_app.send_task(
-            OnyxCeleryTask.CHECK_FOR_INDEXING,
-            priority=OnyxCeleryPriority.HIGH,
+            OmCeleryTask.CHECK_FOR_INDEXING,
+            priority=OmCeleryPriority.HIGH,
             kwargs={"tenant_id": tenant_id},
         )
 
@@ -2046,12 +2046,12 @@ def trigger_indexing_for_cc_pair(
                 f"indexing_trigger={indexing_mode}"
             )
 
-    priority = OnyxCeleryPriority.HIGH
+    priority = OmCeleryPriority.HIGH
 
     # run the beat task to pick up the triggers immediately
     logger.info(f"Sending indexing check task with priority {priority}")
     client_app.send_task(
-        OnyxCeleryTask.CHECK_FOR_INDEXING,
+        OmCeleryTask.CHECK_FOR_INDEXING,
         priority=priority,
         kwargs={"tenant_id": tenant_id},
     )

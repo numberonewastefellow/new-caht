@@ -29,12 +29,12 @@ from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import CELERY_PRUNING_LOCK_TIMEOUT
 from om.configs.constants import CELERY_TASK_WAIT_FOR_FENCE_TIMEOUT
 from om.configs.constants import DANSWER_REDIS_FUNCTION_LOCK_PREFIX
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisConstants
-from om.configs.constants import OnyxRedisLocks
-from om.configs.constants import OnyxRedisSignals
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisConstants
+from om.configs.constants import OmRedisLocks
+from om.configs.constants import OmRedisSignals
 from om.connectors.factory import instantiate_connector
 from om.connectors.models import InputType
 from om.db.connector import mark_ccpair_as_pruned
@@ -60,7 +60,7 @@ from om.redis.redis_hierarchy import ensure_source_node_exists
 from om.redis.redis_hierarchy import HierarchyNodeCacheEntry
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client
-from om.server.runtime.onyx_runtime import OnyxRuntime
+from om.server.runtime.onyx_runtime import OmRuntime
 from om.server.utils import make_short_id
 from om.utils.logger import format_error_for_logging
 from om.utils.logger import LoggerContextVars
@@ -82,7 +82,7 @@ def _get_pruning_block_expiration() -> int:
         return base_expiration
 
     try:
-        beat_multiplier = OnyxRuntime.get_beat_multiplier()
+        beat_multiplier = OmRuntime.get_beat_multiplier()
     except Exception:
         beat_multiplier = CLOUD_BEAT_MULTIPLIER_DEFAULT
 
@@ -100,7 +100,7 @@ def _get_fence_validation_block_expiration() -> int:
         return base_expiration
 
     try:
-        beat_multiplier = OnyxRuntime.get_beat_multiplier()
+        beat_multiplier = OmRuntime.get_beat_multiplier()
     except Exception:
         beat_multiplier = CLOUD_BEAT_MULTIPLIER_DEFAULT
 
@@ -153,7 +153,7 @@ def _is_pruning_due(cc_pair: ConnectorCredentialPair) -> bool:
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_PRUNING,
+    name=OmCeleryTask.CHECK_FOR_PRUNING,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
     bind=True,
@@ -164,7 +164,7 @@ def check_for_pruning(self: Task, *, tenant_id: str) -> bool | None:
     r_celery: Redis = self.app.broker_connection().channel().client  # type: ignore
 
     lock_beat: RedisLock = r.lock(
-        OnyxRedisLocks.CHECK_PRUNE_BEAT_LOCK,
+        OmRedisLocks.CHECK_PRUNE_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -176,7 +176,7 @@ def check_for_pruning(self: Task, *, tenant_id: str) -> bool | None:
         # the entire task needs to run frequently in order to finalize pruning
 
         # but pruning only kicks off once per hour
-        if not r.exists(OnyxRedisSignals.BLOCK_PRUNING):
+        if not r.exists(OmRedisSignals.BLOCK_PRUNING):
 
             task_logger.info("Checking for pruning due")
 
@@ -211,11 +211,11 @@ def check_for_pruning(self: Task, *, tenant_id: str) -> bool | None:
                     task_logger.info(
                         f"Pruning queued: cc_pair={cc_pair.id} id={payload_id}"
                     )
-            r.set(OnyxRedisSignals.BLOCK_PRUNING, 1, ex=_get_pruning_block_expiration())
+            r.set(OmRedisSignals.BLOCK_PRUNING, 1, ex=_get_pruning_block_expiration())
 
         # we want to run this less frequently than the overall task
         lock_beat.reacquire()
-        if not r.exists(OnyxRedisSignals.BLOCK_VALIDATE_PRUNING_FENCES):
+        if not r.exists(OmRedisSignals.BLOCK_VALIDATE_PRUNING_FENCES):
             # clear any permission fences that don't have associated celery tasks in progress
             # tasks can be in the queue in redis, in reserved tasks (prefetched by the worker),
             # or be currently executing
@@ -225,7 +225,7 @@ def check_for_pruning(self: Task, *, tenant_id: str) -> bool | None:
                 task_logger.exception("Exception while validating pruning fences")
 
             r.set(
-                OnyxRedisSignals.BLOCK_VALIDATE_PRUNING_FENCES,
+                OmRedisSignals.BLOCK_VALIDATE_PRUNING_FENCES,
                 1,
                 ex=_get_fence_validation_block_expiration(),
             )
@@ -233,12 +233,12 @@ def check_for_pruning(self: Task, *, tenant_id: str) -> bool | None:
         # use a lookup table to find active fences. We still have to verify the fence
         # exists since it is an optimization and not the source of truth.
         lock_beat.reacquire()
-        keys = cast(set[Any], r_replica.smembers(OnyxRedisConstants.ACTIVE_FENCES))
+        keys = cast(set[Any], r_replica.smembers(OmRedisConstants.ACTIVE_FENCES))
         for key in keys:
             key_bytes = cast(bytes, key)
 
             if not r.exists(key_bytes):
-                r.srem(OnyxRedisConstants.ACTIVE_FENCES, key_bytes)
+                r.srem(OmRedisConstants.ACTIVE_FENCES, key_bytes)
                 continue
 
             key_str = key_bytes.decode("utf-8")
@@ -361,16 +361,16 @@ def try_creating_prune_generator_task(
         redis_connector.prune.set_fence(payload)
 
         result = celery_app.send_task(
-            OnyxCeleryTask.CONNECTOR_PRUNING_GENERATOR_TASK,
+            OmCeleryTask.CONNECTOR_PRUNING_GENERATOR_TASK,
             kwargs=dict(
                 cc_pair_id=cc_pair.id,
                 connector_id=cc_pair.connector_id,
                 credential_id=cc_pair.credential_id,
                 tenant_id=tenant_id,
             ),
-            queue=OnyxCeleryQueues.CONNECTOR_PRUNING,
+            queue=OmCeleryQueues.CONNECTOR_PRUNING,
             task_id=custom_task_id,
-            priority=OnyxCeleryPriority.LOW,
+            priority=OmCeleryPriority.LOW,
         )
 
         # fill in the celery task id
@@ -395,7 +395,7 @@ def try_creating_prune_generator_task(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CONNECTOR_PRUNING_GENERATOR_TASK,
+    name=OmCeleryTask.CONNECTOR_PRUNING_GENERATOR_TASK,
     acks_late=False,
     soft_time_limit=JOB_TIMEOUT,
     track_started=True,
@@ -471,7 +471,7 @@ def connector_pruning_generator_task(
     # set thread_local=False since we don't control what thread the indexing/pruning
     # might run our callback with
     lock: RedisLock = r.lock(
-        OnyxRedisLocks.PRUNING_LOCK_PREFIX + f"_{redis_connector.cc_pair_id}",
+        OmRedisLocks.PRUNING_LOCK_PREFIX + f"_{redis_connector.cc_pair_id}",
         timeout=CELERY_PRUNING_LOCK_TIMEOUT,
         thread_local=False,
     )
@@ -685,23 +685,23 @@ def validate_pruning_fences(
     # validating until the queue is small
     PERMISSION_SYNC_VALIDATION_MAX_QUEUE_LEN = 1024
 
-    queue_len = celery_get_queue_length(OnyxCeleryQueues.CONNECTOR_DELETION, r_celery)
+    queue_len = celery_get_queue_length(OmCeleryQueues.CONNECTOR_DELETION, r_celery)
     if queue_len > PERMISSION_SYNC_VALIDATION_MAX_QUEUE_LEN:
         return
 
     # the queue for a single pruning generator task
     reserved_generator_tasks = celery_get_unacked_task_ids(
-        OnyxCeleryQueues.CONNECTOR_PRUNING, r_celery
+        OmCeleryQueues.CONNECTOR_PRUNING, r_celery
     )
 
     # the queue for a reasonably large set of lightweight deletion tasks
     queued_upsert_tasks = celery_get_queued_task_ids(
-        OnyxCeleryQueues.CONNECTOR_DELETION, r_celery
+        OmCeleryQueues.CONNECTOR_DELETION, r_celery
     )
 
     # Use replica for this because the worst thing that happens
     # is that we don't run the validation on this pass
-    keys = cast(set[Any], r_replica.smembers(OnyxRedisConstants.ACTIVE_FENCES))
+    keys = cast(set[Any], r_replica.smembers(OmRedisConstants.ACTIVE_FENCES))
     for key in keys:
         key_bytes = cast(bytes, key)
         key_str = key_bytes.decode("utf-8")
@@ -779,7 +779,7 @@ def validate_pruning_fence(
     # either the generator task must be in flight or its subtasks must be
     found = celery_find_task(
         payload.celery_task_id,
-        OnyxCeleryQueues.CONNECTOR_PRUNING,
+        OmCeleryQueues.CONNECTOR_PRUNING,
         r_celery,
     )
     if found:

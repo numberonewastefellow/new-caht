@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from om import __version__
 from om.configs.app_configs import INSTANCE_TYPE
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmRedisLocks
 from om.db.release_notes import create_release_notifications_for_versions
 from om.redis.redis_pool import get_shared_redis_client
 from om.server.features.release_notes.constants import AUTO_REFRESH_THRESHOLD_SECONDS
@@ -199,7 +199,7 @@ def ensure_release_notes_fresh_and_notify(db_session: Session) -> None:
     # Acquire lock to prevent concurrent fetches
     redis_client = get_shared_redis_client()
     lock = redis_client.lock(
-        OnyxRedisLocks.RELEASE_NOTES_FETCH_LOCK,
+        OmRedisLocks.RELEASE_NOTES_FETCH_LOCK,
         timeout=90,  # 90 second timeout for the lock
     )
 

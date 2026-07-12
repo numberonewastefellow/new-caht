@@ -4,7 +4,7 @@ import time
 import pytest
 
 from om.configs.constants import DocumentSource
-from om.connectors.credentials_provider import OnyxStaticCredentialsProvider
+from om.connectors.credentials_provider import OmStaticCredentialsProvider
 from om.connectors.imap.connector import ImapConnector
 from tests.daily.connectors.imap.models import EmailDoc
 from tests.daily.connectors.utils import (
@@ -31,7 +31,7 @@ def imap_connector() -> ImapConnector:
         mailboxes=mailboxes,
     )
     imap_connector.set_credentials_provider(
-        OnyxStaticCredentialsProvider(
+        OmStaticCredentialsProvider(
             tenant_id=None,
             connector_name=DocumentSource.IMAP,
             credential_json={

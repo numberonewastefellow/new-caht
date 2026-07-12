@@ -9,15 +9,15 @@ from redis import Redis
 from redis.lock import Lock as RedisLock
 from slack_sdk import WebClient
 
-from om.connectors.slack.utils import ONYX_SLACK_LOCK_BLOCKING_TIMEOUT
-from om.connectors.slack.utils import ONYX_SLACK_LOCK_TOTAL_BLOCKING_TIMEOUT
-from om.connectors.slack.utils import ONYX_SLACK_LOCK_TTL
+from om.connectors.slack.utils import OM_SLACK_LOCK_BLOCKING_TIMEOUT
+from om.connectors.slack.utils import OM_SLACK_LOCK_TOTAL_BLOCKING_TIMEOUT
+from om.connectors.slack.utils import OM_SLACK_LOCK_TTL
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
 
 
-class OnyxSlackWebClient(WebClient):
+class OmSlackWebClient(WebClient):
     """Use in combination with the Onyx Retry Handler.
 
     This client wrapper enforces a proper retry delay through redis BEFORE the api call
@@ -47,13 +47,13 @@ class OnyxSlackWebClient(WebClient):
         # lock and extend the ttl
         lock: RedisLock = self._redis.lock(
             self._delay_lock,
-            timeout=ONYX_SLACK_LOCK_TTL,
+            timeout=OM_SLACK_LOCK_TTL,
         )
 
         # try to acquire the lock
         start = time.monotonic()
         while True:
-            acquired = lock.acquire(blocking_timeout=ONYX_SLACK_LOCK_BLOCKING_TIMEOUT)
+            acquired = lock.acquire(blocking_timeout=OM_SLACK_LOCK_BLOCKING_TIMEOUT)
             if acquired:
                 break
 
@@ -62,10 +62,10 @@ class OnyxSlackWebClient(WebClient):
             if self._redis.exists(self._delay_lock):
                 continue
 
-            if time.monotonic() - start > ONYX_SLACK_LOCK_TOTAL_BLOCKING_TIMEOUT:
+            if time.monotonic() - start > OM_SLACK_LOCK_TOTAL_BLOCKING_TIMEOUT:
                 raise RuntimeError(
                     f"OnyxSlackWebClient._perform_urllib_http_request - "
-                    f"timed out waiting for lock: {ONYX_SLACK_LOCK_TOTAL_BLOCKING_TIMEOUT=}"
+                    f"timed out waiting for lock: {OM_SLACK_LOCK_TOTAL_BLOCKING_TIMEOUT=}"
                 )
 
         try:

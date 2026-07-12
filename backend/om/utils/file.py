@@ -13,7 +13,7 @@ class FileWithMimeType(BaseModel):
     mime_type: str
 
 
-class OnyxStaticFileManager:
+class OmStaticFileManager:
     """Retrieve static resources with this class. Currently, these should all be located
     in the static directory ... e.g. static/images/logo.png"""
 

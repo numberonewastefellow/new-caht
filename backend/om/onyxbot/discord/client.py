@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 
 from om.configs.app_configs import DISCORD_BOT_INVOKE_CHAR
-from om.onyxbot.discord.api_client import OnyxAPIClient
+from om.onyxbot.discord.api_client import OmAPIClient
 from om.onyxbot.discord.cache import DiscordCacheManager
 from om.onyxbot.discord.constants import CACHE_REFRESH_INTERVAL
 from om.onyxbot.discord.handle_commands import handle_dm
@@ -21,7 +21,7 @@ from om.utils.logger import setup_logger
 logger = setup_logger()
 
 
-class OnyxDiscordClient(commands.Bot):
+class OmDiscordClient(commands.Bot):
     """Discord bot client with integrated cache, API client, and message handling.
 
     This client handles:
@@ -40,7 +40,7 @@ class OnyxDiscordClient(commands.Bot):
 
         self.ready = False
         self.cache = DiscordCacheManager()
-        self.api_client = OnyxAPIClient()
+        self.api_client = OmAPIClient()
         self._cache_refresh_task: asyncio.Task | None = None
 
     # -------------------------------------------------------------------------
@@ -217,7 +217,7 @@ def main() -> None:
             time.sleep(5)
             continue
         counter = 0
-        bot = OnyxDiscordClient()
+        bot = OmDiscordClient()
 
         try:
             # bot.run() handles SIGINT/SIGTERM and calls close() automatically

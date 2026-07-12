@@ -14,7 +14,7 @@ from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
 from shared_configs.configs import SLACK_CHANNEL_ID
 from shared_configs.contextvars import CURRENT_TENANT_ID_CONTEXTVAR
 from shared_configs.contextvars import INDEX_ATTEMPT_INFO_CONTEXTVAR
-from shared_configs.contextvars import ONYX_REQUEST_ID_CONTEXTVAR
+from shared_configs.contextvars import OM_REQUEST_ID_CONTEXTVAR
 
 
 logging.addLevelName(logging.INFO + 5, "NOTICE")
@@ -49,15 +49,15 @@ def get_log_level_from_str(log_level_str: str = LOG_LEVEL) -> int:
     return log_level_dict.get(log_level_str.upper(), logging.INFO)
 
 
-class OnyxRequestIDFilter(logging.Filter):
+class OmRequestIDFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
-        from shared_configs.contextvars import ONYX_REQUEST_ID_CONTEXTVAR
+        from shared_configs.contextvars import OM_REQUEST_ID_CONTEXTVAR
 
-        record.request_id = ONYX_REQUEST_ID_CONTEXTVAR.get() or "-"
+        record.request_id = OM_REQUEST_ID_CONTEXTVAR.get() or "-"
         return True
 
 
-class OnyxLoggingAdapter(logging.LoggerAdapter):
+class OmLoggingAdapter(logging.LoggerAdapter):
     def process(
         self, msg: str, kwargs: MutableMapping[str, Any]
     ) -> tuple[str, MutableMapping[str, Any]]:
@@ -99,7 +99,7 @@ class OnyxLoggingAdapter(logging.LoggerAdapter):
                 msg = f"[t:{short_tenant}] {msg}"
 
         # request id within a fastapi route
-        fastapi_request_id = ONYX_REQUEST_ID_CONTEXTVAR.get()
+        fastapi_request_id = OM_REQUEST_ID_CONTEXTVAR.get()
         if fastapi_request_id:
             msg = f"[{fastapi_request_id}] {msg}"
 
@@ -181,12 +181,12 @@ def setup_logger(
     log_level: int = get_log_level_from_str(),
     extra: MutableMapping[str, Any] | None = None,
     propagate: bool = True,
-) -> OnyxLoggingAdapter:
+) -> OmLoggingAdapter:
     logger = logging.getLogger(name)
 
     # If the logger already has handlers, assume it was already configured and return it.
     if logger.handlers:
-        return OnyxLoggingAdapter(logger, extra=extra)
+        return OmLoggingAdapter(logger, extra=extra)
 
     logger.setLevel(log_level)
 
@@ -236,7 +236,7 @@ def setup_logger(
     # own handler (e.g. by Uvicorn / Celery).
     logger.propagate = propagate
 
-    return OnyxLoggingAdapter(logger, extra=extra)
+    return OmLoggingAdapter(logger, extra=extra)
 
 
 def setup_uvicorn_logger(
@@ -256,7 +256,7 @@ def setup_uvicorn_logger(
     uvicorn_logger.handlers = []
     uvicorn_logger.addHandler(handler)
     uvicorn_logger.setLevel(log_level)
-    uvicorn_logger.addFilter(OnyxRequestIDFilter())
+    uvicorn_logger.addFilter(OmRequestIDFilter())
 
     if shared_file_handlers:
         for fh in shared_file_handlers:

@@ -31,6 +31,6 @@ class WebSearchProviderType(str, Enum):
 
 
 class WebContentProviderType(str, Enum):
-    ONYX_WEB_CRAWLER = "onyx_web_crawler"
+    OM_WEB_CRAWLER = "onyx_web_crawler"
     FIRECRAWL = "firecrawl"
     EXA = "exa"

@@ -12,7 +12,7 @@ PDF_MIME_TYPE = "application/pdf"
 PLAIN_TEXT_MIME_TYPE = "text/plain"
 
 
-class OnyxMimeTypes:
+class OmMimeTypes:
     IMAGE_MIME_TYPES = {"image/jpg", "image/jpeg", "image/png", "image/webp"}
     CSV_MIME_TYPES = {"text/csv"}
     TEXT_MIME_TYPES = {
@@ -48,7 +48,7 @@ class OnyxMimeTypes:
     }
 
 
-class OnyxFileExtensions:
+class OmFileExtensions:
     PLAIN_TEXT_EXTENSIONS = {
         ".txt",
         ".md",

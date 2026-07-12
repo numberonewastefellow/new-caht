@@ -28,9 +28,9 @@ from om.background.celery.tasks.vespa.document_sync import DOCUMENT_SYNC_PREFIX
 from om.background.celery.tasks.vespa.document_sync import DOCUMENT_SYNC_TASKSET_KEY
 from om.configs.app_configs import DISABLE_VECTOR_DB
 from om.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
-from om.configs.app_configs import ONYX_DISABLE_VESPA
-from om.configs.constants import ONYX_CLOUD_CELERY_TASK_PREFIX
-from om.configs.constants import OnyxRedisLocks
+from om.configs.app_configs import OM_DISABLE_VESPA
+from om.configs.constants import OM_CLOUD_CELERY_TASK_PREFIX
+from om.configs.constants import OmRedisLocks
 from om.db.engine.sql_engine import get_sqlalchemy_engine
 from om.document_index.opensearch.client import (
     wait_for_opensearch_with_timeout,
@@ -143,7 +143,7 @@ def on_task_postrun(
     if not task_id:
         return
 
-    if task.name.startswith(ONYX_CLOUD_CELERY_TASK_PREFIX):
+    if task.name.startswith(OM_CLOUD_CELERY_TASK_PREFIX):
         # this is a cloud / all tenant task ... no postrun is needed
         return
 
@@ -342,7 +342,7 @@ def on_secondary_worker_init(sender: Any, **kwargs: Any) -> None:  # noqa: ARG00
 
     logger.info("Waiting for primary worker to be ready...")
     while True:
-        if r.exists(OnyxRedisLocks.PRIMARY_WORKER):
+        if r.exists(OmRedisLocks.PRIMARY_WORKER):
             break
 
         time_elapsed = time.monotonic() - time_start
@@ -537,7 +537,7 @@ def wait_for_vespa_or_shutdown(sender: Any, **kwargs: Any) -> None:  # noqa: ARG
         )
         return
 
-    if not ONYX_DISABLE_VESPA:
+    if not OM_DISABLE_VESPA:
         if not wait_for_vespa_with_timeout():
             msg = "[Vespa] Readiness probe did not succeed within the timeout. Exiting..."
             logger.error(msg)

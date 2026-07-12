@@ -8,7 +8,7 @@ from celery import Task
 from ee.om.background.celery_utils import should_perform_chat_ttl_check
 from ee.om.background.task_name_builders import name_chat_ttl_task
 from om.configs.app_configs import JOB_TIMEOUT
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryTask
 from om.db.chat import delete_chat_session
 from om.db.chat import get_chat_sessions_older_than
 from om.db.engine.sql_engine import get_session_with_current_tenant
@@ -22,7 +22,7 @@ logger = setup_logger()
 
 
 @shared_task(
-    name=OnyxCeleryTask.PERFORM_TTL_MANAGEMENT_TASK,
+    name=OmCeleryTask.PERFORM_TTL_MANAGEMENT_TASK,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
     bind=True,
@@ -87,7 +87,7 @@ def perform_ttl_management_task(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_TTL_MANAGEMENT_TASK,
+    name=OmCeleryTask.CHECK_TTL_MANAGEMENT_TASK,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
 )

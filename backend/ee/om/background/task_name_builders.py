@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryTask
 
 
-QUERY_HISTORY_TASK_NAME_PREFIX = OnyxCeleryTask.EXPORT_QUERY_HISTORY_TASK
+QUERY_HISTORY_TASK_NAME_PREFIX = OmCeleryTask.EXPORT_QUERY_HISTORY_TASK
 
 
 def name_chat_ttl_task(

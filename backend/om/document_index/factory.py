@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from om.configs.app_configs import DISABLE_VECTOR_DB
 from om.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
-from om.configs.app_configs import ONYX_DISABLE_VESPA
+from om.configs.app_configs import OM_DISABLE_VESPA
 from om.db.models import SearchSettings
 from om.db.opensearch_migration import get_opensearch_retrieval_state
 from om.document_index.disabled import DisabledDocumentIndex
@@ -109,7 +109,7 @@ def get_default_document_index(
         return DisabledDocumentIndex()
 
     opensearch_retrieval_enabled = get_opensearch_retrieval_state(db_session)
-    if ONYX_DISABLE_VESPA and not opensearch_retrieval_enabled:
+    if OM_DISABLE_VESPA and not opensearch_retrieval_enabled:
         raise ValueError(
             "Bug: ONYX_DISABLE_VESPA is set but opensearch_retrieval_enabled is not set."
         )
@@ -134,13 +134,13 @@ def get_all_document_indices(
     if DISABLE_VECTOR_DB:
         return [DisabledDocumentIndex()]
 
-    if ONYX_DISABLE_VESPA and not ENABLE_OPENSEARCH_INDEXING_FOR_ONYX:
+    if OM_DISABLE_VESPA and not ENABLE_OPENSEARCH_INDEXING_FOR_ONYX:
         raise ValueError(
             "Bug: ONYX_DISABLE_VESPA is set but ENABLE_OPENSEARCH_INDEXING_FOR_ONYX is not set."
         )
 
     result: list[DocumentIndex] = []
-    if not ONYX_DISABLE_VESPA:
+    if not OM_DISABLE_VESPA:
         result.append(
             _build_vespa_pair(search_settings, secondary_search_settings, httpx_client)
         )

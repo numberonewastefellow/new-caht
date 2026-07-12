@@ -70,7 +70,7 @@ class ConfluenceRateLimitError(Exception):
     pass
 
 
-class OnyxConfluence:
+class OmConfluence:
     """
     This is a custom Confluence class that:
 
@@ -389,7 +389,7 @@ class OnyxConfluence:
         if "confluence_refresh_token" in credentials:
             logger.info("Connecting to Confluence Cloud with OAuth Access Token.")
 
-            oauth2_dict: dict[str, Any] = OnyxConfluence._make_oauth2_dict(credentials)
+            oauth2_dict: dict[str, Any] = OmConfluence._make_oauth2_dict(credentials)
             url = f"https://api.atlassian.com/ex/confluence/{credentials['cloud_id']}"
             confluence = Confluence(url=url, oauth2=oauth2_dict, **kwargs)
         else:
@@ -968,7 +968,7 @@ class OnyxConfluence:
 
 
 def get_user_email_from_username__server(
-    confluence_client: OnyxConfluence, user_name: str
+    confluence_client: OmConfluence, user_name: str
 ) -> str | None:
     global _USER_EMAIL_CACHE
     if _USER_EMAIL_CACHE.get(user_name) is None:
@@ -993,7 +993,7 @@ def get_user_email_from_username__server(
     return _USER_EMAIL_CACHE[user_name]
 
 
-def _get_user(confluence_client: OnyxConfluence, user_id: str) -> str:
+def _get_user(confluence_client: OmConfluence, user_id: str) -> str:
     """Get Confluence Display Name based on the account-id or userkey value
 
     Args:
@@ -1031,7 +1031,7 @@ def sanitize_attachment_title(title: str) -> str:
 
 
 def extract_text_from_confluence_html(
-    confluence_client: OnyxConfluence,
+    confluence_client: OmConfluence,
     confluence_object: dict[str, Any],
     fetched_titles: set[str],
 ) -> str:

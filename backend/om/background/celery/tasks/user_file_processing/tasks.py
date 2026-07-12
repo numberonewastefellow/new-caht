@@ -23,10 +23,10 @@ from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import CELERY_USER_FILE_PROCESSING_LOCK_TIMEOUT
 from om.configs.constants import CELERY_USER_FILE_PROJECT_SYNC_LOCK_TIMEOUT
 from om.configs.constants import DocumentSource
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisLocks
 from om.connectors.file.connector import LocalFileConnector
 from om.connectors.models import Document
 from om.connectors.models import HierarchyNode
@@ -54,15 +54,15 @@ def _as_uuid(value: str | UUID) -> UUID:
 
 
 def _user_file_lock_key(user_file_id: str | UUID) -> str:
-    return f"{OnyxRedisLocks.USER_FILE_PROCESSING_LOCK_PREFIX}:{user_file_id}"
+    return f"{OmRedisLocks.USER_FILE_PROCESSING_LOCK_PREFIX}:{user_file_id}"
 
 
 def _user_file_project_sync_lock_key(user_file_id: str | UUID) -> str:
-    return f"{OnyxRedisLocks.USER_FILE_PROJECT_SYNC_LOCK_PREFIX}:{user_file_id}"
+    return f"{OmRedisLocks.USER_FILE_PROJECT_SYNC_LOCK_PREFIX}:{user_file_id}"
 
 
 def _user_file_delete_lock_key(user_file_id: str | UUID) -> str:
-    return f"{OnyxRedisLocks.USER_FILE_DELETE_LOCK_PREFIX}:{user_file_id}"
+    return f"{OmRedisLocks.USER_FILE_DELETE_LOCK_PREFIX}:{user_file_id}"
 
 
 @retry(tries=3, delay=1, backoff=2, jitter=(0.0, 1.0))
@@ -112,7 +112,7 @@ def _get_document_chunk_count(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_USER_FILE_PROCESSING,
+    name=OmCeleryTask.CHECK_FOR_USER_FILE_PROCESSING,
     soft_time_limit=300,
     bind=True,
     ignore_result=True,
@@ -126,7 +126,7 @@ def check_user_file_processing(self: Task, *, tenant_id: str) -> None:
 
     redis_client = get_redis_client(tenant_id=tenant_id)
     lock: RedisLock = redis_client.lock(
-        OnyxRedisLocks.USER_FILE_PROCESSING_BEAT_LOCK,
+        OmRedisLocks.USER_FILE_PROCESSING_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -149,10 +149,10 @@ def check_user_file_processing(self: Task, *, tenant_id: str) -> None:
 
             for user_file_id in user_file_ids:
                 self.app.send_task(
-                    OnyxCeleryTask.PROCESS_SINGLE_USER_FILE,
+                    OmCeleryTask.PROCESS_SINGLE_USER_FILE,
                     kwargs={"user_file_id": str(user_file_id), "tenant_id": tenant_id},
-                    queue=OnyxCeleryQueues.USER_FILE_PROCESSING,
-                    priority=OnyxCeleryPriority.HIGH,
+                    queue=OmCeleryQueues.USER_FILE_PROCESSING,
+                    priority=OmCeleryPriority.HIGH,
                 )
                 enqueued += 1
 
@@ -293,7 +293,7 @@ def _process_user_file_with_indexing(
 
 
 @shared_task(
-    name=OnyxCeleryTask.PROCESS_SINGLE_USER_FILE,
+    name=OmCeleryTask.PROCESS_SINGLE_USER_FILE,
     bind=True,
     ignore_result=True,
 )
@@ -404,7 +404,7 @@ def process_single_user_file(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_USER_FILE_DELETE,
+    name=OmCeleryTask.CHECK_FOR_USER_FILE_DELETE,
     soft_time_limit=300,
     bind=True,
     ignore_result=True,
@@ -414,7 +414,7 @@ def check_for_user_file_delete(self: Task, *, tenant_id: str) -> None:
     task_logger.info("check_for_user_file_delete - Starting")
     redis_client = get_redis_client(tenant_id=tenant_id)
     lock: RedisLock = redis_client.lock(
-        OnyxRedisLocks.USER_FILE_DELETE_BEAT_LOCK,
+        OmRedisLocks.USER_FILE_DELETE_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
     if not lock.acquire(blocking=False):
@@ -433,10 +433,10 @@ def check_for_user_file_delete(self: Task, *, tenant_id: str) -> None:
             )
             for user_file_id in user_file_ids:
                 self.app.send_task(
-                    OnyxCeleryTask.DELETE_SINGLE_USER_FILE,
+                    OmCeleryTask.DELETE_SINGLE_USER_FILE,
                     kwargs={"user_file_id": str(user_file_id), "tenant_id": tenant_id},
-                    queue=OnyxCeleryQueues.USER_FILE_DELETE,
-                    priority=OnyxCeleryPriority.HIGH,
+                    queue=OmCeleryQueues.USER_FILE_DELETE,
+                    priority=OmCeleryPriority.HIGH,
                 )
                 enqueued += 1
     except Exception as e:
@@ -454,7 +454,7 @@ def check_for_user_file_delete(self: Task, *, tenant_id: str) -> None:
 
 
 @shared_task(
-    name=OnyxCeleryTask.DELETE_SINGLE_USER_FILE,
+    name=OmCeleryTask.DELETE_SINGLE_USER_FILE,
     bind=True,
     ignore_result=True,
 )
@@ -550,7 +550,7 @@ def process_single_user_file_delete(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_USER_FILE_PROJECT_SYNC,
+    name=OmCeleryTask.CHECK_FOR_USER_FILE_PROJECT_SYNC,
     soft_time_limit=300,
     bind=True,
     ignore_result=True,
@@ -561,7 +561,7 @@ def check_for_user_file_project_sync(self: Task, *, tenant_id: str) -> None:
 
     redis_client = get_redis_client(tenant_id=tenant_id)
     lock: RedisLock = redis_client.lock(
-        OnyxRedisLocks.USER_FILE_PROJECT_SYNC_BEAT_LOCK,
+        OmRedisLocks.USER_FILE_PROJECT_SYNC_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -586,10 +586,10 @@ def check_for_user_file_project_sync(self: Task, *, tenant_id: str) -> None:
 
             for user_file_id in user_file_ids:
                 self.app.send_task(
-                    OnyxCeleryTask.PROCESS_SINGLE_USER_FILE_PROJECT_SYNC,
+                    OmCeleryTask.PROCESS_SINGLE_USER_FILE_PROJECT_SYNC,
                     kwargs={"user_file_id": str(user_file_id), "tenant_id": tenant_id},
-                    queue=OnyxCeleryQueues.USER_FILE_PROJECT_SYNC,
-                    priority=OnyxCeleryPriority.HIGH,
+                    queue=OmCeleryQueues.USER_FILE_PROJECT_SYNC,
+                    priority=OmCeleryPriority.HIGH,
                 )
                 enqueued += 1
     finally:
@@ -603,7 +603,7 @@ def check_for_user_file_project_sync(self: Task, *, tenant_id: str) -> None:
 
 
 @shared_task(
-    name=OnyxCeleryTask.PROCESS_SINGLE_USER_FILE_PROJECT_SYNC,
+    name=OmCeleryTask.PROCESS_SINGLE_USER_FILE_PROJECT_SYNC,
     bind=True,
     ignore_result=True,
 )

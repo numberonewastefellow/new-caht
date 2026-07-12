@@ -9,7 +9,7 @@ from om.auth.schemas import UserRole
 from om.configs.app_configs import INSTANCE_TYPE
 from om.configs.constants import DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN
 from om.configs.constants import NotificationType
-from om.configs.constants import ONYX_UTM_SOURCE
+from om.configs.constants import OM_UTM_SOURCE
 from om.db.models import User
 from om.db.notification import batch_create_notifications
 from om.server.features.release_notes.constants import DOCS_CHANGELOG_BASE_URL
@@ -63,7 +63,7 @@ def create_release_notifications_for_versions(
 
         # Build UTM parameters for tracking
         utm_params = {
-            "utm_source": ONYX_UTM_SOURCE,
+            "utm_source": OM_UTM_SOURCE,
             "utm_medium": "notification",
             "utm_campaign": INSTANCE_TYPE,
             "utm_content": f"release_notes-{entry.version}",

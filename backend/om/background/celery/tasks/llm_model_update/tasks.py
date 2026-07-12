@@ -3,7 +3,7 @@ from celery import Task
 
 from om.background.celery.apps.app_base import task_logger
 from om.configs.app_configs import AUTO_LLM_CONFIG_URL
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryTask
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.llm.well_known_providers.auto_update_service import (
     sync_llm_models_from_github,
@@ -11,7 +11,7 @@ from om.llm.well_known_providers.auto_update_service import (
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_AUTO_LLM_UPDATE,
+    name=OmCeleryTask.CHECK_FOR_AUTO_LLM_UPDATE,
     ignore_result=True,
     soft_time_limit=300,  # 5 minute timeout
     trail=False,

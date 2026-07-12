@@ -4,7 +4,7 @@ import pytest
 from pydantic import BaseModel
 
 import om.tools.tool_implementations.open_url.onyx_web_crawler as crawler_module
-from om.tools.tool_implementations.open_url.onyx_web_crawler import OnyxWebCrawler
+from om.tools.tool_implementations.open_url.onyx_web_crawler import OmWebCrawler
 
 
 class FakeResponse(BaseModel):
@@ -17,7 +17,7 @@ class FakeResponse(BaseModel):
 
 
 def test_fetch_url_pdf_with_content_type(monkeypatch: pytest.MonkeyPatch) -> None:
-    crawler = OnyxWebCrawler()
+    crawler = OmWebCrawler()
     response = FakeResponse(
         status_code=200,
         headers={"Content-Type": "application/pdf"},
@@ -43,7 +43,7 @@ def test_fetch_url_pdf_with_content_type(monkeypatch: pytest.MonkeyPatch) -> Non
 
 
 def test_fetch_url_pdf_with_signature(monkeypatch: pytest.MonkeyPatch) -> None:
-    crawler = OnyxWebCrawler()
+    crawler = OmWebCrawler()
     response = FakeResponse(
         status_code=200,
         headers={"Content-Type": "application/octet-stream"},
@@ -69,7 +69,7 @@ def test_fetch_url_pdf_with_signature(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_fetch_url_decodes_html_bytes(monkeypatch: pytest.MonkeyPatch) -> None:
-    crawler = OnyxWebCrawler()
+    crawler = OmWebCrawler()
     html_bytes = b"<html><body>caf\xe9</body></html>"
     response = FakeResponse(
         status_code=200,
@@ -92,7 +92,7 @@ def test_fetch_url_decodes_html_bytes(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_fetch_url_pdf_exceeds_size_limit(monkeypatch: pytest.MonkeyPatch) -> None:
     """PDF content exceeding max_pdf_size_bytes should be rejected."""
-    crawler = OnyxWebCrawler(max_pdf_size_bytes=100)
+    crawler = OmWebCrawler(max_pdf_size_bytes=100)
     response = FakeResponse(
         status_code=200,
         headers={"Content-Type": "application/pdf"},
@@ -114,7 +114,7 @@ def test_fetch_url_pdf_exceeds_size_limit(monkeypatch: pytest.MonkeyPatch) -> No
 
 def test_fetch_url_pdf_within_size_limit(monkeypatch: pytest.MonkeyPatch) -> None:
     """PDF content within max_pdf_size_bytes should be processed normally."""
-    crawler = OnyxWebCrawler(max_pdf_size_bytes=500)
+    crawler = OmWebCrawler(max_pdf_size_bytes=500)
     response = FakeResponse(
         status_code=200,
         headers={"Content-Type": "application/pdf"},
@@ -140,7 +140,7 @@ def test_fetch_url_pdf_within_size_limit(monkeypatch: pytest.MonkeyPatch) -> Non
 
 def test_fetch_url_html_exceeds_size_limit(monkeypatch: pytest.MonkeyPatch) -> None:
     """HTML content exceeding max_html_size_bytes should be rejected."""
-    crawler = OnyxWebCrawler(max_html_size_bytes=50)
+    crawler = OmWebCrawler(max_html_size_bytes=50)
     html_bytes = b"<html><body>" + b"x" * 100 + b"</body></html>"  # Exceeds 50 limit
     response = FakeResponse(
         status_code=200,
@@ -163,7 +163,7 @@ def test_fetch_url_html_exceeds_size_limit(monkeypatch: pytest.MonkeyPatch) -> N
 
 def test_fetch_url_html_within_size_limit(monkeypatch: pytest.MonkeyPatch) -> None:
     """HTML content within max_html_size_bytes should be processed normally."""
-    crawler = OnyxWebCrawler(max_html_size_bytes=500)
+    crawler = OmWebCrawler(max_html_size_bytes=500)
     html_bytes = b"<html><body>hello world</body></html>"
     response = FakeResponse(
         status_code=200,

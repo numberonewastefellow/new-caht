@@ -5,12 +5,12 @@ from enum import auto
 from enum import Enum
 
 
-ONYX_DEFAULT_APPLICATION_NAME = "VertualAI"
-ONYX_DISCORD_URL = "https://discord.gg/4NA5SbzrWb"
-ONYX_UTM_SOURCE = "onyx_app"
+OM_DEFAULT_APPLICATION_NAME = "VertualAI"
+OM_DISCORD_URL = "https://discord.gg/4NA5SbzrWb"
+OM_UTM_SOURCE = "onyx_app"
 SLACK_USER_TOKEN_PREFIX = "xoxp-"
 SLACK_BOT_TOKEN_PREFIX = "xoxb-"
-ONYX_EMAILABLE_LOGO_MAX_DIM = 512
+OM_EMAILABLE_LOGO_MAX_DIM = 512
 
 SOURCE_TYPE = "source_type"
 # stored in the `metadata` of a chunk. Used to signify that this chunk should
@@ -49,7 +49,7 @@ SECTION_SEPARATOR = "\n\n"
 INDEX_SEPARATOR = "==="
 
 # For File Connector Metadata override file
-ONYX_METADATA_FILENAME = ".onyx_metadata.json"
+OM_METADATA_FILENAME = ".onyx_metadata.json"
 
 # Messages
 DISABLED_GEN_AI_MSG = (
@@ -370,7 +370,7 @@ class PostgresAdvisoryLocks(Enum):
     KOMBU_MESSAGE_CLEANUP_LOCK_ID = auto()
 
 
-class OnyxCeleryQueues:
+class OmCeleryQueues:
     # "celery" is the default queue defined by celery and also the queue
     # we are running in the primary worker to run system tasks
     # Tasks running in this queue should be designed specifically to run quickly
@@ -407,7 +407,7 @@ class OnyxCeleryQueues:
     OPENSEARCH_MIGRATION = "opensearch_migration"
 
 
-class OnyxRedisLocks:
+class OmRedisLocks:
     PRIMARY_WORKER = "da_lock:primary_worker"
     CHECK_VESPA_SYNC_BEAT_LOCK = "da_lock:check_vespa_sync_beat"
     CHECK_CONNECTOR_DELETION_BEAT_LOCK = "da_lock:check_connector_deletion_beat"
@@ -462,7 +462,7 @@ class OnyxRedisLocks:
     SANDBOX_FILE_SYNC_LOCK_PREFIX = "da_lock:sandbox_file_sync"
 
 
-class OnyxRedisSignals:
+class OmRedisSignals:
     BLOCK_VALIDATE_INDEXING_FENCES = "signal:block_validate_indexing_fences"
     BLOCK_VALIDATE_EXTERNAL_GROUP_SYNC_FENCES = (
         "signal:block_validate_external_group_sync_fences"
@@ -478,11 +478,11 @@ class OnyxRedisSignals:
     )
 
 
-class OnyxRedisConstants:
+class OmRedisConstants:
     ACTIVE_FENCES = "active_fences"
 
 
-class OnyxCeleryPriority(int, Enum):
+class OmCeleryPriority(int, Enum):
     HIGHEST = 0
     HIGH = auto()
     MEDIUM = auto()
@@ -491,29 +491,29 @@ class OnyxCeleryPriority(int, Enum):
 
 
 # a prefix used to distinguish system wide tasks in the cloud
-ONYX_CLOUD_CELERY_TASK_PREFIX = "cloud"
+OM_CLOUD_CELERY_TASK_PREFIX = "cloud"
 
 # the tenant id we use for system level redis operations
-ONYX_CLOUD_TENANT_ID = "cloud"
+OM_CLOUD_TENANT_ID = "cloud"
 
 # the redis namespace for runtime variables
-ONYX_CLOUD_REDIS_RUNTIME = "runtime"
+OM_CLOUD_REDIS_RUNTIME = "runtime"
 CLOUD_BUILD_FENCE_LOOKUP_TABLE_INTERVAL_DEFAULT = 600
 
 
-class OnyxCeleryTask:
+class OmCeleryTask:
     DEFAULT = "celery"
 
-    CLOUD_BEAT_TASK_GENERATOR = f"{ONYX_CLOUD_CELERY_TASK_PREFIX}_generate_beat_tasks"
-    CLOUD_MONITOR_ALEMBIC = f"{ONYX_CLOUD_CELERY_TASK_PREFIX}_monitor_alembic"
+    CLOUD_BEAT_TASK_GENERATOR = f"{OM_CLOUD_CELERY_TASK_PREFIX}_generate_beat_tasks"
+    CLOUD_MONITOR_ALEMBIC = f"{OM_CLOUD_CELERY_TASK_PREFIX}_monitor_alembic"
     CLOUD_MONITOR_CELERY_QUEUES = (
-        f"{ONYX_CLOUD_CELERY_TASK_PREFIX}_monitor_celery_queues"
+        f"{OM_CLOUD_CELERY_TASK_PREFIX}_monitor_celery_queues"
     )
     CLOUD_CHECK_AVAILABLE_TENANTS = (
-        f"{ONYX_CLOUD_CELERY_TASK_PREFIX}_check_available_tenants"
+        f"{OM_CLOUD_CELERY_TASK_PREFIX}_check_available_tenants"
     )
     CLOUD_MONITOR_CELERY_PIDBOX = (
-        f"{ONYX_CLOUD_CELERY_TASK_PREFIX}_monitor_celery_pidbox"
+        f"{OM_CLOUD_CELERY_TASK_PREFIX}_monitor_celery_pidbox"
     )
 
     CHECK_FOR_CONNECTOR_DELETION = "check_for_connector_deletion_task"
@@ -597,7 +597,7 @@ class OnyxCeleryTask:
 
 
 # this needs to correspond to the matching entry in supervisord
-ONYX_CELERY_BEAT_HEARTBEAT_KEY = "onyx:celery:beat:heartbeat"
+OM_CELERY_BEAT_HEARTBEAT_KEY = "onyx:celery:beat:heartbeat"
 
 REDIS_SOCKET_KEEPALIVE_OPTIONS = {}
 REDIS_SOCKET_KEEPALIVE_OPTIONS[socket.TCP_KEEPINTVL] = 15
@@ -609,7 +609,7 @@ else:
     REDIS_SOCKET_KEEPALIVE_OPTIONS[socket.TCP_KEEPIDLE] = 60  # type: ignore[attr-defined,unused-ignore]
 
 
-class OnyxCallTypes(str, Enum):
+class OmCallTypes(str, Enum):
     FIREFLIES = "FIREFLIES"
     GONG = "GONG"
 

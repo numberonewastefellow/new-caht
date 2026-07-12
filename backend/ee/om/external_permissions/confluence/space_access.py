@@ -8,7 +8,7 @@ from om.configs.constants import DocumentSource
 from om.connectors.confluence.onyx_confluence import (
     get_user_email_from_username__server,
 )
-from om.connectors.confluence.onyx_confluence import OnyxConfluence
+from om.connectors.confluence.onyx_confluence import OmConfluence
 from om.utils.logger import setup_logger
 
 
@@ -16,7 +16,7 @@ logger = setup_logger()
 
 
 def _get_server_space_permissions(
-    confluence_client: OnyxConfluence, space_key: str
+    confluence_client: OmConfluence, space_key: str
 ) -> ExternalAccess:
     space_permissions = confluence_client.get_all_space_permissions_server(
         space_key=space_key
@@ -76,7 +76,7 @@ def _get_server_space_permissions(
 
 
 def _get_cloud_space_permissions(
-    confluence_client: OnyxConfluence, space_key: str
+    confluence_client: OmConfluence, space_key: str
 ) -> ExternalAccess:
     space_permissions_result = confluence_client.get_space(
         space_key=space_key, expand="permissions"
@@ -111,7 +111,7 @@ def _get_cloud_space_permissions(
 
 
 def get_space_permission(
-    confluence_client: OnyxConfluence,
+    confluence_client: OmConfluence,
     space_key: str,
     is_cloud: bool,
     add_prefix: bool = False,
@@ -149,7 +149,7 @@ def get_space_permission(
 
 
 def get_all_space_permissions(
-    confluence_client: OnyxConfluence,
+    confluence_client: OmConfluence,
     is_cloud: bool,
     add_prefix: bool = False,
 ) -> dict[str, ExternalAccess]:

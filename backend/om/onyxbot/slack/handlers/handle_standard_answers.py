@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from om.db.models import SlackChannelConfig
 from om.onyxbot.slack.models import SlackMessageInfo
-from om.utils.logger import OnyxLoggingAdapter
+from om.utils.logger import OmLoggingAdapter
 from om.utils.logger import setup_logger
 from om.utils.variable_functionality import fetch_versioned_implementation
 
@@ -14,7 +14,7 @@ def handle_standard_answers(
     message_info: SlackMessageInfo,
     receiver_ids: list[str] | None,
     slack_channel_config: SlackChannelConfig,
-    logger: OnyxLoggingAdapter,
+    logger: OmLoggingAdapter,
     client: WebClient,
     db_session: Session,
 ) -> bool:
@@ -38,7 +38,7 @@ def _handle_standard_answers(
     message_info: SlackMessageInfo,  # noqa: ARG001
     receiver_ids: list[str] | None,  # noqa: ARG001
     slack_channel_config: SlackChannelConfig,  # noqa: ARG001
-    logger: OnyxLoggingAdapter,  # noqa: ARG001
+    logger: OmLoggingAdapter,  # noqa: ARG001
     client: WebClient,  # noqa: ARG001
     db_session: Session,  # noqa: ARG001
 ) -> bool:

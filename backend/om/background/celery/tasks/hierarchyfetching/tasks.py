@@ -25,10 +25,10 @@ from om.background.celery.apps.app_base import task_logger
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import DANSWER_REDIS_FUNCTION_LOCK_PREFIX
 from om.configs.constants import DocumentSource
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisLocks
 from om.connectors.factory import instantiate_connector
 from om.connectors.interfaces import HierarchyConnector
 from om.connectors.models import HierarchyNode as PydanticHierarchyNode
@@ -112,14 +112,14 @@ def _try_creating_hierarchy_fetching_task(
 
         # Send the task
         result = celery_app.send_task(
-            OnyxCeleryTask.CONNECTOR_HIERARCHY_FETCHING_TASK,
+            OmCeleryTask.CONNECTOR_HIERARCHY_FETCHING_TASK,
             kwargs=dict(
                 cc_pair_id=cc_pair.id,
                 tenant_id=tenant_id,
             ),
-            queue=OnyxCeleryQueues.CONNECTOR_HIERARCHY_FETCHING,
+            queue=OmCeleryQueues.CONNECTOR_HIERARCHY_FETCHING,
             task_id=custom_task_id,
-            priority=OnyxCeleryPriority.LOW,
+            priority=OmCeleryPriority.LOW,
         )
 
         if not result:
@@ -144,7 +144,7 @@ def _try_creating_hierarchy_fetching_task(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_HIERARCHY_FETCHING,
+    name=OmCeleryTask.CHECK_FOR_HIERARCHY_FETCHING,
     soft_time_limit=300,
     bind=True,
 )
@@ -162,7 +162,7 @@ def check_for_hierarchy_fetching(self: Task, *, tenant_id: str) -> int | None:
     redis_client = get_redis_client()
 
     lock_beat: RedisLock = redis_client.lock(
-        OnyxRedisLocks.CHECK_HIERARCHY_FETCHING_BEAT_LOCK,
+        OmRedisLocks.CHECK_HIERARCHY_FETCHING_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -316,7 +316,7 @@ def _run_hierarchy_extraction(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CONNECTOR_HIERARCHY_FETCHING_TASK,
+    name=OmCeleryTask.CONNECTOR_HIERARCHY_FETCHING_TASK,
     soft_time_limit=3600,  # 1 hour soft limit
     time_limit=3900,  # 1 hour 5 min hard limit
     bind=True,

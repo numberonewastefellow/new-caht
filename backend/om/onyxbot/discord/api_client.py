@@ -16,7 +16,7 @@ from om.utils.variable_functionality import build_api_server_url_for_http_reques
 logger = setup_logger()
 
 
-class OnyxAPIClient:
+class OmAPIClient:
     """Async HTTP client for sending chat requests to VertualAi API pods.
 
     This client manages an aiohttp session for making non-blocking HTTP

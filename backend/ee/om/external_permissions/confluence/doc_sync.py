@@ -11,7 +11,7 @@ from ee.om.external_permissions.utils import generic_doc_sync
 from om.access.models import ElementExternalAccess
 from om.configs.constants import DocumentSource
 from om.connectors.confluence.connector import ConfluenceConnector
-from om.connectors.credentials_provider import OnyxDBCredentialsProvider
+from om.connectors.credentials_provider import OmDBCredentialsProvider
 from om.db.models import ConnectorCredentialPair
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
@@ -38,7 +38,7 @@ def confluence_doc_sync(
         **cc_pair.connector.connector_specific_config
     )
 
-    provider = OnyxDBCredentialsProvider(
+    provider = OmDBCredentialsProvider(
         get_current_tenant_id(), "confluence", cc_pair.credential_id
     )
     confluence_connector.set_credentials_provider(provider)

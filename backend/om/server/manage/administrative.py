@@ -14,8 +14,8 @@ from om.background.celery.versioned_apps.client import app as client_app
 from om.configs.app_configs import GENERATIVE_MODEL_ACCESS_CHECK_FREQ
 from om.configs.constants import DocumentSource
 from om.configs.constants import KV_GEN_AI_KEY_CHECK_TIME
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryTask
 from om.configs.constants import PUBLIC_API_TAGS
 from om.db.connector_credential_pair import get_connector_credential_pair_for_user
 from om.db.connector_credential_pair import (
@@ -194,8 +194,8 @@ def create_deletion_attempt_for_connector_id(
 
     # run the beat task to pick up this deletion from the db immediately
     client_app.send_task(
-        OnyxCeleryTask.CHECK_FOR_CONNECTOR_DELETION,
-        priority=OnyxCeleryPriority.HIGH,
+        OmCeleryTask.CHECK_FOR_CONNECTOR_DELETION,
+        priority=OmCeleryPriority.HIGH,
         kwargs={"tenant_id": tenant_id},
     )
 

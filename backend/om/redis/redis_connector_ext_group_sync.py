@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from redis.lock import Lock as RedisLock
 from sqlalchemy.orm import Session
 
-from om.configs.constants import OnyxRedisConstants
+from om.configs.constants import OmRedisConstants
 from om.redis.redis_pool import SCAN_ITER_COUNT_DEFAULT
 
 
@@ -76,7 +76,7 @@ class RedisConnectorExternalGroupSync:
         """Count of active external group syncing tasks"""
         count = 0
         for _ in self.redis.sscan_iter(
-            OnyxRedisConstants.ACTIVE_FENCES,
+            OmRedisConstants.ACTIVE_FENCES,
             RedisConnectorExternalGroupSync.FENCE_PREFIX + "*",
             count=SCAN_ITER_COUNT_DEFAULT,
         ):
@@ -107,12 +107,12 @@ class RedisConnectorExternalGroupSync:
         payload: RedisConnectorExternalGroupSyncPayload | None,
     ) -> None:
         if not payload:
-            self.redis.srem(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+            self.redis.srem(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
             self.redis.delete(self.fence_key)
             return
 
         self.redis.set(self.fence_key, payload.model_dump_json(), ex=self.FENCE_TTL)
-        self.redis.sadd(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+        self.redis.sadd(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
 
     def set_active(self) -> None:
         """This sets a signal to keep the permissioning flow from getting cleaned up within
@@ -159,7 +159,7 @@ class RedisConnectorExternalGroupSync:
         pass
 
     def reset(self) -> None:
-        self.redis.srem(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+        self.redis.srem(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
         self.redis.delete(self.active_key)
         self.redis.delete(self.generator_progress_key)
         self.redis.delete(self.generator_complete_key)

@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 
 from om.background.celery.apps.app_base import task_logger
 from om.configs.constants import DANSWER_REDIS_FUNCTION_LOCK_PREFIX
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.index_attempt import mark_attempt_failed
 from om.db.indexing_coordination import IndexingCoordination
@@ -76,21 +76,21 @@ def try_creating_docfetching_task(
         # get processed before re-indexing of existing connectors
         has_successful_attempt = cc_pair.last_successful_index_time is not None
         priority = (
-            OnyxCeleryPriority.MEDIUM
+            OmCeleryPriority.MEDIUM
             if has_successful_attempt
-            else OnyxCeleryPriority.HIGH
+            else OmCeleryPriority.HIGH
         )
 
         # Send the task to Celery
         result = celery_app.send_task(
-            OnyxCeleryTask.CONNECTOR_DOC_FETCHING_TASK,
+            OmCeleryTask.CONNECTOR_DOC_FETCHING_TASK,
             kwargs=dict(
                 index_attempt_id=index_attempt_id,
                 cc_pair_id=cc_pair.id,
                 search_settings_id=search_settings.id,
                 tenant_id=tenant_id,
             ),
-            queue=OnyxCeleryQueues.CONNECTOR_DOC_FETCHING,
+            queue=OmCeleryQueues.CONNECTOR_DOC_FETCHING,
             task_id=custom_task_id,
             priority=priority,
         )

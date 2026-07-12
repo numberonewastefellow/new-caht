@@ -21,10 +21,10 @@ import chardet
 import openpyxl
 from PIL import Image
 
-from om.configs.constants import ONYX_METADATA_FILENAME
+from om.configs.constants import OM_METADATA_FILENAME
 from om.configs.llm_configs import get_image_extraction_and_analysis_enabled
-from om.file_processing.file_types import OnyxFileExtensions
-from om.file_processing.file_types import OnyxMimeTypes
+from om.file_processing.file_types import OmFileExtensions
+from om.file_processing.file_types import OmMimeTypes
 from om.file_processing.file_types import PRESENTATION_MIME_TYPE
 from om.file_processing.file_types import WORD_PROCESSING_MIME_TYPE
 from om.file_processing.html_utils import parse_html_page_basic
@@ -108,7 +108,7 @@ def load_files_from_zip(
             if (
                 ignore_macos_resource_fork_files
                 and is_macos_resource_fork_file(file_info.filename)
-            ) or file_info.filename == ONYX_METADATA_FILENAME:
+            ) or file_info.filename == OM_METADATA_FILENAME:
                 continue
 
             with zip_file.open(file_info.filename, "r") as subfile:
@@ -500,7 +500,7 @@ def extract_file_text(
         if extension is None:
             extension = get_file_ext(file_name)
 
-        if extension in OnyxFileExtensions.TEXT_AND_DOCUMENT_EXTENSIONS:
+        if extension in OmFileExtensions.TEXT_AND_DOCUMENT_EXTENSIONS:
             func = extension_to_function.get(extension, file_io_to_text)
             file.seek(0)
             return func(file)
@@ -604,7 +604,7 @@ def _extract_text_and_images(
     # with content types in UploadMimeTypes.DOCUMENT_MIME_TYPES as plain text files.
     # As a result, the file name extension may differ from the original content type.
     # We process files with a plain text content type first to handle this scenario.
-    if content_type in OnyxMimeTypes.TEXT_MIME_TYPES:
+    if content_type in OmMimeTypes.TEXT_MIME_TYPES:
         return extract_result_from_text_file(file)
 
     # Default processing
@@ -666,7 +666,7 @@ def _extract_text_and_images(
             )
 
         # If we reach here and it's a recognized text extension
-        if extension in OnyxFileExtensions.PLAIN_TEXT_EXTENSIONS:
+        if extension in OmFileExtensions.PLAIN_TEXT_EXTENSIONS:
             return extract_result_from_text_file(file)
 
         # If it's an image file or something else, we do not parse embedded images from them

@@ -29,7 +29,7 @@ from om.configs.app_configs import DEV_MODE
 from om.configs.app_configs import POD_NAME
 from om.configs.app_configs import POD_NAMESPACE
 from om.configs.constants import MessageType
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmRedisLocks
 from om.configs.onyxbot_configs import NOTIFY_SLACKBOT_NO_ANSWER
 from om.connectors.slack.utils import expert_info_from_slack_id
 from om.db.engine.sql_engine import get_session_with_current_tenant
@@ -320,7 +320,7 @@ class SlackbotHandler:
             # thread_local=False because the shutdown event is handled
             # on an arbitrary thread
             rlock: RedisLock = redis_client.lock(
-                OnyxRedisLocks.SLACK_BOT_LOCK,
+                OmRedisLocks.SLACK_BOT_LOCK,
                 timeout=TENANT_LOCK_EXPIRATION,
                 thread_local=False,
             )
@@ -470,7 +470,7 @@ class SlackbotHandler:
         logger.debug(f"Sending heartbeats for {len(tenant_ids)} active tenants")
         for tenant_id in tenant_ids:
             redis_client = get_redis_client(tenant_id=tenant_id)
-            heartbeat_key = f"{OnyxRedisLocks.SLACK_BOT_HEARTBEAT_PREFIX}:{pod_id}"
+            heartbeat_key = f"{OmRedisLocks.SLACK_BOT_HEARTBEAT_PREFIX}:{pod_id}"
             redis_client.set(
                 heartbeat_key, current_time, ex=TENANT_HEARTBEAT_EXPIRATION
             )

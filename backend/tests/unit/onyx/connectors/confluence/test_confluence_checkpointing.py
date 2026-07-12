@@ -13,7 +13,7 @@ from requests.exceptions import HTTPError
 from om.configs.constants import DocumentSource
 from om.connectors.confluence.connector import ConfluenceCheckpoint
 from om.connectors.confluence.connector import ConfluenceConnector
-from om.connectors.confluence.onyx_confluence import OnyxConfluence
+from om.connectors.confluence.onyx_confluence import OmConfluence
 from om.connectors.exceptions import CredentialExpiredError
 from om.connectors.exceptions import InsufficientPermissionsError
 from om.connectors.exceptions import UnexpectedValidationError
@@ -41,17 +41,17 @@ def space_key() -> str:
 
 
 @pytest.fixture
-def mock_confluence_client() -> OnyxConfluence:
+def mock_confluence_client() -> OmConfluence:
     """Create a mock Confluence client with proper typing"""
     # Server mode just Also updates the start value
-    return OnyxConfluence(
+    return OmConfluence(
         is_cloud=False, url="test", credentials_provider=MagicMock(), timeout=None
     )
 
 
 @pytest.fixture
 def confluence_connector(
-    confluence_base_url: str, space_key: str, mock_confluence_client: OnyxConfluence
+    confluence_base_url: str, space_key: str, mock_confluence_client: OmConfluence
 ) -> Generator[ConfluenceConnector, None, None]:
     """Create a Confluence connector with a mock client"""
     # NOTE: we test with is_cloud=False for all tests, which is generally fine because the behavior

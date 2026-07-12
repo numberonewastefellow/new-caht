@@ -9,7 +9,7 @@ import pytest
 from om.configs.constants import DocumentSource
 from om.connectors.confluence.connector import ConfluenceConnector
 from om.connectors.confluence.utils import AttachmentProcessingResult
-from om.connectors.credentials_provider import OnyxStaticCredentialsProvider
+from om.connectors.credentials_provider import OmStaticCredentialsProvider
 from om.connectors.models import Document
 from tests.daily.connectors.utils import load_all_from_connector
 
@@ -25,7 +25,7 @@ def _make_connector(
         scoped_token=scoped_token,
     )
 
-    credentials_provider = OnyxStaticCredentialsProvider(
+    credentials_provider = OmStaticCredentialsProvider(
         None,
         DocumentSource.CONFLUENCE,
         {

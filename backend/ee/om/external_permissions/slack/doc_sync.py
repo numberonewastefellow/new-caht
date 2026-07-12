@@ -7,7 +7,7 @@ from ee.om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunct
 from ee.om.external_permissions.slack.utils import fetch_user_id_to_email_map
 from om.access.models import DocExternalAccess
 from om.access.models import ExternalAccess
-from om.connectors.credentials_provider import OnyxDBCredentialsProvider
+from om.connectors.credentials_provider import OmDBCredentialsProvider
 from om.connectors.models import HierarchyNode
 from om.connectors.slack.connector import get_channels
 from om.connectors.slack.connector import make_paginated_slack_api_call
@@ -149,7 +149,7 @@ def slack_doc_sync(
     # Use credentials provider instead of directly loading credentials
 
     tenant_id = get_current_tenant_id()
-    provider = OnyxDBCredentialsProvider(tenant_id, "slack", cc_pair.credential.id)
+    provider = OmDBCredentialsProvider(tenant_id, "slack", cc_pair.credential.id)
     r = get_redis_client(tenant_id=tenant_id)
     credential_json = (
         cc_pair.credential.credential_json.get_value(apply_mask=False)

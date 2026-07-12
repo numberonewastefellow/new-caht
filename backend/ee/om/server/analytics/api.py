@@ -95,7 +95,7 @@ def get_user_analytics(
     ]
 
 
-class OnyxbotAnalyticsResponse(BaseModel):
+class OmbotAnalyticsResponse(BaseModel):
     total_queries: int
     auto_resolved: int
     date: datetime.date
@@ -107,7 +107,7 @@ def get_onyxbot_analytics(
     end: datetime.datetime | None = None,
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
-) -> list[OnyxbotAnalyticsResponse]:
+) -> list[OmbotAnalyticsResponse]:
     daily_onyxbot_info = fetch_onyxbot_analytics(
         start=start
         or (
@@ -118,7 +118,7 @@ def get_onyxbot_analytics(
     )
 
     resolution_results = [
-        OnyxbotAnalyticsResponse(
+        OmbotAnalyticsResponse(
             total_queries=total_queries,
             # If it hits negatives, something has gone wrong...
             auto_resolved=max(0, total_queries - total_negatives),

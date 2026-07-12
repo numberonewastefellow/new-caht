@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 
 from om.background.indexing.run_docfetching import connector_document_extraction
 from om.configs.constants import DocumentSource
-from om.configs.constants import OnyxCeleryPriority
+from om.configs.constants import OmCeleryPriority
 from om.connectors.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
@@ -137,9 +137,9 @@ class TestDocprocessingPriorityInDocumentExtraction:
         "has_successful_index,expected_priority",
         [
             # First-time indexing (no last_successful_index_time) should get HIGH priority
-            (False, OnyxCeleryPriority.HIGH),
+            (False, OmCeleryPriority.HIGH),
             # Re-indexing (has last_successful_index_time) should get MEDIUM priority
-            (True, OnyxCeleryPriority.MEDIUM),
+            (True, OmCeleryPriority.MEDIUM),
         ],
     )
     @patch("om.background.indexing.run_docfetching.get_document_batch_storage")
@@ -174,7 +174,7 @@ class TestDocprocessingPriorityInDocumentExtraction:
         mock_get_batch_storage: MagicMock,
         db_session: Session,
         has_successful_index: bool,
-        expected_priority: OnyxCeleryPriority,
+        expected_priority: OmCeleryPriority,
     ) -> None:
         """
         Test that docprocessing tasks get the correct priority based on

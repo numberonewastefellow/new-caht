@@ -19,13 +19,13 @@ from om.configs.constants import DocumentSource
 from om.connectors.confluence.access import get_all_space_permissions
 from om.connectors.confluence.access import get_page_restrictions
 from om.connectors.confluence.onyx_confluence import extract_text_from_confluence_html
-from om.connectors.confluence.onyx_confluence import OnyxConfluence
+from om.connectors.confluence.onyx_confluence import OmConfluence
 from om.connectors.confluence.utils import build_confluence_document_id
 from om.connectors.confluence.utils import convert_attachment_to_content
 from om.connectors.confluence.utils import datetime_from_string
 from om.connectors.confluence.utils import update_param_in_path
 from om.connectors.confluence.utils import validate_attachment_filetype
-from om.connectors.credentials_provider import OnyxStaticCredentialsProvider
+from om.connectors.credentials_provider import OmStaticCredentialsProvider
 from om.connectors.cross_connector_utils.miscellaneous_utils import (
     is_atlassian_date_error,
 )
@@ -132,8 +132,8 @@ class ConfluenceConnector(
         self.labels_to_skip = labels_to_skip
         self.timezone_offset = timezone_offset
         self.scoped_token = scoped_token
-        self._confluence_client: OnyxConfluence | None = None
-        self._low_timeout_confluence_client: OnyxConfluence | None = None
+        self._confluence_client: OmConfluence | None = None
+        self._low_timeout_confluence_client: OmConfluence | None = None
         self._fetched_titles: set[str] = set()
         self.allow_images = False
 
@@ -348,13 +348,13 @@ class ConfluenceConnector(
         )
 
     @property
-    def confluence_client(self) -> OnyxConfluence:
+    def confluence_client(self) -> OmConfluence:
         if self._confluence_client is None:
             raise ConnectorMissingCredentialError("Confluence")
         return self._confluence_client
 
     @property
-    def low_timeout_confluence_client(self) -> OnyxConfluence:
+    def low_timeout_confluence_client(self) -> OmConfluence:
         if self._low_timeout_confluence_client is None:
             raise ConnectorMissingCredentialError("Confluence")
         return self._low_timeout_confluence_client
@@ -365,7 +365,7 @@ class ConfluenceConnector(
         self.credentials_provider = credentials_provider
 
         # raises exception if there's a problem
-        confluence_client = OnyxConfluence(
+        confluence_client = OmConfluence(
             is_cloud=self.is_cloud,
             url=self.wiki_base,
             credentials_provider=credentials_provider,
@@ -377,7 +377,7 @@ class ConfluenceConnector(
         self._confluence_client = confluence_client
 
         # create a low timeout confluence client for sync flows
-        low_timeout_confluence_client = OnyxConfluence(
+        low_timeout_confluence_client = OmConfluence(
             is_cloud=self.is_cloud,
             url=self.wiki_base,
             credentials_provider=credentials_provider,
@@ -1074,7 +1074,7 @@ if __name__ == "__main__":
         # page_id=page_id,
     )
 
-    credentials_provider = OnyxStaticCredentialsProvider(
+    credentials_provider = OmStaticCredentialsProvider(
         None,
         DocumentSource.CONFLUENCE,
         {

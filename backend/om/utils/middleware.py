@@ -15,7 +15,7 @@ from fastapi.routing import APIRoute
 
 from shared_configs.contextvars import CURRENT_ENDPOINT_CONTEXTVAR
 from shared_configs.contextvars import CURRENT_TENANT_ID_CONTEXTVAR
-from shared_configs.contextvars import ONYX_REQUEST_ID_CONTEXTVAR
+from shared_configs.contextvars import OM_REQUEST_ID_CONTEXTVAR
 
 
 def add_onyx_tenant_id_middleware(
@@ -52,7 +52,7 @@ def add_onyx_request_id_middleware(
         if not onyx_request_id:
             onyx_request_id = make_randomized_onyx_request_id(prefix)
 
-        ONYX_REQUEST_ID_CONTEXTVAR.set(onyx_request_id)
+        OM_REQUEST_ID_CONTEXTVAR.set(onyx_request_id)
         return await call_next(request)
 
 

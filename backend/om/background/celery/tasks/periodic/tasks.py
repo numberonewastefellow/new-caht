@@ -13,13 +13,13 @@ from sqlalchemy.orm import Session
 
 from om.background.celery.apps.app_base import task_logger
 from om.configs.app_configs import JOB_TIMEOUT
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryTask
 from om.configs.constants import PostgresAdvisoryLocks
 from om.db.engine.sql_engine import get_session_with_current_tenant
 
 
 @shared_task(
-    name=OnyxCeleryTask.KOMBU_MESSAGE_CLEANUP_TASK,
+    name=OmCeleryTask.KOMBU_MESSAGE_CLEANUP_TASK,
     soft_time_limit=JOB_TIMEOUT,
     bind=True,
     base=AbortableTask,

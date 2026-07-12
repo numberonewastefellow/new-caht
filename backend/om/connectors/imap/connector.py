@@ -444,7 +444,7 @@ def _parse_singular_addr(raw_header: str) -> tuple[str, str]:
 if __name__ == "__main__":
     import time
     from tests.daily.connectors.utils import load_all_from_connector
-    from om.connectors.credentials_provider import OnyxStaticCredentialsProvider
+    from om.connectors.credentials_provider import OmStaticCredentialsProvider
 
     host = os.environ.get("IMAP_HOST")
     mailboxes_str = os.environ.get("IMAP_MAILBOXES")
@@ -466,7 +466,7 @@ if __name__ == "__main__":
     )
 
     imap_connector.set_credentials_provider(
-        OnyxStaticCredentialsProvider(
+        OmStaticCredentialsProvider(
             tenant_id=None,
             connector_name=DocumentSource.IMAP,
             credential_json={

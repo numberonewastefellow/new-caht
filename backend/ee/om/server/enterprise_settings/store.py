@@ -12,7 +12,7 @@ from ee.om.server.enterprise_settings.models import EnterpriseSettings
 from om.configs.constants import FileOrigin
 from om.configs.constants import KV_CUSTOM_ANALYTICS_SCRIPT_KEY
 from om.configs.constants import KV_ENTERPRISE_SETTINGS_KEY
-from om.configs.constants import ONYX_DEFAULT_APPLICATION_NAME
+from om.configs.constants import OM_DEFAULT_APPLICATION_NAME
 from om.file_store.file_store import get_default_file_store
 from om.key_value_store.factory import get_kv_store
 from om.key_value_store.interface import KvKeyNotFoundError
@@ -59,7 +59,7 @@ def load_runtime_settings() -> EnterpriseSettings:
     """
     enterprise_settings = load_settings()
     if not enterprise_settings.application_name:
-        enterprise_settings.application_name = ONYX_DEFAULT_APPLICATION_NAME
+        enterprise_settings.application_name = OM_DEFAULT_APPLICATION_NAME
 
     return enterprise_settings
 

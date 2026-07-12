@@ -30,7 +30,7 @@ from om.file_processing.extract_file_text import detect_encoding
 from om.file_processing.extract_file_text import extract_file_text
 from om.file_processing.extract_file_text import get_file_ext
 from om.file_processing.extract_file_text import read_text_file
-from om.file_processing.file_types import OnyxFileExtensions
+from om.file_processing.file_types import OmFileExtensions
 from om.utils.logger import setup_logger
 from om.utils.retry_wrapper import request_with_retries
 
@@ -71,13 +71,13 @@ def _process_egnyte_file(
     extension = get_file_ext(file_name)
 
     # Explicitly excluding image extensions here. TODO: consider allowing images
-    if extension not in OnyxFileExtensions.TEXT_AND_DOCUMENT_EXTENSIONS:
+    if extension not in OmFileExtensions.TEXT_AND_DOCUMENT_EXTENSIONS:
         logger.warning(f"Skipping file '{file_name}' with extension '{extension}'")
         return None
 
     # Extract text content based on file type
     # TODO @wenxi-onyx: convert to extract_text_and_images
-    if extension in OnyxFileExtensions.PLAIN_TEXT_EXTENSIONS:
+    if extension in OmFileExtensions.PLAIN_TEXT_EXTENSIONS:
         encoding = detect_encoding(file_content)
         file_content_raw, file_metadata = read_text_file(
             file_content, encoding=encoding, ignore_onyx_metadata=False

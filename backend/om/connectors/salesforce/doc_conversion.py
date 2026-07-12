@@ -8,8 +8,8 @@ from om.connectors.models import BasicExpertInfo
 from om.connectors.models import Document
 from om.connectors.models import ImageSection
 from om.connectors.models import TextSection
-from om.connectors.salesforce.onyx_salesforce import OnyxSalesforce
-from om.connectors.salesforce.sqlite_functions import OnyxSalesforceSQLite
+from om.connectors.salesforce.onyx_salesforce import OmSalesforce
+from om.connectors.salesforce.sqlite_functions import OmSalesforceSQLite
 from om.connectors.salesforce.utils import ID_FIELD
 from om.connectors.salesforce.utils import MODIFIED_FIELD
 from om.connectors.salesforce.utils import NAME_FIELD
@@ -127,7 +127,7 @@ def _extract_section(salesforce_object_data: dict[str, Any], link: str) -> TextS
 
 
 def _extract_primary_owner(
-    sf_db: OnyxSalesforceSQLite,
+    sf_db: OmSalesforceSQLite,
     sf_object: SalesforceObject,
 ) -> BasicExpertInfo | None:
     object_dict = sf_object.data
@@ -164,7 +164,7 @@ def convert_sf_query_result_to_doc(
     record: dict[str, Any],
     child_records: dict[str, dict[str, Any]],
     primary_owner_list: list[BasicExpertInfo] | None,
-    sf_client: OnyxSalesforce,
+    sf_client: OmSalesforce,
 ) -> Document:
     """Generates a yieldable Document from query results"""
 
@@ -201,7 +201,7 @@ def convert_sf_query_result_to_doc(
 
 
 def convert_sf_object_to_doc(
-    sf_db: OnyxSalesforceSQLite,
+    sf_db: OmSalesforceSQLite,
     sf_object: SalesforceObject,
     sf_instance: str,
 ) -> Document:

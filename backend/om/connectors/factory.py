@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from om.configs.app_configs import INTEGRATION_TESTS_MODE
 from om.configs.constants import DocumentSource
 from om.configs.llm_configs import get_image_extraction_and_analysis_enabled
-from om.connectors.credentials_provider import OnyxDBCredentialsProvider
+from om.connectors.credentials_provider import OmDBCredentialsProvider
 from om.connectors.exceptions import ConnectorValidationError
 from om.connectors.interfaces import BaseConnector
 from om.connectors.interfaces import CheckpointedConnector
@@ -113,7 +113,7 @@ def instantiate_connector(
     connector = connector_class(**connector_specific_config)
 
     if isinstance(connector, CredentialsConnector):
-        provider = OnyxDBCredentialsProvider(
+        provider = OmDBCredentialsProvider(
             get_current_tenant_id(), str(source), credential.id
         )
         connector.set_credentials_provider(provider)

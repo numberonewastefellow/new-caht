@@ -9,10 +9,10 @@ from sqlalchemy.orm import Session
 
 from om.configs.app_configs import DB_YIELD_PER_DEFAULT
 from om.configs.constants import CELERY_VESPA_SYNC_BEAT_LOCK_TIMEOUT
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisConstants
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisConstants
 from om.db.document import construct_document_id_select_by_needs_sync
 from om.db.document import count_documents_by_needs_sync
 from om.utils.logger import setup_logger
@@ -48,12 +48,12 @@ def get_document_sync_remaining(r: Redis) -> int:
 def set_document_sync_fence(r: Redis, payload: int | None) -> None:
     """Set up the fence and register with active fences."""
     if payload is None:
-        r.srem(OnyxRedisConstants.ACTIVE_FENCES, DOCUMENT_SYNC_FENCE_KEY)
+        r.srem(OmRedisConstants.ACTIVE_FENCES, DOCUMENT_SYNC_FENCE_KEY)
         r.delete(DOCUMENT_SYNC_FENCE_KEY)
         return
 
     r.set(DOCUMENT_SYNC_FENCE_KEY, payload, ex=FENCE_TTL)
-    r.sadd(OnyxRedisConstants.ACTIVE_FENCES, DOCUMENT_SYNC_FENCE_KEY)
+    r.sadd(OmRedisConstants.ACTIVE_FENCES, DOCUMENT_SYNC_FENCE_KEY)
 
 
 def delete_document_sync_taskset(r: Redis) -> None:
@@ -63,7 +63,7 @@ def delete_document_sync_taskset(r: Redis) -> None:
 
 def reset_document_sync(r: Redis) -> None:
     """Reset all document sync tracking data."""
-    r.srem(OnyxRedisConstants.ACTIVE_FENCES, DOCUMENT_SYNC_FENCE_KEY)
+    r.srem(OmRedisConstants.ACTIVE_FENCES, DOCUMENT_SYNC_FENCE_KEY)
     r.delete(DOCUMENT_SYNC_TASKSET_KEY)
     r.delete(DOCUMENT_SYNC_FENCE_KEY)
 
@@ -116,11 +116,11 @@ def generate_document_sync_tasks(
 
         # Create the Celery task
         celery_app.send_task(
-            OnyxCeleryTask.VESPA_METADATA_SYNC_TASK,
+            OmCeleryTask.VESPA_METADATA_SYNC_TASK,
             kwargs=dict(document_id=doc_id, tenant_id=tenant_id),
-            queue=OnyxCeleryQueues.VESPA_METADATA_SYNC,
+            queue=OmCeleryQueues.VESPA_METADATA_SYNC,
             task_id=custom_task_id,
-            priority=OnyxCeleryPriority.MEDIUM,
+            priority=OmCeleryPriority.MEDIUM,
             ignore_result=True,
         )
 

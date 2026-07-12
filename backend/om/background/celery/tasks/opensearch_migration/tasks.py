@@ -30,8 +30,8 @@ from om.background.celery.tasks.opensearch_migration.transformer import (
     transform_vespa_chunks_to_opensearch_chunks,
 )
 from om.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisLocks
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.opensearch_migration import build_sanitized_to_original_doc_id_mapping
 from om.db.opensearch_migration import get_vespa_visit_state
@@ -65,7 +65,7 @@ def is_continuation_token_done_for_all_slices(
 
 # shared_task allows this task to be shared across celery app instances.
 @shared_task(
-    name=OnyxCeleryTask.MIGRATE_CHUNKS_FROM_VESPA_TO_OPENSEARCH_TASK,
+    name=OmCeleryTask.MIGRATE_CHUNKS_FROM_VESPA_TO_OPENSEARCH_TASK,
     # Does not store the task's return value in the result backend.
     ignore_result=True,
     # WARNING: This is here just for rigor but since we use threads for Celery
@@ -114,7 +114,7 @@ def migrate_chunks_from_vespa_to_opensearch_task(
     task_start_time = time.monotonic()
     r = get_redis_client()
     lock: RedisLock = r.lock(
-        name=OnyxRedisLocks.OPENSEARCH_MIGRATION_BEAT_LOCK,
+        name=OmRedisLocks.OPENSEARCH_MIGRATION_BEAT_LOCK,
         # The maximum time the lock can be held for. Will automatically be
         # released after this time.
         timeout=MIGRATION_TASK_LOCK_TIMEOUT_S,

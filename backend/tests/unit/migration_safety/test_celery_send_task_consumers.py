@@ -19,7 +19,7 @@ from tests.unit.migration_safety.conftest import qualified
 def _collect_send_task_names() -> tuple[set[str], int]:
     """Return (resolved task-name strings, count of dynamic/unresolved args)."""
     constants = importlib.import_module(qualified("configs.constants"))
-    onyx_celery_task = constants.OnyxCeleryTask
+    onyx_celery_task = constants.OmCeleryTask
 
     resolved: set[str] = set()
     dynamic = 0
@@ -41,7 +41,7 @@ def _collect_send_task_names() -> tuple[set[str], int]:
             if (
                 isinstance(arg, ast.Attribute)
                 and isinstance(arg.value, ast.Name)
-                and arg.value.id == "OnyxCeleryTask"
+                and arg.value.id == "OmCeleryTask"
             ):
                 value = getattr(onyx_celery_task, arg.attr, None)
                 if isinstance(value, str):

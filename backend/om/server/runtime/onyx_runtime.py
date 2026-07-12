@@ -8,19 +8,19 @@ from om.background.celery.tasks.beat_schedule import (
     CLOUD_DOC_PERMISSION_SYNC_MULTIPLIER_DEFAULT,
 )
 from om.configs.constants import CLOUD_BUILD_FENCE_LOOKUP_TABLE_INTERVAL_DEFAULT
-from om.configs.constants import ONYX_CLOUD_REDIS_RUNTIME
-from om.configs.constants import ONYX_CLOUD_TENANT_ID
-from om.configs.constants import ONYX_EMAILABLE_LOGO_MAX_DIM
+from om.configs.constants import OM_CLOUD_REDIS_RUNTIME
+from om.configs.constants import OM_CLOUD_TENANT_ID
+from om.configs.constants import OM_EMAILABLE_LOGO_MAX_DIM
 from om.file_store.file_store import get_default_file_store
 from om.redis.redis_pool import get_redis_replica_client
 from om.utils.file import FileWithMimeType
-from om.utils.file import OnyxStaticFileManager
+from om.utils.file import OmStaticFileManager
 from om.utils.variable_functionality import (
     fetch_ee_implementation_or_noop,
 )
 
 
-class OnyxRuntime:
+class OmRuntime:
     """Used by the application to get the final runtime value of a setting.
 
     Rationale: Settings and overrides may be persisted in multiple places, including the
@@ -43,7 +43,7 @@ class OnyxRuntime:
             onyx_file = file_store.get_file_with_mime_type(db_filename)
 
         if not onyx_file:
-            onyx_file = OnyxStaticFileManager.get_static(static_filename)
+            onyx_file = OmStaticFileManager.get_static(static_filename)
 
         if not onyx_file:
             raise RuntimeError(
@@ -60,21 +60,21 @@ class OnyxRuntime:
             "om.server.enterprise_settings.store", "get_logo_filename", None
         )
 
-        return OnyxRuntime._get_with_static_fallback(db_filename, STATIC_FILENAME)
+        return OmRuntime._get_with_static_fallback(db_filename, STATIC_FILENAME)
 
     @staticmethod
     def get_emailable_logo() -> FileWithMimeType:
-        onyx_file = OnyxRuntime.get_logo()
+        onyx_file = OmRuntime.get_logo()
 
         # check dimensions and resize downwards if necessary or if not PNG
         image = Image.open(io.BytesIO(onyx_file.data))
         if (
-            image.size[0] > ONYX_EMAILABLE_LOGO_MAX_DIM
-            or image.size[1] > ONYX_EMAILABLE_LOGO_MAX_DIM
+            image.size[0] > OM_EMAILABLE_LOGO_MAX_DIM
+            or image.size[1] > OM_EMAILABLE_LOGO_MAX_DIM
             or image.format != "PNG"
         ):
             image.thumbnail(
-                (ONYX_EMAILABLE_LOGO_MAX_DIM, ONYX_EMAILABLE_LOGO_MAX_DIM),
+                (OM_EMAILABLE_LOGO_MAX_DIM, OM_EMAILABLE_LOGO_MAX_DIM),
                 Image.LANCZOS,
             )  # maintains aspect ratio
             output_buffer = io.BytesIO()
@@ -93,7 +93,7 @@ class OnyxRuntime:
             "om.server.enterprise_settings.store", "get_logotype_filename", None
         )
 
-        return OnyxRuntime._get_with_static_fallback(db_filename, STATIC_FILENAME)
+        return OmRuntime._get_with_static_fallback(db_filename, STATIC_FILENAME)
 
     @staticmethod
     def get_beat_multiplier() -> float:
@@ -103,9 +103,9 @@ class OnyxRuntime:
 
         beat_multiplier: float = CLOUD_BEAT_MULTIPLIER_DEFAULT
 
-        r = get_redis_replica_client(tenant_id=ONYX_CLOUD_TENANT_ID)
+        r = get_redis_replica_client(tenant_id=OM_CLOUD_TENANT_ID)
 
-        beat_multiplier_raw = r.get(f"{ONYX_CLOUD_REDIS_RUNTIME}:beat_multiplier")
+        beat_multiplier_raw = r.get(f"{OM_CLOUD_REDIS_RUNTIME}:beat_multiplier")
         if beat_multiplier_raw is not None:
             try:
                 beat_multiplier_bytes = cast(bytes, beat_multiplier_raw)
@@ -124,9 +124,9 @@ class OnyxRuntime:
 
         value: float = CLOUD_DOC_PERMISSION_SYNC_MULTIPLIER_DEFAULT
 
-        r = get_redis_replica_client(tenant_id=ONYX_CLOUD_TENANT_ID)
+        r = get_redis_replica_client(tenant_id=OM_CLOUD_TENANT_ID)
 
-        value_raw = r.get(f"{ONYX_CLOUD_REDIS_RUNTIME}:doc_permission_sync_multiplier")
+        value_raw = r.get(f"{OM_CLOUD_REDIS_RUNTIME}:doc_permission_sync_multiplier")
         if value_raw is not None:
             try:
                 value_bytes = cast(bytes, value_raw)
@@ -147,10 +147,10 @@ class OnyxRuntime:
 
         interval: int = CLOUD_BUILD_FENCE_LOOKUP_TABLE_INTERVAL_DEFAULT
 
-        r = get_redis_replica_client(tenant_id=ONYX_CLOUD_TENANT_ID)
+        r = get_redis_replica_client(tenant_id=OM_CLOUD_TENANT_ID)
 
         interval_raw = r.get(
-            f"{ONYX_CLOUD_REDIS_RUNTIME}:build_fence_lookup_table_interval"
+            f"{OM_CLOUD_REDIS_RUNTIME}:build_fence_lookup_table_interval"
         )
         if interval_raw is not None:
             try:

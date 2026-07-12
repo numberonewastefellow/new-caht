@@ -15,10 +15,10 @@ from ee.om.server.tenants.schema_management import create_schema_if_not_exists
 from ee.om.server.tenants.schema_management import get_current_alembic_version
 from om.background.celery.apps.app_base import task_logger
 from om.configs.app_configs import TARGET_AVAILABLE_TENANTS
-from om.configs.constants import ONYX_CLOUD_TENANT_ID
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OM_CLOUD_TENANT_ID
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisLocks
 from om.db.engine.sql_engine import get_session_with_shared_schema
 from om.db.models import AvailableTenant
 from om.redis.redis_pool import get_redis_client
@@ -35,8 +35,8 @@ _TENANT_PROVISIONING_TIME_LIMIT = 60 * 10  # 10 minutes
 
 
 @shared_task(
-    name=OnyxCeleryTask.CLOUD_CHECK_AVAILABLE_TENANTS,
-    queue=OnyxCeleryQueues.MONITORING,
+    name=OmCeleryTask.CLOUD_CHECK_AVAILABLE_TENANTS,
+    queue=OmCeleryQueues.MONITORING,
     ignore_result=True,
     soft_time_limit=_TENANT_PROVISIONING_SOFT_TIME_LIMIT,
     time_limit=_TENANT_PROVISIONING_TIME_LIMIT,
@@ -55,9 +55,9 @@ def check_available_tenants(self: Task) -> None:  # noqa: ARG001
         )
         return
 
-    r = get_redis_client(tenant_id=ONYX_CLOUD_TENANT_ID)
+    r = get_redis_client(tenant_id=OM_CLOUD_TENANT_ID)
     lock_check: RedisLock = r.lock(
-        OnyxRedisLocks.CHECK_AVAILABLE_TENANTS_LOCK,
+        OmRedisLocks.CHECK_AVAILABLE_TENANTS_LOCK,
         timeout=_TENANT_PROVISIONING_SOFT_TIME_LIMIT,
     )
 
@@ -110,9 +110,9 @@ def pre_provision_tenant() -> None:
     # The MULTI_TENANT check is now done at the caller level (check_available_tenants)
     # rather than inside this function
 
-    r = get_redis_client(tenant_id=ONYX_CLOUD_TENANT_ID)
+    r = get_redis_client(tenant_id=OM_CLOUD_TENANT_ID)
     lock_provision: RedisLock = r.lock(
-        OnyxRedisLocks.CLOUD_PRE_PROVISION_TENANT_LOCK,
+        OmRedisLocks.CLOUD_PRE_PROVISION_TENANT_LOCK,
         timeout=_TENANT_PROVISIONING_SOFT_TIME_LIMIT,
     )
 

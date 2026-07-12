@@ -45,7 +45,7 @@ SCAN_ITER_COUNT = 10000
 BATCH_DEFAULT = 1000
 
 
-class OnyxRedisCommand(Enum):
+class OmRedisCommand(Enum):
     purge_connectorsync_taskset = "purge_connectorsync_taskset"
     purge_documentset_taskset = "purge_documentset_taskset"
     purge_usergroup_taskset = "purge_usergroup_taskset"
@@ -74,7 +74,7 @@ def get_user_id(user_email: str) -> tuple[UUID, str]:
 
 
 def onyx_redis(
-    command: OnyxRedisCommand,
+    command: OmRedisCommand,
     batch: int,
     dry_run: bool,
     ssl: bool,
@@ -108,19 +108,19 @@ def onyx_redis(
 
     logger.info("Redis ping succeeded.")
 
-    if command == OnyxRedisCommand.purge_connectorsync_taskset:
+    if command == OmRedisCommand.purge_connectorsync_taskset:
         """Purge connector tasksets. Used when the tasks represented in the tasksets
         have been purged."""
         return purge_by_match_and_type(
             "*connectorsync_taskset*", "set", batch, dry_run, r
         )
-    elif command == OnyxRedisCommand.purge_documentset_taskset:
+    elif command == OmRedisCommand.purge_documentset_taskset:
         return purge_by_match_and_type(
             "*documentset_taskset*", "set", batch, dry_run, r
         )
-    elif command == OnyxRedisCommand.purge_usergroup_taskset:
+    elif command == OmRedisCommand.purge_usergroup_taskset:
         return purge_by_match_and_type("*usergroup_taskset*", "set", batch, dry_run, r)
-    elif command == OnyxRedisCommand.purge_locks_blocking_deletion:
+    elif command == OmRedisCommand.purge_locks_blocking_deletion:
         if cc_pair_id is None:
             logger.error("You must specify --cc-pair with purge_deletion_locks")
             return 1
@@ -139,22 +139,22 @@ def onyx_redis(
             f"{tenant_id}:{redis_connector.external_group_sync.fence_key}", dry_run, r
         )
         return 0
-    elif command == OnyxRedisCommand.purge_vespa_syncing:
+    elif command == OmRedisCommand.purge_vespa_syncing:
         return purge_by_match_and_type(
             "*connectorsync:vespa_syncing*", "string", batch, dry_run, r
         )
-    elif command == OnyxRedisCommand.purge_pidbox:
+    elif command == OmRedisCommand.purge_pidbox:
         return purge_by_match_and_type(
             "*reply.celery.pidbox", "list", batch, dry_run, r
         )
-    elif command == OnyxRedisCommand.get_list_element:
+    elif command == OmRedisCommand.get_list_element:
         # just hardcoded for now
         result = r.lrange(
             "0097a564-d343-3c1f-9fd1-af8cce038115.reply.celery.pidbox", 0, 0
         )
         print(f"{result}")
         return 0
-    elif command == OnyxRedisCommand.get_user_token:
+    elif command == OmRedisCommand.get_user_token:
         if not user_email:
             logger.error("You must specify --user-email with get_user_token")
             return 1
@@ -165,7 +165,7 @@ def onyx_redis(
         else:
             print(f"No token found for user {user_email}")
             return 2
-    elif command == OnyxRedisCommand.delete_user_token:
+    elif command == OmRedisCommand.delete_user_token:
         if not user_email:
             logger.error("You must specify --user-email with delete_user_token")
             return 1
@@ -173,7 +173,7 @@ def onyx_redis(
             return 0
         else:
             return 2
-    elif command == OnyxRedisCommand.add_invited_user:
+    elif command == OmRedisCommand.add_invited_user:
         if not user_email:
             logger.error("You must specify --user-email with add_invited_user")
             return 1
@@ -379,9 +379,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="VertualAI Redis Manager")
     parser.add_argument(
         "--command",
-        type=OnyxRedisCommand,
+        type=OmRedisCommand,
         help="The command to run",
-        choices=list(OnyxRedisCommand),
+        choices=list(OmRedisCommand),
         required=True,
     )
 

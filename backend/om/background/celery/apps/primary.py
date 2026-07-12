@@ -22,8 +22,8 @@ from om.background.celery.celery_utils import celery_is_worker_primary
 from om.background.celery.tasks.vespa.document_sync import reset_document_sync
 from om.configs.app_configs import CELERY_WORKER_PRIMARY_POOL_OVERFLOW
 from om.configs.constants import CELERY_PRIMARY_WORKER_LOCK_TIMEOUT
-from om.configs.constants import OnyxRedisConstants
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmRedisConstants
+from om.configs.constants import OmRedisLocks
 from om.configs.constants import POSTGRES_CELERY_WORKER_PRIMARY_APP_NAME
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.engine.sql_engine import SqlEngine
@@ -121,7 +121,7 @@ def on_worker_init(sender: Worker, **kwargs: Any) -> None:
     # For the moment, we're assuming that we are the only primary worker
     # that should be running.
     # TODO: maybe check for or clean up another zombie primary worker if we detect it
-    r.delete(OnyxRedisLocks.PRIMARY_WORKER)
+    r.delete(OmRedisLocks.PRIMARY_WORKER)
 
     # this process wide lock is taken to help other workers start up in order.
     # it is planned to use this lock to enforce singleton behavior on the primary
@@ -131,7 +131,7 @@ def on_worker_init(sender: Worker, **kwargs: Any) -> None:
     # set thread_local=False since we don't control what thread the periodic task might
     # reacquire the lock with
     lock: RedisLock = r.lock(
-        OnyxRedisLocks.PRIMARY_WORKER,
+        OmRedisLocks.PRIMARY_WORKER,
         timeout=CELERY_PRIMARY_WORKER_LOCK_TIMEOUT,
         thread_local=False,
     )
@@ -149,9 +149,9 @@ def on_worker_init(sender: Worker, **kwargs: Any) -> None:
 
     # As currently designed, when this worker starts as "primary", we reinitialize redis
     # to a clean state (for our purposes, anyway)
-    r.delete(OnyxRedisLocks.CHECK_VESPA_SYNC_BEAT_LOCK)
+    r.delete(OmRedisLocks.CHECK_VESPA_SYNC_BEAT_LOCK)
 
-    r.delete(OnyxRedisConstants.ACTIVE_FENCES)
+    r.delete(OmRedisConstants.ACTIVE_FENCES)
 
     # NOTE: we want to remove the `Redis*` classes, prefer to just have functions
     # This is the preferred way to do this going forward
@@ -282,7 +282,7 @@ class HubPeriodicTask(bootsteps.StartStopStep):
                     "Reasons could be worker restart or lock expiration."
                 )
                 lock = r.lock(
-                    OnyxRedisLocks.PRIMARY_WORKER,
+                    OmRedisLocks.PRIMARY_WORKER,
                     timeout=CELERY_PRIMARY_WORKER_LOCK_TIMEOUT,
                 )
 

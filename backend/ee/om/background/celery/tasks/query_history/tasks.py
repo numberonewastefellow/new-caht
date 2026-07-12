@@ -6,14 +6,14 @@ from celery import shared_task
 from celery import Task
 
 from ee.om.server.query_history.api import fetch_and_process_chat_session_history
-from ee.om.server.query_history.api import ONYX_ANONYMIZED_EMAIL
+from ee.om.server.query_history.api import OM_ANONYMIZED_EMAIL
 from ee.om.server.query_history.models import QuestionAnswerPairSnapshot
 from om.background.task_utils import construct_query_history_report_name
 from om.configs.app_configs import JOB_TIMEOUT
-from om.configs.app_configs import ONYX_QUERY_HISTORY_TYPE
+from om.configs.app_configs import OM_QUERY_HISTORY_TYPE
 from om.configs.constants import FileOrigin
 from om.configs.constants import FileType
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryTask
 from om.configs.constants import QueryHistoryType
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.tasks import delete_task_with_id
@@ -27,7 +27,7 @@ logger = setup_logger()
 
 
 @shared_task(
-    name=OnyxCeleryTask.EXPORT_QUERY_HISTORY_TASK,
+    name=OmCeleryTask.EXPORT_QUERY_HISTORY_TASK,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
     bind=True,
@@ -67,8 +67,8 @@ def export_query_history_task(
             )
 
             for snapshot in snapshot_generator:
-                if ONYX_QUERY_HISTORY_TYPE == QueryHistoryType.ANONYMIZED:
-                    snapshot.user_email = ONYX_ANONYMIZED_EMAIL
+                if OM_QUERY_HISTORY_TYPE == QueryHistoryType.ANONYMIZED:
+                    snapshot.user_email = OM_ANONYMIZED_EMAIL
 
                 writer.writerows(
                     qa_pair.to_json()

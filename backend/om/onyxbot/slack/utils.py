@@ -21,15 +21,15 @@ from slack_sdk.socket_mode import SocketModeClient
 from om.configs.app_configs import DISABLE_TELEMETRY
 from om.configs.constants import ID_SEPARATOR
 from om.configs.constants import MessageType
-from om.configs.onyxbot_configs import ONYX_BOT_FEEDBACK_VISIBILITY
-from om.configs.onyxbot_configs import ONYX_BOT_MAX_QPM
-from om.configs.onyxbot_configs import ONYX_BOT_MAX_WAIT_TIME
-from om.configs.onyxbot_configs import ONYX_BOT_NUM_RETRIES
+from om.configs.onyxbot_configs import OM_BOT_FEEDBACK_VISIBILITY
+from om.configs.onyxbot_configs import OM_BOT_MAX_QPM
+from om.configs.onyxbot_configs import OM_BOT_MAX_WAIT_TIME
+from om.configs.onyxbot_configs import OM_BOT_NUM_RETRIES
 from om.configs.onyxbot_configs import (
-    ONYX_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD,
+    OM_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD,
 )
 from om.configs.onyxbot_configs import (
-    ONYX_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS,
+    OM_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS,
 )
 from om.connectors.slack.utils import SlackTextCleaner
 from om.db.engine.sql_engine import get_session_with_current_tenant
@@ -118,18 +118,18 @@ def check_message_limit() -> bool:
     High traffic at the end of one period and start of another could cause
     the limit to be exceeded.
     """
-    if ONYX_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD <= 0:
+    if OM_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD <= 0:
         return True
     global _ONYX_BOT_MESSAGE_COUNT
     global _ONYX_BOT_COUNT_START_TIME
     time_since_start = time.time() - _ONYX_BOT_COUNT_START_TIME
-    if time_since_start > ONYX_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS:
+    if time_since_start > OM_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS:
         _ONYX_BOT_MESSAGE_COUNT = 0
         _ONYX_BOT_COUNT_START_TIME = time.time()
-    if (_ONYX_BOT_MESSAGE_COUNT + 1) > ONYX_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD:
+    if (_ONYX_BOT_MESSAGE_COUNT + 1) > OM_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD:
         logger.error(
-            f"VertualAi Bot has reached the message limit {ONYX_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD}"
-            f" for the time period {ONYX_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS} seconds."
+            f"VertualAi Bot has reached the message limit {OM_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD}"
+            f" for the time period {OM_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS} seconds."
             " These limits are configurable in backend/onyx/configs/onyxbot_configs.py"
         )
         return False
@@ -213,7 +213,7 @@ def _build_error_block(error_message: str) -> Block:
 
 
 @retry(
-    tries=ONYX_BOT_NUM_RETRIES,
+    tries=OM_BOT_NUM_RETRIES,
     delay=0.25,
     backoff=2,
     logger=cast(logging.Logger, logger),
@@ -650,8 +650,8 @@ def slack_usage_report(action: str, sender_id: str | None, client: WebClient) ->
 
 class SlackRateLimiter:
     def __init__(self) -> None:
-        self.max_qpm: int | None = ONYX_BOT_MAX_QPM
-        self.max_wait_time = ONYX_BOT_MAX_WAIT_TIME
+        self.max_qpm: int | None = OM_BOT_MAX_QPM
+        self.max_wait_time = OM_BOT_MAX_WAIT_TIME
         self.active_question = 0
         self.last_reset_time = time.time()
         self.waiting_questions: list[int] = []
@@ -711,7 +711,7 @@ class SlackRateLimiter:
 
 def get_feedback_visibility() -> FeedbackVisibility:
     try:
-        return FeedbackVisibility(ONYX_BOT_FEEDBACK_VISIBILITY.lower())
+        return FeedbackVisibility(OM_BOT_FEEDBACK_VISIBILITY.lower())
     except ValueError:
         return FeedbackVisibility.PRIVATE
 

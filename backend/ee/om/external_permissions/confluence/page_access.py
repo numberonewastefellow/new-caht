@@ -6,14 +6,14 @@ from om.configs.constants import DocumentSource
 from om.connectors.confluence.onyx_confluence import (
     get_user_email_from_username__server,
 )
-from om.connectors.confluence.onyx_confluence import OnyxConfluence
+from om.connectors.confluence.onyx_confluence import OmConfluence
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
 
 
 def _extract_read_access_restrictions(
-    confluence_client: OnyxConfluence, restrictions: dict[str, Any]
+    confluence_client: OmConfluence, restrictions: dict[str, Any]
 ) -> tuple[set[str], set[str], bool]:
     """
     Converts a page's restrictions dict into an ExternalAccess object.
@@ -70,7 +70,7 @@ def _extract_read_access_restrictions(
 
 
 def get_page_restrictions(
-    confluence_client: OnyxConfluence,
+    confluence_client: OmConfluence,
     page_id: str,
     page_restrictions: dict[str, Any],
     ancestors: list[dict[str, Any]],

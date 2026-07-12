@@ -41,8 +41,8 @@ from sqlalchemy.orm import Session
 from om.auth.users import current_user
 from om.background.celery.versioned_apps.client import app as celery_app
 from om.configs.constants import DocumentSource
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
 from om.db.connector_credential_pair import update_connector_credential_pair
 from om.db.document import upsert_document_by_connector_credential_pair
 from om.db.document import upsert_documents
@@ -171,9 +171,9 @@ def _trigger_sandbox_sync(
                 only syncs that source's directory with --delete flag.
     """
     celery_app.send_task(
-        OnyxCeleryTask.SANDBOX_FILE_SYNC,
+        OmCeleryTask.SANDBOX_FILE_SYNC,
         kwargs={"user_id": user_id, "tenant_id": tenant_id, "source": source},
-        queue=OnyxCeleryQueues.SANDBOX,
+        queue=OmCeleryQueues.SANDBOX,
     )
 
 

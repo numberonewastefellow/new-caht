@@ -5,7 +5,7 @@ from celery import shared_task
 
 from ee.om.db.query_history import get_all_query_history_export_tasks
 from om.configs.app_configs import JOB_TIMEOUT
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryTask
 from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.enums import TaskStatus
 from om.db.tasks import delete_task_with_id
@@ -16,7 +16,7 @@ logger = setup_logger()
 
 
 @shared_task(
-    name=OnyxCeleryTask.EXPORT_QUERY_HISTORY_CLEANUP_TASK,
+    name=OmCeleryTask.EXPORT_QUERY_HISTORY_CLEANUP_TASK,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
 )

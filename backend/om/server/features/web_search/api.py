@@ -212,7 +212,7 @@ def _open_urls(
     provider_type = (
         provider_view.provider_type
         if provider_view
-        else WebContentProviderType.ONYX_WEB_CRAWLER
+        else WebContentProviderType.OM_WEB_CRAWLER
     )
     return provider_type, results
 

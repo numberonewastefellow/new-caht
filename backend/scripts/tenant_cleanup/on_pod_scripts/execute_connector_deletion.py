@@ -31,8 +31,8 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from om.background.celery.versioned_apps.client import app as client_app
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryTask
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
 from om.db.connector_credential_pair import get_connector_credential_pairs
 from om.db.connector_credential_pair import update_connector_credential_pair_from_id
@@ -130,8 +130,8 @@ def mark_connector_for_deletion(
         )
         task_start: float = time.time()
         client_app.send_task(
-            OnyxCeleryTask.CHECK_FOR_CONNECTOR_DELETION,
-            priority=OnyxCeleryPriority.HIGH,
+            OmCeleryTask.CHECK_FOR_CONNECTOR_DELETION,
+            priority=OmCeleryPriority.HIGH,
             kwargs={"tenant_id": tenant_id},
         )
         timing["send_task_seconds"] = time.time() - task_start
@@ -252,8 +252,8 @@ def mark_all_connectors_for_deletion(tenant_id: str) -> dict[str, Any]:
         )
         task_start: float = time.time()
         client_app.send_task(
-            OnyxCeleryTask.CHECK_FOR_CONNECTOR_DELETION,
-            priority=OnyxCeleryPriority.HIGH,
+            OmCeleryTask.CHECK_FOR_CONNECTOR_DELETION,
+            priority=OmCeleryPriority.HIGH,
             kwargs={"tenant_id": tenant_id},
         )
         task_time: float = time.time() - task_start

@@ -14,7 +14,7 @@ from om.connectors.models import ImageSection
 from om.connectors.models import TextSection
 from om.file_processing.extract_file_text import extract_text_and_images
 from om.file_processing.extract_file_text import get_file_ext
-from om.file_processing.file_types import OnyxFileExtensions
+from om.file_processing.file_types import OmFileExtensions
 from om.file_processing.image_utils import store_image_and_create_section
 from om.utils.logger import setup_logger
 
@@ -95,7 +95,7 @@ def _process_file(
     # Get file extension and determine file type
     extension = get_file_ext(file_name)
 
-    if extension not in OnyxFileExtensions.ALL_ALLOWED_EXTENSIONS:
+    if extension not in OmFileExtensions.ALL_ALLOWED_EXTENSIONS:
         logger.warning(
             f"Skipping file '{file_name}' with unrecognized extension '{extension}'"
         )
@@ -116,7 +116,7 @@ def _process_file(
     title = metadata.get("title") or file_display_name
 
     # 1) If the file itself is an image, handle that scenario quickly
-    if extension in OnyxFileExtensions.IMAGE_EXTENSIONS:
+    if extension in OmFileExtensions.IMAGE_EXTENSIONS:
         # Read the image data
         image_data = file.read()
         if not image_data:

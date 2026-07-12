@@ -16,7 +16,7 @@ from om.configs.app_configs import CONNECTOR_LOCALHOST_OVERRIDE
 from om.configs.constants import DocumentSource
 from om.configs.constants import IGNORE_FOR_QA
 from om.connectors.models import BasicExpertInfo
-from om.connectors.models import OnyxMetadata
+from om.connectors.models import OmMetadata
 from om.utils.logger import setup_logger
 from om.utils.text_processing import is_valid_email
 
@@ -146,7 +146,7 @@ def _parse_document_source(connector_type: Any) -> DocumentSource | None:
 
 def process_onyx_metadata(
     metadata: dict[str, Any],
-) -> tuple[OnyxMetadata, dict[str, Any]]:
+) -> tuple[OmMetadata, dict[str, Any]]:
     """
     Users may set Onyx metadata and custom tags in text files. https://docs.onyx.app/admins/connectors/official/file
     Any unrecognized fields are treated as custom tags.
@@ -170,7 +170,7 @@ def process_onyx_metadata(
     doc_updated_at = time_str_to_utc(dt_str) if dt_str else None
 
     return (
-        OnyxMetadata(
+        OmMetadata(
             document_id=metadata.get("id"),
             source_type=source_type,
             link=metadata.get("link"),

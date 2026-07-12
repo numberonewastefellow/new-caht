@@ -12,8 +12,8 @@ from tenacity import RetryError
 from om.access.access import get_access_for_document
 from om.background.celery.apps.app_base import task_logger
 from om.background.celery.tasks.shared.RetryDocumentIndex import RetryDocumentIndex
-from om.configs.constants import ONYX_CELERY_BEAT_HEARTBEAT_KEY
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OM_CELERY_BEAT_HEARTBEAT_KEY
+from om.configs.constants import OmCeleryTask
 from om.db.document import delete_document_by_connector_credential_pair__no_commit
 from om.db.document import delete_documents_complete__no_commit
 from om.db.document import fetch_chunk_count_for_document
@@ -39,7 +39,7 @@ LIGHT_SOFT_TIME_LIMIT = 105
 LIGHT_TIME_LIMIT = LIGHT_SOFT_TIME_LIMIT + 15
 
 
-class OnyxCeleryTaskCompletionStatus(str, Enum):
+class OmCeleryTaskCompletionStatus(str, Enum):
     """The different statuses the watchdog can finish with.
 
     TODO: create broader success/failure/abort categories
@@ -58,7 +58,7 @@ class OnyxCeleryTaskCompletionStatus(str, Enum):
 
 
 @shared_task(
-    name=OnyxCeleryTask.DOCUMENT_BY_CC_PAIR_CLEANUP_TASK,
+    name=OmCeleryTask.DOCUMENT_BY_CC_PAIR_CLEANUP_TASK,
     soft_time_limit=LIGHT_SOFT_TIME_LIMIT,
     time_limit=LIGHT_TIME_LIMIT,
     max_retries=DOCUMENT_BY_CC_PAIR_CLEANUP_MAX_RETRIES,
@@ -90,7 +90,7 @@ def document_by_cc_pair_cleanup_task(
 
     start = time.monotonic()
 
-    completion_status = OnyxCeleryTaskCompletionStatus.UNDEFINED
+    completion_status = OmCeleryTaskCompletionStatus.UNDEFINED
 
     try:
         with get_session_with_current_tenant() as db_session:
@@ -134,7 +134,7 @@ def document_by_cc_pair_cleanup_task(
                 )
                 db_session.commit()
 
-                completion_status = OnyxCeleryTaskCompletionStatus.SUCCEEDED
+                completion_status = OmCeleryTaskCompletionStatus.SUCCEEDED
             elif count > 1:
                 action = "update"
 
@@ -185,9 +185,9 @@ def document_by_cc_pair_cleanup_task(
                 mark_document_as_synced(document_id, db_session)
                 db_session.commit()
 
-                completion_status = OnyxCeleryTaskCompletionStatus.SUCCEEDED
+                completion_status = OmCeleryTaskCompletionStatus.SUCCEEDED
             else:
-                completion_status = OnyxCeleryTaskCompletionStatus.SKIPPED
+                completion_status = OmCeleryTaskCompletionStatus.SKIPPED
 
             elapsed = time.monotonic() - start
             task_logger.info(
@@ -198,7 +198,7 @@ def document_by_cc_pair_cleanup_task(
             )
     except SoftTimeLimitExceeded:
         task_logger.info(f"SoftTimeLimitExceeded exception. doc={document_id}")
-        completion_status = OnyxCeleryTaskCompletionStatus.SOFT_TIME_LIMIT
+        completion_status = OmCeleryTaskCompletionStatus.SOFT_TIME_LIMIT
     except Exception as ex:
         e: Exception | None = None
         while True:
@@ -222,7 +222,7 @@ def document_by_cc_pair_cleanup_task(
                         f"status={e.response.status_code}"
                     )
                 completion_status = (
-                    OnyxCeleryTaskCompletionStatus.NON_RETRYABLE_EXCEPTION
+                    OmCeleryTaskCompletionStatus.NON_RETRYABLE_EXCEPTION
                 )
                 break
 
@@ -230,7 +230,7 @@ def document_by_cc_pair_cleanup_task(
                 f"document_by_cc_pair_cleanup_task exceptioned: doc={document_id}"
             )
 
-            completion_status = OnyxCeleryTaskCompletionStatus.RETRYABLE_EXCEPTION
+            completion_status = OmCeleryTaskCompletionStatus.RETRYABLE_EXCEPTION
             if (
                 self.max_retries is not None
                 and self.request.retries >= self.max_retries
@@ -254,7 +254,7 @@ def document_by_cc_pair_cleanup_task(
                     )
                     mark_document_as_modified(document_id, db_session)
                 completion_status = (
-                    OnyxCeleryTaskCompletionStatus.NON_RETRYABLE_EXCEPTION
+                    OmCeleryTaskCompletionStatus.NON_RETRYABLE_EXCEPTION
                 )
                 break
 
@@ -267,14 +267,14 @@ def document_by_cc_pair_cleanup_task(
             f"document_by_cc_pair_cleanup_task completed: status={completion_status.value} doc={document_id}"
         )
 
-    if completion_status != OnyxCeleryTaskCompletionStatus.SUCCEEDED:
+    if completion_status != OmCeleryTaskCompletionStatus.SUCCEEDED:
         return False
 
     task_logger.info(f"document_by_cc_pair_cleanup_task finished: doc={document_id}")
     return True
 
 
-@shared_task(name=OnyxCeleryTask.CELERY_BEAT_HEARTBEAT, ignore_result=True, bind=True)
+@shared_task(name=OmCeleryTask.CELERY_BEAT_HEARTBEAT, ignore_result=True, bind=True)
 def celery_beat_heartbeat(self: Task, *, tenant_id: str) -> None:  # noqa: ARG001
     """When this task runs, it writes a key to Redis with a TTL.
 
@@ -282,6 +282,6 @@ def celery_beat_heartbeat(self: Task, *, tenant_id: str) -> None:  # noqa: ARG00
     """
     time_start = time.monotonic()
     r: Redis = get_redis_client()
-    r.set(ONYX_CELERY_BEAT_HEARTBEAT_KEY, 1, ex=600)
+    r.set(OM_CELERY_BEAT_HEARTBEAT_KEY, 1, ex=600)
     time_elapsed = time.monotonic() - time_start
     task_logger.info(f"celery_beat_heartbeat finished: " f"elapsed={time_elapsed:.2f}")

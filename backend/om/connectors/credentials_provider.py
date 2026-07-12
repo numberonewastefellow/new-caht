@@ -11,8 +11,8 @@ from om.db.models import Credential
 from om.redis.redis_pool import get_redis_client
 
 
-class OnyxDBCredentialsProvider(
-    CredentialsProviderInterface["OnyxDBCredentialsProvider"]
+class OmDBCredentialsProvider(
+    CredentialsProviderInterface["OmDBCredentialsProvider"]
 ):
     """Implementation to allow the connector to callback and update credentials in the db.
     Required in cases where credentials can rotate while the connector is running.
@@ -31,7 +31,7 @@ class OnyxDBCredentialsProvider(
         self.lock_key = f"da_lock:connector:{connector_name}:credential_{credential_id}"
         self._lock: RedisLock = self.redis_client.lock(self.lock_key, self.LOCK_TTL)
 
-    def __enter__(self) -> "OnyxDBCredentialsProvider":
+    def __enter__(self) -> "OmDBCredentialsProvider":
         acquired = self._lock.acquire(blocking_timeout=self.LOCK_TTL)
         if not acquired:
             raise RuntimeError(f"Could not acquire lock for key: {self.lock_key}")
@@ -93,8 +93,8 @@ class OnyxDBCredentialsProvider(
         return True
 
 
-class OnyxStaticCredentialsProvider(
-    CredentialsProviderInterface["OnyxStaticCredentialsProvider"]
+class OmStaticCredentialsProvider(
+    CredentialsProviderInterface["OmStaticCredentialsProvider"]
 ):
     """Implementation (a very simple one!) to handle static credentials."""
 
@@ -110,7 +110,7 @@ class OnyxStaticCredentialsProvider(
 
         self._provider_key = str(uuid.uuid4())
 
-    def __enter__(self) -> "OnyxStaticCredentialsProvider":
+    def __enter__(self) -> "OmStaticCredentialsProvider":
         return self
 
     def __exit__(

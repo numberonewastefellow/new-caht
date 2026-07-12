@@ -13,7 +13,7 @@ from om.background.celery.tasks.beat_schedule import CLOUD_BEAT_MULTIPLIER_DEFAU
 from om.configs.constants import POSTGRES_CELERY_BEAT_APP_NAME
 from om.db.engine.sql_engine import SqlEngine
 from om.db.engine.tenant_utils import get_all_tenant_ids
-from om.server.runtime.onyx_runtime import OnyxRuntime
+from om.server.runtime.onyx_runtime import OmRuntime
 from om.utils.variable_functionality import fetch_versioned_implementation
 from shared_configs.configs import IGNORED_SYNCING_TENANT_LIST
 from shared_configs.configs import MULTI_TENANT
@@ -158,7 +158,7 @@ class DynamicTenantScheduler(PersistentScheduler):
 
         # get potential new state
         try:
-            beat_multiplier = OnyxRuntime.get_beat_multiplier()
+            beat_multiplier = OmRuntime.get_beat_multiplier()
         except Exception:
             beat_multiplier = CLOUD_BEAT_MULTIPLIER_DEFAULT
 

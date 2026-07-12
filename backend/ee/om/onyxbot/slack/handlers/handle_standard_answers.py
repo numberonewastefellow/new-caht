@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from ee.om.db.standard_answer import fetch_standard_answer_categories_by_names
 from ee.om.db.standard_answer import find_matching_standard_answers
 from om.configs.constants import MessageType
-from om.configs.onyxbot_configs import ONYX_BOT_REACT_EMOJI
+from om.configs.onyxbot_configs import OM_BOT_REACT_EMOJI
 from om.db.chat import create_chat_session
 from om.db.chat import create_new_chat_message
 from om.db.chat import get_chat_messages_by_sessions
@@ -23,7 +23,7 @@ from om.onyxbot.slack.models import SlackMessageInfo
 from om.onyxbot.slack.utils import respond_in_thread_or_channel
 from om.onyxbot.slack.utils import update_emote_react
 from om.server.manage.models import StandardAnswer as PydanticStandardAnswer
-from om.utils.logger import OnyxLoggingAdapter
+from om.utils.logger import OmLoggingAdapter
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
@@ -80,7 +80,7 @@ def _handle_standard_answers(
     message_info: SlackMessageInfo,
     receiver_ids: list[str] | None,
     slack_channel_config: SlackChannelConfig,
-    logger: OnyxLoggingAdapter,
+    logger: OmLoggingAdapter,
     client: WebClient,
     db_session: Session,
 ) -> bool:
@@ -193,7 +193,7 @@ def _handle_standard_answers(
         db_session.commit()
 
         update_emote_react(
-            emoji=ONYX_BOT_REACT_EMOJI,
+            emoji=OM_BOT_REACT_EMOJI,
             channel=message_info.channel_to_respond,
             message_ts=message_info.msg_to_respond,
             remove=True,

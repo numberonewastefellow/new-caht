@@ -100,7 +100,7 @@ from om.configs.constants import DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN
 from om.configs.constants import DANSWER_API_KEY_PREFIX
 from om.configs.constants import FASTAPI_USERS_AUTH_COOKIE_NAME
 from om.configs.constants import MilestoneRecordType
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmRedisLocks
 from om.configs.constants import PASSWORD_SPECIAL_CHARS
 from om.configs.constants import UNNAMED_KEY_PLACEHOLDER
 from om.db.api_key import fetch_user_for_api_key
@@ -202,7 +202,7 @@ def user_needs_to_be_verified() -> bool:
 
 def anonymous_user_enabled(*, tenant_id: str | None = None) -> bool:
     redis_client = get_redis_client(tenant_id=tenant_id)
-    value = redis_client.get(OnyxRedisLocks.ANONYMOUS_USER_ENABLED)
+    value = redis_client.get(OmRedisLocks.ANONYMOUS_USER_ENABLED)
 
     if value is None:
         return False

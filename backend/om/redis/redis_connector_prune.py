@@ -11,10 +11,10 @@ from sqlalchemy.orm import Session
 
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import CELERY_PRUNING_LOCK_TIMEOUT
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisConstants
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisConstants
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
 from om.redis.redis_pool import SCAN_ITER_COUNT_DEFAULT
 
@@ -85,7 +85,7 @@ class RedisConnectorPrune:
         """Count of active pruning tasks"""
         count = 0
         for _ in self.redis.sscan_iter(
-            OnyxRedisConstants.ACTIVE_FENCES,
+            OmRedisConstants.ACTIVE_FENCES,
             RedisConnectorPrune.FENCE_PREFIX + "*",
             count=SCAN_ITER_COUNT_DEFAULT,
         ):
@@ -113,12 +113,12 @@ class RedisConnectorPrune:
         payload: RedisConnectorPrunePayload | None,
     ) -> None:
         if not payload:
-            self.redis.srem(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+            self.redis.srem(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
             self.redis.delete(self.fence_key)
             return
 
         self.redis.set(self.fence_key, payload.model_dump_json(), ex=self.FENCE_TTL)
-        self.redis.sadd(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+        self.redis.sadd(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
 
     def set_active(self) -> None:
         """This sets a signal to keep the permissioning flow from getting cleaned up within
@@ -189,16 +189,16 @@ class RedisConnectorPrune:
 
             # Priority on sync's triggered by new indexing should be medium
             result = celery_app.send_task(
-                OnyxCeleryTask.DOCUMENT_BY_CC_PAIR_CLEANUP_TASK,
+                OmCeleryTask.DOCUMENT_BY_CC_PAIR_CLEANUP_TASK,
                 kwargs=dict(
                     document_id=doc_id,
                     connector_id=cc_pair.connector_id,
                     credential_id=cc_pair.credential_id,
                     tenant_id=self.tenant_id,
                 ),
-                queue=OnyxCeleryQueues.CONNECTOR_DELETION,
+                queue=OmCeleryQueues.CONNECTOR_DELETION,
                 task_id=custom_task_id,
-                priority=OnyxCeleryPriority.MEDIUM,
+                priority=OmCeleryPriority.MEDIUM,
                 ignore_result=True,
             )
 
@@ -207,7 +207,7 @@ class RedisConnectorPrune:
         return len(async_results)
 
     def reset(self) -> None:
-        self.redis.srem(OnyxRedisConstants.ACTIVE_FENCES, self.fence_key)
+        self.redis.srem(OmRedisConstants.ACTIVE_FENCES, self.fence_key)
         self.redis.delete(self.active_key)
         self.redis.delete(self.generator_progress_key)
         self.redis.delete(self.generator_complete_key)

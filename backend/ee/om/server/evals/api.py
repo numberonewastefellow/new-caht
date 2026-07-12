@@ -3,7 +3,7 @@ from fastapi import Depends
 
 from ee.om.auth.users import current_cloud_superuser
 from om.background.celery.apps.client import celery_app as client_app
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryTask
 from om.db.models import User
 from om.evals.models import EvalConfigurationOptions
 from om.server.evals.models import EvalRunAck
@@ -24,7 +24,7 @@ def eval_run(
     This endpoint requires a valid API key for authentication.
     """
     client_app.send_task(
-        OnyxCeleryTask.EVAL_RUN_TASK,
+        OmCeleryTask.EVAL_RUN_TASK,
         kwargs={
             "configuration_dict": request.model_dump(),
         },

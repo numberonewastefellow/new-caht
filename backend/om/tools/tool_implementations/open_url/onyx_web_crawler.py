@@ -27,7 +27,7 @@ DEFAULT_MAX_PDF_SIZE_BYTES = 50 * 1024 * 1024  # 50 MB
 DEFAULT_MAX_HTML_SIZE_BYTES = 20 * 1024 * 1024  # 20 MB
 
 
-class OnyxWebCrawler(WebContentProvider):
+class OmWebCrawler(WebContentProvider):
     """
     Lightweight built-in crawler that fetches HTML directly and extracts readable text.
     Acts as the default content provider when no external crawler (e.g. Firecrawl) is

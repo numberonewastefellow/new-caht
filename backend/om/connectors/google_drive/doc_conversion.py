@@ -35,8 +35,8 @@ from om.file_processing.extract_file_text import pptx_to_text
 from om.file_processing.extract_file_text import read_docx_file
 from om.file_processing.extract_file_text import read_pdf_file
 from om.file_processing.extract_file_text import xlsx_to_text
-from om.file_processing.file_types import OnyxFileExtensions
-from om.file_processing.file_types import OnyxMimeTypes
+from om.file_processing.file_types import OmFileExtensions
+from om.file_processing.file_types import OmMimeTypes
 from om.file_processing.image_utils import store_image_and_create_section
 from om.utils.logger import setup_logger
 from om.utils.variable_functionality import (
@@ -303,7 +303,7 @@ def _download_and_extract_sections_basic(
     def response_call() -> bytes:
         return download_request(service, file_id, size_threshold)
 
-    if mime_type in OnyxMimeTypes.IMAGE_MIME_TYPES:
+    if mime_type in OmMimeTypes.IMAGE_MIME_TYPES:
         # Skip images if not explicitly enabled
         if not allow_images:
             return []
@@ -390,7 +390,7 @@ def _download_and_extract_sections_basic(
 
     # Final attempt at extracting text
     file_ext = get_file_ext(file.get("name", ""))
-    if file_ext not in OnyxFileExtensions.ALL_ALLOWED_EXTENSIONS:
+    if file_ext not in OmFileExtensions.ALL_ALLOWED_EXTENSIONS:
         logger.warning(f"Skipping file {file.get('name')} due to extension.")
         return []
 

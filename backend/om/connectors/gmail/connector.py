@@ -27,7 +27,7 @@ from om.connectors.google_utils.shared_constants import (
     DB_CREDENTIALS_PRIMARY_ADMIN_KEY,
 )
 from om.connectors.google_utils.shared_constants import MISSING_SCOPES_ERROR_STR
-from om.connectors.google_utils.shared_constants import ONYX_SCOPE_INSTRUCTIONS
+from om.connectors.google_utils.shared_constants import OM_SCOPE_INSTRUCTIONS
 from om.connectors.google_utils.shared_constants import SLIM_BATCH_SIZE
 from om.connectors.google_utils.shared_constants import USER_FIELDS
 from om.connectors.interfaces import CheckpointedConnectorWithPermSync
@@ -574,7 +574,7 @@ class GmailConnector(
             return checkpoint
         except Exception as e:
             if MISSING_SCOPES_ERROR_STR in str(e):
-                raise PermissionError(ONYX_SCOPE_INSTRUCTIONS) from e
+                raise PermissionError(OM_SCOPE_INSTRUCTIONS) from e
             raise e
 
     def load_from_checkpoint(
@@ -626,7 +626,7 @@ class GmailConnector(
                 )
         except Exception as e:
             if MISSING_SCOPES_ERROR_STR in str(e):
-                raise PermissionError(ONYX_SCOPE_INSTRUCTIONS) from e
+                raise PermissionError(OM_SCOPE_INSTRUCTIONS) from e
             raise e
 
     def build_dummy_checkpoint(self) -> GmailCheckpoint:

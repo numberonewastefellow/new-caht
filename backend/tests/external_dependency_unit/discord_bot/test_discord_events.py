@@ -543,11 +543,11 @@ class TestBotLifecycle:
         mock_api_client: MagicMock,
     ) -> None:
         """setup_hook calls cache.refresh_all()."""
-        from om.onyxbot.discord.client import OnyxDiscordClient
+        from om.onyxbot.discord.client import OmDiscordClient
 
         with (
             patch.object(
-                OnyxDiscordClient, "__init__", lambda self: None  # noqa: ARG005
+                OmDiscordClient, "__init__", lambda self: None  # noqa: ARG005
             ),
             patch(
                 "om.onyxbot.discord.client.DiscordCacheManager",
@@ -558,7 +558,7 @@ class TestBotLifecycle:
                 return_value=mock_api_client,
             ),
         ):
-            bot = OnyxDiscordClient()
+            bot = OmDiscordClient()
             bot.cache = mock_cache_manager
             bot.api_client = mock_api_client
             bot.loop = MagicMock()
@@ -575,14 +575,14 @@ class TestBotLifecycle:
         mock_api_client: MagicMock,
     ) -> None:
         """setup_hook calls api_client.initialize()."""
-        from om.onyxbot.discord.client import OnyxDiscordClient
+        from om.onyxbot.discord.client import OmDiscordClient
 
         with (
             patch.object(
-                OnyxDiscordClient, "__init__", lambda self: None  # noqa: ARG005
+                OmDiscordClient, "__init__", lambda self: None  # noqa: ARG005
             ),
         ):
-            bot = OnyxDiscordClient()
+            bot = OmDiscordClient()
             bot.cache = mock_cache_manager
             bot.api_client = mock_api_client
             bot.loop = MagicMock()
@@ -599,15 +599,15 @@ class TestBotLifecycle:
         mock_api_client: MagicMock,
     ) -> None:
         """close() calls api_client.close()."""
-        from om.onyxbot.discord.client import OnyxDiscordClient
+        from om.onyxbot.discord.client import OmDiscordClient
 
         with (
             patch.object(
-                OnyxDiscordClient, "__init__", lambda self: None  # noqa: ARG005
+                OmDiscordClient, "__init__", lambda self: None  # noqa: ARG005
             ),
-            patch.object(OnyxDiscordClient, "is_closed", return_value=True),
+            patch.object(OmDiscordClient, "is_closed", return_value=True),
         ):
-            bot = OnyxDiscordClient()
+            bot = OmDiscordClient()
             bot.cache = mock_cache_manager
             bot.api_client = mock_api_client
             bot._cache_refresh_task = None

@@ -11,7 +11,7 @@ from pydantic import Field
 from om.configs.app_configs import FILE_TOKEN_COUNT_THRESHOLD
 from om.file_processing.extract_file_text import extract_file_text
 from om.file_processing.extract_file_text import get_file_ext
-from om.file_processing.file_types import OnyxFileExtensions
+from om.file_processing.file_types import OmFileExtensions
 from om.file_processing.password_validation import is_file_password_protected
 from om.llm.factory import get_default_llm
 from om.natural_language_processing.utils import get_tokenizer
@@ -159,7 +159,7 @@ def categorize_uploaded_files(files: list[UploadFile]) -> CategorizedFiles:
             extension = get_file_ext(filename)
 
             # If image, estimate tokens via dedicated method first
-            if extension in OnyxFileExtensions.IMAGE_EXTENSIONS:
+            if extension in OmFileExtensions.IMAGE_EXTENSIONS:
                 try:
                     token_count = estimate_image_tokens_for_upload(upload)
                 except (UnidentifiedImageError, OSError) as e:
@@ -187,7 +187,7 @@ def categorize_uploaded_files(files: list[UploadFile]) -> CategorizedFiles:
                 continue
 
             # Otherwise, handle as text/document: extract text and count tokens
-            elif extension in OnyxFileExtensions.ALL_ALLOWED_EXTENSIONS:
+            elif extension in OmFileExtensions.ALL_ALLOWED_EXTENSIONS:
                 if is_file_password_protected(
                     file=upload.file,
                     file_name=filename,

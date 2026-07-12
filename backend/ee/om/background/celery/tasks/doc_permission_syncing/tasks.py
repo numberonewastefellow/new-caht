@@ -38,12 +38,12 @@ from om.configs.constants import CELERY_PERMISSIONS_SYNC_LOCK_TIMEOUT
 from om.configs.constants import CELERY_TASK_WAIT_FOR_FENCE_TIMEOUT
 from om.configs.constants import DANSWER_REDIS_FUNCTION_LOCK_PREFIX
 from om.configs.constants import DocumentSource
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisConstants
-from om.configs.constants import OnyxRedisLocks
-from om.configs.constants import OnyxRedisSignals
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisConstants
+from om.configs.constants import OmRedisLocks
+from om.configs.constants import OmRedisSignals
 from om.connectors.factory import validate_ccpair_for_user
 from om.db.connector import mark_cc_pair_as_permissions_synced
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
@@ -79,7 +79,7 @@ from om.redis.redis_connector_doc_perm_sync import RedisConnectorPermissionSyncP
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client
 from om.redis.redis_pool import redis_lock_dump
-from om.server.runtime.onyx_runtime import OnyxRuntime
+from om.server.runtime.onyx_runtime import OmRuntime
 from om.server.utils import make_short_id
 from om.utils.logger import doc_permission_sync_ctx
 from om.utils.logger import format_error_for_logging
@@ -113,7 +113,7 @@ def _get_fence_validation_block_expiration() -> int:
         return base_expiration
 
     try:
-        beat_multiplier = OnyxRuntime.get_beat_multiplier()
+        beat_multiplier = OmRuntime.get_beat_multiplier()
     except Exception:
         beat_multiplier = CLOUD_BEAT_MULTIPLIER_DEFAULT
 
@@ -164,7 +164,7 @@ def _is_external_doc_permissions_sync_due(cc_pair: ConnectorCredentialPair) -> b
         return True
 
     source_sync_period = sync_config.doc_sync_config.doc_sync_frequency
-    source_sync_period *= int(OnyxRuntime.get_doc_permission_sync_multiplier())
+    source_sync_period *= int(OmRuntime.get_doc_permission_sync_multiplier())
 
     # If the last sync is greater than the full fetch period, we run the sync
     next_sync = last_perm_sync + timedelta(seconds=source_sync_period)
@@ -175,7 +175,7 @@ def _is_external_doc_permissions_sync_due(cc_pair: ConnectorCredentialPair) -> b
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_DOC_PERMISSIONS_SYNC,
+    name=OmCeleryTask.CHECK_FOR_DOC_PERMISSIONS_SYNC,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
     bind=True,
@@ -190,7 +190,7 @@ def check_for_doc_permissions_sync(self: Task, *, tenant_id: str) -> bool | None
     r_celery: Redis = self.app.broker_connection().channel().client  # type: ignore
 
     lock_beat: RedisLock = r.lock(
-        OnyxRedisLocks.CHECK_CONNECTOR_DOC_PERMISSIONS_SYNC_BEAT_LOCK,
+        OmRedisLocks.CHECK_CONNECTOR_DOC_PERMISSIONS_SYNC_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -222,7 +222,7 @@ def check_for_doc_permissions_sync(self: Task, *, tenant_id: str) -> bool | None
 
         # we want to run this less frequently than the overall task
         lock_beat.reacquire()
-        if not r.exists(OnyxRedisSignals.BLOCK_VALIDATE_PERMISSION_SYNC_FENCES):
+        if not r.exists(OmRedisSignals.BLOCK_VALIDATE_PERMISSION_SYNC_FENCES):
             # clear any permission fences that don't have associated celery tasks in progress
             # tasks can be in the queue in redis, in reserved tasks (prefetched by the worker),
             # or be currently executing
@@ -236,7 +236,7 @@ def check_for_doc_permissions_sync(self: Task, *, tenant_id: str) -> bool | None
                 )
 
             r.set(
-                OnyxRedisSignals.BLOCK_VALIDATE_PERMISSION_SYNC_FENCES,
+                OmRedisSignals.BLOCK_VALIDATE_PERMISSION_SYNC_FENCES,
                 1,
                 ex=_get_fence_validation_block_expiration(),
             )
@@ -244,12 +244,12 @@ def check_for_doc_permissions_sync(self: Task, *, tenant_id: str) -> bool | None
         # use a lookup table to find active fences. We still have to verify the fence
         # exists since it is an optimization and not the source of truth.
         lock_beat.reacquire()
-        keys = cast(set[Any], r_replica.smembers(OnyxRedisConstants.ACTIVE_FENCES))
+        keys = cast(set[Any], r_replica.smembers(OmRedisConstants.ACTIVE_FENCES))
         for key in keys:
             key_bytes = cast(bytes, key)
 
             if not r.exists(key_bytes):
-                r.srem(OnyxRedisConstants.ACTIVE_FENCES, key_bytes)
+                r.srem(OmRedisConstants.ACTIVE_FENCES, key_bytes)
                 continue
 
             key_str = key_bytes.decode("utf-8")
@@ -339,14 +339,14 @@ def try_creating_permissions_sync_task(
         redis_connector.permissions.set_fence(payload)
 
         result = app.send_task(
-            OnyxCeleryTask.CONNECTOR_PERMISSION_SYNC_GENERATOR_TASK,
+            OmCeleryTask.CONNECTOR_PERMISSION_SYNC_GENERATOR_TASK,
             kwargs=dict(
                 cc_pair_id=cc_pair_id,
                 tenant_id=tenant_id,
             ),
-            queue=OnyxCeleryQueues.CONNECTOR_DOC_PERMISSIONS_SYNC,
+            queue=OmCeleryQueues.CONNECTOR_DOC_PERMISSIONS_SYNC,
             task_id=custom_task_id,
-            priority=OnyxCeleryPriority.MEDIUM,
+            priority=OmCeleryPriority.MEDIUM,
         )
 
         # fill in the celery task id
@@ -371,7 +371,7 @@ def try_creating_permissions_sync_task(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CONNECTOR_PERMISSION_SYNC_GENERATOR_TASK,
+    name=OmCeleryTask.CONNECTOR_PERMISSION_SYNC_GENERATOR_TASK,
     acks_late=False,
     soft_time_limit=JOB_TIMEOUT,
     track_started=True,
@@ -457,7 +457,7 @@ def connector_permission_sync_generator_task(
         break
 
     lock: RedisLock = r.lock(
-        OnyxRedisLocks.CONNECTOR_DOC_PERMISSIONS_SYNC_LOCK_PREFIX
+        OmRedisLocks.CONNECTOR_DOC_PERMISSIONS_SYNC_LOCK_PREFIX
         + f"_{redis_connector.cc_pair_id}",
         timeout=CELERY_PERMISSIONS_SYNC_LOCK_TIMEOUT,
         thread_local=False,
@@ -745,21 +745,21 @@ def validate_permission_sync_fences(
     PERMISSION_SYNC_VALIDATION_MAX_QUEUE_LEN = 1024
 
     queue_len = celery_get_queue_length(
-        OnyxCeleryQueues.DOC_PERMISSIONS_UPSERT, r_celery
+        OmCeleryQueues.DOC_PERMISSIONS_UPSERT, r_celery
     )
     if queue_len > PERMISSION_SYNC_VALIDATION_MAX_QUEUE_LEN:
         return
 
     queued_upsert_tasks = celery_get_queued_task_ids(
-        OnyxCeleryQueues.DOC_PERMISSIONS_UPSERT, r_celery
+        OmCeleryQueues.DOC_PERMISSIONS_UPSERT, r_celery
     )
     reserved_generator_tasks = celery_get_unacked_task_ids(
-        OnyxCeleryQueues.CONNECTOR_DOC_PERMISSIONS_SYNC, r_celery
+        OmCeleryQueues.CONNECTOR_DOC_PERMISSIONS_SYNC, r_celery
     )
 
     # validate all existing permission sync jobs
     lock_beat.reacquire()
-    keys = cast(set[Any], r_replica.smembers(OnyxRedisConstants.ACTIVE_FENCES))
+    keys = cast(set[Any], r_replica.smembers(OmRedisConstants.ACTIVE_FENCES))
     for key in keys:
         key_bytes = cast(bytes, key)
         key_str = key_bytes.decode("utf-8")
@@ -858,7 +858,7 @@ def validate_permission_sync_fence(
     # either the generator task must be in flight or its subtasks must be
     found = celery_find_task(
         payload.celery_task_id,
-        OnyxCeleryQueues.CONNECTOR_DOC_PERMISSIONS_SYNC,
+        OmCeleryQueues.CONNECTOR_DOC_PERMISSIONS_SYNC,
         r_celery,
     )
     if found:

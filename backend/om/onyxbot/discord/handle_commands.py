@@ -7,7 +7,7 @@ from datetime import timezone
 import discord
 
 from om.configs.app_configs import DISCORD_BOT_INVOKE_CHAR
-from om.configs.constants import ONYX_DISCORD_URL
+from om.configs.constants import OM_DISCORD_URL
 from om.db.discord_bot import bulk_create_channel_configs
 from om.db.discord_bot import get_guild_config_by_discord_id
 from om.db.discord_bot import get_guild_config_by_internal_id
@@ -32,7 +32,7 @@ async def handle_dm(message: discord.Message) -> None:
     dm_response = (
         "**I can't respond to DMs** :sweat:\n\n"
         f"Please chat with me in a server channel, or join the official "
-        f"[VertualAI Discord]({ONYX_DISCORD_URL}) for help!"
+        f"[VertualAI Discord]({OM_DISCORD_URL}) for help!"
     )
     await message.channel.send(dm_response)
 

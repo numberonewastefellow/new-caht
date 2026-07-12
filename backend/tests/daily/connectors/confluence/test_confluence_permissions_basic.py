@@ -9,7 +9,7 @@ from ee.om.external_permissions.confluence.doc_sync import confluence_doc_sync
 from om.access.models import DocExternalAccess
 from om.configs.constants import DocumentSource
 from om.connectors.confluence.connector import ConfluenceConnector
-from om.connectors.credentials_provider import OnyxStaticCredentialsProvider
+from om.connectors.credentials_provider import OmStaticCredentialsProvider
 from om.connectors.models import HierarchyNode
 from om.db.models import ConnectorCredentialPair
 from om.db.utils import DocumentRow
@@ -24,7 +24,7 @@ def confluence_connector() -> ConfluenceConnector:
         is_cloud=True,
     )
 
-    credentials_provider = OnyxStaticCredentialsProvider(
+    credentials_provider = OmStaticCredentialsProvider(
         None,
         DocumentSource.CONFLUENCE,
         {

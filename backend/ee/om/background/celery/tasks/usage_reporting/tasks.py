@@ -6,7 +6,7 @@ from celery import Task
 
 from ee.om.server.reporting.usage_export_generation import create_new_usage_report
 from om.configs.app_configs import JOB_TIMEOUT
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryTask
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.utils.logger import setup_logger
 
@@ -14,7 +14,7 @@ logger = setup_logger()
 
 
 @shared_task(
-    name=OnyxCeleryTask.GENERATE_USAGE_REPORT_TASK,
+    name=OmCeleryTask.GENERATE_USAGE_REPORT_TASK,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
     bind=True,

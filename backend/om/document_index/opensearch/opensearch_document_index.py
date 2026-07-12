@@ -7,7 +7,7 @@ from opensearchpy.helpers.errors import BulkIndexError
 from om.access.models import DocumentAccess
 from om.configs.app_configs import MAX_CHUNKS_PER_DOC_BATCH
 from om.configs.app_configs import VERIFY_CREATE_OPENSEARCH_INDEX_ON_INIT_MT
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmRedisLocks
 from om.configs.constants import PUBLIC_DOC_PAT
 from om.connectors.cross_connector_utils.miscellaneous_utils import (
     get_experts_stores_representations,
@@ -342,7 +342,7 @@ class OpenSearchDocumentIndex(DocumentIndex):
         )
 
         with redis_shared_lock(
-            lock_name=f"{OnyxRedisLocks.OPENSEARCH_VERIFY_INDEX_LOCK_PREFIX}:{self._index_name}",
+            lock_name=f"{OmRedisLocks.OPENSEARCH_VERIFY_INDEX_LOCK_PREFIX}:{self._index_name}",
             max_time_lock_held_s=VERIFY_INDEX_LOCK_TTL_S,
             wait_for_lock_s=VERIFY_INDEX_LOCK_BLOCKING_TIMEOUT_S,
             logger=logger,

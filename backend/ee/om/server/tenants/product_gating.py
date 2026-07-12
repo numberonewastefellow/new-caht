@@ -1,7 +1,7 @@
 from typing import cast
 
 from ee.om.configs.app_configs import GATED_TENANTS_KEY
-from om.configs.constants import ONYX_CLOUD_TENANT_ID
+from om.configs.constants import OM_CLOUD_TENANT_ID
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client
 from om.server.settings.models import ApplicationStatus
@@ -14,7 +14,7 @@ logger = setup_logger()
 
 
 def update_tenant_gating(tenant_id: str, status: ApplicationStatus) -> None:
-    redis_client = get_redis_client(tenant_id=ONYX_CLOUD_TENANT_ID)
+    redis_client = get_redis_client(tenant_id=OM_CLOUD_TENANT_ID)
 
     # Maintain the GATED_ACCESS set
     if status == ApplicationStatus.GATED_ACCESS:
@@ -43,12 +43,12 @@ def store_product_gating(tenant_id: str, application_status: ApplicationStatus) 
 
 
 def overwrite_full_gated_set(tenant_ids: list[str]) -> None:
-    redis_client = get_redis_client(tenant_id=ONYX_CLOUD_TENANT_ID)
+    redis_client = get_redis_client(tenant_id=OM_CLOUD_TENANT_ID)
 
     pipeline = redis_client.pipeline()
 
     # using pipeline doesn't automatically add the tenant_id prefix
-    full_gated_set_key = f"{ONYX_CLOUD_TENANT_ID}:{GATED_TENANTS_KEY}"
+    full_gated_set_key = f"{OM_CLOUD_TENANT_ID}:{GATED_TENANTS_KEY}"
 
     # Clear the existing set
     pipeline.delete(full_gated_set_key)
@@ -62,12 +62,12 @@ def overwrite_full_gated_set(tenant_ids: list[str]) -> None:
 
 
 def get_gated_tenants() -> set[str]:
-    redis_client = get_redis_replica_client(tenant_id=ONYX_CLOUD_TENANT_ID)
+    redis_client = get_redis_replica_client(tenant_id=OM_CLOUD_TENANT_ID)
     gated_tenants_bytes = cast(set[bytes], redis_client.smembers(GATED_TENANTS_KEY))
     return {tenant_id.decode("utf-8") for tenant_id in gated_tenants_bytes}
 
 
 def is_tenant_gated(tenant_id: str) -> bool:
     """Fast O(1) check if tenant is in gated set (multi-tenant only)."""
-    redis_client = get_redis_replica_client(tenant_id=ONYX_CLOUD_TENANT_ID)
+    redis_client = get_redis_replica_client(tenant_id=OM_CLOUD_TENANT_ID)
     return bool(redis_client.sismember(GATED_TENANTS_KEY, tenant_id))

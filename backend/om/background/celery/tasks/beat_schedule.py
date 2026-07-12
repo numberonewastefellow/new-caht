@@ -11,10 +11,10 @@ from om.configs.app_configs import DISABLE_VECTOR_DB
 from om.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
 from om.configs.app_configs import ENTERPRISE_EDITION_ENABLED
 from om.configs.app_configs import SCHEDULED_EVAL_DATASET_NAMES
-from om.configs.constants import ONYX_CLOUD_CELERY_TASK_PREFIX
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OM_CLOUD_CELERY_TASK_PREFIX
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
 from shared_configs.configs import MULTI_TENANT
 
 # choosing 15 minutes because it roughly gives us enough time to process many tasks
@@ -35,123 +35,123 @@ CLOUD_DOC_PERMISSION_SYNC_MULTIPLIER_DEFAULT = 1.0
 beat_task_templates: list[dict] = [
     {
         "name": "check-for-user-file-processing",
-        "task": OnyxCeleryTask.CHECK_FOR_USER_FILE_PROCESSING,
+        "task": OmCeleryTask.CHECK_FOR_USER_FILE_PROCESSING,
         "schedule": timedelta(seconds=20),
         "options": {
-            "priority": OnyxCeleryPriority.MEDIUM,
+            "priority": OmCeleryPriority.MEDIUM,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
         "name": "check-for-user-file-project-sync",
-        "task": OnyxCeleryTask.CHECK_FOR_USER_FILE_PROJECT_SYNC,
+        "task": OmCeleryTask.CHECK_FOR_USER_FILE_PROJECT_SYNC,
         "schedule": timedelta(seconds=20),
         "options": {
-            "priority": OnyxCeleryPriority.MEDIUM,
+            "priority": OmCeleryPriority.MEDIUM,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
         "name": "check-for-user-file-delete",
-        "task": OnyxCeleryTask.CHECK_FOR_USER_FILE_DELETE,
+        "task": OmCeleryTask.CHECK_FOR_USER_FILE_DELETE,
         "schedule": timedelta(seconds=20),
         "options": {
-            "priority": OnyxCeleryPriority.MEDIUM,
+            "priority": OmCeleryPriority.MEDIUM,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
         "name": "check-for-indexing",
-        "task": OnyxCeleryTask.CHECK_FOR_INDEXING,
+        "task": OmCeleryTask.CHECK_FOR_INDEXING,
         "schedule": timedelta(seconds=15),
         "options": {
-            "priority": OnyxCeleryPriority.MEDIUM,
+            "priority": OmCeleryPriority.MEDIUM,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
         "name": "check-for-checkpoint-cleanup",
-        "task": OnyxCeleryTask.CHECK_FOR_CHECKPOINT_CLEANUP,
+        "task": OmCeleryTask.CHECK_FOR_CHECKPOINT_CLEANUP,
         "schedule": timedelta(hours=1),
         "options": {
-            "priority": OnyxCeleryPriority.LOW,
+            "priority": OmCeleryPriority.LOW,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
         "name": "check-for-index-attempt-cleanup",
-        "task": OnyxCeleryTask.CHECK_FOR_INDEX_ATTEMPT_CLEANUP,
+        "task": OmCeleryTask.CHECK_FOR_INDEX_ATTEMPT_CLEANUP,
         "schedule": timedelta(minutes=30),
         "options": {
-            "priority": OnyxCeleryPriority.MEDIUM,
+            "priority": OmCeleryPriority.MEDIUM,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
         "name": "check-for-connector-deletion",
-        "task": OnyxCeleryTask.CHECK_FOR_CONNECTOR_DELETION,
+        "task": OmCeleryTask.CHECK_FOR_CONNECTOR_DELETION,
         "schedule": timedelta(seconds=20),
         "options": {
-            "priority": OnyxCeleryPriority.MEDIUM,
+            "priority": OmCeleryPriority.MEDIUM,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
         "name": "check-for-vespa-sync",
-        "task": OnyxCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
+        "task": OmCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
         "schedule": timedelta(seconds=20),
         "options": {
-            "priority": OnyxCeleryPriority.MEDIUM,
+            "priority": OmCeleryPriority.MEDIUM,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
         "name": "check-for-pruning",
-        "task": OnyxCeleryTask.CHECK_FOR_PRUNING,
+        "task": OmCeleryTask.CHECK_FOR_PRUNING,
         "schedule": timedelta(seconds=20),
         "options": {
-            "priority": OnyxCeleryPriority.MEDIUM,
+            "priority": OmCeleryPriority.MEDIUM,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
         "name": "check-for-hierarchy-fetching",
-        "task": OnyxCeleryTask.CHECK_FOR_HIERARCHY_FETCHING,
+        "task": OmCeleryTask.CHECK_FOR_HIERARCHY_FETCHING,
         "schedule": timedelta(hours=1),  # Check hourly, but only fetch once per day
         "options": {
-            "priority": OnyxCeleryPriority.LOW,
+            "priority": OmCeleryPriority.LOW,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
         "name": "monitor-background-processes",
-        "task": OnyxCeleryTask.MONITOR_BACKGROUND_PROCESSES,
+        "task": OmCeleryTask.MONITOR_BACKGROUND_PROCESSES,
         "schedule": timedelta(minutes=5),
         "options": {
-            "priority": OnyxCeleryPriority.LOW,
+            "priority": OmCeleryPriority.LOW,
             "expires": BEAT_EXPIRES_DEFAULT,
-            "queue": OnyxCeleryQueues.MONITORING,
+            "queue": OmCeleryQueues.MONITORING,
         },
     },
     # Sandbox cleanup tasks
     {
         "name": "cleanup-idle-sandboxes",
-        "task": OnyxCeleryTask.CLEANUP_IDLE_SANDBOXES,
+        "task": OmCeleryTask.CLEANUP_IDLE_SANDBOXES,
         "schedule": timedelta(minutes=1),
         "options": {
-            "priority": OnyxCeleryPriority.LOW,
+            "priority": OmCeleryPriority.LOW,
             "expires": BEAT_EXPIRES_DEFAULT,
-            "queue": OnyxCeleryQueues.SANDBOX,
+            "queue": OmCeleryQueues.SANDBOX,
         },
     },
     {
         "name": "cleanup-old-snapshots",
-        "task": OnyxCeleryTask.CLEANUP_OLD_SNAPSHOTS,
+        "task": OmCeleryTask.CLEANUP_OLD_SNAPSHOTS,
         "schedule": timedelta(hours=24),
         "options": {
-            "priority": OnyxCeleryPriority.LOW,
+            "priority": OmCeleryPriority.LOW,
             "expires": BEAT_EXPIRES_DEFAULT,
-            "queue": OnyxCeleryQueues.SANDBOX,
+            "queue": OmCeleryQueues.SANDBOX,
         },
     },
 ]
@@ -161,19 +161,19 @@ if ENTERPRISE_EDITION_ENABLED:
         [
             {
                 "name": "check-for-doc-permissions-sync",
-                "task": OnyxCeleryTask.CHECK_FOR_DOC_PERMISSIONS_SYNC,
+                "task": OmCeleryTask.CHECK_FOR_DOC_PERMISSIONS_SYNC,
                 "schedule": timedelta(seconds=30),
                 "options": {
-                    "priority": OnyxCeleryPriority.MEDIUM,
+                    "priority": OmCeleryPriority.MEDIUM,
                     "expires": BEAT_EXPIRES_DEFAULT,
                 },
             },
             {
                 "name": "check-for-external-group-sync",
-                "task": OnyxCeleryTask.CHECK_FOR_EXTERNAL_GROUP_SYNC,
+                "task": OmCeleryTask.CHECK_FOR_EXTERNAL_GROUP_SYNC,
                 "schedule": timedelta(seconds=20),
                 "options": {
-                    "priority": OnyxCeleryPriority.MEDIUM,
+                    "priority": OmCeleryPriority.MEDIUM,
                     "expires": BEAT_EXPIRES_DEFAULT,
                 },
             },
@@ -185,10 +185,10 @@ if AUTO_LLM_CONFIG_URL:
     beat_task_templates.append(
         {
             "name": "check-for-auto-llm-update",
-            "task": OnyxCeleryTask.CHECK_FOR_AUTO_LLM_UPDATE,
+            "task": OmCeleryTask.CHECK_FOR_AUTO_LLM_UPDATE,
             "schedule": timedelta(seconds=AUTO_LLM_UPDATE_INTERVAL_SECONDS),
             "options": {
-                "priority": OnyxCeleryPriority.LOW,
+                "priority": OmCeleryPriority.LOW,
                 "expires": BEAT_EXPIRES_DEFAULT,
             },
         }
@@ -199,7 +199,7 @@ if SCHEDULED_EVAL_DATASET_NAMES:
     beat_task_templates.append(
         {
             "name": "scheduled-eval-pipeline",
-            "task": OnyxCeleryTask.SCHEDULED_EVAL_TASK,
+            "task": OmCeleryTask.SCHEDULED_EVAL_TASK,
             # run every Sunday at midnight UTC
             "schedule": crontab(
                 hour=0,
@@ -207,7 +207,7 @@ if SCHEDULED_EVAL_DATASET_NAMES:
                 day_of_week=0,
             ),
             "options": {
-                "priority": OnyxCeleryPriority.LOW,
+                "priority": OmCeleryPriority.LOW,
                 "expires": BEAT_EXPIRES_DEFAULT,
             },
         }
@@ -220,14 +220,14 @@ if ENABLE_OPENSEARCH_INDEXING_FOR_ONYX and not DISABLE_OPENSEARCH_MIGRATION_TASK
     beat_task_templates.append(
         {
             "name": "migrate-chunks-from-vespa-to-opensearch",
-            "task": OnyxCeleryTask.MIGRATE_CHUNKS_FROM_VESPA_TO_OPENSEARCH_TASK,
+            "task": OmCeleryTask.MIGRATE_CHUNKS_FROM_VESPA_TO_OPENSEARCH_TASK,
             # Try to enqueue an invocation of this task with this frequency.
             "schedule": timedelta(seconds=120),  # 2 minutes
             "options": {
-                "priority": OnyxCeleryPriority.LOW,
+                "priority": OmCeleryPriority.LOW,
                 # If the task was not dequeued in this time, revoke it.
                 "expires": BEAT_EXPIRES_DEFAULT,
-                "queue": OnyxCeleryQueues.OPENSEARCH_MIGRATION,
+                "queue": OmCeleryQueues.OPENSEARCH_MIGRATION,
             },
         }
     )
@@ -261,12 +261,12 @@ def make_cloud_generator_task(task: dict[str, Any]) -> dict[str, Any]:
     task_schedule: timedelta = task["schedule"]
     cloud_task["schedule"] = task_schedule
     cloud_task["options"] = {}
-    cloud_task["options"]["priority"] = OnyxCeleryPriority.HIGHEST
+    cloud_task["options"]["priority"] = OmCeleryPriority.HIGHEST
     cloud_task["options"]["expires"] = BEAT_EXPIRES_DEFAULT
 
     # settings dependent on the original task
-    cloud_task["name"] = f"{ONYX_CLOUD_CELERY_TASK_PREFIX}_{task['name']}"
-    cloud_task["task"] = OnyxCeleryTask.CLOUD_BEAT_TASK_GENERATOR
+    cloud_task["name"] = f"{OM_CLOUD_CELERY_TASK_PREFIX}_{task['name']}"
+    cloud_task["task"] = OmCeleryTask.CLOUD_BEAT_TASK_GENERATOR
     cloud_task["kwargs"] = {}
     cloud_task["kwargs"]["task_name"] = task["task"]
 
@@ -284,42 +284,42 @@ def make_cloud_generator_task(task: dict[str, Any]) -> dict[str, Any]:
 beat_cloud_tasks: list[dict] = [
     # cloud specific tasks
     {
-        "name": f"{ONYX_CLOUD_CELERY_TASK_PREFIX}_monitor-alembic",
-        "task": OnyxCeleryTask.CLOUD_MONITOR_ALEMBIC,
+        "name": f"{OM_CLOUD_CELERY_TASK_PREFIX}_monitor-alembic",
+        "task": OmCeleryTask.CLOUD_MONITOR_ALEMBIC,
         "schedule": timedelta(hours=1),
         "options": {
-            "queue": OnyxCeleryQueues.MONITORING,
-            "priority": OnyxCeleryPriority.HIGH,
+            "queue": OmCeleryQueues.MONITORING,
+            "priority": OmCeleryPriority.HIGH,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
-        "name": f"{ONYX_CLOUD_CELERY_TASK_PREFIX}_monitor-celery-queues",
-        "task": OnyxCeleryTask.CLOUD_MONITOR_CELERY_QUEUES,
+        "name": f"{OM_CLOUD_CELERY_TASK_PREFIX}_monitor-celery-queues",
+        "task": OmCeleryTask.CLOUD_MONITOR_CELERY_QUEUES,
         "schedule": timedelta(seconds=30),
         "options": {
-            "queue": OnyxCeleryQueues.MONITORING,
-            "priority": OnyxCeleryPriority.HIGH,
+            "queue": OmCeleryQueues.MONITORING,
+            "priority": OmCeleryPriority.HIGH,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
-        "name": f"{ONYX_CLOUD_CELERY_TASK_PREFIX}_check-available-tenants",
-        "task": OnyxCeleryTask.CLOUD_CHECK_AVAILABLE_TENANTS,
+        "name": f"{OM_CLOUD_CELERY_TASK_PREFIX}_check-available-tenants",
+        "task": OmCeleryTask.CLOUD_CHECK_AVAILABLE_TENANTS,
         "schedule": timedelta(minutes=10),
         "options": {
-            "queue": OnyxCeleryQueues.MONITORING,
-            "priority": OnyxCeleryPriority.HIGH,
+            "queue": OmCeleryQueues.MONITORING,
+            "priority": OmCeleryPriority.HIGH,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
     {
-        "name": f"{ONYX_CLOUD_CELERY_TASK_PREFIX}_monitor-celery-pidbox",
-        "task": OnyxCeleryTask.CLOUD_MONITOR_CELERY_PIDBOX,
+        "name": f"{OM_CLOUD_CELERY_TASK_PREFIX}_monitor-celery-pidbox",
+        "task": OmCeleryTask.CLOUD_MONITOR_CELERY_PIDBOX,
         "schedule": timedelta(hours=4),
         "options": {
-            "queue": OnyxCeleryQueues.MONITORING,
-            "priority": OnyxCeleryPriority.HIGH,
+            "queue": OmCeleryQueues.MONITORING,
+            "priority": OmCeleryPriority.HIGH,
             "expires": BEAT_EXPIRES_DEFAULT,
         },
     },
@@ -332,32 +332,32 @@ if not MULTI_TENANT:
         [
             {
                 "name": "monitor-celery-queues",
-                "task": OnyxCeleryTask.MONITOR_CELERY_QUEUES,
+                "task": OmCeleryTask.MONITOR_CELERY_QUEUES,
                 "schedule": timedelta(seconds=10),
                 "options": {
-                    "priority": OnyxCeleryPriority.MEDIUM,
+                    "priority": OmCeleryPriority.MEDIUM,
                     "expires": BEAT_EXPIRES_DEFAULT,
-                    "queue": OnyxCeleryQueues.MONITORING,
+                    "queue": OmCeleryQueues.MONITORING,
                 },
             },
             {
                 "name": "monitor-process-memory",
-                "task": OnyxCeleryTask.MONITOR_PROCESS_MEMORY,
+                "task": OmCeleryTask.MONITOR_PROCESS_MEMORY,
                 "schedule": timedelta(minutes=5),
                 "options": {
-                    "priority": OnyxCeleryPriority.LOW,
+                    "priority": OmCeleryPriority.LOW,
                     "expires": BEAT_EXPIRES_DEFAULT,
-                    "queue": OnyxCeleryQueues.MONITORING,
+                    "queue": OmCeleryQueues.MONITORING,
                 },
             },
             {
                 "name": "celery-beat-heartbeat",
-                "task": OnyxCeleryTask.CELERY_BEAT_HEARTBEAT,
+                "task": OmCeleryTask.CELERY_BEAT_HEARTBEAT,
                 "schedule": timedelta(minutes=1),
                 "options": {
-                    "priority": OnyxCeleryPriority.HIGHEST,
+                    "priority": OmCeleryPriority.HIGHEST,
                     "expires": BEAT_EXPIRES_DEFAULT,
-                    "queue": OnyxCeleryQueues.PRIMARY,
+                    "queue": OmCeleryQueues.PRIMARY,
                 },
             },
         ]

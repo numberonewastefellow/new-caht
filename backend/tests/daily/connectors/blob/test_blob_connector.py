@@ -13,7 +13,7 @@ from om.connectors.models import Document
 from om.connectors.models import HierarchyNode
 from om.connectors.models import TextSection
 from om.file_processing.extract_file_text import get_file_ext
-from om.file_processing.file_types import OnyxFileExtensions
+from om.file_processing.file_types import OmFileExtensions
 
 
 @pytest.fixture
@@ -113,7 +113,7 @@ def test_blob_s3_connector(
         assert isinstance(section, TextSection)
 
         file_extension = get_file_ext(doc.semantic_identifier)
-        if file_extension in OnyxFileExtensions.TEXT_AND_DOCUMENT_EXTENSIONS:
+        if file_extension in OmFileExtensions.TEXT_AND_DOCUMENT_EXTENSIONS:
             assert len(section.text) > 0
             continue
 

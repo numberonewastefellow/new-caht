@@ -17,7 +17,7 @@ from om.utils.logger import setup_logger
 logger = setup_logger()
 
 
-class OnyxVersion:
+class OmVersion:
     def __init__(self) -> None:
         self._is_ee = False
 
@@ -28,7 +28,7 @@ class OnyxVersion:
         return self._is_ee
 
 
-global_version = OnyxVersion()
+global_version = OmVersion()
 
 # Read LICENSE_ENFORCEMENT_ENABLED directly since it's in EE configs
 # This allows EE code to load when license enforcement is enabled,

@@ -25,7 +25,7 @@ from om.connectors.models import HierarchyNode
 from om.connectors.models import SlimDocument
 from om.connectors.models import TextSection
 from om.file_processing.extract_file_text import extract_file_text
-from om.file_processing.file_types import OnyxFileExtensions
+from om.file_processing.file_types import OmFileExtensions
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
 
@@ -309,7 +309,7 @@ class HighspotConnector(LoadConnector, PollConnector, SlimConnectorWithPermSync)
 
             elif (
                 is_valid_format
-                and file_extension in OnyxFileExtensions.TEXT_AND_DOCUMENT_EXTENSIONS
+                and file_extension in OmFileExtensions.TEXT_AND_DOCUMENT_EXTENSIONS
                 and can_download
             ):
                 content_response = self.client.get_item_content(item_id)

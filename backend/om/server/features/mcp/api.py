@@ -127,7 +127,7 @@ def key_client_info(user_id: str) -> str:
 REQUESTED_SCOPE: str | None = None
 
 
-class OnyxTokenStorage(TokenStorage):
+class OmTokenStorage(TokenStorage):
     """
     store auth info in a particular user's connection config in postgres
     """
@@ -278,7 +278,7 @@ def make_oauth_provider(
             response_types=["code"],
             scope=REQUESTED_SCOPE,  # TODO: do we need to pass this in? maybe make configurable
         ),
-        storage=OnyxTokenStorage(connection_config_id, admin_config_id),
+        storage=OmTokenStorage(connection_config_id, admin_config_id),
         redirect_handler=redirect_handler,
         callback_handler=callback_handler,
     )

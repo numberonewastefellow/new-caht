@@ -25,13 +25,13 @@ from om.configs.app_configs import CONFLUENCE_CONNECTOR_ATTACHMENT_SIZE_THRESHOL
 from om.configs.constants import FileOrigin
 from om.file_processing.extract_file_text import extract_file_text
 from om.file_processing.extract_file_text import get_file_ext
-from om.file_processing.file_types import OnyxFileExtensions
-from om.file_processing.file_types import OnyxMimeTypes
+from om.file_processing.file_types import OmFileExtensions
+from om.file_processing.file_types import OmMimeTypes
 from om.file_processing.image_utils import store_image_and_create_section
 from om.utils.logger import setup_logger
 
 if TYPE_CHECKING:
-    from om.connectors.confluence.onyx_confluence import OnyxConfluence
+    from om.connectors.confluence.onyx_confluence import OmConfluence
 
 
 logger = setup_logger()
@@ -56,13 +56,13 @@ def validate_attachment_filetype(
     """
     media_type = attachment.get("metadata", {}).get("mediaType", "")
     if media_type.startswith("image/"):
-        return media_type in OnyxMimeTypes.IMAGE_MIME_TYPES
+        return media_type in OmMimeTypes.IMAGE_MIME_TYPES
 
     # For non-image files, check if we support the extension
     title = attachment.get("title", "")
     extension = get_file_ext(title)
 
-    return extension in OnyxFileExtensions.ALL_ALLOWED_EXTENSIONS
+    return extension in OmFileExtensions.ALL_ALLOWED_EXTENSIONS
 
 
 class AttachmentProcessingResult(BaseModel):
@@ -79,7 +79,7 @@ class AttachmentProcessingResult(BaseModel):
 
 
 def _make_attachment_link(
-    confluence_client: "OnyxConfluence",
+    confluence_client: "OmConfluence",
     attachment: dict[str, Any],
     parent_content_id: str | None = None,
 ) -> str | None:
@@ -104,7 +104,7 @@ def _make_attachment_link(
 
 
 def process_attachment(
-    confluence_client: "OnyxConfluence",
+    confluence_client: "OmConfluence",
     attachment: dict[str, Any],
     parent_content_id: str | None,
     allow_images: bool,
@@ -213,7 +213,7 @@ def process_attachment(
 
 
 def _process_image_attachment(
-    confluence_client: "OnyxConfluence",  # noqa: ARG001
+    confluence_client: "OmConfluence",  # noqa: ARG001
     attachment: dict[str, Any],
     raw_bytes: bytes,
     media_type: str,
@@ -239,7 +239,7 @@ def _process_image_attachment(
 
 
 def convert_attachment_to_content(
-    confluence_client: "OnyxConfluence",
+    confluence_client: "OmConfluence",
     attachment: dict[str, Any],
     page_id: str,
     allow_images: bool,

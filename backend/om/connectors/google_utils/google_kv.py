@@ -39,7 +39,7 @@ from om.connectors.google_utils.shared_constants import (
     MISSING_SCOPES_ERROR_STR,
 )
 from om.connectors.google_utils.shared_constants import (
-    ONYX_SCOPE_INSTRUCTIONS,
+    OM_SCOPE_INSTRUCTIONS,
 )
 from om.db.credentials import update_credential_json
 from om.db.models import User
@@ -120,7 +120,7 @@ def update_credential_access_tokens(
         email = _get_current_oauth_user(creds, source)
     except Exception as e:
         if MISSING_SCOPES_ERROR_STR in str(e):
-            raise PermissionError(ONYX_SCOPE_INSTRUCTIONS) from e
+            raise PermissionError(OM_SCOPE_INSTRUCTIONS) from e
         raise e
 
     new_creds_dict = {

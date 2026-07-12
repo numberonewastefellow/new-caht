@@ -3,13 +3,13 @@ from typing import Any
 from typing import cast
 
 from om.access.models import ExternalAccess
-from om.connectors.confluence.onyx_confluence import OnyxConfluence
+from om.connectors.confluence.onyx_confluence import OmConfluence
 from om.utils.variable_functionality import fetch_versioned_implementation
 from om.utils.variable_functionality import global_version
 
 
 def get_page_restrictions(
-    confluence_client: OnyxConfluence,
+    confluence_client: OmConfluence,
     page_id: str,
     page_restrictions: dict[str, Any],
     ancestors: list[dict[str, Any]],
@@ -37,7 +37,7 @@ def get_page_restrictions(
     # Fetch the EE implementation
     ee_get_all_page_restrictions = cast(
         Callable[
-            [OnyxConfluence, str, dict[str, Any], list[dict[str, Any]], bool],
+            [OmConfluence, str, dict[str, Any], list[dict[str, Any]], bool],
             ExternalAccess | None,
         ],
         fetch_versioned_implementation(
@@ -52,7 +52,7 @@ def get_page_restrictions(
 
 
 def get_all_space_permissions(
-    confluence_client: OnyxConfluence,
+    confluence_client: OmConfluence,
     is_cloud: bool,
 ) -> dict[str, ExternalAccess]:
     """
@@ -76,7 +76,7 @@ def get_all_space_permissions(
     # Fetch the EE implementation
     ee_get_all_space_permissions = cast(
         Callable[
-            [OnyxConfluence, bool, bool],
+            [OmConfluence, bool, bool],
             dict[str, ExternalAccess],
         ],
         fetch_versioned_implementation(

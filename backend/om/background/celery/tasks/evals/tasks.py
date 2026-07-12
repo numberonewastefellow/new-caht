@@ -10,7 +10,7 @@ from om.configs.app_configs import JOB_TIMEOUT
 from om.configs.app_configs import SCHEDULED_EVAL_DATASET_NAMES
 from om.configs.app_configs import SCHEDULED_EVAL_PERMISSIONS_EMAIL
 from om.configs.app_configs import SCHEDULED_EVAL_PROJECT
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryTask
 from om.evals.eval import run_eval
 from om.evals.models import EvalConfigurationOptions
 from om.utils.logger import setup_logger
@@ -19,7 +19,7 @@ logger = setup_logger()
 
 
 @shared_task(
-    name=OnyxCeleryTask.EVAL_RUN_TASK,
+    name=OmCeleryTask.EVAL_RUN_TASK,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
     bind=True,
@@ -42,7 +42,7 @@ def eval_run_task(
 
 
 @shared_task(
-    name=OnyxCeleryTask.SCHEDULED_EVAL_TASK,
+    name=OmCeleryTask.SCHEDULED_EVAL_TASK,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT * 5,  # Allow more time for multiple datasets
     bind=True,

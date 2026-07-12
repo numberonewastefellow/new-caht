@@ -9,7 +9,7 @@ from slack_sdk import WebClient
 
 from ee.om.db.external_perm import ExternalUserGroup
 from ee.om.external_permissions.slack.utils import fetch_user_id_to_email_map
-from om.connectors.credentials_provider import OnyxDBCredentialsProvider
+from om.connectors.credentials_provider import OmDBCredentialsProvider
 from om.connectors.slack.connector import SlackConnector
 from om.connectors.slack.utils import make_paginated_slack_api_call
 from om.db.models import ConnectorCredentialPair
@@ -61,7 +61,7 @@ def slack_group_sync(
     """NOTE: not used atm. All channel access is done at the
     individual user level. Leaving in for now in case we need it later."""
 
-    provider = OnyxDBCredentialsProvider(tenant_id, "slack", cc_pair.credential.id)
+    provider = OmDBCredentialsProvider(tenant_id, "slack", cc_pair.credential.id)
     r = get_redis_client(tenant_id=tenant_id)
     credential_json = (
         cc_pair.credential.credential_json.get_value(apply_mask=False)

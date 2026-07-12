@@ -28,10 +28,10 @@ from om.configs.app_configs import SMTP_SERVER
 from om.configs.app_configs import SMTP_USER
 from om.configs.app_configs import WEB_DOMAIN
 from om.configs.constants import AuthType
-from om.configs.constants import ONYX_DEFAULT_APPLICATION_NAME
-from om.configs.constants import ONYX_DISCORD_URL
+from om.configs.constants import OM_DEFAULT_APPLICATION_NAME
+from om.configs.constants import OM_DISCORD_URL
 from om.db.models import User
-from om.server.runtime.onyx_runtime import OnyxRuntime
+from om.server.runtime.onyx_runtime import OmRuntime
 from om.utils.logger import setup_logger
 from om.utils.url import add_url_params
 from om.utils.variable_functionality import fetch_versioned_implementation
@@ -162,8 +162,8 @@ def build_html_email(
     cta_link: str | None = None,
 ) -> str:
     community_link_fragment = ""
-    if application_name == ONYX_DEFAULT_APPLICATION_NAME:
-        community_link_fragment = f'<br>Have questions? Join our Discord community <a href="{ONYX_DISCORD_URL}">here</a>.'
+    if application_name == OM_DEFAULT_APPLICATION_NAME:
+        community_link_fragment = f'<br>Have questions? Join our Discord community <a href="{OM_DISCORD_URL}">here</a>.'
 
     if cta_text and cta_link:
         cta_block = f'<a class="cta-button" href="{cta_link}">{cta_text}</a>'
@@ -306,9 +306,9 @@ def send_subscription_cancellation_email(user_email: str) -> None:
         settings = load_runtime_settings_fn()
         application_name = settings.application_name
     except ModuleNotFoundError:
-        application_name = ONYX_DEFAULT_APPLICATION_NAME
+        application_name = OM_DEFAULT_APPLICATION_NAME
 
-    onyx_file = OnyxRuntime.get_emailable_logo()
+    onyx_file = OmRuntime.get_emailable_logo()
 
     subject = f"Your {application_name} Subscription Has Been Canceled"
     heading = "Subscription Canceled"
@@ -404,9 +404,9 @@ def send_user_email_invite(
         settings = load_runtime_settings_fn()
         application_name = settings.application_name
     except ModuleNotFoundError:
-        application_name = ONYX_DEFAULT_APPLICATION_NAME
+        application_name = OM_DEFAULT_APPLICATION_NAME
 
-    onyx_file = OnyxRuntime.get_emailable_logo()
+    onyx_file = OmRuntime.get_emailable_logo()
 
     subject = f"Invitation to Join {application_name} Organization"
 
@@ -437,9 +437,9 @@ def send_forgot_password_email(
         settings = load_runtime_settings_fn()
         application_name = settings.application_name
     except ModuleNotFoundError:
-        application_name = ONYX_DEFAULT_APPLICATION_NAME
+        application_name = OM_DEFAULT_APPLICATION_NAME
 
-    onyx_file = OnyxRuntime.get_emailable_logo()
+    onyx_file = OmRuntime.get_emailable_logo()
 
     subject = f"Reset Your {application_name} Password"
     heading = "Reset Your Password"
@@ -482,9 +482,9 @@ def send_user_verification_email(
         settings = load_runtime_settings_fn()
         application_name = settings.application_name
     except ModuleNotFoundError:
-        application_name = ONYX_DEFAULT_APPLICATION_NAME
+        application_name = OM_DEFAULT_APPLICATION_NAME
 
-    onyx_file = OnyxRuntime.get_emailable_logo()
+    onyx_file = OmRuntime.get_emailable_logo()
 
     subject = f"{application_name} Email Verification"
     link = f"{WEB_DOMAIN}/auth/verify-email?token={token}"

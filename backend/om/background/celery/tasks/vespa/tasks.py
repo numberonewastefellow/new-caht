@@ -19,7 +19,7 @@ from om.background.celery.apps.app_base import task_logger
 from om.background.celery.tasks.shared.RetryDocumentIndex import RetryDocumentIndex
 from om.background.celery.tasks.shared.tasks import LIGHT_SOFT_TIME_LIMIT
 from om.background.celery.tasks.shared.tasks import LIGHT_TIME_LIMIT
-from om.background.celery.tasks.shared.tasks import OnyxCeleryTaskCompletionStatus
+from om.background.celery.tasks.shared.tasks import OmCeleryTaskCompletionStatus
 from om.background.celery.tasks.vespa.document_sync import DOCUMENT_SYNC_FENCE_KEY
 from om.background.celery.tasks.vespa.document_sync import get_document_sync_payload
 from om.background.celery.tasks.vespa.document_sync import get_document_sync_remaining
@@ -30,9 +30,9 @@ from om.background.celery.tasks.vespa.document_sync import (
 from om.configs.app_configs import JOB_TIMEOUT
 from om.configs.app_configs import VESPA_SYNC_MAX_TASKS
 from om.configs.constants import CELERY_VESPA_SYNC_BEAT_LOCK_TIMEOUT
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisConstants
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisConstants
+from om.configs.constants import OmRedisLocks
 from om.db.document import get_document
 from om.db.document import mark_document_as_synced
 from om.db.document_set import delete_document_set
@@ -73,7 +73,7 @@ logger = setup_logger()
 # TODO(andrei): Rename all these kinds of functions from *vespa* to a more
 # generic *document_index*.
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
+    name=OmCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
     trail=False,
@@ -93,7 +93,7 @@ def check_for_vespa_sync_task(self: Task, *, tenant_id: str) -> bool | None:
     r_replica = get_redis_replica_client()
 
     lock_beat: RedisLock = r.lock(
-        OnyxRedisLocks.CHECK_VESPA_SYNC_BEAT_LOCK,
+        OmRedisLocks.CHECK_VESPA_SYNC_BEAT_LOCK,
         timeout=CELERY_VESPA_SYNC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -160,12 +160,12 @@ def check_for_vespa_sync_task(self: Task, *, tenant_id: str) -> bool | None:
 
         # 3/3: FINALIZE
         lock_beat.reacquire()
-        keys = cast(set[Any], r_replica.smembers(OnyxRedisConstants.ACTIVE_FENCES))
+        keys = cast(set[Any], r_replica.smembers(OmRedisConstants.ACTIVE_FENCES))
         for key in keys:
             key_bytes = cast(bytes, key)
 
             if not r.exists(key_bytes):
-                r.srem(OnyxRedisConstants.ACTIVE_FENCES, key_bytes)
+                r.srem(OmRedisConstants.ACTIVE_FENCES, key_bytes)
                 continue
 
             key_str = key_bytes.decode("utf-8")
@@ -453,7 +453,7 @@ def monitor_document_set_taskset(
 
 
 @shared_task(
-    name=OnyxCeleryTask.VESPA_METADATA_SYNC_TASK,
+    name=OmCeleryTask.VESPA_METADATA_SYNC_TASK,
     bind=True,
     soft_time_limit=LIGHT_SOFT_TIME_LIMIT,
     time_limit=LIGHT_TIME_LIMIT,
@@ -462,7 +462,7 @@ def monitor_document_set_taskset(
 def vespa_metadata_sync_task(self: Task, document_id: str, *, tenant_id: str) -> bool:
     start = time.monotonic()
 
-    completion_status = OnyxCeleryTaskCompletionStatus.UNDEFINED
+    completion_status = OmCeleryTaskCompletionStatus.UNDEFINED
 
     try:
         with get_session_with_current_tenant() as db_session:
@@ -487,7 +487,7 @@ def vespa_metadata_sync_task(self: Task, document_id: str, *, tenant_id: str) ->
                     f"action=no_operation "
                     f"elapsed={elapsed:.2f}"
                 )
-                completion_status = OnyxCeleryTaskCompletionStatus.SKIPPED
+                completion_status = OmCeleryTaskCompletionStatus.SKIPPED
             else:
                 # document set sync
                 doc_sets = fetch_document_sets_for_document(document_id, db_session)
@@ -526,10 +526,10 @@ def vespa_metadata_sync_task(self: Task, document_id: str, *, tenant_id: str) ->
                 task_logger.info(
                     f"doc={document_id} " f"action=sync " f"elapsed={elapsed:.2f}"
                 )
-                completion_status = OnyxCeleryTaskCompletionStatus.SUCCEEDED
+                completion_status = OmCeleryTaskCompletionStatus.SUCCEEDED
     except SoftTimeLimitExceeded:
         task_logger.info(f"SoftTimeLimitExceeded exception. doc={document_id}")
-        completion_status = OnyxCeleryTaskCompletionStatus.SOFT_TIME_LIMIT
+        completion_status = OmCeleryTaskCompletionStatus.SOFT_TIME_LIMIT
     except Exception as ex:
         e: Exception | None = None
         while True:
@@ -553,7 +553,7 @@ def vespa_metadata_sync_task(self: Task, document_id: str, *, tenant_id: str) ->
                         f"status={e.response.status_code}"
                     )
                 completion_status = (
-                    OnyxCeleryTaskCompletionStatus.NON_RETRYABLE_EXCEPTION
+                    OmCeleryTaskCompletionStatus.NON_RETRYABLE_EXCEPTION
                 )
                 break
 
@@ -561,13 +561,13 @@ def vespa_metadata_sync_task(self: Task, document_id: str, *, tenant_id: str) ->
                 f"vespa_metadata_sync_task exceptioned: doc={document_id}"
             )
 
-            completion_status = OnyxCeleryTaskCompletionStatus.RETRYABLE_EXCEPTION
+            completion_status = OmCeleryTaskCompletionStatus.RETRYABLE_EXCEPTION
             if (
                 self.max_retries is not None
                 and self.request.retries >= self.max_retries
             ):
                 completion_status = (
-                    OnyxCeleryTaskCompletionStatus.NON_RETRYABLE_EXCEPTION
+                    OmCeleryTaskCompletionStatus.NON_RETRYABLE_EXCEPTION
                 )
 
             # Exponential backoff from 2^4 to 2^6 ... i.e. 16, 32, 64
@@ -579,4 +579,4 @@ def vespa_metadata_sync_task(self: Task, document_id: str, *, tenant_id: str) ->
             f"vespa_metadata_sync_task completed: status={completion_status.value} doc={document_id}"
         )
 
-    return completion_status == OnyxCeleryTaskCompletionStatus.SUCCEEDED
+    return completion_status == OmCeleryTaskCompletionStatus.SUCCEEDED

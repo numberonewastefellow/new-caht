@@ -36,12 +36,12 @@ from om.configs.app_configs import JOB_TIMEOUT
 from om.configs.constants import CELERY_EXTERNAL_GROUP_SYNC_LOCK_TIMEOUT
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import CELERY_TASK_WAIT_FOR_FENCE_TIMEOUT
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisConstants
-from om.configs.constants import OnyxRedisLocks
-from om.configs.constants import OnyxRedisSignals
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisConstants
+from om.configs.constants import OmRedisLocks
+from om.configs.constants import OmRedisSignals
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import AccessType
@@ -68,7 +68,7 @@ from om.redis.redis_connector_ext_group_sync import (
 )
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client
-from om.server.runtime.onyx_runtime import OnyxRuntime
+from om.server.runtime.onyx_runtime import OmRuntime
 from om.server.utils import make_short_id
 from om.utils.logger import format_error_for_logging
 from om.utils.logger import setup_logger
@@ -99,7 +99,7 @@ def _get_fence_validation_block_expiration() -> int:
         return base_expiration
 
     try:
-        beat_multiplier = OnyxRuntime.get_beat_multiplier()
+        beat_multiplier = OmRuntime.get_beat_multiplier()
     except Exception:
         beat_multiplier = CLOUD_BEAT_MULTIPLIER_DEFAULT
 
@@ -156,7 +156,7 @@ def _is_external_group_sync_due(cc_pair: ConnectorCredentialPair) -> bool:
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_EXTERNAL_GROUP_SYNC,
+    name=OmCeleryTask.CHECK_FOR_EXTERNAL_GROUP_SYNC,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
     bind=True,
@@ -169,7 +169,7 @@ def check_for_external_group_sync(self: Task, *, tenant_id: str) -> bool | None:
     r_celery: Redis = self.app.broker_connection().channel().client  # type: ignore
 
     lock_beat: RedisLock = r.lock(
-        OnyxRedisLocks.CHECK_CONNECTOR_EXTERNAL_GROUP_SYNC_BEAT_LOCK,
+        OmRedisLocks.CHECK_CONNECTOR_EXTERNAL_GROUP_SYNC_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -220,7 +220,7 @@ def check_for_external_group_sync(self: Task, *, tenant_id: str) -> bool | None:
 
         # we want to run this less frequently than the overall task
         lock_beat.reacquire()
-        if not r.exists(OnyxRedisSignals.BLOCK_VALIDATE_EXTERNAL_GROUP_SYNC_FENCES):
+        if not r.exists(OmRedisSignals.BLOCK_VALIDATE_EXTERNAL_GROUP_SYNC_FENCES):
             # clear fences that don't have associated celery tasks in progress
             # tasks can be in the queue in redis, in reserved tasks (prefetched by the worker),
             # or be currently executing
@@ -234,7 +234,7 @@ def check_for_external_group_sync(self: Task, *, tenant_id: str) -> bool | None:
                 )
 
             r.set(
-                OnyxRedisSignals.BLOCK_VALIDATE_EXTERNAL_GROUP_SYNC_FENCES,
+                OmRedisSignals.BLOCK_VALIDATE_EXTERNAL_GROUP_SYNC_FENCES,
                 1,
                 ex=_get_fence_validation_block_expiration(),
             )
@@ -305,14 +305,14 @@ def try_creating_external_group_sync_task(
         custom_task_id = f"{redis_connector.external_group_sync.taskset_key}_{uuid4()}"
 
         result = app.send_task(
-            OnyxCeleryTask.CONNECTOR_EXTERNAL_GROUP_SYNC_GENERATOR_TASK,
+            OmCeleryTask.CONNECTOR_EXTERNAL_GROUP_SYNC_GENERATOR_TASK,
             kwargs=dict(
                 cc_pair_id=cc_pair_id,
                 tenant_id=tenant_id,
             ),
-            queue=OnyxCeleryQueues.CONNECTOR_EXTERNAL_GROUP_SYNC,
+            queue=OmCeleryQueues.CONNECTOR_EXTERNAL_GROUP_SYNC,
             task_id=custom_task_id,
-            priority=OnyxCeleryPriority.MEDIUM,
+            priority=OmCeleryPriority.MEDIUM,
         )
 
         payload.celery_task_id = result.id
@@ -336,7 +336,7 @@ def try_creating_external_group_sync_task(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CONNECTOR_EXTERNAL_GROUP_SYNC_GENERATOR_TASK,
+    name=OmCeleryTask.CONNECTOR_EXTERNAL_GROUP_SYNC_GENERATOR_TASK,
     acks_late=False,
     soft_time_limit=JOB_TIMEOUT,
     track_started=True,
@@ -400,7 +400,7 @@ def connector_external_group_sync_generator_task(
         break
 
     lock: RedisLock = r.lock(
-        OnyxRedisLocks.CONNECTOR_EXTERNAL_GROUP_SYNC_LOCK_PREFIX
+        OmRedisLocks.CONNECTOR_EXTERNAL_GROUP_SYNC_LOCK_PREFIX
         + f"_{redis_connector.cc_pair_id}",
         timeout=CELERY_EXTERNAL_GROUP_SYNC_LOCK_TIMEOUT,
     )
@@ -612,12 +612,12 @@ def validate_external_group_sync_fences(
     lock_beat: RedisLock,
 ) -> None:
     reserved_tasks = celery_get_unacked_task_ids(
-        OnyxCeleryQueues.CONNECTOR_EXTERNAL_GROUP_SYNC, r_celery
+        OmCeleryQueues.CONNECTOR_EXTERNAL_GROUP_SYNC, r_celery
     )
 
     # validate all existing external group sync tasks
     lock_beat.reacquire()
-    keys = cast(set[Any], r_replica.smembers(OnyxRedisConstants.ACTIVE_FENCES))
+    keys = cast(set[Any], r_replica.smembers(OmRedisConstants.ACTIVE_FENCES))
     for key in keys:
         key_bytes = cast(bytes, key)
         key_str = key_bytes.decode("utf-8")
@@ -707,7 +707,7 @@ def validate_external_group_sync_fence(
 
     # OK, there's actually something for us to validate
     found = celery_find_task(
-        payload.celery_task_id, OnyxCeleryQueues.CONNECTOR_EXTERNAL_GROUP_SYNC, r_celery
+        payload.celery_task_id, OmCeleryQueues.CONNECTOR_EXTERNAL_GROUP_SYNC, r_celery
     )
     if found:
         # the celery task exists in the redis queue

@@ -473,7 +473,7 @@ class ConnectorStopSignal(Exception):
     """A custom exception used to signal a stop in processing."""
 
 
-class OnyxMetadata(BaseModel):
+class OmMetadata(BaseModel):
     # Careful overriding the document_id, may cause visual issues in the UI.
     # Kept here for API based use cases mostly
     document_id: str | None = None

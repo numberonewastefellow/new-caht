@@ -28,9 +28,9 @@ from om.connectors.models import TextSection
 from om.connectors.salesforce.doc_conversion import convert_sf_object_to_doc
 from om.connectors.salesforce.doc_conversion import convert_sf_query_result_to_doc
 from om.connectors.salesforce.doc_conversion import ID_PREFIX
-from om.connectors.salesforce.onyx_salesforce import OnyxSalesforce
+from om.connectors.salesforce.onyx_salesforce import OmSalesforce
 from om.connectors.salesforce.salesforce_calls import fetch_all_csvs_in_parallel
-from om.connectors.salesforce.sqlite_functions import OnyxSalesforceSQLite
+from om.connectors.salesforce.sqlite_functions import OmSalesforceSQLite
 from om.connectors.salesforce.utils import ACCOUNT_OBJECT_TYPE
 from om.connectors.salesforce.utils import ID_FIELD
 from om.connectors.salesforce.utils import MODIFIED_FIELD
@@ -212,7 +212,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
         custom_query_config: str | None = None,
     ) -> None:
         self.batch_size = batch_size
-        self._sf_client: OnyxSalesforce | None = None
+        self._sf_client: OmSalesforce | None = None
 
         # Validate and store custom query config
         if custom_query_config:
@@ -234,7 +234,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
         credentials: dict[str, Any],
     ) -> dict[str, Any] | None:
         domain = "test" if credentials.get("is_sandbox") else None
-        self._sf_client = OnyxSalesforce(
+        self._sf_client = OmSalesforce(
             username=credentials["sf_username"],
             password=credentials["sf_password"],
             security_token=credentials["sf_security_token"],
@@ -243,7 +243,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
         return None
 
     @property
-    def sf_client(self) -> OnyxSalesforce:
+    def sf_client(self) -> OmSalesforce:
         if self._sf_client is None:
             raise ConnectorMissingCredentialError("Salesforce")
         return self._sf_client
@@ -275,7 +275,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
         all_types_to_filter: dict[str, bool],
         queryable_fields_by_type: dict[str, set[str]],
         directory: str,
-        sf_client: OnyxSalesforce,
+        sf_client: OmSalesforce,
         start: SecondsSinceUnixEpoch | None = None,
         end: SecondsSinceUnixEpoch | None = None,
     ) -> None:
@@ -317,7 +317,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
 
     @staticmethod
     def _load_csvs_to_db(
-        csv_directory: str, remove_ids: bool, sf_db: OnyxSalesforceSQLite
+        csv_directory: str, remove_ids: bool, sf_db: OmSalesforceSQLite
     ) -> dict[str, str]:
         """
         Returns a dict of id to object type. Each id is a newly seen row in salesforce.
@@ -446,7 +446,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
 
     def _yield_doc_batches(
         self,
-        sf_db: OnyxSalesforceSQLite,
+        sf_db: OmSalesforceSQLite,
         type_to_processed: dict[str, int],
         changed_ids_to_type: dict[str, str],
         parent_types: set[str],
@@ -540,7 +540,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
         parents_changed = 0
         examined_ids = 0
 
-        sf_db = OnyxSalesforceSQLite(os.path.join(temp_dir, "salesforce_db.sqlite"))
+        sf_db = OmSalesforceSQLite(os.path.join(temp_dir, "salesforce_db.sqlite"))
         sf_db.connect()
 
         try:
@@ -657,7 +657,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
         parents_changed = 0
         processed = 0
 
-        sf_db = OnyxSalesforceSQLite(os.path.join(temp_dir, "salesforce_db.sqlite"))
+        sf_db = OmSalesforceSQLite(os.path.join(temp_dir, "salesforce_db.sqlite"))
         sf_db.connect()
 
         try:
@@ -880,7 +880,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
         end: SecondsSinceUnixEpoch | None,
         temp_dir: str,
         parent_object_list: list[str],
-        sf_client: OnyxSalesforce,
+        sf_client: OmSalesforce,
     ) -> SalesforceConnectorContext:
         """NOTE: I suspect we're doing way too many queries here. Likely fewer queries
         and just parsing all the info we need in less passes will work."""

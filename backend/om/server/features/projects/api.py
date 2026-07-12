@@ -13,9 +13,9 @@ from sqlalchemy.orm import Session
 
 from om.auth.users import current_user
 from om.background.celery.versioned_apps.client import app as client_app
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
 from om.configs.constants import PUBLIC_API_TAGS
 from om.db.engine.sql_engine import get_session
 from om.db.enums import UserFileStatus
@@ -190,10 +190,10 @@ def unlink_user_file_from_project(
 
     tenant_id = get_current_tenant_id()
     task = client_app.send_task(
-        OnyxCeleryTask.PROCESS_SINGLE_USER_FILE_PROJECT_SYNC,
+        OmCeleryTask.PROCESS_SINGLE_USER_FILE_PROJECT_SYNC,
         kwargs={"user_file_id": user_file.id, "tenant_id": tenant_id},
-        queue=OnyxCeleryQueues.USER_FILE_PROJECT_SYNC,
-        priority=OnyxCeleryPriority.HIGHEST,
+        queue=OmCeleryQueues.USER_FILE_PROJECT_SYNC,
+        priority=OmCeleryPriority.HIGHEST,
     )
     logger.info(
         f"Triggered workspace sync for user_file_id={user_file.id} with task_id={task.id}"
@@ -242,10 +242,10 @@ def link_user_file_to_project(
 
     tenant_id = get_current_tenant_id()
     task = client_app.send_task(
-        OnyxCeleryTask.PROCESS_SINGLE_USER_FILE_PROJECT_SYNC,
+        OmCeleryTask.PROCESS_SINGLE_USER_FILE_PROJECT_SYNC,
         kwargs={"user_file_id": user_file.id, "tenant_id": tenant_id},
-        queue=OnyxCeleryQueues.USER_FILE_PROJECT_SYNC,
-        priority=OnyxCeleryPriority.HIGHEST,
+        queue=OmCeleryQueues.USER_FILE_PROJECT_SYNC,
+        priority=OmCeleryPriority.HIGHEST,
     )
     logger.info(
         f"Triggered workspace sync for user_file_id={user_file.id} with task_id={task.id}"
@@ -440,10 +440,10 @@ def delete_user_file(
 
     tenant_id = get_current_tenant_id()
     task = client_app.send_task(
-        OnyxCeleryTask.DELETE_SINGLE_USER_FILE,
+        OmCeleryTask.DELETE_SINGLE_USER_FILE,
         kwargs={"user_file_id": str(user_file.id), "tenant_id": tenant_id},
-        queue=OnyxCeleryQueues.USER_FILE_DELETE,
-        priority=OnyxCeleryPriority.HIGH,
+        queue=OmCeleryQueues.USER_FILE_DELETE,
+        priority=OmCeleryPriority.HIGH,
     )
     logger.info(
         f"Triggered delete for user_file_id={user_file.id} with task_id={task.id}"

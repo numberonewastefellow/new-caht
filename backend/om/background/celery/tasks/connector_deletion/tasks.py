@@ -18,11 +18,11 @@ from om.background.celery.celery_redis import celery_get_queue_length
 from om.background.celery.celery_redis import celery_get_queued_task_ids
 from om.configs.app_configs import JOB_TIMEOUT
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisConstants
-from om.configs.constants import OnyxRedisLocks
-from om.configs.constants import OnyxRedisSignals
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisConstants
+from om.configs.constants import OmRedisLocks
+from om.configs.constants import OmRedisSignals
 from om.db.connector import fetch_connector_by_id
 from om.db.connector_credential_pair import add_deletion_failure_message
 from om.db.connector_credential_pair import (
@@ -123,7 +123,7 @@ def revoke_tasks_blocking_deletion(
 
 
 @shared_task(
-    name=OnyxCeleryTask.CHECK_FOR_CONNECTOR_DELETION,
+    name=OmCeleryTask.CHECK_FOR_CONNECTOR_DELETION,
     ignore_result=True,
     soft_time_limit=JOB_TIMEOUT,
     trail=False,
@@ -135,7 +135,7 @@ def check_for_connector_deletion_task(self: Task, *, tenant_id: str) -> bool | N
     r_celery: Redis = self.app.broker_connection().channel().client  # type: ignore
 
     lock_beat: RedisLock = r.lock(
-        OnyxRedisLocks.CHECK_CONNECTOR_DELETION_BEAT_LOCK,
+        OmRedisLocks.CHECK_CONNECTOR_DELETION_BEAT_LOCK,
         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
     )
 
@@ -146,7 +146,7 @@ def check_for_connector_deletion_task(self: Task, *, tenant_id: str) -> bool | N
     try:
         # we want to run this less frequently than the overall task
         lock_beat.reacquire()
-        if not r.exists(OnyxRedisSignals.BLOCK_VALIDATE_CONNECTOR_DELETION_FENCES):
+        if not r.exists(OmRedisSignals.BLOCK_VALIDATE_CONNECTOR_DELETION_FENCES):
             # clear fences that don't have associated celery tasks in progress
             try:
                 validate_connector_deletion_fences(
@@ -157,7 +157,7 @@ def check_for_connector_deletion_task(self: Task, *, tenant_id: str) -> bool | N
                     "Exception while validating connector deletion fences"
                 )
 
-            r.set(OnyxRedisSignals.BLOCK_VALIDATE_CONNECTOR_DELETION_FENCES, 1, ex=300)
+            r.set(OmRedisSignals.BLOCK_VALIDATE_CONNECTOR_DELETION_FENCES, 1, ex=300)
 
         # collect cc_pair_ids
         cc_pair_ids: list[int] = []
@@ -208,12 +208,12 @@ def check_for_connector_deletion_task(self: Task, *, tenant_id: str) -> bool | N
                     redis_connector.stop.set_fence(False)
 
         lock_beat.reacquire()
-        keys = cast(set[Any], r_replica.smembers(OnyxRedisConstants.ACTIVE_FENCES))
+        keys = cast(set[Any], r_replica.smembers(OmRedisConstants.ACTIVE_FENCES))
         for key in keys:
             key_bytes = cast(bytes, key)
 
             if not r.exists(key_bytes):
-                r.srem(OnyxRedisConstants.ACTIVE_FENCES, key_bytes)
+                r.srem(OmRedisConstants.ACTIVE_FENCES, key_bytes)
                 continue
 
             key_str = key_bytes.decode("utf-8")
@@ -565,17 +565,17 @@ def validate_connector_deletion_fences(
     # validating until the queue is small
     CONNECTION_DELETION_VALIDATION_MAX_QUEUE_LEN = 1024
 
-    queue_len = celery_get_queue_length(OnyxCeleryQueues.CONNECTOR_DELETION, r_celery)
+    queue_len = celery_get_queue_length(OmCeleryQueues.CONNECTOR_DELETION, r_celery)
     if queue_len > CONNECTION_DELETION_VALIDATION_MAX_QUEUE_LEN:
         return
 
     queued_upsert_tasks = celery_get_queued_task_ids(
-        OnyxCeleryQueues.CONNECTOR_DELETION, r_celery
+        OmCeleryQueues.CONNECTOR_DELETION, r_celery
     )
 
     # validate all existing connector deletion jobs
     lock_beat.reacquire()
-    keys = cast(set[Any], r_replica.smembers(OnyxRedisConstants.ACTIVE_FENCES))
+    keys = cast(set[Any], r_replica.smembers(OmRedisConstants.ACTIVE_FENCES))
     for key in keys:
         key_bytes = cast(bytes, key)
         key_str = key_bytes.decode("utf-8")

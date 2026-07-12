@@ -21,7 +21,7 @@ from om.background.celery.tasks.docfetching.task_creation_utils import (
     try_creating_docfetching_task,
 )
 from om.configs.constants import DocumentSource
-from om.configs.constants import OnyxCeleryPriority
+from om.configs.constants import OmCeleryPriority
 from om.connectors.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
@@ -119,9 +119,9 @@ class TestDocfetchingTaskPriorityWithRealObjects:
         "has_successful_index,expected_priority",
         [
             # First-time indexing (no last_successful_index_time) should get HIGH priority
-            (False, OnyxCeleryPriority.HIGH),
+            (False, OmCeleryPriority.HIGH),
             # Re-indexing (has last_successful_index_time) should get MEDIUM priority
-            (True, OnyxCeleryPriority.MEDIUM),
+            (True, OmCeleryPriority.MEDIUM),
         ],
     )
     @patch(
@@ -132,7 +132,7 @@ class TestDocfetchingTaskPriorityWithRealObjects:
         mock_try_create_index_attempt: MagicMock,
         db_session: Session,
         has_successful_index: bool,
-        expected_priority: OnyxCeleryPriority,
+        expected_priority: OmCeleryPriority,
     ) -> None:
         """
         Test that first-time indexing connectors get higher priority than re-indexing.

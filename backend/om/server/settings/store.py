@@ -1,9 +1,9 @@
 from om.configs.app_configs import DISABLE_USER_KNOWLEDGE
 from om.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
-from om.configs.app_configs import ONYX_QUERY_HISTORY_TYPE
+from om.configs.app_configs import OM_QUERY_HISTORY_TYPE
 from om.configs.app_configs import SHOW_EXTRA_CONNECTORS
 from om.configs.constants import KV_SETTINGS_KEY
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmRedisLocks
 from om.key_value_store.factory import get_kv_store
 from om.key_value_store.interface import KvKeyNotFoundError
 from om.redis.redis_pool import get_redis_client
@@ -37,7 +37,7 @@ def load_settings() -> Settings:
     redis_client = get_redis_client(tenant_id=tenant_id)
 
     try:
-        value = redis_client.get(OnyxRedisLocks.ANONYMOUS_USER_ENABLED)
+        value = redis_client.get(OmRedisLocks.ANONYMOUS_USER_ENABLED)
         if value is not None:
             assert isinstance(value, bytes)
             anonymous_user_enabled = int(value.decode("utf-8")) == 1
@@ -46,7 +46,7 @@ def load_settings() -> Settings:
             anonymous_user_enabled = False
             # Optionally store the default back to Redis
             redis_client.set(
-                OnyxRedisLocks.ANONYMOUS_USER_ENABLED, "0", ex=SETTINGS_TTL
+                OmRedisLocks.ANONYMOUS_USER_ENABLED, "0", ex=SETTINGS_TTL
             )
     except Exception as e:
         # Log the error and reset to default
@@ -54,7 +54,7 @@ def load_settings() -> Settings:
         anonymous_user_enabled = False
 
     settings.anonymous_user_enabled = anonymous_user_enabled
-    settings.query_history_type = ONYX_QUERY_HISTORY_TYPE
+    settings.query_history_type = OM_QUERY_HISTORY_TYPE
 
     # Override user knowledge setting if disabled via environment variable
     if DISABLE_USER_KNOWLEDGE:
@@ -71,7 +71,7 @@ def store_settings(settings: Settings) -> None:
 
     if settings.anonymous_user_enabled is not None:
         redis_client.set(
-            OnyxRedisLocks.ANONYMOUS_USER_ENABLED,
+            OmRedisLocks.ANONYMOUS_USER_ENABLED,
             "1" if settings.anonymous_user_enabled else "0",
             ex=SETTINGS_TTL,
         )

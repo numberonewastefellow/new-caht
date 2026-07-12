@@ -12,9 +12,9 @@ from sqlalchemy.orm import Session
 
 from om.background.celery.versioned_apps.client import app as client_app
 from om.configs.constants import FileOrigin
-from om.configs.constants import OnyxCeleryPriority
-from om.configs.constants import OnyxCeleryQueues
-from om.configs.constants import OnyxCeleryTask
+from om.configs.constants import OmCeleryPriority
+from om.configs.constants import OmCeleryQueues
+from om.configs.constants import OmCeleryTask
 from om.db.models import Project__UserFile
 from om.db.models import User
 from om.db.models import UserFile
@@ -129,10 +129,10 @@ def upload_files_to_user_files_with_indexing(
         )
     for user_file in user_files:
         task = client_app.send_task(
-            OnyxCeleryTask.PROCESS_SINGLE_USER_FILE,
+            OmCeleryTask.PROCESS_SINGLE_USER_FILE,
             kwargs={"user_file_id": user_file.id, "tenant_id": tenant_id},
-            queue=OnyxCeleryQueues.USER_FILE_PROCESSING,
-            priority=OnyxCeleryPriority.HIGH,
+            queue=OmCeleryQueues.USER_FILE_PROCESSING,
+            priority=OmCeleryPriority.HIGH,
         )
         logger.info(
             f"Triggered indexing for user_file_id={user_file.id} with task_id={task.id}"

@@ -27,7 +27,7 @@ def is_salesforce_rate_limit_error(exception: Exception) -> bool:
     ) and "REQUEST_LIMIT_EXCEEDED" in str(exception)
 
 
-class OnyxSalesforce(Salesforce):
+class OmSalesforce(Salesforce):
     SOQL_MAX_SUBQUERIES = 20
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -189,7 +189,7 @@ class OnyxSalesforce(Salesforce):
             ):
                 break
 
-            if len(child_relationships_batch) >= OnyxSalesforce.SOQL_MAX_SUBQUERIES:
+            if len(child_relationships_batch) >= OmSalesforce.SOQL_MAX_SUBQUERIES:
                 process_batch = True
 
             if len(remaining_child_relationships) == 0:
@@ -199,7 +199,7 @@ class OnyxSalesforce(Salesforce):
                 if len(child_relationships_batch) == 0:
                     break
 
-                query = OnyxSalesforce._make_child_objects_by_id_query(
+                query = OmSalesforce._make_child_objects_by_id_query(
                     object_id,
                     sf_type,
                     child_relationships_batch,

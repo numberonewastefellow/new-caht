@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 
 from om.background.celery.apps.app_base import task_logger
 from om.configs.constants import CELERY_SANDBOX_FILE_SYNC_LOCK_TIMEOUT
-from om.configs.constants import OnyxCeleryTask
-from om.configs.constants import OnyxRedisLocks
+from om.configs.constants import OmCeleryTask
+from om.configs.constants import OmRedisLocks
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import SandboxStatus
 from om.redis.redis_pool import get_redis_client
@@ -42,7 +42,7 @@ TIMEOUT_SECONDS = 6000
 
 
 @shared_task(
-    name=OnyxCeleryTask.CLEANUP_IDLE_SANDBOXES,
+    name=OmCeleryTask.CLEANUP_IDLE_SANDBOXES,
     soft_time_limit=TIMEOUT_SECONDS,
     bind=True,
     ignore_result=True,
@@ -74,7 +74,7 @@ def cleanup_idle_sandboxes_task(self: Task, *, tenant_id: str) -> None:  # noqa:
 
     redis_client = get_redis_client(tenant_id=tenant_id)
     lock: RedisLock = redis_client.lock(
-        OnyxRedisLocks.CLEANUP_IDLE_SANDBOXES_BEAT_LOCK,
+        OmRedisLocks.CLEANUP_IDLE_SANDBOXES_BEAT_LOCK,
         timeout=TIMEOUT_SECONDS,
     )
 
@@ -315,7 +315,7 @@ def _get_disabled_user_library_paths(db_session: "Session", user_id: str) -> lis
 
 
 @shared_task(
-    name=OnyxCeleryTask.SANDBOX_FILE_SYNC,
+    name=OmCeleryTask.SANDBOX_FILE_SYNC,
     soft_time_limit=TIMEOUT_SECONDS,
     bind=True,
     ignore_result=True,
@@ -358,7 +358,7 @@ def sync_sandbox_files(
     lock_timeout = CELERY_SANDBOX_FILE_SYNC_LOCK_TIMEOUT
     redis_client = get_redis_client(tenant_id=tenant_id)
     lock = redis_client.lock(
-        f"{OnyxRedisLocks.SANDBOX_FILE_SYNC_LOCK_PREFIX}:{user_id}",
+        f"{OmRedisLocks.SANDBOX_FILE_SYNC_LOCK_PREFIX}:{user_id}",
         timeout=lock_timeout,
     )
 

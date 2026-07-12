@@ -26,7 +26,7 @@ logger = setup_logger()
 SQLITE_DISK_IO_ERROR = "disk I/O error"
 
 
-class OnyxSalesforceSQLite:
+class OmSalesforceSQLite:
     """Notes on context management using 'with self.conn':
 
     Does autocommit / rollback on exit.
@@ -268,7 +268,7 @@ class OnyxSalesforceSQLite:
 
             start = time.monotonic()
             if cursor.fetchone()[0] == 0:
-                OnyxSalesforceSQLite._update_user_email_map(cursor)
+                OmSalesforceSQLite._update_user_email_map(cursor)
             elapsed = time.monotonic() - start
             logger.info(f"init_db - update_user_email_map: elapsed={elapsed:.2f}")
 
@@ -579,7 +579,7 @@ class OnyxSalesforceSQLite:
                     row_id = row[ID_FIELD]
 
                     normalized_record, parent_ids = (
-                        OnyxSalesforceSQLite.normalize_record(row, remove_ids)
+                        OmSalesforceSQLite.normalize_record(row, remove_ids)
                     )
                     normalized_record_json_str = json.dumps(normalized_record)
 
@@ -594,7 +594,7 @@ class OnyxSalesforceSQLite:
                     )
 
                     # Update relationships using the same connection
-                    OnyxSalesforceSQLite._update_relationship_tables(
+                    OmSalesforceSQLite._update_relationship_tables(
                         cursor, row_id, parent_ids
                     )
                     updated_ids.append(row_id)
@@ -607,7 +607,7 @@ class OnyxSalesforceSQLite:
 
             # If we're updating User objects, update the email map
             if object_type == USER_OBJECT_TYPE:
-                OnyxSalesforceSQLite._update_user_email_map(cursor)
+                OmSalesforceSQLite._update_user_email_map(cursor)
 
         return updated_ids
 
