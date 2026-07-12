@@ -1,7 +1,6 @@
 import { FormikProps } from "formik";
 import { Label } from "@/components/Field";
 import { useUserGroups } from "@/lib/hooks";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import { GenericMultiSelect } from "@/components/GenericMultiSelect";
 
 export type GroupsMultiSelectFormType = {
@@ -28,20 +27,15 @@ export function GroupsMultiSelect<T extends GroupsMultiSelectFormType>({
     isLoading: userGroupsIsLoading,
     error,
   } = useUserGroups();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
 
-  // Show loading state while checking enterprise features or loading groups
-  if (userGroupsIsLoading || isPaidEnterpriseFeaturesEnabled === undefined) {
+  // Show loading state while loading groups
+  if (userGroupsIsLoading) {
     return (
       <div className="mb-4">
         <Label>{label}</Label>
         <div className="animate-pulse bg-background-200 h-10 w-full rounded-lg mt-2"></div>
       </div>
     );
-  }
-
-  if (!isPaidEnterpriseFeaturesEnabled) {
-    return null;
   }
 
   return (

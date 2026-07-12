@@ -14,7 +14,6 @@ import {
   useLicense,
   hasActiveSubscription,
 } from "@/lib/billing";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import {
   ClipboardIcon,
   SlackIconSkeleton,
@@ -85,10 +84,7 @@ const document_management_items = () => [
   },
 ];
 
-const custom_assistants_items = (
-  isCurator: boolean,
-  enableEnterprise: boolean
-) => {
+const custom_assistants_items = (isCurator: boolean) => {
   const items = [
     {
       name: "Assistants",
@@ -125,13 +121,11 @@ const custom_assistants_items = (
     }
   );
 
-  if (enableEnterprise) {
-    items.push({
-      name: "Standard Answers",
-      icon: ClipboardIcon,
-      link: "/ee/admin/standard-answer",
-    });
-  }
+  items.push({
+    name: "Standard Answers",
+    icon: ClipboardIcon,
+    link: "/admin/standard-answer",
+  });
 
   return items;
 };
@@ -139,7 +133,6 @@ const custom_assistants_items = (
 const collections = (
   isCurator: boolean,
   enableCloud: boolean,
-  enableEnterprise: boolean,
   settings: CombinedSettings | null,
   kgExposed: boolean,
   customAnalyticsEnabled: boolean,
@@ -166,9 +159,9 @@ const collections = (
       : []),
     {
       name: "Custom Assistants",
-      items: custom_assistants_items(isCurator, enableEnterprise),
+      items: custom_assistants_items(isCurator),
     },
-    ...(isCurator && enableEnterprise
+    ...(isCurator
       ? [
           {
             name: "User Management",
@@ -176,7 +169,7 @@ const collections = (
               {
                 name: "Groups",
                 icon: SvgUsers,
-                link: "/ee/admin/groups",
+                link: "/admin/groups",
               },
             ],
           },
@@ -241,15 +234,11 @@ const collections = (
                 icon: SvgUser,
                 link: "/admin/users",
               },
-              ...(enableEnterprise
-                ? [
-                    {
-                      name: "Groups",
-                      icon: SvgUsers,
-                      link: "/ee/admin/groups",
-                    },
-                  ]
-                : []),
+              {
+                name: "Groups",
+                icon: SvgUsers,
+                link: "/admin/groups",
+              },
               {
                 name: "API Keys",
                 icon: SvgKey,
@@ -262,38 +251,34 @@ const collections = (
               },
             ],
           },
-          ...(enableEnterprise
-            ? [
-                {
-                  name: "Performance",
-                  items: [
+          {
+            name: "Performance",
+            items: [
+              {
+                name: "Usage Statistics",
+                icon: SvgActivity,
+                link: "/admin/performance/usage",
+              },
+              ...(settings?.settings.query_history_type !== "disabled"
+                ? [
                     {
-                      name: "Usage Statistics",
-                      icon: SvgActivity,
-                      link: "/ee/admin/performance/usage",
+                      name: "Query History",
+                      icon: SvgServer,
+                      link: "/admin/performance/query-history",
                     },
-                    ...(settings?.settings.query_history_type !== "disabled"
-                      ? [
-                          {
-                            name: "Query History",
-                            icon: SvgServer,
-                            link: "/ee/admin/performance/query-history",
-                          },
-                        ]
-                      : []),
-                    ...(!enableCloud && customAnalyticsEnabled
-                      ? [
-                          {
-                            name: "Custom Analytics",
-                            icon: SvgBarChart,
-                            link: "/ee/admin/performance/custom-analytics",
-                          },
-                        ]
-                      : []),
-                  ],
-                },
-              ]
-            : []),
+                  ]
+                : []),
+              ...(!enableCloud && customAnalyticsEnabled
+                ? [
+                    {
+                      name: "Custom Analytics",
+                      icon: SvgBarChart,
+                      link: "/admin/performance/custom-analytics",
+                    },
+                  ]
+                : []),
+            ],
+          },
           {
             name: "Platform Services",
             items: [
@@ -317,16 +302,11 @@ const collections = (
                 icon: SvgSettings,
                 link: "/admin/settings",
               },
-              ...(enableEnterprise
-                ? [
-                    {
-                      name: "Appearance & Theming",
-                      icon: SvgPaintBrush,
-                      link: "/ee/admin/theme",
-                    },
-                  ]
-                : []),
-              // Always show billing/upgrade - community users need access to upgrade
+              {
+                name: "Appearance & Theming",
+                icon: SvgPaintBrush,
+                link: "/admin/theme",
+              },
               {
                 name: hasSubscription ? "Plans & Billing" : "Upgrade Plan",
                 icon: hasSubscription ? SvgWallet : SvgArrowUpCircle,
@@ -351,14 +331,9 @@ const collections = (
 interface AdminSidebarProps {
   // Cloud flag is passed from server component (Layout.tsx) since it's a build-time constant
   enableCloudSS: boolean;
-  // Enterprise flag is also passed but we override it with runtime license check below
-  enableEnterpriseSS: boolean;
 }
 
-export default function AdminSidebar({
-  enableCloudSS,
-  enableEnterpriseSS,
-}: AdminSidebarProps) {
+export default function AdminSidebar({ enableCloudSS }: AdminSidebarProps) {
   const { kgExposed } = useIsKGExposed();
   const pathname = usePathname();
   const { customAnalyticsEnabled } = useCustomAnalyticsEnabled();
@@ -366,11 +341,6 @@ export default function AdminSidebar({
   const settings = useSettingsContext();
   const { data: billingData } = useBillingInformation();
   const { data: licenseData } = useLicense();
-
-  // Use runtime license check for enterprise features
-  // This checks settings.ee_features_enabled (set by backend based on license status)
-  // Falls back to build-time check if LICENSE_ENFORCEMENT_ENABLED=false
-  const enableEnterprise = usePaidEnterpriseFeaturesEnabled();
 
   const isCurator =
     user?.role === UserRole.CURATOR || user?.role === UserRole.GLOBAL_CURATOR;
@@ -385,7 +355,6 @@ export default function AdminSidebar({
   const items = collections(
     isCurator,
     enableCloudSS,
-    enableEnterprise,
     settings,
     kgExposed,
     customAnalyticsEnabled,

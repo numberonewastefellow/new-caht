@@ -110,6 +110,15 @@ const nextConfig = {
         destination: "/app/:path*",
         permanent: true,
       },
+      // EE removal: the Enterprise pages moved from /ee/admin/* to their canonical
+      // /admin/* paths (and /ee/assistants/stats -> /assistants/stats). The old sidebar
+      // emitted the /ee/* form, so those URLs are in users' history and bookmarks --
+      // redirect rather than 404 them.
+      {
+        source: "/ee/:path*",
+        destination: "/:path*",
+        permanent: true,
+      },
     ];
   },
 };

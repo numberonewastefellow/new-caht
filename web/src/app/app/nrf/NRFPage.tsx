@@ -49,10 +49,7 @@ import DocumentsSidebar from "@/sections/document-sidebar/DocumentsSidebar";
 import TextViewModal from "@/sections/modals/TextViewModal";
 import { personaIncludesRetrieval } from "@/app/app/services/lib";
 import { useQueryController } from "@/providers/QueryControllerProvider";
-import { eeGated } from "@/ce";
-import EESearchUI from "@/ee/sections/SearchUI";
-
-const SearchUI = eeGated(EESearchUI);
+import SearchUI from "@/sections/SearchUI";
 
 interface NRFPageProps {
   isSidePanel?: boolean;

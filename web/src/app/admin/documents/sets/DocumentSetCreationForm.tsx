@@ -17,7 +17,6 @@ import {
 } from "@/lib/types";
 import { TextFormField } from "@/components/Field";
 import Button from "@/refresh-components/buttons/Button";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import { IsPublicGroupSelector } from "@/components/IsPublicGroupSelector";
 import React, { useEffect, useState } from "react";
 import { useUser } from "@/providers/UserProvider";
@@ -39,7 +38,6 @@ export const DocumentSetCreationForm = ({
   onClose,
   existingDocumentSet,
 }: SetCreationPopupProps) => {
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const isUpdate = existingDocumentSet !== undefined;
   const [localCcPairs, setLocalCcPairs] = useState(ccPairs);
   const { user } = useUser();
@@ -182,12 +180,10 @@ export const DocumentSetCreationForm = ({
                   optional={true}
                 />
 
-                {isPaidEnterpriseFeaturesEnabled && (
-                  <IsPublicGroupSelector
-                    formikProps={props}
-                    objectName="collection"
-                  />
-                )}
+                <IsPublicGroupSelector
+                  formikProps={props}
+                  objectName="collection"
+                />
               </div>
 
               <div className="my-6 border-t border-border-02" />

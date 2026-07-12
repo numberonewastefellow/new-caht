@@ -65,7 +65,6 @@ import { useSettingsContext } from "@/providers/SettingsProvider";
 import { AppMode, useAppMode } from "@/providers/AppModeProvider";
 import useAppFocus from "@/hooks/useAppFocus";
 import { useQueryController } from "@/providers/QueryControllerProvider";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import WorkspaceTopBanner from "@/app/app/components/projects/workspace-v2/WorkspaceTopBanner";
 
 /**
@@ -80,10 +79,9 @@ import WorkspaceTopBanner from "@/app/app/components/projects/workspace-v2/Works
  * - Delete chat with confirmation
  * - Mobile-responsive sidebar toggle
  * - Custom header content from enterprise settings
- * - App-Mode toggle (EE gated)
+ * - App-Mode toggle
  */
 function Header() {
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const { appMode, setAppMode } = useAppMode();
   const settings = useSettingsContext();
   const { isMobile } = useScreenSize();
@@ -341,7 +339,7 @@ function Header() {
         {/*
           Left:
           - (mobile) sidebar toggle
-          - app-mode (for Unified S+C [EE gated])
+          - app-mode (for Unified S+C)
         */}
         <div className="flex-1 flex flex-row items-center gap-2 h-[3.3rem]">
           {isMobile && (
@@ -351,47 +349,45 @@ function Header() {
               internal
             />
           )}
-          {isPaidEnterpriseFeaturesEnabled &&
-            appFocus.isNewSession() &&
-            !classification && (
-              <Popover open={modePopoverOpen} onOpenChange={setModePopoverOpen}>
-                <Popover.Trigger asChild>
-                  <OpenButton
-                    icon={
-                      effectiveMode === "search" ? SvgSearchMenu : SvgBubbleText
-                    }
+          {appFocus.isNewSession() && !classification && (
+            <Popover open={modePopoverOpen} onOpenChange={setModePopoverOpen}>
+              <Popover.Trigger asChild>
+                <OpenButton
+                  icon={
+                    effectiveMode === "search" ? SvgSearchMenu : SvgBubbleText
+                  }
+                >
+                  {effectiveMode === "search" ? "Search" : "Chat"}
+                </OpenButton>
+              </Popover.Trigger>
+              <Popover.Content align="start" width="lg">
+                <Popover.Menu>
+                  <LineItem
+                    icon={SvgSearchMenu}
+                    selected={effectiveMode === "search"}
+                    description="Quick search for documents"
+                    onClick={noProp(() => {
+                      setAppMode("search");
+                      setModePopoverOpen(false);
+                    })}
                   >
-                    {effectiveMode === "search" ? "Search" : "Chat"}
-                  </OpenButton>
-                </Popover.Trigger>
-                <Popover.Content align="start" width="lg">
-                  <Popover.Menu>
-                    <LineItem
-                      icon={SvgSearchMenu}
-                      selected={effectiveMode === "search"}
-                      description="Quick search for documents"
-                      onClick={noProp(() => {
-                        setAppMode("search");
-                        setModePopoverOpen(false);
-                      })}
-                    >
-                      Search
-                    </LineItem>
-                    <LineItem
-                      icon={SvgBubbleText}
-                      selected={effectiveMode === "chat"}
-                      description="Conversation and research"
-                      onClick={noProp(() => {
-                        setAppMode("chat");
-                        setModePopoverOpen(false);
-                      })}
-                    >
-                      Chat
-                    </LineItem>
-                  </Popover.Menu>
-                </Popover.Content>
-              </Popover>
-            )}
+                    Search
+                  </LineItem>
+                  <LineItem
+                    icon={SvgBubbleText}
+                    selected={effectiveMode === "chat"}
+                    description="Conversation and research"
+                    onClick={noProp(() => {
+                      setAppMode("chat");
+                      setModePopoverOpen(false);
+                    })}
+                  >
+                    Chat
+                  </LineItem>
+                </Popover.Menu>
+              </Popover.Content>
+            </Popover>
+          )}
         </div>
 
         {/*

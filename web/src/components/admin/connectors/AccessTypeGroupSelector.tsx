@@ -1,4 +1,3 @@
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import React, { useState, useEffect } from "react";
 import { FieldArray, ArrayHelpers, ErrorMessage, useField } from "formik";
 import Text from "@/refresh-components/texts/Text";
@@ -35,7 +34,6 @@ export function AccessTypeGroupSelector({
 }) {
   const { data: userGroups, isLoading: userGroupsIsLoading } = useUserGroups();
   const { isAdmin, user, isCurator } = useUser();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const [shouldHideContent, setShouldHideContent] = useState(false);
   const isAutoSyncSupported = isValidAutoSyncSource(connector);
 
@@ -44,12 +42,8 @@ export function AccessTypeGroupSelector({
   const [groups, groups_meta, groups_helpers] = useField<number[]>("groups");
 
   useEffect(() => {
-    if (user && userGroups && isPaidEnterpriseFeaturesEnabled) {
+    if (user && userGroups) {
       const isUserAdmin = user.role === UserRole.ADMIN;
-      if (!isPaidEnterpriseFeaturesEnabled) {
-        access_type_helpers.setValue("public");
-        return;
-      }
 
       // Only set default access type if it's not already set, to avoid overriding user selections
       if (!access_type.value && !isUserAdmin && !isAutoSyncSupported) {
@@ -78,15 +72,11 @@ export function AccessTypeGroupSelector({
     access_type.value,
     access_type_helpers,
     groups_helpers,
-    isPaidEnterpriseFeaturesEnabled,
     isAutoSyncSupported,
   ]);
 
   if (userGroupsIsLoading) {
     return <div>Loading...</div>;
-  }
-  if (!isPaidEnterpriseFeaturesEnabled) {
-    return null;
   }
 
   if (shouldHideContent) {

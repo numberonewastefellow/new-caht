@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import { useUser } from "@/providers/UserProvider";
 import { UserRole } from "@/lib/types";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import { useIsKGExposed } from "@/app/admin/kg/utils";
 import { useCustomAnalyticsEnabled } from "@/lib/hooks/useCustomAnalyticsEnabled";
 import {
@@ -39,9 +38,6 @@ export function ClientLayout({
   const { data: billingData } = useBillingInformation();
   const { data: licenseData } = useLicense();
 
-  // Use runtime license check for enterprise features
-  const enableEnterprise = usePaidEnterpriseFeaturesEnabled();
-
   const isCurator =
     user?.role === UserRole.CURATOR || user?.role === UserRole.GLOBAL_CURATOR;
 
@@ -53,7 +49,9 @@ export function ClientLayout({
   const groups = getAdminNavGroups({
     isCurator,
     enableCloud,
-    enableEnterprise,
+    // TODO: `enableEnterprise` is now always true — remove this param from
+    // `getAdminNavGroups` (and from `ClientLayoutProps`) once all call sites are updated.
+    enableEnterprise: true,
     settings,
     kgExposed,
     customAnalyticsEnabled,

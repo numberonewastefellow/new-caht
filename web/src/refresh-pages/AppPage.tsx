@@ -93,9 +93,7 @@ import {
   useIsCompareMode,
   useCompareStore,
 } from "@/app/app/stores/useCompareStore";
-import { eeGated } from "@/ce";
-import EESearchUI from "@/ee/sections/SearchUI";
-const SearchUI = eeGated(EESearchUI);
+import SearchUI from "@/sections/SearchUI";
 import { motion, AnimatePresence } from "motion/react";
 import { useAppMode } from "@/providers/AppModeProvider";
 

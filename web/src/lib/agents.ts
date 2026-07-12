@@ -111,36 +111,22 @@ export async function deleteAgent(agentId: number): Promise<string | null> {
 /**
  * Updates agent sharing settings.
  *
- * For MIT versions, group_ids should not be sent since group-based sharing
- * is an EE-only feature.
- *
  * @param agentId - The ID of the agent to update
  * @param userIds - Array of user IDs to share with
- * @param groupIds - Array of group IDs to share with (ignored when isPaidEnterpriseFeaturesEnabled is false)
+ * @param groupIds - Array of group IDs to share with
  * @param isPublic - Whether the agent should be public
- * @param isPaidEnterpriseFeaturesEnabled - Whether enterprise features are enabled
  * @returns null on success, or an error message string on failure
  *
  * @example
- * const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
- * const error = await updateAgentSharedStatus(agentId, userIds, groupIds, isPublic, isPaidEnterpriseFeaturesEnabled);
+ * const error = await updateAgentSharedStatus(agentId, userIds, groupIds, isPublic);
  * if (error) console.error(error);
  */
 export async function updateAgentSharedStatus(
   agentId: number,
   userIds: string[],
   groupIds: number[],
-  isPublic: boolean | undefined,
-  isPaidEnterpriseFeaturesEnabled: boolean
+  isPublic: boolean | undefined
 ): Promise<null | string> {
-  // MIT versions should not send group_ids - warn if caller provided non-empty groups
-  if (!isPaidEnterpriseFeaturesEnabled && groupIds.length > 0) {
-    console.error(
-      "updateAgentSharedStatus: groupIds provided but enterprise features are disabled. " +
-        "Group sharing is an EE-only feature. Discarding groupIds."
-    );
-  }
-
   try {
     const response = await fetch(`/api/persona/${agentId}/share`, {
       method: "PATCH",
@@ -149,8 +135,7 @@ export async function updateAgentSharedStatus(
       },
       body: JSON.stringify({
         user_ids: userIds,
-        // Only include group_ids for enterprise versions
-        group_ids: isPaidEnterpriseFeaturesEnabled ? groupIds : undefined,
+        group_ids: groupIds,
         is_public: isPublic,
       }),
     });

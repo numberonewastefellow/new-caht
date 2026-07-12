@@ -8,7 +8,6 @@ import { usePinnedAgents, useAgent } from "@/hooks/useAgents";
 import { cn, noProp } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import { checkUserOwnsAssistant, updateAgentSharedStatus } from "@/lib/agents";
 import { useUser } from "@/providers/UserProvider";
 import Text from "@/refresh-components/texts/Text";
@@ -40,7 +39,6 @@ export default function AgentCard({ agent, onLabelClick }: AgentCardProps) {
     [agent.id, pinnedAgents]
   );
   const { user } = useUser();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const isOwnedByUser = checkUserOwnsAssistant(user, agent);
   const [hovered, setHovered] = React.useState(false);
   const shareAgentModal = useCreateModal();
@@ -54,8 +52,7 @@ export default function AgentCard({ agent, onLabelClick }: AgentCardProps) {
         agent.id,
         userIds,
         groupIds,
-        isPublic,
-        isPaidEnterpriseFeaturesEnabled
+        isPublic
       );
 
       if (error) {
@@ -65,7 +62,7 @@ export default function AgentCard({ agent, onLabelClick }: AgentCardProps) {
         shareAgentModal.toggle(false);
       }
     },
-    [agent.id, isPaidEnterpriseFeaturesEnabled, refreshAgent]
+    [agent.id, refreshAgent]
   );
 
   return (
@@ -159,14 +156,12 @@ export default function AgentCard({ agent, onLabelClick }: AgentCardProps) {
           <div className="flex flex-row items-center flex-shrink-0">
             {/* Action buttons — visible on hover */}
             <div className="hidden group-hover/AgentCard:flex flex-row items-center">
-              {isOwnedByUser && isPaidEnterpriseFeaturesEnabled && (
+              {isOwnedByUser && (
                 <IconButton
                   icon={SvgBarChart}
                   tertiary
                   onClick={noProp(() =>
-                    router.push(
-                      `/ee/assistants/stats/${agent.id}` as Route
-                    )
+                    router.push(`/assistants/stats/${agent.id}` as Route)
                   )}
                   tooltip="View Agent Stats"
                 />

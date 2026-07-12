@@ -21,7 +21,6 @@ import {
 import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import { SourceIcon } from "@/components/SourceIcon";
 import { getSourceDisplayName } from "@/lib/sources";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import { ConnectorCredentialPairStatus } from "../../connector/[ccPairId]/types";
 import { PageSelector } from "@/components/PageSelector";
 import { ConnectorStaggeredSkeleton } from "./ConnectorRowSkeleton";
@@ -95,7 +94,6 @@ function SummaryRow({
   isOpen: boolean;
   onToggle: () => void;
 }) {
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const colors = getSourceColor(source);
 
   const activeRatio = summary.total_connectors > 0
@@ -149,15 +147,11 @@ function SummaryRow({
           label="Active"
           value={`${summary.active_connectors}/${summary.total_connectors}`}
         />
-        {isPaidEnterpriseFeaturesEnabled && (
-          <>
-            <div className="w-px h-8 bg-border-01" />
-            <MetricPill
-              label="Public"
-              value={`${summary.public_connectors}/${summary.total_connectors}`}
-            />
-          </>
-        )}
+        <div className="w-px h-8 bg-border-01" />
+        <MetricPill
+          label="Public"
+          value={`${summary.public_connectors}/${summary.total_connectors}`}
+        />
         <div className="w-px h-8 bg-border-01" />
         <MetricPill
           label="Docs"
@@ -194,24 +188,18 @@ function SummaryRow({
 }
 
 /** Column header row for expanded source */
-function ColumnHeaders({
-  isPaidEnterpriseFeaturesEnabled,
-}: {
-  isPaidEnterpriseFeaturesEnabled: boolean;
-}) {
+function ColumnHeaders() {
   return (
     <div
       className={cn(
         "grid items-center px-5 py-2.5 text-[11px] uppercase tracking-wider text-text-03 font-medium border-b border-border-01 bg-background-neutral-01/50",
-        isPaidEnterpriseFeaturesEnabled
-          ? "grid-cols-[1fr_120px_140px_160px_100px_48px]"
-          : "grid-cols-[1fr_120px_140px_100px_48px]"
+        "grid-cols-[1fr_120px_140px_160px_100px_48px]"
       )}
     >
       <span>Name</span>
       <span>Last Indexed</span>
       <span>Status</span>
-      {isPaidEnterpriseFeaturesEnabled && <span>Access</span>}
+      <span>Access</span>
       <span>Docs</span>
       <span />
     </div>
@@ -228,7 +216,6 @@ function ConnectorRow({
   isEditable: boolean;
 }) {
   const router = useRouter();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
 
   const connectorUrl = `/admin/connector/${ccPairsIndexingStatus.cc_pair_id}`;
 
@@ -243,9 +230,7 @@ function ConnectorRow({
       className={cn(
         "grid items-center px-5 py-3 border-b border-border-01 cursor-pointer transition-colors virtualai-card-hover",
         "group",
-        isPaidEnterpriseFeaturesEnabled
-          ? "grid-cols-[1fr_120px_140px_160px_100px_48px]"
-          : "grid-cols-[1fr_120px_140px_100px_48px]"
+        "grid-cols-[1fr_120px_140px_160px_100px_48px]"
       )}
       onClick={handleRowClick}
     >
@@ -272,26 +257,24 @@ function ConnectorRow({
           lastIndexAttemptStatus={ccPairsIndexingStatus.last_status}
         />
       </div>
-      {isPaidEnterpriseFeaturesEnabled && (
-        <div>
-          {ccPairsIndexingStatus.access_type === "public" ? (
-            <Badge variant={isEditable ? "success" : "default"} icon={FiUnlock}>
-              Public
-            </Badge>
-          ) : ccPairsIndexingStatus.access_type === "sync" ? (
-            <Badge
-              variant={isEditable ? "auto-sync" : "default"}
-              icon={FiRefreshCw}
-            >
-              Sync
-            </Badge>
-          ) : (
-            <Badge variant={isEditable ? "private" : "default"} icon={FiLock}>
-              Private
-            </Badge>
-          )}
-        </div>
-      )}
+      <div>
+        {ccPairsIndexingStatus.access_type === "public" ? (
+          <Badge variant={isEditable ? "success" : "default"} icon={FiUnlock}>
+            Public
+          </Badge>
+        ) : ccPairsIndexingStatus.access_type === "sync" ? (
+          <Badge
+            variant={isEditable ? "auto-sync" : "default"}
+            icon={FiRefreshCw}
+          >
+            Sync
+          </Badge>
+        ) : (
+          <Badge variant={isEditable ? "private" : "default"} icon={FiLock}>
+            Private
+          </Badge>
+        )}
+      </div>
       <div>
         <Text as="span" secondaryBody className="text-text-04 tabular-nums">
           {ccPairsIndexingStatus.docs_indexed.toLocaleString()}
@@ -316,7 +299,6 @@ function FederatedConnectorRow({
   invisible?: boolean;
 }) {
   const router = useRouter();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
 
   const federatedUrl = `/admin/federated/${federatedConnector.id}`;
 
@@ -331,9 +313,7 @@ function FederatedConnectorRow({
       className={cn(
         "grid items-center px-5 py-3 border-b border-border-01 cursor-pointer transition-colors virtualai-card-hover",
         "group",
-        isPaidEnterpriseFeaturesEnabled
-          ? "grid-cols-[1fr_120px_140px_160px_100px_48px]"
-          : "grid-cols-[1fr_120px_140px_100px_48px]"
+        "grid-cols-[1fr_120px_140px_160px_100px_48px]"
       )}
       onClick={handleRowClick}
     >
@@ -350,13 +330,11 @@ function FederatedConnectorRow({
       <div>
         <Badge variant="success">Indexed</Badge>
       </div>
-      {isPaidEnterpriseFeaturesEnabled && (
-        <div>
-          <Badge variant="secondary" icon={FiRefreshCw}>
-            Federated
-          </Badge>
-        </div>
-      )}
+      <div>
+        <Badge variant="secondary" icon={FiRefreshCw}>
+          Federated
+        </Badge>
+      </div>
       <div>
         <Text as="span" secondaryBody text03>
           N/A
@@ -390,8 +368,6 @@ export function CCPairIndexingStatusTable({
   onPageChange: (source: ValidSources, newPage: number) => void;
   sourceLoadingStates?: Record<ValidSources, boolean>;
 }) {
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
-
   return (
     <div className="flex flex-col gap-3 mt-2">
       {ccPairsIndexingStatuses.map((ccPairStatus) => {
@@ -420,9 +396,7 @@ export function CCPairIndexingStatusTable({
                 ) : (
                   <>
                     {/* Column headers */}
-                    <ColumnHeaders
-                      isPaidEnterpriseFeaturesEnabled={isPaidEnterpriseFeaturesEnabled}
-                    />
+                    <ColumnHeaders />
 
                     {/* Connector rows */}
                     {ccPairStatus.indexing_statuses.map((indexingStatus) => {

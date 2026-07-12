@@ -14,7 +14,6 @@ import { GenericTokenRateLimitTable } from "./TokenRateLimitTables";
 import { mutate } from "swr";
 import { toast } from "@/hooks/useToast";
 import CreateRateLimitModal from "./CreateRateLimitModal";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import CreateButton from "@/refresh-components/buttons/CreateButton";
 import { SvgGlobe, SvgShield, SvgUser, SvgUsers } from "@opal/icons";
 import { Section } from "@/layouts/general-layouts";
@@ -61,8 +60,6 @@ const handleCreateTokenRateLimit = async (
 function Main() {
   const [tabIndex, setTabIndex] = useState(0);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
 
   const updateTable = (target_scope: Scope) => {
     if (target_scope === Scope.GLOBAL) {
@@ -113,22 +110,18 @@ function Main() {
             spend.
           </Text>
         </li>
-        {isPaidEnterpriseFeaturesEnabled && (
-          <>
-            <li>
-              <Text>
-                Set rate limits for users to ensure that no single user can
-                spend too many tokens.
-              </Text>
-            </li>
-            <li>
-              <Text>
-                Set rate limits for user groups to control token spend for your
-                teams.
-              </Text>
-            </li>
-          </>
-        )}
+        <li>
+          <Text>
+            Set rate limits for users to ensure that no single user can spend
+            too many tokens.
+          </Text>
+        </li>
+        <li>
+          <Text>
+            Set rate limits for user groups to control token spend for your
+            teams.
+          </Text>
+        </li>
         <li>
           <Text>Enable and disable rate limits on the fly.</Text>
         </li>
@@ -138,69 +131,58 @@ function Main() {
         Create a Token Rate Limit
       </CreateButton>
 
-      {isPaidEnterpriseFeaturesEnabled ? (
-        <SimpleTabs
-          tabs={{
-            "0": {
-              name: "Global",
-              icon: SvgGlobe,
-              content: (
-                <GenericTokenRateLimitTable
-                  fetchUrl={GLOBAL_TOKEN_FETCH_URL}
-                  title={"Global Token Rate Limits"}
-                  description={GLOBAL_DESCRIPTION}
-                />
-              ),
-            },
-            "1": {
-              name: "User",
-              icon: SvgUser,
-              content: (
-                <GenericTokenRateLimitTable
-                  fetchUrl={USER_TOKEN_FETCH_URL}
-                  title={"User Token Rate Limits"}
-                  description={USER_DESCRIPTION}
-                />
-              ),
-            },
-            "2": {
-              name: "User Groups",
-              icon: SvgUsers,
-              content: (
-                <GenericTokenRateLimitTable
-                  fetchUrl={USER_GROUP_FETCH_URL}
-                  title={"User Group Token Rate Limits"}
-                  description={USER_GROUP_DESCRIPTION}
-                  responseMapper={(data: Record<string, TokenRateLimit[]>) =>
-                    Object.entries(data).flatMap(([group_name, elements]) =>
-                      elements.map((element) => ({
-                        ...element,
-                        group_name,
-                      }))
-                    )
-                  }
-                />
-              ),
-            },
-          }}
-          value={tabIndex.toString()}
-          onValueChange={(val) => setTabIndex(parseInt(val))}
-        />
-      ) : (
-        <GenericTokenRateLimitTable
-          fetchUrl={GLOBAL_TOKEN_FETCH_URL}
-          title={"Global Token Rate Limits"}
-          description={GLOBAL_DESCRIPTION}
-        />
-      )}
+      <SimpleTabs
+        tabs={{
+          "0": {
+            name: "Global",
+            icon: SvgGlobe,
+            content: (
+              <GenericTokenRateLimitTable
+                fetchUrl={GLOBAL_TOKEN_FETCH_URL}
+                title={"Global Token Rate Limits"}
+                description={GLOBAL_DESCRIPTION}
+              />
+            ),
+          },
+          "1": {
+            name: "User",
+            icon: SvgUser,
+            content: (
+              <GenericTokenRateLimitTable
+                fetchUrl={USER_TOKEN_FETCH_URL}
+                title={"User Token Rate Limits"}
+                description={USER_DESCRIPTION}
+              />
+            ),
+          },
+          "2": {
+            name: "User Groups",
+            icon: SvgUsers,
+            content: (
+              <GenericTokenRateLimitTable
+                fetchUrl={USER_GROUP_FETCH_URL}
+                title={"User Group Token Rate Limits"}
+                description={USER_GROUP_DESCRIPTION}
+                responseMapper={(data: Record<string, TokenRateLimit[]>) =>
+                  Object.entries(data).flatMap(([group_name, elements]) =>
+                    elements.map((element) => ({
+                      ...element,
+                      group_name,
+                    }))
+                  )
+                }
+              />
+            ),
+          },
+        }}
+        value={tabIndex.toString()}
+        onValueChange={(val) => setTabIndex(parseInt(val))}
+      />
 
       <CreateRateLimitModal
         isOpen={modalIsOpen}
         setIsOpen={() => setModalIsOpen(false)}
         onSubmit={handleSubmit}
-        forSpecificScope={
-          isPaidEnterpriseFeaturesEnabled ? undefined : Scope.GLOBAL
-        }
       />
     </Section>
   );

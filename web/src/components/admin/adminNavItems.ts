@@ -165,7 +165,7 @@ export function getAdminNavGroups(opts: {
     agentItems.push({
       name: "Curated Responses",
       icon: ClipboardIcon,
-      link: "/ee/admin/standard-answer",
+      link: "/admin/standard-answer",
     });
   }
 
@@ -247,7 +247,7 @@ export function getAdminNavGroups(opts: {
     governanceItems.push({
       name: "Access Groups",
       icon: SvgUsers,
-      link: "/ee/admin/groups",
+      link: "/admin/groups",
     });
   }
 
@@ -263,7 +263,7 @@ export function getAdminNavGroups(opts: {
             {
               name: "Access Groups",
               icon: SvgUsers,
-              link: "/ee/admin/groups",
+              link: "/admin/groups",
             },
           ]
         : []),
@@ -304,7 +304,7 @@ export function getAdminNavGroups(opts: {
       workspaceItems.push({
         name: "Branding",
         icon: SvgPaintBrush,
-        link: "/ee/admin/theme",
+        link: "/admin/theme",
       });
     }
 
@@ -343,14 +343,14 @@ export function getAdminNavGroups(opts: {
       workspaceItems.push({
         name: "Analytics",
         icon: SvgActivity,
-        link: "/ee/admin/performance/usage",
+        link: "/admin/performance/usage",
       });
 
       if (settings?.settings.query_history_type !== "disabled") {
         workspaceItems.push({
           name: "Query Logs",
           icon: SvgServer,
-          link: "/ee/admin/performance/query-history",
+          link: "/admin/performance/query-history",
         });
       }
 
@@ -358,7 +358,7 @@ export function getAdminNavGroups(opts: {
         workspaceItems.push({
           name: "Custom Reports",
           icon: SvgBarChart,
-          link: "/ee/admin/performance/custom-analytics",
+          link: "/admin/performance/custom-analytics",
         });
       }
     }
@@ -470,22 +470,22 @@ const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
   ["/admin/discord-bot", "purple"],
   ["/admin/actions", "purple"],
   ["/admin/workflows", "purple"],
-  ["/ee/admin/standard-answer", "purple"],
+  ["/admin/standard-answer", "purple"],
   // AI Models (blue)
   ["/admin/configuration", "blue"],
   ["/admin/kg", "blue"],
   // Governance (orange)
   ["/admin/users", "orange"],
-  ["/ee/admin/groups", "orange"],
+  ["/admin/groups", "orange"],
   ["/admin/api-key", "orange"],
   ["/admin/token-rate-limits", "orange"],
   // Workspace (cyan)
   ["/admin/services", "cyan"],
   ["/admin/settings", "cyan"],
-  ["/ee/admin/theme", "cyan"],
+  ["/admin/theme", "cyan"],
   ["/admin/billing", "cyan"],
   ["/admin/document-index-migration", "cyan"],
-  ["/ee/admin/performance", "cyan"],
+  ["/admin/performance", "cyan"],
 ];
 
 export function getGroupColorForPath(pathname: string): NavGroupColor | null {
@@ -505,8 +505,7 @@ export const BREADCRUMB_REDIRECT_MAP: Record<string, string> = {
   "/admin/configuration": "/admin/configuration/default-assistant",
   "/admin/documents": "/admin/documents/sets",
   "/admin/actions": "/admin/actions/mcp",
-  "/ee/admin": "/admin/workflows",
-  "/ee/admin/performance": "/ee/admin/performance/usage",
+  "/admin/performance": "/admin/performance/usage",
 };
 
 export function isDynamicSegment(segment: string): boolean {

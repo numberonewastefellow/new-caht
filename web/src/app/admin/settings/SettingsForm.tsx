@@ -8,7 +8,6 @@ import { Settings } from "./interfaces";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState, useEffect } from "react";
 import { SettingsContext } from "@/providers/SettingsProvider";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import Modal from "@/refresh-components/Modal";
 import { AuthType, NEXT_PUBLIC_CLOUD_ENABLED } from "@/lib/constants";
 import { AnonymousUserPath } from "./AnonymousUserPath";
@@ -89,7 +88,6 @@ export function SettingsForm() {
   const [chatRetention, setChatRetention] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [companyDescription, setCompanyDescription] = useState("");
-  const isEnterpriseEnabled = usePaidEnterpriseFeaturesEnabled();
 
   const {
     visionProviders,
@@ -356,33 +354,29 @@ export function SettingsForm() {
         </Modal>
       )}
 
-      {/* Conversation Retention Section (Enterprise) */}
-      {isEnterpriseEnabled && (
-        <CardSection>
-          <Title className="mb-4">Conversation Settings</Title>
-          <IntegerInput
-            label="Conversation Retention"
-            sublabel="Maximum days to retain conversation history. Leave empty for unlimited retention."
-            value={chatRetention === "" ? null : Number(chatRetention)}
-            onChange={(e) => {
-              const numValue = parseInt(e.target.value, 10);
-              if (numValue >= 1 || e.target.value === "") {
-                setChatRetention(e.target.value);
-              }
-            }}
-            id="chatRetentionInput"
-            placeholder="Infinite Retention"
-          />
-          <div className="flex gap-2">
-            <Button onClick={handleSetChatRetention}>
-              Set Retention Limit
-            </Button>
-            <Button secondary onClick={handleClearChatRetention}>
-              Retain All
-            </Button>
-          </div>
-        </CardSection>
-      )}
+      {/* Conversation Retention Section */}
+      <CardSection>
+        <Title className="mb-4">Conversation Settings</Title>
+        <IntegerInput
+          label="Conversation Retention"
+          sublabel="Maximum days to retain conversation history. Leave empty for unlimited retention."
+          value={chatRetention === "" ? null : Number(chatRetention)}
+          onChange={(e) => {
+            const numValue = parseInt(e.target.value, 10);
+            if (numValue >= 1 || e.target.value === "") {
+              setChatRetention(e.target.value);
+            }
+          }}
+          id="chatRetentionInput"
+          placeholder="Infinite Retention"
+        />
+        <div className="flex gap-2">
+          <Button onClick={handleSetChatRetention}>Set Retention Limit</Button>
+          <Button secondary onClick={handleClearChatRetention}>
+            Retain All
+          </Button>
+        </div>
+      </CardSection>
 
       {/* Vision & Image Analysis Section */}
       <CardSection>

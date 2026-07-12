@@ -45,11 +45,6 @@ jest.mock("@/hooks/useToast", () => {
   };
 });
 
-// Mock usePaidEnterpriseFeaturesEnabled
-jest.mock("@/components/settings/usePaidEnterpriseFeaturesEnabled", () => ({
-  usePaidEnterpriseFeaturesEnabled: () => false,
-}));
-
 describe("Custom LLM Provider Configuration Workflow", () => {
   let fetchSpy: jest.SpyInstance;
 

@@ -10,7 +10,6 @@ import useSWRMutation from "swr/mutation";
 import InputSelect from "@/refresh-components/inputs/InputSelect";
 import GenericConfirmModal from "@/components/modals/GenericConfirmModal";
 import { useState } from "react";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 
 export interface UserRoleDropdownProps {
   user: User;
@@ -31,7 +30,6 @@ export default function UserRoleDropdown({
     userMutationFetcher,
     { onSuccess, onError }
   );
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
 
   const handleChange = (value: string) => {
     if (value === user.role) return;
@@ -88,11 +86,8 @@ export default function UserRoleDropdown({
               // Don't want to ever show external permissioned users because it's scary
               if (role === UserRole.EXT_PERM_USER) return null;
 
-              // Only want to show limited users if paid enterprise features are enabled
-              // Also, dont want to show these other roles in general
+              // Dont want to show these roles in general
               const isNotVisibleRole =
-                (!isPaidEnterpriseFeaturesEnabled &&
-                  role === UserRole.GLOBAL_CURATOR) ||
                 role === UserRole.CURATOR ||
                 role === UserRole.LIMITED ||
                 role === UserRole.SLACK_USER;

@@ -61,7 +61,6 @@ import {
 import { SvgCheck } from "@opal/icons";
 import { cn } from "@/lib/utils";
 import { Interactive } from "@opal/core";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import {
   useVirtualAITheme,
   VirtualAIAccent,
@@ -971,7 +970,6 @@ function ChatPreferencesSettings() {
     updateUserDefaultModel,
     updateUserDefaultAppMode,
   } = useUser();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const llmManager = useLlmManager();
 
   const {
@@ -1026,26 +1024,24 @@ function ChatPreferencesSettings() {
             />
           </InputLayouts.Horizontal>
 
-          {isPaidEnterpriseFeaturesEnabled && (
-            <InputLayouts.Horizontal
-              title="Default App Mode"
-              description="Choose whether new sessions start in Search or Chat mode."
-              center
+          <InputLayouts.Horizontal
+            title="Default App Mode"
+            description="Choose whether new sessions start in Search or Chat mode."
+            center
+          >
+            <InputSelect
+              value={user?.preferences.default_app_mode ?? "CHAT"}
+              onValueChange={(value) => {
+                void updateUserDefaultAppMode(value as "CHAT" | "SEARCH");
+              }}
             >
-              <InputSelect
-                value={user?.preferences.default_app_mode ?? "CHAT"}
-                onValueChange={(value) => {
-                  void updateUserDefaultAppMode(value as "CHAT" | "SEARCH");
-                }}
-              >
-                <InputSelect.Trigger />
-                <InputSelect.Content>
-                  <InputSelect.Item value="CHAT">Chat</InputSelect.Item>
-                  <InputSelect.Item value="SEARCH">Search</InputSelect.Item>
-                </InputSelect.Content>
-              </InputSelect>
-            </InputLayouts.Horizontal>
-          )}
+              <InputSelect.Trigger />
+              <InputSelect.Content>
+                <InputSelect.Item value="CHAT">Chat</InputSelect.Item>
+                <InputSelect.Item value="SEARCH">Search</InputSelect.Item>
+              </InputSelect.Content>
+            </InputSelect>
+          </InputLayouts.Horizontal>
         </Card>
       </Section>
 
