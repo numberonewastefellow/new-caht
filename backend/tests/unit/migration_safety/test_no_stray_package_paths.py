@@ -17,6 +17,7 @@ are external contracts, not package paths, and each is there for a stated reason
 
 from __future__ import annotations
 
+import ast
 import os
 import re
 from pathlib import Path
@@ -31,7 +32,14 @@ from tests.unit.migration_safety.conftest import ROOT_PACKAGE
 # and the ROOT pyproject -- the two the previous sweep missed.
 # NOTE: filesystem walk, not `git ls-files` -- git is NOT installed in the backend image,
 # and a gate that silently skips in the environment it is meant to guard is no gate.
-_SUFFIXES = (".conf", ".toml", ".ini", ".sh", ".yml", ".yaml", ".template")
+#
+# `.py` is in this list for a reason. A Python file can hold a package path that is NOT
+# an import: a filesystem path assembled from string parts. Two such bugs have already
+# slipped through -- `os.path.join(os.getcwd(), "onyx", "document_index", ...)` and the
+# `--template` / `--cloud-services-template` argparse defaults in
+# scripts/debugging/onyx_vespa_schemas.py. No import walk can see either: the module
+# imports fine and only blows up with FileNotFoundError when that code path runs.
+_SUFFIXES = (".conf", ".toml", ".ini", ".sh", ".yml", ".yaml", ".template", ".py")
 _NAME_PREFIXES = ("Dockerfile",)
 
 _SKIP_DIRS = {
@@ -80,6 +88,77 @@ def _patterns(root: str) -> list[re.Pattern[str]]:
     ]
 
 
+def _iter_py_string_literals(text: str) -> list[tuple[int, str]]:
+    """(lineno, value) for every string literal in a .py file, EXCLUDING docstrings.
+
+    Comments and docstrings are prose -- they mention the old name legitimately (this
+    very suite's docstrings do). Flagging them is noise that would push someone to
+    delete the gate. What actually breaks production is an *executable* string: an
+    argparse default, an os.path.join component, a config default path. So parse and
+    look at real string constants only.
+    """
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return []
+
+    docstrings: set[int] = set()
+    for node in ast.walk(tree):
+        if isinstance(
+            node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+        ):
+            body = getattr(node, "body", None)
+            if (
+                body
+                and isinstance(body[0], ast.Expr)
+                and isinstance(body[0].value, ast.Constant)
+                and isinstance(body[0].value.value, str)
+            ):
+                docstrings.add(id(body[0].value))
+
+    out: list[tuple[int, str]] = []
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.Constant)
+            and isinstance(node.value, str)
+            and id(node) not in docstrings
+        ):
+            out.append((node.lineno, node.value))
+    return out
+
+
+# Calls that assemble a filesystem path out of separate components.
+_JOIN_FUNCS = {"join", "joinpath", "Path", "PurePath"}
+
+
+def _iter_path_component_strings(text: str) -> list[tuple[int, str]]:
+    """(lineno, value) for string args passed to a path-JOINING call.
+
+    `os.path.join(os.getcwd(), "onyx", "document_index", ...)` hides the package name as
+    a bare component with no slash, so no path regex can see it -- this was a real
+    Stage-1 bug (Vespa schema dir). But a bare "onyx" string on its own is NOT evidence
+    of a path: it is legitimately data (connector project names, this suite's own
+    _CANDIDATE_ROOTS, test fixtures). The join-call context is what makes it a path.
+    """
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return []
+
+    out: list[tuple[int, str]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        func = node.func
+        fname = getattr(func, "attr", None) or getattr(func, "id", None)
+        if fname not in _JOIN_FUNCS:
+            continue
+        for arg in node.args:
+            if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                out.append((arg.lineno, arg.value))
+    return out
+
+
 def _config_files() -> list:
     """Walk with os.walk so we can PRUNE big dirs in place.
 
@@ -112,6 +191,27 @@ def test_no_references_to_a_dead_package_root() -> None:
         except OSError:
             continue
         scanned += 1
+
+        if path.suffix == ".py":
+            # Executable string literals only -- never comments/docstrings (prose).
+            for lineno, value in _iter_py_string_literals(text):
+                if any(tok in value for tok in PRESERVE):
+                    continue
+                for dead in dead_roots:
+                    if dead in value and any(
+                        pat.search(value) for pat in _patterns(dead)
+                    ):
+                        offenders.append(f"{rel}:{lineno}: {value!r}")
+                        break
+            # A path assembled from components -- os.path.join(cwd, "onyx", "x") --
+            # where the root is a bare arg with no slash for a regex to latch onto.
+            for lineno, value in _iter_path_component_strings(text):
+                if value in dead_roots:
+                    offenders.append(
+                        f"{rel}:{lineno}: dead root {value!r} as a path component"
+                    )
+            continue
+
         for lineno, line in enumerate(text.splitlines(), 1):
             if any(tok in line for tok in PRESERVE):
                 continue

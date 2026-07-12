@@ -1,7 +1,7 @@
 import os
 
-PROMPTS_YAML = "./onyx/seeding/prompts.yaml"
-PERSONAS_YAML = "./onyx/seeding/personas.yaml"
+PROMPTS_YAML = "./om/seeding/prompts.yaml"
+PERSONAS_YAML = "./om/seeding/personas.yaml"
 NUM_RETURNED_HITS = 50
 
 # May be less depending on model

@@ -1,4 +1,4 @@
-# backend/onyx/background/celery/memory_monitoring.py
+# backend/om/background/celery/memory_monitoring.py
 import logging
 import os
 from logging.handlers import RotatingFileHandler

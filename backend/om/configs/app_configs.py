@@ -193,7 +193,7 @@ if _OIDC_SCOPE_OVERRIDE:
         pass
 
 # Applicable for SAML Auth
-SAML_CONF_DIR = os.environ.get("SAML_CONF_DIR") or "/app/onyx/configs/saml_config"
+SAML_CONF_DIR = os.environ.get("SAML_CONF_DIR") or "/app/om/configs/saml_config"
 
 # JWT Public Key URL for JWT token verification
 JWT_PUBLIC_KEY_URL: str | None = os.getenv("JWT_PUBLIC_KEY_URL", None)
@@ -842,7 +842,7 @@ MAX_TOKENS_FOR_FULL_INCLUSION = 4096
 RECENCY_BIAS_MULTIPLIER = float(os.environ.get("RECENCY_BIAS_MULTIPLIER") or 1.0)
 
 # Should match the rerank-count value set in
-# backend/onyx/document_index/vespa/app_config/schemas/danswer_chunk.sd.jinja.
+# backend/om/document_index/vespa/app_config/schemas/danswer_chunk.sd.jinja.
 RERANK_COUNT = int(os.environ.get("RERANK_COUNT") or 1000)
 
 

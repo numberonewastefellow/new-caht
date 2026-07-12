@@ -95,12 +95,12 @@ def main() -> None:
     parser.add_argument(
         "--template",
         help="The Jinja template to use for schemas",
-        default="onyx/document_index/vespa/app_config/schemas/danswer_chunk.sd.jinja",
+        default="om/document_index/vespa/app_config/schemas/danswer_chunk.sd.jinja",
     )
     parser.add_argument(
         "--cloud-services-template",
         help="The cloud-services.xml.jinja template path",
-        default="ee/onyx/document_index/vespa/app_config/cloud-services.xml.jinja",
+        default="ee/om/document_index/vespa/app_config/cloud-services.xml.jinja",
     )
     parser.add_argument(
         "--output-path",

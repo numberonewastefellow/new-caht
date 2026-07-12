@@ -130,7 +130,7 @@ def check_message_limit() -> bool:
         logger.error(
             f"VertualAi Bot has reached the message limit {OM_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD}"
             f" for the time period {OM_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS} seconds."
-            " These limits are configurable in backend/onyx/configs/onyxbot_configs.py"
+            " These limits are configurable in backend/om/configs/onyxbot_configs.py"
         )
         return False
     _ONYX_BOT_MESSAGE_COUNT += 1
