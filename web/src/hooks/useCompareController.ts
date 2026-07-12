@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { FilterManager, LlmDescriptor, LlmManager } from "@/lib/hooks";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
-import { OnyxDocument } from "@/lib/search/interfaces";
+import { OmDocument } from "@/lib/search/interfaces";
 import {
   createChatSession,
   updateLlmOverrideForChatSession,
@@ -44,7 +44,7 @@ interface UseCompareControllerProps {
   filterManager: FilterManager;
   llmManager: LlmManager;
   liveAssistant: MinimalPersonaSnapshot | undefined;
-  selectedDocuments: OnyxDocument[];
+  selectedDocuments: OmDocument[];
   resetInputBar: () => void;
 }
 
@@ -117,7 +117,7 @@ interface StreamOnePanelArgs {
   filterManager: FilterManager;
   llmManager: LlmManager;
   liveAssistant: MinimalPersonaSnapshot | undefined;
-  selectedDocuments: OnyxDocument[];
+  selectedDocuments: OmDocument[];
   setPanelSessionId: (index: number, sessionId: string) => void;
 }
 
@@ -187,7 +187,7 @@ async function streamOnePanel({
 
   // Accumulators (mirror the single-chat drain loop).
   let answer = "";
-  let documents: OnyxDocument[] = selectedDocuments;
+  let documents: OmDocument[] = selectedDocuments;
   let citations: CitationMap | null = null;
   let aiMessageImages: FileDescriptor[] | null = null;
   let error: string | null = null;

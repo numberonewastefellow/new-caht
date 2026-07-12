@@ -3,7 +3,7 @@
 import { useState, Dispatch, SetStateAction } from "react";
 import {
   MinimalOnyxDocument,
-  OnyxDocument,
+  OmDocument,
 } from "@/lib/search/interfaces";
 import { SourceIcon } from "@/components/SourceIcon";
 import { WebResultIcon } from "@/components/WebResultIcon";
@@ -46,8 +46,8 @@ function formatMetaKey(raw: string): string {
 interface CitedSourcesModalProps {
   open: boolean;
   onClose: () => void;
-  citedDocuments: OnyxDocument[];
-  otherDocuments: OnyxDocument[];
+  citedDocuments: OmDocument[];
+  otherDocuments: OmDocument[];
   setPresentingDocument: Dispatch<SetStateAction<MinimalOnyxDocument | null>>;
 }
 
@@ -58,7 +58,7 @@ function SourceCard({
   onOpenDocument,
   index,
 }: {
-  document: OnyxDocument;
+  document: OmDocument;
   isExpanded: boolean;
   onToggle: () => void;
   onOpenDocument: () => void;
@@ -244,7 +244,7 @@ export default function CitedSourcesModal({
     setExpandedDocId((prev) => (prev === docId ? null : docId));
   };
 
-  const handleOpenDocument = (document: OnyxDocument) => {
+  const handleOpenDocument = (document: OmDocument) => {
     openDocument(document, setPresentingDocument);
   };
 

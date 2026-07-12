@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { OnyxIcon } from "../icons/icons";
+import { OmIcon } from "../icons/icons";
 
 /**
  * Brand gradient from the VertualAI logo: pink → fuchsia → violet → indigo.
@@ -92,7 +92,7 @@ function BrandingPanel() {
       <div className="relative z-10 flex flex-col items-center gap-8 px-12 text-center">
         {/* Logo — the original VertualAI dot cluster icon */}
         <div className="virtualai-pulse-ring rounded-full p-5 bg-white/5 backdrop-blur-sm border border-white/10">
-          <OnyxIcon size={72} className="flex-shrink-0" />
+          <OmIcon size={72} className="flex-shrink-0" />
         </div>
 
         {/* Brand name with the original logo gradient */}
@@ -293,7 +293,7 @@ export default function AuthFlowContainer({
             transition={{ duration: 0.5 }}
           >
             <div className="virtualai-pulse-ring rounded-full p-4 bg-white/5 backdrop-blur-sm border border-white/10">
-              <OnyxIcon size={48} className="flex-shrink-0" />
+              <OmIcon size={48} className="flex-shrink-0" />
             </div>
           </motion.div>
 
@@ -379,7 +379,7 @@ export default function AuthFlowContainer({
 
           {/* Mobile-only compact branding header */}
           <div className="lg:hidden mb-8 flex items-center gap-2">
-            <OnyxIcon size={28} className="flex-shrink-0" />
+            <OmIcon size={28} className="flex-shrink-0" />
             <span
               className="text-lg font-bold"
               style={{
@@ -408,7 +408,7 @@ export default function AuthFlowContainer({
   return (
     <div className="p-4 flex flex-col items-center justify-center min-h-screen bg-background">
       <div className="w-full max-w-md flex items-start flex-col bg-background-tint-00 rounded-16 shadow-lg shadow-02 p-6">
-        <OnyxIcon size={44} className="text-theme-primary-05" />
+        <OmIcon size={44} className="text-theme-primary-05" />
         <div className="w-full mt-3">{children}</div>
       </div>
       <FooterLinks authState={authState} footerContent={footerContent} />

@@ -3,7 +3,7 @@
 import { ValidSources } from "@/lib/types";
 import { SourceIcon } from "./SourceIcon";
 import { useState } from "react";
-import { OnyxIcon } from "./icons/icons";
+import { OmIcon } from "./icons/icons";
 
 export function WebResultIcon({
   url,
@@ -22,7 +22,7 @@ export function WebResultIcon({
   return (
     <>
       {hostname.includes("vertualai.com") ? (
-        <OnyxIcon size={size} className="dark:text-[#fff] text-[#000]" />
+        <OmIcon size={size} className="dark:text-[#fff] text-[#000]" />
       ) : !error ? (
         <img
           className="my-0 rounded-full py-0"

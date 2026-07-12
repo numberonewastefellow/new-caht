@@ -1,5 +1,5 @@
 import { SourceIcon } from "@/components/SourceIcon";
-import { MinimalOnyxDocument, OnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOnyxDocument, OmDocument } from "@/lib/search/interfaces";
 import { FiTag } from "react-icons/fi";
 import { buildDocumentSummaryDisplay } from "@/components/search/DocumentDisplay";
 import { DocumentUpdatedAtBadge } from "@/components/search/DocumentUpdatedAtBadge";
@@ -14,7 +14,7 @@ import Text from "@/refresh-components/texts/Text";
 
 interface DocumentMetadataBlockProps {
   modal?: boolean;
-  document: OnyxDocument;
+  document: OmDocument;
 }
 
 function DocumentMetadataBlock({
@@ -53,7 +53,7 @@ function DocumentMetadataBlock({
 }
 
 export interface ChatDocumentDisplayProps {
-  document: OnyxDocument;
+  document: OmDocument;
   modal?: boolean;
   isSelected: boolean;
   setPresentingDocument: Dispatch<SetStateAction<MinimalOnyxDocument | null>>;

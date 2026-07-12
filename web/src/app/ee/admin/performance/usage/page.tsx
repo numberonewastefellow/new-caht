@@ -1,7 +1,7 @@
 "use client";
 
 import { AdminDateRangeSelector } from "@/components/dateRangeSelectors/AdminDateRangeSelector";
-import { OnyxBotChart } from "@/app/ee/admin/performance/usage/OnyxBotChart";
+import { OmBotChart } from "@/app/ee/admin/performance/usage/OmBotChart";
 import { FeedbackChart } from "@/app/ee/admin/performance/usage/FeedbackChart";
 import { QueryPerformanceChart } from "@/app/ee/admin/performance/usage/QueryPerformanceChart";
 import { PersonaMessagesChart } from "@/app/ee/admin/performance/usage/PersonaMessagesChart";
@@ -25,7 +25,7 @@ export default function AnalyticsPage() {
       />
       <QueryPerformanceChart timeRange={timeRange} />
       <FeedbackChart timeRange={timeRange} />
-      <OnyxBotChart timeRange={timeRange} />
+      <OmBotChart timeRange={timeRange} />
       <PersonaMessagesChart
         availablePersonas={personas}
         timeRange={timeRange}

@@ -26,7 +26,7 @@ import {
   SvgTerminalSmall,
   SvgTextLinesSmall,
 } from "@opal/icons";
-import { OnyxIcon } from "@/components/icons/icons";
+import { OmIcon } from "@/components/icons/icons";
 
 interface IconConfig {
   Icon: React.FunctionComponent<IconProps>;
@@ -149,7 +149,7 @@ export default function CustomAgentAvatar({
       className="flex items-center justify-center"
       style={{ width: size, height: size }}
     >
-      <OnyxIcon size={size * 0.85} />
+      <OmIcon size={size * 0.85} />
     </div>
   );
 }

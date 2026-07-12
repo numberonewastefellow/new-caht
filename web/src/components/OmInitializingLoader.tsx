@@ -4,7 +4,7 @@ import { useContext } from "react";
 import Logo from "@/refresh-components/Logo";
 import { SettingsContext } from "@/providers/SettingsProvider";
 
-export default function OnyxInitializingLoader() {
+export default function OmInitializingLoader() {
   const settings = useContext(SettingsContext);
 
   return (

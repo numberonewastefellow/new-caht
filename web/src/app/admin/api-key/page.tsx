@@ -21,7 +21,7 @@ import { DeleteButton } from "@/components/DeleteButton";
 import Modal from "@/refresh-components/Modal";
 import { Spinner } from "@/components/Spinner";
 import { deleteApiKey, regenerateApiKey } from "@/app/admin/api-key/lib";
-import OnyxApiKeyForm from "@/app/admin/api-key/OnyxApiKeyForm";
+import OmApiKeyForm from "@/app/admin/api-key/OmApiKeyForm";
 import {
   APIKey,
   DISCORD_SERVICE_API_KEY_NAME,
@@ -85,7 +85,7 @@ function Main() {
         {introSection}
 
         {showCreateUpdateForm && (
-          <OnyxApiKeyForm
+          <OmApiKeyForm
             onCreateApiKey={(apiKey) => {
               setFullApiKey(apiKey.api_key);
             }}
@@ -195,7 +195,7 @@ function Main() {
       </Table>
 
       {showCreateUpdateForm && (
-        <OnyxApiKeyForm
+        <OmApiKeyForm
           onCreateApiKey={(apiKey) => {
             setFullApiKey(apiKey.api_key);
           }}

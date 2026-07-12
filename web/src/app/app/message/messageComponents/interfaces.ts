@@ -1,11 +1,11 @@
 import { JSX } from "react";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import { Packet, StopReason } from "../../services/streamingModels";
-import { OnyxDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { OmDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
 import { ProjectFile } from "../../projects/projectsService";
 import { LlmDescriptor } from "@/lib/hooks";
 import { IconType } from "react-icons";
-import { OnyxIconType } from "@/components/icons/icons";
+import { OmIconType } from "@/components/icons/icons";
 import { CitationMap } from "../../interfaces";
 
 export enum RenderType {
@@ -27,7 +27,7 @@ export interface FullChatState {
   // Backend assistant message id (for per-message lookups, e.g. workflow trace)
   messageId?: number;
   // Document-related context for citations
-  docs?: OnyxDocument[] | null;
+  docs?: OmDocument[] | null;
   userFiles?: ProjectFile[];
   citations?: CitationMap;
   setPresentingDocument?: (document: MinimalOnyxDocument) => void;
@@ -41,7 +41,7 @@ export interface FullChatState {
 export type TimelineAccent = "purple" | "blue" | "green";
 
 export interface RendererResult {
-  icon: IconType | OnyxIconType | null;
+  icon: IconType | OmIconType | null;
   status: string | JSX.Element | null;
   content: JSX.Element;
 

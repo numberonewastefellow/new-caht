@@ -6,7 +6,7 @@ import {
   SearchToolDocumentsDelta,
   SectionEnd,
 } from "@/app/app/services/streamingModels";
-import { OnyxDocument } from "@/lib/search/interfaces";
+import { OmDocument } from "@/lib/search/interfaces";
 
 export const MAX_TITLE_LENGTH = 25;
 
@@ -28,7 +28,7 @@ export const RESULTS_PER_EXPANSION = 10;
 
 export interface SearchState {
   queries: string[];
-  results: OnyxDocument[];
+  results: OmDocument[];
   isSearching: boolean;
   hasResults: boolean;
   isComplete: boolean;

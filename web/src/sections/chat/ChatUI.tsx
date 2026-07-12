@@ -2,7 +2,7 @@
 
 import React, { useCallback, useMemo, useRef } from "react";
 import { Message } from "@/app/app/interfaces";
-import { OnyxDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { OmDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
 import HumanMessage from "@/app/app/message/HumanMessage";
 import { ErrorBanner } from "@/app/app/message/Resubmit";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
@@ -85,7 +85,7 @@ const ChatUI = React.memo(
     const error = useSessionUncaughtError(chatSessionId);
     const loadError = useSessionLoadingError(chatSessionId);
     // Stable fallbacks to avoid changing prop identities on each render
-    const emptyDocs = useMemo<OnyxDocument[]>(() => [], []);
+    const emptyDocs = useMemo<OmDocument[]>(() => [], []);
     const emptyChildrenIds = useMemo<number[]>(() => [], []);
 
     // Use refs to keep callbacks stable while always using latest values

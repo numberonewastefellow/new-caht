@@ -12,17 +12,17 @@ import { USER_ROLE_LABELS, UserRole } from "@/lib/types";
 import { APIKey } from "./types";
 import { SvgKey } from "@opal/icons";
 
-export interface OnyxApiKeyFormProps {
+export interface OmApiKeyFormProps {
   onClose: () => void;
   onCreateApiKey: (apiKey: APIKey) => void;
   apiKey?: APIKey;
 }
 
-export default function OnyxApiKeyForm({
+export default function OmApiKeyForm({
   onClose,
   onCreateApiKey,
   apiKey,
-}: OnyxApiKeyFormProps) {
+}: OmApiKeyFormProps) {
   const isUpdate = apiKey !== undefined;
 
   return (

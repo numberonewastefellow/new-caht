@@ -2,7 +2,7 @@
 
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import { buildImgUrl } from "@/app/app/components/files/images/utils";
-import { OnyxIcon } from "@/components/icons/icons";
+import { OmIcon } from "@/components/icons/icons";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import {
   DEFAULT_AGENT_AVATAR_SIZE_PX,
@@ -38,7 +38,7 @@ export default function AgentAvatar({
         />
       </div>
     ) : (
-      <OnyxIcon size={size} className="shrink-0" />
+      <OmIcon size={size} className="shrink-0" />
     );
   }
 

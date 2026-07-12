@@ -1,6 +1,6 @@
 "use client";
 
-import { OnyxIcon, OnyxLogoTypeIcon } from "@/components/icons/icons";
+import { OmIcon, OmLogoTypeIcon } from "@/components/icons/icons";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import Image from "next/image";
 import {
@@ -45,7 +45,7 @@ export default function Logo({ folded, size, className }: LogoProps) {
           />
         </div>
       ) : (
-        <OnyxIcon
+        <OmIcon
           size={foldedSize}
           className={cn("flex-shrink-0", className)}
         />
@@ -98,8 +98,8 @@ export default function Logo({ folded, size, className }: LogoProps) {
   return applicationName ? (
     renderNameAndPoweredBy({ includeLogo: true, includeName: true })
   ) : folded ? (
-    <OnyxIcon size={foldedSize} className={cn("flex-shrink-0", className)} />
+    <OmIcon size={foldedSize} className={cn("flex-shrink-0", className)} />
   ) : (
-    <OnyxLogoTypeIcon size={unfoldedSize} className={className} />
+    <OmLogoTypeIcon size={unfoldedSize} className={className} />
   );
 }

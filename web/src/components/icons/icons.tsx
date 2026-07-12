@@ -101,7 +101,7 @@ export interface IconProps {
 export interface LogoIconProps extends IconProps {
   src: string | StaticImageData;
 }
-export type OnyxIconType = (props: IconProps) => JSX.Element;
+export type OmIconType = (props: IconProps) => JSX.Element;
 
 export const defaultTailwindCSS = "my-auto flex flex-shrink-0 text-default";
 export const defaultTailwindCSSBlue = "my-auto flex flex-shrink-0 text-link";
@@ -574,7 +574,7 @@ export const NotebookIconSkeleton = ({
     </svg>
   );
 };
-export const OnyxIcon = ({
+export const OmIcon = ({
   size = 16,
   className = defaultTailwindCSS,
 }: IconProps) => {
@@ -611,7 +611,7 @@ export const OnyxIcon = ({
     </svg>
   );
 };
-export const OnyxLogoTypeIcon = ({
+export const OmLogoTypeIcon = ({
   size = 16,
   className = defaultTailwindCSS,
 }: IconProps) => {
@@ -623,7 +623,7 @@ export const OnyxLogoTypeIcon = ({
       className={`flex items-center gap-1.5 ${className}`}
       style={{ height: `${iconSize}px` }}
     >
-      <OnyxIcon size={iconSize} className="flex-shrink-0" />
+      <OmIcon size={iconSize} className="flex-shrink-0" />
       <span
         className="font-bold leading-none whitespace-nowrap"
         style={{

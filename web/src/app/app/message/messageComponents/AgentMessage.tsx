@@ -4,7 +4,7 @@ import React, { useRef, RefObject, useMemo, useCallback, useState, Dispatch, Set
 import { Packet, StreamingCitation, StopReason } from "@/app/app/services/streamingModels";
 import { FullChatState } from "@/app/app/message/messageComponents/interfaces";
 import { FeedbackType } from "@/app/app/interfaces";
-import { MinimalOnyxDocument, OnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOnyxDocument, OmDocument } from "@/lib/search/interfaces";
 import { handleCopy } from "@/app/app/message/copyingUtils";
 import { useMessageSwitching } from "@/app/app/message/messageComponents/hooks/useMessageSwitching";
 import { RendererComponent } from "@/app/app/message/messageComponents/renderMessageComponent";
@@ -72,8 +72,8 @@ const ReferencesStrip = React.memo(function ReferencesStrip({
   setPresentingDocument,
 }: {
   citations: StreamingCitation[];
-  documentMap: Map<string, OnyxDocument>;
-  allDocs: OnyxDocument[];
+  documentMap: Map<string, OmDocument>;
+  allDocs: OmDocument[];
   setPresentingDocument: Dispatch<SetStateAction<MinimalOnyxDocument | null>>;
 }) {
   const [modalOpen, setModalOpen] = useState(false);

@@ -6,7 +6,7 @@ import Title from "@/components/ui/title";
 import CardSection from "@/components/admin/CardSection";
 import { AreaChartDisplay } from "@/components/ui/areaChart";
 
-export function OnyxBotChart({
+export function OmBotChart({
   timeRange,
 }: {
   timeRange: DateRangePickerValue;

@@ -16,7 +16,7 @@ import { FilterManager, LlmManager, useFederatedConnectors } from "@/lib/hooks";
 import usePromptShortcuts from "@/hooks/usePromptShortcuts";
 import useFilter from "@/hooks/useFilter";
 import useCCPairs from "@/hooks/useCCPairs";
-import { OnyxDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { OmDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
 import { ChatState } from "@/app/app/interfaces";
 import { useForcedTools } from "@/lib/hooks/useForcedTools";
 import { useAppMode } from "@/providers/AppModeProvider";
@@ -120,7 +120,7 @@ export interface AppInputBarHandle {
 
 export interface AppInputBarProps {
   removeDocs: () => void;
-  selectedDocuments: OnyxDocument[];
+  selectedDocuments: OmDocument[];
   initialMessage?: string;
   stopGenerating: () => void;
   onSubmit: (message: string) => void;

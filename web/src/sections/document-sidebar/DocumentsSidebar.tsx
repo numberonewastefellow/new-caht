@@ -1,6 +1,6 @@
 "use client";
 
-import { MinimalOnyxDocument, OnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOnyxDocument, OmDocument } from "@/lib/search/interfaces";
 import ChatDocumentDisplay from "@/sections/document-sidebar/ChatDocumentDisplay";
 import { removeDuplicateDocs } from "@/lib/documentUtils";
 import { Dispatch, SetStateAction, useMemo, memo } from "react";
@@ -14,12 +14,12 @@ import { Button } from "@opal/components";
 import { SvgSearchMenu, SvgX } from "@opal/icons";
 import Separator from "@/refresh-components/Separator";
 
-// Build an OnyxDocument from basic file info
+// Build an OmDocument from basic file info
 const buildOnyxDocumentFromFile = (
   id: string,
   name?: string | null,
   appendProjectPrefix?: boolean
-): OnyxDocument => {
+): OmDocument => {
   const document_id = appendProjectPrefix ? `project_file__${id}` : id;
   return {
     document_id,
@@ -81,7 +81,7 @@ function ChatDocumentDisplayWrapper({
 
 interface DocumentsSidebarProps {
   closeSidebar: () => void;
-  selectedDocuments: OnyxDocument[] | null;
+  selectedDocuments: OmDocument[] | null;
   modal: boolean;
   setPresentingDocument: Dispatch<SetStateAction<MinimalOnyxDocument | null>>;
 }

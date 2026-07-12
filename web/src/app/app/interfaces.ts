@@ -1,5 +1,5 @@
 import {
-  OnyxDocument,
+  OmDocument,
   Filters,
   SearchOnyxDocument,
   StreamStopReason,
@@ -164,7 +164,7 @@ export interface Message {
   packetCount?: number; // Tracks packet count for React memo comparison (avoids reading from mutated array)
 
   // cached values for easy access
-  documents?: OnyxDocument[] | null;
+  documents?: OmDocument[] | null;
   citations?: CitationMap;
 
   // feedback state
@@ -213,7 +213,7 @@ export interface BackendMessage {
   message: string;
   rephrased_query: string | null;
   // Backend sends context_docs as a flat array of documents
-  context_docs: OnyxDocument[] | null;
+  context_docs: OmDocument[] | null;
   time_sent: string;
   overridden_model: string;
   alternate_assistant_id: number | null;
@@ -243,7 +243,7 @@ export interface UserKnowledgeFilePacket {
 }
 
 export interface DocumentsResponse {
-  top_documents: OnyxDocument[];
+  top_documents: OmDocument[];
   rephrased_query: string | null;
   level?: number | null;
   level_question_num?: number | null;
@@ -306,7 +306,7 @@ export interface SubQuestionDetail extends BaseQuestionIdentifier {
   question: string;
   answer: string;
   sub_queries?: SubQueryDetail[] | null;
-  context_docs?: { top_documents: OnyxDocument[] } | null;
+  context_docs?: { top_documents: OmDocument[] } | null;
   is_complete?: boolean;
   is_stopped?: boolean;
   answer_streaming?: boolean;
