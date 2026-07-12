@@ -18,7 +18,6 @@ from fastapi.testclient import TestClient
 from om.auth.users import current_admin_user
 from om.db.engine.sql_engine import get_session
 from om.db.models import UserRole
-from om.main import fetch_versioned_implementation
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
@@ -47,9 +46,8 @@ def mock_current_admin_user() -> MagicMock:
 @pytest.fixture(scope="function")
 def client() -> Generator[TestClient, None, None]:
     # Initialize TestClient with the FastAPI app using a no-op test lifespan
-    get_app = fetch_versioned_implementation(
-        module="om.main", attribute="get_application"
-    )
+    from om.main import get_application as _impl_get_application
+    get_app = _impl_get_application
     app: FastAPI = get_app(lifespan_override=test_lifespan)
 
     # Override the database session dependency with a mock

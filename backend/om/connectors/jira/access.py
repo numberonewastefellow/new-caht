@@ -8,8 +8,6 @@ from typing import cast
 from jira import JIRA
 
 from om.access.models import ExternalAccess
-from om.utils.variable_functionality import fetch_versioned_implementation
-from om.utils.variable_functionality import global_version
 
 
 def get_project_permissions(
@@ -33,17 +31,14 @@ def get_project_permissions(
     """
 
     # Check if EE is enabled
-    if not global_version.is_ee_version():
-        return None
+    from om.external_permissions.jira.page_access import get_project_permissions as _impl_get_project_permissions
 
     ee_get_project_permissions = cast(
         Callable[
             [JIRA, str, bool],
             ExternalAccess | None,
         ],
-        fetch_versioned_implementation(
-            "om.external_permissions.jira.page_access", "get_project_permissions"
-        ),
+        _impl_get_project_permissions,
     )
 
     return ee_get_project_permissions(

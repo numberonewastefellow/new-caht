@@ -34,7 +34,6 @@ from om.db.models import UserGroup__ConnectorCredentialPair
 from om.db.models import UserRole
 from om.server.models import StatusResponse
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 
 logger = setup_logger()
 
@@ -514,6 +513,7 @@ def add_credential_to_connector(
     seeding_flow: bool = False,
     processing_mode: ProcessingMode = ProcessingMode.REGULAR,
 ) -> StatusResponse:
+    from om.external_permissions.sync_params import check_if_valid_sync_source as _impl_check_if_valid_sync_source
     connector = fetch_connector_by_id(connector_id, db_session)
 
     # If we are in the seeding flow, we shouldn't need to check if the credential belongs to the user
@@ -534,11 +534,7 @@ def add_credential_to_connector(
         raise HTTPException(status_code=404, detail="Connector does not exist")
 
     if access_type == AccessType.SYNC:
-        if not fetch_ee_implementation_or_noop(
-            "om.external_permissions.sync_params",
-            "check_if_valid_sync_source",
-            noop_return_value=True,
-        )(connector.source):
+        if not _impl_check_if_valid_sync_source(connector.source):
             raise HTTPException(
                 status_code=400,
                 detail=f"Connector of type {connector.source} does not support SYNC access type",
@@ -605,6 +601,9 @@ def remove_credential_from_connector(
     user: User,
     db_session: Session,
 ) -> StatusResponse[int]:
+    from om.db.external_perm import (
+        delete_user__ext_group_for_cc_pair__no_commit as _impl_delete_user__ext_group_for_cc_pair__no_commit,
+    )
     connector = fetch_connector_by_id(connector_id, db_session)
     credential = fetch_credential_by_id_for_user(
         credential_id,
@@ -631,10 +630,7 @@ def remove_credential_from_connector(
     )
 
     if association is not None:
-        fetch_ee_implementation_or_noop(
-            "om.db.external_perm",
-            "delete_user__ext_group_for_cc_pair__no_commit",
-        )(
+        _impl_delete_user__ext_group_for_cc_pair__no_commit(
             db_session=db_session,
             cc_pair_id=association.id,
         )

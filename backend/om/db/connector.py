@@ -259,11 +259,10 @@ def fetch_unique_document_sources(db_session: Session) -> list[DocumentSource]:
 
 
 def fetch_sources_with_connectors(db_session: Session) -> list[DocumentSource]:
-    sources = db_session.query(distinct(Connector.source)).all()
-
-    document_sources = [source[0] for source in sources]
-
-    return document_sources
+    # scalars(select(...)) rather than the legacy Query API the EE version used: that one
+    # needed a blanket `# type: ignore` and still left the result un-inferable. This
+    # matches the idiom used by the rest of this module and types cleanly.
+    return list(db_session.scalars(select(distinct(Connector.source))).all())
 
 
 def create_initial_default_connector(db_session: Session) -> None:

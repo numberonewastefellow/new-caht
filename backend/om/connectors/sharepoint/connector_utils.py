@@ -5,9 +5,6 @@ from office365.onedrive.driveitems.driveItem import DriveItem  # type: ignore[im
 from office365.sharepoint.client_context import ClientContext  # type: ignore[import-untyped]
 
 from om.connectors.models import ExternalAccess
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
 
 
 def get_sharepoint_external_access(
@@ -18,6 +15,9 @@ def get_sharepoint_external_access(
     site_page: dict[str, Any] | None = None,
     add_prefix: bool = False,
 ) -> ExternalAccess:
+    from om.external_permissions.sharepoint.permission_utils import (
+        get_external_access_from_sharepoint as _impl_get_external_access_from_sharepoint,
+    )
     if drive_item and drive_item.id is None:
         raise ValueError("DriveItem ID is required")
 
@@ -25,11 +25,7 @@ def get_sharepoint_external_access(
     def noop_fallback(*args: Any, **kwargs: Any) -> ExternalAccess:  # noqa: ARG001
         return ExternalAccess.empty()
 
-    get_external_access_func = fetch_versioned_implementation_with_fallback(
-        "om.external_permissions.sharepoint.permission_utils",
-        "get_external_access_from_sharepoint",
-        fallback=noop_fallback,
-    )
+    get_external_access_func = _impl_get_external_access_from_sharepoint
 
     external_access = get_external_access_func(
         ctx, graph_client, drive_name, drive_item, site_page, add_prefix

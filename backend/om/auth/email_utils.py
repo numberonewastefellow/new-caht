@@ -34,7 +34,6 @@ from om.db.models import User
 from om.server.runtime.onyx_runtime import OmRuntime
 from om.utils.logger import setup_logger
 from om.utils.url import add_url_params
-from om.utils.variable_functionality import fetch_versioned_implementation
 from shared_configs.configs import MULTI_TENANT
 
 logger = setup_logger()
@@ -299,10 +298,9 @@ def send_subscription_cancellation_email(user_email: str) -> None:
     """This is templated but isn't meaningful for whitelabeling."""
 
     # Example usage of the reusable HTML
+    from om.server.enterprise_settings.store import load_runtime_settings as _impl_load_runtime_settings
     try:
-        load_runtime_settings_fn = fetch_versioned_implementation(
-            "om.server.enterprise_settings.store", "load_runtime_settings"
-        )
+        load_runtime_settings_fn = _impl_load_runtime_settings
         settings = load_runtime_settings_fn()
         application_name = settings.application_name
     except ModuleNotFoundError:
@@ -397,10 +395,9 @@ def build_user_email_invite(
 def send_user_email_invite(
     user_email: str, current_user: User, auth_type: AuthType
 ) -> None:
+    from om.server.enterprise_settings.store import load_runtime_settings as _impl_load_runtime_settings
     try:
-        load_runtime_settings_fn = fetch_versioned_implementation(
-            "om.server.enterprise_settings.store", "load_runtime_settings"
-        )
+        load_runtime_settings_fn = _impl_load_runtime_settings
         settings = load_runtime_settings_fn()
         application_name = settings.application_name
     except ModuleNotFoundError:
@@ -430,10 +427,9 @@ def send_forgot_password_email(
     mail_from: str = EMAIL_FROM,
 ) -> None:
     # Builds a forgot password email with or without fancy HTML
+    from om.server.enterprise_settings.store import load_runtime_settings as _impl_load_runtime_settings
     try:
-        load_runtime_settings_fn = fetch_versioned_implementation(
-            "om.server.enterprise_settings.store", "load_runtime_settings"
-        )
+        load_runtime_settings_fn = _impl_load_runtime_settings
         settings = load_runtime_settings_fn()
         application_name = settings.application_name
     except ModuleNotFoundError:
@@ -475,10 +471,9 @@ def send_user_verification_email(
     mail_from: str = EMAIL_FROM,
 ) -> None:
     # Builds a verification email
+    from om.server.enterprise_settings.store import load_runtime_settings as _impl_load_runtime_settings
     try:
-        load_runtime_settings_fn = fetch_versioned_implementation(
-            "om.server.enterprise_settings.store", "load_runtime_settings"
-        )
+        load_runtime_settings_fn = _impl_load_runtime_settings
         settings = load_runtime_settings_fn()
         application_name = settings.application_name
     except ModuleNotFoundError:

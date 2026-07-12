@@ -45,17 +45,15 @@ class LiveClient:
 @pytest.fixture(scope="session")
 def api_client(request: pytest.FixtureRequest) -> object:
     """Create an API client based on the --api-mode option."""
+    from om.main import get_application as _impl_get_application
     mode = request.config.getoption("--api-mode")
 
     if mode == "testclient":
         os.environ.setdefault("ENABLE_PAID_ENTERPRISE_EDITION_FEATURES", "True")
         from fastapi.testclient import TestClient
 
-        from om.main import fetch_versioned_implementation
 
-        app = fetch_versioned_implementation(
-            module="om.main", attribute="get_application"
-        )()
+        app = _impl_get_application()
         client = TestClient(app)
         yield client
         client.close()

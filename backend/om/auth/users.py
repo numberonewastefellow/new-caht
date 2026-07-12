@@ -132,7 +132,6 @@ from om.utils.telemetry import optional_telemetry
 from om.utils.telemetry import RecordType
 from om.utils.timing import log_function_time
 from om.utils.url import add_url_params
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 from shared_configs.configs import async_return_default_schema
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
@@ -300,12 +299,11 @@ def enforce_seat_limit(db_session: Session, seats_needed: int = 1) -> None:
 
     No-op for multi-tenant or CE deployments.
     """
+    from om.db.license import check_seat_availability as _impl_check_seat_availability
     if MULTI_TENANT:
         return
 
-    result = fetch_ee_implementation_or_noop(
-        "om.db.license", "check_seat_availability", None
-    )(db_session, seats_needed=seats_needed)
+    result = _impl_check_seat_availability(db_session, seats_needed=seats_needed)
 
     if result is not None and not result.available:
         raise HTTPException(status_code=402, detail=result.error_message)
@@ -318,9 +316,8 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     user_db: SQLAlchemyUserDatabase[User, uuid.UUID]
 
     async def get_by_email(self, user_email: str) -> User:
-        tenant_id = fetch_ee_implementation_or_noop(
-            "om.server.tenants.user_mapping", "get_tenant_id_for_email", None
-        )(user_email)
+        from om.server.tenants.user_mapping import get_tenant_id_for_email as _impl_get_tenant_id_for_email
+        tenant_id = _impl_get_tenant_id_for_email(user_email)
         async with get_async_session_context_manager(tenant_id) as db_session:
             if MULTI_TENANT:
                 tenant_user_db = SQLAlchemyUserAdminDB[User, uuid.UUID](
@@ -342,6 +339,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         request: Optional[Request] = None,
     ) -> User:
         # Verify captcha if enabled (for cloud signup protection)
+        from om.server.tenants.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
         from om.auth.captcha import CaptchaVerificationError
         from om.auth.captcha import is_captcha_enabled
         from om.auth.captcha import verify_captcha_token
@@ -399,11 +397,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             else None
         )
 
-        tenant_id = await fetch_ee_implementation_or_noop(
-            "om.server.tenants.provisioning",
-            "get_or_provision_tenant",
-            async_return_default_schema,
-        )(
+        tenant_id = await _impl_get_or_provision_tenant(
             email=user_create.email,
             referral_source=referral_source,
             request=request,
@@ -589,15 +583,12 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         associate_by_email: bool = False,
         is_verified_by_default: bool = False,
     ) -> User:
+        from om.server.tenants.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
         referral_source = (
             getattr(request.state, "referral_source", None) if request else None
         )
 
-        tenant_id = await fetch_ee_implementation_or_noop(
-            "om.server.tenants.provisioning",
-            "get_or_provision_tenant",
-            async_return_default_schema,
-        )(
+        tenant_id = await _impl_get_or_provision_tenant(
             email=account_email,
             referral_source=referral_source,
             request=request,
@@ -747,11 +738,13 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     async def on_after_register(
         self, user: User, request: Optional[Request] = None
     ) -> None:
-        tenant_id = await fetch_ee_implementation_or_noop(
-            "om.server.tenants.provisioning",
-            "get_or_provision_tenant",
-            async_return_default_schema,
-        )(
+        from om.server.tenants.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
+        from om.utils.posthog_client import (
+            capture_and_sync_with_alternate_posthog as _impl_capture_and_sync_with_alternate_posthog,
+        )
+        from om.utils.posthog_client import get_marketing_posthog_cookie_name as _impl_get_marketing_posthog_cookie_name
+        from om.utils.posthog_client import parse_marketing_cookie as _impl_parse_marketing_cookie
+        tenant_id = await _impl_get_or_provision_tenant(
             email=user.email,
             request=request,
         )
@@ -772,21 +765,9 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             CURRENT_TENANT_ID_CONTEXTVAR.reset(token)
 
         # Fetch EE PostHog functions if available
-        get_marketing_posthog_cookie_name = fetch_ee_implementation_or_noop(
-            module="om.utils.posthog_client",
-            attribute="get_marketing_posthog_cookie_name",
-            noop_return_value=None,
-        )
-        parse_marketing_cookie = fetch_ee_implementation_or_noop(
-            module="om.utils.posthog_client",
-            attribute="parse_marketing_cookie",
-            noop_return_value=None,
-        )
-        capture_and_sync_with_alternate_posthog = fetch_ee_implementation_or_noop(
-            module="om.utils.posthog_client",
-            attribute="capture_and_sync_with_alternate_posthog",
-            noop_return_value=None,
-        )
+        get_marketing_posthog_cookie_name = _impl_get_marketing_posthog_cookie_name
+        parse_marketing_cookie = _impl_parse_marketing_cookie
+        capture_and_sync_with_alternate_posthog = _impl_capture_and_sync_with_alternate_posthog
 
         if (
             request
@@ -832,6 +813,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     async def on_after_forgot_password(
         self, user: User, token: str, request: Optional[Request] = None  # noqa: ARG002
     ) -> None:
+        from om.server.tenants.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
         if not EMAIL_CONFIGURED:
             logger.error(
                 "Email is not configured. Please configure email in the admin panel"
@@ -840,11 +822,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
                 "Your admin has not enabled this feature.",
             )
-        tenant_id = await fetch_ee_implementation_or_noop(
-            "om.server.tenants.provisioning",
-            "get_or_provision_tenant",
-            async_return_default_schema,
-        )(email=user.email)
+        tenant_id = await _impl_get_or_provision_tenant(email=user.email)
 
         send_forgot_password_email(user.email, tenant_id=tenant_id, token=token)
 
@@ -865,15 +843,12 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     async def authenticate(
         self, credentials: OAuth2PasswordRequestForm
     ) -> Optional[User]:
+        from om.server.tenants.provisioning import get_tenant_id_for_email as _impl_get_tenant_id_for_email
         email = credentials.username
 
         tenant_id: str | None = None
         try:
-            tenant_id = fetch_ee_implementation_or_noop(
-                "om.server.tenants.provisioning",
-                "get_tenant_id_for_email",
-                POSTGRES_DEFAULT_SCHEMA,
-            )(
+            tenant_id = _impl_get_tenant_id_for_email(
                 email=email,
             )
         except Exception as e:
@@ -997,13 +972,10 @@ class TenantAwareRedisStrategy(RedisStrategy[User, uuid.UUID]):
         self.key_prefix = key_prefix
 
     async def write_token(self, user: User) -> str:
+        from om.server.tenants.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
         redis = await get_async_redis_connection()
 
-        tenant_id = await fetch_ee_implementation_or_noop(
-            "om.server.tenants.provisioning",
-            "get_or_provision_tenant",
-            async_return_default_schema,
-        )(email=user.email)
+        tenant_id = await _impl_get_or_provision_tenant(email=user.email)
 
         token_data = {
             "sub": str(user.id),
@@ -1800,6 +1772,7 @@ def get_oauth_router(
         user_manager: BaseUserManager[models.UP, models.ID] = Depends(get_user_manager),
         strategy: Strategy[models.UP, models.ID] = Depends(backend.get_strategy),
     ) -> RedirectResponse:
+        from om.server.tenants.user_mapping import get_tenant_id_for_email as _impl_get_tenant_id_for_email
         token, state = access_token_state
         account_id, account_email = await oauth_client.get_id_email(
             token["access_token"]
@@ -1845,9 +1818,7 @@ def get_oauth_router(
         next_url = state_data.get("next_url", "/")
         referral_source = state_data.get("referral_source", None)
         try:
-            tenant_id = fetch_ee_implementation_or_noop(
-                "om.server.tenants.user_mapping", "get_tenant_id_for_email", None
-            )(account_email)
+            tenant_id = _impl_get_tenant_id_for_email(account_email)
         except exceptions.UserNotExists:
             tenant_id = None
 

@@ -69,7 +69,6 @@ from om.server.features.build.indexing.persistent_document_writer import (
 )
 from om.utils.logger import setup_logger
 from om.utils.middleware import make_randomized_onyx_request_id
-from om.utils.variable_functionality import global_version
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import INDEX_ATTEMPT_INFO_CONTEXTVAR
 
@@ -269,13 +268,10 @@ def run_docfetching_entrypoint(
     index_attempt_id: int,
     tenant_id: str,
     connector_credential_pair_id: int,
-    is_ee: bool = False,
+    is_ee: bool = False,  # noqa: ARG001 - kept for call-site compatibility; EE is unconditional
     callback: IndexingHeartbeatInterface | None = None,
 ) -> None:
     """Don't swallow exceptions here ... propagate them up."""
-
-    if is_ee:
-        global_version.set_ee()
 
     # set the indexing attempt ID so that all log messages from this process
     # will have it added as a prefix

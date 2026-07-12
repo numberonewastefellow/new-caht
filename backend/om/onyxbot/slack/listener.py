@@ -91,8 +91,6 @@ from om.onyxbot.slack.utils import TenantSocketModeClient
 from om.redis.redis_pool import get_redis_client
 from om.server.manage.models import SlackBotTokens
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
-from om.utils.variable_functionality import set_is_ee_based_on_env_variable
 from shared_configs.configs import DISALLOWED_SLACK_BOT_TENANT_LIST
 from shared_configs.configs import MODEL_SERVER_HOST
 from shared_configs.configs import MODEL_SERVER_PORT
@@ -280,15 +278,12 @@ class SlackbotHandler:
         - If a tenant in self.tenant_ids no longer has Slack bots, remove it (and release the lock in this scope).
         """
 
+        from om.server.tenants.product_gating import get_gated_tenants as _impl_get_gated_tenants
         token: Token[str | None]
 
         # tenants that are disabled (e.g. their trial is over and haven't subscribed)
         # for non-cloud, this will return an empty set
-        gated_tenants = fetch_ee_implementation_or_noop(
-            "om.server.tenants.product_gating",
-            "get_gated_tenants",
-            set(),
-        )()
+        gated_tenants = _impl_get_gated_tenants()
         all_active_tenants = [
             tenant_id
             for tenant_id in get_all_tenant_ids()
@@ -1097,22 +1092,16 @@ def _check_tenant_gated(client: TenantSocketModeClient, req: SocketModeRequest) 
 
     Returns True if blocked.
     """
+    from om.db.license import get_cached_license_metadata as _impl_get_cached_license_metadata
+    from om.server.tenants.product_gating import is_tenant_gated as _impl_is_tenant_gated
     from om.server.settings.models import ApplicationStatus
 
     # Multi-tenant path: control plane marks gated tenants in Redis
-    is_gated: bool = fetch_ee_implementation_or_noop(
-        "om.server.tenants.product_gating",
-        "is_tenant_gated",
-        False,
-    )(get_current_tenant_id())
+    is_gated: bool = _impl_is_tenant_gated(get_current_tenant_id())
 
     # Self-hosted path: check license metadata cache
     if not is_gated:
-        get_cached_metadata = fetch_ee_implementation_or_noop(
-            "om.db.license",
-            "get_cached_license_metadata",
-            None,
-        )
+        get_cached_metadata = _impl_get_cached_license_metadata
         metadata = get_cached_metadata()
         if metadata is not None:
             if metadata.status == ApplicationStatus.GATED_ACCESS:
@@ -1209,7 +1198,6 @@ if __name__ == "__main__":
     logger.info("Starting SlackbotHandler")
     tenant_handler = SlackbotHandler()
 
-    set_is_ee_based_on_env_variable()
 
     try:
         # Keep the main thread alive

@@ -4,8 +4,6 @@ from typing import cast
 
 from om.access.models import ExternalAccess
 from om.connectors.confluence.onyx_confluence import OmConfluence
-from om.utils.variable_functionality import fetch_versioned_implementation
-from om.utils.variable_functionality import global_version
 
 
 def get_page_restrictions(
@@ -31,8 +29,7 @@ def get_page_restrictions(
         ExternalAccess object for the page. None if EE is not enabled or no restrictions found.
     """
     # Check if EE is enabled
-    if not global_version.is_ee_version():
-        return None
+    from om.external_permissions.confluence.page_access import get_page_restrictions as _impl_get_page_restrictions
 
     # Fetch the EE implementation
     ee_get_all_page_restrictions = cast(
@@ -40,9 +37,7 @@ def get_page_restrictions(
             [OmConfluence, str, dict[str, Any], list[dict[str, Any]], bool],
             ExternalAccess | None,
         ],
-        fetch_versioned_implementation(
-            "om.external_permissions.confluence.page_access", "get_page_restrictions"
-        ),
+        _impl_get_page_restrictions,
     )
 
     # add_prefix=False: permission sync path - upsert_document_external_perms handles prefixing
@@ -70,8 +65,7 @@ def get_all_space_permissions(
         Dictionary mapping space keys to ExternalAccess objects. Empty dict if EE is not enabled.
     """
     # Check if EE is enabled
-    if not global_version.is_ee_version():
-        return {}
+    from om.external_permissions.confluence.space_access import get_all_space_permissions as _impl_get_all_space_permissions
 
     # Fetch the EE implementation
     ee_get_all_space_permissions = cast(
@@ -79,10 +73,7 @@ def get_all_space_permissions(
             [OmConfluence, bool, bool],
             dict[str, ExternalAccess],
         ],
-        fetch_versioned_implementation(
-            "om.external_permissions.confluence.space_access",
-            "get_all_space_permissions",
-        ),
+        _impl_get_all_space_permissions,
     )
 
     # add_prefix=False: permission sync path - upsert_document_external_perms handles prefixing

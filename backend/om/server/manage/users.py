@@ -100,10 +100,6 @@ from om.server.models import MinimalUserSnapshot
 from om.server.usage_limits import is_tenant_on_trial_fn
 from om.server.utils import BasicAuthenticationError
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import get_current_tenant_id
 
@@ -119,6 +115,7 @@ def set_user_role(
     current_user: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> None:
+    from om.db.user_group import remove_curator_status__no_commit as _impl_remove_curator_status__no_commit
     user_to_update = get_user_by_email(
         email=user_role_update_request.user_email, db_session=db_session
     )
@@ -145,10 +142,7 @@ def set_user_role(
 
     if requested_role == UserRole.CURATOR:
         # Remove all curator db relationships before changing role
-        fetch_ee_implementation_or_noop(
-            "om.db.user_group",
-            "remove_curator_status__no_commit",
-        )(db_session, user_to_update)
+        _impl_remove_curator_status__no_commit(db_session, user_to_update)
 
     update_user_role(user_to_update, requested_role, db_session)
 
@@ -163,9 +157,8 @@ async def test_upsert_user(
     _: User = Depends(current_admin_user),
 ) -> None | FullUserSnapshot:
     """Test endpoint for upsert_saml_user. Only used for integration testing."""
-    user = await fetch_ee_implementation_or_noop(
-        "om.server.saml", "upsert_saml_user", None
-    )(email=request.email)
+    from om.server.saml import upsert_saml_user as _impl_upsert_saml_user
+    user = await _impl_upsert_saml_user(email=request.email)
     return FullUserSnapshot.from_user_model(user) if user else None
 
 
@@ -373,6 +366,9 @@ def bulk_invite_users(
 ) -> int:
     """emails are string validated. If any email fails validation, no emails are
     invited and an exception is raised."""
+    from om.server.tenants.billing import register_tenant_users as _impl_register_tenant_users
+    from om.server.tenants.provisioning import add_users_to_tenant as _impl_add_users_to_tenant
+    from om.server.tenants.user_mapping import remove_users_from_tenant as _impl_remove_users_from_tenant
     tenant_id = get_current_tenant_id()
 
     new_invited_emails = []
@@ -416,9 +412,7 @@ def bulk_invite_users(
 
     if MULTI_TENANT:
         try:
-            fetch_ee_implementation_or_noop(
-                "om.server.tenants.provisioning", "add_users_to_tenant", None
-            )(new_invited_emails, tenant_id)
+            _impl_add_users_to_tenant(new_invited_emails, tenant_id)
 
         except Exception as e:
             logger.error(f"Failed to add users to tenant {tenant_id}: {str(e)}")
@@ -442,9 +436,7 @@ def bulk_invite_users(
     # for billing purposes, write to the control plane about the number of new users
     try:
         logger.info("Registering tenant users")
-        fetch_ee_implementation_or_noop(
-            "om.server.tenants.billing", "register_tenant_users", None
-        )(tenant_id, get_live_users_count(db_session))
+        _impl_register_tenant_users(tenant_id, get_live_users_count(db_session))
 
         return number_of_invited_users
     except Exception as e:
@@ -453,9 +445,7 @@ def bulk_invite_users(
             "Reverting changes: removing users from tenant and resetting invited users"
         )
         write_invited_users(initial_invited_users)  # Reset to original state
-        fetch_ee_implementation_or_noop(
-            "om.server.tenants.user_mapping", "remove_users_from_tenant", None
-        )(new_invited_emails, tenant_id)
+        _impl_remove_users_from_tenant(new_invited_emails, tenant_id)
         raise e
 
 
@@ -465,18 +455,16 @@ def remove_invited_user(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> int:
+    from om.server.tenants.billing import register_tenant_users as _impl_register_tenant_users
+    from om.server.tenants.user_mapping import remove_users_from_tenant as _impl_remove_users_from_tenant
     tenant_id = get_current_tenant_id()
     if MULTI_TENANT:
-        fetch_ee_implementation_or_noop(
-            "om.server.tenants.user_mapping", "remove_users_from_tenant", None
-        )([user_email.user_email], tenant_id)
+        _impl_remove_users_from_tenant([user_email.user_email], tenant_id)
     number_of_invited_users = remove_user_from_invited_users(user_email.user_email)
 
     try:
         if MULTI_TENANT and not DEV_MODE:
-            fetch_ee_implementation_or_noop(
-                "om.server.tenants.billing", "register_tenant_users", None
-            )(tenant_id, get_live_users_count(db_session))
+            _impl_register_tenant_users(tenant_id, get_live_users_count(db_session))
     except Exception:
         logger.error(
             "Request to update number of seats taken in control plane failed. "
@@ -493,6 +481,7 @@ def deactivate_user_api(
     current_user: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> None:
+    from om.db.license import invalidate_license_cache as _impl_invalidate_license_cache
     if current_user.email == user_email.user_email:
         raise HTTPException(status_code=400, detail="You cannot deactivate yourself")
 
@@ -511,9 +500,7 @@ def deactivate_user_api(
     # Invalidate license cache so used_seats reflects the new count
     # Only for self-hosted (non-multi-tenant) deployments
     if not MULTI_TENANT:
-        fetch_ee_implementation_or_noop(
-            "om.db.license", "invalidate_license_cache", None
-        )()
+        _impl_invalidate_license_cache()
 
 
 @router.delete("/nexus/admin/delete-user", tags=PUBLIC_API_TAGS)
@@ -522,6 +509,8 @@ async def delete_user(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> None:
+    from om.db.license import invalidate_license_cache as _impl_invalidate_license_cache
+    from om.server.tenants.user_mapping import remove_users_from_tenant as _impl_remove_users_from_tenant
     user_to_delete = get_user_by_email(
         email=user_email.user_email, db_session=db_session
     )
@@ -541,18 +530,14 @@ async def delete_user(
 
     try:
         tenant_id = get_current_tenant_id()
-        fetch_ee_implementation_or_noop(
-            "om.server.tenants.user_mapping", "remove_users_from_tenant", None
-        )([user_email.user_email], tenant_id)
+        _impl_remove_users_from_tenant([user_email.user_email], tenant_id)
         delete_user_from_db(user_to_delete, db_session)
         logger.info(f"Deleted user {user_to_delete.email}")
 
         # Invalidate license cache so used_seats reflects the new count
         # Only for self-hosted (non-multi-tenant) deployments
         if not MULTI_TENANT:
-            fetch_ee_implementation_or_noop(
-                "om.db.license", "invalidate_license_cache", None
-            )()
+            _impl_invalidate_license_cache()
 
     except Exception as e:
         db_session.rollback()
@@ -566,6 +551,7 @@ def activate_user_api(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> None:
+    from om.db.license import invalidate_license_cache as _impl_invalidate_license_cache
     user_to_activate = get_user_by_email(
         email=user_email.user_email, db_session=db_session
     )
@@ -585,9 +571,7 @@ def activate_user_api(
     # Invalidate license cache so used_seats reflects the new count
     # Only for self-hosted (non-multi-tenant) deployments
     if not MULTI_TENANT:
-        fetch_ee_implementation_or_noop(
-            "om.db.license", "invalidate_license_cache", None
-        )()
+        _impl_invalidate_license_cache()
 
 
 @router.get("/nexus/admin/valid-domains")
@@ -719,6 +703,10 @@ def verify_user_logged_in(
     user: User | None = Depends(optional_user),
     db_session: Session = Depends(get_session),
 ) -> UserInfo:
+    from om.configs.app_configs import SUPER_USERS as _impl_SUPER_USERS
+    from om.server.tenants.user_mapping import get_tenant_count as _impl_get_tenant_count
+    from om.server.tenants.user_mapping import get_tenant_id_for_email as _impl_get_tenant_id_for_email
+    from om.server.tenants.user_mapping import get_tenant_invitation as _impl_get_tenant_invitation
     tenant_id = get_current_tenant_id()
 
     # User can be None if not authenticated.
@@ -737,31 +725,21 @@ def verify_user_logged_in(
 
     token_created_at = _get_token_created_at(user, request, db_session)
 
-    team_name = fetch_ee_implementation_or_noop(
-        "om.server.tenants.user_mapping", "get_tenant_id_for_email", None
-    )(user.email)
+    team_name = _impl_get_tenant_id_for_email(user.email)
 
     new_tenant: TenantSnapshot | None = None
     tenant_invitation: TenantSnapshot | None = None
 
     if MULTI_TENANT:
         if team_name != get_current_tenant_id():
-            user_count = fetch_ee_implementation_or_noop(
-                "om.server.tenants.user_mapping", "get_tenant_count", None
-            )(team_name)
+            user_count = _impl_get_tenant_count(team_name)
             new_tenant = TenantSnapshot(tenant_id=team_name, number_of_users=user_count)
 
-        tenant_invitation = fetch_ee_implementation_or_noop(
-            "om.server.tenants.user_mapping", "get_tenant_invitation", None
-        )(user.email)
+        tenant_invitation = _impl_get_tenant_invitation(user.email)
 
     super_users_list = cast(
         list[str],
-        fetch_versioned_implementation_with_fallback(
-            "om.configs.app_configs",
-            "SUPER_USERS",
-            [],
-        ),
+        _impl_SUPER_USERS,
     )
     user_info = UserInfo.from_model(
         user,

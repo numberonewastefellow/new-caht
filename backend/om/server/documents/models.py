@@ -28,7 +28,6 @@ from om.db.models import IndexAttempt
 from om.db.models import IndexingStatus
 from om.db.models import TaskStatus
 from om.server.federated.models import FederatedConnectorStatus
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 
 
 class DocumentSyncStatus(BaseModel):
@@ -286,16 +285,12 @@ class CCPairFullInfo(BaseModel):
     def _get_last_full_permission_sync(
         cls, cc_pair_model: ConnectorCredentialPair
     ) -> datetime | None:
-        check_if_source_requires_external_group_sync = fetch_ee_implementation_or_noop(
-            "om.external_permissions.sync_params",
-            "source_requires_external_group_sync",
-            noop_return_value=False,
+        from om.external_permissions.sync_params import source_requires_doc_sync as _impl_source_requires_doc_sync
+        from om.external_permissions.sync_params import (
+            source_requires_external_group_sync as _impl_source_requires_external_group_sync,
         )
-        check_if_source_requires_doc_sync = fetch_ee_implementation_or_noop(
-            "om.external_permissions.sync_params",
-            "source_requires_doc_sync",
-            noop_return_value=False,
-        )
+        check_if_source_requires_external_group_sync = _impl_source_requires_external_group_sync
+        check_if_source_requires_doc_sync = _impl_source_requires_doc_sync
 
         needs_group_sync = check_if_source_requires_external_group_sync(
             cc_pair_model.connector.source

@@ -19,9 +19,6 @@ from om.db.persona import upsert_persona
 from om.db.tools import get_builtin_tool
 from om.tools.tool_implementations.search.search_tool import SearchTool
 from om.utils.errors import EERequiredError
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
 
 
 def _build_persona_name(channel_name: str | None) -> str:
@@ -106,12 +103,9 @@ def insert_slack_channel_config(
     enable_auto_filters: bool,
     is_default: bool = False,
 ) -> SlackChannelConfig:
+    from om.db.standard_answer import fetch_standard_answer_categories_by_ids as _impl_fetch_standard_answer_categories_by_ids
     versioned_fetch_standard_answer_categories_by_ids = (
-        fetch_versioned_implementation_with_fallback(
-            "om.db.standard_answer",
-            "fetch_standard_answer_categories_by_ids",
-            _no_ee_standard_answer_categories,
-        )
+        _impl_fetch_standard_answer_categories_by_ids
     )
     existing_standard_answer_categories = (
         versioned_fetch_standard_answer_categories_by_ids(
@@ -166,6 +160,7 @@ def update_slack_channel_config(
     enable_auto_filters: bool,
     disabled: bool,  # noqa: ARG001
 ) -> SlackChannelConfig:
+    from om.db.standard_answer import fetch_standard_answer_categories_by_ids as _impl_fetch_standard_answer_categories_by_ids
     slack_channel_config = db_session.scalar(
         select(SlackChannelConfig).where(
             SlackChannelConfig.id == slack_channel_config_id
@@ -177,11 +172,7 @@ def update_slack_channel_config(
         )
 
     versioned_fetch_standard_answer_categories_by_ids = (
-        fetch_versioned_implementation_with_fallback(
-            "om.db.standard_answer",
-            "fetch_standard_answer_categories_by_ids",
-            _no_ee_standard_answer_categories,
-        )
+        _impl_fetch_standard_answer_categories_by_ids
     )
     existing_standard_answer_categories = (
         versioned_fetch_standard_answer_categories_by_ids(

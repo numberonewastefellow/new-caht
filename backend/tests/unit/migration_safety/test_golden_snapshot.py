@@ -100,25 +100,24 @@ def _fetch_targets_normalized() -> list[str]:
 
 
 def _beat_task_names() -> list[str]:
-    """Beat entries as PRODUCTION resolves them -- through the dispatch hub.
+    """Beat entries as PRODUCTION resolves them.
 
-    Importing `<root>.background.celery.tasks.beat_schedule` directly and calling its
-    `get_tasks_to_schedule` is NOT what the beat worker does. The worker resolves it via
-    `fetch_versioned_implementation(...)`, which under EE returns the EE override -- and
-    the EE override returns `ee_tasks_to_schedule + base_get_tasks_to_schedule()`.
+    This used to have to go through `fetch_versioned_implementation(...)`, because the
+    beat worker did: under EE that returned the EE OVERRIDE of `get_tasks_to_schedule`,
+    which appended `ee_tasks_to_schedule` to the MIT list. Importing the MIT module
+    directly and calling its `get_tasks_to_schedule` silently missed every EE-only beat
+    entry (autogenerate-usage-report, check-ttl-management, export-query-history-cleanup)
+    -- i.e. exactly the entries EE removal was most likely to drop on the floor.
 
-    Snapshotting the MIT module directly therefore silently missed every EE-only beat
-    entry (autogenerate-usage-report, check-ttl-management, export-query-history-cleanup),
-    i.e. exactly the entries EE removal is most likely to drop. Resolve it the way the
-    worker does, so the snapshot pins the real schedule.
+    EE removal merged that override into the MIT module and deleted the dispatch hub, so
+    the direct call IS the real schedule now. The 22-entry baseline was captured through
+    the hub BEFORE the merge, so this still pins the same set: that equality is the proof
+    the merge preserved every EE beat entry.
     """
-    vf = importlib.import_module(f"{ROOT_PACKAGE}.utils.variable_functionality")
-    vf.set_is_ee_based_on_env_variable()
-    get_tasks_to_schedule = vf.fetch_versioned_implementation(
-        f"{ROOT_PACKAGE}.background.celery.tasks.beat_schedule",
-        "get_tasks_to_schedule",
+    beat = importlib.import_module(
+        f"{ROOT_PACKAGE}.background.celery.tasks.beat_schedule"
     )
-    return sorted({e["task"] for e in get_tasks_to_schedule()})
+    return sorted({e["task"] for e in beat.get_tasks_to_schedule()})
 
 
 def _build_inventory(

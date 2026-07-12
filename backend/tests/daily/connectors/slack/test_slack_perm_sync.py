@@ -6,7 +6,6 @@ import pytest
 from om.connectors.models import HierarchyNode
 from om.connectors.models import SlimDocument
 from om.connectors.slack.connector import SlackConnector
-from om.utils.variable_functionality import global_version
 from tests.daily.connectors.utils import load_all_from_connector
 
 
@@ -24,11 +23,8 @@ PRIVATE_CHANNEL_USERS = [
 def set_ee_on() -> Generator[None, None, None]:
     """Need EE to be enabled for these tests to work since
     perm syncing is a an EE-only feature."""
-    global_version.set_ee()
 
     yield
-
-    global_version._is_ee = False
 
 
 @pytest.mark.parametrize(

@@ -15,9 +15,6 @@ from om.file_store.file_store import get_default_file_store
 from om.redis.redis_pool import get_redis_replica_client
 from om.utils.file import FileWithMimeType
 from om.utils.file import OmStaticFileManager
-from om.utils.variable_functionality import (
-    fetch_ee_implementation_or_noop,
-)
 
 
 class OmRuntime:
@@ -54,11 +51,10 @@ class OmRuntime:
 
     @staticmethod
     def get_logo() -> FileWithMimeType:
+        from om.server.enterprise_settings.store import get_logo_filename as _impl_get_logo_filename
         STATIC_FILENAME = "static/images/logo.png"
 
-        db_filename: str | None = fetch_ee_implementation_or_noop(
-            "om.server.enterprise_settings.store", "get_logo_filename", None
-        )
+        db_filename: str | None = _impl_get_logo_filename
 
         return OmRuntime._get_with_static_fallback(db_filename, STATIC_FILENAME)
 
@@ -87,11 +83,10 @@ class OmRuntime:
 
     @staticmethod
     def get_logotype() -> FileWithMimeType:
+        from om.server.enterprise_settings.store import get_logotype_filename as _impl_get_logotype_filename
         STATIC_FILENAME = "static/images/logotype.png"
 
-        db_filename: str | None = fetch_ee_implementation_or_noop(
-            "om.server.enterprise_settings.store", "get_logotype_filename", None
-        )
+        db_filename: str | None = _impl_get_logotype_filename
 
         return OmRuntime._get_with_static_fallback(db_filename, STATIC_FILENAME)
 

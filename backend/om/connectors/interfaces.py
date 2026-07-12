@@ -16,7 +16,6 @@ from om.connectors.models import Document
 from om.connectors.models import HierarchyNode
 from om.connectors.models import SlimDocument
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 
 SecondsSinceUnixEpoch = float
 
@@ -77,11 +76,8 @@ class BaseConnector(abc.ABC, Generic[CT]):
         Don't override this; add a function to perm_sync_valid.py in the ee package
         to do permission sync validation
         """
-        validate_connector_settings_fn = fetch_ee_implementation_or_noop(
-            "om.connectors.perm_sync_valid",
-            "validate_perm_sync",
-            noop_return_value=None,
-        )
+        from om.connectors.perm_sync_valid import validate_perm_sync as _impl_validate_perm_sync
+        validate_connector_settings_fn = _impl_validate_perm_sync
         validate_connector_settings_fn(self)
 
     def set_allow_images(self, value: bool) -> None:

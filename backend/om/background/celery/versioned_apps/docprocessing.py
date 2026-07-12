@@ -4,9 +4,7 @@ fetch. Port over the code in those files if we add an EE version of this worker.
 
 from celery import Celery
 
-from om.utils.variable_functionality import set_is_ee_based_on_env_variable
 
-set_is_ee_based_on_env_variable()
 
 
 def get_app() -> Celery:

@@ -24,7 +24,6 @@ from om.db.models import Persona__User
 from om.db.models import SamlAccount
 from om.db.models import User
 from om.db.models import User__UserGroup
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 
 
 def validate_user_role_update(
@@ -321,13 +320,13 @@ def delete_user_from_db(
     user_to_delete: User,
     db_session: Session,
 ) -> None:
+    from om.db.external_perm import (
+        delete_user__ext_group_for_user__no_commit as _impl_delete_user__ext_group_for_user__no_commit,
+    )
     for oauth_account in user_to_delete.oauth_accounts:
         db_session.delete(oauth_account)
 
-    fetch_ee_implementation_or_noop(
-        "om.db.external_perm",
-        "delete_user__ext_group_for_user__no_commit",
-    )(
+    _impl_delete_user__ext_group_for_user__no_commit(
         db_session=db_session,
         user_id=user_to_delete.id,
     )

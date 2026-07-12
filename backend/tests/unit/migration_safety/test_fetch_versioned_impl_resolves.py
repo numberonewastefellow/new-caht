@@ -86,9 +86,33 @@ def _collect_targets() -> tuple[list[Target], int]:
     return targets, dynamic
 
 
+def test_no_dynamic_dispatch_survives_ee_removal() -> None:
+    """The hub is GONE -- assert no call site came back.
+
+    This assertion is inverted from what it was during the rename. Then, the job was
+    "every dispatch string must resolve" (there were ~109 of them, and a missed rename
+    left a dead string that only failed when that code path fired). EE removal deleted
+    the hub and inlined every call site into a real import, so the invariant now is that
+    ZERO remain: a reintroduced `fetch_versioned_implementation("om.x", "y")` would be a
+    new string-keyed module path -- invisible to mypy, invisible to the import walk, and
+    fatal only at runtime. That is the exact hazard this whole migration removed, so
+    growing one back is a regression, not a neutral event.
+    """
+    targets, dynamic = _collect_targets()
+    assert not targets and not dynamic, (
+        "Dynamic dispatch reappeared. Import the symbol directly instead -- a module "
+        "path in a string literal is checked by nothing:\n"
+        + "\n".join(sorted(f"  {t.func}: {t.module}.{t.attribute}" for t in targets))
+        + (f"\n  ...plus {dynamic} call site(s) with non-literal args" if dynamic else "")
+    )
+
+
 def test_fetch_versioned_targets_resolve() -> None:
     targets, dynamic = _collect_targets()
-    assert targets, "Found no fetch_versioned_* call sites (expected many pre-EE-removal)"
+    if not targets:
+        # Post-EE-removal steady state: nothing left to resolve. The real guard is
+        # test_no_dynamic_dispatch_survives_ee_removal above.
+        return
     print(f"[fetch_versioned] literal_targets={len(targets)} dynamic/skipped={dynamic}")
 
     failures: list[str] = []

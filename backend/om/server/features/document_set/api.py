@@ -23,7 +23,6 @@ from om.server.features.document_set.models import CheckDocSetPublicResponse
 from om.server.features.document_set.models import DocumentSetCreationRequest
 from om.server.features.document_set.models import DocumentSetSummary
 from om.server.features.document_set.models import DocumentSetUpdateRequest
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 from shared_configs.contextvars import get_current_tenant_id
 
 
@@ -37,9 +36,8 @@ def create_document_set(
     db_session: Session = Depends(get_session),
     tenant_id: str = Depends(get_current_tenant_id),
 ) -> int:
-    fetch_ee_implementation_or_noop(
-        "om.db.user_group", "validate_object_creation_for_user", None
-    )(
+    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    _impl_validate_object_creation_for_user(
         db_session=db_session,
         user=user,
         target_group_ids=document_set_creation_request.groups,
@@ -72,6 +70,7 @@ def patch_document_set(
     db_session: Session = Depends(get_session),
     tenant_id: str = Depends(get_current_tenant_id),
 ) -> None:
+    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     document_set = get_document_set_by_id(db_session, document_set_update_request.id)
     if document_set is None:
         raise HTTPException(
@@ -79,9 +78,7 @@ def patch_document_set(
             detail=f"Document set {document_set_update_request.id} does not exist",
         )
 
-    fetch_ee_implementation_or_noop(
-        "om.db.user_group", "validate_object_creation_for_user", None
-    )(
+    _impl_validate_object_creation_for_user(
         db_session=db_session,
         user=user,
         target_group_ids=document_set_update_request.groups,
@@ -113,6 +110,7 @@ def delete_document_set(
     db_session: Session = Depends(get_session),
     tenant_id: str = Depends(get_current_tenant_id),
 ) -> None:
+    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     document_set = get_document_set_by_id(db_session, document_set_id)
     if document_set is None:
         raise HTTPException(
@@ -123,9 +121,7 @@ def delete_document_set(
     # check if the user has "edit" access to the document set.
     # `validate_object_creation_for_user` is poorly named, but this
     # is the right function to use here
-    fetch_ee_implementation_or_noop(
-        "om.db.user_group", "validate_object_creation_for_user", None
-    )(
+    _impl_validate_object_creation_for_user(
         db_session=db_session,
         user=user,
         object_is_public=document_set.is_public,

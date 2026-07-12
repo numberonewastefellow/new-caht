@@ -18,8 +18,6 @@ from om.db.external_perm import fetch_public_external_group_ids
 from om.db.models import User
 from om.db.models import UserFile
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
-from om.utils.variable_functionality import fetch_versioned_implementation
 
 
 logger = setup_logger()
@@ -46,9 +44,7 @@ def get_access_for_document(
     document_id: str,
     db_session: Session,
 ) -> DocumentAccess:
-    versioned_get_access_for_document_fn = fetch_versioned_implementation(
-        "om.access.access", "_get_access_for_document"
-    )
+    versioned_get_access_for_document_fn = _get_access_for_document
     return versioned_get_access_for_document_fn(document_id, db_session)
 
 
@@ -189,9 +185,7 @@ def get_access_for_documents(
     db_session: Session,
 ) -> dict[str, DocumentAccess]:
     """Fetches all access information for the given documents."""
-    versioned_get_access_for_documents_fn = fetch_versioned_implementation(
-        "om.access.access", "_get_access_for_documents"
-    )
+    versioned_get_access_for_documents_fn = _get_access_for_documents
     return versioned_get_access_for_documents_fn(document_ids, db_session)
 
 
@@ -244,20 +238,17 @@ def _get_acl_for_user(user: User, db_session: Session) -> set[str]:
 
 
 def get_acl_for_user(user: User, db_session: Session | None = None) -> set[str]:
-    versioned_acl_for_user_fn = fetch_versioned_implementation(
-        "om.access.access", "_get_acl_for_user"
-    )
+    versioned_acl_for_user_fn = _get_acl_for_user
     return versioned_acl_for_user_fn(user, db_session)
 
 
 def source_should_fetch_permissions_during_indexing(source: DocumentSource) -> bool:
+    from om.external_permissions.sync_params import (
+        source_should_fetch_permissions_during_indexing as _impl_source_should_fetch_permissions_during_indexing,
+    )
     _source_should_fetch_permissions_during_indexing_func = cast(
         Callable[[DocumentSource], bool],
-        fetch_ee_implementation_or_noop(
-            "om.external_permissions.sync_params",
-            "source_should_fetch_permissions_during_indexing",
-            False,
-        ),
+        _impl_source_should_fetch_permissions_during_indexing,
     )
     return _source_should_fetch_permissions_during_indexing_func(source)
 

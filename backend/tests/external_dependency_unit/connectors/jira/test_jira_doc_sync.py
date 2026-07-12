@@ -14,7 +14,6 @@ from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
 from om.db.utils import DocumentRow
 from om.db.utils import SortOrder
-from om.utils.variable_functionality import global_version
 
 
 # In order to get these tests to run, use the credentials from Bitwarden.
@@ -53,7 +52,6 @@ def test_jira_doc_sync(
     meaning all documents should be marked as public.
     """
     # NOTE: must set EE on or else the connector will skip the perm syncing
-    global_version.set_ee()
 
     try:
         # Use AS project specifically for this test
@@ -151,7 +149,6 @@ def test_jira_doc_sync_with_specific_permissions(
     that specific users are correctly extracted.
     """
     # NOTE: must set EE on or else the connector will skip the perm syncing
-    global_version.set_ee()
 
     try:
         # Use SUP project which has specific user permissions

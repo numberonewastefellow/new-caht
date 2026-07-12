@@ -7,8 +7,6 @@ from github.Repository import Repository
 from om.access.models import ExternalAccess
 from om.connectors.github.models import SerializedRepository
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_versioned_implementation
-from om.utils.variable_functionality import global_version
 
 logger = setup_logger()
 
@@ -21,17 +19,12 @@ def get_external_access_permission(
     This functionality requires Enterprise Edition.
     """
     # Check if EE is enabled
-    if not global_version.is_ee_version():
-        # For the MIT version, return an empty ExternalAccess (private document)
-        return ExternalAccess.empty()
+    from om.external_permissions.github.utils import get_external_access_permission as _impl_get_external_access_permission
 
     # Fetch the EE implementation
     ee_get_external_access_permission = cast(
         Callable[[Repository, Github, bool], ExternalAccess],
-        fetch_versioned_implementation(
-            "om.external_permissions.github.utils",
-            "get_external_access_permission",
-        ),
+        _impl_get_external_access_permission,
     )
 
     return ee_get_external_access_permission(repo, github_client, True)

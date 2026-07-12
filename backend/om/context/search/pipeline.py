@@ -26,7 +26,6 @@ from om.utils.logger import setup_logger
 from om.utils.threadpool_concurrency import FunctionCall
 from om.utils.threadpool_concurrency import run_functions_in_parallel
 from om.utils.timing import log_function_time
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import get_current_tenant_id
 
@@ -258,6 +257,7 @@ def search_pipeline(
     # If a project ID is provided, it will be exclusively scoped to that project
     project_id: int | None = None,
 ) -> list[InferenceChunk]:
+    from om.external_permissions.post_query_censoring import _post_query_chunk_censoring as _impl__post_query_chunk_censoring
     user_uploaded_persona_files: list[UUID] | None = (
         [user_file.id for user_file in persona.user_files] if persona else None
     )
@@ -319,11 +319,7 @@ def search_pipeline(
 
     # For some specific connectors like Salesforce, a user that has access to an object doesn't mean
     # that they have access to all of the fields of the object.
-    censored_chunks: list[InferenceChunk] = fetch_ee_implementation_or_noop(
-        "om.external_permissions.post_query_censoring",
-        "_post_query_chunk_censoring",
-        retrieved_chunks,
-    )(
+    censored_chunks: list[InferenceChunk] = _impl__post_query_chunk_censoring(
         chunks=retrieved_chunks,
         user=user,
     )

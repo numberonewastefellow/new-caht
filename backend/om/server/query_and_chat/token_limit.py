@@ -31,7 +31,6 @@ from om.db.token_limit import fetch_all_global_token_rate_limits
 from om.db.token_limit import fetch_all_user_token_rate_limits
 from om.utils.logger import setup_logger
 from om.utils.threadpool_concurrency import run_functions_tuples_in_parallel
-from om.utils.variable_functionality import fetch_versioned_implementation
 
 
 logger = setup_logger()
@@ -48,10 +47,7 @@ def check_token_rate_limits(
     if not any_rate_limit_exists():
         return
 
-    versioned_rate_limit_strategy = fetch_versioned_implementation(
-        "om.server.query_and_chat.token_limit", _check_token_rate_limits.__name__
-    )
-    return versioned_rate_limit_strategy(user)
+    return _check_token_rate_limits(user)
 
 
 def _check_token_rate_limits(user: User) -> None:

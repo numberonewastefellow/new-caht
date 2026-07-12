@@ -38,7 +38,6 @@ from om.server.documents.private_key_types import PrivateKeyFileTypes
 from om.server.documents.private_key_types import ProcessPrivateKeyFileProtocol
 from om.server.models import StatusResponse
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 
 logger = setup_logger()
 
@@ -138,10 +137,9 @@ def create_credential_from_model(
     user: User = Depends(current_curator_or_admin_user),
     db_session: Session = Depends(get_session),
 ) -> ObjectCreationIdResponse:
+    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     if not _ignore_credential_permissions(credential_info.source):
-        fetch_ee_implementation_or_noop(
-            "om.db.user_group", "validate_object_creation_for_user", None
-        )(
+        _impl_validate_object_creation_for_user(
             db_session=db_session,
             user=user,
             target_group_ids=credential_info.groups,
@@ -173,6 +171,7 @@ def create_credential_with_private_key(
     type_definition_key: str = Form(...),
     db_session: Session = Depends(get_session),
 ) -> ObjectCreationIdResponse:
+    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     try:
         credential_data = json.loads(credential_json)
     except json.JSONDecodeError as e:
@@ -203,9 +202,7 @@ def create_credential_with_private_key(
     )
 
     if not _ignore_credential_permissions(DocumentSource(source)):
-        fetch_ee_implementation_or_noop(
-            "om.db.user_group", "validate_object_creation_for_user", None
-        )(
+        _impl_validate_object_creation_for_user(
             db_session=db_session,
             user=user,
             target_group_ids=groups,

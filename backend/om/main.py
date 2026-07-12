@@ -175,9 +175,6 @@ from om.utils.middleware import add_onyx_request_id_middleware
 from om.utils.telemetry import get_or_generate_uuid
 from om.utils.telemetry import optional_telemetry
 from om.utils.telemetry import RecordType
-from om.utils.variable_functionality import fetch_versioned_implementation
-from om.utils.variable_functionality import global_version
-from om.utils.variable_functionality import set_is_ee_based_on_env_variable
 from shared_configs.configs import CORS_ALLOWED_ORIGIN
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
@@ -282,6 +279,7 @@ def include_auth_router_with_prefix(
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     # Set recursion limit
+    from om.auth.users import verify_auth_setting as _impl_verify_auth_setting
     if SYSTEM_RECURSION_LIMIT is not None:
         sys.setrecursionlimit(SYSTEM_RECURSION_LIMIT)
         logger.notice(f"System recursion limit set to {SYSTEM_RECURSION_LIMIT}")
@@ -310,9 +308,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
         },
     )
 
-    verify_auth = fetch_versioned_implementation(
-        "om.auth.users", "verify_auth_setting"
-    )
+    verify_auth = _impl_verify_auth_setting
 
     # Will throw exception if an issue is found
     verify_auth()
@@ -714,8 +710,7 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
 
 # NOTE: needs to be outside of the `if __name__ == "__main__"` block so that the
 # app is exportable
-set_is_ee_based_on_env_variable()
-app = fetch_versioned_implementation(module="om.main", attribute="get_application")
+app = get_application
 
 
 if __name__ == "__main__":
@@ -723,7 +718,6 @@ if __name__ == "__main__":
         f"Starting VertualAi Backend version {__version__} on http://{APP_HOST}:{str(APP_PORT)}/"
     )
 
-    if global_version.is_ee_version():
-        logger.notice("Running Enterprise Edition")
+    logger.notice("Running Enterprise Edition")
 
     uvicorn.run(app, host=APP_HOST, port=APP_PORT)

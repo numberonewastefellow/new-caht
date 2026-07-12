@@ -25,7 +25,6 @@ from om.onyxbot.slack.utils import update_emote_react
 from om.server.manage.models import StandardAnswer as PydanticStandardAnswer
 from om.utils.logger import OmLoggingAdapter
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_versioned_implementation
 
 logger = setup_logger()
 
@@ -87,10 +86,7 @@ def handle_standard_answers(
 ) -> bool:
     """Returns whether one or more Standard Answer message blocks were
     emitted by the Slack bot"""
-    versioned_handle_standard_answers = fetch_versioned_implementation(
-        "om.onyxbot.slack.handlers.handle_standard_answers",
-        "_handle_standard_answers",
-    )
+    versioned_handle_standard_answers = _handle_standard_answers
     return versioned_handle_standard_answers(
         message_info=message_info,
         receiver_ids=receiver_ids,

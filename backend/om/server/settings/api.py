@@ -32,9 +32,6 @@ from om.server.settings.models import UserSettings
 from om.server.settings.store import load_settings
 from om.server.settings.store import store_settings
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import get_current_tenant_id
 
@@ -177,11 +174,7 @@ def fetch_settings(
     except KvKeyNotFoundError:
         needs_reindexing = False
 
-    apply_fn = fetch_versioned_implementation_with_fallback(
-        "om.server.settings.api",
-        "apply_license_status_to_settings",
-        apply_license_status_to_settings,
-    )
+    apply_fn = apply_license_status_to_settings
     general_settings = apply_fn(general_settings)
 
     # Check if Onyx Craft is enabled for this user (used for server-side redirects)

@@ -51,7 +51,6 @@ from om.db.models import ScimToken
 from om.db.models import User
 from om.db.models import UserGroup
 from om.db.models import UserRole
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 
 
 # NOTE: All URL paths in this router (/ServiceProviderConfig, /ResourceTypes,
@@ -124,9 +123,8 @@ def _user_to_scim(user: User, external_id: str | None = None) -> ScimUserResourc
 
 def _check_seat_availability(dal: ScimDAL) -> str | None:
     """Return an error message if seat limit is reached, else None."""
-    check_fn = fetch_ee_implementation_or_noop(
-        "om.db.license", "check_seat_availability", None
-    )
+    from om.db.license import check_seat_availability as _impl_check_seat_availability
+    check_fn = _impl_check_seat_availability
     if check_fn is None:
         return None
     result = check_fn(dal.session, seats_needed=1)

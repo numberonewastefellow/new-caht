@@ -18,7 +18,6 @@ from om.server.tenants.billing import fetch_billing_information
 from om.server.tenants.models import BillingInformation
 from om.server.tenants.models import SubscriptionStatusResponse
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_versioned_implementation
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.configs import USAGE_LIMIT_API_CALLS_PAID
 from shared_configs.configs import USAGE_LIMIT_API_CALLS_TRIAL
@@ -90,9 +89,7 @@ def is_tenant_on_trial_fn(tenant_id: str) -> bool:
     Uses fetch_versioned_implementation to get the EE version if available,
     otherwise falls back to the non-EE version that returns False.
     """
-    fn: Callable[[str], bool] = fetch_versioned_implementation(
-        "om.server.usage_limits", "is_tenant_on_trial"
-    )
+    fn: Callable[[str], bool] = is_tenant_on_trial
     return fn(tenant_id)
 
 
@@ -107,11 +104,10 @@ def _get_tenant_override(tenant_id: str, field_name: str) -> int | None:
         - -1 (NO_LIMIT): No limit (unlimited)
         - None: No override specified, use default env var value
     """
+    from om.server.tenant_usage_limits import get_tenant_usage_limit_overrides as _impl_get_tenant_usage_limit_overrides
     try:
         # Try to get EE version that has tenant overrides
-        get_overrides_fn = fetch_versioned_implementation(
-            "om.server.tenant_usage_limits", "get_tenant_usage_limit_overrides"
-        )
+        get_overrides_fn = _impl_get_tenant_usage_limit_overrides
         overrides: TenantUsageLimitOverrides | None = get_overrides_fn(tenant_id)
 
         if overrides is not None:

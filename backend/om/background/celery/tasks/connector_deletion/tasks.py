@@ -58,10 +58,6 @@ from om.redis.redis_connector_delete import RedisConnectorDelete
 from om.redis.redis_connector_delete import RedisConnectorDeletePayload
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
-from om.utils.variable_functionality import noop_fallback
 
 
 class TaskDependencyError(RuntimeError):
@@ -368,6 +364,9 @@ def try_generate_document_cc_pair_cleanup_tasks(
 def monitor_connector_deletion_taskset(
     tenant_id: str, key_bytes: bytes, r: Redis  # noqa: ARG001
 ) -> None:
+    from om.db.user_group import (
+        delete_user_group_cc_pair_relationship__no_commit as _impl_delete_user_group_cc_pair_relationship__no_commit,
+    )
     fence_key = key_bytes.decode("utf-8")
     cc_pair_id_str = RedisConnector.get_id_from_fence_key(fence_key)
     if cc_pair_id_str is None:
@@ -465,11 +464,7 @@ def monitor_connector_deletion_taskset(
             )
 
             # user groups
-            cleanup_user_groups = fetch_versioned_implementation_with_fallback(
-                "om.db.user_group",
-                "delete_user_group_cc_pair_relationship__no_commit",
-                noop_fallback,
-            )
+            cleanup_user_groups = _impl_delete_user_group_cc_pair_relationship__no_commit
             cleanup_user_groups(
                 cc_pair_id=cc_pair_id,
                 db_session=db_session,

@@ -13,7 +13,6 @@ from om.connectors.google_utils.shared_constants import (
     DB_CREDENTIALS_AUTHENTICATION_METHOD,
 )
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_versioned_implementation
 
 logger = setup_logger()
 
@@ -132,16 +131,12 @@ def _mask_list(items: list[Any]) -> list[Any]:
 
 
 def encrypt_string_to_bytes(intput_str: str) -> bytes:
-    versioned_encryption_fn = fetch_versioned_implementation(
-        "om.utils.encryption", "_encrypt_string"
-    )
+    versioned_encryption_fn = _encrypt_string
     return versioned_encryption_fn(intput_str)
 
 
 def decrypt_bytes_to_string(intput_bytes: bytes) -> str:
-    versioned_decryption_fn = fetch_versioned_implementation(
-        "om.utils.encryption", "_decrypt_bytes"
-    )
+    versioned_decryption_fn = _decrypt_bytes
     return versioned_decryption_fn(intput_bytes)
 
 

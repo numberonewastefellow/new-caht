@@ -17,10 +17,6 @@ from om.key_value_store.factory import get_kv_store
 from om.key_value_store.interface import KvKeyNotFoundError
 from om.utils.logger import setup_logger
 from om.utils.posthog_client import posthog
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
-from om.utils.variable_functionality import noop_fallback
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import get_current_tenant_id
 
@@ -179,8 +175,4 @@ def mt_cloud_telemetry(
     # MIT version should not need to include any Posthog code
     # This is only for Onyx MT Cloud, this code should also never be hit, no reason for any orgs to
     # be running the Multi Tenant version of Onyx.
-    fetch_versioned_implementation_with_fallback(
-        module="om.utils.telemetry",
-        attribute="event_telemetry",
-        fallback=noop_fallback,
-    )(distinct_id, event, all_properties)
+    event_telemetry(distinct_id, event, all_properties)

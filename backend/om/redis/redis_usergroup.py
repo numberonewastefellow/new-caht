@@ -15,8 +15,6 @@ from om.configs.constants import OmCeleryQueues
 from om.configs.constants import OmCeleryTask
 from om.configs.constants import OmRedisConstants
 from om.redis.redis_object_helper import RedisObjectHelper
-from om.utils.variable_functionality import fetch_versioned_implementation
-from om.utils.variable_functionality import global_version
 
 
 class RedisUserGroup(RedisObjectHelper):
@@ -66,17 +64,13 @@ class RedisUserGroup(RedisObjectHelper):
         """Max tasks is ignored for now until we can build the logic to mark the
         user group up to date over multiple batches.
         """
+        from om.db.user_group import construct_document_id_select_by_usergroup as _impl_construct_document_id_select_by_usergroup
         last_lock_time = time.monotonic()
         num_tasks_sent = 0
 
-        if not global_version.is_ee_version():
-            return 0, 0
 
         try:
-            construct_document_id_select_by_usergroup = fetch_versioned_implementation(
-                "om.db.user_group",
-                "construct_document_id_select_by_usergroup",
-            )
+            construct_document_id_select_by_usergroup = _impl_construct_document_id_select_by_usergroup
         except ModuleNotFoundError:
             return 0, 0
 

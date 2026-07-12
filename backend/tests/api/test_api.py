@@ -8,7 +8,6 @@ from fastapi.testclient import TestClient
 
 from om.configs.constants import DEV_VERSION_PATTERN
 from om.configs.constants import STABLE_VERSION_PATTERN
-from om.main import fetch_versioned_implementation
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
@@ -17,12 +16,11 @@ logger = setup_logger()
 @pytest.fixture(scope="function")
 def client() -> Generator[TestClient, Any, None]:
     # Set environment variables
+    from om.main import get_application as _impl_get_application
     os.environ["ENABLE_PAID_ENTERPRISE_EDITION_FEATURES"] = "True"
 
     # Initialize TestClient with the FastAPI app
-    app: FastAPI = fetch_versioned_implementation(
-        module="om.main", attribute="get_application"
-    )()
+    app: FastAPI = _impl_get_application()
     client = TestClient(app)
     yield client
 

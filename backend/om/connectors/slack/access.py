@@ -6,8 +6,6 @@ from slack_sdk import WebClient
 from om.access.models import ExternalAccess
 from om.connectors.models import BasicExpertInfo
 from om.connectors.slack.models import ChannelType
-from om.utils.variable_functionality import fetch_versioned_implementation
-from om.utils.variable_functionality import global_version
 
 
 def get_channel_access(
@@ -28,8 +26,7 @@ def get_channel_access(
         ExternalAccess object for the channel. None if EE is not enabled.
     """
     # Check if EE is enabled
-    if not global_version.is_ee_version():
-        return None
+    from om.external_permissions.slack.channel_access import get_channel_access as _impl_get_channel_access
 
     # Fetch the EE implementation
     ee_get_channel_access = cast(
@@ -37,9 +34,7 @@ def get_channel_access(
             [WebClient, ChannelType, dict[str, BasicExpertInfo | None]],
             ExternalAccess,
         ],
-        fetch_versioned_implementation(
-            "om.external_permissions.slack.channel_access", "get_channel_access"
-        ),
+        _impl_get_channel_access,
     )
 
     return ee_get_channel_access(client, channel, user_cache)

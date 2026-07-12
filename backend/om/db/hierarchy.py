@@ -15,7 +15,6 @@ from om.db.enums import HierarchyNodeType
 from om.db.models import Document
 from om.db.models import HierarchyNode
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_versioned_implementation
 
 logger = setup_logger()
 
@@ -524,9 +523,7 @@ def get_accessible_hierarchy_nodes_for_source(
     - MIT version: Returns all nodes (no permission filtering)
     - EE version: Filters based on user email and external group IDs
     """
-    versioned_fn = fetch_versioned_implementation(
-        "om.db.hierarchy", "_get_accessible_hierarchy_nodes_for_source"
-    )
+    versioned_fn = _get_accessible_hierarchy_nodes_for_source
     return versioned_fn(db_session, source, user_email, external_group_ids)
 
 

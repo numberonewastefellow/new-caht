@@ -24,9 +24,6 @@ from om.db.engine.async_sql_engine import get_async_session_context_manager
 from om.db.models import AccessToken
 from om.db.models import OAuthAccount
 from om.db.models import User
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
 
 T = TypeVar("T", bound=tuple[Any, ...])
 
@@ -34,10 +31,9 @@ T = TypeVar("T", bound=tuple[Any, ...])
 def get_default_admin_user_emails() -> list[str]:
     """Returns a list of emails who should default to Admin role.
     Only used in the EE version. For MIT, just return empty list."""
+    from om.auth.users import get_default_admin_user_emails_ as _impl_get_default_admin_user_emails_
     get_default_admin_user_emails_fn: Callable[[], list[str]] = (
-        fetch_versioned_implementation_with_fallback(
-            "om.auth.users", "get_default_admin_user_emails_", lambda: list[str]()
-        )
+        _impl_get_default_admin_user_emails_
     )
     return get_default_admin_user_emails_fn()
 

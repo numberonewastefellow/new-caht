@@ -15,7 +15,6 @@ from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import CELERY_PERMISSIONS_SYNC_LOCK_TIMEOUT
 from om.configs.constants import OmRedisConstants
 from om.redis.redis_pool import SCAN_ITER_COUNT_DEFAULT
-from om.utils.variable_functionality import fetch_versioned_implementation
 
 
 class PermissionSyncResult(NamedTuple):
@@ -180,12 +179,12 @@ class RedisConnectorPermissionSync:
         Returns:
             PermissionSyncResult containing counts of successful updates and errors
         """
+        from om.background.celery.tasks.doc_permission_syncing.tasks import (
+            element_update_permissions as _impl_element_update_permissions,
+        )
         last_lock_time = time.monotonic()
 
-        element_update_permissions_fn = fetch_versioned_implementation(
-            "om.background.celery.tasks.doc_permission_syncing.tasks",
-            "element_update_permissions",
-        )
+        element_update_permissions_fn = _impl_element_update_permissions
 
         num_permissions = 0
         num_errors = 0

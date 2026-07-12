@@ -24,10 +24,6 @@ from om.connectors.google_utils.google_utils import PAGE_TOKEN_KEY
 from om.connectors.google_utils.resources import GoogleDriveService
 from om.connectors.interfaces import SecondsSinceUnixEpoch
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
-from om.utils.variable_functionality import noop_fallback
 
 
 logger = setup_logger()
@@ -201,13 +197,12 @@ def get_external_access_for_folder(
         ExternalAccess with extracted permission info
     """
     # Try to get the EE implementation
+    from om.external_permissions.google_drive.doc_sync import (
+        get_external_access_for_folder as _impl_get_external_access_for_folder,
+    )
     get_folder_access_fn = cast(
         Callable[[GoogleDriveFileType, str, GoogleDriveService, bool], ExternalAccess],
-        fetch_versioned_implementation_with_fallback(
-            "om.external_permissions.google_drive.doc_sync",
-            "get_external_access_for_folder",
-            noop_fallback,
-        ),
+        _impl_get_external_access_for_folder,
     )
 
     return get_folder_access_fn(folder, google_domain, drive_service, add_prefix)

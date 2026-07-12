@@ -39,10 +39,6 @@ from om.file_processing.file_types import OmFileExtensions
 from om.file_processing.file_types import OmMimeTypes
 from om.file_processing.image_utils import store_image_and_create_section
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
-from om.utils.variable_functionality import noop_fallback
 
 logger = setup_logger()
 
@@ -485,6 +481,9 @@ def _get_external_access_for_raw_gdrive_file(
                When False (default), leave unprefixed (for permission sync path
                where upsert_document_external_perms handles prefixing).
     """
+    from om.external_permissions.google_drive.doc_sync import (
+        get_external_access_for_raw_gdrive_file as _impl_get_external_access_for_raw_gdrive_file,
+    )
     external_access_fn = cast(
         Callable[
             [
@@ -496,11 +495,7 @@ def _get_external_access_for_raw_gdrive_file(
             ],
             ExternalAccess,
         ],
-        fetch_versioned_implementation_with_fallback(
-            "om.external_permissions.google_drive.doc_sync",
-            "get_external_access_for_raw_gdrive_file",
-            fallback=noop_fallback,
-        ),
+        _impl_get_external_access_for_raw_gdrive_file,
     )
     return external_access_fn(
         file,

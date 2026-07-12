@@ -47,7 +47,6 @@ from om.server.features.persona.models import PersonaSnapshot
 from om.server.features.persona.models import PersonaUpsertRequest
 from om.server.features.tool.tool_visibility import should_expose_tool_to_fe
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_versioned_implementation
 
 logger = setup_logger()
 
@@ -315,9 +314,7 @@ def create_update_persona(
             document_ids=create_persona_request.document_ids,
         )
 
-        versioned_update_persona_access = fetch_versioned_implementation(
-            "om.db.persona", "update_persona_access"
-        )
+        versioned_update_persona_access = update_persona_access
 
         versioned_update_persona_access(
             persona_id=persona.id,
@@ -355,9 +352,7 @@ def update_persona_shared(
             status_code=403, detail="You don't have permission to modify this persona"
         )
 
-    versioned_update_persona_access = fetch_versioned_implementation(
-        "om.db.persona", "update_persona_access"
-    )
+    versioned_update_persona_access = update_persona_access
     versioned_update_persona_access(
         persona_id=persona_id,
         creator_user_id=user.id,

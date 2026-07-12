@@ -8,7 +8,6 @@ from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.engine.tenant_utils import get_all_tenant_ids
 from om.onyxbot.discord.exceptions import CacheError
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 from shared_configs.contextvars import CURRENT_TENANT_ID_CONTEXTVAR
 
 logger = setup_logger()
@@ -32,6 +31,7 @@ class DiscordCacheManager:
 
     async def refresh_all(self) -> None:
         """Full cache refresh from all tenants."""
+        from om.server.tenants.product_gating import get_gated_tenants as _impl_get_gated_tenants
         async with self._lock:
             logger.info("Starting Discord cache refresh")
 
@@ -39,11 +39,7 @@ class DiscordCacheManager:
             new_api_keys: dict[str, str] = {}
 
             try:
-                gated = fetch_ee_implementation_or_noop(
-                    "om.server.tenants.product_gating",
-                    "get_gated_tenants",
-                    set(),
-                )()
+                gated = _impl_get_gated_tenants()
 
                 tenant_ids = await asyncio.to_thread(get_all_tenant_ids)
                 for tenant_id in tenant_ids:

@@ -62,12 +62,6 @@ from om.redis.redis_pool import get_redis_replica_client
 from om.redis.redis_pool import redis_lock_dump
 from om.redis.redis_usergroup import RedisUserGroup
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_versioned_implementation
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
-from om.utils.variable_functionality import global_version
-from om.utils.variable_functionality import noop_fallback
 
 logger = setup_logger()
 
@@ -89,6 +83,7 @@ def check_for_vespa_sync_task(self: Task, *, tenant_id: str) -> bool | None:
 
     # Useful for debugging timing issues with reacquisitions.
     # TODO: remove once more generalized logging is in place
+    from om.db.user_group import fetch_user_groups as _impl_fetch_user_groups
     task_logger.info("check_for_vespa_sync_task started")
 
     time_start = time.monotonic()
@@ -134,31 +129,28 @@ def check_for_vespa_sync_task(self: Task, *, tenant_id: str) -> bool | None:
 
         # check if any user groups are not synced
         lock_beat.reacquire()
-        if global_version.is_ee_version():
-            try:
-                fetch_user_groups = fetch_versioned_implementation(
-                    "om.db.user_group", "fetch_user_groups"
+        try:
+            fetch_user_groups = _impl_fetch_user_groups
+        except ModuleNotFoundError:
+            # Always exceptions on the MIT version, which is expected
+            # We shouldn't actually get here if the ee version check works
+            pass
+        else:
+            usergroup_ids: list[int] = []
+            with get_session_with_current_tenant() as db_session:
+                user_groups = fetch_user_groups(
+                    db_session=db_session, only_up_to_date=False
                 )
-            except ModuleNotFoundError:
-                # Always exceptions on the MIT version, which is expected
-                # We shouldn't actually get here if the ee version check works
-                pass
-            else:
-                usergroup_ids: list[int] = []
+
+                for usergroup in user_groups:
+                    usergroup_ids.append(usergroup.id)
+
+            for usergroup_id in usergroup_ids:
+                lock_beat.reacquire()
                 with get_session_with_current_tenant() as db_session:
-                    user_groups = fetch_user_groups(
-                        db_session=db_session, only_up_to_date=False
+                    try_generate_user_group_sync_tasks(
+                        self.app, usergroup_id, db_session, r, lock_beat, tenant_id
                     )
-
-                    for usergroup in user_groups:
-                        usergroup_ids.append(usergroup.id)
-
-                for usergroup_id in usergroup_ids:
-                    lock_beat.reacquire()
-                    with get_session_with_current_tenant() as db_session:
-                        try_generate_user_group_sync_tasks(
-                            self.app, usergroup_id, db_session, r, lock_beat, tenant_id
-                        )
 
         # 2/3: VALIDATE: TODO
 
@@ -183,11 +175,7 @@ def check_for_vespa_sync_task(self: Task, *, tenant_id: str) -> bool | None:
                     monitor_document_set_taskset(tenant_id, key_bytes, r, db_session)
             elif key_str.startswith(RedisUserGroup.FENCE_PREFIX):
                 monitor_usergroup_taskset = (
-                    fetch_versioned_implementation_with_fallback(
-                        "om.background.celery.tasks.vespa.tasks",
-                        "monitor_usergroup_taskset",
-                        noop_fallback,
-                    )
+                    monitor_usergroup_taskset
                 )
                 with get_session_with_current_tenant() as db_session:
                     monitor_usergroup_taskset(tenant_id, key_bytes, r, db_session)
@@ -298,6 +286,7 @@ def try_generate_user_group_sync_tasks(
     lock_beat: RedisLock,
     tenant_id: str,
 ) -> int | None:
+    from om.db.user_group import fetch_user_group as _impl_fetch_user_group
     lock_beat.reacquire()
 
     rug = RedisUserGroup(tenant_id, usergroup_id)
@@ -308,7 +297,7 @@ def try_generate_user_group_sync_tasks(
     # race condition with the monitor/cleanup function if we use a cached result!
     fetch_user_group = cast(
         Callable[[Session, int], UserGroup | None],
-        fetch_versioned_implementation("om.db.user_group", "fetch_user_group"),
+        _impl_fetch_user_group,
     )
 
     usergroup = fetch_user_group(db_session, usergroup_id)

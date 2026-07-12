@@ -11,7 +11,6 @@ from om.auth.users import current_limited_user
 from om.auth.users import current_user
 from om.auth.users import current_user_with_expired_token
 from om.configs.app_configs import APP_API_PREFIX
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 
 
 PUBLIC_ENDPOINT_SPECS = [
@@ -123,15 +122,12 @@ def check_router_auth(
     (2) are explicitly marked as a public endpoint
     """
 
-    control_plane_dep = fetch_ee_implementation_or_noop(
-        "om.server.tenants.access", "control_plane_dep"
-    )
-    current_cloud_superuser = fetch_ee_implementation_or_noop(
-        "om.auth.users", "current_cloud_superuser"
-    )
-    verify_scim_token = fetch_ee_implementation_or_noop(
-        "om.server.scim.auth", "verify_scim_token"
-    )
+    from om.auth.users import current_cloud_superuser as _impl_current_cloud_superuser
+    from om.server.scim.auth import verify_scim_token as _impl_verify_scim_token
+    from om.server.tenants.access import control_plane_dep as _impl_control_plane_dep
+    control_plane_dep = _impl_control_plane_dep
+    current_cloud_superuser = _impl_current_cloud_superuser
+    verify_scim_token = _impl_verify_scim_token
 
     for route in application.routes:
         # explicitly marked as public

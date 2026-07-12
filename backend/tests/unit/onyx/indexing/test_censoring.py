@@ -7,11 +7,9 @@ import pytest
 from om.configs.constants import DocumentSource
 from om.context.search.models import InferenceChunk
 from om.db.models import User
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
+from om.external_permissions.post_query_censoring import _post_query_chunk_censoring as _impl__post_query_chunk_censoring
 
-_post_query_chunk_censoring = fetch_ee_implementation_or_noop(
-    "om.external_permissions.post_query_censoring", "_post_query_chunk_censoring"
-)
+_post_query_chunk_censoring = _impl__post_query_chunk_censoring
 
 
 @pytest.mark.skipif(

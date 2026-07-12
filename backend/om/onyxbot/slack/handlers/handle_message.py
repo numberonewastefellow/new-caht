@@ -23,7 +23,6 @@ from om.onyxbot.slack.utils import respond_in_thread_or_channel
 from om.onyxbot.slack.utils import slack_usage_report
 from om.onyxbot.slack.utils import update_emote_react
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 from shared_configs.configs import SLACK_CHANNEL_ID
 
 logger_base = setup_logger()
@@ -119,6 +118,7 @@ def handle_message(
     Query thrown out by filters due to config does not count as a failure that should be notified
     Onyx failing to answer/retrieve docs does count and should be notified
     """
+    from om.db.license import check_seat_availability as _impl_check_seat_availability
     channel = message_info.channel_to_respond
 
     logger = setup_logger(extra={SLACK_CHANNEL_ID: channel})
@@ -217,11 +217,7 @@ def handle_message(
             existing_user = get_user_by_email(message_info.email, db_session)
             if existing_user is None:
                 # New user — check seat availability before creating
-                check_seat_fn = fetch_ee_implementation_or_noop(
-                    "om.db.license",
-                    "check_seat_availability",
-                    None,
-                )
+                check_seat_fn = _impl_check_seat_availability
                 # noop returns None when called; real function returns SeatAvailabilityResult
                 seat_result = check_seat_fn(db_session=db_session)
                 if seat_result is not None and not seat_result.available:

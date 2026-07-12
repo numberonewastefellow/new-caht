@@ -34,7 +34,6 @@ from om.db.index_attempt import mark_attempt_failed
 from om.db.indexing_coordination import IndexingCoordination
 from om.redis.redis_connector import RedisConnector
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import global_version
 from shared_configs.configs import SENTRY_DSN
 
 logger = setup_logger()
@@ -414,7 +413,7 @@ def docfetching_proxy_task(
         index_attempt_id,
         cc_pair_id,
         search_settings_id,
-        global_version.is_ee_version(),
+        True,  # EE is unconditional
         tenant_id,
     )
 

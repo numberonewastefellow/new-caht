@@ -73,7 +73,6 @@ from om.server.documents.models import PaginatedReturn
 from om.server.documents.models import PermissionSyncAttemptSnapshot
 from om.server.models import StatusResponse
 from om.utils.logger import setup_logger
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
@@ -545,9 +544,8 @@ def associate_credential_to_connector(
     The intent of this endpoint is to handle connectors that actually need credentials.
     """
 
-    fetch_ee_implementation_or_noop(
-        "om.db.user_group", "validate_object_creation_for_user", None
-    )(
+    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    _impl_validate_object_creation_for_user(
         db_session=db_session,
         user=user,
         target_group_ids=metadata.groups,

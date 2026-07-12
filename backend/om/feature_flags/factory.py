@@ -2,9 +2,6 @@ from om.configs.app_configs import DEV_MODE
 from om.feature_flags.interface import FeatureFlagProvider
 from om.feature_flags.interface import NoOpFeatureFlagProvider
 from om.feature_flags.posthog_provider import PostHogFeatureFlagProvider
-from om.utils.variable_functionality import (
-    fetch_versioned_implementation_with_fallback,
-)
 from shared_configs.configs import MULTI_TENANT
 
 
@@ -35,9 +32,5 @@ def get_default_feature_flag_provider() -> FeatureFlagProvider:
         FeatureFlagProvider: The configured feature flag provider instance
     """
     if MULTI_TENANT or DEV_MODE:
-        return fetch_versioned_implementation_with_fallback(
-            module="om.feature_flags.factory",
-            attribute="get_posthog_feature_flag_provider",
-            fallback=lambda: NoOpFeatureFlagProvider(),
-        )()
+        return get_posthog_feature_flag_provider()
     return NoOpFeatureFlagProvider()

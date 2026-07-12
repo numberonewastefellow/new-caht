@@ -153,7 +153,6 @@ from om.utils.logger import setup_logger
 from om.utils.telemetry import mt_cloud_telemetry
 from om.utils.threadpool_concurrency import CallableProtocol
 from om.utils.threadpool_concurrency import run_functions_tuples_in_parallel
-from om.utils.variable_functionality import fetch_ee_implementation_or_noop
 from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
@@ -1437,14 +1436,13 @@ def create_connector_from_model(
     user: User = Depends(current_curator_or_admin_user),
     db_session: Session = Depends(get_session),
 ) -> ObjectCreationIdResponse:
+    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     tenant_id = get_current_tenant_id()
 
     try:
         _validate_connector_allowed(connector_data.source)
 
-        fetch_ee_implementation_or_noop(
-            "om.db.user_group", "validate_object_creation_for_user", None
-        )(
+        _impl_validate_object_creation_for_user(
             db_session=db_session,
             user=user,
             target_group_ids=connector_data.groups,
@@ -1476,11 +1474,10 @@ def create_connector_with_mock_credential(
     user: User = Depends(current_curator_or_admin_user),
     db_session: Session = Depends(get_session),
 ) -> StatusResponse:
+    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     tenant_id = get_current_tenant_id()
 
-    fetch_ee_implementation_or_noop(
-        "om.db.user_group", "validate_object_creation_for_user", None
-    )(
+    _impl_validate_object_creation_for_user(
         db_session=db_session,
         user=user,
         target_group_ids=connector_data.groups,
@@ -1559,12 +1556,11 @@ def update_connector_from_model(
     user: User = Depends(current_curator_or_admin_user),
     db_session: Session = Depends(get_session),
 ) -> ConnectorSnapshot | StatusResponse[int]:
+    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     cc_pair = fetch_connector_credential_pair_for_connector(db_session, connector_id)
     try:
         _validate_connector_allowed(connector_data.source)
-        fetch_ee_implementation_or_noop(
-            "om.db.user_group", "validate_object_creation_for_user", None
-        )(
+        _impl_validate_object_creation_for_user(
             db_session=db_session,
             user=user,
             target_group_ids=connector_data.groups,

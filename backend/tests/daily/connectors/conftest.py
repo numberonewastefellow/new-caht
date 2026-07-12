@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 import pytest
 
-from om.utils.variable_functionality import global_version
 
 
 @pytest.fixture
@@ -18,10 +17,10 @@ def mock_get_unstructured_api_key() -> Generator[MagicMock, None, None]:
 
 @pytest.fixture
 def set_ee_on() -> Generator[None, None, None]:
-    """Need EE to be enabled for these tests to work since
-    perm syncing is a an EE-only feature."""
-    global_version.set_ee()
+    """No-op. Kept so the tests that request it keep working.
 
+    Perm syncing used to be EE-gated, so these tests had to flip global_version on and
+    back off. There is one edition now and the feature is always available, so there is
+    nothing to toggle -- and nothing to restore afterwards.
+    """
     yield
-
-    global_version._is_ee = False
