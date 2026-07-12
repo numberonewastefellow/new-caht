@@ -48,17 +48,28 @@ def _importable_module_suffixes() -> list[str]:
     """Root-stripped names of every submodule that imports cleanly.
 
     File-based walk (conftest.iter_package_modules) -- pkgutil would skip the namespace
-    dirs that hold the entire background/celery tree. Includes the EE mirror so the
-    rename of `ee.onyx` -> `ee.om` is snapshot-covered too.
+    dirs that hold the entire background/celery tree. Includes the EE mirror, whose
+    entries `strip_root` COLLAPSES onto their MIT paths (`ee.om.db.license` ->
+    `<root>.db.license`), i.e. exactly where EE removal relocates them. So this set is
+    a zero-diff invariant across EE removal, not just across the rename.
+
+    Deduped: an EE *override* (a module present in both trees) normalizes to the same
+    name as the MIT module it merges into, so it legitimately appears once.
     """
     names = iter_package_modules(ROOT_PACKAGE) + iter_package_modules("ee")
-    ok: list[str] = []
+    ok: set[str] = set()
     for name in names:
         try:
             importlib.import_module(name)
         except Exception:  # noqa: BLE001 - env-dependent; snapshot only the importable set
             continue
-        ok.append(strip_root(name))
+        normalized = strip_root(name)
+        # `ee/om/__init__.py` -> the bare `<root>` sentinel. The root package itself is
+        # never enumerated (iter_package_modules skips it), so post-merge there is no
+        # such entry. Drop it rather than let it read as a spurious `removed=`.
+        if normalized == "<root>":
+            continue
+        ok.add(normalized)
     return sorted(ok)
 
 
@@ -122,13 +133,27 @@ def test_golden_snapshot(
 
     baseline = json.loads(_SNAPSHOT.read_text())
     diffs: list[str] = []
-    for key in ("modules", "celery_tasks", "beat_tasks", "fetch_targets"):
+
+    # Strict equality. `modules` is normalized so the EE mirror collapses onto the MIT
+    # path it merges into, and every EE celery/beat task carries an explicit `name=`
+    # (verified), so its name is independent of which package it lives in. Therefore EE
+    # removal must not perturb ANY of these three -- a diff is a dropped feature.
+    for key in ("modules", "celery_tasks", "beat_tasks"):
         before = set(baseline.get(key, []))
         after = set(inventory[key])  # type: ignore[arg-type]
         missing = sorted(before - after)
         added = sorted(after - before)
         if missing or added:
             diffs.append(f"[{key}] removed={missing}\n[{key}] added={added}")
+
+    # `fetch_targets` is the one key that SHOULD shrink: deleting the dynamic-dispatch
+    # hub is the point of EE removal, and it ends at zero. So assert direction, not
+    # equality -- a target may disappear (converted to a direct import), but a NEW one
+    # appearing means either a dispatch call was introduced or a target string was
+    # rewritten to the wrong path (which shows up as removed-X + added-Y).
+    new_targets = sorted(set(inventory["fetch_targets"]) - set(baseline.get("fetch_targets", [])))  # type: ignore[arg-type]
+    if new_targets:
+        diffs.append(f"[fetch_targets] added={new_targets} (dispatch targets may only be REMOVED)")
 
     assert not diffs, (
         "Normalized inventory changed across migration (something dropped/renamed "

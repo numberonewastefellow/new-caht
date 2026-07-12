@@ -19,15 +19,22 @@ from pathlib import Path
 from types import ModuleType
 from typing import Iterator
 
-# --- Force non-EE, quiet telemetry BEFORE any backend module is imported. -------
-# `om.utils.variable_functionality` reads LICENSE_ENFORCEMENT_ENABLED at import
-# time; setting it here (conftest loads before test modules) pins the MIT/non-EE
-# resolution path -- the exact path that must keep working after EE removal.
-# Force (not setdefault) -- the backend image may already export these, and the EE/MIT
-# resolution path must be pinned identically for the "before" and "after" runs or the
-# golden-snapshot diff is meaningless.
-os.environ["LICENSE_ENFORCEMENT_ENABLED"] = "false"
-os.environ["ENABLE_PAID_ENTERPRISE_EDITION_FEATURES"] = "false"
+# --- Force EE-ON, quiet telemetry BEFORE any backend module is imported. --------
+# `om.utils.variable_functionality` reads LICENSE_ENFORCEMENT_ENABLED at import time;
+# setting it here (conftest loads before test modules) pins the EE resolution path.
+#
+# WHY EE-ON (this flipped for Stage 2 -- it was EE-OFF for the rename):
+# EE removal's end state is "EE is always on, unconditionally". So the inventory this
+# suite must hold invariant is TODAY'S EE-ON RUNTIME inventory -- every EE celery task,
+# every EE beat entry, every EE implementation that `fetch_versioned_implementation`
+# resolves to. Snapshotting with EE OFF would capture the MIT-only subset and would
+# happily "pass" while the merged tree silently dropped EE tasks on the floor.
+#
+# Force (not setdefault) -- the backend image exports these itself, and the resolution
+# path must be pinned identically for the "before" and "after" runs or the golden-
+# snapshot diff is meaningless.
+os.environ["LICENSE_ENFORCEMENT_ENABLED"] = "true"
+os.environ["ENABLE_PAID_ENTERPRISE_EDITION_FEATURES"] = "true"
 os.environ["DISABLE_TELEMETRY"] = "true"
 
 import pytest  # noqa: E402
@@ -85,22 +92,34 @@ def path_to_module(rel_path: str) -> str:
 
 
 def strip_root(dotted: str) -> str:
-    """Normalize a dotted path so `onyx.x` and `om.x` compare equal.
+    """Normalize a dotted path so the tree compares equal ACROSS BOTH migrations.
 
-    Also normalizes the EE mirror (`ee.onyx.x` -> `ee.<root>.x`) so snapshots taken
-    before EE removal line up structurally with the merged tree.
+    Two normalizations, one for each migration:
+
+    1. Rename (`onyx` -> `om`): strip the root package, so `onyx.x` and `om.x` both
+       become `<root>.x`.
+
+    2. EE removal (`ee.<root>.x` -> `<root>.x`): COLLAPSE the EE mirror onto its MIT
+       path. This is not cosmetic -- it *models the merge*. EE removal moves
+       `ee/om/db/license.py` to `om/db/license.py`, so before/after must normalize to
+       the same `<root>.db.license`. EE OVERRIDES (a file present in both trees, e.g.
+       `access/access.py`) collapse onto the single MIT entry they merge into.
+
+    The payoff: the module inventory becomes a ZERO-DIFF invariant across EE removal.
+    Any EE module that fails to make it into the merged tree -- dropped, mis-pathed,
+    or left behind -- shows up as a `removed=[...]` diff instead of silently vanishing.
     """
     for root in _CANDIDATE_ROOTS:
+        # EE mirror first: `ee.om.x` must not be mistaken for anything else. Collapse
+        # it onto the MIT path it merges into.
+        if dotted == "ee." + root:
+            return "<root>"
+        if dotted.startswith("ee." + root + "."):
+            return "<root>." + dotted[len("ee." + root + ".") :]
         if dotted == root:
             return "<root>"
-        # The EE mirror's package ROOT itself (`ee.onyx` / `ee.om`) -- must be handled
-        # before the `root + "."` case, and separately from `ee.<root>.<sub>`.
-        if dotted == "ee." + root:
-            return "ee.<root>"
         if dotted.startswith(root + "."):
             return "<root>." + dotted[len(root) + 1 :]
-        if dotted.startswith("ee." + root + "."):
-            return "ee.<root>." + dotted[len("ee." + root + ".") :]
     return dotted
 
 
