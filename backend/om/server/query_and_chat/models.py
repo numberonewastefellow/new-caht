@@ -18,6 +18,7 @@ from om.db.models import ChatSession
 from om.file_store.models import FileDescriptor
 from om.llm.override_models import LLMOverride
 from om.server.query_and_chat.streaming_models import Packet
+from om.server.query_and_chat.streaming_models import SearchDocWithContent
 
 
 AUTO_PLACE_AFTER_LATEST_MESSAGE = -1
@@ -275,3 +276,45 @@ class ExecuteCodeResponse(BaseModel):
     stderr: str
     exit_code: int | None
     files: list[FileDescriptor]
+
+
+class SearchFlowClassificationRequest(BaseModel):
+    user_query: str
+
+
+class SearchFlowClassificationResponse(BaseModel):
+    is_search_flow: bool
+
+
+# NOTE: This model is used for the core flow of the Onyx application, any changes to it should be reviewed and approved by an
+# experienced team member. It is very important to 1. avoid bloat and 2. that this remains backwards compatible across versions.
+class SendSearchQueryRequest(BaseModel):
+    search_query: str
+    filters: BaseFilters | None = None
+    num_docs_fed_to_llm_selection: int | None = None
+    run_query_expansion: bool = False
+    num_hits: int = 50
+
+    include_content: bool = False
+    stream: bool = False
+
+
+class SearchFullResponse(BaseModel):
+    all_executed_queries: list[str]
+    search_docs: list[SearchDocWithContent]
+    # Reasoning tokens output by the LLM for the document selection
+    doc_selection_reasoning: str | None = None
+    # This a list of document ids that are in the search_docs list
+    llm_selected_doc_ids: list[str] | None = None
+    # Error message if the search failed partway through
+    error: str | None = None
+
+
+class SearchQueryResponse(BaseModel):
+    query: str
+    query_expansions: list[str] | None
+    created_at: datetime
+
+
+class SearchHistoryResponse(BaseModel):
+    search_queries: list[SearchQueryResponse]

@@ -14,7 +14,7 @@ from typing import Literal
 
 import httpx
 
-from ee.om.configs.app_configs import CLOUD_DATA_PLANE_URL
+from om.configs.app_configs import CLOUD_DATA_PLANE_URL
 from om.server.billing.models import BillingInformationResponse
 from om.server.billing.models import CreateCheckoutSessionResponse
 from om.server.billing.models import CreateCustomerPortalSessionResponse

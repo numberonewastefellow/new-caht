@@ -9,7 +9,7 @@ from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ee.om.configs.app_configs import HUBSPOT_TRACKING_URL
+from om.configs.app_configs import HUBSPOT_TRACKING_URL
 from om.server.tenants.access import generate_data_plane_token
 from om.server.tenants.models import TenantByDomainResponse
 from om.server.tenants.models import TenantCreationPayload

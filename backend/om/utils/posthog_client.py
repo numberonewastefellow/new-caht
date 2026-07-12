@@ -4,10 +4,10 @@ from urllib.parse import unquote
 
 from posthog import Posthog
 
-from ee.om.configs.app_configs import MARKETING_POSTHOG_API_KEY
-from ee.om.configs.app_configs import POSTHOG_API_KEY
-from ee.om.configs.app_configs import POSTHOG_DEBUG_LOGS_ENABLED
-from ee.om.configs.app_configs import POSTHOG_HOST
+from om.configs.app_configs import MARKETING_POSTHOG_API_KEY
+from om.configs.app_configs import POSTHOG_API_KEY
+from om.configs.app_configs import POSTHOG_DEBUG_LOGS_ENABLED
+from om.configs.app_configs import POSTHOG_HOST
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

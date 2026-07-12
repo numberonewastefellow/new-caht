@@ -1,7 +1,5 @@
 import functools
 import importlib
-import inspect
-import os
 from typing import Any
 from typing import TypeVar
 
@@ -11,109 +9,50 @@ from om.configs.app_configs import API_SERVER_URL_OVERRIDE_FOR_HTTP_REQUESTS
 from om.configs.app_configs import APP_API_PREFIX
 from om.configs.app_configs import APP_PORT
 from om.configs.app_configs import DEV_MODE
-from om.configs.app_configs import ENTERPRISE_EDITION_ENABLED
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
 
 
 class OmVersion:
-    def __init__(self) -> None:
-        self._is_ee = False
+    """Vestigial. There is exactly one edition now; EE is unconditional.
+
+    Kept only so the remaining `global_version.is_ee_version()` call sites keep working
+    until they are removed (Stage 2.4). It always reports True, which is what a live
+    EE deployment already reported.
+    """
 
     def set_ee(self) -> None:
-        self._is_ee = True
+        return None
 
     def is_ee_version(self) -> bool:
-        return self._is_ee
+        return True
 
 
 global_version = OmVersion()
 
-# Read LICENSE_ENFORCEMENT_ENABLED directly since it's in EE configs
-# This allows EE code to load when license enforcement is enabled,
-# even without ENABLE_PAID_ENTERPRISE_EDITION_FEATURES being set.
-# Eventually, ENABLE_PAID_ENTERPRISE_EDITION_FEATURES will be removed
-# and license enforcement will be the only mechanism for EE features.
-_LICENSE_ENFORCEMENT_ENABLED = (
-    os.environ.get("LICENSE_ENFORCEMENT_ENABLED", "true").lower() == "true"
-)
-
 
 def set_is_ee_based_on_env_variable() -> None:
-    """Enable Enterprise Edition based on environment configuration.
-
-    EE is enabled if either:
-    - ENABLE_PAID_ENTERPRISE_EDITION_FEATURES=true (legacy/rollout flag)
-    - LICENSE_ENFORCEMENT_ENABLED=true (license-based gating)
-
-    When LICENSE_ENFORCEMENT_ENABLED is true, EE code is loaded but access
-    to EE-only features is controlled by the license enforcement middleware.
-    """
-    if global_version.is_ee_version():
-        return
-
-    if ENTERPRISE_EDITION_ENABLED:
-        logger.notice(
-            "Enterprise Edition enabled via ENABLE_PAID_ENTERPRISE_EDITION_FEATURES"
-        )
-        global_version.set_ee()
-    elif _LICENSE_ENFORCEMENT_ENABLED:
-        logger.notice("Enterprise Edition enabled via LICENSE_ENFORCEMENT_ENABLED")
-        global_version.set_ee()
+    """No-op. EE is no longer conditional on the environment."""
+    return None
 
 
 @functools.lru_cache(maxsize=128)
 def fetch_versioned_implementation(module: str, attribute: str) -> Any:
+    """Fetch `attribute` from `module`.
+
+    This used to prefix `ee.` and fall back to the MIT module on ModuleNotFoundError.
+    The EE tree is gone -- its implementations were merged into these very modules -- so
+    the only remaining resolution is the direct one.
+
+    NOTE: the `ee.` prefixing could not simply be left in place. With `backend/ee/`
+    deleted, `import_module("ee.om.x")` raises ModuleNotFoundError("No module named
+    'ee'"), and the old fallback guard was `if "ee.om" not in str(e): raise` -- which
+    does NOT match that message, so every dispatch call would have re-raised instead of
+    falling back. Silent on import, fatal on first use.
     """
-    Fetches a versioned implementation of a specified attribute from a given module.
-    This function first checks if the application is running in an Enterprise Edition (EE)
-    context. If so, it attempts to import the attribute from the EE-specific module.
-    If the module or attribute is not found, it falls back to the default module or
-    raises the appropriate exception depending on the context.
-
-    Args:
-        module (str): The name of the module from which to fetch the attribute.
-        attribute (str): The name of the attribute to fetch from the module.
-
-    Returns:
-        Any: The fetched implementation of the attribute.
-
-    Raises:
-        ModuleNotFoundError: If the module cannot be found and the error is not related to
-                             the Enterprise Edition fallback logic.
-
-    Logs:
-        Logs debug information about the fetching process and warnings if the versioned
-        implementation cannot be found or loaded.
-    """
-    logger.debug("Fetching versioned implementation for %s.%s", module, attribute)
-    is_ee = global_version.is_ee_version()
-
-    module_full = f"ee.{module}" if is_ee else module
-    try:
-        return getattr(importlib.import_module(module_full), attribute)
-    except ModuleNotFoundError as e:
-        logger.warning(
-            "Failed to fetch versioned implementation for %s.%s: %s",
-            module_full,
-            attribute,
-            e,
-        )
-
-        if is_ee:
-            if "ee.om" not in str(e):
-                # If it's a non Onyx related import failure, this is likely because
-                # a dependent library has not been installed. Should raise this failure
-                # instead of letting the server start up
-                raise e
-
-            # Use the MIT version as a fallback, this allows us to develop MIT
-            # versions independently and later add additional EE functionality
-            # similar to feature flagging
-            return getattr(importlib.import_module(module), attribute)
-
-        raise
+    logger.debug("Fetching implementation for %s.%s", module, attribute)
+    return getattr(importlib.import_module(module), attribute)
 
 
 T = TypeVar("T")
@@ -156,36 +95,15 @@ def noop_fallback(*args: Any, **kwargs: Any) -> None:
 
 
 def fetch_ee_implementation_or_noop(
-    module: str, attribute: str, noop_return_value: Any = None
+    module: str, attribute: str, noop_return_value: Any = None  # noqa: ARG001
 ) -> Any:
+    """Fetch `attribute` from `module`.
+
+    The no-op branch is gone: it only ever fired when EE was disabled, and EE is now
+    unconditional. A live EE deployment always took the fetch path, so this preserves
+    production behavior exactly. `noop_return_value` is retained (unused) so the ~30
+    call sites that pass it keep type-checking until Stage 2.3 rewrites them.
     """
-    Fetches an EE implementation if EE is enabled, otherwise returns a no-op function.
-    Raises an exception if EE is enabled but the fetch fails.
-
-    Args:
-        module (str): The name of the module from which to fetch the attribute.
-        attribute (str): The name of the attribute to fetch from the module.
-
-    Returns:
-        Any: The fetched EE implementation if successful and EE is enabled, otherwise a no-op function.
-
-    Raises:
-        Exception: If EE is enabled but the fetch fails.
-    """
-    if not global_version.is_ee_version():
-        if inspect.iscoroutinefunction(noop_return_value):
-
-            async def async_noop(*args: Any, **kwargs: Any) -> Any:
-                return await noop_return_value(*args, **kwargs)
-
-            return async_noop
-
-        else:
-
-            def sync_noop(*args: Any, **kwargs: Any) -> Any:  # noqa: ARG001
-                return noop_return_value
-
-            return sync_noop
     try:
         return fetch_versioned_implementation(module, attribute)
     except Exception as e:

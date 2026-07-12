@@ -1,6 +1,6 @@
 from typing import cast
 
-from ee.om.configs.app_configs import GATED_TENANTS_KEY
+from om.configs.app_configs import GATED_TENANTS_KEY
 from om.configs.constants import OM_CLOUD_TENANT_ID
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client

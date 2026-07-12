@@ -102,6 +102,10 @@ celery_app.autodiscover_tasks(
             # Sandbox tasks (file sync, cleanup)
             "om.server.features.build.sandbox.tasks",
             "om.background.celery.tasks.hierarchyfetching",
+            "om.background.celery.tasks.doc_permission_syncing",
+            "om.background.celery.tasks.external_group_syncing",
+            "om.background.celery.tasks.cleanup",
+            "om.background.celery.tasks.query_history",
         ]
     )
 )

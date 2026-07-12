@@ -58,7 +58,33 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.engine.sql_engine import SqlEngine
 from om.file_store.file_store import get_default_file_store
 from om.server.api_key.api import router as api_key_router
-from om.server.auth_check import check_router_auth
+from om.server.auth_check import check_ee_router_auth
+from om.server.analytics.api import router as analytics_router
+from om.server.billing.api import router as billing_router
+from om.server.enterprise_settings.api import (
+    admin_router as enterprise_settings_admin_router,
+)
+from om.server.enterprise_settings.api import (
+    basic_router as enterprise_settings_router,
+)
+from om.server.evals.api import router as evals_router
+from om.server.license.api import router as license_router
+from om.server.manage.standard_answer import router as standard_answer_router
+from om.server.middleware.license_enforcement import (
+    add_license_enforcement_middleware,
+)
+from om.server.middleware.tenant_tracking import (
+    add_api_server_tenant_id_middleware,
+)
+from om.server.oauth.api import router as ee_oauth_router
+from om.server.query_and_chat.search_backend import router as search_router
+from om.server.query_history.api import router as query_history_router
+from om.server.reporting.usage_export_api import router as usage_export_router
+from om.server.scim.api import scim_router
+from om.server.seeding import seed_db
+from om.server.tenants.api import router as tenants_router
+from om.server.user_group.api import router as user_group_router
+from om.utils.encryption import test_encryption
 from om.server.documents.cc_pair import router as cc_pair_router
 from om.server.documents.connector import router as connector_router
 from om.server.documents.credential import router as credential_router
@@ -323,6 +349,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     if AUTH_RATE_LIMITING_ENABLED:
         await setup_auth_limiter()
 
+    # seed the environment with LLMs, Assistants, etc. based on an optional environment
+    # variable. Used to automate deployment for multiple environments. (Merged from the
+    # former ee/om/main.py lifespan, which wrapped this one purely to append this call.)
+    seed_db()
+
     yield
 
     SqlEngine.reset_engine()
@@ -356,6 +387,10 @@ def log_http_error(request: Request, exc: Exception) -> JSONResponse:
 
 
 def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
+    # Merged from the former ee/om/main.py: fail fast at startup if the encryption key
+    # is misconfigured, rather than at first use.
+    test_encryption()
+
     application = FastAPI(
         title="VertualAI Backend",
         version=__version__,
@@ -446,6 +481,44 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
 
     include_router_with_global_prefix_prepended(application, pat_router)
 
+    # --- Merged from the former ee/om/main.py (EE removal, Stage 2.2) ---------------
+    # NOTE: query_router, cc_pair_router and token_rate_limit_settings_router are NOT
+    # re-included here. The EE overrides of those three modules were merged into their
+    # MIT counterparts, so the EE routes now live on the very same router objects that
+    # are already included above. Including them again would double-register every route.
+
+    # RBAC / group access control
+    include_router_with_global_prefix_prepended(application, user_group_router)
+    # Analytics endpoints
+    include_router_with_global_prefix_prepended(application, analytics_router)
+    include_router_with_global_prefix_prepended(application, query_history_router)
+    include_router_with_global_prefix_prepended(application, search_router)
+    include_router_with_global_prefix_prepended(application, standard_answer_router)
+    include_router_with_global_prefix_prepended(application, ee_oauth_router)
+    include_router_with_global_prefix_prepended(application, evals_router)
+
+    # Global settings
+    include_router_with_global_prefix_prepended(
+        application, enterprise_settings_admin_router
+    )
+    include_router_with_global_prefix_prepended(application, enterprise_settings_router)
+    include_router_with_global_prefix_prepended(application, usage_export_router)
+    # License management
+    include_router_with_global_prefix_prepended(application, license_router)
+
+    # Unified billing API - always registered so frontend doesn't get 404.
+    # Works for both self-hosted and cloud deployments.
+    include_router_with_global_prefix_prepended(application, billing_router)
+
+    if MULTI_TENANT:
+        # Tenant management
+        include_router_with_global_prefix_prepended(application, tenants_router)
+
+    # SCIM 2.0 - protocol endpoints (unauthenticated by session auth; they use their own
+    # SCIM bearer token auth). Not behind APP_API_PREFIX because IdPs expect
+    # /scim/v2/... directly.
+    application.include_router(scim_router)
+
     if AUTH_TYPE == AuthType.BASIC or AUTH_TYPE == AuthType.CLOUD:
         include_auth_router_with_prefix(
             application,
@@ -473,6 +546,39 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
             application,
             fastapi_users.get_users_router(UserRead, UserUpdate),
             prefix="/users",
+        )
+
+    # Merged from the former ee/om/main.py. The MIT Google-OAuth block below covers
+    # GOOGLE_OAUTH and BASIC-with-OAuth but deliberately NOT CLOUD, so CLOUD needs its
+    # own registration. For Google OAuth, refresh tokens are requested by:
+    #   1. adding the right scopes
+    #   2. configuring OAuth in Google Cloud Console to allow offline access
+    if AUTH_TYPE == AuthType.CLOUD:
+        cloud_oauth_client = GoogleOAuth2(
+            OAUTH_CLIENT_ID,
+            OAUTH_CLIENT_SECRET,
+            # Use standard scopes that include profile and email
+            scopes=["openid", "email", "profile"],
+        )
+        include_auth_router_with_prefix(
+            application,
+            create_onyx_oauth_router(
+                cloud_oauth_client,
+                auth_backend,
+                USER_AUTH_SECRET,
+                associate_by_email=True,
+                is_verified_by_default=True,
+                # Points the user back to the login page
+                redirect_url=f"{WEB_DOMAIN}/auth/oauth/callback",
+            ),
+            prefix="/auth/oauth",
+        )
+
+        # Need basic auth router for `logout` endpoint
+        include_auth_router_with_prefix(
+            application,
+            fastapi_users.get_logout_router(auth_backend),
+            prefix="/auth",
         )
 
     # Register Google OAuth when AUTH_TYPE is GOOGLE_OAUTH, or when
@@ -589,8 +695,17 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     # instrumentator adds middleware via app.add_middleware().
     setup_prometheus_metrics(application)
 
+    # Merged from the former ee/om/main.py.
+    if MULTI_TENANT:
+        add_api_server_tenant_id_middleware(application, logger)
+    else:
+        # License enforcement middleware for self-hosted deployments only.
+        # Checks LICENSE_ENFORCEMENT_ENABLED at runtime (can be toggled without a
+        # restart). MT deployments use control-plane gating via is_tenant_gated().
+        add_license_enforcement_middleware(application, logger)
+
     # Ensure all routes have auth enabled or are explicitly marked as public
-    check_router_auth(application)
+    check_ee_router_auth(application)
 
     use_route_function_names_as_operation_ids(application)
 

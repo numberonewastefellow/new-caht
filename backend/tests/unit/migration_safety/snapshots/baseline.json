@@ -14,8 +14,11 @@
     "check_for_user_file_processing",
     "check_for_user_file_project_sync",
     "check_for_vespa_sync_task",
+    "check_ttl_management_task",
     "cleanup_idle_sandboxes",
     "cleanup_old_snapshots",
+    "export_query_history_cleanup_task",
+    "generate_usage_report_task",
     "monitor_background_processes",
     "monitor_celery_queues",
     "monitor_process_memory"

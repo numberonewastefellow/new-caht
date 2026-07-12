@@ -118,6 +118,7 @@ celery_app.autodiscover_tasks(
             "om.background.celery.tasks.doc_permission_syncing",
             "om.background.celery.tasks.docprocessing",
             "om.background.celery.tasks.opensearch_migration",
+            "om.background.celery.tasks.external_group_syncing",
             # Sandbox cleanup tasks (isolated in build feature)
             "om.server.features.build.sandbox.tasks",
         ]

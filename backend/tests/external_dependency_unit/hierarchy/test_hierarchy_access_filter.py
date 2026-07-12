@@ -11,7 +11,7 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from ee.om.db.hierarchy import _get_accessible_hierarchy_nodes_for_source
+from om.db.hierarchy import _get_accessible_hierarchy_nodes_for_source
 from om.configs.constants import DocumentSource
 from om.db.enums import HierarchyNodeType
 from om.db.models import HierarchyNode

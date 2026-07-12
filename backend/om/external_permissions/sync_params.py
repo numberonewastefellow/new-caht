@@ -4,18 +4,18 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from ee.om.configs.app_configs import CONFLUENCE_PERMISSION_DOC_SYNC_FREQUENCY
-from ee.om.configs.app_configs import CONFLUENCE_PERMISSION_GROUP_SYNC_FREQUENCY
-from ee.om.configs.app_configs import DEFAULT_PERMISSION_DOC_SYNC_FREQUENCY
-from ee.om.configs.app_configs import GITHUB_PERMISSION_DOC_SYNC_FREQUENCY
-from ee.om.configs.app_configs import GITHUB_PERMISSION_GROUP_SYNC_FREQUENCY
-from ee.om.configs.app_configs import GOOGLE_DRIVE_PERMISSION_GROUP_SYNC_FREQUENCY
-from ee.om.configs.app_configs import JIRA_PERMISSION_DOC_SYNC_FREQUENCY
-from ee.om.configs.app_configs import JIRA_PERMISSION_GROUP_SYNC_FREQUENCY
-from ee.om.configs.app_configs import SHAREPOINT_PERMISSION_DOC_SYNC_FREQUENCY
-from ee.om.configs.app_configs import SHAREPOINT_PERMISSION_GROUP_SYNC_FREQUENCY
-from ee.om.configs.app_configs import SLACK_PERMISSION_DOC_SYNC_FREQUENCY
-from ee.om.configs.app_configs import TEAMS_PERMISSION_DOC_SYNC_FREQUENCY
+from om.configs.app_configs import CONFLUENCE_PERMISSION_DOC_SYNC_FREQUENCY
+from om.configs.app_configs import CONFLUENCE_PERMISSION_GROUP_SYNC_FREQUENCY
+from om.configs.app_configs import DEFAULT_PERMISSION_DOC_SYNC_FREQUENCY
+from om.configs.app_configs import GITHUB_PERMISSION_DOC_SYNC_FREQUENCY
+from om.configs.app_configs import GITHUB_PERMISSION_GROUP_SYNC_FREQUENCY
+from om.configs.app_configs import GOOGLE_DRIVE_PERMISSION_GROUP_SYNC_FREQUENCY
+from om.configs.app_configs import JIRA_PERMISSION_DOC_SYNC_FREQUENCY
+from om.configs.app_configs import JIRA_PERMISSION_GROUP_SYNC_FREQUENCY
+from om.configs.app_configs import SHAREPOINT_PERMISSION_DOC_SYNC_FREQUENCY
+from om.configs.app_configs import SHAREPOINT_PERMISSION_GROUP_SYNC_FREQUENCY
+from om.configs.app_configs import SLACK_PERMISSION_DOC_SYNC_FREQUENCY
+from om.configs.app_configs import TEAMS_PERMISSION_DOC_SYNC_FREQUENCY
 from om.external_permissions.confluence.doc_sync import confluence_doc_sync
 from om.external_permissions.confluence.group_sync import confluence_group_sync
 from om.external_permissions.github.doc_sync import github_doc_sync

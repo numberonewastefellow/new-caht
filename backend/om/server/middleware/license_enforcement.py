@@ -49,7 +49,7 @@ from fastapi.responses import JSONResponse
 from redis.exceptions import RedisError
 from sqlalchemy.exc import SQLAlchemyError
 
-from ee.om.configs.app_configs import LICENSE_ENFORCEMENT_ENABLED
+from om.configs.app_configs import LICENSE_ENFORCEMENT_ENABLED
 from om.configs.license_enforcement_config import EE_ONLY_PATH_PREFIXES
 from om.configs.license_enforcement_config import (
     LICENSE_ENFORCEMENT_ALLOWED_PREFIXES,

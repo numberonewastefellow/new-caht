@@ -3,6 +3,7 @@ from datetime import timezone
 from typing import cast
 
 from sqlalchemy import and_
+from sqlalchemy import distinct
 from sqlalchemy import exists
 from sqlalchemy import func
 from sqlalchemy import select
@@ -255,6 +256,14 @@ def fetch_unique_document_sources(db_session: Session) -> list[DocumentSource]:
     ]
 
     return sources
+
+
+def fetch_sources_with_connectors(db_session: Session) -> list[DocumentSource]:
+    sources = db_session.query(distinct(Connector.source)).all()
+
+    document_sources = [source[0] for source in sources]
+
+    return document_sources
 
 
 def create_initial_default_connector(db_session: Session) -> None:

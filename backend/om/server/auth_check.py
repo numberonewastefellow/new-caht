@@ -65,6 +65,30 @@ PUBLIC_ENDPOINT_SPECS = [
 ]
 
 
+EE_PUBLIC_ENDPOINT_SPECS = PUBLIC_ENDPOINT_SPECS + [
+    # SCIM 2.0 service discovery — unauthenticated so IdPs can probe
+    # before bearer token configuration is complete
+    ("/scim/v2/ServiceProviderConfig", {"GET"}),
+    ("/scim/v2/ResourceTypes", {"GET"}),
+    ("/scim/v2/Schemas", {"GET"}),
+    # needs to be accessible prior to user login
+    ("/enterprise-settings", {"GET"}),
+    ("/enterprise-settings/logo", {"GET"}),
+    ("/enterprise-settings/logotype", {"GET"}),
+    ("/enterprise-settings/custom-analytics-script", {"GET"}),
+    # Stripe publishable key is safe to expose publicly
+    ("/tenants/stripe-publishable-key", {"GET"}),
+    ("/admin/billing/stripe-publishable-key", {"GET"}),
+    # Proxy endpoints use license-based auth, not user auth
+    ("/proxy/create-checkout-session", {"POST"}),
+    ("/proxy/claim-license", {"POST"}),
+    ("/proxy/create-customer-portal-session", {"POST"}),
+    ("/proxy/billing-information", {"GET"}),
+    ("/proxy/license/{tenant_id}", {"GET"}),
+    ("/proxy/seats/update", {"POST"}),
+]
+
+
 def is_route_in_spec_list(
     route: BaseRoute, public_endpoint_specs: list[tuple[str, set[str]]]
 ) -> bool:
@@ -143,3 +167,12 @@ def check_router_auth(
             raise RuntimeError(
                 f"Did not find user dependency in private route - {route}"
             )
+
+
+def check_ee_router_auth(
+    application: FastAPI,
+    public_endpoint_specs: list[tuple[str, set[str]]] = EE_PUBLIC_ENDPOINT_SPECS,
+) -> None:
+    # similar to the open source version of this function, but checking for the EE-only
+    # endpoints as well
+    check_router_auth(application, public_endpoint_specs)

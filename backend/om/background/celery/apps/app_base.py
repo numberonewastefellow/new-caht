@@ -592,8 +592,6 @@ _VECTOR_DB_TASK_MODULES: set[str] = {
     "om.background.celery.tasks.opensearch_migration",
     "om.background.celery.tasks.doc_permission_syncing",
     "om.background.celery.tasks.hierarchyfetching",
-    # EE modules that are vector-DB-dependent
-    "om.background.celery.tasks.doc_permission_syncing",
     "om.background.celery.tasks.external_group_syncing",
 }
 # NOTE: "om.background.celery.tasks.shared" is intentionally NOT in the set

@@ -28,7 +28,7 @@ from fastapi import Header
 from fastapi import HTTPException
 from pydantic import BaseModel
 
-from ee.om.configs.app_configs import LICENSE_ENFORCEMENT_ENABLED
+from om.configs.app_configs import LICENSE_ENFORCEMENT_ENABLED
 from om.server.billing.models import SeatUpdateRequest
 from om.server.billing.models import SeatUpdateResponse
 from om.server.license.models import LicensePayload

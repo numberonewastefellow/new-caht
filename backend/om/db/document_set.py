@@ -1,12 +1,10 @@
 from collections.abc import Sequence
-from typing import cast
 from uuid import UUID
 
 from sqlalchemy import and_
 from sqlalchemy import delete
 from sqlalchemy import exists
 from sqlalchemy import func
-from sqlalchemy import or_
 from sqlalchemy import Select
 from sqlalchemy import select
 from sqlalchemy.orm import aliased
@@ -23,10 +21,12 @@ from om.db.models import Document
 from om.db.models import DocumentByConnectorCredentialPair
 from om.db.models import DocumentSet as DocumentSetDBModel
 from om.db.models import DocumentSet__ConnectorCredentialPair
+from om.db.models import DocumentSet__User
 from om.db.models import DocumentSet__UserGroup
 from om.db.models import FederatedConnector__DocumentSet
 from om.db.models import User
 from om.db.models import User__UserGroup
+from om.db.models import UserGroup
 from om.db.models import UserRole
 from om.server.features.document_set.models import DocumentSetCreationRequest
 from om.server.features.document_set.models import DocumentSetUpdateRequest
@@ -113,7 +113,13 @@ def _mark_document_set_cc_pairs_as_outdated__no_commit(
 def delete_document_set_privacy__no_commit(
     document_set_id: int, db_session: Session
 ) -> None:
-    """No private document sets in Onyx MIT"""
+    db_session.query(DocumentSet__User).filter(
+        DocumentSet__User.document_set_id == document_set_id
+    ).delete(synchronize_session="fetch")
+
+    db_session.query(DocumentSet__UserGroup).filter(
+        DocumentSet__UserGroup.document_set_id == document_set_id
+    ).delete(synchronize_session="fetch")
 
 
 def get_document_set_by_id_for_user(
@@ -170,14 +176,31 @@ def get_document_sets_by_ids(
 
 
 def make_doc_set_private(
-    document_set_id: int,  # noqa: ARG001
+    document_set_id: int,
     user_ids: list[UUID] | None,
     group_ids: list[int] | None,
-    db_session: Session,  # noqa: ARG001
+    db_session: Session,
 ) -> None:
-    # May cause error if someone switches down to MIT from EE
-    if user_ids or group_ids:
-        raise NotImplementedError("VertualAI MIT does not support private Document Sets")
+    db_session.query(DocumentSet__User).filter(
+        DocumentSet__User.document_set_id == document_set_id
+    ).delete(synchronize_session="fetch")
+    db_session.query(DocumentSet__UserGroup).filter(
+        DocumentSet__UserGroup.document_set_id == document_set_id
+    ).delete(synchronize_session="fetch")
+
+    if user_ids:
+        for user_uuid in user_ids:
+            db_session.add(
+                DocumentSet__User(document_set_id=document_set_id, user_id=user_uuid)
+            )
+
+    if group_ids:
+        for group_id in group_ids:
+            db_session.add(
+                DocumentSet__UserGroup(
+                    document_set_id=document_set_id, user_group_id=group_id
+                )
+            )
 
 
 def _check_if_cc_pairs_are_owned_by_groups(
@@ -491,59 +514,78 @@ def delete_document_set_cc_pair_relationship__no_commit(
 
 
 def fetch_document_sets(
-    user_id: UUID | None,  # noqa: ARG001
+    user_id: UUID | None,
     db_session: Session,
-    include_outdated: bool = False,
+    include_outdated: bool = True,  # Parameter only for versioned implementation, unused  # noqa: ARG001
 ) -> list[tuple[DocumentSetDBModel, list[ConnectorCredentialPair]]]:
-    """Return is a list where each element contains a tuple of:
-    1. The document set itself
-    2. All CC pairs associated with the document set"""
-    stmt = (
-        select(DocumentSetDBModel, ConnectorCredentialPair)
-        .join(
-            DocumentSet__ConnectorCredentialPair,
-            DocumentSetDBModel.id
-            == DocumentSet__ConnectorCredentialPair.document_set_id,
-            isouter=True,  # outer join is needed to also fetch document sets with no cc pairs
-        )
-        .join(
-            ConnectorCredentialPair,
-            ConnectorCredentialPair.id
-            == DocumentSet__ConnectorCredentialPair.connector_credential_pair_id,
-            isouter=True,  # outer join is needed to also fetch document sets with no cc pairs
-        )
-    )
-    if not include_outdated:
-        stmt = stmt.where(
-            or_(
-                DocumentSet__ConnectorCredentialPair.is_current == True,  # noqa: E712
-                # `None` handles case where no CC Pairs exist for a Document Set
-                DocumentSet__ConnectorCredentialPair.is_current.is_(None),
-            )
-        )
+    assert user_id is not None
 
-    results = cast(
-        list[tuple[DocumentSetDBModel, ConnectorCredentialPair | None]],
-        db_session.execute(stmt).all(),
+    # Public document sets
+    public_document_sets = (
+        db_session.query(DocumentSetDBModel)
+        .filter(DocumentSetDBModel.is_public == True)  # noqa
+        .all()
     )
 
-    aggregated_results: dict[
-        int, tuple[DocumentSetDBModel, list[ConnectorCredentialPair]]
-    ] = {}
-    for document_set, cc_pair in results:
-        if document_set.id not in aggregated_results:
-            aggregated_results[document_set.id] = (
-                document_set,
-                [cc_pair] if cc_pair else [],
-            )
-        else:
-            if cc_pair:
-                aggregated_results[document_set.id][1].append(cc_pair)
+    # Document sets via shared user relationships
+    shared_document_sets = (
+        db_session.query(DocumentSetDBModel)
+        .join(
+            DocumentSet__User,
+            DocumentSetDBModel.id == DocumentSet__User.document_set_id,
+        )
+        .filter(DocumentSet__User.user_id == user_id)
+        .all()
+    )
 
-    return [
-        (document_set, cc_pairs)
-        for document_set, cc_pairs in aggregated_results.values()
-    ]
+    # Document sets via groups
+    # First, find the user groups the user belongs to
+    user_groups = (
+        db_session.query(UserGroup)
+        .join(User__UserGroup, UserGroup.id == User__UserGroup.user_group_id)
+        .filter(User__UserGroup.user_id == user_id)
+        .all()
+    )
+
+    group_document_sets = []
+    for group in user_groups:
+        group_document_sets.extend(
+            db_session.query(DocumentSetDBModel)
+            .join(
+                DocumentSet__UserGroup,
+                DocumentSetDBModel.id == DocumentSet__UserGroup.document_set_id,
+            )
+            .filter(DocumentSet__UserGroup.user_group_id == group.id)
+            .all()
+        )
+
+    # Combine and deduplicate document sets from all sources
+    all_document_sets = list(
+        set(public_document_sets + shared_document_sets + group_document_sets)
+    )
+
+    document_set_with_cc_pairs: list[
+        tuple[DocumentSetDBModel, list[ConnectorCredentialPair]]
+    ] = []
+
+    for document_set in all_document_sets:
+        # Fetch the associated ConnectorCredentialPairs
+        cc_pairs = (
+            db_session.query(ConnectorCredentialPair)
+            .join(
+                DocumentSet__ConnectorCredentialPair,
+                ConnectorCredentialPair.id
+                == DocumentSet__ConnectorCredentialPair.connector_credential_pair_id,
+            )
+            .filter(
+                DocumentSet__ConnectorCredentialPair.document_set_id == document_set.id,
+            )
+            .all()
+        )
+
+        document_set_with_cc_pairs.append((document_set, cc_pairs))
+
+    return document_set_with_cc_pairs
 
 
 def fetch_all_document_sets_for_user(

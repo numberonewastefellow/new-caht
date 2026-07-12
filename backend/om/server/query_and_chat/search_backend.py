@@ -12,13 +12,13 @@ from om.search.process_search_query import stream_search_query
 from om.secondary_llm_flows.search_flow_classification import (
     classify_is_search_flow,
 )
-from ee.om.server.query_and_chat.models import SearchFlowClassificationRequest
-from ee.om.server.query_and_chat.models import SearchFlowClassificationResponse
-from ee.om.server.query_and_chat.models import SearchFullResponse
-from ee.om.server.query_and_chat.models import SearchHistoryResponse
-from ee.om.server.query_and_chat.models import SearchQueryResponse
-from ee.om.server.query_and_chat.models import SendSearchQueryRequest
-from ee.om.server.query_and_chat.streaming_models import SearchErrorPacket
+from om.server.query_and_chat.models import SearchFlowClassificationRequest
+from om.server.query_and_chat.models import SearchFlowClassificationResponse
+from om.server.query_and_chat.models import SearchFullResponse
+from om.server.query_and_chat.models import SearchHistoryResponse
+from om.server.query_and_chat.models import SearchQueryResponse
+from om.server.query_and_chat.models import SendSearchQueryRequest
+from om.server.query_and_chat.streaming_models import SearchErrorPacket
 from om.auth.users import current_user
 from om.db.engine.sql_engine import get_session
 from om.db.engine.sql_engine import get_session_with_current_tenant

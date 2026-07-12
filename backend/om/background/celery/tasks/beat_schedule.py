@@ -6,10 +6,10 @@ from celery.schedules import crontab
 
 from om.configs.app_configs import AUTO_LLM_CONFIG_URL
 from om.configs.app_configs import AUTO_LLM_UPDATE_INTERVAL_SECONDS
+from om.configs.app_configs import CHECK_TTL_MANAGEMENT_TASK_FREQUENCY_IN_HOURS
 from om.configs.app_configs import DISABLE_OPENSEARCH_MIGRATION_TASK
 from om.configs.app_configs import DISABLE_VECTOR_DB
 from om.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
-from om.configs.app_configs import ENTERPRISE_EDITION_ENABLED
 from om.configs.app_configs import SCHEDULED_EVAL_DATASET_NAMES
 from om.configs.constants import OM_CLOUD_CELERY_TASK_PREFIX
 from om.configs.constants import OmCeleryPriority
@@ -156,29 +156,61 @@ beat_task_templates: list[dict] = [
     },
 ]
 
-if ENTERPRISE_EDITION_ENABLED:
-    beat_task_templates.extend(
-        [
-            {
-                "name": "check-for-doc-permissions-sync",
-                "task": OmCeleryTask.CHECK_FOR_DOC_PERMISSIONS_SYNC,
-                "schedule": timedelta(seconds=30),
-                "options": {
-                    "priority": OmCeleryPriority.MEDIUM,
-                    "expires": BEAT_EXPIRES_DEFAULT,
-                },
+beat_task_templates.extend(
+    [
+        {
+            "name": "check-for-doc-permissions-sync",
+            "task": OmCeleryTask.CHECK_FOR_DOC_PERMISSIONS_SYNC,
+            "schedule": timedelta(seconds=30),
+            "options": {
+                "priority": OmCeleryPriority.MEDIUM,
+                "expires": BEAT_EXPIRES_DEFAULT,
             },
-            {
-                "name": "check-for-external-group-sync",
-                "task": OmCeleryTask.CHECK_FOR_EXTERNAL_GROUP_SYNC,
-                "schedule": timedelta(seconds=20),
-                "options": {
-                    "priority": OmCeleryPriority.MEDIUM,
-                    "expires": BEAT_EXPIRES_DEFAULT,
-                },
+        },
+        {
+            "name": "check-for-external-group-sync",
+            "task": OmCeleryTask.CHECK_FOR_EXTERNAL_GROUP_SYNC,
+            "schedule": timedelta(seconds=20),
+            "options": {
+                "priority": OmCeleryPriority.MEDIUM,
+                "expires": BEAT_EXPIRES_DEFAULT,
             },
-        ]
-    )
+        },
+        # Merged from the former ee/om/.../beat_schedule.py override. Appending to
+        # beat_task_templates covers BOTH consumers at once: get_cloud_tasks_to_schedule
+        # reads the templates directly, and tasks_to_schedule (self-hosted) extends them
+        # below -- which is exactly the split the EE override maintained by hand via
+        # ee_beat_task_templates + ee_tasks_to_schedule (identical entries in both).
+        {
+            "name": "autogenerate-usage-report",
+            "task": OmCeleryTask.GENERATE_USAGE_REPORT_TASK,
+            "schedule": timedelta(days=30),
+            "options": {
+                "priority": OmCeleryPriority.MEDIUM,
+                "expires": BEAT_EXPIRES_DEFAULT,
+            },
+        },
+        {
+            "name": "check-ttl-management",
+            "task": OmCeleryTask.CHECK_TTL_MANAGEMENT_TASK,
+            "schedule": timedelta(hours=CHECK_TTL_MANAGEMENT_TASK_FREQUENCY_IN_HOURS),
+            "options": {
+                "priority": OmCeleryPriority.MEDIUM,
+                "expires": BEAT_EXPIRES_DEFAULT,
+            },
+        },
+        {
+            "name": "export-query-history-cleanup-task",
+            "task": OmCeleryTask.EXPORT_QUERY_HISTORY_CLEANUP_TASK,
+            "schedule": timedelta(hours=1),
+            "options": {
+                "priority": OmCeleryPriority.MEDIUM,
+                "expires": BEAT_EXPIRES_DEFAULT,
+                "queue": OmCeleryQueues.CSV_GENERATION,
+            },
+        },
+    ]
+)
 
 # Add the Auto LLM update task if the config URL is set (has a default)
 if AUTO_LLM_CONFIG_URL:

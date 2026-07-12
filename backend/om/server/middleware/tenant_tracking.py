@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from fastapi import Request
 from fastapi import Response
 
-from ee.om.auth.users import decode_anonymous_user_jwt_token
+from om.auth.users import decode_anonymous_user_jwt_token
 from om.auth.utils import extract_tenant_from_auth_header
 from om.configs.constants import ANONYMOUS_USER_COOKIE_NAME
 from om.configs.constants import TENANT_ID_COOKIE_NAME

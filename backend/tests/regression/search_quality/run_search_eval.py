@@ -37,8 +37,8 @@ load_dotenv(env_path)
 # pylint: disable=E402
 # flake8: noqa: E402
 
-from ee.om.server.query_and_chat.models import SearchFullResponse
-from ee.om.server.query_and_chat.models import SendSearchQueryRequest
+from om.server.query_and_chat.models import SearchFullResponse
+from om.server.query_and_chat.models import SendSearchQueryRequest
 from om.configs.app_configs import POSTGRES_API_SERVER_POOL_OVERFLOW
 from om.configs.app_configs import POSTGRES_API_SERVER_POOL_SIZE
 from om.context.search.models import BaseFilters

@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from fastapi import Response
 from sqlalchemy.exc import IntegrityError
 
-from ee.om.auth.users import generate_anonymous_user_jwt_token
+from om.auth.users import generate_anonymous_user_jwt_token
 from om.server.tenants.anonymous_user_path import get_anonymous_user_path
 from om.server.tenants.anonymous_user_path import (
     get_tenant_id_for_anonymous_user_path,

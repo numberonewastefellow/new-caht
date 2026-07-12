@@ -4,7 +4,7 @@ from typing import Literal
 import requests
 import stripe
 
-from ee.om.configs.app_configs import STRIPE_SECRET_KEY
+from om.configs.app_configs import STRIPE_SECRET_KEY
 from om.server.tenants.access import generate_data_plane_token
 from om.server.tenants.models import BillingInformation
 from om.server.tenants.models import SubscriptionStatusResponse

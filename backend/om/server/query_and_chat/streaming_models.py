@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from enum import Enum
 from typing import Annotated
 from typing import Any
@@ -5,8 +6,10 @@ from typing import Literal
 from typing import Union
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
+from om.context.search.models import InferenceSection
 from om.context.search.models import SearchDoc
 from om.server.query_and_chat.placement import Placement
 
@@ -463,3 +466,87 @@ class Packet(BaseModel):
     placement: Placement
 
     obj: Annotated[PacketObj, Field(discriminator="type")]
+
+
+################################################
+# Search API Packets
+################################################
+# NOTE: SearchDocWithContent is defined here (rather than in
+# om.server.query_and_chat.models) because the search packets below need it and
+# `models` already imports from this module. It is re-exported from
+# `om.server.query_and_chat.models` for convenience.
+class SearchDocWithContent(SearchDoc):
+    # Allows None because this is determined by a flag but the object used in code
+    # of the search path uses this type
+    content: str | None
+
+    @classmethod
+    def from_inference_sections(
+        cls,
+        sections: Sequence[InferenceSection],
+        include_content: bool = False,
+        is_internet: bool = False,
+    ) -> list["SearchDocWithContent"]:
+        """Convert InferenceSections to SearchDocWithContent objects.
+
+        Args:
+            sections: Sequence of InferenceSection objects
+            include_content: If True, populate content field with combined_content
+            is_internet: Whether these are internet search results
+
+        Returns:
+            List of SearchDocWithContent with optional content
+        """
+        if not sections:
+            return []
+
+        return [
+            cls(
+                document_id=(chunk := section.center_chunk).document_id,
+                chunk_ind=chunk.chunk_id,
+                semantic_identifier=chunk.semantic_identifier or "Unknown",
+                link=chunk.source_links[0] if chunk.source_links else None,
+                blurb=chunk.blurb,
+                source_type=chunk.source_type,
+                boost=chunk.boost,
+                hidden=chunk.hidden,
+                metadata=chunk.metadata,
+                score=chunk.score,
+                match_highlights=chunk.match_highlights,
+                updated_at=chunk.updated_at,
+                primary_owners=chunk.primary_owners,
+                secondary_owners=chunk.secondary_owners,
+                is_internet=is_internet,
+                content=section.combined_content if include_content else None,
+            )
+            for section in sections
+        ]
+
+
+class SearchQueriesPacket(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    type: Literal["search_queries"] = "search_queries"
+    all_executed_queries: list[str]
+
+
+class SearchDocsPacket(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    type: Literal["search_docs"] = "search_docs"
+    search_docs: list[SearchDocWithContent]
+
+
+class SearchErrorPacket(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    type: Literal["search_error"] = "search_error"
+    error: str
+
+
+class LLMSelectedDocsPacket(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    type: Literal["llm_selected_docs"] = "llm_selected_docs"
+    # None if LLM selection failed, empty list if no docs selected, list of IDs otherwise
+    llm_selected_doc_ids: list[str] | None

@@ -1,4 +1,4 @@
-from ee.om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
+from om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
 from om.external_permissions.sync_params import get_all_censoring_enabled_sources
 from om.external_permissions.sync_params import get_source_perm_sync_config
 from om.configs.constants import DocumentSource

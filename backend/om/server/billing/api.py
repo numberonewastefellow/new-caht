@@ -30,7 +30,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from ee.om.auth.users import current_admin_user
+from om.auth.users import current_admin_user
 from om.db.license import get_license
 from om.db.license import get_used_seats
 from om.server.billing.models import BillingInformationResponse

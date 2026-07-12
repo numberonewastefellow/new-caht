@@ -16,6 +16,7 @@ from om.db.models import User
 from om.key_value_store.factory import get_kv_store
 from om.key_value_store.interface import KvKeyNotFoundError
 from om.utils.logger import setup_logger
+from om.utils.posthog_client import posthog
 from om.utils.variable_functionality import (
     fetch_versioned_implementation_with_fallback,
 )
@@ -143,6 +144,18 @@ def optional_telemetry(
     except Exception:
         # Should never interfere with normal functions of Onyx
         pass
+
+
+def event_telemetry(
+    distinct_id: str, event: str, properties: dict | None = None
+) -> None:
+    """Capture and send an event to PostHog, flushing immediately."""
+    logger.info(f"Capturing PostHog event: {distinct_id} {event} {properties}")
+    try:
+        posthog.capture(distinct_id, event, properties)
+        posthog.flush()
+    except Exception as e:
+        logger.error(f"Error capturing PostHog event: {e}")
 
 
 def mt_cloud_telemetry(

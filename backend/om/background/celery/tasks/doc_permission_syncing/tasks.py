@@ -21,8 +21,8 @@ from tenacity import retry_if_exception
 from tenacity import stop_after_delay
 from tenacity import wait_random_exponential
 
-from ee.om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
-from ee.om.db.document import upsert_document_external_perms
+from om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
+from om.db.document import upsert_document_external_perms
 from om.external_permissions.sync_params import get_source_perm_sync_config
 from om.access.models import DocExternalAccess
 from om.access.models import ElementExternalAccess

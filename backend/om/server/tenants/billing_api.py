@@ -23,7 +23,7 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 
-from ee.om.auth.users import current_admin_user
+from om.auth.users import current_admin_user
 from om.server.tenants.access import control_plane_dep
 from om.server.tenants.billing import fetch_billing_information
 from om.server.tenants.billing import fetch_customer_portal_session

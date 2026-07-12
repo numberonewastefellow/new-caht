@@ -3,14 +3,14 @@ from collections.abc import Generator
 from sqlalchemy.orm import Session
 
 from om.db.search import create_search_query
-from ee.om.secondary_llm_flows.query_expansion import expand_keywords
-from ee.om.server.query_and_chat.models import SearchDocWithContent
-from ee.om.server.query_and_chat.models import SearchFullResponse
-from ee.om.server.query_and_chat.models import SendSearchQueryRequest
-from ee.om.server.query_and_chat.streaming_models import LLMSelectedDocsPacket
-from ee.om.server.query_and_chat.streaming_models import SearchDocsPacket
-from ee.om.server.query_and_chat.streaming_models import SearchErrorPacket
-from ee.om.server.query_and_chat.streaming_models import SearchQueriesPacket
+from om.secondary_llm_flows.query_expansion import expand_keywords
+from om.server.query_and_chat.models import SearchDocWithContent
+from om.server.query_and_chat.models import SearchFullResponse
+from om.server.query_and_chat.models import SendSearchQueryRequest
+from om.server.query_and_chat.streaming_models import LLMSelectedDocsPacket
+from om.server.query_and_chat.streaming_models import SearchDocsPacket
+from om.server.query_and_chat.streaming_models import SearchErrorPacket
+from om.server.query_and_chat.streaming_models import SearchQueriesPacket
 from om.context.search.models import BaseFilters
 from om.context.search.models import ChunkSearchRequest
 from om.context.search.models import InferenceChunk

@@ -1,7 +1,7 @@
 import requests
 
-from ee.om.server.query_and_chat.models import SearchFullResponse
-from ee.om.server.query_and_chat.models import SendSearchQueryRequest
+from om.server.query_and_chat.models import SearchFullResponse
+from om.server.query_and_chat.models import SendSearchQueryRequest
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import GENERAL_HEADERS
 from tests.integration.common_utils.test_models import DATestUser

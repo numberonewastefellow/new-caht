@@ -17,8 +17,8 @@ from redis.lock import Lock as RedisLock
 from om.background.celery.tasks.external_group_syncing.group_sync_utils import (
     mark_all_relevant_cc_pairs_as_external_group_synced,
 )
-from ee.om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
-from ee.om.db.connector_credential_pair import get_cc_pairs_by_source
+from om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
+from om.db.connector_credential_pair import get_cc_pairs_by_source
 from om.db.external_perm import ExternalUserGroup
 from om.db.external_perm import mark_old_external_groups_as_stale
 from om.db.external_perm import remove_stale_external_groups

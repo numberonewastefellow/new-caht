@@ -18,8 +18,8 @@ from fastapi import HTTPException
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
-from ee.om.auth.users import current_admin_user
-from ee.om.configs.app_configs import CLOUD_DATA_PLANE_URL
+from om.auth.users import current_admin_user
+from om.configs.app_configs import CLOUD_DATA_PLANE_URL
 from om.db.license import delete_license as db_delete_license
 from om.db.license import get_license
 from om.db.license import get_license_metadata

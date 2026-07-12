@@ -99,13 +99,32 @@ def _fetch_targets_normalized() -> list[str]:
     return sorted(targets)
 
 
+def _beat_task_names() -> list[str]:
+    """Beat entries as PRODUCTION resolves them -- through the dispatch hub.
+
+    Importing `<root>.background.celery.tasks.beat_schedule` directly and calling its
+    `get_tasks_to_schedule` is NOT what the beat worker does. The worker resolves it via
+    `fetch_versioned_implementation(...)`, which under EE returns the EE override -- and
+    the EE override returns `ee_tasks_to_schedule + base_get_tasks_to_schedule()`.
+
+    Snapshotting the MIT module directly therefore silently missed every EE-only beat
+    entry (autogenerate-usage-report, check-ttl-management, export-query-history-cleanup),
+    i.e. exactly the entries EE removal is most likely to drop. Resolve it the way the
+    worker does, so the snapshot pins the real schedule.
+    """
+    vf = importlib.import_module(f"{ROOT_PACKAGE}.utils.variable_functionality")
+    vf.set_is_ee_based_on_env_variable()
+    get_tasks_to_schedule = vf.fetch_versioned_implementation(
+        f"{ROOT_PACKAGE}.background.celery.tasks.beat_schedule",
+        "get_tasks_to_schedule",
+    )
+    return sorted({e["task"] for e in get_tasks_to_schedule()})
+
+
 def _build_inventory(
     union_task_registry: set[str], worker_celery_apps: list[tuple[str, Celery]]
 ) -> dict[str, object]:
-    beat = importlib.import_module(
-        f"{ROOT_PACKAGE}.background.celery.tasks.beat_schedule"
-    )
-    beat_tasks = sorted({e["task"] for e in beat.get_tasks_to_schedule()})
+    beat_tasks = _beat_task_names()
     return {
         "modules": _importable_module_suffixes(),
         "celery_tasks": sorted(union_task_registry),

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi import Depends
 
-from ee.om.auth.users import current_cloud_superuser
+from om.auth.users import current_cloud_superuser
 from om.background.celery.apps.client import celery_app as client_app
 from om.configs.constants import OmCeleryTask
 from om.db.models import User

@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from fastapi import Response
 from fastapi_users import exceptions
 
-from ee.om.auth.users import current_cloud_superuser
+from om.auth.users import current_cloud_superuser
 from om.server.tenants.models import ImpersonateRequest
 from om.server.tenants.user_mapping import get_tenant_id_for_email
 from om.auth.users import auth_backend

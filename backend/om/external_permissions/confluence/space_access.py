@@ -1,4 +1,4 @@
-from ee.om.configs.app_configs import CONFLUENCE_ANONYMOUS_ACCESS_IS_PUBLIC
+from om.configs.app_configs import CONFLUENCE_ANONYMOUS_ACCESS_IS_PUBLIC
 from om.external_permissions.confluence.constants import ALL_CONF_EMAILS_GROUP_NAME
 from om.external_permissions.confluence.constants import REQUEST_PAGINATION_LIMIT
 from om.external_permissions.confluence.constants import VIEWSPACE_PERMISSION_TYPE

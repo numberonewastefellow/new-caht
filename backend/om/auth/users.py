@@ -88,6 +88,8 @@ from om.configs.app_configs import PASSWORD_REQUIRE_UPPERCASE
 from om.configs.app_configs import REDIS_AUTH_KEY_PREFIX
 from om.configs.app_configs import REQUIRE_EMAIL_VERIFICATION
 from om.configs.app_configs import SESSION_EXPIRE_TIME_SECONDS
+from om.configs.app_configs import SUPER_CLOUD_API_KEY
+from om.configs.app_configs import SUPER_USERS
 from om.configs.app_configs import TRACK_EXTERNAL_IDP_EXPIRY
 from om.configs.app_configs import USER_AUTH_SECRET
 from om.configs.app_configs import VALID_EMAIL_DOMAINS
@@ -121,6 +123,7 @@ from om.db.pat import fetch_user_for_pat
 from om.db.users import get_user_by_email
 from om.redis.redis_pool import get_async_redis_connection
 from om.redis.redis_pool import get_redis_client
+from om.server.seeding import get_seed_config
 from om.server.settings.store import load_settings
 from om.server.utils import BasicAuthenticationError
 from om.utils.logger import setup_logger
@@ -146,10 +149,7 @@ def is_user_admin(user: User) -> bool:
 
 
 def verify_auth_setting() -> None:
-    if AUTH_TYPE == AuthType.CLOUD:
-        raise ValueError(
-            f"{AUTH_TYPE.value} is not a valid auth type for self-hosted deployments."
-        )
+    # All the Auth flows are valid for EE version
     logger.notice(f"Using Auth Type: {AUTH_TYPE.value}")
 
 
@@ -1585,8 +1585,40 @@ async def current_admin_user(user: User = Depends(current_user)) -> User:
 
 
 def get_default_admin_user_emails_() -> list[str]:
-    # No default seeding available for Onyx MIT
+    seed_config = get_seed_config()
+    if seed_config and seed_config.admin_user_emails:
+        return seed_config.admin_user_emails
     return []
+
+
+async def current_cloud_superuser(
+    request: Request,
+    user: User = Depends(current_admin_user),
+) -> User:
+    api_key = request.headers.get("Authorization", "").replace("Bearer ", "")
+    if api_key != SUPER_CLOUD_API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    if user and user.email not in SUPER_USERS:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied. User must be a cloud superuser to perform this action.",
+        )
+    return user
+
+
+def generate_anonymous_user_jwt_token(tenant_id: str) -> str:
+    payload = {
+        "tenant_id": tenant_id,
+        # Token does not expire
+        "iat": datetime.utcnow(),  # Issued at time
+    }
+
+    return jwt.encode(payload, USER_AUTH_SECRET, algorithm="HS256")
+
+
+def decode_anonymous_user_jwt_token(token: str) -> dict:
+    return jwt.decode(token, USER_AUTH_SECRET, algorithms=["HS256"])
 
 
 STATE_TOKEN_AUDIENCE = "fastapi-users:oauth-state"
