@@ -25,6 +25,7 @@ from pathlib import Path
 import pytest
 
 from tests.unit.migration_safety.conftest import _CANDIDATE_ROOTS
+from tests.unit.migration_safety.conftest import backend_root
 from tests.unit.migration_safety.conftest import repo_root
 from tests.unit.migration_safety.conftest import ROOT_PACKAGE
 
@@ -173,6 +174,52 @@ def _config_files() -> list:
             if name.endswith(_SUFFIXES) or name.startswith(_NAME_PREFIXES):
                 found.append(Path(dirpath) / name)
     return found
+
+
+def test_dockerfile_copy_sources_exist() -> None:
+    """Every `COPY <src>` in the backend Dockerfiles must name a path that EXISTS.
+
+    The dead-root test below only catches a path pointing at the OLD package name. It
+    cannot catch a path pointing at a directory that was legitimately DELETED -- which is
+    what EE removal did to `backend/ee`, leaving `COPY --chown=onyx:onyx ./ee /app/ee`
+    behind. That fails nothing until `docker compose build`, at which point every image
+    fails to build. Same family as the Stage-1 `COPY ./onyx/__init__.py` break.
+
+    Build context for both backend Dockerfiles is `backend/`, so sources resolve there.
+    """
+    backend = backend_root()
+    offenders: list[str] = []
+    checked = 0
+
+    for name in ("Dockerfile", "Dockerfile.model_server"):
+        dockerfile = backend / name
+        if not dockerfile.exists():
+            continue
+        for lineno, raw in enumerate(
+            dockerfile.read_text(encoding="utf-8").splitlines(), 1
+        ):
+            line = raw.strip()
+            if not line.upper().startswith("COPY "):
+                continue
+            parts = line.split()[1:]
+            # `COPY --from=<stage>` copies out of another build stage, not the context.
+            if any(p.startswith("--from=") for p in parts):
+                continue
+            parts = [p for p in parts if not p.startswith("--")]
+            if len(parts) < 2:
+                continue
+            for src in parts[:-1]:  # last token is the destination
+                if any(ch in src for ch in "*?["):
+                    continue  # glob -- not a literal path
+                checked += 1
+                if not (backend / src).exists():
+                    offenders.append(f"{name}:{lineno}: COPY {src} -> does not exist")
+
+    assert checked > 5, f"Expected to check several COPY sources, saw {checked}"
+    assert not offenders, (
+        "Dockerfile COPY sources that do not exist. These fail nothing until "
+        "`docker compose build`, and then EVERY image fails:\n" + "\n".join(offenders)
+    )
 
 
 def test_no_references_to_a_dead_package_root() -> None:
