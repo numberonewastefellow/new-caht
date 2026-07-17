@@ -144,7 +144,7 @@ inferenceCapability:
     - key: app
       value: inference-model-server
   image:
-    repository: onyxdotapp/onyx-model-server
+    repository: om/om-model-server
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
   containerPorts:
@@ -203,7 +203,7 @@ indexCapability:
   containerPorts:
     server: 9000
   image:
-    repository: onyxdotapp/onyx-model-server
+    repository: om/om-model-server
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
   limitConcurrency: 10
@@ -312,7 +312,7 @@ nginx:
 webserver:
   replicaCount: 1
   image:
-    repository: onyxdotapp/onyx-web-server
+    repository: om/om-web-server
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
   deploymentLabels:
@@ -399,7 +399,7 @@ webserver:
 api:
   replicaCount: 1
   image:
-    repository: onyxdotapp/onyx-backend
+    repository: om/om-backend
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
   deploymentLabels:
@@ -494,7 +494,7 @@ api:
 
 celery_shared:
   image:
-    repository: onyxdotapp/onyx-backend
+    repository: om/om-backend
     tag: ""  # Overrides the image tag whose default is the chart appVersion.
   startupProbe:
     # startupProbe fails after 2m
@@ -759,7 +759,7 @@ discordbot:
   # Command prefix for bot commands (default: "!")
   invokeChar: "!"
   image:
-    repository: onyxdotapp/onyx-backend
+    repository: om/om-backend
     tag: ""  # Overrides the image tag whose default is the chart appVersion.
   podAnnotations: {}
   podLabels:
@@ -787,7 +787,7 @@ slackbot:
   enabled: true
   replicaCount: 1
   image:
-    repository: onyxdotapp/onyx-backend
+    repository: om/om-backend
     tag: ""  # Overrides the image tag whose default is the chart appVersion.
   podAnnotations: {}
   podLabels:
@@ -815,7 +815,7 @@ mcpServer:
   enabled: false  # Disabled by default
   replicaCount: 1
   image:
-    repository: onyxdotapp/onyx-backend
+    repository: om/om-backend
     tag: ""  # Overrides the image tag whose default is the chart appVersion.
   # CORS origins for MCP clients (comma-separated)
   # Example: "https://claude.ai,https://app.cursor.sh"

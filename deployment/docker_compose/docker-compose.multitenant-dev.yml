@@ -2,7 +2,7 @@ name: onyx
 
 services:
   api_server:
-    image: ${ONYX_BACKEND_IMAGE:-onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}}
+    image: ${OM_BACKEND_IMAGE:-om/om-backend:${IMAGE_TAG:-latest}}
     build:
       context: ../../backend
       dockerfile: Dockerfile
@@ -119,7 +119,7 @@ services:
         max-file: "6"
 
   background:
-    image: ${ONYX_BACKEND_IMAGE:-onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}}
+    image: ${OM_BACKEND_IMAGE:-om/om-backend:${IMAGE_TAG:-latest}}
     build:
       context: ../../backend
       dockerfile: Dockerfile
@@ -265,7 +265,7 @@ services:
     #   - ${CA_CERT_PATH:-./custom-ca.crt}:/etc/ssl/certs/custom-ca.crt:ro
 
   web_server:
-    image: ${ONYX_WEB_SERVER_IMAGE:-onyxdotapp/onyx-web-server:${IMAGE_TAG:-latest}}
+    image: ${OM_WEB_SERVER_IMAGE:-om/om-web-server:${IMAGE_TAG:-latest}}
     build:
       context: ../../web
       dockerfile: Dockerfile
@@ -288,7 +288,7 @@ services:
 
   # Uncomment the block below to enable the MCP server for Onyx.
   # mcp_server:
-  #   image: ${ONYX_BACKEND_IMAGE:-onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}}
+  #   image: ${OM_BACKEND_IMAGE:-om/om-backend:${IMAGE_TAG:-latest}}
   #   build:
   #     context: ../../backend
   #     dockerfile: Dockerfile
@@ -325,10 +325,10 @@ services:
   #       max-size: "50m"
   #       max-file: "6"
   #   volumes:
-  #     - mcp_server_logs:/var/log/onyx
+  #     - mcp_server_logs:/var/log/om
 
   inference_model_server:
-    image: ${ONYX_MODEL_SERVER_IMAGE:-onyxdotapp/onyx-model-server:${IMAGE_TAG:-latest}}
+    image: ${OM_MODEL_SERVER_IMAGE:-om/om-model-server:${IMAGE_TAG:-latest}}
     build:
       context: ../../backend
       dockerfile: Dockerfile.model_server
@@ -357,7 +357,7 @@ services:
         max-file: "6"
 
   indexing_model_server:
-    image: ${ONYX_MODEL_SERVER_IMAGE:-onyxdotapp/onyx-model-server:${IMAGE_TAG:-latest}}
+    image: ${OM_MODEL_SERVER_IMAGE:-om/om-model-server:${IMAGE_TAG:-latest}}
     build:
       context: ../../backend
       dockerfile: Dockerfile.model_server

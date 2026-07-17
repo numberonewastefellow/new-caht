@@ -117,7 +117,7 @@ Resources:
         OperatingSystemFamily: LINUX
       ContainerDefinitions:
         - Name: onyx-backend
-          Image: onyxdotapp/onyx-backend:latest
+          Image: om/om-backend:latest
           Cpu: 0
           Essential: true
           Command:

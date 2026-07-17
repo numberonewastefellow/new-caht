@@ -51,7 +51,7 @@ env:
 jobs:
   discover-test-dirs:
     # NOTE: Github-hosted runners have about 20s faster queue times and are preferred here.
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     outputs:
       test-dirs: ${{ steps.set-matrix.outputs.test-dirs }}
@@ -88,7 +88,6 @@ jobs:
       DISABLE_TELEMETRY: "true"
 
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6

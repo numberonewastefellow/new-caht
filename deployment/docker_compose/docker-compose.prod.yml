@@ -2,7 +2,7 @@ name: onyx
 
 services:
   api_server:
-    image: onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}
+    image: om/om-backend:${IMAGE_TAG:-latest}
     build:
       context: ../../backend
       dockerfile: Dockerfile
@@ -47,12 +47,12 @@ services:
         max-size: "50m"
         max-file: "6"
     volumes:
-      - api_server_logs:/var/log/onyx
+      - api_server_logs:/var/log/om
       # Shared volume for persistent document storage (Craft file-system mode)
       - file-system:/app/file-system
 
   background:
-    image: onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}
+    image: om/om-backend:${IMAGE_TAG:-latest}
     build:
       context: ../../backend
       dockerfile: Dockerfile
@@ -100,7 +100,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - background_logs:/var/log/onyx
+      - background_logs:/var/log/om
       # Shared volume for persistent document storage (Craft file-system mode)
       - file-system:/app/file-system
     logging:
@@ -118,7 +118,7 @@ services:
     #   - ${CA_CERT_PATH:-./custom-ca.crt}:/etc/ssl/certs/custom-ca.crt:ro
 
   web_server:
-    image: onyxdotapp/onyx-web-server:${IMAGE_TAG:-latest}
+    image: om/om-web-server:${IMAGE_TAG:-latest}
     build:
       context: ../../web
       dockerfile: Dockerfile
@@ -142,7 +142,7 @@ services:
 
   # Uncomment the block below to enable the MCP server for Onyx.
   # mcp_server:
-  #   image: onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}
+  #   image: om/om-backend:${IMAGE_TAG:-latest}
   #   build:
   #     context: ../../backend
   #     dockerfile: Dockerfile
@@ -177,7 +177,7 @@ services:
   #       max-size: "50m"
   #       max-file: "6"
   #   volumes:
-  #     - mcp_server_logs:/var/log/onyx
+  #     - mcp_server_logs:/var/log/om
 
   relational_db:
     image: postgres:15.2-alpine
@@ -197,7 +197,7 @@ services:
         max-file: "6"
 
   inference_model_server:
-    image: onyxdotapp/onyx-model-server:${IMAGE_TAG:-latest}
+    image: om/om-model-server:${IMAGE_TAG:-latest}
     build:
       context: ../../backend
       dockerfile: Dockerfile.model_server
@@ -217,7 +217,7 @@ services:
       # Not necessary, this is just to reduce download time during startup
       - model_cache_huggingface:/app/.cache/huggingface/
       # optional, only for debugging purposes
-      - inference_model_server_logs:/var/log/onyx
+      - inference_model_server_logs:/var/log/om
     logging:
       driver: json-file
       options:
@@ -225,7 +225,7 @@ services:
         max-file: "6"
 
   indexing_model_server:
-    image: onyxdotapp/onyx-model-server:${IMAGE_TAG:-latest}
+    image: om/om-model-server:${IMAGE_TAG:-latest}
     build:
       context: ../../backend
       dockerfile: Dockerfile.model_server
@@ -247,7 +247,7 @@ services:
       # Not necessary, this is just to reduce download time during startup
       - indexing_huggingface_model_cache:/app/.cache/huggingface/
       # optional, only for debugging purposes
-      - indexing_model_server_logs:/var/log/onyx
+      - indexing_model_server_logs:/var/log/om
     logging:
       driver: json-file
       options:

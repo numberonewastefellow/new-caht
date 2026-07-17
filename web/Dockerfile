@@ -150,9 +150,9 @@ ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
 ARG NEXT_PUBLIC_RECAPTCHA_SITE_KEY
 ENV NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
 
-# Default ONYX_VERSION, typically overriden during builds by GitHub Actions.
-ARG ONYX_VERSION=0.0.0-dev
-ENV ONYX_VERSION=${ONYX_VERSION}
+# Default OM_VERSION, typically overriden during builds by GitHub Actions.
+ARG OM_VERSION=0.0.0-dev
+ENV OM_VERSION=${OM_VERSION}
 
 # Note: Don't expose ports here, Compose will handle that for us if necessary.
 # If you want to run this without compose, specify the ports to

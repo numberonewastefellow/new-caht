@@ -55,7 +55,7 @@ def create_document_set(
 
     if not DISABLE_VECTOR_DB:
         client_app.send_task(
-            OmCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
+            OmCeleryTask.CHECK_FOR_DOC_INDEX_SYNC_TASK,
             kwargs={"tenant_id": tenant_id},
             priority=OmCeleryPriority.HIGH,
         )
@@ -97,7 +97,7 @@ def patch_document_set(
 
     if not DISABLE_VECTOR_DB:
         client_app.send_task(
-            OmCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
+            OmCeleryTask.CHECK_FOR_DOC_INDEX_SYNC_TASK,
             kwargs={"tenant_id": tenant_id},
             priority=OmCeleryPriority.HIGH,
         )
@@ -140,7 +140,7 @@ def delete_document_set(
 
     if not DISABLE_VECTOR_DB:
         client_app.send_task(
-            OmCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
+            OmCeleryTask.CHECK_FOR_DOC_INDEX_SYNC_TASK,
             kwargs={"tenant_id": tenant_id},
             priority=OmCeleryPriority.HIGH,
         )

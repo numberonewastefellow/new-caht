@@ -62,8 +62,8 @@ PRESERVE = (
     "hub.docker.com",  # image URL
     "onyx.app",  # docs/email URLs
     "github.com",  # any repo URL
-    "/var/log/onyx",  # container log dir (owned by the onyx unix user)
-    "onyx:onyx",  # unix user:group in COPY --chown
+    "/var/log/om",  # container log dir (owned by the om unix user)
+    "om:om",  # unix user:group in COPY --chown
     "groupadd",  # unix user creation
     "useradd",
     "onyx-sandboxes",  # k8s namespace (selector contract)

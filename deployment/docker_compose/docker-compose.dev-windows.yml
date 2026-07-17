@@ -27,7 +27,7 @@ services:
       # Code Interpreter: tell api_server where the service lives
       - CODE_INTERPRETER_BASE_URL=${CODE_INTERPRETER_BASE_URL:-http://code-interpreter:8000}
     volumes:
-      - E:/temp/vert/api_server_logs:/var/log/onyx
+      - E:/temp/vert/api_server_logs:/var/log/om
       - E:/temp/vert/file-system:/app/file-system
       - craft-templates:/app/om/server/features/build/sandbox/kubernetes/docker/templates
       # Dev bind mounts: local source → container (restart to pick up changes, no rebuild needed)
@@ -57,7 +57,7 @@ services:
       - STRIPE_PUBLISHABLE_KEY=
       - LICENSE_ENFORCEMENT_ENABLED=false
     volumes:
-      - E:/temp/vert/background_logs:/var/log/onyx
+      - E:/temp/vert/background_logs:/var/log/om
       - E:/temp/vert/file-system:/app/file-system
       - craft-templates:/app/om/server/features/build/sandbox/kubernetes/docker/templates
       # Dev bind mounts: same as api_server
@@ -119,12 +119,12 @@ services:
       - SENTRY_DSN=
     volumes:
       - E:/temp/vert/model_cache_huggingface:/app/.cache/huggingface/
-      - E:/temp/vert/inference_model_server_logs:/var/log/onyx
+      - E:/temp/vert/inference_model_server_logs:/var/log/om
 
   indexing_model_server:
     volumes:
       - E:/temp/vert/indexing_huggingface_model_cache:/app/.cache/huggingface/
-      - E:/temp/vert/indexing_model_server_logs:/var/log/onyx
+      - E:/temp/vert/indexing_model_server_logs:/var/log/om
 
   cache:
     ports:

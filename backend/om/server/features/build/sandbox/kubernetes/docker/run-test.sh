@@ -21,7 +21,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../../../../../.." && pwd)"
 NAMESPACE="onyx-sandboxes"
 POD_NAME="sandbox-test"
-IMAGE_NAME="onyxdotapp/onyx-backend:latest"
+IMAGE_NAME="om/om-backend:latest"
 TEST_FILE="om/server/features/build/sandbox/kubernetes/test_kubernetes_sandbox.py"
 ENV_FILE="$PROJECT_ROOT/.vscode/.env"
 

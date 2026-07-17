@@ -127,7 +127,7 @@ celery_app.autodiscover_tasks(
             "om.background.celery.tasks.llm_model_update",
             # Light worker tasks
             "om.background.celery.tasks.shared",
-            "om.background.celery.tasks.vespa",
+            "om.background.celery.tasks.document_index",
             "om.background.celery.tasks.connector_deletion",
             "om.background.celery.tasks.doc_permission_syncing",
             "om.background.celery.tasks.opensearch_migration",

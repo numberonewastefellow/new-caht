@@ -19,7 +19,7 @@ from redis.lock import Lock as RedisLock
 import om.background.celery.apps.app_base as app_base
 from om.background.celery.apps.app_base import task_logger
 from om.background.celery.celery_utils import celery_is_worker_primary
-from om.background.celery.tasks.vespa.document_sync import reset_document_sync
+from om.background.celery.tasks.document_index.document_sync import reset_document_sync
 from om.configs.app_configs import CELERY_WORKER_PRIMARY_POOL_OVERFLOW
 from om.configs.constants import CELERY_PRIMARY_WORKER_LOCK_TIMEOUT
 from om.configs.constants import OmRedisConstants
@@ -149,7 +149,7 @@ def on_worker_init(sender: Worker, **kwargs: Any) -> None:
 
     # As currently designed, when this worker starts as "primary", we reinitialize redis
     # to a clean state (for our purposes, anyway)
-    r.delete(OmRedisLocks.CHECK_VESPA_SYNC_BEAT_LOCK)
+    r.delete(OmRedisLocks.CHECK_DOC_INDEX_SYNC_BEAT_LOCK)
 
     r.delete(OmRedisConstants.ACTIVE_FENCES)
 
@@ -323,7 +323,7 @@ celery_app.autodiscover_tasks(
             "om.background.celery.tasks.periodic",
             "om.background.celery.tasks.pruning",
             "om.background.celery.tasks.shared",
-            "om.background.celery.tasks.vespa",
+            "om.background.celery.tasks.document_index",
             "om.background.celery.tasks.llm_model_update",
             "om.background.celery.tasks.user_file_processing",
             "om.background.celery.tasks.doc_permission_syncing",

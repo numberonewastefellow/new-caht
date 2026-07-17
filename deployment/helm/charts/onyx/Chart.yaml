@@ -12,9 +12,9 @@ annotations:
   licenses: MIT
   images: |
     - name: webserver
-      image: docker.io/onyxdotapp/onyx-web-server:latest
+      image: docker.io/om/om-web-server:latest
     - name: background
-      image: docker.io/onyxdotapp/onyx-backend:latest
+      image: docker.io/om/om-backend:latest
     - name: vespa
       image: vespaengine/vespa:8.609.39
 dependencies:

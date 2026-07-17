@@ -28,6 +28,8 @@ jobs:
       - name: Add required Helm repositories
         run: |
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          # NOTE(fork): Onyx's public Helm charts (GitHub Pages). Functional public deps -- kept
+          # intentionally; there is no fork replacement. See DO_NOT_RENAME.md.
           helm repo add onyx-vespa https://onyx-dot-app.github.io/vespa-helm-charts
           helm repo add opensearch https://opensearch-project.github.io/helm-charts
           helm repo add cloudnative-pg https://cloudnative-pg.github.io/charts

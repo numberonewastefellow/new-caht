@@ -117,7 +117,7 @@ Resources:
         OperatingSystemFamily: LINUX
       ContainerDefinitions:
         - Name: onyx-webserver
-          Image: onyxdotapp/onyx-web-server:latest
+          Image: om/om-web-server:latest
           Cpu: 0
           Essential: true
           PortMappings:

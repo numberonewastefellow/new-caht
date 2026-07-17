@@ -169,11 +169,11 @@ def get_standard_formatter() -> ColoredFormatter:
     )
 
 
-DANSWER_DOCKER_ENV_STR = "DANSWER_RUNNING_IN_DOCKER"
+OM_DOCKER_ENV_STR = "OM_RUNNING_IN_DOCKER"
 
 
 def is_running_in_container() -> bool:
-    return os.getenv(DANSWER_DOCKER_ENV_STR) == "true"
+    return os.getenv(OM_DOCKER_ENV_STR) == "true"
 
 
 def setup_logger(
@@ -203,7 +203,7 @@ def setup_logger(
         log_levels = ["debug", "info", "notice"]
         for level in log_levels:
             file_name = (
-                f"/var/log/onyx/{LOG_FILE_NAME}_{level}.log"
+                f"/var/log/om/{LOG_FILE_NAME}_{level}.log"
                 if is_containerized
                 else f"./log/{LOG_FILE_NAME}_{level}.log"
             )

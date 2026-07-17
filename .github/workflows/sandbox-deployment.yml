@@ -1,3 +1,7 @@
+# TODO(fork): set the `IMAGE_REGISTRY` repository variable (Settings > Actions > Variables)
+# to your container-registry namespace, e.g. "myorg" or "ghcr.io/myorg". This workflow
+# publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,model-server,sandbox}.
+# NOTE: do NOT rename the om-* image basenames casually -- see DO_NOT_RENAME.md.
 name: Build and Push Sandbox Image on Tag
 
 on:
@@ -10,7 +14,7 @@ permissions: {}
 
 jobs:
   check-sandbox-changes:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
@@ -60,7 +64,7 @@ jobs:
         if: steps.check.outputs.sandbox-changed == 'true'
         run: |
           # Query Docker Hub for the latest versioned tag
-          LATEST_TAG=$(curl -s "https://hub.docker.com/v2/repositories/onyxdotapp/sandbox/tags?page_size=100" \
+          LATEST_TAG=$(curl -s "https://hub.docker.com/v2/repositories/${{ vars.IMAGE_REGISTRY }}/om-sandbox/tags?page_size=100" \
             | jq -r '.results[].name' \
             | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
             | sort -V \
@@ -100,9 +104,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: onyxdotapp/sandbox
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-sandbox
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -170,9 +173,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: onyxdotapp/sandbox
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-sandbox
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -239,9 +241,8 @@ jobs:
     permissions:
       id-token: write
     env:
-      REGISTRY_IMAGE: onyxdotapp/sandbox
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-sandbox
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708

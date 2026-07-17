@@ -1,3 +1,7 @@
+# TODO(fork): set the `IMAGE_REGISTRY` repository variable (Settings > Actions > Variables)
+# to your container-registry namespace, e.g. "myorg" or "ghcr.io/myorg". This workflow
+# publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,model-server,sandbox}.
+# NOTE: do NOT rename the om-* image basenames casually -- see DO_NOT_RENAME.md.
 name: Run Playwright Tests
 concurrency:
   group: Run-Playwright-Tests-${{ github.workflow }}-${{ github.head_ref || github.event.workflow_run.head_branch || github.run_id }}
@@ -69,7 +73,6 @@ jobs:
       ]
     timeout-minutes: 45
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -113,7 +116,7 @@ jobs:
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:web-cache-${{ github.event.pull_request.head.sha || github.sha }}
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:web-cache-${{ steps.format-branch.outputs.cache-suffix }}
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:web-cache
-            type=registry,ref=onyxdotapp/onyx-web-server:latest
+            type=registry,ref=${{ vars.IMAGE_REGISTRY }}/om-web-server:latest
           cache-to: |
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:web-cache-${{ github.event.pull_request.head.sha || github.sha }},mode=max
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:web-cache-${{ steps.format-branch.outputs.cache-suffix }},mode=max
@@ -130,7 +133,6 @@ jobs:
       ]
     timeout-minutes: 45
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -174,7 +176,7 @@ jobs:
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:backend-cache-${{ github.event.pull_request.head.sha || github.sha }}
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:backend-cache-${{ steps.format-branch.outputs.cache-suffix }}
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:backend-cache
-            type=registry,ref=onyxdotapp/onyx-backend:latest
+            type=registry,ref=${{ vars.IMAGE_REGISTRY }}/om-backend:latest
           cache-to: |
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:backend-cache-${{ github.event.pull_request.head.sha || github.sha }},mode=max
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:backend-cache-${{ steps.format-branch.outputs.cache-suffix }},mode=max
@@ -191,7 +193,6 @@ jobs:
       ]
     timeout-minutes: 45
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -235,7 +236,7 @@ jobs:
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ github.event.pull_request.head.sha || github.sha }}
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ steps.format-branch.outputs.cache-suffix }}
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache
-            type=registry,ref=onyxdotapp/onyx-model-server:latest
+            type=registry,ref=${{ vars.IMAGE_REGISTRY }}/om-model-server:latest
           cache-to: |
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ github.event.pull_request.head.sha || github.sha }},mode=max
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ steps.format-branch.outputs.cache-suffix }},mode=max
@@ -260,7 +261,6 @@ jobs:
       matrix:
         project: [admin, exclusive]
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -596,7 +596,7 @@ jobs:
       always() &&
       github.event_name == 'pull_request' &&
       needs.playwright-tests.result != 'cancelled'
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
       pull-requests: write
@@ -683,7 +683,7 @@ jobs:
 
   playwright-required:
     # NOTE: Github-hosted runners have about 20s faster queue times and are preferred here.
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     needs: [playwright-tests]
     if: ${{ always() }}

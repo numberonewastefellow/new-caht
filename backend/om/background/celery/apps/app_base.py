@@ -24,8 +24,8 @@ from om.background.celery.apps.task_formatters import CeleryTaskColoredFormatter
 from om.background.celery.apps.task_formatters import CeleryTaskPlainFormatter
 from om.background.celery.celery_utils import celery_is_worker_primary
 from om.background.celery.celery_utils import make_probe_path
-from om.background.celery.tasks.vespa.document_sync import DOCUMENT_SYNC_PREFIX
-from om.background.celery.tasks.vespa.document_sync import DOCUMENT_SYNC_TASKSET_KEY
+from om.background.celery.tasks.document_index.document_sync import DOCUMENT_SYNC_PREFIX
+from om.background.celery.tasks.document_index.document_sync import DOCUMENT_SYNC_TASKSET_KEY
 from om.configs.app_configs import DISABLE_VECTOR_DB
 from om.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
 from om.configs.app_configs import OM_DISABLE_VESPA
@@ -588,7 +588,7 @@ _VECTOR_DB_TASK_MODULES: set[str] = {
     "om.background.celery.tasks.docprocessing",
     "om.background.celery.tasks.docfetching",
     "om.background.celery.tasks.pruning",
-    "om.background.celery.tasks.vespa",
+    "om.background.celery.tasks.document_index",
     "om.background.celery.tasks.opensearch_migration",
     "om.background.celery.tasks.doc_permission_syncing",
     "om.background.celery.tasks.hierarchyfetching",

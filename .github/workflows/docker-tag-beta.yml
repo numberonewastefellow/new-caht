@@ -1,3 +1,7 @@
+# TODO(fork): set the `IMAGE_REGISTRY` repository variable (Settings > Actions > Variables)
+# to your container-registry namespace, e.g. "myorg" or "ghcr.io/myorg". This workflow
+# publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,model-server,sandbox}.
+# NOTE: do NOT rename the om-* image basenames casually -- see DO_NOT_RENAME.md.
 # This workflow is set up to be manually triggered via the GitHub Action tab.
 # Given a version, it will tag those backend and webserver images as "beta".
 
@@ -15,9 +19,8 @@ permissions:
 
 jobs:
   tag:
-    # See https://runs-on.com/runners/linux/
     # use a lower powered instance since this just does i/o to docker hub
-    runs-on: [runs-on, runner=2cpu-linux-x64, "run-id=${{ github.run_id }}-tag"]
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - name: Set up Docker Buildx
@@ -36,16 +39,16 @@ jobs:
         env:
           VERSION: ${{ github.event.inputs.version }}
         run: |
-          docker buildx imagetools create -t onyxdotapp/onyx-web-server:beta onyxdotapp/onyx-web-server:${VERSION}
+          docker buildx imagetools create -t ${{ vars.IMAGE_REGISTRY }}/om-web-server:beta ${{ vars.IMAGE_REGISTRY }}/om-web-server:${VERSION}
 
       - name: Pull, Tag and Push API Server Image
         env:
           VERSION: ${{ github.event.inputs.version }}
         run: |
-          docker buildx imagetools create -t onyxdotapp/onyx-backend:beta onyxdotapp/onyx-backend:${VERSION}
+          docker buildx imagetools create -t ${{ vars.IMAGE_REGISTRY }}/om-backend:beta ${{ vars.IMAGE_REGISTRY }}/om-backend:${VERSION}
 
       - name: Pull, Tag and Push Model Server Image
         env:
           VERSION: ${{ github.event.inputs.version }}
         run: |
-          docker buildx imagetools create -t onyxdotapp/onyx-model-server:beta onyxdotapp/onyx-model-server:${VERSION}
+          docker buildx imagetools create -t ${{ vars.IMAGE_REGISTRY }}/om-model-server:beta ${{ vars.IMAGE_REGISTRY }}/om-model-server:${VERSION}

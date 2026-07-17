@@ -36,7 +36,7 @@ services:
       - seed_test_db_volume:/var/lib/postgresql/data
 
   seed_test_api:
-    image: ${ONYX_BACKEND_IMAGE:-onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}}
+    image: ${OM_BACKEND_IMAGE:-om/om-backend:${IMAGE_TAG:-latest}}
     command: >
       /bin/sh -c "alembic upgrade head &&
       echo \"Starting Seed Test API Server\" &&

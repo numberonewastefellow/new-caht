@@ -1,10 +1,7 @@
 FROM python:3.11.7-slim-bookworm
 
-LABEL com.danswer.maintainer="founders@onyx.app"
-LABEL com.danswer.description="This image is the web/frontend container of Onyx which \
-contains code for both the Community and Enterprise editions of Onyx. If you do not \
-have a contract or agreement with DanswerAI, you are not permitted to use the Enterprise \
-Edition features outside of personal development or testing purposes. Please reach out to \
+LABEL com.om.maintainer="founders@onyx.app"
+LABEL com.om.description="This image is the web/frontend container of Om. Please reach out to \
 founders@onyx.app for more information. Please visit https://github.com/onyx-dot-app/onyx"
 
 # Build argument for Craft support (disabled by default)
@@ -15,16 +12,16 @@ ARG ENABLE_CRAFT=false
 ARG PREBAKE_CRAFT_TEMPLATES=true
 
 # DO_NOT_TRACK is used to disable telemetry for Unstructured
-ENV DANSWER_RUNNING_IN_DOCKER="true" \
+ENV OM_RUNNING_IN_DOCKER="true" \
     DO_NOT_TRACK="true" \
     PLAYWRIGHT_BROWSERS_PATH="/app/.cache/ms-playwright"
 
 # Create non-root user for security best practices
-RUN groupadd -g 1001 onyx && \
-    useradd -u 1001 -g onyx -m -s /bin/bash onyx && \
-    mkdir -p /var/log/onyx && \
-    chmod 755 /var/log/onyx && \
-    chown onyx:onyx /var/log/onyx
+RUN groupadd -g 1001 om && \
+    useradd -u 1001 -g om -m -s /bin/bash om && \
+    mkdir -p /var/log/om && \
+    chmod 755 /var/log/om && \
+    chown om:om /var/log/om
 
 COPY --from=ghcr.io/astral-sh/uv:0.9.9 /uv /uvx /bin/
 
@@ -81,7 +78,7 @@ RUN uv pip install --system --no-cache-dir --upgrade \
     pip uninstall -y py && \
     playwright install chromium && \
     playwright install-deps chromium && \
-    chown -R onyx:onyx /app && \
+    chown -R om:om /app && \
     ln -s /usr/local/bin/supervisord /usr/bin/supervisord && \
     # Cleanup for CVEs and size reduction
     # https://github.com/tornadoweb/tornado/issues/3107
@@ -128,20 +125,20 @@ WORKDIR /app
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Set up application files
-COPY --chown=onyx:onyx ./om /app/om
-COPY --chown=onyx:onyx ./shared_configs /app/shared_configs
-COPY --chown=onyx:onyx ./alembic /app/alembic
-COPY --chown=onyx:onyx ./alembic_tenants /app/alembic_tenants
-COPY --chown=onyx:onyx ./alembic.ini /app/alembic.ini
+COPY --chown=om:om ./om /app/om
+COPY --chown=om:om ./shared_configs /app/shared_configs
+COPY --chown=om:om ./alembic /app/alembic
+COPY --chown=om:om ./alembic_tenants /app/alembic_tenants
+COPY --chown=om:om ./alembic.ini /app/alembic.ini
 COPY supervisord.conf /usr/etc/supervisord.conf
-COPY --chown=onyx:onyx ./static /app/static
-COPY --chown=onyx:onyx ./keys /app/keys
+COPY --chown=om:om ./static /app/static
+COPY --chown=om:om ./keys /app/keys
 
 # Escape hatch scripts
-COPY --chown=onyx:onyx ./scripts/debugging /app/scripts/debugging
-COPY --chown=onyx:onyx ./scripts/force_delete_connector_by_id.py /app/scripts/force_delete_connector_by_id.py
-COPY --chown=onyx:onyx ./scripts/supervisord_entrypoint.sh /app/scripts/supervisord_entrypoint.sh
-COPY --chown=onyx:onyx ./scripts/setup_craft_templates.sh /app/scripts/setup_craft_templates.sh
+COPY --chown=om:om ./scripts/debugging /app/scripts/debugging
+COPY --chown=om:om ./scripts/force_delete_connector_by_id.py /app/scripts/force_delete_connector_by_id.py
+COPY --chown=om:om ./scripts/supervisord_entrypoint.sh /app/scripts/supervisord_entrypoint.sh
+COPY --chown=om:om ./scripts/setup_craft_templates.sh /app/scripts/setup_craft_templates.sh
 # Strip Windows CRLF line endings from scripts (prevents "not found" shebang errors
 # when the image is built on a Windows host where Git converts LF to CRLF)
 RUN sed -i 's/\r$//' /app/scripts/*.sh
@@ -161,13 +158,13 @@ ENV OUTPUTS_TEMPLATE_PATH=/app/om/server/features/build/sandbox/kubernetes/docke
 ENV VENV_TEMPLATE_PATH=/app/om/server/features/build/sandbox/kubernetes/docker/templates/venv
 
 # Put logo in assets
-COPY --chown=onyx:onyx ./assets /app/assets
+COPY --chown=om:om ./assets /app/assets
 
 ENV PYTHONPATH=/app
 
-# Default ONYX_VERSION, typically overriden during builds by GitHub Actions.
-ARG ONYX_VERSION=0.0.0-dev
-ENV ONYX_VERSION=${ONYX_VERSION}
+# Default OM_VERSION, typically overriden during builds by GitHub Actions.
+ARG OM_VERSION=0.0.0-dev
+ENV OM_VERSION=${OM_VERSION}
 
 # Default command which does nothing
 # This container is used by api server and background which specify their own CMD

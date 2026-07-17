@@ -16,7 +16,7 @@ spec:
   serviceAccountName: sandbox-runner  # Needs permissions to create/delete pods
   containers:
   - name: test
-    image: onyxdotapp/onyx-backend:latest
+    image: om/om-backend:latest
     imagePullPolicy: Never  # Use local image, don't try to pull from registry
     command: ["sleep", "infinity"]
     env:

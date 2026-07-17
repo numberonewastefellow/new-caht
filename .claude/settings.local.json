@@ -1,5 +1,6 @@
 {
   "permissions": {
+    "defaultMode": "bypassPermissions",
     "allow": [
       "PowerShell(*)",
       "Bash(*)",
@@ -10,10 +11,16 @@
       "WebSearch",
       "Bash(docker:*)",
       "PowerShell(docker:*)",
+      "Bash(docker run:*)",
+      "PowerShell(docker run:*)",
       "Bash(docker compose:*)",
       "PowerShell(docker compose:*)",
       "Bash(docker-compose:*)",
-      "PowerShell(docker-compose:*)"
+      "PowerShell(docker-compose:*)",
+      "Bash(docker logs:*)",
+      "PowerShell(docker logs:*)",
+      "Bash(docker exec:*)",
+      "PowerShell(docker exec:*)"
     ]
   }
 }

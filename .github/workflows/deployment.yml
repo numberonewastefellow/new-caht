@@ -1,3 +1,7 @@
+# TODO(fork): set the `IMAGE_REGISTRY` repository variable (Settings > Actions > Variables)
+# to your container-registry namespace, e.g. "myorg" or "ghcr.io/myorg". This workflow
+# publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,model-server,sandbox}.
+# NOTE: do NOT rename the om-* image basenames casually -- see DO_NOT_RENAME.md.
 name: Build and Push Docker Images on Tag
 
 on:
@@ -19,7 +23,7 @@ jobs:
   # Determine which components to build based on the tag
   determine-builds:
     # NOTE: Github-hosted runners have about 20s faster queue times and are preferred here.
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     outputs:
       build-desktop: ${{ steps.check.outputs.build-desktop }}
@@ -140,7 +144,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   check-version-tag:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     if: ${{ !startsWith(github.ref_name, 'nightly-latest') && github.event_name != 'workflow_dispatch' }}
     steps:
@@ -165,7 +169,7 @@ jobs:
     needs:
       - check-version-tag
     if: always() && needs.check-version-tag.result == 'failure' && github.event_name != 'workflow_dispatch'
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: release
     steps:
@@ -374,9 +378,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-web-server
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-web-server
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -423,7 +426,7 @@ jobs:
           platforms: linux/amd64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            ONYX_VERSION=${{ github.ref_name }}
+            OM_VERSION=${{ github.ref_name }}
             NODE_OPTIONS=--max-old-space-size=8192
           cache-from: |
             type=registry,ref=${{ env.REGISTRY_IMAGE }}:latest
@@ -447,9 +450,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-web-server
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-web-server
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -496,7 +498,7 @@ jobs:
           platforms: linux/arm64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            ONYX_VERSION=${{ github.ref_name }}
+            OM_VERSION=${{ github.ref_name }}
             NODE_OPTIONS=--max-old-space-size=8192
           cache-from: |
             type=registry,ref=${{ env.REGISTRY_IMAGE }}:latest
@@ -520,9 +522,8 @@ jobs:
     timeout-minutes: 90
     environment: release
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-web-server
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-web-server
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
@@ -585,9 +586,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-web-server-cloud
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-web-server-cloud
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -634,7 +634,7 @@ jobs:
           platforms: linux/amd64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            ONYX_VERSION=${{ github.ref_name }}
+            OM_VERSION=${{ github.ref_name }}
             NEXT_PUBLIC_CLOUD_ENABLED=true
             NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.POSTHOG_KEY }}
             NEXT_PUBLIC_POSTHOG_HOST=${{ secrets.POSTHOG_HOST }}
@@ -667,9 +667,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-web-server-cloud
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-web-server-cloud
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -716,7 +715,7 @@ jobs:
           platforms: linux/arm64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            ONYX_VERSION=${{ github.ref_name }}
+            OM_VERSION=${{ github.ref_name }}
             NEXT_PUBLIC_CLOUD_ENABLED=true
             NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.POSTHOG_KEY }}
             NEXT_PUBLIC_POSTHOG_HOST=${{ secrets.POSTHOG_HOST }}
@@ -749,9 +748,8 @@ jobs:
     timeout-minutes: 90
     environment: release
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-web-server-cloud
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-web-server-cloud
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
@@ -811,9 +809,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && 'onyxdotapp/onyx-backend-cloud' || 'onyxdotapp/onyx-backend' }}
+      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && format('{0}/om-backend-cloud', vars.IMAGE_REGISTRY) || format('{0}/om-backend', vars.IMAGE_REGISTRY) }}
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -860,7 +857,7 @@ jobs:
           platforms: linux/amd64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            ONYX_VERSION=${{ github.ref_name }}
+            OM_VERSION=${{ github.ref_name }}
           cache-from: |
             type=registry,ref=${{ env.REGISTRY_IMAGE }}:latest
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:backend-cache-amd64
@@ -883,9 +880,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && 'onyxdotapp/onyx-backend-cloud' || 'onyxdotapp/onyx-backend' }}
+      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && format('{0}/om-backend-cloud', vars.IMAGE_REGISTRY) || format('{0}/om-backend', vars.IMAGE_REGISTRY) }}
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -932,7 +928,7 @@ jobs:
           platforms: linux/arm64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            ONYX_VERSION=${{ github.ref_name }}
+            OM_VERSION=${{ github.ref_name }}
           cache-from: |
             type=registry,ref=${{ env.REGISTRY_IMAGE }}:latest
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:backend-cache-arm64
@@ -955,9 +951,8 @@ jobs:
     timeout-minutes: 90
     environment: release
     env:
-      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && 'onyxdotapp/onyx-backend-cloud' || 'onyxdotapp/onyx-backend' }}
+      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && format('{0}/om-backend-cloud', vars.IMAGE_REGISTRY) || format('{0}/om-backend', vars.IMAGE_REGISTRY) }}
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
@@ -1020,9 +1015,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-backend
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-backend
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -1069,7 +1063,7 @@ jobs:
           platforms: linux/amd64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            ONYX_VERSION=${{ github.ref_name }}
+            OM_VERSION=${{ github.ref_name }}
             ENABLE_CRAFT=true
           cache-from: |
             type=registry,ref=${{ env.REGISTRY_IMAGE }}:latest
@@ -1093,9 +1087,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-backend
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-backend
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -1142,7 +1135,7 @@ jobs:
           platforms: linux/arm64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            ONYX_VERSION=${{ github.ref_name }}
+            OM_VERSION=${{ github.ref_name }}
             ENABLE_CRAFT=true
           cache-from: |
             type=registry,ref=${{ env.REGISTRY_IMAGE }}:latest
@@ -1167,9 +1160,8 @@ jobs:
     timeout-minutes: 90
     environment: release
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-backend
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-backend
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
@@ -1232,9 +1224,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && 'onyxdotapp/onyx-model-server-cloud' || 'onyxdotapp/onyx-model-server' }}
+      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && format('{0}/om-model-server-cloud', vars.IMAGE_REGISTRY) || format('{0}/om-model-server', vars.IMAGE_REGISTRY) }}
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -1285,7 +1276,7 @@ jobs:
           platforms: linux/amd64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            ONYX_VERSION=${{ github.ref_name }}
+            OM_VERSION=${{ github.ref_name }}
           cache-from: |
             type=registry,ref=${{ env.REGISTRY_IMAGE }}:latest
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-amd64
@@ -1311,9 +1302,8 @@ jobs:
     outputs:
       digest: ${{ steps.build.outputs.digest }}
     env:
-      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && 'onyxdotapp/onyx-model-server-cloud' || 'onyxdotapp/onyx-model-server' }}
+      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && format('{0}/om-model-server-cloud', vars.IMAGE_REGISTRY) || format('{0}/om-model-server', vars.IMAGE_REGISTRY) }}
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -1364,7 +1354,7 @@ jobs:
           platforms: linux/arm64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            ONYX_VERSION=${{ github.ref_name }}
+            OM_VERSION=${{ github.ref_name }}
           cache-from: |
             type=registry,ref=${{ env.REGISTRY_IMAGE }}:latest
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-arm64
@@ -1389,9 +1379,8 @@ jobs:
     timeout-minutes: 90
     environment: release
     env:
-      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && 'onyxdotapp/onyx-model-server-cloud' || 'onyxdotapp/onyx-model-server' }}
+      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && format('{0}/om-model-server-cloud', vars.IMAGE_REGISTRY) || format('{0}/om-model-server', vars.IMAGE_REGISTRY) }}
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
@@ -1454,9 +1443,8 @@ jobs:
     timeout-minutes: 90
     environment: release
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-web-server
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-web-server
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
@@ -1509,9 +1497,8 @@ jobs:
     timeout-minutes: 90
     environment: release
     env:
-      REGISTRY_IMAGE: onyxdotapp/onyx-web-server-cloud
+      REGISTRY_IMAGE: ${{ vars.IMAGE_REGISTRY }}/om-web-server-cloud
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
@@ -1564,9 +1551,8 @@ jobs:
     timeout-minutes: 90
     environment: release
     env:
-      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && 'onyxdotapp/onyx-backend-cloud' || 'onyxdotapp/onyx-backend' }}
+      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && format('{0}/om-backend-cloud', vars.IMAGE_REGISTRY) || format('{0}/om-backend', vars.IMAGE_REGISTRY) }}
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -1626,9 +1612,8 @@ jobs:
     timeout-minutes: 90
     environment: release
     env:
-      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && 'onyxdotapp/onyx-model-server-cloud' || 'onyxdotapp/onyx-model-server' }}
+      REGISTRY_IMAGE: ${{ contains(github.ref_name, 'cloud') && format('{0}/om-model-server-cloud', vars.IMAGE_REGISTRY) || format('{0}/om-model-server', vars.IMAGE_REGISTRY) }}
     steps:
-      - uses: runs-on/action@cd2b598b0515d39d78c38a02d529db87d2196d1e # ratchet:runs-on/action@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
@@ -1689,7 +1674,7 @@ jobs:
       - merge-model-server
     if: always() && (needs.build-desktop.result == 'failure' || needs.build-web-amd64.result == 'failure' || needs.build-web-arm64.result == 'failure' || needs.merge-web.result == 'failure' || needs.build-web-cloud-amd64.result == 'failure' || needs.build-web-cloud-arm64.result == 'failure' || needs.merge-web-cloud.result == 'failure' || needs.build-backend-amd64.result == 'failure' || needs.build-backend-arm64.result == 'failure' || needs.merge-backend.result == 'failure' || (needs.determine-builds.outputs.build-backend-craft == 'true' && (needs.build-backend-craft-amd64.result == 'failure' || needs.build-backend-craft-arm64.result == 'failure' || needs.merge-backend-craft.result == 'failure')) || needs.build-model-server-amd64.result == 'failure' || needs.build-model-server-arm64.result == 'failure' || needs.merge-model-server.result == 'failure') && needs.determine-builds.outputs.is-test-run != 'true'
     # NOTE: Github-hosted runners have about 20s faster queue times and are preferred here.
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     environment: release
     steps:

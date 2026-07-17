@@ -1,0 +1,138 @@
+# DO NOT RENAME — external contracts
+
+> **Read this before any `onyx` → `om` (or any other) mass rename / find-and-replace.**
+
+Most `onyx` strings in this repo are safe to rename. **The strings on this page are NOT.**
+They are *external contracts*: they point at artifacts owned by someone else (HuggingFace Hub,
+Docker Hub, the browser, Redis, the OS), or at on-disk/on-wire names that outlive the code. If
+you rename them, nothing fails at build time, mypy stays green, the app starts fine — and then
+it **breaks at runtime** the first time that path executes (a model download 404s, a session
+cookie is dropped, a Redis key misses, a log dir is wrong).
+
+This is exactly how the last few migration bugs happened: a string literal is invisible to the
+compiler and the type checker. Treat everything below as **frozen** until the "How to actually
+own these" section is done.
+
+---
+
+## 1. HuggingFace model repo IDs — trained models, NO drop-in replacement
+
+These are downloaded at runtime via `snapshot_download` / `from_pretrained`. The repo id **is
+the download URL**. Rename it and the model 404s. There is no `om/…` equivalent on HF Hub.
+
+| String (do NOT change) | Location | What it is |
+|---|---|---|
+| `onyx-dot-app/hybrid-intent-token-classifier` | `backend/shared_configs/configs.py:38` (`INTENT_MODEL_VERSION`) | **ACTIVE** intent / keyword-vs-semantic token classifier |
+| `Danswer/filter-extraction-model` | `backend/shared_configs/configs.py:36` (`CONNECTOR_CLASSIFIER_MODEL_REPO`) | **ACTIVE** connector classifier (old `Danswer/` HF namespace) |
+| `onyx-dot-app/information-content-model` | `backend/model_server/legacy/custom_models.py:36` | information-content SetFit classifier (currently commented-out legacy, but keep the id intact) |
+
+### Third-party public models (also do NOT rename — not ours to rename)
+`nomic-ai/nomic-embed-text-v1`, `thenlper/gte-small`, `intfloat/e5-base-v2`,
+`intfloat/e5-small-v2`, `intfloat/multilingual-e5-base`, `intfloat/multilingual-e5-small`,
+`mixedbread-ai/mxbai-rerank-xsmall-v1` (comment), `distilbert-base-uncased` (commented).
+Found in `backend/om/configs/model_configs.py`, `backend/om/configs/embedding_configs.py`,
+`backend/Dockerfile`, `backend/Dockerfile.model_server`.
+
+---
+
+## 2. Other frozen external contracts (from the Stage-1 `onyx`→`om` rename)
+
+| String / name | Where | Why frozen |
+|---|---|---|
+| `onyx_tid`, `onyx_anonymous_user` | auth / session cookies | live browsers hold these; renaming logs everyone out / drops anon sessions |
+| `onyx:` key prefix | Redis namespace | renaming misses every existing key (locks, caches, taskset ids) |
+| `__danswer_alt_index`, `danswer_chunk_*` | Vespa index / suffix names | renaming orphans every existing index |
+| `github.com/onyx-dot-app/…`, `raw.githubusercontent.com/onyx-dot-app/…` | upstream repo + asset URLs | real upstream URLs (release notes, Slack icons); renaming 404s the asset |
+| `founders@onyx.app`, `onyx.app` | Dockerfile `LABEL` maintainer value / docs | real email + domain — the LABEL **keys** (`com.danswer.*`→`com.om.*`) and brand **prose** were renamed to `om`, but this email/domain **value** stays as-is |
+| `hub.docker.com/r/onyx/onyx-model-server` | `Dockerfile.model_server` `LABEL` description | Docker Hub URL — no `om/…` image is published there yet; renaming points the label at a 404 |
+
+### Already renamed to `om` (no longer frozen — kept here so nobody "restores" them)
+
+The Docker-runtime layer was fully renamed in lockstep and is done:
+
+- Docker image tags `onyxdotapp/onyx-{backend,web-server,model-server}` → **`om/om-*`** (compose,
+  CF templates, helm `values.yaml`, sandbox k8s manifests, `get_state.py`).
+- Unix user/group `onyx` (uid/gid 1001) → **`om`**; log dir `/var/log/onyx` → **`/var/log/om`**
+  (both Dockerfiles + `logger.py` / `memory_monitoring.py` / `packet_logger.py` + compose volume
+  mounts, all changed together).
+- Env-var keys `ONYX_{BACKEND,WEB_SERVER,MODEL_SERVER}_IMAGE` → **`OM_*_IMAGE`**.
+- Dockerfile `LABEL` keys `com.danswer.maintainer` / `com.danswer.description` → **`com.om.*`**, and
+  the brand **prose** `Onyx` / `DanswerAI` → **`Om`** in both Dockerfiles' descriptions. The stale
+  Community/Enterprise-Edition licensing sentence was removed (EE was dissolved). The embedded
+  `founders@onyx.app`, `github.com/onyx-dot-app/onyx`, and `hub.docker.com/r/onyx/…` values stay
+  frozen (see the table above).
+- Runtime version env key `ONYX_VERSION` → **`OM_VERSION`** (`backend/Dockerfile`,
+  `Dockerfile.model_server`, `web/Dockerfile`, the 10 `--build-arg` lines in
+  `.github/workflows/deployment.yml`, and the consumers `backend/om/__init__.py` +
+  `web/src/lib/version.ts`), and `DANSWER_RUNNING_IN_DOCKER` → **`OM_RUNNING_IN_DOCKER`** (both
+  Dockerfile `ENV`s + the `OM_DOCKER_ENV_STR` constant in `backend/om/utils/logger.py`), all changed
+  in lockstep.
+
+### Frozen items found in the full audit (Stage-2 sweep)
+
+The repo-wide sweep surfaced more frozen contracts than the original list. These are **frozen** for
+the same reason as §1–§2: renaming compiles clean but breaks at runtime / orphans stored state. The
+full renameable inventory lives in [`RENAME_AUDIT.md`](RENAME_AUDIT.md); this is only the *new frozen*
+set.
+
+| String / name | Where | Why frozen |
+|---|---|---|
+| `onyx_pat_`, `onyx_scim_` | `backend/om/auth/constants.py:9` (`PAT_PREFIX`), `backend/om/server/scim/auth.py:31` (`SCIM_TOKEN_PREFIX`) | prefix on live personal-access / SCIM tokens |
+| `onyx_kv_store:` | `backend/om/key_value_store/store.py:18` (`REDIS_KEY_PREFIX`) | prefix on every KV-store Redis key |
+| `da_function_lock:` | `backend/om/configs/constants.py:164` | live Redis lock keys |
+| `onyxapikey.ai`, `API_KEY__` | `backend/om/configs/constants.py:98,99` | stamped on existing API-key pseudo-user rows (matched by `.endswith()`) |
+| `onyx-files` (S3), `onyx-sandboxes` (k8s ns) | `backend/om/configs/app_configs.py:1129` (`S3_FILE_STORE_PREFIX`), sandbox config | prefixes on existing objects / live namespace |
+| `ONYX_METADATA` file marker (`<!-- ONYX_METADATA={…} -->`, `#ONYX_METADATA=`, `.onyx_metadata.json`) | `backend/om/file_processing/extract_file_text.py:122-127`, `backend/om/connectors/file/utils.py:163` | user-authored file format |
+| `telemetry.onyx.app`, `cloud.onyx.app`, `docs.onyx.app`, `api.onyx.app` | `backend/om/utils/telemetry.py:24`; `desktop/**`; `widget/**`; helm/env templates | real hosted endpoints |
+| `app.onyx.desktop` (Tauri bundle id + on-disk config dir), `tabbingIdentifier:"onyx"` | `desktop/src-tauri/tauri.conf.json:5,30`, `src/main.rs:199` | OS app identity; orphans installs + saved config |
+| `onyxExtension*` (7 keys) | `extensions/chrome/src/utils/constants.js:22-29` | persisted `chrome.storage.local` keys on existing installs |
+| `ONYX_APP_LOADED` | `web/src/lib/extension/constants.ts:15` + `extensions/chrome/src/utils/constants.js:34` | web↔extension postMessage type — must match both sides |
+| `<onyx-chat-widget>`, `onyx-widget.js` | `widget/src/widget.ts:20`, `widget/src/index.ts:11,13`, `widget/vite.config.ts:20` | public custom-element tag + bundle name embedders depend on |
+| `onyxTheme`, `onyx:hideMoveCustomAgentModal`, `onyx-widget-session` | `web/src/lib/extension/constants.ts:27`, `web/src/sections/sidebar/constants.ts:8`, `widget/src/utils/storage.ts:7` | persisted browser storage keys |
+| `@danswer.ai` / `@onyx.app` fixture emails | `backend/tests/external_dependency_unit/connectors/**`, `backend/tests/daily/connectors/**` | baked into recorded connector test data |
+| Alembic revision ids | `backend/alembic/versions/*onyx*.py` (filenames + `down_revision`) | migration-chain identity — rename bodies/comments only, never ids |
+| Prometheus metric names `onyx_*` | `docs/METRICS.md` + backend emit sites | Grafana dashboards / alerts depend |
+| `ONYX_GITHUB_*` secret names | `.github/workflows/pr-integration-tests.yml:40-44` | must match repo secret settings |
+| `onyxdotapp/code-interpreter` image | `deployment/docker_compose/docker-compose.yml:572`, helm `values.yaml:965` | Onyx's published sandbox image; no `om/` republish yet |
+
+> **`standard-answer` is NOT a `danswer` reference.** `StandardAnswer` / `standardAnswer…` match
+> "…stan**dAnswer**" case-insensitively and account for ~95% of raw `danswer` hits. Never bulk-replace;
+> genuine `Danswer` prose (e.g. `web/src/app/admin/bots/SlackBotTable.tsx:114`) is rare and goes to
+> **VertualAI** — see [`RENAME_AUDIT.md`](RENAME_AUDIT.md).
+
+> **Guard test:** `backend/tests/unit/migration_safety/test_no_stray_package_paths.py` intentionally
+> allowlists some of the above (`onyx:celery`, `onyx-sandboxes`, cookie prefixes, `onyx-dot-app/`).
+> Update it in tandem with any rename — do not blindly strip it.
+
+---
+
+## 3. How to actually OWN the trained models (TODO — the real fix)
+
+Until this is done, the fork depends on Onyx's / Danswer's HuggingFace repos. To become
+self-sufficient (and only THEN able to rename them):
+
+1. Create a HuggingFace account/org — e.g. `<your-hf-org>`.
+2. Pull each Onyx/Danswer-trained model and re-upload under your org:
+   ```bash
+   # requires: pip install -U "huggingface_hub[cli]"; huggingface-cli login
+   for repo in \
+     "onyx-dot-app/hybrid-intent-token-classifier" \
+     "Danswer/filter-extraction-model" \
+     "onyx-dot-app/information-content-model"; do
+       name="${repo##*/}"
+       huggingface-cli download "$repo" --local-dir "./hf_export/$name"
+       huggingface-cli upload "<your-hf-org>/$name" "./hf_export/$name" .
+   done
+   ```
+3. Re-point the config in `backend/shared_configs/configs.py`:
+   - `CONNECTOR_CLASSIFIER_MODEL_REPO = "<your-hf-org>/filter-extraction-model"`
+   - `INTENT_MODEL_VERSION = "<your-hf-org>/hybrid-intent-token-classifier"`
+   - (and the information-content id if/when that legacy path is re-enabled)
+4. Rebuild the `model_server` image and verify the models load at startup (watch
+   `virtualai-inference_model_server-1` / `-indexing_model_server-1` logs for download +
+   warm-up, no 404).
+5. **Only after** the models resolve from `<your-hf-org>/…` may these ids be renamed. Update the
+   table in §1 when you do.
+
+> ⚠️ Do **not** rename these ids in anticipation of the migration. Onyx's/Danswer's repos are the
+> only working source until step 4 passes.

@@ -12,6 +12,10 @@ permissions:
 
 jobs:
   linear-check:
+    # TODO(fork): this gate forces every PR to link a Linear ticket (or tick the override box).
+    # It targeted Onyx's Linear workspace. Disabled for the fork -- delete `if: false` and point
+    # at your own tracker (or remove this workflow) if you want the check.
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

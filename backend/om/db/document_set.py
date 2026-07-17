@@ -321,8 +321,8 @@ def update_document_set(
     user: User,
 ) -> tuple[DocumentSetDBModel, list[DocumentSet__ConnectorCredentialPair]]:
     """If successful, this sets document_set_row.is_up_to_date = False.
-    That will be processed via Celery in check_for_vespa_sync_task
-    and trigger a long running background sync to Vespa.
+    That will be processed via Celery in check_for_document_index_sync_task
+    and trigger a long running background sync to the document index.
     """
     # Check if we have either CC pairs or federated connectors (or both)
     if (
@@ -513,9 +513,10 @@ def delete_document_set_cc_pair_relationship__no_commit(
 # (the only fetch_versioned targets for this module were make_doc_set_private and
 # delete_document_set_privacy__no_commit). Its own signature even said the
 # include_outdated arg was "only for versioned implementation, unused".
-# Meanwhile the one real caller -- check_for_vespa_sync_task -- imports THIS function
-# directly and passes user_id=None. Taking the EE version under the usual superset rule
-# therefore broke vespa metadata sync with an AssertionError every 20s.
+# Meanwhile the one real caller -- check_for_document_index_sync_task -- imports THIS
+# function directly and passes user_id=None. Taking the EE version under the usual
+# superset rule therefore broke document index metadata sync with an AssertionError
+# every 20s.
 def fetch_document_sets(
     user_id: UUID | None,  # noqa: ARG001
     db_session: Session,

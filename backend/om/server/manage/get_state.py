@@ -3,7 +3,6 @@ import re
 
 import requests
 from fastapi import APIRouter
-from fastapi import HTTPException
 
 from om import __version__
 from om.auth.users import anonymous_user_enabled
@@ -62,31 +61,37 @@ def get_versions() -> AllVersions:
     Since DockerHub does not explicitly flag stable and beta images,
     this endpoint can be used to programmatically check for new images.
     """
-    # Fetch the latest tags from DockerHub for each Onyx component
+    # Fetch the latest tags from DockerHub for each image component.
     dockerhub_repos = [
-        "onyxdotapp/onyx-model-server",
-        "onyxdotapp/onyx-backend",
-        "onyxdotapp/onyx-web-server",
+        "om/om-model-server",
+        "om/om-backend",
+        "om/om-web-server",
     ]
 
-    # For good measure, we fetch 10 pages of tags
+    # For good measure, we fetch 10 pages of tags.
+    # Fault-tolerant: if the registry is unreachable or the repo is unpublished
+    # (e.g. this fork does not push public images), return whatever we collected
+    # (usually nothing) instead of raising -- the caller falls back to __version__.
     def get_dockerhub_tags(repo: str, pages: int = 10) -> list[str]:
-        url = f"https://hub.docker.com/v2/repositories/{repo}/tags"
-        tags = []
+        url: str | None = f"https://hub.docker.com/v2/repositories/{repo}/tags"
+        tags: list[str] = []
         for _ in range(pages):
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
-            data = response.json()
+            if not url:
+                break
+            try:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+                data = response.json()
+            except (requests.RequestException, ValueError):
+                break
             tags.extend(
                 [
                     tag["name"]
-                    for tag in data["results"]
+                    for tag in data.get("results", [])
                     if re.match(r"^v\d", tag["name"])
                 ]
             )
             url = data.get("next")
-            if not url:
-                break
         return tags
 
     # Get tags for all repos in parallel
@@ -101,18 +106,6 @@ def get_versions() -> AllVersions:
     # Filter tags by strict version patterns
     dev_tags = [tag for tag in common_tags if DEV_VERSION_PATTERN.match(tag)]
     stable_tags = [tag for tag in common_tags if STABLE_VERSION_PATTERN.match(tag)]
-
-    # Ensure we have at least one tag of each type
-    if not dev_tags:
-        raise HTTPException(
-            status_code=500,
-            detail="No valid dev versions found matching pattern v(number).(number).(number)-beta.(number)",
-        )
-    if not stable_tags:
-        raise HTTPException(
-            status_code=500,
-            detail="No valid stable versions found matching pattern v(number).(number).(number)",
-        )
 
     # Sort common tags and get the latest one
     def version_key(version: str) -> tuple[int, int, int, int]:
@@ -131,8 +124,17 @@ def get_versions() -> AllVersions:
             parts = clean_version.split(".")
             return (int(parts[0]), int(parts[1]), int(parts[2]), 0)
 
-    latest_dev_version = sorted(dev_tags, key=version_key, reverse=True)[0]
-    latest_stable_version = sorted(stable_tags, key=version_key, reverse=True)[0]
+    # Fall back to the running version when no published tags were found (e.g. the
+    # registry was unreachable or this fork does not publish public images) so the
+    # endpoint degrades to a 200 with the current version instead of failing.
+    latest_dev_version = (
+        sorted(dev_tags, key=version_key, reverse=True)[0] if dev_tags else __version__
+    )
+    latest_stable_version = (
+        sorted(stable_tags, key=version_key, reverse=True)[0]
+        if stable_tags
+        else __version__
+    )
 
     return AllVersions(
         stable=ContainerVersions(

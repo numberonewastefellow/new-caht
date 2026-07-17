@@ -1,10 +1,10 @@
-* @onyx-dot-app/onyx-core-team
-# Helm charts Owners
-/helm/ @justin-tahara
-
-# Web standards updates
-/web/STANDARDS.md @raunakab @Weves
-
-# Agent context files
-/CLAUDE.md @Weves
-/AGENTS.md @Weves
+# TODO(fork): set your own code owners.
+# The upstream Onyx owners are commented out below: the @onyx-dot-app/* team and the individual
+# handles do not exist on this fork, and an unresolvable CODEOWNERS entry blocks PR review
+# assignment. Uncomment and replace with your org/team/handles to re-enable ownership rules.
+#
+# * @your-org/your-team
+# /helm/ @your-handle
+# /web/STANDARDS.md @your-handle
+# /CLAUDE.md @your-handle
+# /AGENTS.md @your-handle

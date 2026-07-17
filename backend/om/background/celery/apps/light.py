@@ -113,7 +113,7 @@ celery_app.autodiscover_tasks(
     app_base.filter_task_modules(
         [
             "om.background.celery.tasks.shared",
-            "om.background.celery.tasks.vespa",
+            "om.background.celery.tasks.document_index",
             "om.background.celery.tasks.connector_deletion",
             "om.background.celery.tasks.doc_permission_syncing",
             "om.background.celery.tasks.docprocessing",

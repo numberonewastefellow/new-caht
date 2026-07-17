@@ -97,8 +97,8 @@ beat_task_templates: list[dict] = [
         },
     },
     {
-        "name": "check-for-vespa-sync",
-        "task": OmCeleryTask.CHECK_FOR_VESPA_SYNC_TASK,
+        "name": "check-for-document-index-sync",
+        "task": OmCeleryTask.CHECK_FOR_DOC_INDEX_SYNC_TASK,
         "schedule": timedelta(seconds=20),
         "options": {
             "priority": OmCeleryPriority.MEDIUM,
@@ -269,7 +269,7 @@ if ENABLE_OPENSEARCH_INDEXING_FOR_ONYX and not DISABLE_OPENSEARCH_MIGRATION_TASK
 _VECTOR_DB_BEAT_TASK_NAMES: set[str] = {
     "check-for-indexing",
     "check-for-connector-deletion",
-    "check-for-vespa-sync",
+    "check-for-document-index-sync",
     "check-for-pruning",
     "check-for-hierarchy-fetching",
     "check-for-checkpoint-cleanup",

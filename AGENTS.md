@@ -4,6 +4,7 @@ This file provides guidance to AI agents when working with code in this reposito
 
 ## KEY NOTES
 
+- ⚠️ **Before any `onyx` → `om` rename or repo-wide find-and-replace, read [`DO_NOT_RENAME.md`](DO_NOT_RENAME.md).** Some `onyx`/`Danswer` strings are *external contracts* — HuggingFace model repo ids (e.g. `onyx-dot-app/hybrid-intent-token-classifier`), session cookies (`onyx_tid`), the Redis `onyx:` namespace, Docker image tags, Vespa index names. They pass build/mypy but **404 or break at runtime** if renamed. They are frozen until the HF re-hosting TODO in that file is done.
 - If you run into any missing python dependency errors, try running your command with `source .venv/bin/activate` \
   to assume the python venv.
 - To make tests work, check the `.env` file at the root of the project to find an OpenAI key.

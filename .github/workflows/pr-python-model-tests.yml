@@ -1,3 +1,7 @@
+# TODO(fork): set the `IMAGE_REGISTRY` repository variable (Settings > Actions > Variables)
+# to your container-registry namespace, e.g. "myorg" or "ghcr.io/myorg". This workflow
+# publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,model-server,sandbox}.
+# NOTE: do NOT rename the om-* image basenames casually -- see DO_NOT_RENAME.md.
 name: Model Server Tests
 
 on:
@@ -25,7 +29,6 @@ env:
 
 jobs:
   model-check:
-    # See https://runs-on.com/runners/linux/
     runs-on:
       - runs-on
       - runner=4cpu-linux-arm64
@@ -83,7 +86,7 @@ jobs:
             model-server.cache-from=type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ github.event.pull_request.head.sha || github.sha }}
             model-server.cache-from=type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ steps.format-branch.outputs.cache-suffix }}
             model-server.cache-from=type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache
-            model-server.cache-from=type=registry,ref=onyxdotapp/onyx-model-server:latest
+            model-server.cache-from=type=registry,ref=${{ vars.IMAGE_REGISTRY }}/om-model-server:latest
             model-server.cache-to=type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ github.event.pull_request.head.sha || github.sha }},mode=max
             model-server.cache-to=type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ steps.format-branch.outputs.cache-suffix }},mode=max
             model-server.cache-to=type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache,mode=max

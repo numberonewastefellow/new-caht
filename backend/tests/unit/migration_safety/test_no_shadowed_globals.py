@@ -10,7 +10,7 @@ the target lived in the same module as the caller -- and the result was assigned
 variable of the SAME NAME as the target:
 
     monitor_usergroup_taskset = fetch_versioned_implementation(
-        "om.background.celery.tasks.vespa.tasks", "monitor_usergroup_taskset"
+        "om.background.celery.tasks.document_index.tasks", "monitor_usergroup_taskset"
     )
 
 the rewrite produced `monitor_usergroup_taskset = monitor_usergroup_taskset`. That
@@ -20,7 +20,7 @@ right-hand side no longer resolves to the module-level function:
     UnboundLocalError: cannot access local variable 'monitor_usergroup_taskset'
                        where it is not associated with a value
 
-check_for_vespa_sync_task raised this on every beat tick until it was caught in the
+check_for_document_index_sync_task raised this on every beat tick until it was caught in the
 deploy logs. The suite was 25/25 green the whole time.
 """
 

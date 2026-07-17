@@ -9,7 +9,7 @@ from redis.lock import Lock as RedisLock
 from sqlalchemy.orm import Session
 
 from om.configs.app_configs import DB_YIELD_PER_DEFAULT
-from om.configs.constants import CELERY_VESPA_SYNC_BEAT_LOCK_TIMEOUT
+from om.configs.constants import CELERY_DOC_INDEX_SYNC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryQueues
 from om.configs.constants import OmCeleryTask
@@ -79,7 +79,7 @@ class RedisUserGroup(RedisObjectHelper):
             doc_id = cast(str, doc_id)
             current_time = time.monotonic()
             if current_time - last_lock_time >= (
-                CELERY_VESPA_SYNC_BEAT_LOCK_TIMEOUT / 4
+                CELERY_DOC_INDEX_SYNC_BEAT_LOCK_TIMEOUT / 4
             ):
                 lock.reacquire()
                 last_lock_time = current_time
@@ -95,9 +95,9 @@ class RedisUserGroup(RedisObjectHelper):
             redis_client.expire(self.taskset_key, self.TASKSET_TTL)
 
             celery_app.send_task(
-                OmCeleryTask.VESPA_METADATA_SYNC_TASK,
+                OmCeleryTask.DOC_INDEX_METADATA_SYNC_TASK,
                 kwargs=dict(document_id=doc_id, tenant_id=tenant_id),
-                queue=OmCeleryQueues.VESPA_METADATA_SYNC,
+                queue=OmCeleryQueues.DOC_INDEX_METADATA_SYNC,
                 task_id=custom_task_id,
                 priority=OmCeleryPriority.MEDIUM,
             )

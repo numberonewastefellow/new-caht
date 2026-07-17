@@ -117,7 +117,7 @@ Resources:
         OperatingSystemFamily: LINUX
       ContainerDefinitions:
         - Name: onyx-model-server-inference
-          Image: onyxdotapp/onyx-model-server:latest
+          Image: om/om-model-server:latest
           Cpu: 0
           Essential: true
           Command:

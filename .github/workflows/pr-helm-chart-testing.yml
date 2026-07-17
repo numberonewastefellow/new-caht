@@ -1,3 +1,7 @@
+# TODO(fork): set the `IMAGE_REGISTRY` repository variable (Settings > Actions > Variables)
+# to your container-registry namespace, e.g. "myorg" or "ghcr.io/myorg". This workflow
+# publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,model-server,sandbox}.
+# NOTE: do NOT rename the om-* image basenames casually -- see DO_NOT_RENAME.md.
 name: Helm - Lint and Test Charts
 concurrency:
   group: Helm-Lint-and-Test-Charts-${{ github.workflow }}-${{ github.head_ref || github.event.workflow_run.head_branch || github.run_id }}
@@ -17,7 +21,6 @@ permissions:
 
 jobs:
   helm-chart-check:
-    # See https://runs-on.com/runners/linux/
     runs-on:
       [
         runs-on,
@@ -86,6 +89,8 @@ jobs:
         run: |
           echo "=== Adding Helm repositories ==="
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          # NOTE(fork): Onyx's public Helm charts (GitHub Pages). Functional public deps -- kept
+          # intentionally; there is no fork replacement. See DO_NOT_RENAME.md.
           helm repo add vespa https://onyx-dot-app.github.io/vespa-helm-charts
           helm repo add opensearch https://opensearch-project.github.io/helm-charts
           helm repo add cloudnative-pg https://cloudnative-pg.github.io/charts
@@ -112,7 +117,7 @@ jobs:
           IMAGES=(
             "ghcr.io/cloudnative-pg/cloudnative-pg:1.27.0"
             "quay.io/opstree/redis:v7.0.15"
-            "docker.io/onyxdotapp/onyx-web-server:latest"
+            "docker.io/${{ vars.IMAGE_REGISTRY }}/om-web-server:latest"
           )
 
           for image in "${IMAGES[@]}"; do

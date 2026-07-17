@@ -10,7 +10,7 @@ from redis.lock import Lock as RedisLock
 from sqlalchemy.orm import Session
 
 from om.configs.app_configs import DB_YIELD_PER_DEFAULT
-from om.configs.constants import CELERY_VESPA_SYNC_BEAT_LOCK_TIMEOUT
+from om.configs.constants import CELERY_DOC_INDEX_SYNC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryQueues
 from om.configs.constants import OmCeleryTask
@@ -127,7 +127,7 @@ class RedisConnectorDelete:
             doc_id = cast(str, doc_id)
             current_time = time.monotonic()
             if current_time - last_lock_time >= (
-                CELERY_VESPA_SYNC_BEAT_LOCK_TIMEOUT / 4
+                CELERY_DOC_INDEX_SYNC_BEAT_LOCK_TIMEOUT / 4
             ):
                 lock.reacquire()
                 last_lock_time = current_time

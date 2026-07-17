@@ -149,7 +149,7 @@ def _collect_queue_metrics(redis_celery: Redis) -> list[Metric]:
         "celery_queue_length": OmCeleryQueues.PRIMARY,
         "docprocessing_queue_length": OmCeleryQueues.DOCPROCESSING,
         "docfetching_queue_length": OmCeleryQueues.CONNECTOR_DOC_FETCHING,
-        "sync_queue_length": OmCeleryQueues.VESPA_METADATA_SYNC,
+        "sync_queue_length": OmCeleryQueues.DOC_INDEX_METADATA_SYNC,
         "deletion_queue_length": OmCeleryQueues.CONNECTOR_DELETION,
         "pruning_queue_length": OmCeleryQueues.CONNECTOR_PRUNING,
         "permissions_sync_queue_length": OmCeleryQueues.CONNECTOR_DOC_PERMISSIONS_SYNC,
@@ -908,7 +908,7 @@ def monitor_celery_queues_helper(
     n_user_file_delete = celery_get_queue_length(
         OmCeleryQueues.USER_FILE_DELETE, r_celery
     )
-    n_sync = celery_get_queue_length(OmCeleryQueues.VESPA_METADATA_SYNC, r_celery)
+    n_sync = celery_get_queue_length(OmCeleryQueues.DOC_INDEX_METADATA_SYNC, r_celery)
     n_deletion = celery_get_queue_length(OmCeleryQueues.CONNECTOR_DELETION, r_celery)
     n_pruning = celery_get_queue_length(OmCeleryQueues.CONNECTOR_PRUNING, r_celery)
     n_permissions_sync = celery_get_queue_length(

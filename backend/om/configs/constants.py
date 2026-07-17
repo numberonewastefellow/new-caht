@@ -124,7 +124,7 @@ KV_KG_CONFIG_KEY = "kg_config"
 # might be worth separating this timeout into separate timeouts for each situation
 CELERY_GENERIC_BEAT_LOCK_TIMEOUT = 120
 
-CELERY_VESPA_SYNC_BEAT_LOCK_TIMEOUT = 120
+CELERY_DOC_INDEX_SYNC_BEAT_LOCK_TIMEOUT = 120
 
 
 CELERY_PRIMARY_WORKER_LOCK_TIMEOUT = 120
@@ -377,7 +377,7 @@ class OmCeleryQueues:
     PRIMARY = "celery"
 
     # Light queue
-    VESPA_METADATA_SYNC = "vespa_metadata_sync"
+    DOC_INDEX_METADATA_SYNC = "document_index_metadata_sync"
     DOC_PERMISSIONS_UPSERT = "doc_permissions_upsert"
     CONNECTOR_DELETION = "connector_deletion"
     LLM_MODEL_UPDATE = "llm_model_update"
@@ -409,7 +409,7 @@ class OmCeleryQueues:
 
 class OmRedisLocks:
     PRIMARY_WORKER = "da_lock:primary_worker"
-    CHECK_VESPA_SYNC_BEAT_LOCK = "da_lock:check_vespa_sync_beat"
+    CHECK_DOC_INDEX_SYNC_BEAT_LOCK = "da_lock:check_document_index_sync_beat"
     CHECK_CONNECTOR_DELETION_BEAT_LOCK = "da_lock:check_connector_deletion_beat"
     CHECK_PRUNE_BEAT_LOCK = "da_lock:check_prune_beat"
     CHECK_HIERARCHY_FETCHING_BEAT_LOCK = "da_lock:check_hierarchy_fetching_beat"
@@ -517,7 +517,7 @@ class OmCeleryTask:
     )
 
     CHECK_FOR_CONNECTOR_DELETION = "check_for_connector_deletion_task"
-    CHECK_FOR_VESPA_SYNC_TASK = "check_for_vespa_sync_task"
+    CHECK_FOR_DOC_INDEX_SYNC_TASK = "check_for_document_index_sync_task"
     CHECK_FOR_INDEXING = "check_for_indexing"
     CHECK_FOR_PRUNING = "check_for_pruning"
     CHECK_FOR_HIERARCHY_FETCHING = "check_for_hierarchy_fetching"
@@ -564,7 +564,7 @@ class OmCeleryTask:
     CONNECTOR_PRUNING_GENERATOR_TASK = "connector_pruning_generator_task"
     CONNECTOR_HIERARCHY_FETCHING_TASK = "connector_hierarchy_fetching_task"
     DOCUMENT_BY_CC_PAIR_CLEANUP_TASK = "document_by_cc_pair_cleanup_task"
-    VESPA_METADATA_SYNC_TASK = "vespa_metadata_sync_task"
+    DOC_INDEX_METADATA_SYNC_TASK = "document_index_metadata_sync_task"
 
     # chat retention
     CHECK_TTL_MANAGEMENT_TASK = "check_ttl_management_task"

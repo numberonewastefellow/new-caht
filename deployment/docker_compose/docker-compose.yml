@@ -38,7 +38,7 @@ name: virtualai
 
 services:
   api_server:
-    image: ${ONYX_BACKEND_IMAGE:-onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}}
+    image: ${OM_BACKEND_IMAGE:-om/om-backend:${IMAGE_TAG:-latest}}
     build:
       context: ../../backend
       dockerfile: Dockerfile
@@ -124,14 +124,14 @@ services:
       start_period: 25s
     # Optional, only for debugging purposes
     volumes:
-      - api_server_logs:/var/log/onyx
+      - api_server_logs:/var/log/om
       # Shared volume for persistent document storage (Craft file-system mode)
       - file-system:/app/file-system
       # Shared Craft templates volume (venv + npm deps, persisted across restarts)
       - craft-templates:/app/om/server/features/build/sandbox/kubernetes/docker/templates
 
   background:
-    image: ${ONYX_BACKEND_IMAGE:-onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}}
+    image: ${OM_BACKEND_IMAGE:-om/om-backend:${IMAGE_TAG:-latest}}
     build:
       context: ../../backend
       dockerfile: Dockerfile
@@ -197,7 +197,7 @@ services:
       - "host.docker.internal:host-gateway"
     # Optional, only for debugging purposes
     volumes:
-      - background_logs:/var/log/onyx
+      - background_logs:/var/log/om
       # Shared volume for persistent document storage (Craft file-system mode)
       - file-system:/app/file-system
       # Shared Craft templates volume (venv + npm deps, persisted across restarts)
@@ -218,7 +218,7 @@ services:
     #   - ${CA_CERT_PATH:-./custom-ca.crt}:/etc/ssl/certs/custom-ca.crt:ro
 
   web_server:
-    image: ${ONYX_WEB_SERVER_IMAGE:-onyxdotapp/onyx-web-server:${IMAGE_TAG:-latest}}
+    image: ${OM_WEB_SERVER_IMAGE:-om/om-web-server:${IMAGE_TAG:-latest}}
     build:
       context: ../../web
       dockerfile: Dockerfile
@@ -246,7 +246,7 @@ services:
 
   # Uncomment the block below to enable the MCP server for Onyx.
   # mcp_server:
-  #   image: ${ONYX_BACKEND_IMAGE:-onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}}
+  #   image: ${OM_BACKEND_IMAGE:-om/om-backend:${IMAGE_TAG:-latest}}
   #   build:
   #     context: ../../backend
   #     dockerfile: Dockerfile
@@ -282,10 +282,10 @@ services:
   #       max-file: "6"
   #   # Optional, only for debugging purposes
   #   volumes:
-  #     - mcp_server_logs:/var/log/onyx
+  #     - mcp_server_logs:/var/log/om
 
   inference_model_server:
-    image: ${ONYX_MODEL_SERVER_IMAGE:-onyxdotapp/onyx-model-server:${IMAGE_TAG:-latest}}
+    image: ${OM_MODEL_SERVER_IMAGE:-om/om-model-server:${IMAGE_TAG:-latest}}
     build:
       context: ../../backend
       dockerfile: Dockerfile.model_server
@@ -313,7 +313,7 @@ services:
       # Not necessary, this is just to reduce download time during startup
       - model_cache_huggingface:/app/.cache/huggingface/
       # Optional, only for debugging purposes
-      - inference_model_server_logs:/var/log/onyx
+      - inference_model_server_logs:/var/log/om
     logging:
       driver: json-file
       options:
@@ -332,7 +332,7 @@ services:
       retries: 3
 
   indexing_model_server:
-    image: ${ONYX_MODEL_SERVER_IMAGE:-onyxdotapp/onyx-model-server:${IMAGE_TAG:-latest}}
+    image: ${OM_MODEL_SERVER_IMAGE:-om/om-model-server:${IMAGE_TAG:-latest}}
     build:
       context: ../../backend
       dockerfile: Dockerfile.model_server
@@ -362,7 +362,7 @@ services:
       # Not necessary, this is just to reduce download time during startup
       - indexing_huggingface_model_cache:/app/.cache/huggingface/
       # Optional, only for debugging purposes
-      - indexing_model_server_logs:/var/log/onyx
+      - indexing_model_server_logs:/var/log/om
     logging:
       driver: json-file
       options:
