@@ -25,9 +25,9 @@ def test_cold_startup_default_assistant() -> None:
         result = db_session.execute(
             text(
                 """
-                SELECT id, name, builtin_persona, is_default_persona, deleted
-                FROM persona
-                WHERE builtin_persona = true
+                SELECT id, name, builtin_agent, is_default_agent, deleted
+                FROM agent
+                WHERE builtin_agent = true
                 ORDER BY id
                 """
             )
@@ -49,8 +49,8 @@ def test_cold_startup_default_assistant() -> None:
                 """
                 SELECT t.name, t.display_name
                 FROM tool t
-                JOIN persona__tool pt ON t.id = pt.tool_id
-                WHERE pt.persona_id = 0
+                JOIN agent__tool pt ON t.id = pt.tool_id
+                WHERE pt.agent_id = 0
                 ORDER BY t.name
                 """
             )

@@ -9,7 +9,7 @@ export const PYTHON_TOOL_NAME = "run_python";
 export const HTTP_REQUEST_TOOL_NAME = "http_request";
 export const OPEN_URL_TOOL_NAME = "open_url";
 
-// In-code tool IDs that also correspond to the tool's name when associated with a persona
+// In-code tool IDs that also correspond to the tool's name when associated with a agent
 export const SEARCH_TOOL_ID = "SearchTool";
 export const IMAGE_GENERATION_TOOL_ID = "ImageGenerationTool";
 export const WEB_SEARCH_TOOL_ID = "WebSearchTool";

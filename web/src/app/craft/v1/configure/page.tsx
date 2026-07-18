@@ -50,8 +50,8 @@ import { useLLMProviders } from "@/lib/hooks/useLLMProviders";
 import { useUser } from "@/providers/UserProvider";
 import { getProviderIcon } from "@/app/admin/configuration/llm/utils";
 import {
-  getBuildUserPersona,
-  getPersonaInfo,
+  getBuildUserAgent,
+  getAgentInfo,
   getPositionText,
   DEMO_COMPANY_NAME,
   BuildLlmSelection,
@@ -86,7 +86,7 @@ interface SelectedConnectorState {
 export default function BuildConfigPage() {
   const { isAdmin, isCurator } = useUser();
   const { llmProviders } = useLLMProviders();
-  const { openPersonaEditor, openLlmSetup } = useOnboarding();
+  const { openAgentEditor, openLlmSetup } = useOnboarding();
   const [selectedConnector, setSelectedConnector] =
     useState<SelectedConnectorState | null>(null);
   const [connectorToDelete, setConnectorToDelete] =
@@ -265,22 +265,22 @@ export default function BuildConfigPage() {
     ensurePreProvisionedSession,
   ]);
 
-  // Read persona from cookies
-  const existingPersona = getBuildUserPersona();
-  const workAreaValue = existingPersona?.workArea;
-  const levelValue = existingPersona?.level;
+  // Read agent from cookies
+  const existingAgent = getBuildUserAgent();
+  const workAreaValue = existingAgent?.workArea;
+  const levelValue = existingAgent?.level;
 
-  // Get persona info from mapping
-  // If workAreaValue and levelValue exist, personaInfo will always be defined
-  // (all combinations are mapped in PERSONA_MAPPING)
-  const personaInfo =
+  // Get agent info from mapping
+  // If workAreaValue and levelValue exist, agentInfo will always be defined
+  // (all combinations are mapped in AGENT_MAPPING)
+  const agentInfo =
     workAreaValue && levelValue
-      ? getPersonaInfo(workAreaValue, levelValue)
+      ? getAgentInfo(workAreaValue, levelValue)
       : undefined;
 
-  // Get persona name (split into first and last)
-  const personaName = personaInfo?.name;
-  const [firstName, ...lastNameParts] = personaName?.split(" ") || [];
+  // Get agent name (split into first and last)
+  const agentName = agentInfo?.name;
+  const [firstName, ...lastNameParts] = agentName?.split(" ") || [];
   const lastName = lastNameParts.join(" ") || "";
 
   // Get position text using shared helper
@@ -409,7 +409,7 @@ export default function BuildConfigPage() {
               >
                 <Card>
                   <InputLayouts.Horizontal
-                    title="Your Demo Persona"
+                    title="Your Demo Agent"
                     description={
                       firstName && lastName && positionText
                         ? `${firstName} ${lastName}, ${positionText} at ${DEMO_COMPANY_NAME}`
@@ -429,7 +429,7 @@ export default function BuildConfigPage() {
                     >
                       <button
                         type="button"
-                        onClick={() => openPersonaEditor()}
+                        onClick={() => openAgentEditor()}
                         disabled={!hasLlmProvider}
                         className="p-2 rounded-08 text-text-03 hover:bg-background-tint-02 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >

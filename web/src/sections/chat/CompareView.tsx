@@ -7,7 +7,7 @@ import ChatUI from "@/sections/chat/ChatUI";
 import Button from "@/refresh-components/buttons/Button";
 import Text from "@/refresh-components/texts/Text";
 import { LlmManager } from "@/lib/hooks";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { MinimalOnyxDocument } from "@/lib/search/interfaces";
 import { useChatSessionStore } from "@/app/app/stores/useChatSessionStore";
 import {
@@ -20,7 +20,7 @@ import LLMPopover from "@/refresh-components/popovers/LLMPopover";
 import { SvgPlus } from "@opal/icons";
 
 interface CompareViewProps {
-  liveAssistant: MinimalPersonaSnapshot;
+  liveAssistant: MinimalAgentSnapshot;
   llmManager: LlmManager;
   setPresentingDocument: (doc: MinimalOnyxDocument | null) => void;
   onMessageSelection: (nodeId: number) => void;
@@ -38,7 +38,7 @@ interface CompareViewProps {
 interface ComparePanelProps {
   model: CompareModel;
   sessionId: string | undefined;
-  liveAssistant: MinimalPersonaSnapshot;
+  liveAssistant: MinimalAgentSnapshot;
   llmManager: LlmManager;
   setPresentingDocument: (doc: MinimalOnyxDocument | null) => void;
   onMessageSelection: (nodeId: number) => void;

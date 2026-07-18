@@ -23,7 +23,7 @@ import type {
   AgentNodeData,
   ConditionalRouterNodeData,
   WorkflowMeta,
-  DragPersonaData,
+  DragAgentData,
 } from "./types";
 import {
   DEFAULT_WORKFLOW_META,
@@ -68,7 +68,7 @@ export function useWorkflowGraph() {
   // ── Add agent node (from sidebar drag-drop) ──────────────────────
 
   const addAgentNode = useCallback(
-    (persona: DragPersonaData, position: { x: number; y: number }) => {
+    (agent: DragAgentData, position: { x: number; y: number }) => {
       const nodeId = `agent-${Date.now()}`;
       const agentCount = nodes.filter((n) => n.type === "agent").length;
 
@@ -77,20 +77,20 @@ export function useWorkflowGraph() {
         type: "agent",
         position,
         data: {
-          persona_id: persona.persona_id,
-          persona_name: persona.persona_name,
-          step_name: persona.persona_name,
-          step_description: persona.persona_description || "",
+          agent_id: agent.agent_id,
+          agent_name: agent.agent_name,
+          step_name: agent.agent_name,
+          step_description: agent.agent_description || "",
           output_key: `step_${agentCount}`,
           is_terminal: false,
           can_request_input: false,
           promote_output: false,
-          persona_description: persona.persona_description,
-          persona_icon_url: persona.persona_icon_url,
-          persona_num_tools: persona.persona_num_tools,
-          persona_tool_names: persona.persona_tool_names || [],
-          persona_llm_model: persona.persona_llm_model || null,
-          persona_llm_provider: persona.persona_llm_provider || null,
+          agent_description: agent.agent_description,
+          agent_icon_url: agent.agent_icon_url,
+          agent_num_tools: agent.agent_num_tools,
+          agent_tool_names: agent.agent_tool_names || [],
+          agent_llm_model: agent.agent_llm_model || null,
+          agent_llm_provider: agent.agent_llm_provider || null,
           stepOrder: agentCount,
         },
       };

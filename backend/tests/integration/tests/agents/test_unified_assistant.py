@@ -1,26 +1,26 @@
 """Integration tests for the unified assistant."""
 
-from tests.integration.common_utils.managers.persona import PersonaManager
+from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.test_models import DATestUser
 
 
 def test_unified_assistant(reset: None, admin_user: DATestUser) -> None:  # noqa: ARG001
     """Combined test verifying unified assistant existence, tools, and starter messages."""
-    # Fetch all personas
-    personas = PersonaManager.get_all(admin_user)
+    # Fetch all agents
+    agents = AgentManager.get_all(admin_user)
 
     # Find the unified assistant (ID 0)
     unified_assistant = None
-    for persona in personas:
-        if persona.id == 0:
-            unified_assistant = persona
+    for agent in agents:
+        if agent.id == 0:
+            unified_assistant = agent
             break
 
-    # Assert that there are no other assistants (personas) besides the unified assistant
+    # Assert that there are no other assistants (agents) besides the unified assistant
     # (ID 0)
     assert (
-        len(personas) == 1
-    ), f"Expected only the unified assistant, found {len(personas)} personas"
+        len(agents) == 1
+    ), f"Expected only the unified assistant, found {len(agents)} agents"
 
     # Verify the unified assistant exists
     assert unified_assistant is not None, "Unified assistant (ID 0) not found"
@@ -31,7 +31,7 @@ def test_unified_assistant(reset: None, admin_user: DATestUser) -> None:  # noqa
         "search, web browsing, and image generation"
         in unified_assistant.description.lower()
     )
-    assert unified_assistant.is_default_persona is True
+    assert unified_assistant.is_default_agent is True
     assert unified_assistant.is_visible is True
     assert unified_assistant.num_chunks == 25
 

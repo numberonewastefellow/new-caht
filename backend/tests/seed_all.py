@@ -4,9 +4,9 @@ Seed All — One-command database restore for VirtualAI
 Seeds LLM providers, standalone agents, and workflows from JSON definitions.
 
 Dependency order:
-    1. LLM Providers  (needed before personas can use LLM overrides)
+    1. LLM Providers  (needed before agents can use LLM overrides)
     2. Standalone Agents  (agents_creator/assistants/*.json)
-    3. Workflows  (workflow_creator/workflows/*.json + auto-creates step personas)
+    3. Workflows  (workflow_creator/workflows/*.json + auto-creates step agents)
 
 Usage:
     python seed_all.py                              # Seed everything
@@ -175,7 +175,7 @@ def seed_agents(force: bool = False, dry_run: bool = False) -> tuple[int, int, i
     # Fetch existing
     existing_names: set[str] = set()
     if not force:
-        resp = api("GET", "persona")
+        resp = api("GET", "agent")
         if resp.status_code == 200:
             existing_names = {a["name"] for a in resp.json()}
 
@@ -213,7 +213,7 @@ def seed_workflows(force: bool = False, dry_run: bool = False, gen_icons: bool =
             generate_workflow_icons,
             load_json_files,
         )
-        from workflow_creator.config import resolve_or_create_persona
+        from workflow_creator.config import resolve_or_create_agent
 
     workflows_dir = _workflow_dir / "workflows"
     if not workflows_dir.exists():
@@ -252,16 +252,16 @@ def seed_workflows(force: bool = False, dry_run: bool = False, gen_icons: bool =
         name = w.get("name", "Unnamed")
 
         if not force and name in existing_names:
-            # Workflow exists — still sync step persona prompts so they
+            # Workflow exists — still sync step agent prompts so they
             # stay up-to-date with the JSON definitions.
             steps = w.get("steps", [])
             checked = 0
             for step in steps:
-                if step.get("persona_def", {}).get("system_prompt"):
-                    resolve_or_create_persona(step)
+                if step.get("agent_def", {}).get("system_prompt"):
+                    resolve_or_create_agent(step)
                     checked += 1
             if checked:
-                print(f"  [SYNC] {name} — checked {checked} persona(s)")
+                print(f"  [SYNC] {name} — checked {checked} agent(s)")
             else:
                 print(f"  [SKIP] {name}")
             skipped += 1
@@ -279,7 +279,7 @@ def seed_workflows(force: bool = False, dry_run: bool = False, gen_icons: bool =
         else:
             failed += 1
 
-    # Generate icons for new workflow wrapper personas
+    # Generate icons for new workflow wrapper agents
     if created > 0 and gen_icons and not dry_run:
         generate_workflow_icons()
 

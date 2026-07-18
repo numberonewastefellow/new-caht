@@ -19,8 +19,8 @@ from om.configs.constants import NO_AUTH_PLACEHOLDER_USER_EMAIL
 from om.db.api_key import DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN
 from om.db.models import DocumentSet
 from om.db.models import DocumentSet__User
-from om.db.models import Persona
-from om.db.models import Persona__User
+from om.db.models import Agent
+from om.db.models import Agent__User
 from om.db.models import SamlAccount
 from om.db.models import User
 from om.db.models import User__UserGroup
@@ -333,20 +333,20 @@ def delete_user_from_db(
     db_session.query(SamlAccount).filter(
         SamlAccount.user_id == user_to_delete.id
     ).delete()
-    # Null out ownership on document sets and personas so they're
+    # Null out ownership on document sets and agents so they're
     # preserved for other users instead of being cascade-deleted
     db_session.query(DocumentSet).filter(
         DocumentSet.user_id == user_to_delete.id
     ).update({DocumentSet.user_id: None})
-    db_session.query(Persona).filter(Persona.user_id == user_to_delete.id).update(
-        {Persona.user_id: None}
+    db_session.query(Agent).filter(Agent.user_id == user_to_delete.id).update(
+        {Agent.user_id: None}
     )
 
     db_session.query(DocumentSet__User).filter(
         DocumentSet__User.user_id == user_to_delete.id
     ).delete()
-    db_session.query(Persona__User).filter(
-        Persona__User.user_id == user_to_delete.id
+    db_session.query(Agent__User).filter(
+        Agent__User.user_id == user_to_delete.id
     ).delete()
     db_session.query(User__UserGroup).filter(
         User__UserGroup.user_id == user_to_delete.id

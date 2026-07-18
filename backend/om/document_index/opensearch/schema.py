@@ -33,30 +33,30 @@ from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import get_current_tenant_id
 
 TITLE_FIELD_NAME = "title"
-TITLE_VECTOR_FIELD_NAME = "title_vector"
-CONTENT_FIELD_NAME = "content"
-CONTENT_VECTOR_FIELD_NAME = "content_vector"
+TITLE_EMBEDDING_FIELD_NAME = "title_embedding"
+CHUNK_TEXT_FIELD_NAME = "chunk_text"
+CONTENT_EMBEDDING_FIELD_NAME = "content_embedding"
 SOURCE_TYPE_FIELD_NAME = "source_type"
-METADATA_LIST_FIELD_NAME = "metadata_list"
-LAST_UPDATED_FIELD_NAME = "last_updated"
-PUBLIC_FIELD_NAME = "public"
+METADATA_TAGS_FIELD_NAME = "metadata_tags"
+UPDATED_AT_FIELD_NAME = "updated_at"
+IS_PUBLIC_FIELD_NAME = "is_public"
 ACCESS_CONTROL_LIST_FIELD_NAME = "access_control_list"
-HIDDEN_FIELD_NAME = "hidden"
-GLOBAL_BOOST_FIELD_NAME = "global_boost"
-SEMANTIC_IDENTIFIER_FIELD_NAME = "semantic_identifier"
-IMAGE_FILE_ID_FIELD_NAME = "image_file_id"
+IS_HIDDEN_FIELD_NAME = "is_hidden"
+BOOST_FIELD_NAME = "boost"
+DISPLAY_NAME_FIELD_NAME = "display_name"
+IMAGE_ID_FIELD_NAME = "image_id"
 SOURCE_LINKS_FIELD_NAME = "source_links"
 DOCUMENT_SETS_FIELD_NAME = "document_sets"
 USER_WORKSPACES_FIELD_NAME = "user_workspaces"
-PERSONAS_FIELD_NAME = "personas"
+AGENTS_FIELD_NAME = "agents"
 DOCUMENT_ID_FIELD_NAME = "document_id"
 CHUNK_INDEX_FIELD_NAME = "chunk_index"
 MAX_CHUNK_SIZE_FIELD_NAME = "max_chunk_size"
 TENANT_ID_FIELD_NAME = "tenant_id"
-BLURB_FIELD_NAME = "blurb"
-DOC_SUMMARY_FIELD_NAME = "doc_summary"
-CHUNK_CONTEXT_FIELD_NAME = "chunk_context"
-METADATA_SUFFIX_FIELD_NAME = "metadata_suffix"
+SNIPPET_FIELD_NAME = "snippet"
+DOCUMENT_SUMMARY_FIELD_NAME = "document_summary"
+CONTEXTUAL_SUMMARY_FIELD_NAME = "contextual_summary"
+METADATA_TEXT_FIELD_NAME = "metadata_text"
 PRIMARY_OWNERS_FIELD_NAME = "primary_owners"
 SECONDARY_OWNERS_FIELD_NAME = "secondary_owners"
 # Hierarchy filtering - list of ancestor hierarchy node IDs
@@ -198,39 +198,39 @@ class DocumentChunkWithoutVectors(BaseModel):
 
     # Either both should be None or both should be non-None.
     title: str | None = None
-    content: str
+    chunk_text: str
 
     source_type: str
     # A list of key-value pairs separated by INDEX_SEPARATOR. See
     # convert_metadata_dict_to_list_of_strings.
-    metadata_list: list[str] | None = None
+    metadata_tags: list[str] | None = None
     # If it exists, time zone should always be UTC.
-    last_updated: datetime | None = None
+    updated_at: datetime | None = None
 
-    public: bool
+    is_public: bool
     access_control_list: list[str]
     # Defaults to False, currently gets written during update not index.
-    hidden: bool = False
+    is_hidden: bool = False
 
-    global_boost: int
+    boost: int
 
-    semantic_identifier: str
-    image_file_id: str | None = None
+    display_name: str
+    image_id: str | None = None
     # Contains a string representation of a dict which maps offset into the raw
     # chunk text to the link corresponding to that point.
     source_links: str | None = None
-    blurb: str
+    snippet: str
     # doc_summary, chunk_context, and metadata_suffix are all stored simply to
     # reverse the augmentations to content. Ideally these would just be start
     # and stop indices into the content string. For legacy reasons they are not
     # right now.
-    doc_summary: str
-    chunk_context: str
-    metadata_suffix: str | None = None
+    document_summary: str
+    contextual_summary: str
+    metadata_text: str | None = None
 
     document_sets: list[str] | None = None
     user_workspaces: list[int] | None = None
-    personas: list[int] | None = None
+    agents: list[int] | None = None
     primary_owners: list[str] | None = None
     secondary_owners: list[str] | None = None
 
@@ -256,7 +256,7 @@ class DocumentChunkWithoutVectors(BaseModel):
     def __str__(self) -> str:
         return (
             f"DocumentChunk(document_id={self.document_id}, chunk_index={self.chunk_index}, "
-            f"content length={len(self.content)}, tenant_id={self.tenant_id.tenant_id})."
+            f"content length={len(self.chunk_text)}, tenant_id={self.tenant_id.tenant_id})."
         )
 
     @model_serializer(mode="wrap")
@@ -281,7 +281,7 @@ class DocumentChunkWithoutVectors(BaseModel):
         serialized_exclude_none = {k: v for k, v in serialized.items() if v is not None}
         return serialized_exclude_none
 
-    @field_serializer("last_updated", mode="wrap")
+    @field_serializer("updated_at", mode="wrap")
     def serialize_datetime_fields_to_epoch_seconds(
         self,
         value: datetime | None,
@@ -297,7 +297,7 @@ class DocumentChunkWithoutVectors(BaseModel):
         value = set_or_convert_timezone_to_utc(value)
         return int(value.timestamp())
 
-    @field_validator("last_updated", mode="before")
+    @field_validator("updated_at", mode="before")
     @classmethod
     def parse_epoch_seconds_to_datetime(cls, value: Any) -> datetime | None:
         """Parses seconds since the Unix epoch to a datetime object.
@@ -384,22 +384,22 @@ class DocumentChunk(DocumentChunkWithoutVectors):
 
     model_config = {"frozen": True}
 
-    title_vector: list[float] | None = None
-    content_vector: list[float]
+    title_embedding: list[float] | None = None
+    content_embedding: list[float]
 
     def __str__(self) -> str:
         return (
             f"DocumentChunk(document_id={self.document_id}, chunk_index={self.chunk_index}, "
-            f"content length={len(self.content)}, content vector length={len(self.content_vector)}, "
+            f"content length={len(self.chunk_text)}, content vector length={len(self.content_embedding)}, "
             f"tenant_id={self.tenant_id.tenant_id})"
         )
 
     @model_validator(mode="after")
     def check_title_and_title_vector_are_consistent(self) -> Self:
         # title and title_vector should both either be None or not.
-        if self.title is not None and self.title_vector is None:
+        if self.title is not None and self.title_embedding is None:
             raise ValueError("Bug: Title vector must not be None if title is not None.")
-        if self.title_vector is not None and self.title is None:
+        if self.title_embedding is not None and self.title is None:
             raise ValueError("Bug: Title must not be None if title vector is not None.")
         return self
 
@@ -471,13 +471,13 @@ class DocumentSchema:
                     # https://docs.opensearch.org/latest/search-plugins/searching-data/highlight/#methods-of-obtaining-offsets
                     "index_options": "offsets",
                 },
-                CONTENT_FIELD_NAME: {
+                CHUNK_TEXT_FIELD_NAME: {
                     "type": "text",
                     "store": True,
                     "analyzer": OPENSEARCH_TEXT_ANALYZER,
                     "index_options": "offsets",
                 },
-                TITLE_VECTOR_FIELD_NAME: {
+                TITLE_EMBEDDING_FIELD_NAME: {
                     "type": "knn_vector",
                     "dimension": vector_dimension,
                     "method": {
@@ -489,7 +489,7 @@ class DocumentSchema:
                 },
                 # TODO(andrei): This is a tensor in Vespa. Also look at feature
                 # parity for these other method fields.
-                CONTENT_VECTOR_FIELD_NAME: {
+                CONTENT_EMBEDDING_FIELD_NAME: {
                     "type": "knn_vector",
                     "dimension": vector_dimension,
                     "method": {
@@ -500,8 +500,8 @@ class DocumentSchema:
                     },
                 },
                 SOURCE_TYPE_FIELD_NAME: {"type": "keyword"},
-                METADATA_LIST_FIELD_NAME: {"type": "keyword"},
-                LAST_UPDATED_FIELD_NAME: {
+                METADATA_TAGS_FIELD_NAME: {"type": "keyword"},
+                UPDATED_AT_FIELD_NAME: {
                     "type": "date",
                     "format": "epoch_second",
                     # For some reason date defaults to False, even though it
@@ -513,7 +513,7 @@ class DocumentSchema:
                 # control list but is such a broad and critical filter that it
                 # is its own field. If true, ACCESS_CONTROL_LIST_FIELD_NAME
                 # should have no effect on queries.
-                PUBLIC_FIELD_NAME: {"type": "boolean"},
+                IS_PUBLIC_FIELD_NAME: {"type": "boolean"},
                 # Access control list for the doc, excluding public access,
                 # which is covered above.
                 # If a user's access set contains at least one entry from this
@@ -524,15 +524,15 @@ class DocumentSchema:
                 ACCESS_CONTROL_LIST_FIELD_NAME: {"type": "keyword"},
                 # Whether the doc is hidden from search results.
                 # Should clobber all other access search filters, namely
-                # PUBLIC_FIELD_NAME and ACCESS_CONTROL_LIST_FIELD_NAME; up to
+                # IS_PUBLIC_FIELD_NAME and ACCESS_CONTROL_LIST_FIELD_NAME; up to
                 # search implementations to guarantee this.
-                HIDDEN_FIELD_NAME: {"type": "boolean"},
-                GLOBAL_BOOST_FIELD_NAME: {"type": "integer"},
+                IS_HIDDEN_FIELD_NAME: {"type": "boolean"},
+                BOOST_FIELD_NAME: {"type": "integer"},
                 # This field is only used for displaying a useful name for the
                 # doc in the UI and is not used for searching. Disabling these
                 # features to increase perf. This field is therefore essentially
                 # just metadata.
-                SEMANTIC_IDENTIFIER_FIELD_NAME: {
+                DISPLAY_NAME_FIELD_NAME: {
                     "type": "keyword",
                     "index": False,
                     "doc_values": False,
@@ -540,7 +540,7 @@ class DocumentSchema:
                     "store": False,
                 },
                 # Same as above; used to display an image along with the doc.
-                IMAGE_FILE_ID_FIELD_NAME: {
+                IMAGE_ID_FIELD_NAME: {
                     "type": "keyword",
                     "index": False,
                     "doc_values": False,
@@ -556,7 +556,7 @@ class DocumentSchema:
                     "store": False,
                 },
                 # Same as above; used to quickly summarize the doc in the UI.
-                BLURB_FIELD_NAME: {
+                SNIPPET_FIELD_NAME: {
                     "type": "keyword",
                     "index": False,
                     "doc_values": False,
@@ -566,7 +566,7 @@ class DocumentSchema:
                 # Same as above.
                 # TODO(andrei): If we want to search on this this needs to be
                 # changed.
-                DOC_SUMMARY_FIELD_NAME: {
+                DOCUMENT_SUMMARY_FIELD_NAME: {
                     "type": "keyword",
                     "index": False,
                     "doc_values": False,
@@ -576,7 +576,7 @@ class DocumentSchema:
                 # Same as above.
                 # TODO(andrei): If we want to search on this this needs to be
                 # changed.
-                CHUNK_CONTEXT_FIELD_NAME: {
+                CONTEXTUAL_SUMMARY_FIELD_NAME: {
                     "type": "keyword",
                     "index": False,
                     "doc_values": False,
@@ -584,7 +584,7 @@ class DocumentSchema:
                     "store": False,
                 },
                 # Same as above.
-                METADATA_SUFFIX_FIELD_NAME: {
+                METADATA_TEXT_FIELD_NAME: {
                     "type": "keyword",
                     "index": False,
                     "doc_values": False,
@@ -593,7 +593,7 @@ class DocumentSchema:
                 # Product-specific fields.
                 DOCUMENT_SETS_FIELD_NAME: {"type": "keyword"},
                 USER_WORKSPACES_FIELD_NAME: {"type": "integer"},
-                PERSONAS_FIELD_NAME: {"type": "integer"},
+                AGENTS_FIELD_NAME: {"type": "integer"},
                 PRIMARY_OWNERS_FIELD_NAME: {"type": "keyword"},
                 SECONDARY_OWNERS_FIELD_NAME: {"type": "keyword"},
                 # OpenSearch metadata fields.

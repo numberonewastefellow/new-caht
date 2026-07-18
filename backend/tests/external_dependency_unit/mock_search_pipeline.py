@@ -11,7 +11,7 @@ from om.configs.constants import DocumentSource
 from om.context.search.models import ChunkSearchRequest
 from om.context.search.models import InferenceChunk
 from om.context.search.models import SearchDoc
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
 from om.document_index.interfaces_new import DocumentIndex
 from om.llm.interfaces import LLM
@@ -134,7 +134,7 @@ def use_mock_search_pipeline(
         chunk_search_request: ChunkSearchRequest,
         document_index: DocumentIndex,  # noqa: ARG001
         user: User | None,  # noqa: ARG001
-        persona: Persona | None,  # noqa: ARG001
+        agent: Agent | None,  # noqa: ARG001
         db_session: Session,  # noqa: ARG001
         auto_detect_filters: bool = False,  # noqa: ARG001
         llm: LLM | None = None,  # noqa: ARG001

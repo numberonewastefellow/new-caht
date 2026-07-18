@@ -72,7 +72,7 @@ class ConditionConfig(BaseModel):
 
 class WorkflowStepCreate(BaseModel):
     step_type: StepType = "agent"
-    persona_id: int | None = None
+    agent_id: int | None = None
     step_order: int
     step_name: str
     step_description: str | None = None
@@ -89,11 +89,11 @@ class WorkflowStepCreate(BaseModel):
             raise ValueError(
                 "conditional_router steps must have a 'condition' configuration"
             )
-        if self.step_type == "agent" and self.persona_id is None:
-            raise ValueError("agent steps must have a 'persona_id'")
+        if self.step_type == "agent" and self.agent_id is None:
+            raise ValueError("agent steps must have a 'agent_id'")
         return self
 
-    # Step-level overrides (override persona defaults when set)
+    # Step-level overrides (override agent defaults when set)
     llm_provider_override: str | None = None
     llm_model_override: str | None = None
     max_output_tokens_override: int | None = None
@@ -143,8 +143,8 @@ class WorkflowStepResponse(BaseModel):
     id: int
     workflow_id: int
     step_type: str = "agent"
-    persona_id: int | None = None
-    persona_name: str | None = None
+    agent_id: int | None = None
+    agent_name: str | None = None
     step_order: int
     step_name: str
     step_description: str | None = None
@@ -189,7 +189,7 @@ class WorkflowResponse(BaseModel):
 
 class StepExecutionRecord(BaseModel):
     step_id: int
-    persona_id: int
+    agent_id: int
     step_name: str
     input_text: str
     output_text: str

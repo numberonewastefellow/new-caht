@@ -231,7 +231,7 @@ User Message → SessionManager → SandboxManager → OpenCode Agent → Stream
 |------|------|
 | `backend/om/chat/llm_loop.py` | Reusable agentic loop (LLM call → tool calls → repeat) |
 | `backend/om/chat/llm_step.py` | Single LLM step with tool call extraction |
-| `backend/om/chat/process_message.py` | Entry point for chat processing |
+| `backend/om/chat/message_handler.py` | Entry point for chat processing |
 
 Already supports multi-turn, tool calling, streaming, citations.
 
@@ -329,7 +329,7 @@ CREATE TABLE agent_workflow (
 CREATE TABLE agent_workflow_step (
     id SERIAL PRIMARY KEY,
     workflow_id INTEGER REFERENCES agent_workflow(id) ON DELETE CASCADE,
-    persona_id INTEGER REFERENCES persona(id) ON DELETE CASCADE,
+    agent_id INTEGER REFERENCES agent(id) ON DELETE CASCADE,
         -- The agent to run at this step
 
     step_order INTEGER NOT NULL,          -- For sequential mode ordering
@@ -362,7 +362,7 @@ CREATE TABLE workflow_execution (
 
     status VARCHAR DEFAULT 'running',  -- 'running' | 'completed' | 'failed' | 'timeout'
     steps_executed JSONB DEFAULT '[]',
-        -- [{step_id, persona_id, input, output, duration_ms, tokens_used}]
+        -- [{step_id, agent_id, input, output, duration_ms, tokens_used}]
     total_tokens INTEGER DEFAULT 0,
     total_duration_ms INTEGER DEFAULT 0,
 
@@ -812,7 +812,7 @@ When Agent A runs in a workflow step:
 |------|--------|
 | `backend/om/db/models.py` | Add AgentWorkflow, AgentWorkflowStep, WorkflowExecution models |
 | `backend/om/server/manage.py` | Register new API router |
-| `backend/om/chat/process_message.py` | Add workflow execution entry point |
+| `backend/om/chat/message_handler.py` | Add workflow execution entry point |
 | `backend/om/server/query_and_chat/streaming_models.py` | Add workflow packet types |
 | `web/src/app/admin/` | Add workflow admin pages |
 | `web/src/refresh-pages/` | Add WorkflowEditorPage |

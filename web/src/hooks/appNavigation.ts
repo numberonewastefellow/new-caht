@@ -26,11 +26,11 @@ export function useAppRouter() {
       if (chatSessionId)
         finalParams.push(`${SEARCH_PARAM_NAMES.CHAT_ID}=${chatSessionId}`);
       else if (agentId)
-        finalParams.push(`${SEARCH_PARAM_NAMES.PERSONA_ID}=${agentId}`);
+        finalParams.push(`${SEARCH_PARAM_NAMES.AGENT_ID}=${agentId}`);
       else if (workspaceId)
         finalParams.push(`${SEARCH_PARAM_NAMES.PROJECT_ID}=${workspaceId}`);
       else if (assistantId)
-        finalParams.push(`${SEARCH_PARAM_NAMES.PERSONA_ID}=${assistantId}`);
+        finalParams.push(`${SEARCH_PARAM_NAMES.AGENT_ID}=${assistantId}`);
 
       const finalString = finalParams.join("&");
       const finalUrl = `/app?${finalString}`;

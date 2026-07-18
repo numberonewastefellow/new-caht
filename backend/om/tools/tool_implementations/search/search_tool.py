@@ -62,7 +62,7 @@ from om.db.federated import (
     get_federated_connector_document_set_mappings_by_document_set_names,
 )
 from om.db.federated import list_federated_connector_oauth_tokens
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
 from om.db.slack_bot import fetch_slack_bots
 from om.document_index.interfaces_new import DocumentIndex
@@ -229,7 +229,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
         # Used for ACLs and federated search, anonymous users only see public docs
         user: User,
         # Used for filter settings
-        persona: Persona,
+        agent: Agent,
         llm: LLM,
         document_index: DocumentIndex,
         # Respecting user selections
@@ -245,7 +245,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
         super().__init__(emitter=emitter)
 
         self.user = user
-        self.persona = persona
+        self.agent = agent
         self.llm = llm
         self.document_index = document_index
         self.user_selected_filters = user_selected_filters
@@ -299,13 +299,13 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
             entities: dict[str, Any] = {}
 
             # Case 1: Slack bot context - requires Slack federated connector
-            # linked via persona's document sets (matches old behavior)
+            # linked via agent's document sets (matches old behavior)
             if self.slack_context:
-                # Step 1: Look up document sets associated with the persona
-                document_set_names = [ds.name for ds in self.persona.document_sets]
+                # Step 1: Look up document sets associated with the agent
+                document_set_names = [ds.name for ds in self.agent.document_sets]
                 if not document_set_names:
                     logger.debug(
-                        "Skipping Slack federated search: no document sets on persona"
+                        "Skipping Slack federated search: no document sets on agent"
                     )
                     return []
 
@@ -454,7 +454,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
                 workspace_id=self.workspace_id,
                 document_index=self.document_index,
                 user=self.user,
-                persona=self.persona,
+                agent=self.agent,
             )
         finally:
             search_db_session.close()

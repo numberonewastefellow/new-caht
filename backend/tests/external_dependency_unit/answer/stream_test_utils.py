@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from om.chat.chat_utils import create_chat_session_from_request
 from om.chat.models import AnswerStreamPart
-from om.chat.process_message import handle_stream_message_objects
+from om.chat.message_handler import stream_chat_message
 from om.configs.constants import DocumentSource
 from om.context.search.models import SearchDoc
 from om.db.models import ChatSession
@@ -52,7 +52,7 @@ def submit_query(
         llm_override=llm_override,
     )
 
-    return handle_stream_message_objects(
+    return stream_chat_message(
         new_msg_req=request,
         user=user,
         db_session=db_session,

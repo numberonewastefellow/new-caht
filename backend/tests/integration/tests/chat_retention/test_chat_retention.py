@@ -18,7 +18,7 @@ def test_chat_retention(reset: None, admin_user: DATestUser) -> None:  # noqa: A
 
     # Create a chat session
     chat_session = ChatSessionManager.create(
-        persona_id=0,
+        agent_id=0,
         description="Test chat retention",
         user_performing_action=admin_user,
     )

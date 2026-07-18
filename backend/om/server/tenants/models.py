@@ -52,7 +52,7 @@ class CheckoutSessionCreationResponse(BaseModel):
     id: str
 
 
-class ImpersonateRequest(BaseModel):
+class ImagentteRequest(BaseModel):
     email: str
 
 

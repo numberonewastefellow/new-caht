@@ -67,9 +67,9 @@ def _safe_print(text: str, **kwargs):
         print(safe, **kwargs)
 
 
-def create_chat_session(persona_id: int = 0) -> str | None:
+def create_chat_session(agent_id: int = 0) -> str | None:
     """Create a chat session and return its UUID."""
-    resp = api("POST", "converse/create-chat-session", {"persona_id": persona_id})
+    resp = api("POST", "converse/create-chat-session", {"agent_id": agent_id})
     if resp.status_code != 200:
         print(f"[ERROR] Could not create chat session: {resp.status_code} {resp.text[:300]}")
         return None
@@ -128,8 +128,8 @@ def run_workflow_round(
 
             if ptype == "workflow_step_start":
                 step_name = obj.get("step_name", "?")
-                persona = obj.get("persona_name", "?")
-                _safe_print(f"\n  [{step_name}] (Agent: {persona})")
+                agent = obj.get("agent_name", "?")
+                _safe_print(f"\n  [{step_name}] (Agent: {agent})")
                 print("  " + "-" * 48)
 
             elif ptype == "workflow_step_delta":
@@ -147,9 +147,9 @@ def run_workflow_round(
                 was_paused = True
                 pause_questions = obj.get("questions", "")
                 step_name = obj.get("step_name", "?")
-                persona = obj.get("persona_name", "?")
+                agent = obj.get("agent_name", "?")
                 _safe_print(f"\n  {'='*50}")
-                _safe_print(f"  [PAUSED] {persona} needs more info:")
+                _safe_print(f"  [PAUSED] {agent} needs more info:")
                 _safe_print(f"  {'='*50}")
                 _safe_print(f"  {pause_questions}")
                 _safe_print(f"  {'='*50}")

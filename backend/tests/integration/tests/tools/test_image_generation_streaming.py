@@ -17,7 +17,7 @@ from tests.integration.common_utils.test_models import DATestLLMProvider
 from tests.integration.common_utils.test_models import DATestUser
 from tests.integration.common_utils.test_models import ToolName
 
-ART_PERSONA_ID = -3
+ART_AGENT_ID = -3
 
 
 def test_image_generation_streaming(
@@ -33,7 +33,7 @@ def test_image_generation_streaming(
 
     This test uses the actual API without any mocking.
     """
-    # Create a chat session with this persona
+    # Create a chat session with this agent
     chat_session = ChatSessionManager.create(user_performing_action=basic_user)
 
     # Send a message that should trigger image generation

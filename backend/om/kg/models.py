@@ -18,7 +18,7 @@ class KGConfigSettings(BaseModel):
     KG_COVERAGE_START: str = datetime(1970, 1, 1).strftime("%Y-%m-%d")
     KG_MAX_COVERAGE_DAYS: int = 10000
     KG_MAX_PARENT_RECURSION_DEPTH: int = KG_DEFAULT_MAX_PARENT_RECURSION_DEPTH
-    KG_BETA_PERSONA_ID: int | None = None
+    KG_BETA_AGENT_ID: int | None = None
 
     @property
     def KG_COVERAGE_START_DATE(self) -> datetime:

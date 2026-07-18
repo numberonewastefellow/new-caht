@@ -17,7 +17,7 @@ export interface BuildOnboardingFlow {
 // New mode-based modal types
 export type OnboardingModalMode =
   | { type: "initial-onboarding" } // Full flow: user-info → llm? → content
-  | { type: "edit-persona" } // Just user-info step
+  | { type: "edit-agent" } // Just user-info step
   | { type: "add-llm"; provider?: string } // Just llm-setup step
   | { type: "closed" }; // Modal not visible
 
@@ -28,7 +28,7 @@ export interface OnboardingModalController {
   isOpen: boolean;
 
   // Actions
-  openPersonaEditor: () => void;
+  openAgentEditor: () => void;
   openLlmSetup: (provider?: string) => void;
   close: () => void;
 

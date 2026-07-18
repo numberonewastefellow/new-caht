@@ -18,7 +18,7 @@ import {
   ToolCallMetadata,
   UserKnowledgeFilePacket,
 } from "../interfaces";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { SEARCH_PARAM_NAMES } from "./searchParams";
 import { WEB_SEARCH_TOOL_ID } from "@/app/app/components/tools/constants";
@@ -60,7 +60,7 @@ export async function updateTemperatureOverrideForChatSession(
 }
 
 export async function createChatSession(
-  personaId: number,
+  agentId: number,
   description: string | null,
   workspaceId: number | null
 ): Promise<string> {
@@ -72,7 +72,7 @@ export async function createChatSession(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        persona_id: personaId,
+        agent_id: agentId,
         description,
         workspace_id: workspaceId,
       }),
@@ -378,10 +378,10 @@ export function processRawChatHistory(
   return messages;
 }
 
-export function personaIncludesRetrieval(
-  selectedPersona: MinimalPersonaSnapshot
+export function agentIncludesRetrieval(
+  selectedAgent: MinimalAgentSnapshot
 ) {
-  return selectedPersona.tools.some(
+  return selectedAgent.tools.some(
     (tool) =>
       tool.in_code_tool_id &&
       [SEARCH_TOOL_ID, WEB_SEARCH_TOOL_ID].includes(tool.in_code_tool_id)
@@ -394,7 +394,7 @@ const PARAMS_TO_SKIP = [
   SEARCH_PARAM_NAMES.TITLE,
   // only use these if explicitly passed in
   SEARCH_PARAM_NAMES.CHAT_ID,
-  SEARCH_PARAM_NAMES.PERSONA_ID,
+  SEARCH_PARAM_NAMES.AGENT_ID,
   // NOTE: PROJECT_ID is intentionally NOT skipped — a new chat started inside a
   // workspace keeps `workspaceId` so the workspace banner/context shows on the
   // first message. The AppPage URL-sync effect corrects stale params later.
@@ -403,7 +403,7 @@ const PARAMS_TO_SKIP = [
 export function buildChatUrl(
   existingSearchParams: ReadonlyURLSearchParams | null,
   chatSessionId: string | null,
-  personaId: number | null,
+  agentId: number | null,
   search?: boolean,
   skipReload?: boolean
 ) {
@@ -415,8 +415,8 @@ export function buildChatUrl(
       }=${chatSessionId}`
     );
   }
-  if (personaId !== null) {
-    finalSearchParams.push(`${SEARCH_PARAM_NAMES.PERSONA_ID}=${personaId}`);
+  if (agentId !== null) {
+    finalSearchParams.push(`${SEARCH_PARAM_NAMES.AGENT_ID}=${agentId}`);
   }
 
   existingSearchParams?.forEach((value, key) => {

@@ -14,7 +14,7 @@ from om.db.enums import MCPTransport
 from om.db.models import MCPAuthenticationType
 from om.db.models import MCPConnectionConfig
 from om.db.models import MCPServer
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import Tool
 from om.db.models import User
 from om.server.features.mcp.models import MCPConnectionData
@@ -49,18 +49,18 @@ def get_mcp_servers_by_owner(owner_email: str, db_session: Session) -> list[MCPS
     )
 
 
-def get_mcp_servers_for_persona(
-    persona_id: int, db_session: Session, user: User  # noqa: ARG001
+def get_mcp_servers_for_agent(
+    agent_id: int, db_session: Session, user: User  # noqa: ARG001
 ) -> list[MCPServer]:
-    """Get all MCP servers associated with a persona via its tools"""
-    # Get the persona and its tools
-    persona = db_session.query(Persona).filter(Persona.id == persona_id).first()
-    if not persona:
+    """Get all MCP servers associated with a agent via its tools"""
+    # Get the agent and its tools
+    agent = db_session.query(Agent).filter(Agent.id == agent_id).first()
+    if not agent:
         return []
 
-    # Collect unique MCP server IDs from the persona's tools
+    # Collect unique MCP server IDs from the agent's tools
     mcp_server_ids = set()
-    for tool in persona.tools:
+    for tool in agent.tools:
         if tool.mcp_server_id:
             mcp_server_ids.add(tool.mcp_server_id)
 

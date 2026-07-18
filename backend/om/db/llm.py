@@ -11,10 +11,10 @@ from om.db.models import DocumentSet
 from om.db.models import ImageGenerationConfig
 from om.db.models import LLMModelFlow
 from om.db.models import LLMProvider as LLMProviderModel
-from om.db.models import LLMProvider__Persona
+from om.db.models import LLMProvider__Agent
 from om.db.models import LLMProvider__UserGroup
 from om.db.models import ModelConfiguration
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import SearchSettings
 from om.db.models import Tool as ToolModel
 from om.db.models import User
@@ -50,25 +50,25 @@ def update_group_llm_provider_relationships__no_commit(
         db_session.add_all(new_relationships)
 
 
-def update_llm_provider_persona_relationships__no_commit(
+def update_llm_provider_agent_relationships__no_commit(
     db_session: Session,
     llm_provider_id: int,
-    persona_ids: list[int] | None,
+    agent_ids: list[int] | None,
 ) -> None:
-    """Replace the persona restrictions for a provider within an open transaction."""
+    """Replace the agent restrictions for a provider within an open transaction."""
     db_session.execute(
-        delete(LLMProvider__Persona).where(
-            LLMProvider__Persona.llm_provider_id == llm_provider_id
+        delete(LLMProvider__Agent).where(
+            LLMProvider__Agent.llm_provider_id == llm_provider_id
         )
     )
 
-    if persona_ids:
+    if agent_ids:
         db_session.add_all(
-            LLMProvider__Persona(
+            LLMProvider__Agent(
                 llm_provider_id=llm_provider_id,
-                persona_id=persona_id,
+                agent_id=agent_id,
             )
-            for persona_id in persona_ids
+            for agent_id in agent_ids
         )
 
 
@@ -97,7 +97,7 @@ def fetch_user_group_ids(db_session: Session, user: User) -> set[int]:
 def can_user_access_llm_provider(
     provider: LLMProviderModel,
     user_group_ids: set[int],
-    persona: Persona | None,
+    agent: Agent | None,
     is_admin: bool = False,
 ) -> bool:
     """Check if a user may use an LLM provider.
@@ -105,15 +105,15 @@ def can_user_access_llm_provider(
     Args:
         provider: The LLM provider to check access for
         user_group_ids: Set of user group IDs the user belongs to
-        persona: The persona being used (if any)
-        is_admin: If True, bypass user group restrictions but still respect persona restrictions
+        agent: The agent being used (if any)
+        is_admin: If True, bypass user group restrictions but still respect agent restrictions
 
     Access logic:
     1. If is_public=True → everyone has access (public override)
     2. If is_public=False:
-       - Both groups AND personas set → must satisfy BOTH (AND logic, admins bypass group check)
+       - Both groups AND agents set → must satisfy BOTH (AND logic, admins bypass group check)
        - Only groups set → must be in one of the groups (OR across groups, admins bypass)
-       - Only personas set → must use one of the personas (OR across personas, applies to admins)
+       - Only agents set → must use one of the agents (OR across agents, applies to admins)
        - Neither set → NOBODY has access unless admin (locked, admin-only)
     """
     # Public override - everyone has access
@@ -124,67 +124,67 @@ def can_user_access_llm_provider(
     provider_group_ids = (
         {group.id for group in provider.groups} if provider.groups else set()
     )
-    provider_persona_ids = (
-        {p.id for p in provider.personas} if provider.personas else set()
+    provider_agent_ids = (
+        {p.id for p in provider.agents} if provider.agents else set()
     )
 
     has_groups = bool(provider_group_ids)
-    has_personas = bool(provider_persona_ids)
+    has_agents = bool(provider_agent_ids)
 
-    # Both groups AND personas set → AND logic (must satisfy both)
-    if has_groups and has_personas:
-        # Admins bypass group check but still must satisfy persona restrictions
+    # Both groups AND agents set → AND logic (must satisfy both)
+    if has_groups and has_agents:
+        # Admins bypass group check but still must satisfy agent restrictions
         user_in_group = is_admin or bool(user_group_ids & provider_group_ids)
-        persona_allowed = persona.id in provider_persona_ids if persona else False
-        return user_in_group and persona_allowed
+        agent_allowed = agent.id in provider_agent_ids if agent else False
+        return user_in_group and agent_allowed
 
     # Only groups set → user must be in one of the groups (admins bypass)
     if has_groups:
         return is_admin or bool(user_group_ids & provider_group_ids)
 
-    # Only personas set → persona must be in allowed list (applies to admins too)
-    if has_personas:
-        return persona.id in provider_persona_ids if persona else False
+    # Only agents set → agent must be in allowed list (applies to admins too)
+    if has_agents:
+        return agent.id in provider_agent_ids if agent else False
 
-    # Neither groups nor personas set, and not public → admins can access
+    # Neither groups nor agents set, and not public → admins can access
     return is_admin
 
 
-def validate_persona_ids_exist(
-    db_session: Session, persona_ids: list[int]
+def validate_agent_ids_exist(
+    db_session: Session, agent_ids: list[int]
 ) -> tuple[set[int], list[int]]:
-    """Validate that persona IDs exist in the database.
+    """Validate that agent IDs exist in the database.
 
     Returns:
-        Tuple of (fetched_persona_ids, missing_personas)
+        Tuple of (fetched_agent_ids, missing_agents)
     """
-    fetched_persona_ids = set(
-        db_session.scalars(select(Persona.id).where(Persona.id.in_(persona_ids))).all()
+    fetched_agent_ids = set(
+        db_session.scalars(select(Agent.id).where(Agent.id.in_(agent_ids))).all()
     )
-    missing_personas = sorted(set(persona_ids) - fetched_persona_ids)
-    return fetched_persona_ids, missing_personas
+    missing_agents = sorted(set(agent_ids) - fetched_agent_ids)
+    return fetched_agent_ids, missing_agents
 
 
-def get_personas_using_provider(
+def get_agents_using_provider(
     db_session: Session, provider_name: str
-) -> list[Persona]:
-    """Get all non-deleted personas that use a specific LLM provider."""
+) -> list[Agent]:
+    """Get all non-deleted agents that use a specific LLM provider."""
     return list(
         db_session.scalars(
-            select(Persona).where(
-                Persona.llm_model_provider_override == provider_name,
-                Persona.deleted == False,  # noqa: E712
+            select(Agent).where(
+                Agent.llm_model_provider_override == provider_name,
+                Agent.deleted == False,  # noqa: E712
             )
         ).all()
     )
 
 
-def fetch_persona_with_groups(db_session: Session, persona_id: int) -> Persona | None:
-    """Fetch a persona with its groups eagerly loaded."""
+def fetch_agent_with_groups(db_session: Session, agent_id: int) -> Agent | None:
+    """Fetch a agent with its groups eagerly loaded."""
     return db_session.scalar(
-        select(Persona)
-        .options(selectinload(Persona.groups))
-        .where(Persona.id == persona_id, Persona.deleted == False)  # noqa: E712
+        select(Agent)
+        .options(selectinload(Agent.groups))
+        .where(Agent.id == agent_id, Agent.deleted == False)  # noqa: E712
     )
 
 
@@ -321,10 +321,10 @@ def upsert_llm_provider(
         group_ids=llm_provider_upsert_request.groups,
         db_session=db_session,
     )
-    update_llm_provider_persona_relationships__no_commit(
+    update_llm_provider_agent_relationships__no_commit(
         db_session=db_session,
         llm_provider_id=existing_llm_provider.id,
-        persona_ids=llm_provider_upsert_request.personas,
+        agent_ids=llm_provider_upsert_request.agents,
     )
 
     db_session.flush()
@@ -463,7 +463,7 @@ def fetch_existing_llm_providers(
     stmt = stmt.options(
         selectinload(LLMProviderModel.model_configurations),
         selectinload(LLMProviderModel.groups),
-        selectinload(LLMProviderModel.personas),
+        selectinload(LLMProviderModel.agents),
     )
 
     providers = list(db_session.scalars(stmt).all())
@@ -481,7 +481,7 @@ def fetch_existing_llm_provider(
         .options(
             selectinload(LLMProviderModel.model_configurations),
             selectinload(LLMProviderModel.groups),
-            selectinload(LLMProviderModel.personas),
+            selectinload(LLMProviderModel.agents),
         )
     )
 
@@ -562,11 +562,11 @@ def remove_llm_provider(db_session: Session, provider_id: int) -> None:
     if not provider:
         raise ValueError("LLM Provider not found")
 
-    # Clear the provider override from any personas using it
+    # Clear the provider override from any agents using it
     # This causes them to fall back to the default provider
-    personas_using_provider = get_personas_using_provider(db_session, provider.name)
-    for persona in personas_using_provider:
-        persona.llm_model_provider_override = None
+    agents_using_provider = get_agents_using_provider(db_session, provider.name)
+    for agent in agents_using_provider:
+        agent.llm_model_provider_override = None
 
     db_session.execute(
         delete(LLMProvider__UserGroup).where(
@@ -586,11 +586,11 @@ def remove_llm_provider__no_commit(db_session: Session, provider_id: int) -> Non
     if not provider:
         raise ValueError("LLM Provider not found")
 
-    # Clear the provider override from any personas using it
+    # Clear the provider override from any agents using it
     # This causes them to fall back to the default provider
-    personas_using_provider = get_personas_using_provider(db_session, provider.name)
-    for persona in personas_using_provider:
-        persona.llm_model_provider_override = None
+    agents_using_provider = get_agents_using_provider(db_session, provider.name)
+    for agent in agents_using_provider:
+        agent.llm_model_provider_override = None
 
     db_session.execute(
         delete(LLMProvider__UserGroup).where(

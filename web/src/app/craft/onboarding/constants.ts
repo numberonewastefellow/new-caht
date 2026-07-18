@@ -193,15 +193,15 @@ export const BUILD_MODE_PROVIDERS: BuildModeProvider[] = [
 ];
 
 // =============================================================================
-// User Info/Persona Constants
+// User Info/Agent Constants
 // =============================================================================
 
-export interface PersonaInfo {
+export interface AgentInfo {
   name: string;
   email: string;
 }
 
-// Work area enum - derived from PERSONA_MAPPING keys
+// Work area enum - derived from AGENT_MAPPING keys
 export enum WorkArea {
   ENGINEERING = "engineering",
   PRODUCT = "product",
@@ -211,16 +211,16 @@ export enum WorkArea {
   OTHER = "other",
 }
 
-// Level enum - derived from PERSONA_MAPPING structure
+// Level enum - derived from AGENT_MAPPING structure
 export enum Level {
   IC = "ic",
   MANAGER = "manager",
 }
 
-// Persona mapping: work_area -> level -> PersonaInfo
-// Matches backend/onyx/server/features/build/sandbox/util/persona_mapping.py
+// Agent mapping: work_area -> level -> AgentInfo
+// Matches backend/onyx/server/features/build/sandbox/util/agent_mapping.py
 // This is the source of truth for work areas and levels
-export const PERSONA_MAPPING: Record<WorkArea, Record<Level, PersonaInfo>> = {
+export const AGENT_MAPPING: Record<WorkArea, Record<Level, AgentInfo>> = {
   [WorkArea.ENGINEERING]: {
     [Level.IC]: {
       name: "Jiwon Kang",
@@ -301,7 +301,7 @@ export const LEVEL_OPTIONS = Object.values(Level).map((value) => ({
 }));
 
 // Work areas where level selection is required
-// Executive has the same persona for both levels, so level is optional
+// Executive has the same agent for both levels, so level is optional
 export const WORK_AREAS_REQUIRING_LEVEL: WorkArea[] = [
   WorkArea.ENGINEERING,
   WorkArea.PRODUCT,
@@ -310,15 +310,15 @@ export const WORK_AREAS_REQUIRING_LEVEL: WorkArea[] = [
   WorkArea.OTHER,
 ];
 
-// Helper function to get persona info
-export function getPersonaInfo(
+// Helper function to get agent info
+export function getAgentInfo(
   workArea: WorkArea,
   level: Level
-): PersonaInfo | undefined {
-  return PERSONA_MAPPING[workArea]?.[level];
+): AgentInfo | undefined {
+  return AGENT_MAPPING[workArea]?.[level];
 }
 
-// Company name for demo personas
+// Company name for demo agents
 export const DEMO_COMPANY_NAME = "Netherite Extraction Inc.";
 
 // Helper function to get position text from work area and level
@@ -347,21 +347,21 @@ export function getPositionText(
   return workAreaLabel;
 }
 
-export const BUILD_USER_PERSONA_COOKIE_NAME = "build_user_persona";
+export const BUILD_USER_AGENT_COOKIE_NAME = "build_user_agent";
 
 // Helper type for the consolidated cookie
-export interface BuildUserPersona {
+export interface BuildUserAgent {
   workArea: WorkArea;
   level?: Level;
 }
 
 // Helper functions for getting/setting the consolidated cookie
-export function getBuildUserPersona(): BuildUserPersona | null {
+export function getBuildUserAgent(): BuildUserAgent | null {
   if (typeof window === "undefined") return null;
 
   const cookieValue = document.cookie
     .split("; ")
-    .find((row) => row.startsWith(`${BUILD_USER_PERSONA_COOKIE_NAME}=`))
+    .find((row) => row.startsWith(`${BUILD_USER_AGENT_COOKIE_NAME}=`))
     ?.split("=")[1];
 
   if (!cookieValue) return null;
@@ -387,9 +387,9 @@ export function getBuildUserPersona(): BuildUserPersona | null {
   }
 }
 
-export function setBuildUserPersona(persona: BuildUserPersona): void {
-  const cookieValue = encodeURIComponent(JSON.stringify(persona));
+export function setBuildUserAgent(agent: BuildUserAgent): void {
+  const cookieValue = encodeURIComponent(JSON.stringify(agent));
   const expires = new Date();
   expires.setFullYear(expires.getFullYear() + 1);
-  document.cookie = `${BUILD_USER_PERSONA_COOKIE_NAME}=${cookieValue}; path=/; expires=${expires.toUTCString()}`;
+  document.cookie = `${BUILD_USER_AGENT_COOKIE_NAME}=${cookieValue}; path=/; expires=${expires.toUTCString()}`;
 }

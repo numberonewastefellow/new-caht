@@ -296,7 +296,7 @@ export interface IntermediateReportCitedDocs extends BaseObj {
 export interface WorkflowStepStart extends BaseObj {
   type: "workflow_step_start";
   step_name: string;
-  persona_name: string;
+  agent_name: string;
   step_order: number;
   promote_output?: boolean;
 }
@@ -329,7 +329,7 @@ export interface WorkflowOrchestratorThinking extends BaseObj {
 export interface WorkflowPauseForInput extends BaseObj {
   type: "workflow_pause_for_input";
   step_name: string;
-  persona_name: string;
+  agent_name: string;
   questions: string;
 }
 

@@ -1,5 +1,5 @@
 import { ChatSession } from "@/app/app/interfaces";
-import { LOCAL_STORAGE_KEYS, DEFAULT_PERSONA_ID } from "./constants";
+import { LOCAL_STORAGE_KEYS, DEFAULT_AGENT_ID } from "./constants";
 import { moveChatSession } from "@/app/app/workspaces/workspacesService";
 import { toast } from "@/hooks/useToast";
 
@@ -10,7 +10,7 @@ export const shouldShowMoveModal = (chatSession: ChatSession): boolean => {
       LOCAL_STORAGE_KEYS.HIDE_MOVE_CUSTOM_AGENT_MODAL
     ) === "true";
 
-  return !hideModal && chatSession.persona_id !== DEFAULT_PERSONA_ID;
+  return !hideModal && chatSession.agent_id !== DEFAULT_AGENT_ID;
 };
 
 export const showErrorNotification = (message: string) => {

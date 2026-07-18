@@ -583,7 +583,7 @@ def fetch_llm_provider_by_type_for_build_mode(
             .options(
                 selectinload(LLMProviderModel.model_configurations),
                 selectinload(LLMProviderModel.groups),
-                selectinload(LLMProviderModel.personas),
+                selectinload(LLMProviderModel.agents),
             )
         )
 

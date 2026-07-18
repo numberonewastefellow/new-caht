@@ -288,9 +288,9 @@ def find_workflow_id() -> int | None:
     return None
 
 
-def create_chat_session(persona_id: int = 0) -> str | None:
+def create_chat_session(agent_id: int = 0) -> str | None:
     """Create a chat session and return its UUID."""
-    resp = api("POST", "converse/create-chat-session", {"persona_id": persona_id})
+    resp = api("POST", "converse/create-chat-session", {"agent_id": agent_id})
     if resp.status_code != 200:
         print(f"[ERROR] Could not create chat session: {resp.status_code} {resp.text[:300]}")
         return None
@@ -356,8 +356,8 @@ def run_workflow_stream(
                 agent = obj.get("step_name", "?")
                 if agent not in result["agents_run"]:
                     result["agents_run"].append(agent)
-                persona = obj.get("persona_name", "?")
-                _safe_print(f"\n  [{agent}] (Persona: {persona})")
+                agent = obj.get("agent_name", "?")
+                _safe_print(f"\n  [{agent}] (Agent: {agent})")
                 print("  " + "-" * 48)
 
             elif ptype == "workflow_step_delta":

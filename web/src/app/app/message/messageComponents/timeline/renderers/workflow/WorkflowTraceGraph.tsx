@@ -60,7 +60,7 @@ interface TraceNode {
   output: string;
   reason?: string | null;
   step_id?: number | null;
-  persona_id?: number | null;
+  agent_id?: number | null;
   call_index?: number | null;
   duration_ms?: number | null;
   tokens?: number | null;

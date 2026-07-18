@@ -1,6 +1,6 @@
 "use client";
 
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { useCallback, useMemo, useState } from "react";
 import { ChatSession } from "@/app/app/interfaces";
 import { useAgents, usePinnedAgents } from "@/hooks/useAgents";
@@ -21,15 +21,15 @@ export default function useAgentController({
   const combinedSettings = useSettingsContext();
 
   const defaultAssistantIdRaw = searchParams?.get(
-    SEARCH_PARAM_NAMES.PERSONA_ID
+    SEARCH_PARAM_NAMES.AGENT_ID
   );
   const defaultAssistantId = defaultAssistantIdRaw
     ? parseInt(defaultAssistantIdRaw)
     : undefined;
 
-  const existingChatSessionAssistantId = selectedChatSession?.persona_id;
+  const existingChatSessionAssistantId = selectedChatSession?.agent_id;
   const [selectedAssistant, setSelectedAssistant] = useState<
-    MinimalPersonaSnapshot | undefined
+    MinimalAgentSnapshot | undefined
   >(
     // NOTE: look through available assistants here, so that even if the user
     // has hidden this assistant it still shows the correct assistant when
@@ -52,7 +52,7 @@ export default function useAgentController({
   // 4. First pinned assistants (ordered list of pinned assistants)
   // 5. Available assistants (ordered list of available assistants)
   // Relevant test: `live_assistant.spec.ts`
-  const liveAssistant: MinimalPersonaSnapshot | undefined = useMemo(() => {
+  const liveAssistant: MinimalAgentSnapshot | undefined = useMemo(() => {
     if (selectedAssistant) return selectedAssistant;
 
     const disableDefaultAssistant =

@@ -1,15 +1,15 @@
 "use client";
 
 import Text from "@/refresh-components/texts/Text";
-import { Persona } from "./interfaces";
+import { Agent } from "./interfaces";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/useToast";
 import { useState, useMemo, useEffect } from "react";
 import {
-  deletePersona,
-  personaComparator,
-  togglePersonaDefault,
-  togglePersonaVisibility,
+  deleteAgent,
+  agentComparator,
+  toggleAgentDefault,
+  toggleAgentVisibility,
 } from "./lib";
 import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
 import Button from "@/refresh-components/buttons/Button";
@@ -33,8 +33,8 @@ import { cn } from "@/lib/utils";
 import type { Route } from "next";
 
 /** Status badge colors */
-function TypeBadge({ persona }: { persona: Persona }) {
-  if (persona.builtin_persona) {
+function TypeBadge({ agent }: { agent: Agent }) {
+  if (agent.builtin_agent) {
     return (
       <span
         className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-medium border"
@@ -48,7 +48,7 @@ function TypeBadge({ persona }: { persona: Persona }) {
       </span>
     );
   }
-  if (persona.is_public) {
+  if (agent.is_public) {
     return (
       <span
         className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-medium border"
@@ -63,7 +63,7 @@ function TypeBadge({ persona }: { persona: Persona }) {
       </span>
     );
   }
-  if (persona.groups.length > 0 || persona.users.length > 0) {
+  if (agent.groups.length > 0 || agent.users.length > 0) {
     return (
       <span
         className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-medium border"
@@ -125,15 +125,15 @@ function HiddenBadge() {
   );
 }
 
-function PersonaCard({
-  persona,
+function AgentCard({
+  agent,
   isEditable,
   onEdit,
   onToggleDefault,
   onToggleVisibility,
   onDelete,
 }: {
-  persona: Persona;
+  agent: Agent;
   isEditable: boolean;
   onEdit: () => void;
   onToggleDefault: () => void;
@@ -144,11 +144,11 @@ function PersonaCard({
 
   // Accent color follows the user's accent theme (ocean/emerald/violet)
   // --virtualai-accent and --theme-primary-04 adapt to the chosen theme
-  const accentColor = persona.is_public
+  const accentColor = agent.is_public
     ? "var(--virtualai-accent, var(--theme-primary-05))"
-    : persona.groups.length > 0 || persona.users.length > 0
+    : agent.groups.length > 0 || agent.users.length > 0
       ? "var(--theme-primary-04)"
-      : persona.is_default_persona
+      : agent.is_default_agent
         ? "var(--virtualai-accent, var(--theme-primary-05))"
         : "var(--border-03)";
 
@@ -172,15 +172,15 @@ function PersonaCard({
       {/* Top row: Avatar + Name + Menu */}
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0 mt-0.5">
-          <AgentAvatar agent={persona} size={40} />
+          <AgentAvatar agent={agent} size={40} />
         </div>
         <div className="flex-1 min-w-0">
           <Text as="p" mainContentBody className="font-semibold truncate">
-            {persona.name}
+            {agent.name}
           </Text>
-          {persona.owner && (
+          {agent.owner && (
             <Text as="p" className="text-[0.6875rem] text-text-03 truncate">
-              by {persona.owner.email}
+              by {agent.owner.email}
             </Text>
           )}
         </div>
@@ -224,14 +224,14 @@ function PersonaCard({
                     icon={SvgStar}
                     onClick={() => { onToggleDefault(); setMenuOpen(false); }}
                   >
-                    {persona.is_default_persona ? "Remove Featured" : "Set as Featured"}
+                    {agent.is_default_agent ? "Remove Featured" : "Set as Featured"}
                   </LineItem>,
                   <LineItem
                     key="visibility"
-                    icon={persona.is_visible ? SvgEyeClosed : SvgEye}
+                    icon={agent.is_visible ? SvgEyeClosed : SvgEye}
                     onClick={() => { onToggleVisibility(); setMenuOpen(false); }}
                   >
-                    {persona.is_visible ? "Hide Assistant" : "Show Assistant"}
+                    {agent.is_visible ? "Hide Assistant" : "Show Assistant"}
                   </LineItem>,
                   isEditable && (
                     <LineItem
@@ -251,144 +251,144 @@ function PersonaCard({
 
       {/* Description */}
       <Text as="p" secondaryBody text03 className="line-clamp-2 min-h-[2.5rem]">
-        {persona.description || "No description"}
+        {agent.description || "No description"}
       </Text>
 
       {/* Badges */}
       <div className="flex items-center gap-1.5 flex-wrap">
-        <TypeBadge persona={persona} />
-        {persona.is_default_persona && <FeaturedBadge />}
-        {!persona.is_visible && <HiddenBadge />}
+        <TypeBadge agent={agent} />
+        {agent.is_default_agent && <FeaturedBadge />}
+        {!agent.is_visible && <HiddenBadge />}
       </div>
       </div>
     </div>
   );
 }
 
-export function PersonasTable({
-  personas,
-  refreshPersonas,
+export function AgentsTable({
+  agents,
+  refreshAgents,
   currentPage,
   pageSize,
 }: {
-  personas: Persona[];
-  refreshPersonas: () => void;
+  agents: Agent[];
+  refreshAgents: () => void;
   currentPage: number;
   pageSize: number;
 }) {
   const router = useRouter();
 
-  const editablePersonas = useMemo(() => {
-    return personas.filter((p) => !p.builtin_persona);
-  }, [personas]);
+  const editableAgents = useMemo(() => {
+    return agents.filter((p) => !p.builtin_agent);
+  }, [agents]);
 
-  const editablePersonaIds = useMemo(() => {
-    return new Set(editablePersonas.map((p) => p.id.toString()));
-  }, [editablePersonas]);
+  const editableAgentIds = useMemo(() => {
+    return new Set(editableAgents.map((p) => p.id.toString()));
+  }, [editableAgents]);
 
-  const [finalPersonas, setFinalPersonas] = useState<Persona[]>([]);
+  const [finalAgents, setFinalAgents] = useState<Agent[]>([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [personaToDelete, setPersonaToDelete] = useState<Persona | null>(null);
+  const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
   const [defaultModalOpen, setDefaultModalOpen] = useState(false);
-  const [personaToToggleDefault, setPersonaToToggleDefault] =
-    useState<Persona | null>(null);
+  const [agentToToggleDefault, setAgentToToggleDefault] =
+    useState<Agent | null>(null);
 
   useEffect(() => {
-    const editable = [...editablePersonas].sort(personaComparator);
-    const nonEditable = personas
-      .filter((p) => !editablePersonaIds.has(p.id.toString()))
-      .sort(personaComparator);
-    setFinalPersonas([...editable, ...nonEditable]);
-  }, [editablePersonas, personas, editablePersonaIds]);
+    const editable = [...editableAgents].sort(agentComparator);
+    const nonEditable = agents
+      .filter((p) => !editableAgentIds.has(p.id.toString()))
+      .sort(agentComparator);
+    setFinalAgents([...editable, ...nonEditable]);
+  }, [editableAgents, agents, editableAgentIds]);
 
-  const openDeleteModal = (persona: Persona) => {
-    setPersonaToDelete(persona);
+  const openDeleteModal = (agent: Agent) => {
+    setAgentToDelete(agent);
     setDeleteModalOpen(true);
   };
 
   const closeDeleteModal = () => {
     setDeleteModalOpen(false);
-    setPersonaToDelete(null);
+    setAgentToDelete(null);
   };
 
-  const handleDeletePersona = async () => {
-    if (personaToDelete) {
-      const response = await deletePersona(personaToDelete.id);
+  const handleDeleteAgent = async () => {
+    if (agentToDelete) {
+      const response = await deleteAgent(agentToDelete.id);
       if (response.ok) {
-        refreshPersonas();
+        refreshAgents();
         closeDeleteModal();
       } else {
-        toast.error(`Failed to delete persona - ${await response.text()}`);
+        toast.error(`Failed to delete agent - ${await response.text()}`);
       }
     }
   };
 
-  const openDefaultModal = (persona: Persona) => {
-    setPersonaToToggleDefault(persona);
+  const openDefaultModal = (agent: Agent) => {
+    setAgentToToggleDefault(agent);
     setDefaultModalOpen(true);
   };
 
   const closeDefaultModal = () => {
     setDefaultModalOpen(false);
-    setPersonaToToggleDefault(null);
+    setAgentToToggleDefault(null);
   };
 
   const handleToggleDefault = async () => {
-    if (personaToToggleDefault) {
-      const response = await togglePersonaDefault(
-        personaToToggleDefault.id,
-        personaToToggleDefault.is_default_persona
+    if (agentToToggleDefault) {
+      const response = await toggleAgentDefault(
+        agentToToggleDefault.id,
+        agentToToggleDefault.is_default_agent
       );
       if (response.ok) {
-        refreshPersonas();
+        refreshAgents();
         closeDefaultModal();
       } else {
-        toast.error(`Failed to update persona - ${await response.text()}`);
+        toast.error(`Failed to update agent - ${await response.text()}`);
       }
     }
   };
 
-  const handleToggleVisibility = async (persona: Persona) => {
-    const response = await togglePersonaVisibility(
-      persona.id,
-      persona.is_visible
+  const handleToggleVisibility = async (agent: Agent) => {
+    const response = await toggleAgentVisibility(
+      agent.id,
+      agent.is_visible
     );
     if (response.ok) {
-      refreshPersonas();
+      refreshAgents();
     } else {
-      toast.error(`Failed to update persona - ${await response.text()}`);
+      toast.error(`Failed to update agent - ${await response.text()}`);
     }
   };
 
   return (
     <div>
       {/* Delete confirmation modal */}
-      {deleteModalOpen && personaToDelete && (
+      {deleteModalOpen && agentToDelete && (
         <ConfirmationModalLayout
           icon={SvgAlertCircle}
           title="Delete Assistant"
           onClose={closeDeleteModal}
-          submit={<Button onClick={handleDeletePersona}>Delete</Button>}
+          submit={<Button onClick={handleDeleteAgent}>Delete</Button>}
         >
-          {`Are you sure you want to delete ${personaToDelete.name}?`}
+          {`Are you sure you want to delete ${agentToDelete.name}?`}
         </ConfirmationModalLayout>
       )}
 
       {/* Featured confirmation modal */}
       {defaultModalOpen &&
-        personaToToggleDefault &&
+        agentToToggleDefault &&
         (() => {
-          const isDefault = personaToToggleDefault.is_default_persona;
+          const isDefault = agentToToggleDefault.is_default_agent;
           const title = isDefault
             ? "Remove Featured Assistant"
             : "Set Featured Assistant";
           const buttonText = isDefault ? "Remove Feature" : "Set as Featured";
           const text = isDefault
-            ? `Are you sure you want to remove the featured status of ${personaToToggleDefault.name}?`
-            : `Are you sure you want to set the featured status of ${personaToToggleDefault.name}?`;
+            ? `Are you sure you want to remove the featured status of ${agentToToggleDefault.name}?`
+            : `Are you sure you want to set the featured status of ${agentToToggleDefault.name}?`;
           const additionalText = isDefault
-            ? `Removing "${personaToToggleDefault.name}" as a featured assistant will not affect its visibility or accessibility.`
-            : `Setting "${personaToToggleDefault.name}" as a featured assistant will make it public and visible to all users. This action cannot be undone.`;
+            ? `Removing "${agentToToggleDefault.name}" as a featured assistant will not affect its visibility or accessibility.`
+            : `Setting "${agentToToggleDefault.name}" as a featured assistant will make it public and visible to all users. This action cannot be undone.`;
 
           return (
             <ConfirmationModalLayout
@@ -411,21 +411,21 @@ export function PersonasTable({
 
       {/* Card grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {finalPersonas.map((persona) => {
-          const isEditable = editablePersonas.includes(persona);
+        {finalAgents.map((agent) => {
+          const isEditable = editableAgents.includes(agent);
           return (
-            <PersonaCard
-              key={persona.id}
-              persona={persona}
+            <AgentCard
+              key={agent.id}
+              agent={agent}
               isEditable={isEditable}
               onEdit={() =>
                 router.push(
-                  `/app/agents/edit/${persona.id}?u=${Date.now()}&admin=true` as Route
+                  `/app/agents/edit/${agent.id}?u=${Date.now()}&admin=true` as Route
                 )
               }
-              onToggleDefault={() => openDefaultModal(persona)}
-              onToggleVisibility={() => handleToggleVisibility(persona)}
-              onDelete={() => openDeleteModal(persona)}
+              onToggleDefault={() => openDefaultModal(agent)}
+              onToggleVisibility={() => handleToggleVisibility(agent)}
+              onDelete={() => openDeleteModal(agent)}
             />
           );
         })}

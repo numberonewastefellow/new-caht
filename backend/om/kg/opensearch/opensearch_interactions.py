@@ -126,8 +126,8 @@ def get_document_opensearch_contents(
     current_batch: list[KGChunkFormat] = []
     for chunk in chunks:
         metadata: dict[str, str | list[str]] | None = None
-        if chunk.metadata_list:
-            metadata = convert_metadata_list_of_strings_to_dict(chunk.metadata_list)
+        if chunk.metadata_tags:
+            metadata = convert_metadata_list_of_strings_to_dict(chunk.metadata_tags)
 
         current_batch.append(
             KGChunkFormat(
@@ -138,7 +138,7 @@ def get_document_opensearch_contents(
                 secondary_owners=chunk.secondary_owners or [],
                 source_type=chunk.source_type,
                 title=chunk.title or "",
-                content=chunk.content,
+                content=chunk.chunk_text,
                 metadata=metadata,
             )
         )

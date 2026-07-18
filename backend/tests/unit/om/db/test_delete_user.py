@@ -6,8 +6,8 @@ from uuid import uuid4
 
 from om.db.models import DocumentSet
 from om.db.models import DocumentSet__User
-from om.db.models import Persona
-from om.db.models import Persona__User
+from om.db.models import Agent
+from om.db.models import Agent__User
 from om.db.models import SamlAccount
 from om.db.models import User__UserGroup
 from om.db.users import delete_user_from_db
@@ -56,11 +56,11 @@ def test_delete_user_nulls_out_document_set_ownership(
         {DocumentSet.user_id: None}
     )
 
-    # Verify Persona.user_id is nulled out (update, not delete)
-    persona_chain = query_chains[Persona]
-    persona_chain.filter.assert_called()
-    persona_chain.filter.return_value.update.assert_called_once_with(
-        {Persona.user_id: None}
+    # Verify Agent.user_id is nulled out (update, not delete)
+    agent_chain = query_chains[Agent]
+    agent_chain.filter.assert_called()
+    agent_chain.filter.return_value.update.assert_called_once_with(
+        {Agent.user_id: None}
     )
 
 
@@ -84,7 +84,7 @@ def test_delete_user_cleans_up_join_tables(
     delete_user_from_db(user, db_session)
 
     # Join tables should be deleted (not updated)
-    for model in [DocumentSet__User, Persona__User, User__UserGroup, SamlAccount]:
+    for model in [DocumentSet__User, Agent__User, User__UserGroup, SamlAccount]:
         chain = query_chains[model]
         chain.filter.return_value.delete.assert_called_once()
 

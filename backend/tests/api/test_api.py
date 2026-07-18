@@ -29,7 +29,7 @@ def client() -> Generator[TestClient, Any, None]:
 def test_handle_simplified_chat_message(client: TestClient) -> None:
     req: dict[str, Any] = {}
 
-    req["persona_id"] = 0
+    req["agent_id"] = 0
     req["description"] = "pytest"
     response = client.post("/converse/create-chat-session", json=req)
     chat_session_id = response.json()["chat_session_id"]
@@ -65,10 +65,10 @@ def test_handle_send_message_simple_with_history(client: TestClient) -> None:
     #                  "Is there a particular area you'd like to know more about?",
     #                  "role": "assistant"})
     # req["prompt_id"] = 9
-    # req["persona_id"] = 6
+    # req["agent_id"] = 6
 
     # Yoda
-    req["persona_id"] = 1
+    req["agent_id"] = 1
     messages.append(
         {
             "message": "Answer questions for you, I can. "
@@ -98,7 +98,7 @@ def test_handle_send_message_simple_with_history(client: TestClient) -> None:
 
     resp_json = response.json()
 
-    # persona must have LLM relevance enabled for this to pass
+    # agent must have LLM relevance enabled for this to pass
     assert len(resp_json["llm_selected_doc_indices"]) > 0
 
 

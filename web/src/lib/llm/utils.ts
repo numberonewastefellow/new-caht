@@ -1,4 +1,4 @@
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import {
   LLMProviderDescriptor,
   ModelConfiguration,
@@ -7,7 +7,7 @@ import { LlmDescriptor } from "@/lib/hooks";
 
 export function getFinalLLM(
   llmProviders: LLMProviderDescriptor[],
-  persona: MinimalPersonaSnapshot | null,
+  agent: MinimalAgentSnapshot | null,
   currentLlm: LlmDescriptor | null
 ): [string, string] {
   const defaultProvider = llmProviders.find(
@@ -17,16 +17,16 @@ export function getFinalLLM(
   let provider = defaultProvider?.provider || "";
   let model = defaultProvider?.default_model_name || "";
 
-  if (persona) {
+  if (agent) {
     // Map "provider override" to actual LLLMProvider
-    if (persona.llm_model_provider_override) {
+    if (agent.llm_model_provider_override) {
       const underlyingProvider = llmProviders.find(
         (item: LLMProviderDescriptor) =>
-          item.name === persona.llm_model_provider_override
+          item.name === agent.llm_model_provider_override
       );
       provider = underlyingProvider?.provider || provider;
     }
-    model = persona.llm_model_version_override || model;
+    model = agent.llm_model_version_override || model;
   }
 
   if (currentLlm) {
@@ -37,8 +37,8 @@ export function getFinalLLM(
   return [provider, model];
 }
 
-export function getLLMProviderOverrideForPersona(
-  liveAssistant: MinimalPersonaSnapshot,
+export function getLLMProviderOverrideForAgent(
+  liveAssistant: MinimalAgentSnapshot,
   llmProviders: LLMProviderDescriptor[]
 ): LlmDescriptor | null {
   const overrideProvider = liveAssistant.llm_model_provider_override;
@@ -134,10 +134,10 @@ export const modelSupportsImageInput = (
 };
 
 export function getDisplayName(
-  agent: MinimalPersonaSnapshot,
+  agent: MinimalAgentSnapshot,
   llmProviders: LLMProviderDescriptor[]
 ): string | undefined {
-  const llmDescriptor = getLLMProviderOverrideForPersona(
+  const llmDescriptor = getLLMProviderOverrideForAgent(
     agent,
     llmProviders ?? []
   );

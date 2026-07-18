@@ -13,8 +13,8 @@ from om.db.analytics import fetch_assistant_unique_users
 from om.db.analytics import fetch_assistant_unique_users_total
 from om.db.analytics import fetch_onyxbot_analytics
 from om.db.analytics import fetch_per_user_query_analytics
-from om.db.analytics import fetch_persona_message_analytics
-from om.db.analytics import fetch_persona_unique_users
+from om.db.analytics import fetch_agent_message_analytics
+from om.db.analytics import fetch_agent_unique_users
 from om.db.analytics import fetch_query_analytics
 from om.db.analytics import user_can_view_assistant_stats
 from om.auth.users import current_admin_user
@@ -130,72 +130,72 @@ def get_onyxbot_analytics(
     return resolution_results
 
 
-class PersonaMessageAnalyticsResponse(BaseModel):
+class AgentMessageAnalyticsResponse(BaseModel):
     total_messages: int
     date: datetime.date
-    persona_id: int
+    agent_id: int
 
 
-@router.get("/admin/persona/messages")
-def get_persona_messages(
-    persona_id: int,
+@router.get("/admin/agent/messages")
+def get_agent_messages(
+    agent_id: int,
     start: datetime.datetime | None = None,
     end: datetime.datetime | None = None,
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
-) -> list[PersonaMessageAnalyticsResponse]:
-    """Fetch daily message counts for a single persona within the given time range."""
+) -> list[AgentMessageAnalyticsResponse]:
+    """Fetch daily message counts for a single agent within the given time range."""
     start = start or (
         datetime.datetime.utcnow() - datetime.timedelta(days=_DEFAULT_LOOKBACK_DAYS)
     )
     end = end or datetime.datetime.utcnow()
 
-    persona_message_counts = []
-    for count, date in fetch_persona_message_analytics(
+    agent_message_counts = []
+    for count, date in fetch_agent_message_analytics(
         db_session=db_session,
-        persona_id=persona_id,
+        agent_id=agent_id,
         start=start,
         end=end,
     ):
-        persona_message_counts.append(
-            PersonaMessageAnalyticsResponse(
+        agent_message_counts.append(
+            AgentMessageAnalyticsResponse(
                 total_messages=count,
                 date=date,
-                persona_id=persona_id,
+                agent_id=agent_id,
             )
         )
 
-    return persona_message_counts
+    return agent_message_counts
 
 
-class PersonaUniqueUsersResponse(BaseModel):
+class AgentUniqueUsersResponse(BaseModel):
     unique_users: int
     date: datetime.date
-    persona_id: int
+    agent_id: int
 
 
-@router.get("/admin/persona/unique-users")
-def get_persona_unique_users(
-    persona_id: int,
+@router.get("/admin/agent/unique-users")
+def get_agent_unique_users(
+    agent_id: int,
     start: datetime.datetime,
     end: datetime.datetime,
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
-) -> list[PersonaUniqueUsersResponse]:
-    """Get unique users per day for a single persona."""
+) -> list[AgentUniqueUsersResponse]:
+    """Get unique users per day for a single agent."""
     unique_user_counts = []
-    daily_counts = fetch_persona_unique_users(
+    daily_counts = fetch_agent_unique_users(
         db_session=db_session,
-        persona_id=persona_id,
+        agent_id=agent_id,
         start=start,
         end=end,
     )
     for count, date in daily_counts:
         unique_user_counts.append(
-            PersonaUniqueUsersResponse(
+            AgentUniqueUsersResponse(
                 unique_users=count,
                 date=date,
-                persona_id=persona_id,
+                agent_id=agent_id,
             )
         )
     return unique_user_counts

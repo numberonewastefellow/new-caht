@@ -8,8 +8,8 @@ function AgentNodeComponent({
   data,
   selected,
 }: NodeProps & { data: AgentNodeData }) {
-  const toolNames = data.persona_tool_names || [];
-  const llmModel = data.persona_llm_model;
+  const toolNames = data.agent_tool_names || [];
+  const llmModel = data.agent_llm_model;
   const [imgError, setImgError] = useState(false);
 
   const handleTestClick = useCallback(
@@ -19,14 +19,14 @@ function AgentNodeComponent({
       window.dispatchEvent(
         new CustomEvent("wfb-test-agent", {
           detail: {
-            personaId: data.persona_id,
-            personaName: data.persona_name,
+            agentId: data.agent_id,
+            agentName: data.agent_name,
             stepName: data.step_name,
           },
         })
       );
     },
-    [data.persona_id, data.persona_name, data.step_name]
+    [data.agent_id, data.agent_name, data.step_name]
   );
 
   return (
@@ -36,24 +36,24 @@ function AgentNodeComponent({
       {/* Header */}
       <div className="wfb-agent-header">
         <div className="wfb-agent-avatar">
-          {data.persona_icon_url && !imgError ? (
+          {data.agent_icon_url && !imgError ? (
             <img
-              src={data.persona_icon_url}
+              src={data.agent_icon_url}
               alt=""
               className="wfb-agent-avatar-img"
               onError={() => setImgError(true)}
             />
           ) : (
             <span className="wfb-agent-avatar-text">
-              {(data.persona_name || "A").charAt(0).toUpperCase()}
+              {(data.agent_name || "A").charAt(0).toUpperCase()}
             </span>
           )}
         </div>
         <div className="wfb-agent-name-col">
-          <div className="wfb-agent-name" title={data.persona_name}>
-            {data.persona_name}
+          <div className="wfb-agent-name" title={data.agent_name}>
+            {data.agent_name}
           </div>
-          {data.step_name && data.step_name !== data.persona_name && (
+          {data.step_name && data.step_name !== data.agent_name && (
             <div className="wfb-agent-step-name" title={data.step_name}>
               {data.step_name}
             </div>

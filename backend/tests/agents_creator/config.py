@@ -143,7 +143,7 @@ def get_or_create_labels(label_names: list[str]) -> list[int]:
 
     # Populate cache once
     if not _label_cache:
-        resp = api("GET", "persona/labels")
+        resp = api("GET", "agent/labels")
         if resp.status_code == 200:
             for lbl in resp.json():
                 _label_cache[lbl["name"].lower()] = lbl["id"]
@@ -155,7 +155,7 @@ def get_or_create_labels(label_names: list[str]) -> list[int]:
             ids.append(_label_cache[key])
         else:
             # Create the label
-            resp = api("POST", "persona/labels", {"name": name.strip()})
+            resp = api("POST", "agent/labels", {"name": name.strip()})
             if resp.status_code == 200:
                 lbl = resp.json()
                 _label_cache[key] = lbl["id"]

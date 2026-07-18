@@ -54,11 +54,11 @@ def test_fail(name: str, reason: str) -> None:
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 
-def create_persona(name: str, system_prompt: str) -> int | None:
-    """Create a minimal persona. Returns persona ID."""
+def create_agent(name: str, system_prompt: str) -> int | None:
+    """Create a minimal agent. Returns agent ID."""
     body = {
         "name": name,
-        "description": f"Test persona: {name}",
+        "description": f"Test agent: {name}",
         "num_chunks": 0,
         "is_public": True,
         "system_prompt": system_prompt,
@@ -77,15 +77,15 @@ def create_persona(name: str, system_prompt: str) -> int | None:
         "hierarchy_node_ids": [],
         "document_ids": [],
     }
-    r = api("POST", "persona", body)
+    r = api("POST", "agent", body)
     if r.status_code not in (200, 201):
-        log(f"Failed to create persona '{name}': {r.status_code} {r.text[:200]}")
+        log(f"Failed to create agent '{name}': {r.status_code} {r.text[:200]}")
         return None
     return r.json()["id"]
 
 
-def delete_persona(pid: int) -> None:
-    api("PATCH", f"admin/persona/{pid}/visible?is_visible=false")
+def delete_agent(pid: int) -> None:
+    api("PATCH", f"admin/agent/{pid}/visible?is_visible=false")
 
 
 def delete_workflow(wid: int) -> None:
@@ -164,12 +164,12 @@ def setup_test_workflow() -> dict | None:
     Step 2: Positive Handler (true branch)
     Step 3: Negative Handler (false branch)
 
-    Returns dict with workflow_id, persona_ids for cleanup.
+    Returns dict with workflow_id, agent_ids for cleanup.
     """
     ts = int(time.time())
 
-    # Create personas
-    classifier_id = create_persona(
+    # Create agents
+    classifier_id = create_agent(
         f"Classifier {ts}",
         "You are a sentiment classifier. Analyze the user's message. "
         "If the message expresses positive sentiment, happiness, or good news, "
@@ -181,25 +181,25 @@ def setup_test_workflow() -> dict | None:
     if not classifier_id:
         return None
 
-    positive_id = create_persona(
+    positive_id = create_agent(
         f"Positive Handler {ts}",
         "You are a celebration agent. The previous step detected POSITIVE sentiment. "
         "Write a brief, enthusiastic congratulations message (2-3 sentences). "
         "Always include the word CELEBRATION in your response.",
     )
     if not positive_id:
-        delete_persona(classifier_id)
+        delete_agent(classifier_id)
         return None
 
-    negative_id = create_persona(
+    negative_id = create_agent(
         f"Negative Handler {ts}",
         "You are a support agent. The previous step detected NEGATIVE sentiment. "
         "Write a brief, empathetic support message (2-3 sentences). "
         "Always include the word SUPPORT in your response.",
     )
     if not negative_id:
-        delete_persona(classifier_id)
-        delete_persona(positive_id)
+        delete_agent(classifier_id)
+        delete_agent(positive_id)
         return None
 
     # Create the workflow
@@ -214,7 +214,7 @@ def setup_test_workflow() -> dict | None:
         "steps": [
             {
                 "step_type": "agent",
-                "persona_id": classifier_id,
+                "agent_id": classifier_id,
                 "step_order": 0,
                 "step_name": "Classifier",
                 "step_description": "Classify sentiment",
@@ -225,7 +225,7 @@ def setup_test_workflow() -> dict | None:
             },
             {
                 "step_type": "conditional_router",
-                "persona_id": None,
+                "agent_id": None,
                 "step_order": 1,
                 "step_name": "Sentiment Check",
                 "step_description": "Route based on sentiment",
@@ -244,7 +244,7 @@ def setup_test_workflow() -> dict | None:
             },
             {
                 "step_type": "agent",
-                "persona_id": positive_id,
+                "agent_id": positive_id,
                 "step_order": 2,
                 "step_name": "Positive Handler",
                 "step_description": "Handle positive sentiment",
@@ -255,7 +255,7 @@ def setup_test_workflow() -> dict | None:
             },
             {
                 "step_type": "agent",
-                "persona_id": negative_id,
+                "agent_id": negative_id,
                 "step_order": 3,
                 "step_name": "Negative Handler",
                 "step_description": "Handle negative sentiment",
@@ -270,15 +270,15 @@ def setup_test_workflow() -> dict | None:
     r = api("POST", "admin/workflow", workflow_body)
     if r.status_code not in (200, 201):
         log(f"Failed to create workflow: {r.status_code} {r.text[:300]}")
-        delete_persona(classifier_id)
-        delete_persona(positive_id)
-        delete_persona(negative_id)
+        delete_agent(classifier_id)
+        delete_agent(positive_id)
+        delete_agent(negative_id)
         return None
 
     wf = r.json()
     return {
         "workflow_id": wf["id"],
-        "persona_ids": [classifier_id, positive_id, negative_id],
+        "agent_ids": [classifier_id, positive_id, negative_id],
     }
 
 
@@ -326,11 +326,11 @@ def test_1_workflow_creation(setup: dict):
     else:
         test_fail("Condition config", f"Got: {condition}")
 
-    # Check persona_id is null for conditional step
-    if cond.get("persona_id") is None:
-        test_pass("Conditional step has null persona_id")
+    # Check agent_id is null for conditional step
+    if cond.get("agent_id") is None:
+        test_pass("Conditional step has null agent_id")
     else:
-        test_fail("Conditional persona_id", f"Expected None, got {cond.get('persona_id')}")
+        test_fail("Conditional agent_id", f"Expected None, got {cond.get('agent_id')}")
 
 
 def test_2_true_branch(setup: dict):
@@ -455,7 +455,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     log(f"Workflow ID: {setup['workflow_id']}")
-    log(f"Persona IDs: {setup['persona_ids']}")
+    log(f"Agent IDs: {setup['agent_ids']}")
 
     try:
         test_1_workflow_creation(setup)
@@ -465,9 +465,9 @@ if __name__ == "__main__":
         # Cleanup
         print("\n--- Cleanup ---")
         delete_workflow(setup["workflow_id"])
-        for pid in setup["persona_ids"]:
-            delete_persona(pid)
-        log("Cleaned up workflow and personas")
+        for pid in setup["agent_ids"]:
+            delete_agent(pid)
+        log("Cleaned up workflow and agents")
 
     print(f"\n{'='*60}")
     print(f"Results: {PASS} passed, {FAIL} failed")

@@ -10,10 +10,10 @@ import {
 import { WellKnownLLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
 import { updateUserPersonalization } from "@/lib/userSettings";
 import { useUser } from "@/providers/UserProvider";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { useLLMProviders } from "@/lib/hooks/useLLMProviders";
 
-export function useOnboardingState(liveAssistant?: MinimalPersonaSnapshot): {
+export function useOnboardingState(liveAssistant?: MinimalAgentSnapshot): {
   state: OnboardingState;
   llmDescriptors: WellKnownLLMProviderDescriptor[];
   actions: OnboardingActions;
@@ -21,13 +21,13 @@ export function useOnboardingState(liveAssistant?: MinimalPersonaSnapshot): {
 } {
   const [state, dispatch] = useReducer(onboardingReducer, initialState);
   const { user, refreshUser } = useUser();
-  // Use the SWR hook for LLM providers - no persona ID for the general providers list
+  // Use the SWR hook for LLM providers - no agent ID for the general providers list
   const {
     llmProviders,
     isLoading: isLoadingProviders,
     refetch: refreshLlmProviders,
   } = useLLMProviders();
-  const { refetch: refreshPersonaProviders } = useLLMProviders(
+  const { refetch: refreshAgentProviders } = useLLMProviders(
     liveAssistant?.id
   );
   const hasLlmProviders = (llmProviders?.length ?? 0) > 0;
@@ -136,11 +136,11 @@ export function useOnboardingState(liveAssistant?: MinimalPersonaSnapshot): {
     if (state.currentStep === OnboardingStep.LlmSetup) {
       refreshLlmProviders();
       if (liveAssistant) {
-        refreshPersonaProviders();
+        refreshAgentProviders();
       }
     }
     dispatch({ type: OnboardingActionType.NEXT_STEP });
-  }, [state, refreshLlmProviders, llmProviders, refreshPersonaProviders]);
+  }, [state, refreshLlmProviders, llmProviders, refreshAgentProviders]);
 
   const prevStep = useCallback(() => {
     dispatch({ type: OnboardingActionType.PREV_STEP });

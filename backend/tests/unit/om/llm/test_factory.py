@@ -60,7 +60,7 @@ def _build_provider_view(
         is_public=True,
         is_auto_mode=False,
         groups=[],
-        personas=[],
+        agents=[],
         deployment_name=None,
         default_vision_model=None,
     )

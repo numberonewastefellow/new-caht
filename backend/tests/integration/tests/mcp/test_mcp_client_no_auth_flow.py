@@ -13,7 +13,7 @@ from om.db.enums import MCPAuthenticationPerformer
 from om.db.enums import MCPAuthenticationType
 from om.db.enums import MCPTransport
 from tests.integration.common_utils.constants import API_SERVER_URL
-from tests.integration.common_utils.managers.persona import PersonaManager
+from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.test_models import DATestLLMProvider
 from tests.integration.common_utils.test_models import DATestUser
 
@@ -137,22 +137,22 @@ def test_mcp_client_no_auth_flow(
     )
     tool_id = hello_tool_entry["id"]
 
-    # Step c) Create an assistant (persona) with the MCP tool attached
-    persona = PersonaManager.create(
-        name="integration-mcp-persona",
-        description="Persona for MCP integration test",
+    # Step c) Create an assistant (agent) with the MCP tool attached
+    agent = AgentManager.create(
+        name="integration-mcp-agent",
+        description="Agent for MCP integration test",
         tool_ids=[tool_id],
         user_performing_action=admin_user,
     )
-    persona_tools_response = requests.get(
-        f"{API_SERVER_URL}/persona",
+    agent_tools_response = requests.get(
+        f"{API_SERVER_URL}/agent",
         headers=basic_user.headers,
         cookies=basic_user.cookies,
     )
-    persona_tools_response.raise_for_status()
-    persona_entries = persona_tools_response.json()
-    persona_entry = next(
-        entry for entry in persona_entries if entry["id"] == persona.id
+    agent_tools_response.raise_for_status()
+    agent_entries = agent_tools_response.json()
+    agent_entry = next(
+        entry for entry in agent_entries if entry["id"] == agent.id
     )
-    persona_tool_ids = {tool["id"] for tool in persona_entry["tools"]}
-    assert tool_id in persona_tool_ids
+    agent_tool_ids = {tool["id"] for tool in agent_entry["tools"]}
+    assert tool_id in agent_tool_ids

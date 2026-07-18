@@ -51,7 +51,7 @@ def _create_provider_with_api(
         "is_public": True,
         "is_auto_mode": is_auto_mode,
         "groups": [],
-        "personas": [],
+        "agents": [],
         "model_configurations": model_configurations,
         "api_key_changed": True,
     }

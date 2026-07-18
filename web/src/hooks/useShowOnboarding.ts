@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { useOnboardingState } from "@/refresh-components/onboarding/useOnboardingState";
 interface UseShowOnboardingParams {
-  liveAssistant: MinimalPersonaSnapshot | undefined;
+  liveAssistant: MinimalAgentSnapshot | undefined;
   isLoadingProviders: boolean;
   hasAnyProvider: boolean | undefined;
   isLoadingChatSessions: boolean;

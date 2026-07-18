@@ -937,8 +937,8 @@ from sqlalchemy.orm import Session
 from starlette.datastructures import Headers
 
 import om.tools.tool_implementations.python.code_interpreter_client as ci_mod
-from om.chat.process_message import handle_stream_message_objects
-from om.db.models import Persona
+from om.chat.message_handler import stream_chat_message
+from om.db.models import Agent
 from om.db.tools import get_builtin_tool
 from om.file_store.models import ChatFileType
 from om.file_store.models import FileDescriptor
@@ -1066,14 +1066,14 @@ def mock_ci_server() -> Generator[MockCodeInterpreterServer, None, None]:
 
 
 @pytest.fixture()
-def _attach_python_tool_to_default_persona(db_session: Session) -> None:
-    """Ensure the default persona (id=0) has the PythonTool attached."""
+def _attach_python_tool_to_default_agent(db_session: Session) -> None:
+    """Ensure the default agent (id=0) has the PythonTool attached."""
     python_tool_db = get_builtin_tool(db_session, PythonTool)
-    persona = db_session.get(Persona, 0)
-    assert persona is not None, "Default persona (id=0) not found"
+    agent = db_session.get(Agent, 0)
+    assert agent is not None, "Default agent (id=0) not found"
 
-    if python_tool_db not in persona.tools:
-        persona.tools.append(python_tool_db)
+    if python_tool_db not in agent.tools:
+        agent.tools.append(python_tool_db)
         db_session.commit()
 
 
@@ -1085,7 +1085,7 @@ def _attach_python_tool_to_default_persona(db_session: Session) -> None:
 def test_code_interpreter_receives_chat_files(
     db_session: Session,
     mock_ci_server: MockCodeInterpreterServer,
-    _attach_python_tool_to_default_persona: None,
+    _attach_python_tool_to_default_agent: None,
     initialize_file_store: None,  # noqa: ARG001
 ) -> None:
     mock_ci_server.captured_requests.clear()
@@ -1153,7 +1153,7 @@ def test_code_interpreter_receives_chat_files(
         ci_mod.CodeInterpreterClient.__init__.__defaults__ = (mock_url,)
         try:
             list(
-                handle_stream_message_objects(
+                stream_chat_message(
                     new_msg_req=msg_req, user=user, db_session=db_session
                 )
             )

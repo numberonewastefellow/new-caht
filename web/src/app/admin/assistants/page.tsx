@@ -1,8 +1,8 @@
 "use client";
 
-import { PersonasTable } from "./PersonaTable";
+import { AgentsTable } from "./AgentTable";
 import { AdminPageTitle } from "@/components/admin/Title";
-import { useAdminPersonas } from "@/hooks/useAdminPersonas";
+import { useAdminAgents } from "@/hooks/useAdminAgents";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { ErrorCallout } from "@/components/ErrorCallout";
 import { SvgOnyxOctagon, SvgPlus } from "@opal/icons";
@@ -11,30 +11,30 @@ import Pagination from "@/refresh-components/Pagination";
 import Text from "@/refresh-components/texts/Text";
 import Button from "@/refresh-components/buttons/Button";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
-import { Persona } from "./interfaces";
+import { Agent } from "./interfaces";
 
 const PAGE_SIZE = 20;
 
 function MainContent({
-  personas,
+  agents,
   totalItems,
   currentPage,
   onPageChange,
-  refreshPersonas,
+  refreshAgents,
   searchInput,
   onSearchChange,
   searchActive,
 }: {
-  personas: Persona[];
+  agents: Agent[];
   totalItems: number;
   currentPage: number;
   onPageChange: (page: number) => void;
-  refreshPersonas: () => void;
+  refreshAgents: () => void;
   searchInput: string;
   onSearchChange: (value: string) => void;
   searchActive: boolean;
 }) {
-  const customPersonas = personas.filter((persona) => !persona.builtin_persona);
+  const customAgents = agents.filter((agent) => !agent.builtin_agent);
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
   useEffect(() => {
@@ -69,11 +69,11 @@ function MainContent({
       </div>
 
       {/* Card grid */}
-      {customPersonas.length > 0 ? (
+      {customAgents.length > 0 ? (
         <>
-          <PersonasTable
-            personas={customPersonas}
-            refreshPersonas={refreshPersonas}
+          <AgentsTable
+            agents={customAgents}
+            refreshAgents={refreshAgents}
             currentPage={currentPage}
             pageSize={PAGE_SIZE}
           />
@@ -132,7 +132,7 @@ export default function Page() {
   // Server-side search across ALL assistants (matches name OR description),
   // not just the current page. keepPreviousData (in the hook) avoids the list
   // unmounting between fetches so the search box keeps focus.
-  const { personas, totalItems, isLoading, error, refresh } = useAdminPersonas({
+  const { agents, totalItems, isLoading, error, refresh } = useAdminAgents({
     pageNum: currentPage - 1,
     pageSize: PAGE_SIZE,
     searchQuery: debouncedQuery,
@@ -157,11 +157,11 @@ export default function Page() {
 
       {!isLoading && !error && (
         <MainContent
-          personas={personas}
+          agents={agents}
           totalItems={totalItems}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
-          refreshPersonas={refresh}
+          refreshAgents={refresh}
           searchInput={searchInput}
           onSearchChange={setSearchInput}
           searchActive={debouncedQuery.length > 0}

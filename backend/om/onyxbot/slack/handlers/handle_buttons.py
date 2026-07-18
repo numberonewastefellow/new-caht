@@ -9,7 +9,7 @@ from slack_sdk.socket_mode.request import SocketModeRequest
 from slack_sdk.webhook import WebhookClient
 
 from om.chat.models import ChatBasicResponse
-from om.chat.process_message import remove_answer_citations
+from om.chat.message_handler import remove_answer_citations
 from om.configs.constants import MessageType
 from om.configs.constants import SearchFeedbackType
 from om.configs.onyxbot_configs import OM_BOT_FOLLOWUP_EMOJI

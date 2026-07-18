@@ -2,7 +2,7 @@ import { FormikProps } from "formik";
 import { GenericMultiSelect } from "@/components/GenericMultiSelect";
 
 export type AgentsMultiSelectFormType = {
-  personas: number[];
+  agents: number[];
 };
 
 interface Agent {
@@ -35,7 +35,7 @@ export function AgentsMultiSelect<T extends AgentsMultiSelectFormType>({
   return (
     <GenericMultiSelect
       formikProps={formikProps}
-      fieldName="personas"
+      fieldName="agents"
       label={label}
       subtext={subtext}
       items={agents}

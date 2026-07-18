@@ -1,30 +1,30 @@
-import { Persona } from "@/app/admin/assistants/interfaces";
+import { Agent } from "@/app/admin/assistants/interfaces";
 import { DocumentSetSummary, ValidSources } from "./types";
-import { getSourcesForPersona } from "./sources";
+import { getSourcesForAgent } from "./sources";
 
 export function computeAvailableFilters({
-  selectedPersona,
+  selectedAgent,
   availableSources,
   availableDocumentSets,
 }: {
-  selectedPersona: Persona | undefined | null;
+  selectedAgent: Agent | undefined | null;
   availableSources: ValidSources[];
   availableDocumentSets: DocumentSetSummary[];
 }): [ValidSources[], DocumentSetSummary[]] {
   const finalAvailableSources =
-    selectedPersona && selectedPersona.document_sets.length
-      ? getSourcesForPersona(selectedPersona)
+    selectedAgent && selectedAgent.document_sets.length
+      ? getSourcesForAgent(selectedAgent)
       : availableSources;
 
-  // only display document sets that are available to the persona
+  // only display document sets that are available to the agent
   // in filters
-  const personaDocumentSetIds =
-    selectedPersona && selectedPersona.document_sets.length
-      ? selectedPersona.document_sets.map((documentSet) => documentSet.id)
+  const agentDocumentSetIds =
+    selectedAgent && selectedAgent.document_sets.length
+      ? selectedAgent.document_sets.map((documentSet) => documentSet.id)
       : null;
-  const finalAvailableDocumentSets = personaDocumentSetIds
+  const finalAvailableDocumentSets = agentDocumentSetIds
     ? availableDocumentSets.filter((documentSet) =>
-        personaDocumentSetIds.includes(documentSet.id)
+        agentDocumentSetIds.includes(documentSet.id)
       )
     : availableDocumentSets;
 

@@ -60,7 +60,7 @@ def test_all_stream_chat_message_objects_outputs(reset: None) -> None:  # noqa: 
                     "role": MessageType.USER.value,
                 }
             ],
-            "persona_id": 0,
+            "agent_id": 0,
         },
         headers=admin_user.headers,
     )
@@ -106,7 +106,7 @@ def test_all_stream_chat_message_objects_outputs(reset: None) -> None:  # noqa: 
                     "role": MessageType.USER.value,
                 },
             ],
-            "persona_id": 0,
+            "agent_id": 0,
         },
         headers=admin_user.headers,
     )
@@ -160,7 +160,7 @@ def test_all_stream_chat_message_objects_outputs(reset: None) -> None:  # noqa: 
                     "role": MessageType.USER.value,
                 },
             ],
-            "persona_id": 0,
+            "agent_id": 0,
         },
         headers=admin_user.headers,
     )

@@ -771,10 +771,10 @@ def fetch_document_sets_for_documents(
 def get_or_create_document_set_by_name(
     db_session: Session,
     document_set_name: str,
-    document_set_description: str = "Default Persona created Document-Set, "
+    document_set_description: str = "Default Agent created Document-Set, "
     "please update description",
 ) -> DocumentSetDBModel:
-    """This is used by the default personas which need to attach to document sets
+    """This is used by the default agents which need to attach to document sets
     on server startup"""
     doc_set = get_document_set_by_name(db_session, document_set_name)
     if doc_set is not None:

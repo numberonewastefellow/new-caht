@@ -1,23 +1,23 @@
 "use client";
 
 import React, { useState, useMemo, useCallback, type DragEvent } from "react";
-import type { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import type { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import type { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
-import type { DragPersonaData, WorkflowMeta } from "./types";
+import type { DragAgentData, WorkflowMeta } from "./types";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import LLMSelector from "@/components/llm/LLMSelector";
 import { parseLlmDescriptor, structureValue } from "@/lib/llm/utils";
 
-/** Special drag data type for non-persona items (e.g., conditional router) */
+/** Special drag data type for non-agent items (e.g., conditional router) */
 export const CONDITION_DRAG_TYPE = "application/reactflow-condition";
 
-// Names of utility personas that get their own section
-const UTILITY_PERSONA_NAMES = new Set(["HTTP Request", "Code Executor"]);
+// Names of utility agents that get their own section
+const UTILITY_AGENT_NAMES = new Set(["HTTP Request", "Code Executor"]);
 
 type SidebarTab = "agents" | "utilities" | "settings";
 
 interface AgentSidebarProps {
-  agents: MinimalPersonaSnapshot[];
+  agents: MinimalAgentSnapshot[];
   isLoading: boolean;
   onCreateNew?: () => void;
   /** Workflow-level settings (for Settings tab) */
@@ -46,42 +46,42 @@ export function AgentSidebar({
   const { utilityAgents, regularAgents } = useMemo(() => {
     const nonWorkflow = agents.filter((a) => !a.workflow_id && a.id !== 0);
     const q = search.trim().toLowerCase();
-    const matchesSearch = (a: MinimalPersonaSnapshot) =>
+    const matchesSearch = (a: MinimalAgentSnapshot) =>
       !q ||
       a.name.toLowerCase().includes(q) ||
       a.description?.toLowerCase().includes(q);
 
     return {
       utilityAgents: nonWorkflow.filter(
-        (a) => UTILITY_PERSONA_NAMES.has(a.name) && matchesSearch(a)
+        (a) => UTILITY_AGENT_NAMES.has(a.name) && matchesSearch(a)
       ),
       regularAgents: nonWorkflow.filter(
-        (a) => !UTILITY_PERSONA_NAMES.has(a.name) && matchesSearch(a)
+        (a) => !UTILITY_AGENT_NAMES.has(a.name) && matchesSearch(a)
       ),
     };
   }, [agents, search]);
 
   const handleDragStart = (
     event: DragEvent<HTMLDivElement>,
-    agent: MinimalPersonaSnapshot
+    agent: MinimalAgentSnapshot
   ) => {
-    const data: DragPersonaData = {
-      persona_id: agent.id,
-      persona_name: agent.name,
-      persona_description: agent.description || "",
-      persona_icon_url: agent.uploaded_image_id
-        ? `/api/persona/${agent.id}/uploaded_image`
+    const data: DragAgentData = {
+      agent_id: agent.id,
+      agent_name: agent.name,
+      agent_description: agent.description || "",
+      agent_icon_url: agent.uploaded_image_id
+        ? `/api/agent/${agent.id}/uploaded_image`
         : null,
-      persona_num_tools: agent.tools?.length || 0,
-      persona_tool_names: (agent.tools || []).map((t) => t.name),
-      persona_llm_model: agent.llm_model_version_override || null,
-      persona_llm_provider: agent.llm_model_provider_override || null,
+      agent_num_tools: agent.tools?.length || 0,
+      agent_tool_names: (agent.tools || []).map((t) => t.name),
+      agent_llm_model: agent.llm_model_version_override || null,
+      agent_llm_provider: agent.llm_model_provider_override || null,
     };
     event.dataTransfer.setData("application/reactflow", JSON.stringify(data));
     event.dataTransfer.effectAllowed = "move";
   };
 
-  const renderAgentCard = (agent: MinimalPersonaSnapshot) => (
+  const renderAgentCard = (agent: MinimalAgentSnapshot) => (
     <div
       key={agent.id}
       className="wfb-sidebar-card"

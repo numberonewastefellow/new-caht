@@ -1,15 +1,15 @@
 """
-Generate vibrant, professional icons for ALL workflow personas using real
+Generate vibrant, professional icons for ALL workflow agents using real
 SVG icons from the Iconify API (200k+ icons from Material Design, Fluent,
 Carbon, etc.) on vibrant gradient backgrounds.
 
 Supports:
-    --all                 Generate & upload icons for every persona in workflows 22-28
-    --missing             Only generate for personas that have no icon yet
-    --workflow ID         Only process personas belonging to a specific workflow ID
-    --id ID               Process a single persona by ID
+    --all                 Generate & upload icons for every agent in workflows 22-28
+    --missing             Only generate for agents that have no icon yet
+    --workflow ID         Only process agents belonging to a specific workflow ID
+    --id ID               Process a single agent by ID
     --preview             Save PNGs locally without uploading
-    --list                Show icon status for all workflow personas (dry-run)
+    --list                Show icon status for all workflow agents (dry-run)
     --style flat          Use flat colored icons (no background)
 
 Dependencies:
@@ -39,7 +39,7 @@ from agents_creator.config import resolve_api_key, api  # noqa: E402
 from agents_creator.generate_icon_v2 import (  # noqa: E402
     generate_icon_with_svg,
     upload_image,
-    update_persona_image,
+    update_agent_image,
     extract_search_queries,
     find_best_icon,
     DEPARTMENT_COLORS,
@@ -247,9 +247,9 @@ WORKFLOW_NAME_TO_DOMAIN = {
 }
 
 
-def _match_role_color(persona_name: str, domain_colors: dict) -> tuple[str, str]:
-    """Match a persona name to the best role-specific color in the domain palette."""
-    name_lower = persona_name.lower()
+def _match_role_color(agent_name: str, domain_colors: dict) -> tuple[str, str]:
+    """Match a agent name to the best role-specific color in the domain palette."""
+    name_lower = agent_name.lower()
     for role_key, colors in domain_colors.items():
         if role_key.startswith("_"):
             continue
@@ -268,11 +268,11 @@ def get_all_workflows() -> list[dict]:
     return resp.json()
 
 
-def get_all_personas_map() -> dict[int, dict]:
-    """Fetch all personas, return as {id: persona_dict}."""
-    resp = api("GET", "admin/persona")
+def get_all_agents_map() -> dict[int, dict]:
+    """Fetch all agents, return as {id: agent_dict}."""
+    resp = api("GET", "admin/agent")
     if resp.status_code != 200:
-        resp = api("GET", "persona")
+        resp = api("GET", "agent")
     resp.raise_for_status()
     return {
         p["id"]: {
@@ -286,12 +286,12 @@ def get_all_personas_map() -> dict[int, dict]:
     }
 
 
-def collect_workflow_personas(
+def collect_workflow_agents(
     workflows: list[dict],
-    persona_map: dict[int, dict],
+    agent_map: dict[int, dict],
     workflow_id: int | None = None,
 ) -> list[dict]:
-    """Collect all personas (wrapper + sub-agents) for target workflows."""
+    """Collect all agents (wrapper + sub-agents) for target workflows."""
     result = []
     seen_ids = set()
 
@@ -306,8 +306,8 @@ def collect_workflow_personas(
 
         domain_colors = WORKFLOW_DOMAIN_COLORS[domain]
 
-        # Wrapper persona (same name as workflow)
-        for pid, pdata in persona_map.items():
+        # Wrapper agent (same name as workflow)
+        for pid, pdata in agent_map.items():
             if pdata["name"] == wf_name and pid not in seen_ids:
                 bg, accent = domain_colors["_base"]
                 result.append({
@@ -321,11 +321,11 @@ def collect_workflow_personas(
                 seen_ids.add(pid)
                 break
 
-        # Sub-agent personas from steps
+        # Sub-agent agents from steps
         for step in wf.get("steps", []):
-            pid = step.get("persona_id")
-            if pid and pid in persona_map and pid not in seen_ids:
-                pdata = persona_map[pid]
+            pid = step.get("agent_id")
+            if pid and pid in agent_map and pid not in seen_ids:
+                pdata = agent_map[pid]
                 bg, accent = _match_role_color(pdata["name"], domain_colors)
                 result.append({
                     **pdata,
@@ -350,19 +350,19 @@ def _inject_colors_into_v2(top_color: str, bottom_color: str):
     DEPARTMENT_COLORS["__workflow_override__"] = (top_color, bottom_color)
 
 
-def process_persona(
-    persona: dict,
+def process_agent(
+    agent: dict,
     preview_dir: str | None = None,
     upload: bool = True,
     style: str = "monochrome",
 ) -> bool:
     """Generate vibrant icon with real SVG and optionally upload."""
-    name = persona["name"]
-    pid = persona["id"]
-    domain = persona.get("domain", "?")
-    is_wrapper = persona.get("is_wrapper", False)
+    name = agent["name"]
+    pid = agent["id"]
+    domain = agent.get("domain", "?")
+    is_wrapper = agent.get("is_wrapper", False)
     role = "WRAPPER" if is_wrapper else "agent"
-    top_color, bottom_color = persona["_colors"]
+    top_color, bottom_color = agent["_colors"]
 
     print(f"\n{'='*60}")
     print(f"  [{role}] {name} (ID={pid}, domain={domain})")
@@ -378,7 +378,7 @@ def process_persona(
     # Call v2's generate function with our override label
     icon_bytes, icon_used = generate_icon_with_svg(
         name,
-        labels=["__workflow_override__"] + persona.get("labels", []),
+        labels=["__workflow_override__"] + agent.get("labels", []),
         icon_id=curated_icon,
         size=256,
         style=style,
@@ -403,25 +403,25 @@ def process_persona(
         return False
     print(f"  Uploaded: file_id={file_id}")
 
-    # Update persona
-    if update_persona_image(pid, file_id):
+    # Update agent
+    if update_agent_image(pid, file_id):
         print(f"  [OK] Icon set for {name}")
         return True
     else:
-        print(f"  [FAIL] Could not update persona {pid}")
+        print(f"  [FAIL] Could not update agent {pid}")
         return False
 
 
 # ── List / status ─────────────────────────────────────────────────────────
 
 
-def list_icon_status(personas: list[dict]):
-    """Print a table showing icon status for all workflow personas."""
+def list_icon_status(agents: list[dict]):
+    """Print a table showing icon status for all workflow agents."""
     print(f"\n{'ID':<6} {'Icon':<8} {'Type':<9} {'Domain':<15} {'Curated':<8} {'Name'}")
     print("-" * 95)
 
     has_icon = no_icon = 0
-    for p in sorted(personas, key=lambda x: (x.get("workflow_id", 0), not x.get("is_wrapper"), x["id"])):
+    for p in sorted(agents, key=lambda x: (x.get("workflow_id", 0), not x.get("is_wrapper"), x["id"])):
         icon_status = "YES" if p.get("uploaded_image_id") else "---"
         role = "WRAPPER" if p.get("is_wrapper") else "agent"
         domain = p.get("domain", "?")
@@ -437,9 +437,9 @@ def list_icon_status(personas: list[dict]):
 
         print(f"  {p['id']:<6} {icon_status:<8} {role:<9} {domain:<15} {curated:<8} {p['name']}")
 
-    print(f"\n  Total: {has_icon + no_icon} personas | {has_icon} with icon | {no_icon} missing")
-    curated_count = sum(1 for p in personas if p["name"] in AGENT_ICON_MAP)
-    print(f"  Curated icons: {curated_count}/{len(personas)}")
+    print(f"\n  Total: {has_icon + no_icon} agents | {has_icon} with icon | {no_icon} missing")
+    curated_count = sum(1 for p in agents if p["name"] in AGENT_ICON_MAP)
+    print(f"  Curated icons: {curated_count}/{len(agents)}")
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────
@@ -456,16 +456,16 @@ Examples:
   python generate_workflow_icons.py --all                   # Regenerate ALL
   python generate_workflow_icons.py --all --preview         # Preview only
   python generate_workflow_icons.py --workflow 53            # Medical only
-  python generate_workflow_icons.py --id 325                # Single persona
+  python generate_workflow_icons.py --id 325                # Single agent
   python generate_workflow_icons.py --all --style flat       # Flat colored icons
         """,
     )
 
     mode = parser.add_mutually_exclusive_group(required=True)
-    mode.add_argument("--all", action="store_true", help="Generate for ALL workflow personas")
-    mode.add_argument("--missing", action="store_true", help="Only personas WITHOUT icons")
+    mode.add_argument("--all", action="store_true", help="Generate for ALL workflow agents")
+    mode.add_argument("--missing", action="store_true", help="Only agents WITHOUT icons")
     mode.add_argument("--list", action="store_true", help="Show icon status (no changes)")
-    mode.add_argument("--id", type=int, help="Single persona ID")
+    mode.add_argument("--id", type=int, help="Single agent ID")
 
     parser.add_argument("--workflow", type=int, help="Filter to a specific workflow ID")
     parser.add_argument("--preview", action="store_true", help="Save PNGs locally, don't upload")
@@ -477,47 +477,47 @@ Examples:
     resolve_api_key()
 
     # Fetch data
-    print("Fetching workflows and personas...")
+    print("Fetching workflows and agents...")
     workflows = get_all_workflows()
-    persona_map = get_all_personas_map()
-    all_personas = collect_workflow_personas(workflows, persona_map, args.workflow)
+    agent_map = get_all_agents_map()
+    all_agents = collect_workflow_agents(workflows, agent_map, args.workflow)
 
-    if not all_personas:
-        print("No workflow personas found. Check that workflows are deployed.")
+    if not all_agents:
+        print("No workflow agents found. Check that workflows are deployed.")
         sys.exit(1)
 
-    wrappers = [p for p in all_personas if p.get("is_wrapper")]
-    agents = [p for p in all_personas if not p.get("is_wrapper")]
-    print(f"Found {len(wrappers)} wrapper(s) + {len(agents)} sub-agent(s) = {len(all_personas)} total")
+    wrappers = [p for p in all_agents if p.get("is_wrapper")]
+    agents = [p for p in all_agents if not p.get("is_wrapper")]
+    print(f"Found {len(wrappers)} wrapper(s) + {len(agents)} sub-agent(s) = {len(all_agents)} total")
 
     if args.list:
-        list_icon_status(all_personas)
+        list_icon_status(all_agents)
         return
 
     if args.id:
-        target = next((p for p in all_personas if p["id"] == args.id), None)
+        target = next((p for p in all_agents if p["id"] == args.id), None)
         if not target:
-            if args.id in persona_map:
-                pdata = persona_map[args.id]
+            if args.id in agent_map:
+                pdata = agent_map[args.id]
                 pdata["_colors"] = ("#5C6BC0", "#283593")
                 pdata["domain"] = "custom"
                 pdata["is_wrapper"] = False
                 target = pdata
             else:
-                print(f"Persona ID {args.id} not found")
+                print(f"Agent ID {args.id} not found")
                 sys.exit(1)
-        process_persona(target, preview_dir=args.preview_dir if args.preview else None,
+        process_agent(target, preview_dir=args.preview_dir if args.preview else None,
                         upload=not args.preview, style=args.style)
         return
 
-    targets = all_personas
+    targets = all_agents
     if args.missing:
-        targets = [p for p in all_personas if not p.get("uploaded_image_id")]
+        targets = [p for p in all_agents if not p.get("uploaded_image_id")]
         if not targets:
-            print("\nAll personas already have icons!")
-            list_icon_status(all_personas)
+            print("\nAll agents already have icons!")
+            list_icon_status(all_agents)
             return
-        print(f"\n{len(targets)} persona(s) missing icons")
+        print(f"\n{len(targets)} agent(s) missing icons")
 
     preview_dir = None
     if args.preview:
@@ -527,11 +527,11 @@ Examples:
 
     scope = f"workflow {args.workflow}" if args.workflow else "all workflows"
     mode_label = "all" if args.all else "missing"
-    print(f"\nProcessing {len(targets)} personas ({mode_label}, {scope}, style={args.style})...\n")
+    print(f"\nProcessing {len(targets)} agents ({mode_label}, {scope}, style={args.style})...\n")
 
     ok, fail = 0, 0
-    for persona in sorted(targets, key=lambda x: (x.get("workflow_id", 0), not x.get("is_wrapper"), x["id"])):
-        if process_persona(persona, preview_dir=preview_dir, upload=not args.preview, style=args.style):
+    for agent in sorted(targets, key=lambda x: (x.get("workflow_id", 0), not x.get("is_wrapper"), x["id"])):
+        if process_agent(agent, preview_dir=preview_dir, upload=not args.preview, style=args.style):
             ok += 1
         else:
             fail += 1

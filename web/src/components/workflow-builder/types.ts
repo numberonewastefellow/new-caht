@@ -9,8 +9,8 @@ import type { Node, Edge } from "@xyflow/react";
 
 /** Data stored on each agent node */
 export interface AgentNodeData {
-  persona_id: number;
-  persona_name: string;
+  agent_id: number;
+  agent_name: string;
   step_name: string;
   step_description: string;
   output_key: string;
@@ -20,8 +20,8 @@ export interface AgentNodeData {
   input_mapping?: Record<string, any> | null;
   condition?: Record<string, any> | null;
 
-  // Step-level overrides (saved to backend, override persona defaults)
-  // null/undefined = use persona default (inheritance)
+  // Step-level overrides (saved to backend, override agent defaults)
+  // null/undefined = use agent default (inheritance)
   llm_provider_override?: string | null;
   llm_model_override?: string | null;
   max_output_tokens_override?: number | null;
@@ -31,14 +31,14 @@ export interface AgentNodeData {
   document_set_ids_override?: number[] | null;
   replace_base_system_prompt_override?: boolean | null;
 
-  // Display-only fields from the persona (not saved to backend)
-  persona_description?: string;
-  persona_icon_url?: string | null;
-  persona_num_tools?: number;
-  persona_tool_names?: string[];
-  persona_llm_model?: string | null;
-  persona_llm_provider?: string | null;
-  persona_labels?: string[];
+  // Display-only fields from the agent (not saved to backend)
+  agent_description?: string;
+  agent_icon_url?: string | null;
+  agent_num_tools?: number;
+  agent_tool_names?: string[];
+  agent_llm_model?: string | null;
+  agent_llm_provider?: string | null;
+  agent_labels?: string[];
 
   // Visual state
   isSelected?: boolean;
@@ -121,17 +121,17 @@ export const DEFAULT_WORKFLOW_META: WorkflowMeta = {
   icon_name: "",
 };
 
-// ── Sidebar persona item (minimal data for drag) ──────────────────────
+// ── Sidebar agent item (minimal data for drag) ──────────────────────
 
-export interface DragPersonaData {
-  persona_id: number;
-  persona_name: string;
-  persona_description: string;
-  persona_icon_url?: string | null;
-  persona_num_tools: number;
-  persona_tool_names?: string[];
-  persona_llm_model?: string | null;
-  persona_llm_provider?: string | null;
+export interface DragAgentData {
+  agent_id: number;
+  agent_name: string;
+  agent_description: string;
+  agent_icon_url?: string | null;
+  agent_num_tools: number;
+  agent_tool_names?: string[];
+  agent_llm_model?: string | null;
+  agent_llm_provider?: string | null;
 }
 
 // ── Constants ──────────────────────────────────────────────────────────

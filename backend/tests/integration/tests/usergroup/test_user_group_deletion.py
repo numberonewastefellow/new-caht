@@ -6,7 +6,7 @@ This tests the deletion of a user group with the following foreign key constrain
 - llm_provider
 - document_set
 - token_rate_limit (Not Implemented)
-- persona
+- agent
 """
 
 
@@ -17,13 +17,13 @@ from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.credential import CredentialManager
 from tests.integration.common_utils.managers.document_set import DocumentSetManager
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager
-from tests.integration.common_utils.managers.persona import PersonaManager
+from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.managers.user_group import UserGroupManager
 from tests.integration.common_utils.test_models import DATestCredential
 from tests.integration.common_utils.test_models import DATestDocumentSet
 from tests.integration.common_utils.test_models import DATestLLMProvider
-from tests.integration.common_utils.test_models import DATestPersona
+from tests.integration.common_utils.test_models import DATestAgent
 from tests.integration.common_utils.test_models import DATestUser
 from tests.integration.common_utils.test_models import DATestUserGroup
 
@@ -74,7 +74,7 @@ def test_user_group_deletion(
         groups=[user_group.id],
         user_performing_action=admin_user,
     )
-    persona: DATestPersona = PersonaManager.create(
+    agent: DATestAgent = AgentManager.create(
         groups=[user_group.id],
         user_performing_action=admin_user,
     )
@@ -101,7 +101,7 @@ def test_user_group_deletion(
     credential.groups = []
     document_set.groups = []
     llm_provider.groups = []
-    persona.groups = []
+    agent.groups = []
 
     # Verify that the local representations were updated
     CredentialManager.verify(
@@ -119,7 +119,7 @@ def test_user_group_deletion(
         user_performing_action=admin_user,
     )
 
-    PersonaManager.verify(
-        persona=persona,
+    AgentManager.verify(
+        agent=agent,
         user_performing_action=admin_user,
     )

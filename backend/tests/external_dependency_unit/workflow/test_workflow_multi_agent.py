@@ -18,16 +18,16 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.engine.sql_engine import SqlEngine
 from om.db.models import AgentWorkflow
 from om.db.models import AgentWorkflowStep
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
 from om.db.models import UserRole
-from om.db.persona import upsert_persona
+from om.db.agent import upsert_agent
 from om.db.workflow import create_workflow
 from om.db.workflow import delete_workflow
 from om.db.workflow import get_workflow_by_id
 from om.db.workflow import list_workflows
 from om.db.workflow import update_workflow
-from om.server.features.persona.models import PersonaSnapshot
+from om.server.features.agent.models import AgentSnapshot
 from om.server.manage.models import RecencyBiasSetting
 from om.workflows.models import WorkflowCreate
 from om.workflows.models import WorkflowStepCreate
@@ -73,9 +73,9 @@ def test_user(db_session: Session) -> User:
 
 
 @pytest.fixture(scope="module")
-def math_solver_persona(db_session: Session, test_user: User) -> Persona:
+def math_solver_agent(db_session: Session, test_user: User) -> Agent:
     """Agent 1: Math Solver — takes a math problem and solves it step by step."""
-    persona = upsert_persona(
+    agent = upsert_agent(
         user=test_user,
         name="Test Math Solver",
         description="Solves math problems step by step with clear working.",
@@ -97,13 +97,13 @@ def math_solver_persona(db_session: Session, test_user: User) -> Persona:
         db_session=db_session,
         tool_ids=[],
     )
-    return db_session.get(Persona, persona.id)
+    return db_session.get(Agent, agent.id)
 
 
 @pytest.fixture(scope="module")
-def verifier_persona(db_session: Session, test_user: User) -> Persona:
+def verifier_agent(db_session: Session, test_user: User) -> Agent:
     """Agent 2: Verifier — checks a math solution for correctness."""
-    persona = upsert_persona(
+    agent = upsert_agent(
         user=test_user,
         name="Test Verifier",
         description="Verifies mathematical solutions for correctness.",
@@ -125,13 +125,13 @@ def verifier_persona(db_session: Session, test_user: User) -> Persona:
         db_session=db_session,
         tool_ids=[],
     )
-    return db_session.get(Persona, persona.id)
+    return db_session.get(Agent, agent.id)
 
 
 @pytest.fixture(scope="module")
-def summarizer_persona(db_session: Session, test_user: User) -> Persona:
+def summarizer_agent(db_session: Session, test_user: User) -> Agent:
     """Agent 3: Summarizer — produces a plain-language summary of the result."""
-    persona = upsert_persona(
+    agent = upsert_agent(
         user=test_user,
         name="Test Summarizer",
         description="Summarizes technical results into plain language.",
@@ -153,7 +153,7 @@ def summarizer_persona(db_session: Session, test_user: User) -> Persona:
         db_session=db_session,
         tool_ids=[],
     )
-    return db_session.get(Persona, persona.id)
+    return db_session.get(Agent, agent.id)
 
 
 # ─── Test: CRUD Operations ───────────────────────────────────────────────
@@ -166,9 +166,9 @@ class TestWorkflowCRUD:
         self,
         db_session: Session,
         test_user: User,
-        math_solver_persona: Persona,
-        verifier_persona: Persona,
-        summarizer_persona: Persona,
+        math_solver_agent: Agent,
+        verifier_agent: Agent,
+        summarizer_agent: Agent,
     ) -> None:
         """Create a 3-agent sequential workflow and verify all fields."""
         workflow_data = WorkflowCreate(
@@ -180,21 +180,21 @@ class TestWorkflowCRUD:
             is_public=True,
             steps=[
                 WorkflowStepCreate(
-                    persona_id=math_solver_persona.id,
+                    agent_id=math_solver_agent.id,
                     step_order=0,
                     step_name="Solve",
                     step_description="Solve the math problem step by step",
                     output_key="solution",
                 ),
                 WorkflowStepCreate(
-                    persona_id=verifier_persona.id,
+                    agent_id=verifier_agent.id,
                     step_order=1,
                     step_name="Verify",
                     step_description="Verify the solution is correct",
                     output_key="verification",
                 ),
                 WorkflowStepCreate(
-                    persona_id=summarizer_persona.id,
+                    agent_id=summarizer_agent.id,
                     step_order=2,
                     step_name="Summarize",
                     step_description="Summarize the result in plain language",
@@ -226,16 +226,16 @@ class TestWorkflowCRUD:
         steps_sorted = sorted(workflow.steps, key=lambda s: s.step_order)
 
         assert steps_sorted[0].step_name == "Solve"
-        assert steps_sorted[0].persona_id == math_solver_persona.id
+        assert steps_sorted[0].agent_id == math_solver_agent.id
         assert steps_sorted[0].output_key == "solution"
         assert steps_sorted[0].is_terminal is False
 
         assert steps_sorted[1].step_name == "Verify"
-        assert steps_sorted[1].persona_id == verifier_persona.id
+        assert steps_sorted[1].agent_id == verifier_agent.id
         assert steps_sorted[1].output_key == "verification"
 
         assert steps_sorted[2].step_name == "Summarize"
-        assert steps_sorted[2].persona_id == summarizer_persona.id
+        assert steps_sorted[2].agent_id == summarizer_agent.id
         assert steps_sorted[2].output_key == "summary"
         assert steps_sorted[2].is_terminal is True
 
@@ -282,9 +282,9 @@ class TestWorkflowCRUD:
         self,
         db_session: Session,
         test_user: User,
-        math_solver_persona: Persona,
-        verifier_persona: Persona,
-        summarizer_persona: Persona,
+        math_solver_agent: Agent,
+        verifier_agent: Agent,
+        summarizer_agent: Agent,
     ) -> None:
         """Create an LLM-decision mode workflow with 3 agents."""
         workflow_data = WorkflowCreate(
@@ -301,19 +301,19 @@ class TestWorkflowCRUD:
             is_public=True,
             steps=[
                 WorkflowStepCreate(
-                    persona_id=math_solver_persona.id,
+                    agent_id=math_solver_agent.id,
                     step_order=0,
                     step_name="Math Solver",
                     output_key="solution",
                 ),
                 WorkflowStepCreate(
-                    persona_id=verifier_persona.id,
+                    agent_id=verifier_agent.id,
                     step_order=1,
                     step_name="Verifier",
                     output_key="verification",
                 ),
                 WorkflowStepCreate(
-                    persona_id=summarizer_persona.id,
+                    agent_id=summarizer_agent.id,
                     step_order=2,
                     step_name="Summarizer",
                     output_key="summary",
@@ -369,7 +369,7 @@ class TestWorkflowModels:
     def test_workflow_step_create_defaults(self) -> None:
         """WorkflowStepCreate has sensible defaults."""
         step = WorkflowStepCreate(
-            persona_id=1, step_order=0, step_name="Test Step"
+            agent_id=1, step_order=0, step_name="Test Step"
         )
         assert step.output_key == "output"
         assert step.is_terminal is False
@@ -384,13 +384,13 @@ class TestWorkflowModels:
             orchestration_mode="sequential",
             steps=[
                 WorkflowStepCreate(
-                    persona_id=1,
+                    agent_id=1,
                     step_order=0,
                     step_name="Step A",
                     output_key="result_a",
                 ),
                 WorkflowStepCreate(
-                    persona_id=2,
+                    agent_id=2,
                     step_order=1,
                     step_name="Step B",
                     output_key="result_b",
@@ -407,12 +407,12 @@ class TestWorkflowModels:
 
 
 class TestAgentTool:
-    """Test the AgentTool adapter that wraps Persona as a callable tool."""
+    """Test the AgentTool adapter that wraps Agent as a callable tool."""
 
     def test_agent_tool_definition(
         self,
         db_session: Session,
-        math_solver_persona: Persona,
+        math_solver_agent: Agent,
     ) -> None:
         """AgentTool produces a valid OpenAI function-call tool definition."""
         from unittest.mock import MagicMock
@@ -421,7 +421,7 @@ class TestAgentTool:
 
         mock_emitter = MagicMock()
         tool = AgentTool(
-            persona=math_solver_persona,
+            agent=math_solver_agent,
             emitter=mock_emitter,
             db_session=db_session,
             step_name="Solve",
@@ -455,7 +455,7 @@ class TestAgentTool:
     def test_agent_tool_no_task_returns_error(
         self,
         db_session: Session,
-        math_solver_persona: Persona,
+        math_solver_agent: Agent,
     ) -> None:
         """AgentTool.run() with empty task returns error ToolResponse."""
         from unittest.mock import MagicMock
@@ -465,7 +465,7 @@ class TestAgentTool:
 
         mock_emitter = MagicMock()
         tool = AgentTool(
-            persona=math_solver_persona,
+            agent=math_solver_agent,
             emitter=mock_emitter,
             db_session=db_session,
         )
@@ -488,9 +488,9 @@ class TestWorkflowEngine:
         self,
         db_session: Session,
         test_user: User,
-        math_solver_persona: Persona,
-        verifier_persona: Persona,
-        summarizer_persona: Persona,
+        math_solver_agent: Agent,
+        verifier_agent: Agent,
+        summarizer_agent: Agent,
     ) -> None:
         """Sequential workflow retrieves steps in correct order."""
         workflow = get_workflow_by_id(
@@ -505,10 +505,10 @@ class TestWorkflowEngine:
         assert steps[1].step_name == "Verify"
         assert steps[2].step_name == "Summarize"
 
-        # Each step references a valid persona
+        # Each step references a valid agent
         for step in steps:
-            assert step.persona is not None
-            assert step.persona.name.startswith("Test ")
+            assert step.agent is not None
+            assert step.agent.name.startswith("Test ")
 
     def test_agent_tools_created_for_workflow(
         self,
@@ -530,7 +530,7 @@ class TestWorkflowEngine:
         tools = []
         for step in sorted(workflow.steps, key=lambda s: s.step_order):
             tool = AgentTool(
-                persona=step.persona,
+                agent=step.agent,
                 emitter=mock_emitter,
                 db_session=db_session,
                 step_name=step.step_name,
@@ -578,21 +578,21 @@ class TestWorkflowEngine:
             steps_executed=[
                 {
                     "step_name": "Solve",
-                    "persona_id": 1,
+                    "agent_id": 1,
                     "output": "42",
                     "duration_ms": 1500,
                     "tokens_used": 200,
                 },
                 {
                     "step_name": "Verify",
-                    "persona_id": 2,
+                    "agent_id": 2,
                     "output": "VERIFIED",
                     "duration_ms": 800,
                     "tokens_used": 150,
                 },
                 {
                     "step_name": "Summarize",
-                    "persona_id": 3,
+                    "agent_id": 3,
                     "output": "The answer is 42.",
                     "duration_ms": 600,
                     "tokens_used": 100,
@@ -624,9 +624,9 @@ class TestWorkflowEngine:
 def cleanup(
     db_session: Session,
     test_user: User,
-    math_solver_persona: Persona,
-    verifier_persona: Persona,
-    summarizer_persona: Persona,
+    math_solver_agent: Agent,
+    verifier_agent: Agent,
+    summarizer_agent: Agent,
 ) -> Generator[None, None, None]:
     """Clean up test data after all tests complete."""
     yield
@@ -642,10 +642,10 @@ def cleanup(
             except Exception:
                 pass
 
-    # Clean up personas
-    for persona in [math_solver_persona, verifier_persona, summarizer_persona]:
+    # Clean up agents
+    for agent in [math_solver_agent, verifier_agent, summarizer_agent]:
         try:
-            persona.deleted = True
+            agent.deleted = True
             db_session.commit()
         except Exception:
             pass

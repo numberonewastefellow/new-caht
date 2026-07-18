@@ -131,8 +131,8 @@ class TestSendChatMessage:
         assert result is not None
 
     @pytest.mark.asyncio
-    async def test_send_message_with_persona(self) -> None:
-        """persona_id is passed to API."""
+    async def test_send_message_with_agent(self) -> None:
+        """agent_id is passed to API."""
         client = OmAPIClient()
 
         response_data = {"answer": "Response", "citations": [], "error_msg": None}
@@ -154,9 +154,9 @@ class TestSendChatMessage:
             "model_validate",
             return_value=MagicMock(answer="Response", error_msg=None),
         ):
-            await client.send_chat_message("Hello", "api_key", persona_id=5)
+            await client.send_chat_message("Hello", "api_key", agent_id=5)
 
-        # Verify persona was included in request
+        # Verify agent was included in request
         call_args = mock_post.call_args
         json_data = call_args.kwargs.get("json") or call_args[1].get("json")
         assert json_data is not None
@@ -183,7 +183,7 @@ class TestSendChatMessage:
 
     @pytest.mark.asyncio
     async def test_send_message_403_error(self) -> None:
-        """Persona not accessible returns APIResponseError with 403."""
+        """Agent not accessible returns APIResponseError with 403."""
         client = OmAPIClient()
 
         mock_response = MagicMock()
@@ -197,7 +197,7 @@ class TestSendChatMessage:
         client._session = mock_session
 
         with pytest.raises(APIResponseError) as exc_info:
-            await client.send_chat_message("Hello", "api_key", persona_id=999)
+            await client.send_chat_message("Hello", "api_key", agent_id=999)
 
         assert exc_info.value.status_code == 403
 

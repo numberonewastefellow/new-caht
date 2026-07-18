@@ -81,8 +81,8 @@ export function snapshotToGraph(workflow: WorkflowSnapshot): {
         type: "agent",
         position: { x: 0, y: 0 },
         data: {
-          persona_id: step.persona_id!,
-          persona_name: step.persona_name || `Agent ${step.persona_id}`,
+          agent_id: step.agent_id!,
+          agent_name: step.agent_name || `Agent ${step.agent_id}`,
           step_name: step.step_name,
           step_description: step.step_description || "",
           output_key: step.output_key || "output",
@@ -267,7 +267,7 @@ export function graphToPayload(
       const data = node.data as ConditionalRouterNodeData;
       return {
         step_type: "conditional_router",
-        persona_id: null,
+        agent_id: null,
         step_order: i,
         step_name: data.step_name || "Condition",
         step_description: data.step_description || null,
@@ -287,9 +287,9 @@ export function graphToPayload(
     const data = node.data as AgentNodeData;
     return {
       step_type: "agent",
-      persona_id: data.persona_id,
+      agent_id: data.agent_id,
       step_order: i,
-      step_name: data.step_name || data.persona_name,
+      step_name: data.step_name || data.agent_name,
       step_description: data.step_description || null,
       output_key: data.output_key || "output",
       input_mapping: data.input_mapping || null,
@@ -563,7 +563,7 @@ export function validateGraph(
     if (!data.step_name?.trim()) {
       errors.push({
         nodeId: node.id,
-        message: `Agent "${data.persona_name}" needs a step name`,
+        message: `Agent "${data.agent_name}" needs a step name`,
       });
     }
   }
@@ -579,7 +579,7 @@ export function validateGraph(
         message: `Duplicate output key "${key}" — also used by "${outputKeys.get(key)}"`,
       });
     } else {
-      outputKeys.set(key, data.persona_name);
+      outputKeys.set(key, data.agent_name);
     }
   }
 
@@ -626,7 +626,7 @@ export function validateGraph(
     if (!targetsWithEdges.has(node.id)) {
       const name = node.type === "conditional_router"
         ? (node.data as ConditionalRouterNodeData).step_name
-        : (node.data as AgentNodeData).persona_name;
+        : (node.data as AgentNodeData).agent_name;
       errors.push({
         nodeId: node.id,
         message: `"${name}" is not connected — draw an edge to it`,

@@ -28,9 +28,9 @@ from om.db.models import DocumentSet
 from om.db.models import FederatedConnector
 from om.db.models import FederatedConnector__DocumentSet
 from om.db.models import LLMProvider
-from om.db.models import Persona
-from om.db.models import Persona__DocumentSet
-from om.db.models import Persona__Tool
+from om.db.models import Agent
+from om.db.models import Agent__DocumentSet
+from om.db.models import Agent__Tool
 from om.db.models import SlackBot
 from om.db.models import SlackChannelConfig
 from om.db.models import User
@@ -42,8 +42,8 @@ from tests.external_dependency_unit.conftest import create_test_user
 from om.llm.constants import LlmProviderNames
 
 
-def _create_test_persona_with_slack_config(db_session: Session) -> Persona | None:
-    """Helper to create a test persona configured for Slack federated search"""
+def _create_test_agent_with_slack_config(db_session: Session) -> Agent | None:
+    """Helper to create a test agent configured for Slack federated search"""
     unique_id = str(uuid4())[:8]
     document_set = DocumentSet(
         name=f"test_slack_docs_{unique_id}",
@@ -52,9 +52,9 @@ def _create_test_persona_with_slack_config(db_session: Session) -> Persona | Non
     db_session.add(document_set)
     db_session.flush()
 
-    persona = Persona(
-        name=f"test_slack_persona_{unique_id}",
-        description="Test persona for Slack federated search",
+    agent = Agent(
+        name=f"test_slack_agent_{unique_id}",
+        description="Test agent for Slack federated search",
         chunks_above=0,
         chunks_below=0,
         llm_relevance_filter=True,
@@ -63,14 +63,14 @@ def _create_test_persona_with_slack_config(db_session: Session) -> Persona | Non
         system_prompt="You are a helpful assistant.",
         task_prompt="Answer the user's question based on the provided context.",
     )
-    db_session.add(persona)
+    db_session.add(agent)
     db_session.flush()
 
-    persona_doc_set = Persona__DocumentSet(
-        persona_id=persona.id,
+    agent_doc_set = Agent__DocumentSet(
+        agent_id=agent.id,
         document_set_id=document_set.id,
     )
-    db_session.add(persona_doc_set)
+    db_session.add(agent_doc_set)
     db_session.commit()
 
     # Built-in tools are automatically seeded by migrations
@@ -78,16 +78,16 @@ def _create_test_persona_with_slack_config(db_session: Session) -> Persona | Non
     try:
         search_tool = get_builtin_tool(db_session=db_session, tool_type=SearchTool)
         if search_tool:
-            persona_tool = Persona__Tool(persona_id=persona.id, tool_id=search_tool.id)
-            db_session.add(persona_tool)
+            agent_tool = Agent__Tool(agent_id=agent.id, tool_id=search_tool.id)
+            db_session.add(agent_tool)
     except RuntimeError:
         # SearchTool not found, skip adding it
         pass
 
     db_session.commit()
 
-    # Prompts are now directly on the persona table, no need for joinedload
-    return persona
+    # Prompts are now directly on the agent table, no need for joinedload
+    return agent
 
 
 def _create_mock_slack_request(
@@ -240,13 +240,13 @@ class TestSlackBotFederatedSearch:
 
     def _setup_test_environment(
         self, db_session: Session
-    ) -> tuple[User, Persona, FederatedConnector, SlackBot, SlackChannelConfig]:
-        """Setup test environment with user, persona, and federated connector"""
+    ) -> tuple[User, Agent, FederatedConnector, SlackBot, SlackChannelConfig]:
+        """Setup test environment with user, agent, and federated connector"""
         user = create_test_user(db_session, "slack_bot_test")
 
-        persona = _create_test_persona_with_slack_config(db_session)
-        if persona is None:
-            raise ValueError("Failed to create test persona")
+        agent = _create_test_agent_with_slack_config(db_session)
+        if agent is None:
+            raise ValueError("Failed to create test agent")
 
         federated_connector = FederatedConnector(
             source=FederatedConnectorSource.FEDERATED_SLACK,
@@ -257,9 +257,9 @@ class TestSlackBotFederatedSearch:
         # Expire to ensure credentials is reloaded as SensitiveValue from DB
         db_session.expire(federated_connector)
 
-        # Associate the federated connector with the persona's document sets
+        # Associate the federated connector with the agent's document sets
         # This is required for Slack federated search to be enabled
-        for doc_set in persona.document_sets:
+        for doc_set in agent.document_sets:
             federated_doc_set_mapping = FederatedConnector__DocumentSet(
                 federated_connector_id=federated_connector.id,
                 document_set_id=doc_set.id,
@@ -283,7 +283,7 @@ class TestSlackBotFederatedSearch:
 
         slack_channel_config = SlackChannelConfig(
             slack_bot_id=slack_bot.id,
-            persona_id=persona.id,
+            agent_id=agent.id,
             channel_config={"channel_name": "general", "disabled": False},
             enable_auto_filters=True,
             is_default=True,
@@ -291,7 +291,7 @@ class TestSlackBotFederatedSearch:
         db_session.add(slack_channel_config)
         db_session.commit()
 
-        return user, persona, federated_connector, slack_bot, slack_channel_config
+        return user, agent, federated_connector, slack_bot, slack_channel_config
 
     def _setup_slack_mocks(self, channel_name: str) -> tuple[list, list]:
         """Setup only Slack API mocks - everything else runs live"""
@@ -469,7 +469,7 @@ class TestSlackBotFederatedSearch:
         """Test that slack bot in public channel sees only public channel messages"""
         self._setup_llm_provider(db_session)
 
-        user, persona, federated_connector, slack_bot, slack_channel_config = (
+        user, agent, federated_connector, slack_bot, slack_channel_config = (
             self._setup_test_environment(db_session)
         )
 
@@ -528,7 +528,7 @@ class TestSlackBotFederatedSearch:
         """Test that slack bot in private channel sees private + public channel messages"""
         self._setup_llm_provider(db_session)
 
-        user, persona, federated_connector, slack_bot, slack_channel_config = (
+        user, agent, federated_connector, slack_bot, slack_channel_config = (
             self._setup_test_environment(db_session)
         )
 
@@ -587,7 +587,7 @@ class TestSlackBotFederatedSearch:
         """Test that slack bot in DM sees all messages (no filtering)"""
         self._setup_llm_provider(db_session)
 
-        user, persona, federated_connector, slack_bot, slack_channel_config = (
+        user, agent, federated_connector, slack_bot, slack_channel_config = (
             self._setup_test_environment(db_session)
         )
 
@@ -806,8 +806,8 @@ def test_multiple_missing_scopes_resilience(
     assert result["C1234567890"]["name"] == "general"
 
 
-def test_slack_channel_config_eager_loads_persona(db_session: Session) -> None:
-    """Test that fetch_slack_channel_config_for_channel_or_default eagerly loads persona.
+def test_slack_channel_config_eager_loads_agent(db_session: Session) -> None:
+    """Test that fetch_slack_channel_config_for_channel_or_default eagerly loads agent.
 
     This prevents lazy loading failures when the session context changes later
     in the request handling flow (e.g., in handle_regular_answer).
@@ -818,10 +818,10 @@ def test_slack_channel_config_eager_loads_persona(db_session: Session) -> None:
 
     unique_id = str(uuid4())[:8]
 
-    # Create a persona (using same fields as _create_test_persona_with_slack_config)
-    persona = Persona(
-        name=f"test_eager_load_persona_{unique_id}",
-        description="Test persona for eager loading test",
+    # Create a agent (using same fields as _create_test_agent_with_slack_config)
+    agent = Agent(
+        name=f"test_eager_load_agent_{unique_id}",
+        description="Test agent for eager loading test",
         chunks_above=0,
         chunks_below=0,
         llm_relevance_filter=True,
@@ -830,7 +830,7 @@ def test_slack_channel_config_eager_loads_persona(db_session: Session) -> None:
         system_prompt="You are a helpful assistant.",
         task_prompt="Answer the user's question.",
     )
-    db_session.add(persona)
+    db_session.add(agent)
     db_session.flush()
 
     # Create a slack bot
@@ -843,11 +843,11 @@ def test_slack_channel_config_eager_loads_persona(db_session: Session) -> None:
     db_session.add(slack_bot)
     db_session.flush()
 
-    # Create slack channel config with persona
+    # Create slack channel config with agent
     channel_name = f"test-channel-{unique_id}"
     slack_channel_config = SlackChannelConfig(
         slack_bot_id=slack_bot.id,
-        persona_id=persona.id,
+        agent_id=agent.id,
         channel_config={"channel_name": channel_name, "disabled": False},
         enable_auto_filters=False,
         is_default=False,
@@ -864,16 +864,16 @@ def test_slack_channel_config_eager_loads_persona(db_session: Session) -> None:
 
     assert fetched_config is not None, "Should find the channel config"
 
-    # Check that persona relationship is already loaded (not pending lazy load)
+    # Check that agent relationship is already loaded (not pending lazy load)
     insp = inspect(fetched_config)
     assert insp is not None, "Should be able to inspect the config"
-    assert "persona" not in insp.unloaded, (
-        "Persona should be eagerly loaded, not pending lazy load. "
-        "This is required to prevent fallback to default persona when "
+    assert "agent" not in insp.unloaded, (
+        "Agent should be eagerly loaded, not pending lazy load. "
+        "This is required to prevent fallback to default agent when "
         "session context changes in handle_regular_answer."
     )
 
-    # Verify the persona is correct
-    assert fetched_config.persona is not None, "Persona should not be None"
-    assert fetched_config.persona.id == persona.id, "Should load the correct persona"
-    assert fetched_config.persona.name == persona.name
+    # Verify the agent is correct
+    assert fetched_config.agent is not None, "Agent should not be None"
+    assert fetched_config.agent.id == agent.id, "Should load the correct agent"
+    assert fetched_config.agent.name == agent.name

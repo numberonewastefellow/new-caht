@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from om.chat.models import AnswerStreamPart
 from om.chat.models import StreamingError
-from om.chat.process_message import handle_stream_message_objects
+from om.chat.message_handler import stream_chat_message
 from om.db.chat import create_chat_session
 from om.db.enums import LLMModelFlowType
 from om.db.llm import fetch_existing_llm_providers
@@ -66,7 +66,7 @@ def test_answer_with_only_anthropic_provider(
             db_session=db_session,
             description="Anthropic only chat",
             user_id=test_user.id,
-            persona_id=0,
+            agent_id=0,
         )
 
         chat_request = SendMessageRequest(
@@ -75,7 +75,7 @@ def test_answer_with_only_anthropic_provider(
         )
 
         response_stream: list[AnswerStreamPart] = []
-        for packet in handle_stream_message_objects(
+        for packet in stream_chat_message(
             new_msg_req=chat_request,
             user=test_user,
             db_session=db_session,

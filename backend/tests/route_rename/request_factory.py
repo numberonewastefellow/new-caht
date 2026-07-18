@@ -8,7 +8,7 @@ import uuid
 # Manual overrides keyed by operation_id
 REQUEST_OVERRIDES: dict[str, dict] = {
     "create_chat_session": {
-        "body": {"persona_id": 0, "description": "snapshot-test"},
+        "body": {"agent_id": 0, "description": "snapshot-test"},
     },
     "rename_chat_session": {
         "body": {

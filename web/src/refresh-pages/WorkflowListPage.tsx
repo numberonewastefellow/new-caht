@@ -45,7 +45,7 @@ const MAX_CHAIN = 4;
 
 function AgentChain({ workflow }: { workflow: WorkflowSnapshot }) {
   const names = workflow.steps.map(
-    (s) => s.persona_name || `Agent #${s.persona_id}`
+    (s) => s.agent_name || `Agent #${s.agent_id}`
   );
   const shown = names.slice(0, MAX_CHAIN);
   const extra = names.length - shown.length;

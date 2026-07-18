@@ -2,7 +2,7 @@
 Generate and deploy starter messages for all agents missing them.
 
 Reads each agent's system_prompt, uses an LLM to generate 3-4 relevant
-starter questions, then PATCHes the persona.
+starter questions, then PATCHes the agent.
 
 Usage:
     python generate_starter_messages.py --list              # Show which agents are missing starters
@@ -182,14 +182,14 @@ def generate_starters_heuristic(name: str, system_prompt: str) -> list[dict]:
     ]
 
 
-# ── Persona helpers ───────────────────────────────────────────────────────
+# ── Agent helpers ───────────────────────────────────────────────────────
 
 
-def get_all_personas() -> list[dict]:
-    """Fetch all personas."""
-    resp = api("GET", "admin/persona")
+def get_all_agents() -> list[dict]:
+    """Fetch all agents."""
+    resp = api("GET", "admin/agent")
     if resp.status_code != 200:
-        resp = api("GET", "persona")
+        resp = api("GET", "agent")
     resp.raise_for_status()
     return resp.json()
 
@@ -201,12 +201,12 @@ def get_workflows() -> list[dict]:
     return resp.json()
 
 
-def update_persona_starters(persona_id: int, starters: list[dict]) -> bool:
-    """PATCH persona with new starter_messages."""
+def update_agent_starters(agent_id: int, starters: list[dict]) -> bool:
+    """PATCH agent with new starter_messages."""
     # Fetch current data
-    resp = api("GET", f"persona/{persona_id}")
+    resp = api("GET", f"agent/{agent_id}")
     if resp.status_code != 200:
-        print(f"    [ERR] GET persona {persona_id}: {resp.status_code}")
+        print(f"    [ERR] GET agent {agent_id}: {resp.status_code}")
         return False
 
     p = resp.json()
@@ -233,7 +233,7 @@ def update_persona_starters(persona_id: int, starters: list[dict]) -> bool:
         "knowledge_file_ids": [],
     }
 
-    resp = api("PATCH", f"persona/{persona_id}", patch)
+    resp = api("PATCH", f"agent/{agent_id}", patch)
     if resp.status_code == 200:
         return True
     else:
@@ -242,35 +242,35 @@ def update_persona_starters(persona_id: int, starters: list[dict]) -> bool:
 
 
 def find_missing_starters(
-    personas: list[dict],
+    agents: list[dict],
     workflow_id: int | None = None,
 ) -> list[dict]:
-    """Find personas missing starter messages, optionally filtered by workflow."""
-    # Get workflow persona IDs if filtering
-    wf_persona_ids = None
+    """Find agents missing starter messages, optionally filtered by workflow."""
+    # Get workflow agent IDs if filtering
+    wf_agent_ids = None
     if workflow_id is not None:
         workflows = get_workflows()
         for wf in workflows:
             if wf["id"] == workflow_id:
-                wf_persona_ids = set()
-                # Add step persona IDs
+                wf_agent_ids = set()
+                # Add step agent IDs
                 for step in wf.get("steps", []):
-                    if step.get("persona_id"):
-                        wf_persona_ids.add(step["persona_id"])
-                # Add wrapper persona (same name)
-                for p in personas:
+                    if step.get("agent_id"):
+                        wf_agent_ids.add(step["agent_id"])
+                # Add wrapper agent (same name)
+                for p in agents:
                     if p["name"] == wf["name"]:
-                        wf_persona_ids.add(p["id"])
+                        wf_agent_ids.add(p["id"])
                 break
 
     missing = []
-    for p in personas:
+    for p in agents:
         pid = p["id"]
         if pid == 0:
             continue
         if p["name"].startswith("__test"):
             continue
-        if wf_persona_ids is not None and pid not in wf_persona_ids:
+        if wf_agent_ids is not None and pid not in wf_agent_ids:
             continue
 
         starters = p.get("starter_messages") or []
@@ -283,9 +283,9 @@ def find_missing_starters(
 # ── List command ──────────────────────────────────────────────────────────
 
 
-def list_missing(personas: list[dict], workflow_id: int | None = None):
+def list_missing(agents: list[dict], workflow_id: int | None = None):
     """Show which agents are missing starter messages."""
-    missing = find_missing_starters(personas, workflow_id)
+    missing = find_missing_starters(agents, workflow_id)
 
     has_prompt = [p for p in missing if (p.get("system_prompt") or "").strip()]
     no_prompt = [p for p in missing if not (p.get("system_prompt") or "").strip()]
@@ -306,21 +306,21 @@ def list_missing(personas: list[dict], workflow_id: int | None = None):
 # ── Process command ───────────────────────────────────────────────────────
 
 
-def process_persona(
-    persona: dict,
+def process_agent(
+    agent: dict,
     upload: bool = True,
     use_llm: bool = True,
     preview_file=None,
 ) -> bool:
-    """Generate starter messages for one persona."""
-    pid = persona["id"]
-    name = persona["name"]
-    prompt = (persona.get("system_prompt") or "").strip()
+    """Generate starter messages for one agent."""
+    pid = agent["id"]
+    name = agent["name"]
+    prompt = (agent.get("system_prompt") or "").strip()
 
     print(f"\n  [{pid}] {name}")
 
     if not prompt:
-        print(f"    No system prompt — skipping (wrapper persona)")
+        print(f"    No system prompt — skipping (wrapper agent)")
         return False
 
     print(f"    Prompt: {len(prompt)} chars")
@@ -352,7 +352,7 @@ def process_persona(
         return True
 
     # Deploy
-    if update_persona_starters(pid, starters):
+    if update_agent_starters(pid, starters):
         print(f"    [OK] Starters set")
         return True
     else:
@@ -371,7 +371,7 @@ def main():
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--list", action="store_true", help="Show agents missing starters")
     mode.add_argument("--all", action="store_true", help="Generate for ALL missing agents")
-    mode.add_argument("--id", type=int, help="Single persona ID")
+    mode.add_argument("--id", type=int, help="Single agent ID")
 
     parser.add_argument("--workflow", type=int, help="Filter to a specific workflow ID")
     parser.add_argument("--preview", action="store_true", help="Generate but don't upload")
@@ -386,24 +386,24 @@ def main():
     _resolve_openai_key()
 
     print(f"LLM: {LLM_CONFIG['model']} (key={'YES' if LLM_CONFIG['api_key'] else 'MISSING'})")
-    print("Fetching personas...")
-    personas = get_all_personas()
-    print(f"Total: {len(personas)} personas")
+    print("Fetching agents...")
+    agents = get_all_agents()
+    print(f"Total: {len(agents)} agents")
 
     if args.list:
-        list_missing(personas, args.workflow)
+        list_missing(agents, args.workflow)
         return
 
     if args.id:
-        target = next((p for p in personas if p["id"] == args.id), None)
+        target = next((p for p in agents if p["id"] == args.id), None)
         if not target:
-            print(f"Persona {args.id} not found")
+            print(f"Agent {args.id} not found")
             sys.exit(1)
-        process_persona(target, upload=not args.preview, use_llm=not args.no_llm)
+        process_agent(target, upload=not args.preview, use_llm=not args.no_llm)
         return
 
     # --all
-    missing = find_missing_starters(personas, args.workflow)
+    missing = find_missing_starters(agents, args.workflow)
     # Only process those with system prompts
     targets = [p for p in missing if (p.get("system_prompt") or "").strip()]
 
@@ -419,9 +419,9 @@ def main():
         print(f"Preview mode — saving to {args.preview_file}")
 
     ok, fail = 0, 0
-    for i, persona in enumerate(sorted(targets, key=lambda x: x["id"])):
-        if process_persona(
-            persona,
+    for i, agent in enumerate(sorted(targets, key=lambda x: x["id"])):
+        if process_agent(
+            agent,
             upload=not args.preview,
             use_llm=not args.no_llm,
             preview_file=preview_file,

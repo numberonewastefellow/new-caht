@@ -49,13 +49,13 @@ class TestBasicShouldRespond:
         """Guild config enabled=true proceeds to channel check."""
         mock_guild_config = MagicMock()
         mock_guild_config.enabled = True
-        mock_guild_config.default_persona_id = 1
+        mock_guild_config.default_agent_id = 1
 
         mock_channel_config = MagicMock()
         mock_channel_config.enabled = True
         mock_channel_config.require_bot_invocation = False
         mock_channel_config.thread_only_mode = False
-        mock_channel_config.persona_override_id = None
+        mock_channel_config.agent_override_id = None
 
         with patch(
             "om.onyxbot.discord.handle_message.get_session_with_tenant"
@@ -121,13 +121,13 @@ class TestBasicShouldRespond:
         """Channel config enabled=true proceeds to mention check."""
         mock_guild_config = MagicMock()
         mock_guild_config.enabled = True
-        mock_guild_config.default_persona_id = 2
+        mock_guild_config.default_agent_id = 2
 
         mock_channel_config = MagicMock()
         mock_channel_config.enabled = True
         mock_channel_config.require_bot_invocation = False
         mock_channel_config.thread_only_mode = False
-        mock_channel_config.persona_override_id = None
+        mock_channel_config.agent_override_id = None
 
         with patch(
             "om.onyxbot.discord.handle_message.get_session_with_tenant"
@@ -151,7 +151,7 @@ class TestBasicShouldRespond:
                 )
 
         assert result.should_respond is True
-        assert result.persona_id == 2
+        assert result.agent_id == 2
 
     @pytest.mark.asyncio
     async def test_should_respond_channel_not_found(
@@ -191,13 +191,13 @@ class TestBasicShouldRespond:
         """require_bot_invocation=true with no @mention returns False."""
         mock_guild_config = MagicMock()
         mock_guild_config.enabled = True
-        mock_guild_config.default_persona_id = 1
+        mock_guild_config.default_agent_id = 1
 
         mock_channel_config = MagicMock()
         mock_channel_config.enabled = True
         mock_channel_config.require_bot_invocation = True
         mock_channel_config.thread_only_mode = False
-        mock_channel_config.persona_override_id = None
+        mock_channel_config.agent_override_id = None
 
         # No bot mention
         mock_discord_message.mentions = []
@@ -236,13 +236,13 @@ class TestBasicShouldRespond:
         """require_bot_invocation=true with @mention returns True."""
         mock_guild_config = MagicMock()
         mock_guild_config.enabled = True
-        mock_guild_config.default_persona_id = 1
+        mock_guild_config.default_agent_id = 1
 
         mock_channel_config = MagicMock()
         mock_channel_config.enabled = True
         mock_channel_config.require_bot_invocation = True
         mock_channel_config.thread_only_mode = False
-        mock_channel_config.persona_override_id = None
+        mock_channel_config.agent_override_id = None
 
         with patch(
             "om.onyxbot.discord.handle_message.get_session_with_tenant"
@@ -274,13 +274,13 @@ class TestBasicShouldRespond:
         """require_bot_invocation=false with no @mention returns True."""
         mock_guild_config = MagicMock()
         mock_guild_config.enabled = True
-        mock_guild_config.default_persona_id = 1
+        mock_guild_config.default_agent_id = 1
 
         mock_channel_config = MagicMock()
         mock_channel_config.enabled = True
         mock_channel_config.require_bot_invocation = False
         mock_channel_config.thread_only_mode = False
-        mock_channel_config.persona_override_id = None
+        mock_channel_config.agent_override_id = None
 
         with patch(
             "om.onyxbot.discord.handle_message.get_session_with_tenant"
@@ -499,13 +499,13 @@ class TestThreadOnlyMode:
         """thread_only_mode=true, message in thread returns True."""
         mock_guild_config = MagicMock()
         mock_guild_config.enabled = True
-        mock_guild_config.default_persona_id = 1
+        mock_guild_config.default_agent_id = 1
 
         mock_channel_config = MagicMock()
         mock_channel_config.enabled = True
         mock_channel_config.require_bot_invocation = False
         mock_channel_config.thread_only_mode = True
-        mock_channel_config.persona_override_id = None
+        mock_channel_config.agent_override_id = None
 
         # Create thread message
         thread = MagicMock(spec=discord.Thread)
@@ -548,13 +548,13 @@ class TestThreadOnlyMode:
         """thread_only_mode=false, message in channel returns True."""
         mock_guild_config = MagicMock()
         mock_guild_config.enabled = True
-        mock_guild_config.default_persona_id = 1
+        mock_guild_config.default_agent_id = 1
 
         mock_channel_config = MagicMock()
         mock_channel_config.enabled = True
         mock_channel_config.require_bot_invocation = False
         mock_channel_config.thread_only_mode = False
-        mock_channel_config.persona_override_id = None
+        mock_channel_config.agent_override_id = None
 
         with patch(
             "om.onyxbot.discord.handle_message.get_session_with_tenant"
@@ -600,13 +600,13 @@ class TestEdgeCases:
         """Thread under channel uses parent channel's config."""
         mock_guild_config = MagicMock()
         mock_guild_config.enabled = True
-        mock_guild_config.default_persona_id = 1
+        mock_guild_config.default_agent_id = 1
 
         mock_channel_config = MagicMock()
         mock_channel_config.enabled = True
         mock_channel_config.require_bot_invocation = False
         mock_channel_config.thread_only_mode = False
-        mock_channel_config.persona_override_id = 5  # Specific persona
+        mock_channel_config.agent_override_id = 5  # Specific agent
 
         # Create thread message
         thread = MagicMock(spec=discord.Thread)
@@ -641,5 +641,5 @@ class TestEdgeCases:
                 result = await should_respond(msg, "tenant1", mock_bot_user)
 
         assert result.should_respond is True
-        # Should use parent's persona override
-        assert result.persona_id == 5
+        # Should use parent's agent override
+        assert result.agent_id == 5

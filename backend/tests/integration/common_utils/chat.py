@@ -19,8 +19,8 @@ def test_create_chat_session_and_send_messages() -> None:
         f"{base_url}/chat/create-chat-session",
         json={
             "description": "Test Chat",
-            "persona_id": 1,
-        },  # Assuming persona_id 1 exists
+            "agent_id": 1,
+        },  # Assuming agent_id 1 exists
         headers=headers,
     )
     assert create_session_response.status_code == 200

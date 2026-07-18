@@ -78,7 +78,7 @@ class TraceNode(BaseModel):
     # Why this node was reached (orchestrator's routing rationale).
     reason: str | None = None
     step_id: int | None = None
-    persona_id: int | None = None
+    agent_id: int | None = None
     call_index: int | None = None  # e.g. 2 for the 2nd call to the same agent
     duration_ms: int | None = None
     tokens: int | None = None
@@ -202,7 +202,7 @@ class WorkflowTraceBuilder:
         self,
         step_id: int | None,
         name: str,
-        persona_id: int | None,
+        agent_id: int | None,
         input_text: str,
         output_text: str,
         status: NodeStatus = "completed",
@@ -224,7 +224,7 @@ class WorkflowTraceBuilder:
                 output=output_text or "",
                 reason=self._pending_reason,
                 step_id=step_id,
-                persona_id=persona_id,
+                agent_id=agent_id,
                 call_index=call_index,
                 duration_ms=duration_ms,
                 tokens=tokens,
@@ -254,7 +254,7 @@ class WorkflowTraceBuilder:
         self,
         step_id: int | None,
         name: str,
-        persona_id: int | None,
+        agent_id: int | None,
         input_text: str,
         file_names: list[str] | None = None,
         call_index: int | None = None,
@@ -276,7 +276,7 @@ class WorkflowTraceBuilder:
                 output="",
                 reason=self._pending_reason,
                 step_id=step_id,
-                persona_id=persona_id,
+                agent_id=agent_id,
                 call_index=call_index,
                 file_names=file_names or [],
                 started_at=_now_iso(),
@@ -330,7 +330,7 @@ class WorkflowTraceBuilder:
             self.add_agent(
                 step_id=None,
                 name="Agent",
-                persona_id=None,
+                agent_id=None,
                 input_text="",
                 output_text=output_text,
                 status=status,

@@ -41,7 +41,7 @@ def assert_response_is_equivalent(
     assert provider_data is not None
 
     assert provider_data["default_model_name"] == default_model_name
-    assert provider_data["personas"] == []
+    assert provider_data["agents"] == []
 
     def fill_max_input_tokens_and_supports_image_input(
         req: ModelConfigurationUpsertRequest,
@@ -464,7 +464,7 @@ def test_model_visibility_preserved_on_edit(reset: None) -> None:  # noqa: ARG00
             "model_configurations": [config.dict() for config in model_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert create_response.status_code == 200
@@ -515,7 +515,7 @@ def test_model_visibility_preserved_on_edit(reset: None) -> None:  # noqa: ARG00
             ],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert edit_response_1.status_code == 200
@@ -563,7 +563,7 @@ def test_model_visibility_preserved_on_edit(reset: None) -> None:  # noqa: ARG00
             ],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert edit_response_2.status_code == 200
@@ -777,7 +777,7 @@ def test_default_model_persistence_and_update(reset: None) -> None:  # noqa: ARG
             "model_configurations": [config.model_dump() for config in model_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert create_response.status_code == 200
@@ -834,7 +834,7 @@ def test_default_model_persistence_and_update(reset: None) -> None:  # noqa: ARG
             "model_configurations": [config.model_dump() for config in model_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert update_response.status_code == 200
@@ -1010,7 +1010,7 @@ def test_multiple_providers_default_switching(reset: None) -> None:  # noqa: ARG
             "model_configurations": [c.model_dump() for c in provider_1_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert create_response_1.status_code == 200
@@ -1028,7 +1028,7 @@ def test_multiple_providers_default_switching(reset: None) -> None:  # noqa: ARG
             "model_configurations": [c.model_dump() for c in provider_2_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert create_response_2.status_code == 200
@@ -1111,7 +1111,7 @@ def test_multiple_providers_default_switching(reset: None) -> None:  # noqa: ARG
             "model_configurations": [c.model_dump() for c in provider_2_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert update_response.status_code == 200
@@ -1193,7 +1193,7 @@ def test_multiple_providers_default_switching(reset: None) -> None:  # noqa: ARG
             "model_configurations": [c.model_dump() for c in provider_2_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert update_response.status_code == 200
@@ -1358,7 +1358,7 @@ def test_default_provider_and_vision_provider_selection(
             "model_configurations": [c.model_dump() for c in provider_1_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert create_response_1.status_code == 200
@@ -1376,7 +1376,7 @@ def test_default_provider_and_vision_provider_selection(
             "model_configurations": [c.model_dump() for c in provider_2_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert create_response_2.status_code == 200
@@ -1539,7 +1539,7 @@ def test_default_provider_is_not_default_vision_provider(
             "model_configurations": [c.model_dump() for c in model_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert create_response.status_code == 200
@@ -1725,7 +1725,7 @@ def test_all_three_provider_types_no_mixup(reset: None) -> None:  # noqa: ARG001
             "model_configurations": [c.model_dump() for c in regular_model_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert create_regular_response.status_code == 200
@@ -1746,7 +1746,7 @@ def test_all_three_provider_types_no_mixup(reset: None) -> None:  # noqa: ARG001
             "model_configurations": [c.model_dump() for c in vision_model_configs],
             "is_public": True,
             "groups": [],
-            "personas": [],
+            "agents": [],
         },
     )
     assert create_vision_response.status_code == 200

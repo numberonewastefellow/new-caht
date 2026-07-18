@@ -65,7 +65,7 @@ DISABLED_GEN_AI_MSG = (
 STABLE_VERSION_PATTERN = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
 DEV_VERSION_PATTERN = re.compile(r"^v(\d+)\.(\d+)\.(\d+)-beta\.(\d+)$")
 
-DEFAULT_PERSONA_ID = 0
+DEFAULT_AGENT_ID = 0
 
 DEFAULT_CC_PAIR_ID = 1
 
@@ -163,7 +163,7 @@ CELERY_SANDBOX_FILE_SYNC_LOCK_TIMEOUT = 5 * 60  # 5 minutes (in seconds)
 
 DANSWER_REDIS_FUNCTION_LOCK_PREFIX = "da_function_lock:"
 
-TMP_DRALPHA_PERSONA_NAME = "KG Beta"
+TMP_DRALPHA_AGENT_NAME = "KG Beta"
 
 
 class DocumentSource(str, Enum):
@@ -247,7 +247,7 @@ DocumentSourceRequiringTenantContext: list[DocumentSource] = [DocumentSource.FIL
 
 class NotificationType(str, Enum):
     REINDEX = "reindex"
-    PERSONA_SHARED = "persona_shared"
+    AGENT_SHARED = "agent_shared"
     TRIAL_ENDS_TWO_DAYS = "two_day_trial_ending"  # 2 days left in trial
     RELEASE_NOTES = "release_notes"
     ASSISTANT_FILES_READY = "assistant_files_ready"

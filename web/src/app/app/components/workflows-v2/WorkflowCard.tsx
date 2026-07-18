@@ -11,7 +11,7 @@ import { SvgStar, SvgPin, SvgUser } from "@opal/icons";
 export interface WorkflowCardProps {
   workflow: WorkflowSnapshot;
   pinned: boolean;
-  /** Whether a wrapper persona exists so the workflow can actually be launched. */
+  /** Whether a wrapper agent exists so the workflow can actually be launched. */
   launchable: boolean;
   onOpen: () => void;
   onTogglePin: () => void;
@@ -41,15 +41,15 @@ const WorkflowCard = memo(function WorkflowCard({
 }: WorkflowCardProps) {
   const { from, to } = swatchForId(workflow.id);
 
-  // Only real agent steps get a persona chip / count (skip conditional routers).
+  // Only real agent steps get a agent chip / count (skip conditional routers).
   const agentSteps = useMemo(
     () =>
       workflow.steps.filter(
-        (s) => s.step_type === "agent" && !!s.persona_name
+        (s) => s.step_type === "agent" && !!s.agent_name
       ),
     [workflow.steps]
   );
-  const chainNames = agentSteps.slice(0, 4).map((s) => s.persona_name as string);
+  const chainNames = agentSteps.slice(0, 4).map((s) => s.agent_name as string);
   const overflow = agentSteps.length - chainNames.length;
 
   return (
@@ -59,7 +59,7 @@ const WorkflowCard = memo(function WorkflowCard({
       title={
         launchable
           ? undefined
-          : "Not yet available — this workflow needs a persona backfill by an admin."
+          : "Not yet available — this workflow needs a agent backfill by an admin."
       }
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-2xl border border-border-01 bg-background-tint-01 p-4 text-left",

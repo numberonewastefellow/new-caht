@@ -10,8 +10,8 @@ import {
   BuildUserInfo,
 } from "@/app/craft/onboarding/types";
 import {
-  getBuildUserPersona,
-  setBuildUserPersona,
+  getBuildUserAgent,
+  setBuildUserAgent,
 } from "@/app/craft/onboarding/constants";
 import { updateUserPersonalization } from "@/lib/userSettings";
 import { useBuildSessionStore } from "@/app/craft/hooks/useBuildSessionStore";
@@ -60,7 +60,7 @@ export function useOnboardingModal(): OnboardingModalController {
   const [hasInitialized, setHasInitialized] = useState(false);
 
   // Compute initial values for the form (read fresh on every render)
-  const existingPersona = getBuildUserPersona();
+  const existingAgent = getBuildUserAgent();
   const existingName = user?.personalization?.name || "";
   const spaceIndex = existingName.indexOf(" ");
   const initialFirstName =
@@ -71,14 +71,14 @@ export function useOnboardingModal(): OnboardingModalController {
   const initialValues = {
     firstName: initialFirstName,
     lastName: initialLastName,
-    workArea: existingPersona?.workArea,
-    level: existingPersona?.level,
+    workArea: existingAgent?.workArea,
+    level: existingAgent?.level,
   };
 
   // Check if user has completed initial onboarding
   const hasUserInfo = useMemo(() => {
-    const existingPersona = getBuildUserPersona();
-    return !!(user?.personalization?.name && existingPersona?.workArea);
+    const existingAgent = getBuildUserAgent();
+    return !!(user?.personalization?.name && existingAgent?.workArea);
   }, [user?.personalization?.name]);
 
   // Check if all providers are configured (skip LLM step entirely if so)
@@ -124,8 +124,8 @@ export function useOnboardingModal(): OnboardingModalController {
         : info.firstName.trim();
       await updateUserPersonalization({ name: fullName });
 
-      // Save persona to cookie
-      setBuildUserPersona({
+      // Save agent to cookie
+      setBuildUserAgent({
         workArea: info.workArea,
         level: info.level,
       });
@@ -147,8 +147,8 @@ export function useOnboardingModal(): OnboardingModalController {
   }, [refetchLlmProviders]);
 
   // Actions
-  const openPersonaEditor = useCallback(() => {
-    setMode({ type: "edit-persona" });
+  const openAgentEditor = useCallback(() => {
+    setMode({ type: "edit-agent" });
   }, []);
 
   const openLlmSetup = useCallback((provider?: string) => {
@@ -164,7 +164,7 @@ export function useOnboardingModal(): OnboardingModalController {
   return {
     mode,
     isOpen,
-    openPersonaEditor,
+    openAgentEditor,
     openLlmSetup,
     close,
     llmProviders,

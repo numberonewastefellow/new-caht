@@ -114,7 +114,7 @@ class DiscordBotManager:
         config_id: int,
         user_performing_action: DATestUser,
         enabled: bool | None = None,
-        default_persona_id: int | None = None,
+        default_agent_id: int | None = None,
     ) -> dict:
         """Update a guild config."""
         # Fetch current guild config to get existing values
@@ -123,10 +123,10 @@ class DiscordBotManager:
         # Build request body with required fields
         body: dict = {
             "enabled": enabled if enabled is not None else current_guild["enabled"],
-            "default_persona_id": (
-                default_persona_id
-                if default_persona_id is not None
-                else current_guild.get("default_persona_id")
+            "default_agent_id": (
+                default_agent_id
+                if default_agent_id is not None
+                else current_guild.get("default_agent_id")
             ),
         }
 
@@ -177,7 +177,7 @@ class DiscordBotManager:
         enabled: bool = False,
         thread_only_mode: bool = False,
         require_bot_invocation: bool = True,
-        persona_override_id: int | None = None,
+        agent_override_id: int | None = None,
     ) -> DATestDiscordChannelConfig:
         """Update a channel config.
 
@@ -188,7 +188,7 @@ class DiscordBotManager:
             "enabled": enabled,
             "thread_only_mode": thread_only_mode,
             "require_bot_invocation": require_bot_invocation,
-            "persona_override_id": persona_override_id,
+            "agent_override_id": agent_override_id,
         }
 
         response = requests.patch(
@@ -306,5 +306,5 @@ class DiscordBotManager:
                 enabled=config.enabled,
                 thread_only_mode=config.thread_only_mode,
                 require_bot_invocation=config.require_bot_invocation,
-                persona_override_id=config.persona_override_id,
+                agent_override_id=config.agent_override_id,
             )

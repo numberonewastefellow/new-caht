@@ -7,11 +7,11 @@ from sqlalchemy.orm import Session
 
 from om.chat.models import AnswerStreamPart
 from om.chat.models import StreamingError
-from om.chat.process_message import handle_stream_message_objects
+from om.chat.message_handler import stream_chat_message
 from om.db.chat import create_chat_session
 from om.db.models import RecencyBiasSetting
 from om.db.models import User
-from om.db.persona import upsert_persona
+from om.db.agent import upsert_agent
 from om.server.query_and_chat.models import MessageResponseIDInfo
 from om.server.query_and_chat.models import SendMessageRequest
 from om.server.query_and_chat.streaming_models import AgentResponseDelta
@@ -27,7 +27,7 @@ def test_stream_chat_message_objects_without_web_search(
     mock_external_deps: None,  # noqa: ARG001
 ) -> None:
     """
-    Test that when web search is requested but the persona has no web search tool,
+    Test that when web search is requested but the agent has no web search tool,
     the system handles it gracefully and returns a message explaining that web
     search is not available.
     """
@@ -68,12 +68,12 @@ def test_stream_chat_message_objects_without_web_search(
     # Create a test user
     test_user: User = create_test_user(db_session, email_prefix="test_web_search")
 
-    # Create a test persona explicitly WITHOUT any tools (including web search)
-    # This ensures the test doesn't rely on the state of the default persona
-    test_persona = upsert_persona(
-        user=None,  # System persona
-        name=f"Test Persona {uuid.uuid4()}",
-        description="Test persona with no tools for web search test",
+    # Create a test agent explicitly WITHOUT any tools (including web search)
+    # This ensures the test doesn't rely on the state of the default agent
+    test_agent = upsert_agent(
+        user=None,  # System agent
+        name=f"Test Agent {uuid.uuid4()}",
+        description="Test agent with no tools for web search test",
         num_chunks=10.0,
         llm_relevance_filter=True,
         llm_filter_extraction=True,
@@ -91,20 +91,20 @@ def test_stream_chat_message_objects_without_web_search(
         is_visible=True,
     )
 
-    # Create a chat session with our test persona
+    # Create a chat session with our test agent
     chat_session = create_chat_session(
         db_session=db_session,
         description="Test web search without tool",
         user_id=test_user.id if test_user else None,
-        persona_id=test_persona.id,
+        agent_id=test_agent.id,
     )
     # Create the chat message request with a query that attempts to force web search
     chat_request = SendMessageRequest(
         message="run a web search for 'Onyx'",
         chat_session_id=chat_session.id,
     )
-    # Call handle_stream_message_objects
-    response_generator = handle_stream_message_objects(
+    # Call stream_chat_message
+    response_generator = stream_chat_message(
         new_msg_req=chat_request,
         user=test_user,
         db_session=db_session,

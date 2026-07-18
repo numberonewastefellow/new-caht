@@ -17,7 +17,7 @@ import {
   buildImmediateMessages,
   buildEmptyMessage,
 } from "@/app/app/services/messageTree";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { SEARCH_PARAM_NAMES } from "@/app/app/services/searchParams";
 import { SEARCH_TOOL_ID } from "@/app/app/components/tools/constants";
 import { OmDocument } from "@/lib/search/interfaces";
@@ -100,8 +100,8 @@ interface RegenerationRequest {
 interface UseChatControllerProps {
   filterManager: FilterManager;
   llmManager: LlmManager;
-  liveAssistant: MinimalPersonaSnapshot | undefined;
-  availableAssistants: MinimalPersonaSnapshot[];
+  liveAssistant: MinimalAgentSnapshot | undefined;
+  availableAssistants: MinimalAgentSnapshot[];
   existingChatSessionId: string | null;
   selectedDocuments: OmDocument[];
   searchParams: ReadonlyURLSearchParams;
@@ -487,7 +487,7 @@ export default function useChatController({
         // This ensures "New Chat" appears immediately, even before any messages are saved
         addPendingChatSession({
           chatSessionId: currChatSessionId,
-          personaId: liveAssistant?.id || 0,
+          agentId: liveAssistant?.id || 0,
           workspaceId: workspaceId ? parseInt(workspaceId) : null,
         });
       } else {
@@ -1070,13 +1070,13 @@ export default function useChatController({
     handleSlackChatRedirect();
   }, [searchParams, router]);
 
-  // fetch # of allowed document tokens for the selected Persona
+  // fetch # of allowed document tokens for the selected Agent
   useEffect(() => {
-    if (!liveAssistant?.id) return; // avoid calling with undefined persona id
+    if (!liveAssistant?.id) return; // avoid calling with undefined agent id
 
     async function fetchMaxTokens() {
       const response = await fetch(
-        `/api/converse/max-selected-document-tokens?persona_id=${liveAssistant?.id}`
+        `/api/converse/max-selected-document-tokens?agent_id=${liveAssistant?.id}`
       );
       if (response.ok) {
         const maxTokens = (await response.json()).max_tokens as number;

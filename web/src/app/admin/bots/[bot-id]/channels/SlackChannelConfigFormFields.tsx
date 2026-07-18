@@ -12,7 +12,7 @@ import {
   TextFormField,
 } from "@/components/Field";
 import Button from "@/refresh-components/buttons/Button";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import DocumentSetCard from "@/sections/cards/DocumentSetCard";
 import CollapsibleSection from "@/app/admin/assistants/CollapsibleSection";
 import { StandardAnswerCategoryResponse } from "@/components/standardAnswers/getStandardAnswerCategories";
@@ -45,8 +45,8 @@ export interface SlackChannelConfigFormFieldsProps {
   isUpdate: boolean;
   isDefault: boolean;
   documentSets: DocumentSetSummary[];
-  searchEnabledAssistants: MinimalPersonaSnapshot[];
-  nonSearchAssistants: MinimalPersonaSnapshot[];
+  searchEnabledAssistants: MinimalAgentSnapshot[];
+  nonSearchAssistants: MinimalAgentSnapshot[];
   standardAnswerCategoryResponse: StandardAnswerCategoryResponse;
   slack_bot_id: number;
   formikProps: any;
@@ -88,15 +88,15 @@ export function SlackChannelConfigFormFields({
   };
 
   const [syncEnabledAssistants, availableAssistants] = useMemo(() => {
-    const sync: MinimalPersonaSnapshot[] = [];
-    const available: MinimalPersonaSnapshot[] = [];
+    const sync: MinimalAgentSnapshot[] = [];
+    const available: MinimalAgentSnapshot[] = [];
 
-    searchEnabledAssistants.forEach((persona) => {
-      const hasSyncSet = persona.document_sets.some(documentSetContainsSync);
+    searchEnabledAssistants.forEach((agent) => {
+      const hasSyncSet = agent.document_sets.some(documentSetContainsSync);
       if (hasSyncSet) {
-        sync.push(persona);
+        sync.push(agent);
       } else {
-        available.push(persona);
+        available.push(agent);
       }
     });
 
@@ -152,7 +152,7 @@ export function SlackChannelConfigFormFields({
       return selectedSets.some((ds) => documentSetContainsPrivate(ds));
     } else if (values.knowledge_source === "assistant") {
       const chosenAssistant = searchEnabledAssistants.find(
-        (p) => p.id == values.persona_id
+        (p) => p.id == values.agent_id
       );
       return chosenAssistant?.document_sets.some((ds) =>
         documentSetContainsPrivate(ds)
@@ -160,7 +160,7 @@ export function SlackChannelConfigFormFields({
     }
     return false;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.knowledge_source, values.document_sets, values.persona_id]);
+  }, [values.knowledge_source, values.document_sets, values.agent_id]);
 
   return (
     <>
@@ -358,10 +358,10 @@ export function SlackChannelConfigFormFields({
             </SubLabel>
 
             <SelectorFormField
-              name="persona_id"
-              options={availableAssistants.map((persona) => ({
-                name: persona.name,
-                value: persona.id,
+              name="agent_id"
+              options={availableAssistants.map((agent) => ({
+                name: agent.name,
+                value: agent.id,
               }))}
             />
             {viewSyncEnabledAssistants && syncEnabledAssistants.length > 0 && (
@@ -371,17 +371,17 @@ export function SlackChannelConfigFormFields({
                 </p>
                 <div className="mb-3 mt-2 flex gap-2 flex-wrap text-sm">
                   {syncEnabledAssistants.map(
-                    (persona: MinimalPersonaSnapshot) => (
+                    (agent: MinimalAgentSnapshot) => (
                       <button
                         type="button"
                         onClick={() =>
-                          router.push(`/app/agents/edit/${persona.id}` as Route)
+                          router.push(`/app/agents/edit/${agent.id}` as Route)
                         }
-                        key={persona.id}
+                        key={agent.id}
                         className="p-2 bg-background-100 cursor-pointer rounded-md flex items-center gap-2"
                       >
-                        <AgentAvatar agent={persona} size={16} />
-                        {persona.name}
+                        <AgentAvatar agent={agent} size={16} />
+                        {agent.name}
                       </button>
                     )
                   )}
@@ -425,10 +425,10 @@ export function SlackChannelConfigFormFields({
             </SubLabel>
 
             <SelectorFormField
-              name="persona_id"
-              options={nonSearchAssistants.map((persona) => ({
-                name: persona.name,
-                value: persona.id,
+              name="agent_id"
+              options={nonSearchAssistants.map((agent) => ({
+                name: agent.name,
+                value: agent.id,
               }))}
             />
           </div>

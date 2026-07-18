@@ -3,8 +3,8 @@
 import useSWR from "swr";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import {
-  MinimalPersonaSnapshot,
-  FullPersona,
+  MinimalAgentSnapshot,
+  FullAgent,
 } from "@/app/admin/assistants/interfaces";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import { pinAgents } from "@/lib/agents";
@@ -14,17 +14,17 @@ import { SEARCH_PARAM_NAMES } from "@/app/app/services/searchParams";
 import useChatSessions from "./useChatSessions";
 
 /**
- * Fetches all agents (personas) available to the current user.
+ * Fetches all agents (agents) available to the current user.
  *
  * Returns minimal agent snapshots containing basic information like name, description,
  * tools, and display settings. Use this for listing agents in UI components like
  * sidebars, dropdowns, or agent selection interfaces.
  *
  * For full agent details including knowledge_file_ids, groups, and advanced settings,
- * use `useAgent(personaId)` instead.
+ * use `useAgent(agentId)` instead.
  *
  * @returns Object containing:
- *   - agents: Array of MinimalPersonaSnapshot objects (empty array while loading)
+ *   - agents: Array of MinimalAgentSnapshot objects (empty array while loading)
  *   - isLoading: Boolean indicating if data is being fetched
  *   - error: Any error that occurred during fetch
  *   - refresh: Function to manually revalidate the data
@@ -35,8 +35,8 @@ import useChatSessions from "./useChatSessions";
  * return <AgentList agents={agents} />;
  */
 export function useAgents() {
-  const { data, error, mutate } = useSWR<MinimalPersonaSnapshot[]>(
-    "/api/persona",
+  const { data, error, mutate } = useSWR<MinimalAgentSnapshot[]>(
+    "/api/agent",
     errorHandlingFetcher,
     {
       revalidateOnFocus: false,
@@ -53,7 +53,7 @@ export function useAgents() {
 }
 
 /**
- * Fetches a single agent (persona) by ID with full details.
+ * Fetches a single agent (agent) by ID with full details.
  *
  * Returns complete agent information including knowledge_file_ids, groups, system prompts,
  * and all configuration settings. Use this when you need detailed agent data for
@@ -63,8 +63,8 @@ export function useAgents() {
  *
  * @param agentId - The ID of the agent to fetch, or null to skip fetching
  * @returns Object containing:
- *   - agent: FullPersona object with complete agent details, or null if not loaded/not found
- *   - isLoading: Boolean indicating if data is being fetched (false when personaId is null)
+ *   - agent: FullAgent object with complete agent details, or null if not loaded/not found
+ *   - isLoading: Boolean indicating if data is being fetched (false when agentId is null)
  *   - error: Any error that occurred during fetch
  *   - refresh: Function to manually revalidate the data
  *
@@ -75,8 +75,8 @@ export function useAgents() {
  * return <AgentEditor agent={agent} />;
  */
 export function useAgent(agentId: number | null) {
-  const { data, error, isLoading, mutate } = useSWR<FullPersona>(
-    agentId ? `/api/persona/${agentId}` : null,
+  const { data, error, isLoading, mutate } = useSWR<FullAgent>(
+    agentId ? `/api/agent/${agentId}` : null,
     errorHandlingFetcher,
     {
       revalidateOnFocus: false,
@@ -102,25 +102,25 @@ export function usePinnedAgents() {
 
   // Local state for optimistic updates during drag-and-drop
   const [localPinnedAgents, setLocalPinnedAgents] = useState<
-    MinimalPersonaSnapshot[]
+    MinimalAgentSnapshot[]
   >([]);
 
   // Derive pinned agents from server data
   const serverPinnedAgents = useMemo(() => {
     if (agents.length === 0) return [];
 
-    // If pinned_assistants is null/undefined (never set), show default personas
+    // If pinned_assistants is null/undefined (never set), show default agents
     // If it's an empty array (user explicitly unpinned all), show nothing
     const pinnedIds = user?.preferences.pinned_assistants;
     if (pinnedIds === null || pinnedIds === undefined) {
       return agents.filter(
-        (agent) => agent.is_default_persona && agent.id !== 0
+        (agent) => agent.is_default_agent && agent.id !== 0
       );
     }
 
     return pinnedIds
       .map((id) => agents.find((agent) => agent.id === id))
-      .filter((agent): agent is MinimalPersonaSnapshot => !!agent);
+      .filter((agent): agent is MinimalAgentSnapshot => !!agent);
   }, [agents, user?.preferences.pinned_assistants]);
 
   // Sync server data → local state when server data changes
@@ -133,7 +133,7 @@ export function usePinnedAgents() {
 
   // Toggle pin status - updates local state AND persists to server
   const togglePinnedAgent = useCallback(
-    async (agent: MinimalPersonaSnapshot, shouldPin: boolean) => {
+    async (agent: MinimalAgentSnapshot, shouldPin: boolean) => {
       const newPinned = shouldPin
         ? [...localPinnedAgents, agent]
         : localPinnedAgents.filter((a) => a.id !== agent.id);
@@ -150,7 +150,7 @@ export function usePinnedAgents() {
 
   // Update pinned agents order (for drag-and-drop) - updates AND persists
   const updatePinnedAgents = useCallback(
-    async (newPinnedAgents: MinimalPersonaSnapshot[]) => {
+    async (newPinnedAgents: MinimalAgentSnapshot[]) => {
       // Optimistic update
       setLocalPinnedAgents(newPinnedAgents);
 
@@ -172,28 +172,28 @@ export function usePinnedAgents() {
 /**
  * Hook to determine the currently active agent based on:
  * 1. URL param `assistantId`
- * 2. Chat session's `persona_id`
+ * 2. Chat session's `agent_id`
  * 3. Falls back to null if neither is present
  */
-export function useCurrentAgent(): MinimalPersonaSnapshot | null {
+export function useCurrentAgent(): MinimalAgentSnapshot | null {
   const { agents } = useAgents();
   const searchParams = useSearchParams();
 
-  const agentIdRaw = searchParams?.get(SEARCH_PARAM_NAMES.PERSONA_ID);
+  const agentIdRaw = searchParams?.get(SEARCH_PARAM_NAMES.AGENT_ID);
   const { currentChatSession } = useChatSessions();
 
   const currentAgent = useMemo(() => {
     if (agents.length === 0) return null;
 
-    // Priority: URL param > chat session persona > null
+    // Priority: URL param > chat session agent > null
     const agentId = agentIdRaw
       ? parseInt(agentIdRaw)
-      : currentChatSession?.persona_id;
+      : currentChatSession?.agent_id;
 
     if (!agentId) return null;
 
     return agents.find((a) => a.id === agentId) ?? null;
-  }, [agents, agentIdRaw, currentChatSession?.persona_id]);
+  }, [agents, agentIdRaw, currentChatSession?.agent_id]);
 
   return currentAgent;
 }

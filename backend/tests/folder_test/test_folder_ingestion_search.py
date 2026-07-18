@@ -205,7 +205,7 @@ def wait_for_indexing(timeout: int = 120, cc_pair_id: int | None = None) -> bool
 def create_chat_session() -> str:
     """Create a new chat session. Returns session_id."""
     resp = api("POST", "chat/create-chat-session", {
-        "persona_id": 0,
+        "agent_id": 0,
         "description": None,
         "project_id": None,
     })

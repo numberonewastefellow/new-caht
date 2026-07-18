@@ -51,7 +51,7 @@ class TagResponse(BaseModel):
 
 
 class UpdateChatSessionThreadRequest(BaseModel):
-    # If not specified, use Onyx default persona
+    # If not specified, use Onyx default agent
     chat_session_id: UUID
     new_alternate_model: str
 
@@ -62,8 +62,8 @@ class UpdateChatSessionTemperatureRequest(BaseModel):
 
 
 class ChatSessionCreationRequest(BaseModel):
-    # If not specified, use Onyx default persona
-    persona_id: int = 0
+    # If not specified, use Onyx default agent
+    agent_id: int = 0
     description: str | None = None
     workspace_id: int | None = None
 
@@ -165,7 +165,7 @@ class RenameChatSessionResponse(BaseModel):
 class ChatSessionDetails(BaseModel):
     id: UUID
     name: str | None
-    persona_id: int | None = None
+    agent_id: int | None = None
     time_created: str
     time_updated: str
     shared_status: ChatSessionSharedStatus
@@ -177,7 +177,7 @@ class ChatSessionDetails(BaseModel):
         return cls(
             id=model.id,
             name=model.description,
-            persona_id=model.persona_id,
+            agent_id=model.agent_id,
             time_created=model.time_created.isoformat(),
             time_updated=model.time_updated.isoformat(),
             shared_status=model.shared_status,
@@ -216,8 +216,8 @@ class ChatMessageDetail(BaseModel):
 class ChatSessionDetailResponse(BaseModel):
     chat_session_id: UUID
     description: str | None
-    persona_id: int | None = None
-    persona_name: str | None
+    agent_id: int | None = None
+    agent_name: str | None
     personal_icon_name: str | None
     messages: list[ChatMessageDetail]
     time_created: datetime
@@ -241,7 +241,7 @@ class AdminSearchResponse(BaseModel):
 class ChatSessionSummary(BaseModel):
     id: UUID
     name: str | None = None
-    persona_id: int | None = None
+    agent_id: int | None = None
     time_created: datetime
     shared_status: ChatSessionSharedStatus
     current_alternate_model: str | None = None

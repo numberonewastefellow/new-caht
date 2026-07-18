@@ -215,7 +215,7 @@ def create_via_api(converted: list[dict], skip_existing: bool = True):
     """Create assistants directly via the VirtualAI API."""
     existing_names = set()
     if skip_existing:
-        resp = api("GET", "persona")
+        resp = api("GET", "agent")
         if resp.status_code == 200:
             existing_names = {a["name"] for a in resp.json()}
 
@@ -230,7 +230,7 @@ def create_via_api(converted: list[dict], skip_existing: bool = True):
         clean = {k: v for k, v in a.items() if not k.startswith("_")}
         body = {**DEFAULTS, **clean}
 
-        resp = api("POST", "persona", body)
+        resp = api("POST", "agent", body)
         if resp.status_code == 200:
             result = resp.json()
             print(f"  [OK]  ID={result['id']}  {name}")

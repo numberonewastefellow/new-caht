@@ -139,10 +139,10 @@ def handle_message(
     slack_usage_report(action=action, sender_id=sender_id, client=client)
 
     document_set_names: list[str] | None = None
-    persona = slack_channel_config.persona if slack_channel_config else None
-    if persona:
+    agent = slack_channel_config.agent if slack_channel_config else None
+    if agent:
         document_set_names = [
-            document_set.name for document_set in persona.document_sets
+            document_set.name for document_set in agent.document_sets
         ]
 
     respond_tag_only = False

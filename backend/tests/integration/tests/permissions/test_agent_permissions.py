@@ -1,21 +1,21 @@
 """
-This file tests the permissions for creating and editing personas for different user roles:
-- Basic users can create personas and edit their own
-- Curators can edit personas that belong exclusively to groups they curate
-- Admins can edit all personas
+This file tests the permissions for creating and editing agents for different user roles:
+- Basic users can create agents and edit their own
+- Curators can edit agents that belong exclusively to groups they curate
+- Admins can edit all agents
 """
 
 
 import pytest
 from requests.exceptions import HTTPError
 
-from tests.integration.common_utils.managers.persona import PersonaManager
+from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.managers.user import DATestUser
 from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.managers.user_group import UserGroupManager
 
 
-def test_persona_permissions(reset: None) -> None:  # noqa: ARG001
+def test_agent_permissions(reset: None) -> None:  # noqa: ARG001
     # Creating an admin user (first user created is automatically an admin)
     admin_user: DATestUser = UserManager.create(name="admin_user")
 
@@ -53,131 +53,131 @@ def test_persona_permissions(reset: None) -> None:  # noqa: ARG001
         user_groups_to_check=[user_group_2], user_performing_action=admin_user
     )
 
-    """Test that any user can create a persona"""
-    # Basic user creates a persona
-    basic_user_persona = PersonaManager.create(
-        name="basic_user_persona",
-        description="A persona created by basic user",
+    """Test that any user can create a agent"""
+    # Basic user creates a agent
+    basic_user_agent = AgentManager.create(
+        name="basic_user_agent",
+        description="A agent created by basic user",
         is_public=False,
         groups=[],
         users=[admin_user.id],
         user_performing_action=basic_user,
     )
-    PersonaManager.verify(basic_user_persona, user_performing_action=basic_user)
+    AgentManager.verify(basic_user_agent, user_performing_action=basic_user)
 
-    # Curator creates a persona
-    curator_persona = PersonaManager.create(
-        name="curator_persona",
-        description="A persona created by curator",
+    # Curator creates a agent
+    curator_agent = AgentManager.create(
+        name="curator_agent",
+        description="A agent created by curator",
         is_public=False,
         groups=[],
         user_performing_action=curator,
     )
-    PersonaManager.verify(curator_persona, user_performing_action=curator)
+    AgentManager.verify(curator_agent, user_performing_action=curator)
 
-    # Admin creates personas for different groups
-    admin_persona_group_1 = PersonaManager.create(
-        name="admin_persona_group_1",
-        description="A persona for group 1",
+    # Admin creates agents for different groups
+    admin_agent_group_1 = AgentManager.create(
+        name="admin_agent_group_1",
+        description="A agent for group 1",
         is_public=False,
         groups=[user_group_1.id],
         user_performing_action=admin_user,
     )
-    admin_persona_group_2 = PersonaManager.create(
-        name="admin_persona_group_2",
-        description="A persona for group 2",
+    admin_agent_group_2 = AgentManager.create(
+        name="admin_agent_group_2",
+        description="A agent for group 2",
         is_public=False,
         groups=[user_group_2.id],
         user_performing_action=admin_user,
     )
-    admin_persona_both_groups = PersonaManager.create(
-        name="admin_persona_both_groups",
-        description="A persona for both groups",
+    admin_agent_both_groups = AgentManager.create(
+        name="admin_agent_both_groups",
+        description="A agent for both groups",
         is_public=False,
         groups=[user_group_1.id, user_group_2.id],
         user_performing_action=admin_user,
     )
 
-    """Test that users can edit their own personas"""
-    # Basic user can edit their own persona
-    PersonaManager.edit(
-        persona=basic_user_persona,
+    """Test that users can edit their own agents"""
+    # Basic user can edit their own agent
+    AgentManager.edit(
+        agent=basic_user_agent,
         description="Updated description by basic user",
         user_performing_action=basic_user,
     )
-    PersonaManager.verify(basic_user_persona, user_performing_action=basic_user)
+    AgentManager.verify(basic_user_agent, user_performing_action=basic_user)
 
-    # Basic user cannot edit other's personas
+    # Basic user cannot edit other's agents
     with pytest.raises(HTTPError):
-        PersonaManager.edit(
-            persona=curator_persona,
+        AgentManager.edit(
+            agent=curator_agent,
             description="Invalid edit by basic user",
             user_performing_action=basic_user,
         )
 
     """Test curator permissions"""
-    # Curator can edit personas that belong exclusively to groups they curate
-    PersonaManager.edit(
-        persona=admin_persona_group_1,
+    # Curator can edit agents that belong exclusively to groups they curate
+    AgentManager.edit(
+        agent=admin_agent_group_1,
         description="Updated by curator",
         user_performing_action=curator,
     )
-    PersonaManager.verify(admin_persona_group_1, user_performing_action=curator)
+    AgentManager.verify(admin_agent_group_1, user_performing_action=curator)
 
-    # Curator cannot edit personas in groups they don't curate
+    # Curator cannot edit agents in groups they don't curate
     with pytest.raises(HTTPError):
-        PersonaManager.edit(
-            persona=admin_persona_group_2,
+        AgentManager.edit(
+            agent=admin_agent_group_2,
             description="Invalid edit by curator",
             user_performing_action=curator,
         )
 
-    # Curator cannot edit personas that belong to multiple groups, even if they curate one
+    # Curator cannot edit agents that belong to multiple groups, even if they curate one
     with pytest.raises(HTTPError):
-        PersonaManager.edit(
-            persona=admin_persona_both_groups,
+        AgentManager.edit(
+            agent=admin_agent_both_groups,
             description="Invalid edit by curator",
             user_performing_action=curator,
         )
 
     """Test admin permissions"""
-    # Admin can edit any persona
+    # Admin can edit any agent
 
-    # the persona was shared with the admin user on creation
+    # the agent was shared with the admin user on creation
     # this edit call will simulate having the same user in the list twice.
     # The server side should dedupe and handle this correctly (prior bug)
-    PersonaManager.edit(
-        persona=basic_user_persona,
+    AgentManager.edit(
+        agent=basic_user_agent,
         description="Updated by admin 2",
         users=[admin_user.id, admin_user.id],
         user_performing_action=admin_user,
     )
-    PersonaManager.verify(basic_user_persona, user_performing_action=admin_user)
+    AgentManager.verify(basic_user_agent, user_performing_action=admin_user)
 
-    PersonaManager.edit(
-        persona=curator_persona,
+    AgentManager.edit(
+        agent=curator_agent,
         description="Updated by admin",
         user_performing_action=admin_user,
     )
-    PersonaManager.verify(curator_persona, user_performing_action=admin_user)
+    AgentManager.verify(curator_agent, user_performing_action=admin_user)
 
-    PersonaManager.edit(
-        persona=admin_persona_group_1,
+    AgentManager.edit(
+        agent=admin_agent_group_1,
         description="Updated by admin",
         user_performing_action=admin_user,
     )
-    PersonaManager.verify(admin_persona_group_1, user_performing_action=admin_user)
+    AgentManager.verify(admin_agent_group_1, user_performing_action=admin_user)
 
-    PersonaManager.edit(
-        persona=admin_persona_group_2,
+    AgentManager.edit(
+        agent=admin_agent_group_2,
         description="Updated by admin",
         user_performing_action=admin_user,
     )
-    PersonaManager.verify(admin_persona_group_2, user_performing_action=admin_user)
+    AgentManager.verify(admin_agent_group_2, user_performing_action=admin_user)
 
-    PersonaManager.edit(
-        persona=admin_persona_both_groups,
+    AgentManager.edit(
+        agent=admin_agent_both_groups,
         description="Updated by admin",
         user_performing_action=admin_user,
     )
-    PersonaManager.verify(admin_persona_both_groups, user_performing_action=admin_user)
+    AgentManager.verify(admin_agent_both_groups, user_performing_action=admin_user)

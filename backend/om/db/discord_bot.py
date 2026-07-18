@@ -235,11 +235,11 @@ def update_guild_config(
     db_session: Session,
     config: DiscordGuildConfig,
     enabled: bool,
-    default_persona_id: int | None = None,
+    default_agent_id: int | None = None,
 ) -> DiscordGuildConfig:
     """Update guild config fields."""
     config.enabled = enabled
-    config.default_persona_id = default_persona_id
+    config.default_agent_id = default_agent_id
     db_session.flush()
     return config
 
@@ -310,12 +310,12 @@ def update_discord_channel_config(
     thread_only_mode: bool,
     require_bot_invocation: bool,
     enabled: bool,
-    persona_override_id: int | None = None,
+    agent_override_id: int | None = None,
 ) -> DiscordChannelConfig:
     """Update channel config fields."""
     config.channel_name = channel_name
     config.require_bot_invocation = require_bot_invocation
-    config.persona_override_id = persona_override_id
+    config.agent_override_id = agent_override_id
     config.enabled = enabled
     config.thread_only_mode = thread_only_mode
     db_session.flush()

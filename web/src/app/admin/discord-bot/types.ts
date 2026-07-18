@@ -10,7 +10,7 @@ export interface DiscordGuildConfig {
   guild_id: number | null;
   guild_name: string | null;
   registered_at: string | null;
-  default_persona_id: number | null;
+  default_agent_id: number | null;
   enabled: boolean;
 }
 
@@ -29,18 +29,18 @@ export interface DiscordChannelConfig {
   is_private: boolean;
   require_bot_invocation: boolean;
   thread_only_mode: boolean;
-  persona_override_id: number | null;
+  agent_override_id: number | null;
   enabled: boolean;
 }
 
 export interface DiscordChannelConfigUpdate {
   require_bot_invocation: boolean;
   thread_only_mode: boolean;
-  persona_override_id: number | null;
+  agent_override_id: number | null;
   enabled: boolean;
 }
 
 export interface DiscordGuildConfigUpdate {
   enabled: boolean;
-  default_persona_id: number | null;
+  default_agent_id: number | null;
 }

@@ -287,7 +287,7 @@ Only if `sub_agent_persona_ids and delegation_depth < min(max_delegation_depth, 
 existing lazy import at `agent_tool.py` ~L283 → no module-level cycle), load each allowed sub-persona
 (cap at breadth/hard cap), append an `AgentTool(...)` under a synthetic negative `tool_dict` key
 (avoid colliding with real `db_tool_model.id`). Exclude `persona.id` from its own allow-list.
-Existing callers (`process_message.py` ~L891, `research_agent.py` ~L762) pass nothing → identical
+Existing callers (`message_handler.py` ~L891, `research_agent.py` ~L762) pass nothing → identical
 behavior. Verify: `construct_tools(..., sub_agent_persona_ids=[p2.id], max_delegation_depth=1)` yields
 a `delegate_to_p2` tool; without params → none.
 

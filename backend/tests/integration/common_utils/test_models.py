@@ -63,7 +63,7 @@ class DATestUser(BaseModel):
     cookies: dict = {}
 
 
-class DATestPersonaLabel(BaseModel):
+class DATestAgentLabel(BaseModel):
     id: int | None = None
     name: str
 
@@ -120,7 +120,7 @@ class DATestLLMProvider(BaseModel):
     is_public: bool
     is_auto_mode: bool = False
     groups: list[int]
-    personas: list[int]
+    agents: list[int]
     api_base: str | None = None
     api_version: str | None = None
 
@@ -146,7 +146,7 @@ class DATestDocumentSet(BaseModel):
     federated_connectors: list[dict[str, Any]] = Field(default_factory=list)
 
 
-class DATestPersona(BaseModel):
+class DATestAgent(BaseModel):
     id: int
     name: str
     description: str
@@ -180,7 +180,7 @@ class DATestChatMessage(BaseModel):
 
 class DATestChatSession(BaseModel):
     id: UUID
-    persona_id: int
+    agent_id: int
     description: str
 
 
@@ -291,7 +291,7 @@ class DATestDiscordGuildConfig(BaseModel):
     guild_id: int | None = None
     guild_name: str | None = None
     enabled: bool = True
-    default_persona_id: int | None = None
+    default_agent_id: int | None = None
 
 
 class DATestDiscordChannelConfig(BaseModel):
@@ -306,4 +306,4 @@ class DATestDiscordChannelConfig(BaseModel):
     enabled: bool = False
     thread_only_mode: bool = False
     require_bot_invocation: bool = True
-    persona_override_id: int | None = None
+    agent_override_id: int | None = None

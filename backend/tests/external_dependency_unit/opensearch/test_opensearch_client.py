@@ -25,7 +25,7 @@ from om.document_index.opensearch.constants import DEFAULT_MAX_CHUNK_SIZE
 from om.document_index.opensearch.opensearch_document_index import (
     generate_opensearch_filtered_access_control_list,
 )
-from om.document_index.opensearch.schema import CONTENT_FIELD_NAME
+from om.document_index.opensearch.schema import CHUNK_TEXT_FIELD_NAME
 from om.document_index.opensearch.schema import DocumentChunk
 from om.document_index.opensearch.schema import DocumentSchema
 from om.document_index.opensearch.schema import get_opensearch_doc_chunk_id
@@ -80,24 +80,24 @@ def _create_test_document_chunk(
         document_id=document_id,
         chunk_index=chunk_index,
         title=title,
-        title_vector=title_vector,
-        content=content,
-        content_vector=content_vector,
+        title_embedding=title_vector,
+        chunk_text=content,
+        content_embedding=content_vector,
         source_type=source_type.value,
-        metadata_list=None,
-        last_updated=last_updated,
-        public=document_access.is_public,
+        metadata_tags=None,
+        updated_at=last_updated,
+        is_public=document_access.is_public,
         access_control_list=generate_opensearch_filtered_access_control_list(
             document_access
         ),
-        hidden=hidden,
-        global_boost=0,
-        semantic_identifier="Test semantic identifier",
-        image_file_id=None,
+        is_hidden=hidden,
+        boost=0,
+        display_name="Test semantic identifier",
+        image_id=None,
         source_links=None,
-        blurb="Test blurb",
-        doc_summary="Test doc summary",
-        chunk_context="Test chunk context",
+        snippet="Test blurb",
+        document_summary="Test doc summary",
+        contextual_summary="Test chunk context",
         document_sets=None,
         user_workspaces=None,
         primary_owners=None,
@@ -582,8 +582,8 @@ class TestOpenSearchClient:
             max_chunk_size=doc.max_chunk_size,
         )
         properties_to_update = {
-            "hidden": True,
-            "global_boost": 5,
+            "is_hidden": True,
+            "boost": 5,
         }
         test_client.update_document(
             document_chunk_id=doc_chunk_id,
@@ -593,12 +593,12 @@ class TestOpenSearchClient:
         # Postcondition.
         # Retrieve the document and verify updates were applied.
         updated_doc = test_client.get_document(document_chunk_id=doc_chunk_id)
-        assert updated_doc.hidden is True
-        assert updated_doc.global_boost == 5
+        assert updated_doc.is_hidden is True
+        assert updated_doc.boost == 5
         # Other properties should remain unchanged.
         assert updated_doc.document_id == doc.document_id
-        assert updated_doc.content == doc.content
-        assert updated_doc.public == doc.public
+        assert updated_doc.chunk_text == doc.chunk_text
+        assert updated_doc.is_public == doc.is_public
 
     def test_update_nonexistent_document(
         self, test_client: OpenSearchClient, monkeypatch: pytest.MonkeyPatch
@@ -618,7 +618,7 @@ class TestOpenSearchClient:
         with pytest.raises(NotFoundError, match="404"):
             test_client.update_document(
                 document_chunk_id="test_source__nonexistent__512__0",
-                properties_to_update={"hidden": True},
+                properties_to_update={"is_hidden": True},
             )
 
     def test_hybrid_search_with_pipeline(
@@ -700,7 +700,7 @@ class TestOpenSearchClient:
             # result. The other results are so bad they're not expected to have
             # match highlights.
             if i == 0:
-                assert chunk.match_highlights.get(CONTENT_FIELD_NAME, [])
+                assert chunk.match_highlights.get(CHUNK_TEXT_FIELD_NAME, [])
 
     def test_search_empty_index(
         self,
@@ -854,12 +854,12 @@ class TestOpenSearchClient:
         # or 0).
         assert results[0].score
         # Make sure there is some kind of match highlight.
-        assert results[0].match_highlights.get(CONTENT_FIELD_NAME, [])
+        assert results[0].match_highlights.get(CHUNK_TEXT_FIELD_NAME, [])
         # Same for the second result.
         assert results[1].document_chunk.document_id == "private-doc-user-a"
         assert results[1].document_chunk == docs["private-doc-user-a"]
         assert results[1].score
-        assert results[1].match_highlights.get(CONTENT_FIELD_NAME, [])
+        assert results[1].match_highlights.get(CHUNK_TEXT_FIELD_NAME, [])
 
     def test_hybrid_search_with_pipeline_and_filters_returns_chunks_with_related_content_first(
         self,
@@ -976,7 +976,7 @@ class TestOpenSearchClient:
 
         # Make sure there is some kind of match highlight for the most relevant
         # result.
-        match_highlights = results[0].match_highlights.get(CONTENT_FIELD_NAME, [])
+        match_highlights = results[0].match_highlights.get(CHUNK_TEXT_FIELD_NAME, [])
         assert len(match_highlights) == 1
         # We expect the terms "Artificial" and "intelligence" to be matched.
         highlight_split = re.findall(r"<hi>(.*?)</hi>", match_highlights[0])

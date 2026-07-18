@@ -73,13 +73,13 @@ export function getDatesList(startDate: Date): string[] {
   return datesList;
 }
 
-export interface PersonaMessageAnalytics {
+export interface AgentMessageAnalytics {
   total_messages: number;
   date: string;
-  persona_id: number;
+  agent_id: number;
 }
 
-export interface PersonaSnapshot {
+export interface AgentSnapshot {
   id: number;
   name: string;
   description: string;
@@ -87,18 +87,18 @@ export interface PersonaSnapshot {
   is_public: boolean;
 }
 
-export const usePersonaMessages = (
-  personaId: number | undefined,
+export const useAgentMessages = (
+  agentId: number | undefined,
   timeRange: DateRangePickerValue
 ) => {
-  const url = buildApiPath(`/api/analytics/admin/persona/messages`, {
-    persona_id: personaId?.toString(),
+  const url = buildApiPath(`/api/analytics/admin/agent/messages`, {
+    agent_id: agentId?.toString(),
     start: convertDateToStartOfDay(timeRange.from)?.toISOString(),
     end: convertDateToEndOfDay(timeRange.to)?.toISOString(),
   });
 
-  const { data, error, isLoading } = useSWR<PersonaMessageAnalytics[]>(
-    personaId !== undefined ? url : null,
+  const { data, error, isLoading } = useSWR<AgentMessageAnalytics[]>(
+    agentId !== undefined ? url : null,
     errorHandlingFetcher
   );
 
@@ -106,28 +106,28 @@ export const usePersonaMessages = (
     data,
     error,
     isLoading,
-    refreshPersonaMessages: () => mutate(url),
+    refreshAgentMessages: () => mutate(url),
   };
 };
 
-export interface PersonaUniqueUserAnalytics {
+export interface AgentUniqueUserAnalytics {
   unique_users: number;
   date: string;
-  persona_id: number;
+  agent_id: number;
 }
 
-export const usePersonaUniqueUsers = (
-  personaId: number | undefined,
+export const useAgentUniqueUsers = (
+  agentId: number | undefined,
   timeRange: DateRangePickerValue
 ) => {
-  const url = buildApiPath(`/api/analytics/admin/persona/unique-users`, {
-    persona_id: personaId?.toString(),
+  const url = buildApiPath(`/api/analytics/admin/agent/unique-users`, {
+    agent_id: agentId?.toString(),
     start: convertDateToStartOfDay(timeRange.from)?.toISOString(),
     end: convertDateToEndOfDay(timeRange.to)?.toISOString(),
   });
 
-  const { data, error, isLoading } = useSWR<PersonaUniqueUserAnalytics[]>(
-    personaId !== undefined ? url : null,
+  const { data, error, isLoading } = useSWR<AgentUniqueUserAnalytics[]>(
+    agentId !== undefined ? url : null,
     errorHandlingFetcher
   );
 
@@ -135,6 +135,6 @@ export const usePersonaUniqueUsers = (
     data,
     error,
     isLoading,
-    refreshPersonaUniqueUsers: () => mutate(url),
+    refreshAgentUniqueUsers: () => mutate(url),
   };
 };

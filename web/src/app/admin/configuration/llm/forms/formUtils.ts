@@ -30,7 +30,7 @@ export const buildDefaultInitialValues = (
     is_public: existingLlmProvider?.is_public ?? true,
     is_auto_mode: isAutoMode,
     groups: existingLlmProvider?.groups ?? [],
-    personas: existingLlmProvider?.personas ?? [],
+    agents: existingLlmProvider?.agents ?? [],
     selected_model_names: existingLlmProvider
       ? existingLlmProvider.model_configurations
           .filter((modelConfiguration) => modelConfiguration.is_visible)
@@ -48,7 +48,7 @@ export const buildDefaultValidationSchema = () => {
     is_public: Yup.boolean().required(),
     is_auto_mode: Yup.boolean().required(),
     groups: Yup.array().of(Yup.number()),
-    personas: Yup.array().of(Yup.number()),
+    agents: Yup.array().of(Yup.number()),
     selected_model_names: Yup.array().of(Yup.string()),
   });
 };
@@ -85,7 +85,7 @@ export interface BaseLLMFormValues {
   is_public: boolean;
   is_auto_mode: boolean;
   groups: number[];
-  personas: number[];
+  agents: number[];
   selected_model_names: string[];
   custom_config?: Record<string, string>;
 }

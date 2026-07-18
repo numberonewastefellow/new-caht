@@ -407,7 +407,7 @@ class LocalSandboxManager(SandboxManager):
         5. .agent/skills/
         6. files/ (symlink to demo data OR filtered user files)
         7. opencode.json
-        8. org_info/ (if demo_data is enabled, the org structure and user identity for the user's demo persona)
+        8. org_info/ (if demo_data is enabled, the org structure and user identity for the user's demo agent)
         9. attachments/
         10. Start Next.js dev server for this session
 
@@ -419,8 +419,8 @@ class LocalSandboxManager(SandboxManager):
             snapshot_path: Optional storage path to restore outputs from
             user_name: User's name for personalization in AGENTS.md
             user_role: User's role/title for personalization in AGENTS.md
-            user_work_area: User's work area for demo persona (e.g., "engineering")
-            user_level: User's level for demo persona (e.g., "ic", "manager")
+            user_work_area: User's work area for demo agent (e.g., "engineering")
+            user_level: User's level for demo agent (e.g., "ic", "manager")
             use_demo_data: If True, symlink files/ to demo data; else to user files
             excluded_user_library_paths: List of paths within user_library/ to exclude
                 (e.g., ["/data/file.xlsx"]). These files won't be linked in the sandbox.

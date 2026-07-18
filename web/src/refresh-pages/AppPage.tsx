@@ -13,7 +13,7 @@ import { useAgentPanelStore } from "@/app/app/stores/useAgentPanelStore";
 import AgentPanelDock from "@/app/app/message/messageComponents/timeline/AgentPanelDock";
 import { HealthCheckBanner } from "@/components/health/healthcheck";
 import {
-  personaIncludesRetrieval,
+  agentIncludesRetrieval,
   getAvailableContextTokens,
 } from "@/app/app/services/lib";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -233,7 +233,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
         const newSearchParams = new URLSearchParams(
           searchParams?.toString() || ""
         );
-        if (newSearchParams.has(SEARCH_PARAM_NAMES.PERSONA_ID)) {
+        if (newSearchParams.has(SEARCH_PARAM_NAMES.AGENT_ID)) {
           newSearchParams.delete(SEARCH_PARAM_NAMES.PROJECT_ID);
           router.replace(`?${newSearchParams.toString()}`, { scroll: false });
         }
@@ -451,14 +451,14 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
 
   const retrievalEnabled = useMemo(() => {
     if (liveAssistant) {
-      return personaIncludesRetrieval(liveAssistant);
+      return agentIncludesRetrieval(liveAssistant);
     }
     return false;
   }, [liveAssistant]);
 
   useEffect(() => {
     if (
-      (!personaIncludesRetrieval &&
+      (!agentIncludesRetrieval &&
         (!selectedDocuments || selectedDocuments.length === 0) &&
         documentSidebarVisible) ||
       !currentChatSessionId
@@ -718,7 +718,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
 
   // Available context tokens source of truth:
   // - If a chat session exists, fetch from session API (dynamic per session/model)
-  // - If no session, derive from the default/current persona's max document tokens
+  // - If no session, derive from the default/current agent's max document tokens
   const [availableContextTokens, setAvailableContextTokens] = useState<number>(
     DEFAULT_CONTEXT_TOKENS * 0.5
   );
@@ -733,9 +733,9 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
             (available ?? DEFAULT_CONTEXT_TOKENS) * 0.5;
           if (!cancelled) setAvailableContextTokens(capped_context_tokens);
         } else {
-          const personaId = (selectedAssistant || liveAssistant)?.id;
-          if (personaId !== undefined && personaId !== null) {
-            const maxTokens = await getMaxSelectedDocumentTokens(personaId);
+          const agentId = (selectedAssistant || liveAssistant)?.id;
+          if (agentId !== undefined && agentId !== null) {
+            const maxTokens = await getMaxSelectedDocumentTokens(agentId);
             const capped_context_tokens =
               (maxTokens ?? DEFAULT_CONTEXT_TOKENS) * 0.5;
             if (!cancelled) setAvailableContextTokens(capped_context_tokens);

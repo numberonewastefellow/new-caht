@@ -29,8 +29,8 @@ import { AllUsersResponse } from "./types";
 import { Credential } from "./connectors/credentials";
 import { SettingsContext } from "@/providers/SettingsProvider";
 import {
-  MinimalPersonaSnapshot,
-  PersonaLabel,
+  MinimalAgentSnapshot,
+  AgentLabel,
 } from "@/app/admin/assistants/interfaces";
 import { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
 import { isAnthropic } from "@/app/admin/configuration/llm/utils";
@@ -248,17 +248,17 @@ export const useFederatedConnectors = () => {
 
 export const useLabels = () => {
   const { mutate } = useSWRConfig();
-  const { data: labels, error } = useSWR<PersonaLabel[]>(
-    "/api/persona/labels",
+  const { data: labels, error } = useSWR<AgentLabel[]>(
+    "/api/agent/labels",
     errorHandlingFetcher
   );
 
   const refreshLabels = async () => {
-    return mutate("/api/persona/labels");
+    return mutate("/api/agent/labels");
   };
 
   const createLabel = async (name: string) => {
-    const response = await fetch("/api/persona/labels", {
+    const response = await fetch("/api/agent/labels", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name }),
@@ -266,14 +266,14 @@ export const useLabels = () => {
 
     if (response.ok) {
       const newLabel = await response.json();
-      mutate("/api/persona/labels", [...(labels || []), newLabel], false);
+      mutate("/api/agent/labels", [...(labels || []), newLabel], false);
     }
 
     return response;
   };
 
   const updateLabel = async (id: number, name: string) => {
-    const response = await fetch(`/api/admin/persona/label/${id}`, {
+    const response = await fetch(`/api/admin/agent/label/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ label_name: name }),
@@ -281,7 +281,7 @@ export const useLabels = () => {
 
     if (response.ok) {
       mutate(
-        "/api/persona/labels",
+        "/api/agent/labels",
         labels?.map((label) => (label.id === id ? { ...label, name } : label)),
         false
       );
@@ -291,14 +291,14 @@ export const useLabels = () => {
   };
 
   const deleteLabel = async (id: number) => {
-    const response = await fetch(`/api/admin/persona/label/${id}`, {
+    const response = await fetch(`/api/admin/agent/label/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
 
     if (response.ok) {
       mutate(
-        "/api/persona/labels",
+        "/api/agent/labels",
         labels?.filter((label) => label.id !== id),
         false
       );
@@ -476,7 +476,7 @@ export interface LlmManager {
   updateModelOverrideBasedOnChatSession: (chatSession?: ChatSession) => void;
   imageFilesPresent: boolean;
   updateImageFilesPresent: (present: boolean) => void;
-  liveAssistant: MinimalPersonaSnapshot | null;
+  liveAssistant: MinimalAgentSnapshot | null;
   maxTemperature: number;
   llmProviders: LLMProviderDescriptor[] | undefined;
   isLoadingProviders: boolean;
@@ -623,25 +623,25 @@ export function getValidLlmDescriptorForProviders(
 
 export function useLlmManager(
   currentChatSession?: ChatSession,
-  liveAssistant?: MinimalPersonaSnapshot
+  liveAssistant?: MinimalAgentSnapshot
 ): LlmManager {
   const { user } = useUser();
 
-  // Get all user-accessible providers via SWR (general providers - no persona filter)
+  // Get all user-accessible providers via SWR (general providers - no agent filter)
   // This includes public + all restricted providers user can access via groups
   const { llmProviders: allUserProviders, isLoading: isLoadingAllProviders } =
     useLLMProviders();
-  // Fetch persona-specific providers to enforce RBAC restrictions per assistant
+  // Fetch agent-specific providers to enforce RBAC restrictions per assistant
   // Only fetch if we have an assistant selected
-  const personaId =
+  const agentId =
     liveAssistant?.id !== undefined ? liveAssistant.id : undefined;
   const {
-    llmProviders: personaProviders,
-    isLoading: isLoadingPersonaProviders,
-  } = useLLMProviders(personaId);
+    llmProviders: agentProviders,
+    isLoading: isLoadingAgentProviders,
+  } = useLLMProviders(agentId);
 
   const llmProviders =
-    personaProviders !== undefined ? personaProviders : allUserProviders;
+    agentProviders !== undefined ? agentProviders : allUserProviders;
 
   const [userHasManuallyOverriddenLLM, setUserHasManuallyOverriddenLLM] =
     useState(false);
@@ -842,7 +842,7 @@ export function useLlmManager(
     llmProviders,
     isLoadingProviders:
       isLoadingAllProviders ||
-      (personaId !== undefined && isLoadingPersonaProviders),
+      (agentId !== undefined && isLoadingAgentProviders),
     hasAnyProvider,
   };
 }

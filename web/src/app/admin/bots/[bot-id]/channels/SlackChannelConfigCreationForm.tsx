@@ -11,12 +11,12 @@ import {
 } from "@/lib/types";
 import {
   createSlackChannelConfig,
-  isPersonaASlackBotPersona,
+  isAgentASlackBotAgent,
   updateSlackChannelConfig,
 } from "../lib";
 import CardSection from "@/components/admin/CardSection";
 import { useRouter } from "next/navigation";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { StandardAnswerCategoryResponse } from "@/components/standardAnswers/getStandardAnswerCategories";
 import { SEARCH_TOOL_ID } from "@/app/app/components/tools/constants";
 import { SlackChannelConfigFormFields } from "./SlackChannelConfigFormFields";
@@ -24,43 +24,43 @@ import { SlackChannelConfigFormFields } from "./SlackChannelConfigFormFields";
 export const SlackChannelConfigCreationForm = ({
   slack_bot_id,
   documentSets,
-  personas,
+  agents,
   standardAnswerCategoryResponse,
   existingSlackChannelConfig,
 }: {
   slack_bot_id: number;
   documentSets: DocumentSetSummary[];
-  personas: MinimalPersonaSnapshot[];
+  agents: MinimalAgentSnapshot[];
   standardAnswerCategoryResponse: StandardAnswerCategoryResponse;
   existingSlackChannelConfig?: SlackChannelConfig;
 }) => {
   const router = useRouter();
   const isUpdate = Boolean(existingSlackChannelConfig);
   const isDefault = existingSlackChannelConfig?.is_default || false;
-  const existingSlackBotUsesPersona = existingSlackChannelConfig?.persona
-    ? !isPersonaASlackBotPersona(existingSlackChannelConfig.persona)
+  const existingSlackBotUsesAgent = existingSlackChannelConfig?.agent
+    ? !isAgentASlackBotAgent(existingSlackChannelConfig.agent)
     : false;
-  const existingPersonaHasSearchTool = existingSlackChannelConfig?.persona
-    ? existingSlackChannelConfig.persona.tools.some(
+  const existingAgentHasSearchTool = existingSlackChannelConfig?.agent
+    ? existingSlackChannelConfig.agent.tools.some(
         (tool) => tool.in_code_tool_id === SEARCH_TOOL_ID
       )
     : false;
 
   const [searchEnabledAssistants, nonSearchAssistants] = useMemo(() => {
-    return personas.reduce(
-      (acc, persona) => {
+    return agents.reduce(
+      (acc, agent) => {
         if (
-          persona.tools.some((tool) => tool.in_code_tool_id === SEARCH_TOOL_ID)
+          agent.tools.some((tool) => tool.in_code_tool_id === SEARCH_TOOL_ID)
         ) {
-          acc[0].push(persona);
+          acc[0].push(agent);
         } else {
-          acc[1].push(persona);
+          acc[1].push(agent);
         }
         return acc;
       },
-      [[], []] as [MinimalPersonaSnapshot[], MinimalPersonaSnapshot[]]
+      [[], []] as [MinimalAgentSnapshot[], MinimalAgentSnapshot[]]
     );
-  }, [personas]);
+  }, [agents]);
 
   return (
     <CardSection className="!px-12 max-w-4xl">
@@ -100,23 +100,23 @@ export const SlackChannelConfigCreationForm = ({
             existingSlackChannelConfig?.channel_config?.follow_up_tags ||
             undefined,
           document_sets:
-            existingSlackChannelConfig && existingSlackChannelConfig.persona
-              ? existingSlackChannelConfig.persona.document_sets.map(
+            existingSlackChannelConfig && existingSlackChannelConfig.agent
+              ? existingSlackChannelConfig.agent.document_sets.map(
                   (documentSet) => documentSet.id
                 )
               : ([] as number[]),
-          persona_id:
-            existingSlackChannelConfig?.persona &&
-            !isPersonaASlackBotPersona(existingSlackChannelConfig.persona)
-              ? existingSlackChannelConfig.persona.id
+          agent_id:
+            existingSlackChannelConfig?.agent &&
+            !isAgentASlackBotAgent(existingSlackChannelConfig.agent)
+              ? existingSlackChannelConfig.agent.id
               : null,
           standard_answer_categories:
             existingSlackChannelConfig?.standard_answer_categories || [],
-          knowledge_source: existingSlackBotUsesPersona
-            ? existingPersonaHasSearchTool
+          knowledge_source: existingSlackBotUsesAgent
+            ? existingAgentHasSearchTool
               ? "assistant"
               : "non_search_assistant"
-            : existingSlackChannelConfig?.persona
+            : existingSlackChannelConfig?.agent
               ? "document_sets"
               : "all_public",
           disabled:
@@ -150,13 +150,13 @@ export const SlackChannelConfigCreationForm = ({
                   "At least one Document Set is required when using the 'Document Sets' knowledge source"
                 ),
             }),
-          persona_id: Yup.number()
+          agent_id: Yup.number()
             .nullable()
             .when("knowledge_source", {
               is: "assistant",
               then: (schema) =>
                 schema.required(
-                  "A persona is required when using the'Assistant' knowledge source"
+                  "A agent is required when using the'Assistant' knowledge source"
                 ),
             }),
           standard_answer_categories: Yup.array(),
@@ -178,17 +178,17 @@ export const SlackChannelConfigCreationForm = ({
             slack_bot_id,
             channel_name: values.channel_name,
             respond_member_group_list: values.respond_member_group_list,
-            usePersona:
+            useAgent:
               values.knowledge_source === "assistant" ||
               values.knowledge_source === "non_search_assistant",
             document_sets:
               values.knowledge_source === "document_sets"
                 ? values.document_sets
                 : [],
-            persona_id:
+            agent_id:
               values.knowledge_source === "assistant" ||
               values.knowledge_source === "non_search_assistant"
-                ? values.persona_id
+                ? values.agent_id
                 : null,
             standard_answer_categories: values.standard_answer_categories.map(
               (category: any) => category.id

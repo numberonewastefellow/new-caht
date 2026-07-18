@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
-import { FullPersona } from "@/app/admin/assistants/interfaces";
+import { FullAgent } from "@/app/admin/assistants/interfaces";
 import { useModal } from "@/refresh-components/contexts/ModalContext";
 import Modal from "@/refresh-components/Modal";
 import { Section, LineItemLayout } from "@/layouts/general-layouts";
@@ -209,7 +209,7 @@ function ViewerOpenApiToolCard({ tool }: { tool: ToolSnapshot }) {
 const EMPTY_DOCS: [] = [];
 
 interface AgentChatInputProps {
-  agent: FullPersona;
+  agent: FullAgent;
   onSubmit: (message: string) => void;
 }
 function AgentChatInput({ agent, onSubmit }: AgentChatInputProps) {
@@ -245,7 +245,7 @@ function OverviewTab({
   defaultModel,
   onStartChat,
 }: {
-  agent: FullPersona;
+  agent: FullAgent;
   defaultModel: string | null | undefined;
   onStartChat: (message: string) => void;
 }) {
@@ -447,7 +447,7 @@ function KnowledgeTab({
   agent,
   allRecentFiles,
 }: {
-  agent: FullPersona;
+  agent: FullAgent;
   allRecentFiles: ReturnType<typeof useWorkspacesContext>["allRecentFiles"];
 }) {
   const hasDocSets = agent.document_sets && agent.document_sets.length > 0;
@@ -543,7 +543,7 @@ function KnowledgeTab({
 // ─── Main AgentViewerModal ────────────────────────────────────────────────────
 
 export interface AgentViewerModalProps {
-  agent: FullPersona;
+  agent: FullAgent;
 }
 
 export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
@@ -556,7 +556,7 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
   const handleStartChat = useCallback(
     (message: string) => {
       const params = new URLSearchParams({
-        [SEARCH_PARAM_NAMES.PERSONA_ID]: String(agent.id),
+        [SEARCH_PARAM_NAMES.AGENT_ID]: String(agent.id),
         [SEARCH_PARAM_NAMES.USER_PROMPT]: message,
         [SEARCH_PARAM_NAMES.SEND_ON_LOAD]: "true",
       });
@@ -633,7 +633,7 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
         <Modal.Body>
           {/* ── Metadata pills ── */}
           <div className="flex flex-wrap items-center gap-1.5">
-            {!agent.is_default_persona && (
+            {!agent.is_default_agent && (
               <span
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
                 style={{

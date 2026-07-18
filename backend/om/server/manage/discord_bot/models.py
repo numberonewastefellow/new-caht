@@ -28,7 +28,7 @@ class DiscordGuildConfigResponse(BaseModel):
     guild_id: int | None
     guild_name: str | None
     registered_at: datetime | None
-    default_persona_id: int | None
+    default_agent_id: int | None
     enabled: bool
 
     class Config:
@@ -42,7 +42,7 @@ class DiscordGuildConfigCreateResponse(BaseModel):
 
 class DiscordGuildConfigUpdateRequest(BaseModel):
     enabled: bool
-    default_persona_id: int | None
+    default_agent_id: int | None
 
 
 # === Channel Config ===
@@ -57,7 +57,7 @@ class DiscordChannelConfigResponse(BaseModel):
     is_private: bool
     require_bot_invocation: bool
     thread_only_mode: bool
-    persona_override_id: int | None
+    agent_override_id: int | None
     enabled: bool
 
     class Config:
@@ -66,6 +66,6 @@ class DiscordChannelConfigResponse(BaseModel):
 
 class DiscordChannelConfigUpdateRequest(BaseModel):
     require_bot_invocation: bool
-    persona_override_id: int | None
+    agent_override_id: int | None
     enabled: bool
     thread_only_mode: bool

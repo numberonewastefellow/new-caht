@@ -12,7 +12,7 @@ from om.auth.schemas import UserRole
 from om.db.enums import DefaultAppMode
 from om.db.enums import ThemePreference
 from om.db.models import AccessToken
-from om.db.models import Assistant__UserSpecificConfig
+from om.db.models import Agent__UserSpecificConfig
 from om.db.models import Memory
 from om.db.models import User
 from om.server.manage.models import MemoryItem
@@ -283,11 +283,11 @@ def update_user_assistant_visibility(
 def get_all_user_assistant_specific_configs(
     user_id: UUID,
     db_session: Session,
-) -> Sequence[Assistant__UserSpecificConfig]:
+) -> Sequence[Agent__UserSpecificConfig]:
     """Get the full user assistant specific config for a specific assistant and user."""
     return db_session.scalars(
-        select(Assistant__UserSpecificConfig).where(
-            Assistant__UserSpecificConfig.user_id == user_id
+        select(Agent__UserSpecificConfig).where(
+            Agent__UserSpecificConfig.user_id == user_id
         )
     ).all()
 
@@ -301,9 +301,9 @@ def update_assistant_preferences(
     """Update the disabled tools for a specific assistant for a specific user."""
     # First check if a config already exists
     result = db_session.execute(
-        select(Assistant__UserSpecificConfig)
-        .where(Assistant__UserSpecificConfig.assistant_id == assistant_id)
-        .where(Assistant__UserSpecificConfig.user_id == user_id)
+        select(Agent__UserSpecificConfig)
+        .where(Agent__UserSpecificConfig.agent_id == assistant_id)
+        .where(Agent__UserSpecificConfig.user_id == user_id)
     )
     config = result.scalar_one_or_none()
 
@@ -312,8 +312,8 @@ def update_assistant_preferences(
         config.disabled_tool_ids = new_assistant_preference.disabled_tool_ids
     else:
         # Create new config
-        config = Assistant__UserSpecificConfig(
-            assistant_id=assistant_id,
+        config = Agent__UserSpecificConfig(
+            agent_id=assistant_id,
             user_id=user_id,
             disabled_tool_ids=new_assistant_preference.disabled_tool_ids,
         )

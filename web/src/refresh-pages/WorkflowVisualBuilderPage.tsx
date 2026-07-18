@@ -28,7 +28,7 @@ import { JsonViewModal } from "@/components/workflow-builder/JsonViewModal";
 import type {
   AgentNodeData,
   ConditionalRouterNodeData,
-  DragPersonaData,
+  DragAgentData,
 } from "@/components/workflow-builder/types";
 import { ORCHESTRATOR_NODE_ID } from "@/components/workflow-builder/types";
 
@@ -119,7 +119,7 @@ function WorkflowVisualBuilderInner({
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail as AgentTestTarget;
-      if (detail?.personaId) setTestTarget(detail);
+      if (detail?.agentId) setTestTarget(detail);
     };
     window.addEventListener("wfb-test-agent", handler);
     return () => window.removeEventListener("wfb-test-agent", handler);
@@ -154,7 +154,7 @@ function WorkflowVisualBuilderInner({
     }
   }, [workflow, loaded, loadFromSnapshot]);
 
-  // Enrich agent nodes with persona details (LLM, tools, labels) once agents are loaded
+  // Enrich agent nodes with agent details (LLM, tools, labels) once agents are loaded
   useEffect(() => {
     if (
       !loaded ||
@@ -168,18 +168,18 @@ function WorkflowVisualBuilderInner({
     for (const node of nodes) {
       if (node.type !== "agent") continue;
       const d = node.data as AgentNodeData;
-      const persona = agentMap.get(d.persona_id);
-      if (!persona) continue;
+      const agent = agentMap.get(d.agent_id);
+      if (!agent) continue;
       updateNodeData(node.id, {
-        persona_icon_url: persona.uploaded_image_id
-          ? `/api/persona/${persona.id}/uploaded_image`
+        agent_icon_url: agent.uploaded_image_id
+          ? `/api/agent/${agent.id}/uploaded_image`
           : null,
-        persona_num_tools: persona.tools?.length || 0,
-        persona_tool_names: (persona.tools || []).map((t) => t.name),
-        persona_llm_model: persona.llm_model_version_override || null,
-        persona_llm_provider:
-          persona.llm_model_provider_override || null,
-        persona_labels: [],
+        agent_num_tools: agent.tools?.length || 0,
+        agent_tool_names: (agent.tools || []).map((t) => t.name),
+        agent_llm_model: agent.llm_model_version_override || null,
+        agent_llm_provider:
+          agent.llm_model_provider_override || null,
+        agent_labels: [],
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -199,8 +199,8 @@ function WorkflowVisualBuilderInner({
 
   // Handle drop from sidebar
   const handleDrop = useCallback(
-    (persona: DragPersonaData, position: { x: number; y: number }) => {
-      addAgentNode(persona, position);
+    (agent: DragAgentData, position: { x: number; y: number }) => {
+      addAgentNode(agent, position);
     },
     [addAgentNode]
   );
@@ -431,7 +431,7 @@ function WorkflowVisualBuilderInner({
             refreshAgents();
             addAgentNode(dragData, { x: 400, y: 300 });
             setShowCreateModal(false);
-            toast.success(`Agent "${dragData.persona_name}" created and added.`);
+            toast.success(`Agent "${dragData.agent_name}" created and added.`);
           }}
           onClose={() => setShowCreateModal(false)}
         />
@@ -443,7 +443,7 @@ function WorkflowVisualBuilderInner({
           workflowJson={toPayload()}
           agentIds={nodes
             .filter((n) => n.type === "agent")
-            .map((n) => (n.data as AgentNodeData).persona_id)}
+            .map((n) => (n.data as AgentNodeData).agent_id)}
           onClose={() => setShowJsonView(false)}
         />
       )}

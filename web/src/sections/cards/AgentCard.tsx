@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useCallback } from "react";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import { usePinnedAgents, useAgent } from "@/hooks/useAgents";
@@ -27,7 +27,7 @@ import { Interactive } from "@opal/core";
 import { getLabelColor } from "@/lib/labelColors";
 
 export interface AgentCardProps {
-  agent: MinimalPersonaSnapshot;
+  agent: MinimalAgentSnapshot;
   onLabelClick?: (labelId: number) => void;
 }
 

@@ -1,7 +1,7 @@
 """End-to-end live test for Multi-Agent Workflow system.
 
 This script tests the full pipeline against a running deployment:
-1. Creates 3 test personas via API
+1. Creates 3 test agents via API
 2. Creates a sequential workflow linking them
 3. Runs the workflow with a math problem
 4. Validates that all 3 agents produced output
@@ -56,10 +56,10 @@ def get_session(
     return s
 
 
-# ─── Step 1: Create 3 Test Personas ───────────────────────────────────────
+# ─── Step 1: Create 3 Test Agents ───────────────────────────────────────
 
 
-PERSONAS = [
+AGENTS = [
     {
         "name": "[E2E Test] Math Solver",
         "description": "Solves math problems step by step with clear working.",
@@ -95,13 +95,13 @@ PERSONAS = [
 ]
 
 
-def create_persona(session: requests.Session, base_url: str, persona_config: dict) -> dict:
-    """Create a persona via the API."""
+def create_agent(session: requests.Session, base_url: str, agent_config: dict) -> dict:
+    """Create a agent via the API."""
     payload = {
-        "name": persona_config["name"],
-        "description": persona_config["description"],
-        "system_prompt": persona_config["system_prompt"],
-        "task_prompt": persona_config.get("task_prompt", ""),
+        "name": agent_config["name"],
+        "description": agent_config["description"],
+        "system_prompt": agent_config["system_prompt"],
+        "task_prompt": agent_config.get("task_prompt", ""),
         "num_chunks": 0,
         "is_public": True,
         "recency_bias": "base_decay",
@@ -117,24 +117,24 @@ def create_persona(session: requests.Session, base_url: str, persona_config: dic
         "groups": [],
     }
 
-    resp = session.post(f"{base_url}/persona", json=payload)
+    resp = session.post(f"{base_url}/agent", json=payload)
     if resp.status_code != 200:
-        print(f"  ERROR creating persona '{persona_config['name']}': {resp.status_code}")
+        print(f"  ERROR creating agent '{agent_config['name']}': {resp.status_code}")
         print(f"  Response: {resp.text[:500]}")
         return {}
 
     data = resp.json()
-    print(f"  Created persona: '{data['name']}' (id={data['id']})")
+    print(f"  Created agent: '{data['name']}' (id={data['id']})")
     return data
 
 
-def delete_persona(session: requests.Session, base_url: str, persona_id: int) -> None:
-    """Delete a persona via the API."""
-    resp = session.delete(f"{base_url}/persona/{persona_id}")
+def delete_agent(session: requests.Session, base_url: str, agent_id: int) -> None:
+    """Delete a agent via the API."""
+    resp = session.delete(f"{base_url}/agent/{agent_id}")
     if resp.status_code == 200:
-        print(f"  Deleted persona id={persona_id}")
+        print(f"  Deleted agent id={agent_id}")
     else:
-        print(f"  Warning: failed to delete persona {persona_id}: {resp.status_code}")
+        print(f"  Warning: failed to delete agent {agent_id}: {resp.status_code}")
 
 
 # ─── Step 2: Create Workflow ──────────────────────────────────────────────
@@ -143,7 +143,7 @@ def delete_persona(session: requests.Session, base_url: str, persona_id: int) ->
 def create_workflow(
     session: requests.Session,
     base_url: str,
-    persona_ids: list[int],
+    agent_ids: list[int],
 ) -> dict:
     """Create a 3-agent sequential workflow."""
     payload = {
@@ -155,7 +155,7 @@ def create_workflow(
         "is_public": True,
         "steps": [
             {
-                "persona_id": persona_ids[0],
+                "agent_id": agent_ids[0],
                 "step_order": 0,
                 "step_name": "Solve",
                 "step_description": "Solve the math problem step by step",
@@ -163,7 +163,7 @@ def create_workflow(
                 "is_terminal": False,
             },
             {
-                "persona_id": persona_ids[1],
+                "agent_id": agent_ids[1],
                 "step_order": 1,
                 "step_name": "Verify",
                 "step_description": "Verify the solution is correct",
@@ -171,7 +171,7 @@ def create_workflow(
                 "is_terminal": False,
             },
             {
-                "persona_id": persona_ids[2],
+                "agent_id": agent_ids[2],
                 "step_order": 2,
                 "step_name": "Summarize",
                 "step_description": "Summarize the result in plain language",
@@ -255,11 +255,11 @@ def analyze_packets(packets: list[dict]) -> dict:
 
         if pkt_type == "workflow_step_start":
             step_name = obj.get("step_name", "")
-            persona_name = obj.get("persona_name", "")
+            agent_name = obj.get("agent_name", "")
             steps_started.append(step_name)
             current_step = step_name
             step_outputs[step_name] = ""
-            print(f"    Step started: '{step_name}' (agent: {persona_name})")
+            print(f"    Step started: '{step_name}' (agent: {agent_name})")
 
         elif pkt_type == "workflow_step_delta":
             content = obj.get("content", "")
@@ -300,26 +300,26 @@ def run_full_test(
 ) -> bool:
     """Run the complete end-to-end test. Returns True if all checks pass."""
     session = get_session(base_url, api_key, email, password)
-    created_persona_ids: list[int] = []
+    created_agent_ids: list[int] = []
     created_workflow_id: int | None = None
     all_passed = True
 
     try:
-        # ── Step 1: Create 3 Personas ──
-        print("\n[1/4] Creating 3 test personas...")
-        for persona_config in PERSONAS:
-            result = create_persona(session, base_url, persona_config)
+        # ── Step 1: Create 3 Agents ──
+        print("\n[1/4] Creating 3 test agents...")
+        for agent_config in AGENTS:
+            result = create_agent(session, base_url, agent_config)
             if not result:
-                print("  FAIL: Could not create persona")
+                print("  FAIL: Could not create agent")
                 return False
-            created_persona_ids.append(result["id"])
+            created_agent_ids.append(result["id"])
 
-        assert len(created_persona_ids) == 3, "Expected 3 personas"
-        print(f"  OK: Created {len(created_persona_ids)} personas: {created_persona_ids}")
+        assert len(created_agent_ids) == 3, "Expected 3 agents"
+        print(f"  OK: Created {len(created_agent_ids)} agents: {created_agent_ids}")
 
         # ── Step 2: Create Workflow ──
         print("\n[2/4] Creating sequential workflow...")
-        workflow = create_workflow(session, base_url, created_persona_ids)
+        workflow = create_workflow(session, base_url, created_agent_ids)
         if not workflow:
             print("  FAIL: Could not create workflow")
             return False
@@ -376,8 +376,8 @@ def run_full_test(
         print("\n[Cleanup] Removing test data...")
         if created_workflow_id:
             delete_workflow_api(session, base_url, created_workflow_id)
-        for pid in created_persona_ids:
-            delete_persona(session, base_url, pid)
+        for pid in created_agent_ids:
+            delete_agent(session, base_url, pid)
         print("  Done.")
 
 

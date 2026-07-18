@@ -13,9 +13,9 @@ from om.file_store.models import FileDescriptor
 from tests.integration.common_utils.managers.chat import ChatSessionManager
 from tests.integration.common_utils.managers.file import FileManager
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager
-from tests.integration.common_utils.managers.persona import PersonaManager
+from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.managers.user import UserManager
-from tests.integration.common_utils.test_models import DATestPersona
+from tests.integration.common_utils.test_models import DATestAgent
 from tests.integration.common_utils.test_models import DATestUser
 
 
@@ -25,7 +25,7 @@ class KnowledgeFileTestSetup(NamedTuple):
     user2_non_owner: DATestUser
     user1_file_descriptor: FileDescriptor
     user1_file_id: str
-    public_assistant: DATestPersona
+    public_assistant: DATestAgent
 
 
 @pytest.fixture
@@ -65,7 +65,7 @@ def user_file_setup(reset: None) -> KnowledgeFileTestSetup:  # noqa: ARG001
     assert knowledge_file_id is not None, "knowledge_file_id should not be None"
 
     # Create a public assistant with the user file attached
-    public_assistant = PersonaManager.create(
+    public_assistant = AgentManager.create(
         name="Public Assistant with Files",
         description="A public assistant with user files for testing permissions",
         is_public=True,
@@ -92,7 +92,7 @@ def test_public_assistant_with_user_files(
     """
     # Create a chat session with the public assistant as user2
     chat_session = ChatSessionManager.create(
-        persona_id=user_file_setup.public_assistant.id,
+        agent_id=user_file_setup.public_assistant.id,
         description="Test chat session for user file permissions",
         user_performing_action=user_file_setup.user2_non_owner,
     )

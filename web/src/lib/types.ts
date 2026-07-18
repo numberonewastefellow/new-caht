@@ -1,4 +1,4 @@
-import { Persona } from "@/app/admin/assistants/interfaces";
+import { Agent } from "@/app/admin/assistants/interfaces";
 import { Credential } from "./connectors/credentials";
 import { Connector } from "./connectors/connectors";
 import { ConnectorCredentialPairStatus } from "@/app/admin/connector/[ccPairId]/types";
@@ -413,8 +413,8 @@ export type SlackBotResponseType = "quotes" | "citations";
 export interface SlackChannelConfig {
   id: number;
   slack_bot_id: number;
-  persona_id: number | null;
-  persona: Persona | null;
+  agent_id: number | null;
+  agent: Agent | null;
   channel_config: ChannelConfig;
   enable_auto_filters: boolean;
   standard_answer_categories: StandardAnswerCategory[];
@@ -457,7 +457,7 @@ export interface UserGroup {
   curator_ids: string[];
   cc_pairs: CCPairDescriptor<any, any>[];
   document_sets: DocumentSetSummary[];
-  personas: Persona[];
+  agents: Agent[];
   is_up_to_date: boolean;
   is_up_for_deletion: boolean;
 }

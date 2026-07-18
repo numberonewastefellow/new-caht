@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo } from "react";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { usePinnedAgents, useCurrentAgent } from "@/hooks/useAgents";
 import { cn, noProp } from "@/lib/utils";
 import SidebarTab from "@/refresh-components/buttons/SidebarTab";
@@ -43,7 +43,7 @@ function SortableItem({ id, children }: SortableItemProps) {
 }
 
 export interface AgentButtonProps {
-  agent: MinimalPersonaSnapshot;
+  agent: MinimalAgentSnapshot;
 }
 
 const AgentButton = memo(({ agent }: AgentButtonProps) => {

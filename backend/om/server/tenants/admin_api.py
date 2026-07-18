@@ -5,7 +5,7 @@ from fastapi import Response
 from fastapi_users import exceptions
 
 from om.auth.users import current_cloud_superuser
-from om.server.tenants.models import ImpersonateRequest
+from om.server.tenants.models import ImagentteRequest
 from om.server.tenants.user_mapping import get_tenant_id_for_email
 from om.auth.users import auth_backend
 from om.auth.users import get_redis_strategy
@@ -21,7 +21,7 @@ router = APIRouter(prefix="/tenants")
 
 @router.post("/impersonate")
 async def impersonate_user(
-    impersonate_request: ImpersonateRequest,
+    impersonate_request: ImagentteRequest,
     _: User = Depends(current_cloud_superuser),
 ) -> Response:
     """Allows a cloud superuser to impersonate another user by generating an impersonation JWT token"""

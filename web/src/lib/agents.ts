@@ -1,10 +1,10 @@
 import {
-  MinimalPersonaSnapshot,
-  Persona,
+  MinimalAgentSnapshot,
+  Agent,
 } from "@/app/admin/assistants/interfaces";
 import { User } from "./types";
 import { checkUserIsNoAuthUser } from "./user";
-import { personaComparator } from "@/app/admin/assistants/lib";
+import { agentComparator } from "@/app/admin/assistants/lib";
 
 /**
  * Checks if the given user owns the specified assistant.
@@ -15,7 +15,7 @@ import { personaComparator } from "@/app/admin/assistants/lib";
  */
 export function checkUserOwnsAssistant(
   user: User | null,
-  assistant: MinimalPersonaSnapshot | Persona
+  assistant: MinimalAgentSnapshot | Agent
 ) {
   return checkUserIdOwnsAssistant(user?.id, assistant);
 }
@@ -37,12 +37,12 @@ export function checkUserOwnsAssistant(
  */
 export function checkUserIdOwnsAssistant(
   userId: string | undefined,
-  assistant: MinimalPersonaSnapshot | Persona
+  assistant: MinimalAgentSnapshot | Agent
 ) {
   return (
     !!userId &&
     (checkUserIsNoAuthUser(userId) || assistant.owner?.id === userId) &&
-    !assistant.builtin_persona
+    !assistant.builtin_agent
   );
 }
 
@@ -70,18 +70,18 @@ export async function pinAgents(pinnedAgentIds: number[]) {
 /**
  * Filters and sorts assistants based on visibility.
  *
- * Only returns assistants that are marked as visible, sorted using the persona comparator.
+ * Only returns assistants that are marked as visible, sorted using the agent comparator.
  *
  * @param assistants - Array of assistants to filter
  * @returns Filtered and sorted array of visible assistants
  */
 export function filterAssistants(
-  assistants: MinimalPersonaSnapshot[]
-): MinimalPersonaSnapshot[] {
+  assistants: MinimalAgentSnapshot[]
+): MinimalAgentSnapshot[] {
   let filteredAssistants = assistants.filter(
     (assistant) => assistant.is_visible
   );
-  return filteredAssistants.sort(personaComparator);
+  return filteredAssistants.sort(agentComparator);
 }
 
 /**
@@ -92,7 +92,7 @@ export function filterAssistants(
  */
 export async function deleteAgent(agentId: number): Promise<string | null> {
   try {
-    const response = await fetch(`/api/persona/${agentId}`, {
+    const response = await fetch(`/api/agent/${agentId}`, {
       method: "DELETE",
     });
 
@@ -128,7 +128,7 @@ export async function updateAgentSharedStatus(
   isPublic: boolean | undefined
 ): Promise<null | string> {
   try {
-    const response = await fetch(`/api/persona/${agentId}/share`, {
+    const response = await fetch(`/api/agent/${agentId}/share`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

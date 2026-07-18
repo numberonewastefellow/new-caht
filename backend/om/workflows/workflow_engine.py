@@ -1,8 +1,8 @@
 """Multi-Agent Workflow Engine.
 
-Orchestrates multiple personas (agents) in sequence or via LLM-driven routing.
+Orchestrates multiple agents (agents) in sequence or via LLM-driven routing.
 Mirrors the proven Deep Research pattern from dr_loop.py but generalized to
-support any number of persona-based sub-agents.
+support any number of agent-based sub-agents.
 """
 
 import datetime
@@ -25,7 +25,7 @@ from om.chat.models import ChatMessageSimple
 from om.configs.constants import MessageType
 from om.db.models import AgentWorkflow
 from om.db.models import AgentWorkflowStep
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
 from om.db.models import WorkflowExecution
 from om.db.workflow import create_workflow_execution
@@ -38,7 +38,7 @@ from om.db.workflow import save_checkpoint
 from om.db.workflow import update_workflow_execution
 from om.db.llm import fetch_llm_provider_view
 from om.llm.factory import get_default_llm
-from om.llm.factory import get_llm_for_persona
+from om.llm.factory import get_llm_for_agent
 from om.llm.factory import get_llm_token_counter
 from om.llm.factory import llm_from_provider
 from om.llm.interfaces import LLM
@@ -429,38 +429,38 @@ def _build_agent_tools(
     chat_files: list[ChatFile] | None = None,
     sandbox_session_id: str | None = None,
 ) -> list[AgentTool]:
-    """Build AgentTool instances for each workflow step's persona.
+    """Build AgentTool instances for each workflow step's agent.
 
     Performance: pre-resolves user and caches LLM instances to avoid
     redundant DB lookups per agent call (Tier 1.5).
-    Also checks persona.tools on the main thread to avoid lazy-loading
+    Also checks agent.tools on the main thread to avoid lazy-loading
     in background agent threads (Tier 1.1).
     """
     agent_tools = []
     llm_cache: dict[str, LLM] = {}
 
     for step in steps:
-        persona = step.persona if step.persona else db_session.get(Persona, step.persona_id)
-        if persona is None or persona.deleted:
+        agent = step.agent if step.agent else db_session.get(Agent, step.agent_id)
+        if agent is None or agent.deleted:
             logger.warning(
-                f"Persona {step.persona_id} not found for workflow step {step.id}"
+                f"Agent {step.agent_id} not found for workflow step {step.id}"
             )
             continue
 
-        # Resolve effective LLM: step override > persona override > default
-        effective_provider = step.llm_provider_override or persona.llm_model_provider_override
-        effective_model = step.llm_model_override or persona.llm_model_version_override
+        # Resolve effective LLM: step override > agent override > default
+        effective_provider = step.llm_provider_override or agent.llm_model_provider_override
+        effective_model = step.llm_model_override or agent.llm_model_version_override
 
         # Cache LLM per (provider, model) pair
         llm_key = f"{effective_provider}:{effective_model}"
         if llm_key not in llm_cache:
             if step.llm_provider_override and user:
-                # Step has its own LLM override — build a temporary persona-like
+                # Step has its own LLM override — build a temporary agent-like
                 # object isn't needed; just override via LLMOverride
                 from om.llm.override_models import LLMOverride
 
-                llm_cache[llm_key] = get_llm_for_persona(
-                    persona,
+                llm_cache[llm_key] = get_llm_for_agent(
+                    agent,
                     user,
                     llm_override=LLMOverride(
                         model_provider=step.llm_provider_override,
@@ -468,7 +468,7 @@ def _build_agent_tools(
                     ),
                 )
             elif user:
-                llm_cache[llm_key] = get_llm_for_persona(persona, user)
+                llm_cache[llm_key] = get_llm_for_agent(agent, user)
             else:
                 llm_cache[llm_key] = get_default_llm()
 
@@ -477,12 +477,12 @@ def _build_agent_tools(
         has_tools = (
             bool(step.tool_ids_override)
             if step.tool_ids_override is not None
-            else bool(persona.tools)
+            else bool(agent.tools)
         )
 
         agent_tools.append(
             AgentTool(
-                persona=persona,
+                agent=agent,
                 emitter=emitter,
                 db_session=db_session,
                 step_name=step.step_name,
@@ -775,23 +775,23 @@ def run_workflow_sequential(
         logger.debug("[Trace] sequential init failed", exc_info=True)
 
     # Pre-build agent tools with cached LLMs + user (Tier 1.5 performance)
-    # Skip non-agent steps (e.g. conditional_router has no persona)
+    # Skip non-agent steps (e.g. conditional_router has no agent)
     agent_tools_by_step: dict[int, AgentTool] = {}
     llm_cache: dict[int, LLM] = {}
     skip_step_orders: set[int] = set()  # Branch-skip for conditional router
     for step in steps:
         if step.step_type == "conditional_router":
             continue
-        if step.persona_id is None:
+        if step.agent_id is None:
             continue
-        persona = step.persona if step.persona else db_session.get(Persona, step.persona_id)
-        if persona is None or persona.deleted:
+        agent = step.agent if step.agent else db_session.get(Agent, step.agent_id)
+        if agent is None or agent.deleted:
             continue
-        if persona.id not in llm_cache:
-            llm_cache[persona.id] = get_llm_for_persona(persona, user)
-        has_tools = bool(persona.tools)
+        if agent.id not in llm_cache:
+            llm_cache[agent.id] = get_llm_for_agent(agent, user)
+        has_tools = bool(agent.tools)
         agent_tools_by_step[step.id] = AgentTool(
-            persona=persona,
+            agent=agent,
             emitter=emitter,
             db_session=db_session,
             step_name=step.step_name,
@@ -799,7 +799,7 @@ def run_workflow_sequential(
             step_id=step.id,
             output_key=step.output_key,
             user=user,
-            llm=llm_cache[persona.id],
+            llm=llm_cache[agent.id],
             has_tools=has_tools,
             promote_output=step.promote_output,
             chat_files=chat_files,
@@ -874,7 +874,7 @@ def run_workflow_sequential(
                     placement=placement,
                     obj=WorkflowStepStart(
                         step_name=step.step_name,
-                        persona_name=None,
+                        agent_name=None,
                         step_order=step.step_order,
                         step_type="conditional_router",
                     ),
@@ -911,7 +911,7 @@ def run_workflow_sequential(
 
                 steps_executed.append({
                     "step_id": step.id,
-                    "persona_id": None,
+                    "agent_id": None,
                     "step_name": step.step_name,
                     "input_text": str(condition_config)[:500],
                     "output_text": explanation,
@@ -928,14 +928,14 @@ def run_workflow_sequential(
                 continue
 
             step_start_time = time.monotonic()
-            persona = agent_tool._persona
+            agent = agent_tool._agent
             logger.info(
                 "[Sequential] STEP START step=%d/%d name='%s' agent='%s' "
                 "can_request_input=%s",
                 step.step_order + 1,
                 len(steps),
                 step.step_name,
-                persona.name,
+                agent.name,
                 step.can_request_input,
             )
 
@@ -946,7 +946,7 @@ def run_workflow_sequential(
                 placement=placement,
                 obj=WorkflowStepStart(
                     step_name=step.step_name,
-                    persona_name=persona.name,
+                    agent_name=agent.name,
                     step_order=step.step_order,
                     promote_output=step.promote_output,
                 ),
@@ -965,7 +965,7 @@ def run_workflow_sequential(
                 trace_node_id = trace_builder.start_agent(
                     step_id=step.id,
                     name=step.step_name,
-                    persona_id=step.persona_id,
+                    agent_id=step.agent_id,
                     input_text=task_input,
                     file_names=_trace_file_names,
                 )
@@ -1039,7 +1039,7 @@ def run_workflow_sequential(
                 "[Sequential] AGENT DONE step='%s' agent='%s' "
                 "llm_time=%.2fs output_len=%d words=%d",
                 step.step_name,
-                persona.name,
+                agent.name,
                 agent_elapsed,
                 output_len,
                 len(agent_output.split()),
@@ -1051,7 +1051,7 @@ def run_workflow_sequential(
                     "[Sequential] PAUSE DETECTED step='%s' agent='%s' — "
                     "agent is requesting user input, saving checkpoint",
                     step.step_name,
-                    persona.name,
+                    agent.name,
                 )
                 # Build accumulated clarification conversation
                 accumulated_conv: list[dict[str, str]] = list(
@@ -1134,7 +1134,7 @@ def run_workflow_sequential(
                     placement=pause_placement,
                     obj=WorkflowPauseForInput(
                         step_name=step.step_name,
-                        persona_name=persona.name,
+                        agent_name=agent.name,
                         questions=pause_questions,
                     ),
                 )
@@ -1214,7 +1214,7 @@ def run_workflow_sequential(
                 step.step_order + 1,
                 len(steps),
                 step.step_name,
-                persona.name,
+                agent.name,
                 step_duration_ms,
                 step_tokens,
                 len(agent_output.split()),
@@ -1222,7 +1222,7 @@ def run_workflow_sequential(
 
             steps_executed.append({
                 "step_id": step.id,
-                "persona_id": step.persona_id,
+                "agent_id": step.agent_id,
                 "step_name": step.step_name,
                 "input_text": task_input[:500],  # Truncate for storage
                 "output_text": agent_output[:2000],
@@ -1668,7 +1668,7 @@ def run_workflow_llm_decision(
                 placement=agent_placement,
                 obj=WorkflowStepStart(
                     step_name=_direct_resume_tool._step_name,
-                    persona_name=_direct_resume_tool._persona.name,
+                    agent_name=_direct_resume_tool._agent.name,
                     step_order=_direct_resume_tool._step_order,
                     promote_output=_direct_resume_tool.promote_output,
                 ),
@@ -1680,7 +1680,7 @@ def run_workflow_llm_decision(
                 resume_node_id = trace_builder.start_agent(
                     step_id=_direct_resume_tool.step_id,
                     name=_direct_resume_tool.display_name,
-                    persona_id=_direct_resume_tool.id,
+                    agent_id=_direct_resume_tool.id,
                     input_text=_direct_resume_task,
                     file_names=_trace_file_names,
                     call_index=agent_call_counts.get(_direct_resume_tool.name),
@@ -1867,7 +1867,7 @@ def run_workflow_llm_decision(
                         placement=pause_placement,
                         obj=WorkflowPauseForInput(
                             step_name=_direct_resume_tool._step_name,
-                            persona_name=_direct_resume_tool._persona.name,
+                            agent_name=_direct_resume_tool._agent.name,
                             questions=pause_questions,
                         ),
                     )
@@ -1932,7 +1932,7 @@ def run_workflow_llm_decision(
                 total_tokens += step_tokens
                 steps_executed.append({
                     "step_id": _direct_resume_tool.step_id,
-                    "persona_id": _direct_resume_tool.id,
+                    "agent_id": _direct_resume_tool.id,
                     "step_name": _direct_resume_tool.display_name,
                     "input_text": _direct_resume_task[:500],
                     "output_text": agent_output[:2000],
@@ -2216,7 +2216,7 @@ def run_workflow_llm_decision(
                         placement=agent_placement,
                         obj=WorkflowStepStart(
                             step_name=agent_tool._step_name,
-                            persona_name=agent_tool._persona.name,
+                            agent_name=agent_tool._agent.name,
                             step_order=agent_tool._step_order,
                             promote_output=agent_tool.promote_output,
                         ),
@@ -2229,7 +2229,7 @@ def run_workflow_llm_decision(
                         agent_node_id = trace_builder.start_agent(
                             step_id=agent_tool.step_id,
                             name=agent_tool.display_name,
-                            persona_id=agent_tool.id,
+                            agent_id=agent_tool.id,
                             input_text=json.dumps(tool_call.tool_args),
                             file_names=_trace_file_names,
                             call_index=agent_call_counts.get(tool_call.tool_name),
@@ -2426,7 +2426,7 @@ def run_workflow_llm_decision(
                             placement=pause_placement,
                             obj=WorkflowPauseForInput(
                                 step_name=agent_tool._step_name,
-                                persona_name=agent_tool._persona.name,
+                                agent_name=agent_tool._agent.name,
                                 questions=pause_questions,
                             ),
                         )
@@ -2489,7 +2489,7 @@ def run_workflow_llm_decision(
 
                     steps_executed.append({
                         "step_id": agent_tool.step_id,
-                        "persona_id": agent_tool.id,
+                        "agent_id": agent_tool.id,
                         "step_name": agent_tool.display_name,
                         "input_text": task_input[:500],
                         "output_text": agent_output[:2000],

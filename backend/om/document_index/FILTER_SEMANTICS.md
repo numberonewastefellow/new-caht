@@ -10,7 +10,7 @@ How `IndexFilters` fields combine into the final query filter. Applies to both V
 | **Tenant** | `tenant_id` | AND (multi-tenant only) |
 | **ACL** | `access_control_list` | OR within, AND with rest |
 | **Narrowing** | `source_type`, `tags`, `time_cutoff` | Each OR within, AND with rest |
-| **Knowledge scope** | `document_set`, `attached_document_ids`, `hierarchy_node_ids`, `persona_id_filter` | OR within group, AND with rest |
+| **Knowledge scope** | `document_set`, `attached_document_ids`, `hierarchy_node_ids`, `agent_id_filter` | OR within group, AND with rest |
 | **Additive scope** | `project_id_filter` | OR'd into knowledge scope **only when** a knowledge scope filter already exists |
 
 ## How filters combine
@@ -33,9 +33,9 @@ The knowledge scope filter controls **what knowledge an assistant can access**.
 
 ### Primary vs additive triggers
 
-- **`persona_id_filter`** is a **primary** trigger. A persona with user files IS explicit
-  knowledge, so `persona_id_filter` alone can start a knowledge scope. Note: this is
-  NOT the raw ID of the persona being used — it is only set when the persona's
+- **`agent_id_filter`** is a **primary** trigger. An agent with user files IS explicit
+  knowledge, so `agent_id_filter` alone can start a knowledge scope. Note: this is
+  NOT the raw ID of the agent being used — it is only set when the agent's
   user files overflowed the LLM context window.
 - **`project_id_filter`** is **additive**. It widens an existing scope to include project
   files but never restricts on its own — a chat inside a project should still search
@@ -43,7 +43,7 @@ The knowledge scope filter controls **what knowledge an assistant can access**.
 
 ### No explicit knowledge attached
 
-When `document_set`, `attached_document_ids`, `hierarchy_node_ids`, and `persona_id_filter` are all empty/None:
+When `document_set`, `attached_document_ids`, `hierarchy_node_ids`, and `agent_id_filter` are all empty/None:
 
 - **No knowledge scope filter is applied.** The assistant can see everything (subject to ACL).
 - `project_id_filter` is ignored — it never restricts on its own.
@@ -54,17 +54,17 @@ When `document_set`, `attached_document_ids`, `hierarchy_node_ids`, and `persona
 -- Only document sets
 AND (document_sets contains "Engineering" OR document_sets contains "Legal")
 
--- Only persona user files (overflowed context)
-AND (personas contains 42)
+-- Only agent user files (overflowed context)
+AND (agents contains 42)
 ```
 
 ### Multiple explicit knowledge types (OR'd)
 
 ```
--- Document sets + persona user files
+-- Document sets + agent user files
 AND (
     document_sets contains "Engineering"
-    OR personas contains 42
+    OR agents contains 42
 )
 ```
 
@@ -79,10 +79,10 @@ AND (
     OR user_project contains 7
 )
 
--- Persona user files + project files (won't happen in practice;
--- custom personas ignore project files per the precedence rule)
+-- Agent user files + project files (won't happen in practice;
+-- custom agents ignore project files per the precedence rule)
 AND (
-    personas contains 42
+    agents contains 42
     OR user_project contains 7
 )
 ```
@@ -104,7 +104,7 @@ AND (acl contains ...)
 | `document_set` | `document_sets` | `weightedset<string>` | Connector doc sets attached to assistant |
 | `attached_document_ids` | `document_id` | `string` | Documents explicitly attached (OpenSearch only) |
 | `hierarchy_node_ids` | `ancestor_hierarchy_node_ids` | `array<int>` | Folder/space nodes (OpenSearch only) |
-| `persona_id_filter` | `personas` | `array<int>` | Persona tag for overflowing user files (**primary** trigger) |
+| `agent_id_filter` | `agents` | `array<int>` | Agent tag for overflowing user files (**primary** trigger) |
 | `project_id_filter` | `user_project` | `array<int>` | Project tag for overflowing project files (**additive** only) |
 | `access_control_list` | `access_control_list` | `weightedset<string>` | ACL entries for the requesting user |
 | `source_type` | `source_type` | `string` | Connector source type (e.g. `web`, `jira`) |

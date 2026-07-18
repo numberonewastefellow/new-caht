@@ -44,7 +44,7 @@ A **CompareController** fans one prompt out to 1-3 sessions; each panel is a nor
 
 ### Send orchestration — `web/src/hooks/useCompareController.ts`
 On submit in compare mode, for each model i **in parallel** (independent async tasks, not awaited serially):
-1. First turn: `createChatSession(personaId,…)` → `sessionId_i`; `createSession(sessionId_i)` in the store; `updateLlmOverrideForChatSession(sessionId_i, model_i)` (reuse `web/src/app/app/services/lib.tsx:28-80`).
+1. First turn: `createChatSession(agentId,…)` → `sessionId_i`; `createSession(sessionId_i)` in the store; `updateLlmOverrideForChatSession(sessionId_i, model_i)` (reuse `web/src/app/app/services/lib.tsx:28-80`).
 2. Stream via the **shared helper** below, keyed to `sessionId_i` + `model_i`.
 
 Each task has its own session id, FIFO, abort controller, and store keys → the fastest model renders immediately and the slowest never blocks the others.

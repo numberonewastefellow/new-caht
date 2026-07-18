@@ -7,14 +7,14 @@ import {
 } from "@/lib/chat/greetingMessages";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import Text from "@/refresh-components/texts/Text";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { useState, useEffect } from "react";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import FrostedDiv from "@/refresh-components/FrostedDiv";
 import { motion } from "motion/react";
 
 export interface WelcomeMessageProps {
-  agent?: MinimalPersonaSnapshot;
+  agent?: MinimalAgentSnapshot;
   isDefaultAgent: boolean;
 }
 

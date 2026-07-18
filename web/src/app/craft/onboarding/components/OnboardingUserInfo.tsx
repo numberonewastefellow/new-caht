@@ -9,7 +9,7 @@ import {
   WORK_AREA_OPTIONS,
   LEVEL_OPTIONS,
   WORK_AREAS_REQUIRING_LEVEL,
-  PERSONA_MAPPING,
+  AGENT_MAPPING,
   DEMO_COMPANY_NAME,
   getPositionText,
 } from "@/app/craft/onboarding/constants";
@@ -79,10 +79,10 @@ export default function OnboardingUserInfo({
   const requiresLevel =
     workArea !== undefined && WORK_AREAS_REQUIRING_LEVEL.includes(workArea);
 
-  // Get persona info for preview
+  // Get agent info for preview
   const selectedLevel = level ?? Level.IC;
-  const personaInfo =
-    workArea !== undefined ? PERSONA_MAPPING[workArea]?.[selectedLevel] : null;
+  const agentInfo =
+    workArea !== undefined ? AGENT_MAPPING[workArea]?.[selectedLevel] : null;
   const positionText =
     workArea !== undefined ? getPositionText(workArea, level) : null;
 
@@ -176,11 +176,11 @@ export default function OnboardingUserInfo({
           </div>
         </div>
 
-        {/* Persona preview - always reserve space to prevent layout shift */}
+        {/* Agent preview - always reserve space to prevent layout shift */}
         <div className="flex justify-center min-h-[1.5rem]">
-          {personaInfo && positionText && (
+          {agentInfo && positionText && (
             <Text mainContentBody text03 className="text-center">
-              You will play the role of {positionText} named {personaInfo.name}{" "}
+              You will play the role of {positionText} named {agentInfo.name}{" "}
               working at <br />
               {DEMO_COMPANY_NAME}
             </Text>

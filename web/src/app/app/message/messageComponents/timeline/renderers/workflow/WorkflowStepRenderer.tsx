@@ -28,7 +28,7 @@ export const WorkflowStepRenderer: MessageRenderer<
     (p) => p.obj.type === PacketType.WORKFLOW_STEP_START
   );
   const stepStart = startPacket?.obj as WorkflowStepStart | undefined;
-  const personaName = stepStart?.persona_name || "Agent";
+  const agentName = stepStart?.agent_name || "Agent";
   const stepName = stepStart?.step_name || "";
 
   // Check completion. Only an explicit WorkflowStepEnd (or ERROR) means the step
@@ -73,7 +73,7 @@ export const WorkflowStepRenderer: MessageRenderer<
     [packets]
   );
 
-  const statusText = isComplete ? `${personaName}` : personaName;
+  const statusText = isComplete ? `${agentName}` : agentName;
 
   // Markdown renderer callback
   const renderMarkdown = useCallback(
@@ -91,7 +91,7 @@ export const WorkflowStepRenderer: MessageRenderer<
   const stepContent = fullContent ? (
     <div className="pl-[var(--timeline-common-text-padding)]">
       <ExpandableTextDisplay
-        title={`${personaName}: ${stepName}`}
+        title={`${agentName}: ${stepName}`}
         content={fullContent}
         renderContent={renderMarkdown}
         isStreaming={!isComplete && !stopPacketSeen}
@@ -108,7 +108,7 @@ export const WorkflowStepRenderer: MessageRenderer<
     const reasoningBlock = (
       <div className="pl-[var(--timeline-common-text-padding)]">
         <ExpandableTextDisplay
-          title={`${personaName}: Reasoning`}
+          title={`${agentName}: Reasoning`}
           content={reasoningContent}
           renderContent={renderMarkdown}
           isStreaming={!isComplete && !stopPacketSeen}

@@ -196,7 +196,7 @@ def mock_guild_config_enabled() -> MagicMock:
     config.id = 1
     config.guild_id = 987654321
     config.enabled = True
-    config.default_persona_id = 1
+    config.default_agent_id = 1
     return config
 
 
@@ -207,7 +207,7 @@ def mock_guild_config_disabled() -> MagicMock:
     config.id = 2
     config.guild_id = 987654321
     config.enabled = False
-    config.default_persona_id = None
+    config.default_agent_id = None
     return config
 
 
@@ -219,7 +219,7 @@ def mock_channel_config_factory() -> Callable[..., MagicMock]:
         enabled: bool = True,
         require_bot_invocation: bool = True,
         thread_only_mode: bool = False,
-        persona_override_id: int | None = None,
+        agent_override_id: int | None = None,
     ) -> MagicMock:
         config = MagicMock()
         config.id = random.randint(1, 1000)
@@ -227,7 +227,7 @@ def mock_channel_config_factory() -> Callable[..., MagicMock]:
         config.enabled = enabled
         config.require_bot_invocation = require_bot_invocation
         config.thread_only_mode = thread_only_mode
-        config.persona_override_id = persona_override_id
+        config.agent_override_id = agent_override_id
         return config
 
     return _make_config

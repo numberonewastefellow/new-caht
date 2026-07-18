@@ -952,7 +952,7 @@ def get_user_assistant_preferences(
         user.id, db_session
     )
     return {
-        config.assistant_id: UserSpecificAssistantPreference(
+        config.agent_id: UserSpecificAssistantPreference(
             disabled_tool_ids=config.disabled_tool_ids
         )
         for config in assistant_specific_configs

@@ -9,8 +9,8 @@ from om.context.search.enums import RecencyBiasSetting
 from om.db.enums import HierarchyNodeType
 from om.db.models import Document
 from om.db.models import HierarchyNode
-from om.db.models import Persona
-from om.db.models import PersonaLabel
+from om.db.models import Agent
+from om.db.models import AgentLabel
 from om.db.models import StarterMessage
 from om.server.features.document_set.models import DocumentSetSummary
 from om.server.features.tool.models import ToolSnapshot
@@ -23,7 +23,7 @@ logger = setup_logger()
 
 
 class HierarchyNodeSnapshot(BaseModel):
-    """Minimal representation of a hierarchy node for persona responses."""
+    """Minimal representation of a hierarchy node for agent responses."""
 
     id: int
     raw_node_id: str
@@ -45,7 +45,7 @@ class HierarchyNodeSnapshot(BaseModel):
 
 
 class AttachedDocumentSnapshot(BaseModel):
-    """Minimal representation of an attached document for persona responses."""
+    """Minimal representation of an attached document for agent responses."""
 
     id: str
     title: str
@@ -77,25 +77,25 @@ class PromptSnapshot(BaseModel):
     system_prompt: str
     task_prompt: str
     datetime_aware: bool
-    # Not including persona info, not needed
+    # Not including agent info, not needed
 
     @classmethod
-    def from_model(cls, persona: Persona) -> "PromptSnapshot":
-        """Create PromptSnapshot from persona's embedded prompt fields"""
-        if persona.deleted:
-            raise ValueError("Persona has been deleted")
+    def from_model(cls, agent: Agent) -> "PromptSnapshot":
+        """Create PromptSnapshot from agent's embedded prompt fields"""
+        if agent.deleted:
+            raise ValueError("Agent has been deleted")
 
         return PromptSnapshot(
-            id=persona.id,
-            name=persona.name,
-            description=persona.description,
-            system_prompt=persona.system_prompt or "",
-            task_prompt=persona.task_prompt or "",
-            datetime_aware=persona.datetime_aware,
+            id=agent.id,
+            name=agent.name,
+            description=agent.description,
+            system_prompt=agent.system_prompt or "",
+            task_prompt=agent.task_prompt or "",
+            datetime_aware=agent.datetime_aware,
         )
 
 
-# More minimal request for generating a persona prompt
+# More minimal request for generating a agent prompt
 class GenerateStarterMessageRequest(BaseModel):
     name: str
     description: str
@@ -104,7 +104,7 @@ class GenerateStarterMessageRequest(BaseModel):
     generation_count: int
 
 
-class PersonaUpsertRequest(BaseModel):
+class AgentUpsertRequest(BaseModel):
     name: str
     description: str
     document_set_ids: list[int]
@@ -117,7 +117,7 @@ class PersonaUpsertRequest(BaseModel):
     llm_model_version_override: str | None = None
     max_output_tokens: int | None = None
     starter_messages: list[StarterMessage] | None = None
-    # For Private Personas, who should be able to access these
+    # For Private Agents, who should be able to access these
     users: list[UUID] = Field(default_factory=list)
     groups: list[int] = Field(default_factory=list)
     # e.g. ID of SearchTool or ImageGenerationTool or <USER_DEFINED_TOOL>
@@ -129,7 +129,7 @@ class PersonaUpsertRequest(BaseModel):
     )
     search_start_date: datetime | None = None
     label_ids: list[int] | None = None
-    is_default_persona: bool = False
+    is_default_agent: bool = False
     display_priority: int | None = None
     # Accept string UUIDs from frontend
     knowledge_file_ids: list[str] | None = None
@@ -145,8 +145,8 @@ class PersonaUpsertRequest(BaseModel):
     datetime_aware: bool
 
 
-class MinimalPersonaSnapshot(BaseModel):
-    """Minimal persona model optimized for ChatPage.tsx - only includes fields actually used"""
+class MinimalAgentSnapshot(BaseModel):
+    """Minimal agent model optimized for ChatPage.tsx - only includes fields actually used"""
 
     # Core fields used by ChatPage
     id: int
@@ -178,79 +178,79 @@ class MinimalPersonaSnapshot(BaseModel):
     is_public: bool
     is_visible: bool
     display_priority: int | None
-    is_default_persona: bool
-    builtin_persona: bool
+    is_default_agent: bool
+    builtin_agent: bool
 
     # Used for filtering
-    labels: list["PersonaLabelSnapshot"]
+    labels: list["AgentLabelSnapshot"]
 
     # Used to display ownership
     owner: MinimalUserSnapshot | None
 
-    # Multi-agent workflow link — set when this persona is a workflow wrapper
+    # Multi-agent workflow link — set when this agent is a workflow wrapper
     workflow_id: int | None = None
 
     @classmethod
-    def from_model(cls, persona: Persona) -> "MinimalPersonaSnapshot":
+    def from_model(cls, agent: Agent) -> "MinimalAgentSnapshot":
         # Collect unique sources from document sets, hierarchy nodes, and attached documents
         sources: set[DocumentSource] = set()
 
         # Sources from document sets
-        for doc_set in persona.document_sets:
+        for doc_set in agent.document_sets:
             for cc_pair in doc_set.connector_credential_pairs:
                 sources.add(cc_pair.connector.source)
 
         # Sources from hierarchy nodes
-        for node in persona.hierarchy_nodes:
+        for node in agent.hierarchy_nodes:
             sources.add(node.source)
 
         # Sources from attached documents (via their parent hierarchy node)
-        for doc in persona.attached_documents:
+        for doc in agent.attached_documents:
             if doc.parent_hierarchy_node:
                 sources.add(doc.parent_hierarchy_node.source)
 
-        return MinimalPersonaSnapshot(
+        return MinimalAgentSnapshot(
             # Core fields actually used by ChatPage
-            id=persona.id,
-            name=persona.name,
-            description=persona.description,
+            id=agent.id,
+            name=agent.name,
+            description=agent.description,
             tools=[
                 ToolSnapshot.from_model(tool)
-                for tool in persona.tools
+                for tool in agent.tools
                 if should_expose_tool_to_fe(tool)
             ],
-            starter_messages=persona.starter_messages,
-            llm_relevance_filter=persona.llm_relevance_filter,
-            llm_filter_extraction=persona.llm_filter_extraction,
+            starter_messages=agent.starter_messages,
+            llm_relevance_filter=agent.llm_relevance_filter,
+            llm_filter_extraction=agent.llm_filter_extraction,
             document_sets=[
                 DocumentSetSummary.from_model(document_set)
-                for document_set in persona.document_sets
+                for document_set in agent.document_sets
             ],
-            hierarchy_node_count=len(persona.hierarchy_nodes),
-            attached_document_count=len(persona.attached_documents),
+            hierarchy_node_count=len(agent.hierarchy_nodes),
+            attached_document_count=len(agent.attached_documents),
             knowledge_sources=list(sources),
-            llm_model_version_override=persona.llm_model_version_override,
-            llm_model_provider_override=persona.llm_model_provider_override,
-            max_output_tokens=persona.max_output_tokens,
-            replace_base_system_prompt=persona.replace_base_system_prompt,
-            uploaded_image_id=persona.uploaded_image_id,
-            icon_name=persona.icon_name,
-            is_public=persona.is_public,
-            is_visible=persona.is_visible,
-            display_priority=persona.display_priority,
-            is_default_persona=persona.is_default_persona,
-            builtin_persona=persona.builtin_persona,
-            labels=[PersonaLabelSnapshot.from_model(label) for label in persona.labels],
+            llm_model_version_override=agent.llm_model_version_override,
+            llm_model_provider_override=agent.llm_model_provider_override,
+            max_output_tokens=agent.max_output_tokens,
+            replace_base_system_prompt=agent.replace_base_system_prompt,
+            uploaded_image_id=agent.uploaded_image_id,
+            icon_name=agent.icon_name,
+            is_public=agent.is_public,
+            is_visible=agent.is_visible,
+            display_priority=agent.display_priority,
+            is_default_agent=agent.is_default_agent,
+            builtin_agent=agent.builtin_agent,
+            labels=[AgentLabelSnapshot.from_model(label) for label in agent.labels],
             owner=(
-                MinimalUserSnapshot(id=persona.user.id, email=persona.user.email)
-                if persona.user
+                MinimalUserSnapshot(id=agent.user.id, email=agent.user.email)
+                if agent.user
                 else None
             ),
-            workflow_id=persona.workflow_id,
+            workflow_id=agent.workflow_id,
         )
 
 
-class PersonaSnapshot(BaseModel):
+class AgentSnapshot(BaseModel):
     id: int
     name: str
     description: str
@@ -261,13 +261,13 @@ class PersonaSnapshot(BaseModel):
     # Return string UUIDs to frontend for consistency
     knowledge_file_ids: list[str]
     display_priority: int | None
-    is_default_persona: bool
-    builtin_persona: bool
+    is_default_agent: bool
+    builtin_agent: bool
     starter_messages: list[StarterMessage] | None
     llm_relevance_filter: bool
     llm_filter_extraction: bool
     tools: list[ToolSnapshot]
-    labels: list["PersonaLabelSnapshot"]
+    labels: list["AgentLabelSnapshot"]
     owner: MinimalUserSnapshot | None
     users: list[MinimalUserSnapshot]
     groups: list[int]
@@ -288,131 +288,131 @@ class PersonaSnapshot(BaseModel):
     datetime_aware: bool = True
 
     @classmethod
-    def from_model(cls, persona: Persona) -> "PersonaSnapshot":
-        return PersonaSnapshot(
-            id=persona.id,
-            name=persona.name,
-            description=persona.description,
-            is_public=persona.is_public,
-            is_visible=persona.is_visible,
-            uploaded_image_id=persona.uploaded_image_id,
-            icon_name=persona.icon_name,
-            knowledge_file_ids=[str(file.id) for file in persona.knowledge_files],
-            display_priority=persona.display_priority,
-            is_default_persona=persona.is_default_persona,
-            builtin_persona=persona.builtin_persona,
-            starter_messages=persona.starter_messages,
-            llm_relevance_filter=persona.llm_relevance_filter,
-            llm_filter_extraction=persona.llm_filter_extraction,
+    def from_model(cls, agent: Agent) -> "AgentSnapshot":
+        return AgentSnapshot(
+            id=agent.id,
+            name=agent.name,
+            description=agent.description,
+            is_public=agent.is_public,
+            is_visible=agent.is_visible,
+            uploaded_image_id=agent.uploaded_image_id,
+            icon_name=agent.icon_name,
+            knowledge_file_ids=[str(file.id) for file in agent.knowledge_files],
+            display_priority=agent.display_priority,
+            is_default_agent=agent.is_default_agent,
+            builtin_agent=agent.builtin_agent,
+            starter_messages=agent.starter_messages,
+            llm_relevance_filter=agent.llm_relevance_filter,
+            llm_filter_extraction=agent.llm_filter_extraction,
             tools=[
                 ToolSnapshot.from_model(tool)
-                for tool in persona.tools
+                for tool in agent.tools
                 if should_expose_tool_to_fe(tool)
             ],
-            labels=[PersonaLabelSnapshot.from_model(label) for label in persona.labels],
+            labels=[AgentLabelSnapshot.from_model(label) for label in agent.labels],
             hierarchy_nodes=[
                 HierarchyNodeSnapshot.from_model(node)
-                for node in persona.hierarchy_nodes
+                for node in agent.hierarchy_nodes
             ],
             attached_documents=[
                 AttachedDocumentSnapshot.from_model(doc)
-                for doc in persona.attached_documents
+                for doc in agent.attached_documents
             ],
             owner=(
-                MinimalUserSnapshot(id=persona.user.id, email=persona.user.email)
-                if persona.user
+                MinimalUserSnapshot(id=agent.user.id, email=agent.user.email)
+                if agent.user
                 else None
             ),
             users=[
                 MinimalUserSnapshot(id=user.id, email=user.email)
-                for user in persona.users
+                for user in agent.users
             ],
-            groups=[user_group.id for user_group in persona.groups],
+            groups=[user_group.id for user_group in agent.groups],
             document_sets=[
                 DocumentSetSummary.from_model(document_set_model)
-                for document_set_model in persona.document_sets
+                for document_set_model in agent.document_sets
             ],
-            llm_model_provider_override=persona.llm_model_provider_override,
-            llm_model_version_override=persona.llm_model_version_override,
-            max_output_tokens=persona.max_output_tokens,
-            num_chunks=persona.num_chunks,
-            system_prompt=persona.system_prompt,
-            replace_base_system_prompt=persona.replace_base_system_prompt,
-            task_prompt=persona.task_prompt,
-            datetime_aware=persona.datetime_aware,
+            llm_model_provider_override=agent.llm_model_provider_override,
+            llm_model_version_override=agent.llm_model_version_override,
+            max_output_tokens=agent.max_output_tokens,
+            num_chunks=agent.num_chunks,
+            system_prompt=agent.system_prompt,
+            replace_base_system_prompt=agent.replace_base_system_prompt,
+            task_prompt=agent.task_prompt,
+            datetime_aware=agent.datetime_aware,
         )
 
 
 # Model with full context on perona's internal settings
 # This is used for flows which need to know all settings
-class FullPersonaSnapshot(PersonaSnapshot):
+class FullAgentSnapshot(AgentSnapshot):
     search_start_date: datetime | None = None
     llm_relevance_filter: bool = False
     llm_filter_extraction: bool = False
 
     @classmethod
     def from_model(
-        cls, persona: Persona, allow_deleted: bool = False
-    ) -> "FullPersonaSnapshot":
-        if persona.deleted:
-            error_msg = f"Persona with ID {persona.id} has been deleted"
+        cls, agent: Agent, allow_deleted: bool = False
+    ) -> "FullAgentSnapshot":
+        if agent.deleted:
+            error_msg = f"Agent with ID {agent.id} has been deleted"
             if not allow_deleted:
                 raise ValueError(error_msg)
             else:
                 logger.warning(error_msg)
 
-        return FullPersonaSnapshot(
-            id=persona.id,
-            name=persona.name,
-            description=persona.description,
-            is_public=persona.is_public,
-            is_visible=persona.is_visible,
-            uploaded_image_id=persona.uploaded_image_id,
-            icon_name=persona.icon_name,
-            knowledge_file_ids=[str(file.id) for file in persona.knowledge_files],
-            display_priority=persona.display_priority,
-            is_default_persona=persona.is_default_persona,
-            builtin_persona=persona.builtin_persona,
-            starter_messages=persona.starter_messages,
+        return FullAgentSnapshot(
+            id=agent.id,
+            name=agent.name,
+            description=agent.description,
+            is_public=agent.is_public,
+            is_visible=agent.is_visible,
+            uploaded_image_id=agent.uploaded_image_id,
+            icon_name=agent.icon_name,
+            knowledge_file_ids=[str(file.id) for file in agent.knowledge_files],
+            display_priority=agent.display_priority,
+            is_default_agent=agent.is_default_agent,
+            builtin_agent=agent.builtin_agent,
+            starter_messages=agent.starter_messages,
             users=[
                 MinimalUserSnapshot(id=user.id, email=user.email)
-                for user in persona.users
+                for user in agent.users
             ],
-            groups=[user_group.id for user_group in persona.groups],
+            groups=[user_group.id for user_group in agent.groups],
             tools=[
                 ToolSnapshot.from_model(tool)
-                for tool in persona.tools
+                for tool in agent.tools
                 if should_expose_tool_to_fe(tool)
             ],
-            labels=[PersonaLabelSnapshot.from_model(label) for label in persona.labels],
+            labels=[AgentLabelSnapshot.from_model(label) for label in agent.labels],
             hierarchy_nodes=[
                 HierarchyNodeSnapshot.from_model(node)
-                for node in persona.hierarchy_nodes
+                for node in agent.hierarchy_nodes
             ],
             attached_documents=[
                 AttachedDocumentSnapshot.from_model(doc)
-                for doc in persona.attached_documents
+                for doc in agent.attached_documents
             ],
             owner=(
-                MinimalUserSnapshot(id=persona.user.id, email=persona.user.email)
-                if persona.user
+                MinimalUserSnapshot(id=agent.user.id, email=agent.user.email)
+                if agent.user
                 else None
             ),
             document_sets=[
                 DocumentSetSummary.from_model(document_set_model)
-                for document_set_model in persona.document_sets
+                for document_set_model in agent.document_sets
             ],
-            num_chunks=persona.num_chunks,
-            search_start_date=persona.search_start_date,
-            llm_relevance_filter=persona.llm_relevance_filter,
-            llm_filter_extraction=persona.llm_filter_extraction,
-            llm_model_provider_override=persona.llm_model_provider_override,
-            llm_model_version_override=persona.llm_model_version_override,
-            max_output_tokens=persona.max_output_tokens,
-            system_prompt=persona.system_prompt,
-            replace_base_system_prompt=persona.replace_base_system_prompt,
-            task_prompt=persona.task_prompt,
-            datetime_aware=persona.datetime_aware,
+            num_chunks=agent.num_chunks,
+            search_start_date=agent.search_start_date,
+            llm_relevance_filter=agent.llm_relevance_filter,
+            llm_filter_extraction=agent.llm_filter_extraction,
+            llm_model_provider_override=agent.llm_model_provider_override,
+            llm_model_version_override=agent.llm_model_version_override,
+            max_output_tokens=agent.max_output_tokens,
+            system_prompt=agent.system_prompt,
+            replace_base_system_prompt=agent.replace_base_system_prompt,
+            task_prompt=agent.task_prompt,
+            datetime_aware=agent.datetime_aware,
         )
 
 
@@ -420,37 +420,37 @@ class PromptTemplateResponse(BaseModel):
     final_prompt_template: str
 
 
-class PersonaSharedNotificationData(BaseModel):
-    persona_id: int
+class AgentSharedNotificationData(BaseModel):
+    agent_id: int
 
 
 class ImageGenerationToolStatus(BaseModel):
     is_available: bool
 
 
-class PersonaLabelCreate(BaseModel):
+class AgentLabelCreate(BaseModel):
     name: str
 
 
-class PersonaLabelResponse(BaseModel):
+class AgentLabelResponse(BaseModel):
     id: int
     name: str
 
     @classmethod
-    def from_model(cls, category: PersonaLabel) -> "PersonaLabelResponse":
-        return PersonaLabelResponse(
+    def from_model(cls, category: AgentLabel) -> "AgentLabelResponse":
+        return AgentLabelResponse(
             id=category.id,
             name=category.name,
         )
 
 
-class PersonaLabelSnapshot(BaseModel):
+class AgentLabelSnapshot(BaseModel):
     id: int
     name: str
 
     @classmethod
-    def from_model(cls, label: PersonaLabel) -> "PersonaLabelSnapshot":
-        return PersonaLabelSnapshot(
+    def from_model(cls, label: AgentLabel) -> "AgentLabelSnapshot":
+        return AgentLabelSnapshot(
             id=label.id,
             name=label.name,
         )

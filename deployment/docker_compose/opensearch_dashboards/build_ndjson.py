@@ -18,7 +18,7 @@ VERSION = "3.6.0"
 
 # Drill-down: render each `user_workspaces` value (in the "Files by Workspace" table
 # and the Chunk Text saved search) as a link that reloads THIS dashboard scoped
-# to that project via a KQL query. This is the reliable, scales-to-many-projects
+# to that workspace via a KQL query. This is the reliable, scales-to-many-workspaces
 # alternative to the legacy data-table cell click, which is broken by an OSD
 # 3.5/3.6 filter-button regression.
 FIELD_FORMAT_MAP = {
@@ -179,7 +179,7 @@ objects.append(
     )
 )
 
-# 4) Files table: document_id -> filename (top_hits, since semantic_identifier
+# 4) Files table: document_id -> filename (top_hits, since display_name
 #    has doc_values disabled and can't be a terms bucket) -> chunk count
 objects.append(
     table_viz(
@@ -193,7 +193,7 @@ objects.append(
                 "type": "top_hits",
                 "schema": "metric",
                 "params": {
-                    "field": "semantic_identifier",
+                    "field": "display_name",
                     "aggregate": "concat",
                     "size": 1,
                     "sortField": "chunk_index",
@@ -234,12 +234,12 @@ objects.append(
             "description": "",
             "hits": 0,
             "columns": [
-                "semantic_identifier",
+                "display_name",
                 "document_id",
                 "chunk_index",
                 "user_workspaces",
                 "source_type",
-                "content",
+                "chunk_text",
             ],
             "sort": [["document_id", "asc"], ["chunk_index", "asc"]],
             "version": 1,
@@ -292,8 +292,8 @@ objects.append(
             "title": "VirtualAI — Files & Chunks",
             "hits": 0,
             "description": (
-                "Files indexed in OpenSearch: totals, chunks per file, and per-project "
-                "breakdown. Click a file or project row to drill into chunk text."
+                "Files indexed in OpenSearch: totals, chunks per file, and per-workspace "
+                "breakdown. Click a file or workspace row to drill into chunk text."
             ),
             "panelsJSON": json.dumps(panels_json),
             "optionsJSON": json.dumps({"useMargins": True, "hidePanelTitles": False}),

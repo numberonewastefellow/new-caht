@@ -126,9 +126,9 @@ class ChatSessionMinimal(BaseModel):
             name=chat_session.description,
             first_user_message=first_user_message,
             first_ai_message=first_ai_message,
-            assistant_id=chat_session.persona_id,
+            assistant_id=chat_session.agent_id,
             assistant_name=(
-                chat_session.persona.name if chat_session.persona else None
+                chat_session.agent.name if chat_session.agent else None
             ),
             time_created=chat_session.time_created,
             feedback_type=session_feedback_type,
@@ -166,7 +166,7 @@ class QuestionAnswerPairSnapshot(BaseModel):
     retrieved_documents: list[AbridgedSearchDoc]
     feedback_type: QAFeedbackType | None
     feedback_text: str | None
-    persona_name: str | None
+    agent_name: str | None
     user_email: str
     time_created: datetime
     flow_type: SessionType
@@ -194,7 +194,7 @@ class QuestionAnswerPairSnapshot(BaseModel):
                 retrieved_documents=ai_message.documents,
                 feedback_type=ai_message.feedback_type,
                 feedback_text=ai_message.feedback_text,
-                persona_name=chat_session_snapshot.assistant_name,
+                agent_name=chat_session_snapshot.assistant_name,
                 user_email=get_display_email(chat_session_snapshot.user_email),
                 time_created=user_message.time_created,
                 flow_type=chat_session_snapshot.flow_type,
@@ -216,7 +216,7 @@ class QuestionAnswerPairSnapshot(BaseModel):
             ),
             "feedback_type": self.feedback_type.value if self.feedback_type else "",
             "feedback_text": self.feedback_text or "",
-            "persona_name": self.persona_name,
+            "agent_name": self.agent_name,
             "user_email": self.user_email,
             "time_created": str(self.time_created),
             "flow_type": self.flow_type,

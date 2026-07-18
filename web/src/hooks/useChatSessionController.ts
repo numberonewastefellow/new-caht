@@ -184,12 +184,12 @@ export default function useChatSessionController({
 
       const session = await response.json();
       const chatSession = session as BackendChatSession;
-      setSelectedAssistantFromId(chatSession.persona_id);
+      setSelectedAssistantFromId(chatSession.agent_id);
 
       // Ensure the current session is set to the actual session ID from the response
       setCurrentSession(chatSession.chat_session_id);
 
-      // Initialize session data including personaId
+      // Initialize session data including agentId
       initializeSession(chatSession.chat_session_id, chatSession);
 
       const newMessageMap = processRawChatHistory(
@@ -317,9 +317,9 @@ export default function useChatSessionController({
     }
   }, [
     existingChatSessionId,
-    searchParams?.get(SEARCH_PARAM_NAMES.PERSONA_ID),
+    searchParams?.get(SEARCH_PARAM_NAMES.AGENT_ID),
     // Note: We're intentionally not including all dependencies to avoid infinite loops
-    // This effect should only run when existingChatSessionId or persona ID changes
+    // This effect should only run when existingChatSessionId or agent ID changes
   ]);
 
   const onMessageSelection = useCallback(

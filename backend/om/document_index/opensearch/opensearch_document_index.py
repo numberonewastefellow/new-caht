@@ -37,21 +37,21 @@ from om.document_index.opensearch.cluster_settings import OPENSEARCH_CLUSTER_SET
 from om.document_index.opensearch.constants import DEFAULT_MAX_CHUNK_SIZE
 from om.document_index.opensearch.constants import OpenSearchSearchType
 from om.document_index.opensearch.schema import ACCESS_CONTROL_LIST_FIELD_NAME
-from om.document_index.opensearch.schema import CONTENT_FIELD_NAME
+from om.document_index.opensearch.schema import CHUNK_TEXT_FIELD_NAME
 from om.document_index.opensearch.schema import DOCUMENT_SETS_FIELD_NAME
 from om.document_index.opensearch.schema import DocumentChunk
 from om.document_index.opensearch.schema import DocumentChunkWithoutVectors
 from om.document_index.opensearch.schema import DocumentSchema
 from om.document_index.opensearch.schema import get_opensearch_doc_chunk_id
-from om.document_index.opensearch.schema import GLOBAL_BOOST_FIELD_NAME
-from om.document_index.opensearch.schema import HIDDEN_FIELD_NAME
+from om.document_index.opensearch.schema import BOOST_FIELD_NAME
+from om.document_index.opensearch.schema import IS_HIDDEN_FIELD_NAME
 from om.document_index.opensearch.schema import KG_ENTITIES_FIELD_NAME
 from om.document_index.opensearch.schema import KG_RELATIONSHIP_SOURCE_FIELD_NAME
 from om.document_index.opensearch.schema import KG_RELATIONSHIP_TARGET_FIELD_NAME
 from om.document_index.opensearch.schema import KG_RELATIONSHIP_TYPE_FIELD_NAME
 from om.document_index.opensearch.schema import KG_RELATIONSHIPS_FIELD_NAME
 from om.document_index.opensearch.schema import KG_TERMS_FIELD_NAME
-from om.document_index.opensearch.schema import PERSONAS_FIELD_NAME
+from om.document_index.opensearch.schema import AGENTS_FIELD_NAME
 from om.document_index.opensearch.schema import USER_WORKSPACES_FIELD_NAME
 from om.document_index.opensearch.search import DocumentQuery
 from om.document_index.opensearch.search import (
@@ -101,7 +101,7 @@ def generate_opensearch_filtered_access_control_list(
 ) -> list[str]:
     """Generates an access control list with PUBLIC_DOC_PAT removed.
 
-    In the OpenSearch schema this is represented by PUBLIC_FIELD_NAME.
+    In the OpenSearch schema this is represented by IS_PUBLIC_FIELD_NAME.
     """
     access_control_list = access.to_acl()
     access_control_list.discard(PUBLIC_DOC_PAT)
@@ -134,7 +134,7 @@ def set_cluster_state(client: OpenSearchClient) -> None:
 
 
 def _convert_retrieved_opensearch_chunk_to_inference_chunk_uncleaned(
-    chunk: DocumentChunkWithoutVectors,
+    opensearch_chunk: DocumentChunkWithoutVectors,
     score: float | None,
     highlights: dict[str, list[str]],
 ) -> InferenceChunkUncleaned:
@@ -142,8 +142,23 @@ def _convert_retrieved_opensearch_chunk_to_inference_chunk_uncleaned(
     Generates an inference chunk from an OpenSearch document chunk, its score,
     and its match highlights.
 
+    DIRECTION: OpenSearch -> internal (this is the READ boundary).
+    The OpenSearch schema and the internal InferenceChunk model use DIFFERENT
+    field names, so this function READS the OpenSearch field names off
+    ``opensearch_chunk`` (e.g. ``.chunk_text``, ``.snippet``, ``.display_name``,
+    ``.is_hidden``, ``.boost``, ``.updated_at``) and assigns them to the INTERNAL
+    field names on ``InferenceChunkUncleaned`` (``content``, ``blurb``,
+    ``semantic_identifier``, ``hidden``, ``boost``, ``updated_at`` ...).
+    So here the *right-hand* ``opensearch_chunk.<attr>`` are OpenSearch names and
+    the *left-hand* kwargs are internal names.
+    ⚠️ The sibling WRITE boundary ``_convert_onyx_chunk_to_opensearch_document``
+    goes the OPPOSITE way and its ``index_chunk`` param is the INTERNAL model —
+    do not confuse the two ``chunk`` roles.
+
     Args:
-        chunk: The document chunk returned by OpenSearch.
+        opensearch_chunk: One chunk exactly as stored in / returned by OpenSearch.
+            Carries the OpenSearch field names (``.chunk_text``, ``.display_name``,
+            ``.snippet``, ``.is_hidden`` ...), NOT the internal names.
         score: The document chunk match score as calculated by OpenSearch. Only
             relevant for searches like hybrid search. It is acceptable for this
             value to be None for results from other queries like ID-based
@@ -156,120 +171,148 @@ def _convert_retrieved_opensearch_chunk_to_inference_chunk_uncleaned(
         An Onyx inference chunk representation.
     """
     return InferenceChunkUncleaned(
-        chunk_id=chunk.chunk_index,
-        blurb=chunk.blurb,
+        chunk_id=opensearch_chunk.chunk_index,
+        blurb=opensearch_chunk.snippet,
         # Includes extra content prepended/appended during indexing.
-        content=chunk.content,
+        content=opensearch_chunk.chunk_text,
         # When we read a string and turn it into a dict the keys will be
         # strings, but in this case they need to be ints.
         source_links=(
-            {int(k): v for k, v in json.loads(chunk.source_links).items()}
-            if chunk.source_links
+            {int(k): v for k, v in json.loads(opensearch_chunk.source_links).items()}
+            if opensearch_chunk.source_links
             else None
         ),
-        image_file_id=chunk.image_file_id,
+        image_file_id=opensearch_chunk.image_id,
         # Deprecated. Fill in some reasonable default.
         section_continuation=False,
-        document_id=chunk.document_id,
-        source_type=DocumentSource(chunk.source_type),
-        semantic_identifier=chunk.semantic_identifier,
-        title=chunk.title,
-        boost=chunk.global_boost,
+        document_id=opensearch_chunk.document_id,
+        source_type=DocumentSource(opensearch_chunk.source_type),
+        semantic_identifier=opensearch_chunk.display_name,
+        title=opensearch_chunk.title,
+        boost=opensearch_chunk.boost,
         score=score,
-        hidden=chunk.hidden,
+        hidden=opensearch_chunk.is_hidden,
         metadata=(
-            convert_metadata_list_of_strings_to_dict(chunk.metadata_list)
-            if chunk.metadata_list
+            convert_metadata_list_of_strings_to_dict(opensearch_chunk.metadata_tags)
+            if opensearch_chunk.metadata_tags
             else {}
         ),
         # Extract highlighted snippets from the content field, if available. In
         # the future we may want to match on other fields too, currently we only
         # use the content field.
-        match_highlights=highlights.get(CONTENT_FIELD_NAME, []),
+        match_highlights=highlights.get(CHUNK_TEXT_FIELD_NAME, []),
         # TODO(andrei) Consider storing a chunk content index instead of a full
         # string when working on chunk content augmentation.
-        doc_summary=chunk.doc_summary,
+        doc_summary=opensearch_chunk.document_summary,
         # TODO(andrei) Same thing as above.
-        chunk_context=chunk.chunk_context,
-        updated_at=chunk.last_updated,
-        primary_owners=chunk.primary_owners,
-        secondary_owners=chunk.secondary_owners,
+        chunk_context=opensearch_chunk.contextual_summary,
+        updated_at=opensearch_chunk.updated_at,
+        primary_owners=opensearch_chunk.primary_owners,
+        secondary_owners=opensearch_chunk.secondary_owners,
         # TODO(andrei) Same thing as chunk_context above.
-        metadata_suffix=chunk.metadata_suffix,
+        metadata_suffix=opensearch_chunk.metadata_text,
     )
 
 
 def _convert_onyx_chunk_to_opensearch_document(
-    chunk: DocMetadataAwareIndexChunk,
+    index_chunk: DocMetadataAwareIndexChunk,
 ) -> DocumentChunk:
-    filtered_blurb = remove_invalid_unicode_chars(chunk.blurb)
-    _title = chunk.source_document.get_title_for_document_index()
+    """
+    Builds an OpenSearch DocumentChunk from an internal indexing chunk.
+
+    DIRECTION: internal -> OpenSearch (this is the WRITE boundary).
+    The internal model and the OpenSearch schema use DIFFERENT field names, so
+    this function READS the INTERNAL field names off ``index_chunk`` (e.g.
+    ``.boost``, ``.doc_summary``, ``.chunk_context``, ``.image_file_id``,
+    ``.title_embedding``) and assigns them to the OpenSearch kwargs of
+    ``DocumentChunk`` (e.g. ``boost``, ``document_summary``,
+    ``contextual_summary``, ``image_id``, ``title_embedding`` ...).
+    So here the *left-hand* kwargs are OpenSearch names and the *right-hand*
+    ``index_chunk.<attr>`` are internal names — the EXACT MIRROR of the read
+    boundary above, where ``opensearch_chunk`` is the OpenSearch model.
+    ⚠️ Do not confuse ``index_chunk`` (internal, here) with ``opensearch_chunk``
+    (OpenSearch, in the read boundary).
+
+    Args:
+        index_chunk: The internal ``DocMetadataAwareIndexChunk`` to index.
+            Carries the INTERNAL field names (``.boost``, ``.doc_summary``,
+            ``.image_file_id`` ...), NOT the OpenSearch names.
+
+    Returns:
+        The OpenSearch ``DocumentChunk`` to serialize into the index.
+    """
+    filtered_blurb = remove_invalid_unicode_chars(index_chunk.blurb)
+    _title = index_chunk.source_document.get_title_for_document_index()
     filtered_title = remove_invalid_unicode_chars(_title) if _title else None
     filtered_content = remove_invalid_unicode_chars(
-        generate_enriched_content_for_chunk_text(chunk)
+        generate_enriched_content_for_chunk_text(index_chunk)
     )
     filtered_semantic_identifier = remove_invalid_unicode_chars(
-        chunk.source_document.semantic_identifier
+        index_chunk.source_document.semantic_identifier
     )
     filtered_metadata_suffix = remove_invalid_unicode_chars(
-        chunk.metadata_suffix_keyword
+        index_chunk.metadata_suffix_keyword
     )
-    _metadata_list = chunk.source_document.get_metadata_str_attributes()
+    _metadata_list = index_chunk.source_document.get_metadata_str_attributes()
     filtered_metadata_list = (
         [remove_invalid_unicode_chars(metadata) for metadata in _metadata_list]
         if _metadata_list
         else None
     )
     return DocumentChunk(
-        document_id=chunk.source_document.id,
-        chunk_index=chunk.chunk_id,
+        document_id=index_chunk.source_document.id,
+        chunk_index=index_chunk.chunk_id,
         # Use get_title_for_document_index to match the logic used when creating
         # the title_embedding in the embedder. This method falls back to
         # semantic_identifier when title is None (but not empty string).
         title=filtered_title,
-        title_vector=chunk.title_embedding,
-        content=filtered_content,
-        content_vector=chunk.embeddings.full_embedding,
-        source_type=chunk.source_document.source.value,
-        metadata_list=filtered_metadata_list,
-        metadata_suffix=filtered_metadata_suffix,
-        last_updated=chunk.source_document.doc_updated_at,
-        public=chunk.access.is_public,
+        title_embedding=index_chunk.title_embedding,
+        chunk_text=filtered_content,
+        content_embedding=index_chunk.embeddings.full_embedding,
+        source_type=index_chunk.source_document.source.value,
+        metadata_tags=filtered_metadata_list,
+        metadata_text=filtered_metadata_suffix,
+        updated_at=index_chunk.source_document.doc_updated_at,
+        is_public=index_chunk.access.is_public,
         access_control_list=generate_opensearch_filtered_access_control_list(
-            chunk.access
+            index_chunk.access
         ),
-        global_boost=chunk.boost,
-        semantic_identifier=filtered_semantic_identifier,
-        image_file_id=chunk.image_file_id,
+        boost=index_chunk.boost,
+        display_name=filtered_semantic_identifier,
+        image_id=index_chunk.image_file_id,
         # Small optimization, if this list is empty we can supply None to
         # OpenSearch and it will not store any data at all for this field, which
         # is different from supplying an empty list.
-        source_links=json.dumps(chunk.source_links) if chunk.source_links else None,
-        blurb=filtered_blurb,
-        doc_summary=chunk.doc_summary,
-        chunk_context=chunk.chunk_context,
+        source_links=(
+            json.dumps(index_chunk.source_links) if index_chunk.source_links else None
+        ),
+        snippet=filtered_blurb,
+        document_summary=index_chunk.doc_summary,
+        contextual_summary=index_chunk.chunk_context,
         # Small optimization, if this list is empty we can supply None to
         # OpenSearch and it will not store any data at all for this field, which
         # is different from supplying an empty list.
-        document_sets=list(chunk.document_sets) if chunk.document_sets else None,
+        document_sets=(
+            list(index_chunk.document_sets) if index_chunk.document_sets else None
+        ),
         # Small optimization, if this list is empty we can supply None to
         # OpenSearch and it will not store any data at all for this field, which
         # is different from supplying an empty list.
-        user_workspaces=chunk.user_workspace or None,
-        personas=chunk.personas or None,
+        user_workspaces=index_chunk.user_workspace or None,
+        agents=index_chunk.agents or None,
         primary_owners=get_experts_stores_representations(
-            chunk.source_document.primary_owners
+            index_chunk.source_document.primary_owners
         ),
         secondary_owners=get_experts_stores_representations(
-            chunk.source_document.secondary_owners
+            index_chunk.source_document.secondary_owners
         ),
         # TODO(andrei): Consider not even getting this from
         # DocMetadataAwareIndexChunk and instead using OpenSearchDocumentIndex's
         # instance variable. One source of truth -> less chance of a very bad
         # bug in prod.
-        tenant_id=TenantState(tenant_id=chunk.tenant_id, multitenant=MULTI_TENANT),
+        tenant_id=TenantState(tenant_id=index_chunk.tenant_id, multitenant=MULTI_TENANT),
         # Store ancestor hierarchy node IDs for hierarchy-based filtering.
-        ancestor_hierarchy_node_ids=chunk.ancestor_hierarchy_node_ids or None,
+        ancestor_hierarchy_node_ids=index_chunk.ancestor_hierarchy_node_ids or None,
     )
 
 
@@ -595,18 +638,18 @@ class OpenSearchDocumentIndex(DocumentIndex):
                     update_request.document_sets
                 )
             if update_request.boost is not None:
-                properties_to_update[GLOBAL_BOOST_FIELD_NAME] = int(
+                properties_to_update[BOOST_FIELD_NAME] = int(
                     update_request.boost
                 )
             if update_request.hidden is not None:
-                properties_to_update[HIDDEN_FIELD_NAME] = update_request.hidden
+                properties_to_update[IS_HIDDEN_FIELD_NAME] = update_request.hidden
             if update_request.workspace_ids is not None:
                 properties_to_update[USER_WORKSPACES_FIELD_NAME] = list(
                     update_request.workspace_ids
                 )
-            if update_request.persona_ids is not None:
-                properties_to_update[PERSONAS_FIELD_NAME] = list(
-                    update_request.persona_ids
+            if update_request.agent_ids is not None:
+                properties_to_update[AGENTS_FIELD_NAME] = list(
+                    update_request.agent_ids
                 )
 
             if not properties_to_update:

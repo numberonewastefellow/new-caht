@@ -33,21 +33,21 @@ from om.document_index.opensearch.constants import HybridSearchSubqueryConfigura
 from om.document_index.opensearch.schema import ACCESS_CONTROL_LIST_FIELD_NAME
 from om.document_index.opensearch.schema import ANCESTOR_HIERARCHY_NODE_IDS_FIELD_NAME
 from om.document_index.opensearch.schema import CHUNK_INDEX_FIELD_NAME
-from om.document_index.opensearch.schema import CONTENT_FIELD_NAME
-from om.document_index.opensearch.schema import CONTENT_VECTOR_FIELD_NAME
+from om.document_index.opensearch.schema import CHUNK_TEXT_FIELD_NAME
+from om.document_index.opensearch.schema import CONTENT_EMBEDDING_FIELD_NAME
 from om.document_index.opensearch.schema import DOCUMENT_ID_FIELD_NAME
 from om.document_index.opensearch.schema import DOCUMENT_SETS_FIELD_NAME
-from om.document_index.opensearch.schema import HIDDEN_FIELD_NAME
-from om.document_index.opensearch.schema import LAST_UPDATED_FIELD_NAME
+from om.document_index.opensearch.schema import IS_HIDDEN_FIELD_NAME
+from om.document_index.opensearch.schema import UPDATED_AT_FIELD_NAME
 from om.document_index.opensearch.schema import MAX_CHUNK_SIZE_FIELD_NAME
-from om.document_index.opensearch.schema import METADATA_LIST_FIELD_NAME
-from om.document_index.opensearch.schema import PERSONAS_FIELD_NAME
-from om.document_index.opensearch.schema import PUBLIC_FIELD_NAME
+from om.document_index.opensearch.schema import METADATA_TAGS_FIELD_NAME
+from om.document_index.opensearch.schema import AGENTS_FIELD_NAME
+from om.document_index.opensearch.schema import IS_PUBLIC_FIELD_NAME
 from om.document_index.opensearch.schema import set_or_convert_timezone_to_utc
 from om.document_index.opensearch.schema import SOURCE_TYPE_FIELD_NAME
 from om.document_index.opensearch.schema import TENANT_ID_FIELD_NAME
 from om.document_index.opensearch.schema import TITLE_FIELD_NAME
-from om.document_index.opensearch.schema import TITLE_VECTOR_FIELD_NAME
+from om.document_index.opensearch.schema import TITLE_EMBEDDING_FIELD_NAME
 from om.document_index.opensearch.schema import USER_WORKSPACES_FIELD_NAME
 
 # See https://docs.opensearch.org/latest/query-dsl/term/terms/.
@@ -229,7 +229,7 @@ class DocumentQuery:
             tags=index_filters.tags or [],
             document_sets=index_filters.document_set or [],
             workspace_id_filter=index_filters.workspace_id_filter,
-            persona_id_filter=index_filters.persona_id_filter,
+            agent_id_filter=index_filters.agent_id_filter,
             time_cutoff=index_filters.time_cutoff,
             min_chunk_index=min_chunk_index,
             max_chunk_index=max_chunk_index,
@@ -247,7 +247,7 @@ class DocumentQuery:
             # By default exclude retrieving the vector fields in order to save
             # on retrieval cost as we don't need them upstream.
             "_source": {
-                "excludes": [TITLE_VECTOR_FIELD_NAME, CONTENT_VECTOR_FIELD_NAME]
+                "excludes": [TITLE_EMBEDDING_FIELD_NAME, CONTENT_EMBEDDING_FIELD_NAME]
             },
             "timeout": f"{DEFAULT_OPENSEARCH_QUERY_TIMEOUT_S}s",
         }
@@ -295,7 +295,7 @@ class DocumentQuery:
             tags=[],
             document_sets=[],
             workspace_id_filter=None,
-            persona_id_filter=None,
+            agent_id_filter=None,
             time_cutoff=None,
             min_chunk_index=None,
             max_chunk_index=None,
@@ -367,7 +367,7 @@ class DocumentQuery:
             tags=index_filters.tags or [],
             document_sets=index_filters.document_set or [],
             workspace_id_filter=index_filters.workspace_id_filter,
-            persona_id_filter=index_filters.persona_id_filter,
+            agent_id_filter=index_filters.agent_id_filter,
             time_cutoff=index_filters.time_cutoff,
             min_chunk_index=None,
             max_chunk_index=None,
@@ -404,7 +404,7 @@ class DocumentQuery:
             # Exclude retrieving the vector fields in order to save on
             # retrieval cost as we don't need them upstream.
             "_source": {
-                "excludes": [TITLE_VECTOR_FIELD_NAME, CONTENT_VECTOR_FIELD_NAME]
+                "excludes": [TITLE_EMBEDDING_FIELD_NAME, CONTENT_EMBEDDING_FIELD_NAME]
             },
         }
 
@@ -462,7 +462,7 @@ class DocumentQuery:
             tags=index_filters.tags or [],
             document_sets=index_filters.document_set or [],
             workspace_id_filter=index_filters.workspace_id_filter,
-            persona_id_filter=index_filters.persona_id_filter,
+            agent_id_filter=index_filters.agent_id_filter,
             time_cutoff=index_filters.time_cutoff,
             min_chunk_index=None,
             max_chunk_index=None,
@@ -483,7 +483,7 @@ class DocumentQuery:
             # Exclude retrieving the vector fields in order to save on
             # retrieval cost as we don't need them upstream.
             "_source": {
-                "excludes": [TITLE_VECTOR_FIELD_NAME, CONTENT_VECTOR_FIELD_NAME]
+                "excludes": [TITLE_EMBEDDING_FIELD_NAME, CONTENT_EMBEDDING_FIELD_NAME]
             },
         }
 
@@ -544,7 +544,7 @@ class DocumentQuery:
             tags=index_filters.tags or [],
             document_sets=index_filters.document_set or [],
             workspace_id_filter=index_filters.workspace_id_filter,
-            persona_id_filter=index_filters.persona_id_filter,
+            agent_id_filter=index_filters.agent_id_filter,
             time_cutoff=index_filters.time_cutoff,
             min_chunk_index=None,
             max_chunk_index=None,
@@ -567,7 +567,7 @@ class DocumentQuery:
             # Exclude retrieving the vector fields in order to save on
             # retrieval cost as we don't need them upstream.
             "_source": {
-                "excludes": [TITLE_VECTOR_FIELD_NAME, CONTENT_VECTOR_FIELD_NAME]
+                "excludes": [TITLE_EMBEDDING_FIELD_NAME, CONTENT_EMBEDDING_FIELD_NAME]
             },
         }
 
@@ -605,7 +605,7 @@ class DocumentQuery:
             tags=index_filters.tags or [],
             document_sets=index_filters.document_set or [],
             workspace_id_filter=index_filters.workspace_id_filter,
-            persona_id_filter=index_filters.persona_id_filter,
+            agent_id_filter=index_filters.agent_id_filter,
             time_cutoff=index_filters.time_cutoff,
             min_chunk_index=None,
             max_chunk_index=None,
@@ -634,7 +634,7 @@ class DocumentQuery:
             # Exclude retrieving the vector fields in order to save on
             # retrieval cost as we don't need them upstream.
             "_source": {
-                "excludes": [TITLE_VECTOR_FIELD_NAME, CONTENT_VECTOR_FIELD_NAME]
+                "excludes": [TITLE_EMBEDDING_FIELD_NAME, CONTENT_EMBEDDING_FIELD_NAME]
             },
         }
         if not OPENSEARCH_PROFILING_DISABLED:
@@ -740,7 +740,7 @@ class DocumentQuery:
     ) -> dict[str, Any]:
         return {
             "knn": {
-                TITLE_VECTOR_FIELD_NAME: {
+                TITLE_EMBEDDING_FIELD_NAME: {
                     "vector": query_vector,
                     "k": vector_candidates,
                 }
@@ -755,7 +755,7 @@ class DocumentQuery:
     ) -> dict[str, Any]:
         query = {
             "knn": {
-                CONTENT_VECTOR_FIELD_NAME: {
+                CONTENT_EMBEDDING_FIELD_NAME: {
                     "vector": query_vector,
                     "k": vector_candidates,
                 }
@@ -763,7 +763,7 @@ class DocumentQuery:
         }
 
         if search_filters is not None:
-            query["knn"][CONTENT_VECTOR_FIELD_NAME]["filter"] = {
+            query["knn"][CONTENT_EMBEDDING_FIELD_NAME]["filter"] = {
                 "bool": {"filter": search_filters}
             }  # ty: ignore[invalid-assignment]
 
@@ -803,7 +803,7 @@ class DocumentQuery:
                         # of the query's terms. More matches result in higher
                         # scores.
                         "match": {
-                            CONTENT_FIELD_NAME: {
+                            CHUNK_TEXT_FIELD_NAME: {
                                 "query": query_text,
                                 "operator": "or",
                                 "boost": 1.0,
@@ -813,7 +813,7 @@ class DocumentQuery:
                     {
                         # Matches an exact phrase in a specified order.
                         "match_phrase": {
-                            CONTENT_FIELD_NAME: {
+                            CHUNK_TEXT_FIELD_NAME: {
                                 "query": query_text,
                                 # The number of words permitted between words of
                                 # a query phrase and still result in a match.
@@ -844,7 +844,7 @@ class DocumentQuery:
         tags: list[Tag],
         document_sets: list[str],
         workspace_id_filter: int | None,
-        persona_id_filter: int | None,
+        agent_id_filter: int | None,
         time_cutoff: datetime | None,
         min_chunk_index: int | None,
         max_chunk_index: int | None,
@@ -885,8 +885,8 @@ class DocumentQuery:
             workspace_id_filter: If not None, only documents with this project ID
                 in user projects will be retrieved. Additive — only applied
                 when a knowledge scope already exists.
-            persona_id_filter: If not None, only documents whose personas array
-                contains this persona ID will be retrieved. Primary — creates
+            agent_id_filter: If not None, only documents whose agents array
+                contains this agent ID will be retrieved. Primary — creates
                 a knowledge scope on its own.
             time_cutoff: Time cutoff for the documents to retrieve. If not None,
                 Documents which were last updated before this date will not be
@@ -946,7 +946,7 @@ class DocumentQuery:
             # Logical OR operator on its elements.
             acl_visibility_filter: dict[str, dict[str, Any]] = {
                 "bool": {
-                    "should": [{"term": {PUBLIC_FIELD_NAME: {"value": True}}}],
+                    "should": [{"term": {IS_PUBLIC_FIELD_NAME: {"value": True}}}],
                     "minimum_should_match": 1,
                 }
             }
@@ -1041,7 +1041,7 @@ class DocumentQuery:
             # Lucene will optimize the filtering for large sets of terms. Small
             # sets of terms are not expected to perform any differently than
             # individual term clauses.
-            return {"terms": {METADATA_LIST_FIELD_NAME: tag_str_list}}
+            return {"terms": {METADATA_TAGS_FIELD_NAME: tag_str_list}}
 
         def _get_document_set_filter(document_sets: list[str]) -> TermsQuery[str]:
             """Returns a filter for the document sets.
@@ -1077,8 +1077,8 @@ class DocumentQuery:
         def _get_user_workspace_filter(workspace_id: int) -> TermQuery[int]:
             return {"term": {USER_WORKSPACES_FIELD_NAME: {"value": workspace_id}}}
 
-        def _get_persona_filter(persona_id: int) -> TermQuery[int]:
-            return {"term": {PERSONAS_FIELD_NAME: {"value": persona_id}}}
+        def _get_agent_filter(agent_id: int) -> TermQuery[int]:
+            return {"term": {AGENTS_FIELD_NAME: {"value": agent_id}}}
 
         def _get_time_cutoff_filter(time_cutoff: datetime) -> dict[str, Any]:
             # Convert to UTC if not already so the cutoff is comparable to the
@@ -1091,7 +1091,7 @@ class DocumentQuery:
             time_cutoff_filter["bool"]["should"].append(
                 {
                     "range": {
-                        LAST_UPDATED_FIELD_NAME: {"gte": int(time_cutoff.timestamp())}
+                        UPDATED_AT_FIELD_NAME: {"gte": int(time_cutoff.timestamp())}
                     }
                 }
             )
@@ -1100,11 +1100,11 @@ class DocumentQuery:
             ):
                 # Since the time cutoff is older than ASSUMED_DOCUMENT_AGE_DAYS
                 # ago, we include documents which have no
-                # LAST_UPDATED_FIELD_NAME value.
+                # UPDATED_AT_FIELD_NAME value.
                 time_cutoff_filter["bool"]["should"].append(
                     {
                         "bool": {
-                            "must_not": {"exists": {"field": LAST_UPDATED_FIELD_NAME}}
+                            "must_not": {"exists": {"field": UPDATED_AT_FIELD_NAME}}
                         }
                     }
                 )
@@ -1197,7 +1197,7 @@ class DocumentQuery:
         filter_clauses: list[dict[str, Any]] = []
 
         if not include_hidden:
-            filter_clauses.append({"term": {HIDDEN_FIELD_NAME: {"value": False}}})
+            filter_clauses.append({"term": {IS_HIDDEN_FIELD_NAME: {"value": False}}})
 
         if access_control_list is not None:
             # If an access control list is provided, the caller can only
@@ -1223,7 +1223,7 @@ class DocumentQuery:
         # assistant can see. When none are set the assistant searches
         # everything.
         #
-        # persona_id_filter is a primary trigger — a persona with user files IS
+        # agent_id_filter is a primary trigger — a agent with user files IS
         # explicit knowledge, so it can start a knowledge scope on its own.
         #
         # workspace_id_filter is additive — it widens the scope to also cover
@@ -1233,7 +1233,7 @@ class DocumentQuery:
             attached_document_ids
             or hierarchy_node_ids
             or document_sets
-            or persona_id_filter is not None
+            or agent_id_filter is not None
         )
 
         if has_knowledge_scope:
@@ -1255,9 +1255,9 @@ class DocumentQuery:
                 knowledge_filter["bool"]["should"].append(
                     _get_document_set_filter(document_sets)
                 )
-            if persona_id_filter is not None:
+            if agent_id_filter is not None:
                 knowledge_filter["bool"]["should"].append(
-                    _get_persona_filter(persona_id_filter)
+                    _get_agent_filter(agent_id_filter)
                 )
             if workspace_id_filter is not None:
                 knowledge_filter["bool"]["should"].append(
@@ -1269,7 +1269,7 @@ class DocumentQuery:
             # If a time cutoff is provided, the caller will only retrieve
             # documents where the document was last updated at or after the time
             # cutoff. For documents which do not have a value for
-            # LAST_UPDATED_FIELD_NAME, we assume some default age for the
+            # UPDATED_AT_FIELD_NAME, we assume some default age for the
             # purposes of time cutoff.
             filter_clauses.append(_get_time_cutoff_filter(time_cutoff))
 
@@ -1302,7 +1302,7 @@ class DocumentQuery:
         """
         match_highlights_configuration: dict[str, Any] = {
             "fields": {
-                CONTENT_FIELD_NAME: {
+                CHUNK_TEXT_FIELD_NAME: {
                     # See https://docs.opensearch.org/latest/search-plugins/searching-data/highlight/#highlighter-types
                     "type": "unified",
                     # The length in chars of a match snippet. Somewhat

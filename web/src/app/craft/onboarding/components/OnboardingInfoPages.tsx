@@ -5,7 +5,7 @@ import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import {
   WorkArea,
   Level,
-  getPersonaInfo,
+  getAgentInfo,
   getPositionText,
   DEMO_COMPANY_NAME,
 } from "@/app/craft/onboarding/constants";
@@ -30,9 +30,9 @@ export default function OnboardingInfoPages({
   workArea,
   level,
 }: OnboardingInfoPagesProps) {
-  // Get persona info from mapping (only if both are valid enum values)
-  const personaInfo =
-    workArea && level ? getPersonaInfo(workArea, level) : undefined;
+  // Get agent info from mapping (only if both are valid enum values)
+  const agentInfo =
+    workArea && level ? getAgentInfo(workArea, level) : undefined;
 
   // Helper function to determine article (a/an) based on first letter
   const getArticle = (word: string | undefined): string => {

@@ -14,7 +14,7 @@ curl.exe ^"http://localhost:3000/api/chat/create-chat-session^" ^
   -H ^"Sec-Fetch-Mode: cors^" ^
   -H ^"Sec-Fetch-Site: same-origin^" ^
   -H ^"Priority: u=0^" ^
-  --data-raw ^"^{^\^"persona_id^\^":0,^\^"description^\^":null,^\^"project_id^\^":null^}^"
+  --data-raw ^"^{^\^"agent_id^\^":0,^\^"description^\^":null,^\^"workspace_id^\^":null^}^"
 
 
 to send message with chat

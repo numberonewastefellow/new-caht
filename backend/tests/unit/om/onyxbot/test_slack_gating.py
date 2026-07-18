@@ -67,7 +67,7 @@ def _make_message_info(email: str = "user@test.com") -> MagicMock:
 def _make_channel_config() -> MagicMock:
     """Create a mock SlackChannelConfig."""
     config = MagicMock()
-    config.persona = None
+    config.agent = None
     config.channel_config = {}
     return config
 

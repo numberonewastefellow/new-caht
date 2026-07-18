@@ -69,7 +69,7 @@ logger = getLogger(__name__)
 # class ChatSessionDetails(BaseModel):
 #     id: UUID
 #     name: str
-#     persona_id: int | None = None
+#     agent_id: int | None = None
 #     time_created: str
 #     shared_status: ChatSessionSharedStatus
 #     folder_id: int | None = None
@@ -122,7 +122,7 @@ logger = getLogger(__name__)
 #     user_email: str
 #     name: str | None
 #     messages: list[MessageSnapshot]
-#     persona_name: str | None
+#     agent_name: str | None
 #     time_created: datetime
 #     flow_type: SessionType
 

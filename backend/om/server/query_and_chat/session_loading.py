@@ -61,7 +61,7 @@ from om.utils.logger import setup_logger
 
 logger = setup_logger()
 
-# Must match WORKFLOW_STEP_TOOL_ID in process_message.py
+# Must match WORKFLOW_STEP_TOOL_ID in message_handler.py
 _WORKFLOW_STEP_TOOL_ID = 0
 
 
@@ -85,7 +85,7 @@ def _create_workflow_step_packets(tool_call: ToolCall) -> list[Packet]:
     turn_idx = tool_call.turn_number
     tab_idx = tool_call.tab_index
     step_name = args.get("step_name", tool_call.tool_call_id or "step")
-    persona_name = args.get("persona_name", "Agent")
+    agent_name = args.get("agent_name", "Agent")
     step_order = args.get("step_order", 0)
     is_pause = args.get("_workflow_pause", False)
 
@@ -98,7 +98,7 @@ def _create_workflow_step_packets(tool_call: ToolCall) -> list[Packet]:
             placement=placement,
             obj=WorkflowStepStart(
                 step_name=step_name,
-                persona_name=persona_name,
+                agent_name=agent_name,
                 step_order=step_order,
             ),
         )
@@ -113,7 +113,7 @@ def _create_workflow_step_packets(tool_call: ToolCall) -> list[Packet]:
                 placement=placement,
                 obj=WorkflowPauseForInput(
                     step_name=step_name,
-                    persona_name=persona_name,
+                    agent_name=agent_name,
                     questions=output,
                 ),
             )

@@ -12,9 +12,9 @@ from sqlalchemy.orm.session import SessionTransaction
 
 from om.chat.chat_state import ChatStateContainer
 from om.chat.models import ChatFullResponse
-from om.chat.process_message import gather_stream_full
-from om.chat.process_message import handle_stream_message_objects
-from om.configs.constants import DEFAULT_PERSONA_ID
+from om.chat.message_handler import collect_stream_response
+from om.chat.message_handler import stream_chat_message
+from om.configs.constants import DEFAULT_AGENT_ID
 from om.db.chat import create_chat_session
 from om.db.engine.sql_engine import get_sqlalchemy_engine
 from om.db.users import get_user_by_email
@@ -78,7 +78,7 @@ def _chat_full_response_to_eval_result(
     full: ChatFullResponse,
     stream_start_time: float,
 ) -> ChatFullEvalResult:
-    """Map ChatFullResponse from gather_stream_full to eval result components."""
+    """Map ChatFullResponse from collect_stream_response to eval result components."""
     tools_called = [tc.tool_name for tc in full.tool_calls]
     tool_call_details: list[dict[str, Any]] = [
         {"tool_name": tc.tool_name, "tool_arguments": tc.tool_arguments}
@@ -231,20 +231,20 @@ def _get_answer_with_tools(
                 allowed_tool_ids=full_configuration.allowed_tool_ids,
                 forced_tool_id=forced_tool_id,
                 chat_session_info=ChatSessionCreationRequest(
-                    persona_id=DEFAULT_PERSONA_ID,
+                    agent_id=DEFAULT_AGENT_ID,
                     description="Eval session",
                 ),
             )
 
             stream_start_time = time.time()
             state_container = ChatStateContainer()
-            packets = handle_stream_message_objects(
+            packets = stream_chat_message(
                 new_msg_req=request,
                 user=user,
                 db_session=db_session,
                 external_state_container=state_container,
             )
-            full = gather_stream_full(packets, state_container)
+            full = collect_stream_response(packets, state_container)
 
             result = _chat_full_response_to_eval_result(full, stream_start_time)
 
@@ -330,7 +330,7 @@ def _get_multi_turn_answer_with_tools(
                 db_session=db_session,
                 description="Multi-turn eval session",
                 user_id=user_id,
-                persona_id=DEFAULT_PERSONA_ID,
+                agent_id=DEFAULT_AGENT_ID,
                 onyxbot_flow=True,
             )
             chat_session_id = chat_session.id
@@ -377,7 +377,7 @@ def _get_multi_turn_answer_with_tools(
                         ),
                     )
 
-                # Create request for this turn using SendMessageRequest (same API as handle_stream_message_objects)
+                # Create request for this turn using SendMessageRequest (same API as stream_chat_message)
                 # Use AUTO_PLACE_AFTER_LATEST_MESSAGE to chain messages
                 forced_tool_id = forced_tool_ids[0] if forced_tool_ids else None
                 request = SendMessageRequest(
@@ -389,16 +389,16 @@ def _get_multi_turn_answer_with_tools(
                     forced_tool_id=forced_tool_id,
                 )
 
-                # Stream and gather results for this turn via handle_stream_message_objects + gather_stream_full
+                # Stream and gather results for this turn via stream_chat_message + collect_stream_response
                 stream_start_time = time.time()
                 state_container = ChatStateContainer()
-                packets = handle_stream_message_objects(
+                packets = stream_chat_message(
                     new_msg_req=request,
                     user=user,
                     db_session=db_session,
                     external_state_container=state_container,
                 )
-                full = gather_stream_full(packets, state_container)
+                full = collect_stream_response(packets, state_container)
 
                 result = _chat_full_response_to_eval_result(full, stream_start_time)
 

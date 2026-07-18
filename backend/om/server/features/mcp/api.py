@@ -45,7 +45,7 @@ from om.db.mcp import extract_connection_data
 from om.db.mcp import get_all_mcp_servers
 from om.db.mcp import get_connection_config_by_id
 from om.db.mcp import get_mcp_server_by_id
-from om.db.mcp import get_mcp_servers_for_persona
+from om.db.mcp import get_mcp_servers_for_agent
 from om.db.mcp import get_server_auth_template
 from om.db.mcp import get_user_connection_config
 from om.db.mcp import update_connection_config
@@ -981,7 +981,7 @@ def _db_mcp_server_to_api_mcp_server(
     )
 
 
-@router.get("/servers/persona/{assistant_id}", response_model=MCPServersResponse)
+@router.get("/servers/agent/{assistant_id}", response_model=MCPServersResponse)
 def get_mcp_servers_for_assistant(
     assistant_id: str,
     db: Session = Depends(get_session),
@@ -992,8 +992,8 @@ def get_mcp_servers_for_assistant(
     logger.info(f"Fetching MCP servers for assistant: {assistant_id}")
 
     try:
-        persona_id = int(assistant_id)
-        db_mcp_servers = get_mcp_servers_for_persona(persona_id, db, user)
+        agent_id = int(assistant_id)
+        db_mcp_servers = get_mcp_servers_for_agent(agent_id, db, user)
 
         # Convert to API model format with opportunistic token refresh for OAuth
         mcp_servers = [

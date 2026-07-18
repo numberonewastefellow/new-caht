@@ -23,8 +23,8 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.llm import update_default_provider
 from om.db.llm import upsert_llm_provider
 from om.db.models import Tool
-from om.db.persona import upsert_persona
-from om.server.features.persona.models import PersonaUpsertRequest
+from om.db.agent import upsert_agent
+from om.server.features.agent.models import AgentUpsertRequest
 from om.server.manage.llm.models import LLMProviderUpsertRequest
 from om.server.settings.models import Settings
 from om.server.settings.store import store_settings as store_base_settings
@@ -57,7 +57,7 @@ class SeedConfiguration(BaseModel):
     llms: list[LLMProviderUpsertRequest] | None = None
     admin_user_emails: list[str] | None = None
     seeded_logo_path: str | None = None
-    personas: list[PersonaUpsertRequest] | None = None
+    agents: list[AgentUpsertRequest] | None = None
     settings: Settings | None = None
     enterprise_settings: EnterpriseSettings | None = None
 
@@ -128,37 +128,37 @@ def _seed_llms(
         )
 
 
-def _seed_personas(db_session: Session, personas: list[PersonaUpsertRequest]) -> None:
-    if personas:
-        logger.notice("Seeding Personas")
+def _seed_agents(db_session: Session, agents: list[AgentUpsertRequest]) -> None:
+    if agents:
+        logger.notice("Seeding Agents")
         try:
-            for persona in personas:
-                upsert_persona(
+            for agent in agents:
+                upsert_agent(
                     user=None,  # Seeding is done as admin
-                    name=persona.name,
-                    description=persona.description,
+                    name=agent.name,
+                    description=agent.description,
                     num_chunks=(
-                        persona.num_chunks if persona.num_chunks is not None else 0.0
+                        agent.num_chunks if agent.num_chunks is not None else 0.0
                     ),
-                    llm_relevance_filter=persona.llm_relevance_filter,
-                    llm_filter_extraction=persona.llm_filter_extraction,
+                    llm_relevance_filter=agent.llm_relevance_filter,
+                    llm_filter_extraction=agent.llm_filter_extraction,
                     recency_bias=RecencyBiasSetting.AUTO,
-                    document_set_ids=persona.document_set_ids,
-                    llm_model_provider_override=persona.llm_model_provider_override,
-                    llm_model_version_override=persona.llm_model_version_override,
-                    starter_messages=persona.starter_messages,
-                    is_public=persona.is_public,
+                    document_set_ids=agent.document_set_ids,
+                    llm_model_provider_override=agent.llm_model_provider_override,
+                    llm_model_version_override=agent.llm_model_version_override,
+                    starter_messages=agent.starter_messages,
+                    is_public=agent.is_public,
                     db_session=db_session,
-                    tool_ids=persona.tool_ids,
-                    display_priority=persona.display_priority,
-                    system_prompt=persona.system_prompt,
-                    task_prompt=persona.task_prompt,
-                    datetime_aware=persona.datetime_aware,
+                    tool_ids=agent.tool_ids,
+                    display_priority=agent.display_priority,
+                    system_prompt=agent.system_prompt,
+                    task_prompt=agent.task_prompt,
+                    datetime_aware=agent.datetime_aware,
                     commit=False,
                 )
             db_session.commit()
         except Exception:
-            logger.exception("Failed to seed personas.")
+            logger.exception("Failed to seed agents.")
             raise
 
 
@@ -241,8 +241,8 @@ def seed_db() -> None:
     with get_session_with_current_tenant() as db_session:
         if seed_config.llms is not None:
             _seed_llms(db_session, seed_config.llms)
-        if seed_config.personas is not None:
-            _seed_personas(db_session, seed_config.personas)
+        if seed_config.agents is not None:
+            _seed_agents(db_session, seed_config.agents)
         if seed_config.settings is not None:
             _seed_settings(seed_config.settings)
         if seed_config.custom_tools is not None:

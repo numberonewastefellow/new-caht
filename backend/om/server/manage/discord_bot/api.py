@@ -209,7 +209,7 @@ def update_guild_request(
         db_session,
         config,
         enabled=request.enabled,
-        default_persona_id=request.default_persona_id,
+        default_agent_id=request.default_agent_id,
     )
     db_session.commit()
 
@@ -286,7 +286,7 @@ def update_channel_request(
         channel_name=config.channel_name,  # Keep existing name, only Discord can update
         thread_only_mode=request.thread_only_mode,
         require_bot_invocation=request.require_bot_invocation,
-        persona_override_id=request.persona_override_id,
+        agent_override_id=request.agent_override_id,
         enabled=request.enabled,
     )
     db_session.commit()

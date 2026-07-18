@@ -51,7 +51,7 @@ export interface LLMProvider {
   is_public: boolean;
   is_auto_mode: boolean;
   groups: number[];
-  personas: number[];
+  agents: number[];
   deployment_name: string | null;
   default_vision_model: string | null;
   is_default_vision_provider: boolean | null;
@@ -77,7 +77,7 @@ export interface LLMProviderDescriptor {
   default_vision_model?: string | null;
   is_public?: boolean;
   groups?: number[];
-  personas?: number[];
+  agents?: number[];
   model_configurations: ModelConfiguration[];
 }
 

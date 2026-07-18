@@ -166,8 +166,8 @@ def _handle_standard_answers(
             db_session=db_session,
             description="",
             user_id=None,
-            persona_id=(
-                slack_channel_config.persona.id if slack_channel_config.persona else 0
+            agent_id=(
+                slack_channel_config.agent.id if slack_channel_config.agent else 0
             ),
             onyxbot_flow=True,
             slack_thread_id=slack_thread_id,

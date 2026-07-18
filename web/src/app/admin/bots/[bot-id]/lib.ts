@@ -1,10 +1,10 @@
 import { SlackBotResponseType } from "@/lib/types";
-import { Persona } from "@/app/admin/assistants/interfaces";
+import { Agent } from "@/app/admin/assistants/interfaces";
 
 interface SlackChannelConfigCreationRequest {
   slack_bot_id: number;
   document_sets: number[];
-  persona_id: number | null;
+  agent_id: number | null;
   enable_auto_filters: boolean;
   channel_name: string;
   answer_validity_check_enabled: boolean;
@@ -15,7 +15,7 @@ interface SlackChannelConfigCreationRequest {
   show_continue_in_web_ui: boolean;
   respond_member_group_list: string[];
   follow_up_tags?: string[];
-  usePersona: boolean;
+  useAgent: boolean;
   response_type: SlackBotResponseType;
   standard_answer_categories: number[];
   disabled: boolean;
@@ -48,8 +48,8 @@ const buildRequestBodyFromCreationRequest = (
     respond_member_group_list: creationRequest.respond_member_group_list,
     answer_filters: buildFiltersFromCreationRequest(creationRequest),
     follow_up_tags: creationRequest.follow_up_tags?.filter((tag) => tag !== ""),
-    ...(creationRequest.usePersona
-      ? { persona_id: creationRequest.persona_id }
+    ...(creationRequest.useAgent
+      ? { agent_id: creationRequest.agent_id }
       : { document_sets: creationRequest.document_sets }),
     response_type: creationRequest.response_type,
     standard_answer_categories: creationRequest.standard_answer_categories,
@@ -91,6 +91,6 @@ export const deleteSlackChannelConfig = async (id: number) => {
   });
 };
 
-export function isPersonaASlackBotPersona(persona: Persona) {
-  return persona.name.startsWith("__slack_bot_persona__");
+export function isAgentASlackBotAgent(agent: Agent) {
+  return agent.name.startsWith("__slack_bot_agent__");
 }

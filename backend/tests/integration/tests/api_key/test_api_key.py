@@ -22,7 +22,7 @@ def test_limited(reset: None) -> None:  # noqa: ARG001
 
     # test limited endpoint
     response = requests.get(
-        f"{API_SERVER_URL}/persona/0",
+        f"{API_SERVER_URL}/agent/0",
         headers=api_key.headers,
     )
     assert response.status_code == 200

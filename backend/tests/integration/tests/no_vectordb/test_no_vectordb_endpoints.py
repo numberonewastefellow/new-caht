@@ -138,11 +138,11 @@ def test_document_set_list_works(
     assert resp.status_code == 200
 
 
-def test_persona_list_works(
+def test_agent_list_works(
     reset: None, admin_user: DATestUser  # noqa: ARG001
 ) -> None:
     resp = requests.get(
-        f"{API_SERVER_URL}/admin/persona",
+        f"{API_SERVER_URL}/admin/agent",
         headers=_headers(admin_user),
     )
     assert resp.status_code == 200

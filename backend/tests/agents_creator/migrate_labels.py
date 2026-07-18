@@ -239,19 +239,19 @@ def dry_run():
         print(f"  [{count:2d} agents] {l}")
 
     # Fetch current server state for comparison
-    resp = api("GET", "admin/persona")
+    resp = api("GET", "admin/agent")
     if resp.status_code != 200:
-        print(f"\nERROR: Could not fetch personas: {resp.status_code}")
+        print(f"\nERROR: Could not fetch agents: {resp.status_code}")
         return
-    personas = resp.json()
-    id_to_persona = {p["id"]: p for p in personas}
+    agents = resp.json()
+    id_to_agent = {p["id"]: p for p in agents}
 
     print(f"\n--- Agent Label Changes ---")
     for pid, new_labels_list in sorted(AGENT_LABEL_MAP.items()):
-        if pid not in id_to_persona:
+        if pid not in id_to_agent:
             print(f"  ID={pid:3d}  [NOT FOUND ON SERVER]")
             continue
-        p = id_to_persona[pid]
+        p = id_to_agent[pid]
         old = sorted([l["name"] for l in p.get("labels", [])])
         new = sorted(new_labels_list)
         if old != new:
@@ -267,7 +267,7 @@ def apply_migration():
     new_label_names = get_all_new_labels()
 
     # Step 1: Get existing labels
-    resp = api("GET", "persona/labels")
+    resp = api("GET", "agent/labels")
     if resp.status_code != 200:
         print(f"ERROR: Could not fetch labels: {resp.status_code}")
         sys.exit(1)
@@ -281,7 +281,7 @@ def apply_migration():
             label_id_map[name] = existing_labels[name]
             print(f"  [EXISTS] {name} (ID={existing_labels[name]})")
         else:
-            resp = api("POST", "persona/labels", {"name": name})
+            resp = api("POST", "agent/labels", {"name": name})
             if resp.status_code == 200:
                 lbl = resp.json()
                 label_id_map[name] = lbl["id"]
@@ -290,24 +290,24 @@ def apply_migration():
                 print(f"  [FAIL]   {name}: {resp.status_code} {resp.text}")
                 sys.exit(1)
 
-    # Step 3: Fetch all personas for update
-    resp = api("GET", "admin/persona")
+    # Step 3: Fetch all agents for update
+    resp = api("GET", "admin/agent")
     if resp.status_code != 200:
-        print(f"ERROR: Could not fetch personas: {resp.status_code}")
+        print(f"ERROR: Could not fetch agents: {resp.status_code}")
         sys.exit(1)
-    personas = resp.json()
-    id_to_persona = {p["id"]: p for p in personas}
+    agents = resp.json()
+    id_to_agent = {p["id"]: p for p in agents}
 
     # Step 4: Update each agent with new labels
     print(f"\n=== Step 2: Updating {len(AGENT_LABEL_MAP)} agents ===\n")
     updated, failed, skipped = 0, 0, 0
     for pid, new_labels_list in sorted(AGENT_LABEL_MAP.items()):
-        if pid not in id_to_persona:
+        if pid not in id_to_agent:
             print(f"  [SKIP] ID={pid} not found on server")
             skipped += 1
             continue
 
-        existing = id_to_persona[pid]
+        existing = id_to_agent[pid]
         new_label_ids = [label_id_map[name] for name in new_labels_list]
 
         # Build minimal PATCH payload
@@ -335,7 +335,7 @@ def apply_migration():
         if existing.get("starter_messages"):
             body["starter_messages"] = existing["starter_messages"]
 
-        resp = api("PATCH", f"persona/{pid}", body)
+        resp = api("PATCH", f"agent/{pid}", body)
         if resp.status_code == 200:
             print(f"  [OK]   ID={pid:3d}  {existing['name'][:50]}  -> {new_labels_list}")
             updated += 1
@@ -352,20 +352,20 @@ def apply_migration():
 
 def cleanup_orphans():
     """Delete labels that have zero agents assigned."""
-    resp = api("GET", "admin/persona")
+    resp = api("GET", "admin/agent")
     if resp.status_code != 200:
-        print(f"ERROR: Could not fetch personas: {resp.status_code}")
+        print(f"ERROR: Could not fetch agents: {resp.status_code}")
         sys.exit(1)
-    personas = resp.json()
+    agents = resp.json()
 
     # Collect all label IDs currently in use
     used_label_ids = set()
-    for p in personas:
+    for p in agents:
         for l in p.get("labels", []):
             used_label_ids.add(l["id"])
 
     # Get all labels
-    resp = api("GET", "persona/labels")
+    resp = api("GET", "agent/labels")
     if resp.status_code != 200:
         print(f"ERROR: Could not fetch labels: {resp.status_code}")
         sys.exit(1)
@@ -380,14 +380,14 @@ def cleanup_orphans():
 
     for l in sorted(orphans, key=lambda x: x["name"]):
         print(f"  Deleting: {l['name']} (ID={l['id']})")
-        resp = api("DELETE", f"admin/persona/label/{l['id']}")
+        resp = api("DELETE", f"admin/agent/label/{l['id']}")
         if resp.status_code == 200:
             print(f"    [OK]")
         else:
             print(f"    [FAIL] {resp.status_code}: {resp.text}")
 
     # Verify
-    resp = api("GET", "persona/labels")
+    resp = api("GET", "agent/labels")
     remaining = len(resp.json()) if resp.status_code == 200 else "?"
     print(f"\nLabels remaining: {remaining}")
 

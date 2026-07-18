@@ -3,8 +3,8 @@
 Covers:
 - Uploading a file to a workspace, sending a chat message, and verifying the LLM
   receives the file content (small workspace — fits in context window).
-- Creating a persona with knowledge_files and verifying chat works.
-- Verifying that persona creation with document_sets / hierarchy_nodes /
+- Creating a agent with knowledge_files and verifying chat works.
+- Verifying that agent creation with document_sets / hierarchy_nodes /
   document_ids is rejected with a 400.
 """
 
@@ -17,7 +17,7 @@ from om.db.enums import KnowledgeFileStatus
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.managers.chat import ChatSessionManager
 from tests.integration.common_utils.managers.file import FileManager
-from tests.integration.common_utils.managers.persona import PersonaManager
+from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.managers.workspace import WorkspaceManager
 from tests.integration.common_utils.managers.tool import ToolManager
 from tests.integration.common_utils.test_models import DATestLLMProvider
@@ -73,9 +73,9 @@ def test_chat_with_small_workspace_file(
 
     _wait_for_file_processed(workspace.id, admin_user)
 
-    # Create a chat session associated with the workspace's default persona
+    # Create a chat session associated with the workspace's default agent
     chat_session = ChatSessionManager.create(
-        persona_id=0,
+        agent_id=0,
         description="no-vectordb small workspace test",
         user_performing_action=admin_user,
     )
@@ -101,16 +101,16 @@ def test_chat_with_small_workspace_file(
 
 
 # ------------------------------------------------------------------
-# Persona with knowledge_files — should work in no-vector-DB mode
+# Agent with knowledge_files — should work in no-vector-DB mode
 # ------------------------------------------------------------------
 
 
-def test_persona_with_knowledge_files_chat(
+def test_agent_with_knowledge_files_chat(
     reset: None,  # noqa: ARG001
     admin_user: DATestUser,
     llm_provider: DATestLLMProvider,  # noqa: ARG001
 ) -> None:
-    """Create a persona with attached user files and verify chat works."""
+    """Create a agent with attached user files and verify chat works."""
     # Upload a file first
     file_content = b"Quarterly revenue was $42 million."
     file_obj = io.BytesIO(file_content)
@@ -147,10 +147,10 @@ def test_persona_with_knowledge_files_chat(
         file_reader_tool is not None
     ), "FileReaderTool should be registered as a built-in tool"
 
-    # Create a persona with the user file attached
-    persona = PersonaManager.create(
-        name="no-vectordb-persona-test",
-        description="Test persona for no-vectordb mode",
+    # Create a agent with the user file attached
+    agent = AgentManager.create(
+        name="no-vectordb-agent-test",
+        description="Test agent for no-vectordb mode",
         system_prompt="You are a helpful assistant. Answer questions using the available tools and files.",
         task_prompt="",
         knowledge_file_ids=[knowledge_file_id],
@@ -159,8 +159,8 @@ def test_persona_with_knowledge_files_chat(
     )
 
     chat_session = ChatSessionManager.create(
-        persona_id=persona.id,
-        description="no-vectordb persona test",
+        agent_id=agent.id,
+        description="no-vectordb agent test",
         user_performing_action=admin_user,
     )
 
@@ -179,12 +179,12 @@ def test_persona_with_knowledge_files_chat(
 
 
 # ------------------------------------------------------------------
-# Persona validation — vector-DB knowledge types rejected
+# Agent validation — vector-DB knowledge types rejected
 # ------------------------------------------------------------------
 
 
-def _base_persona_body(**overrides: object) -> dict:
-    """Build a valid PersonaUpsertRequest body with sensible defaults.
+def _base_agent_body(**overrides: object) -> dict:
+    """Build a valid AgentUpsertRequest body with sensible defaults.
 
     Callers override only the fields under test so that Pydantic validation
     passes and the vector-DB guard (``_validate_vector_db_knowledge``) is
@@ -210,14 +210,14 @@ def _base_persona_body(**overrides: object) -> dict:
     return body
 
 
-def test_persona_rejects_document_sets_without_vector_db(
+def test_agent_rejects_document_sets_without_vector_db(
     reset: None,  # noqa: ARG001
     admin_user: DATestUser,
 ) -> None:
-    """Creating a persona with document_set_ids should fail with 400."""
+    """Creating a agent with document_set_ids should fail with 400."""
     resp = requests.post(
-        f"{API_SERVER_URL}/persona",
-        json=_base_persona_body(document_set_ids=[1]),
+        f"{API_SERVER_URL}/agent",
+        json=_base_agent_body(document_set_ids=[1]),
         headers=admin_user.headers,
     )
     assert (
@@ -225,14 +225,14 @@ def test_persona_rejects_document_sets_without_vector_db(
     ), f"Expected 400 for document_set_ids, got {resp.status_code}: {resp.text}"
 
 
-def test_persona_rejects_document_ids_without_vector_db(
+def test_agent_rejects_document_ids_without_vector_db(
     reset: None,  # noqa: ARG001
     admin_user: DATestUser,
 ) -> None:
-    """Creating a persona with document_ids should fail with 400."""
+    """Creating a agent with document_ids should fail with 400."""
     resp = requests.post(
-        f"{API_SERVER_URL}/persona",
-        json=_base_persona_body(document_ids=["fake-doc-id"]),
+        f"{API_SERVER_URL}/agent",
+        json=_base_agent_body(document_ids=["fake-doc-id"]),
         headers=admin_user.headers,
     )
     assert (

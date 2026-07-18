@@ -1,5 +1,5 @@
 """
-Integration tests for LLM Provider persona access authorization.
+Integration tests for LLM Provider agent access authorization.
 """
 
 
@@ -9,7 +9,7 @@ import requests
 from om.llm.constants import LlmProviderNames
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager
-from tests.integration.common_utils.managers.persona import PersonaManager
+from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.managers.user_group import UserGroupManager
 from tests.integration.common_utils.test_models import DATestUser
@@ -41,24 +41,24 @@ def users_and_groups(
     return admin_user, basic_user, group1.id, group2.id
 
 
-def test_unauthorized_persona_access_returns_403(
+def test_unauthorized_agent_access_returns_403(
     users_and_groups: tuple[DATestUser, DATestUser, int, int],
 ) -> None:
-    """Test that users cannot query providers for personas they don't have access to."""
+    """Test that users cannot query providers for agents they don't have access to."""
     admin_user, basic_user, group1_id, group2_id = users_and_groups
 
-    # Create a persona restricted to group2 (which basic_user is NOT in)
-    restricted_persona = PersonaManager.create(
+    # Create a agent restricted to group2 (which basic_user is NOT in)
+    restricted_agent = AgentManager.create(
         user_performing_action=admin_user,
-        name="Restricted Persona",
+        name="Restricted Agent",
         description="Only accessible to group2",
         is_public=False,
         groups=[group2_id],
     )
 
-    # Try to query providers for the restricted persona as basic_user
+    # Try to query providers for the restricted agent as basic_user
     response = requests.get(
-        f"{API_SERVER_URL}/llm/persona/{restricted_persona.id}/providers",
+        f"{API_SERVER_URL}/llm/agent/{restricted_agent.id}/providers",
         headers=basic_user.headers,
     )
 
@@ -67,22 +67,22 @@ def test_unauthorized_persona_access_returns_403(
     assert "don't have access to this assistant" in response.json()["detail"]
 
 
-def test_authorized_persona_access_returns_filtered_providers(
+def test_authorized_agent_access_returns_filtered_providers(
     users_and_groups: tuple[DATestUser, DATestUser, int, int],
 ) -> None:
-    """Test that users can query providers for personas they have access to."""
+    """Test that users can query providers for agents they have access to."""
     admin_user, basic_user, group1_id, group2_id = users_and_groups
 
-    # Create a persona accessible to group1 (which basic_user IS in)
-    accessible_persona = PersonaManager.create(
+    # Create a agent accessible to group1 (which basic_user IS in)
+    accessible_agent = AgentManager.create(
         user_performing_action=admin_user,
-        name="Accessible Persona",
+        name="Accessible Agent",
         description="Accessible to group1",
         is_public=False,
         groups=[group1_id],
     )
 
-    # Create a restricted provider accessible only to the persona
+    # Create a restricted provider accessible only to the agent
     restricted_provider = LLMProviderManager.create(
         user_performing_action=admin_user,
         name="Restricted Provider",
@@ -91,12 +91,12 @@ def test_authorized_persona_access_returns_filtered_providers(
         default_model_name="gpt-4o",
         is_public=False,
         groups=[],
-        personas=[accessible_persona.id],
+        agents=[accessible_agent.id],
     )
 
-    # Query providers for the accessible persona as basic_user
+    # Query providers for the accessible agent as basic_user
     response = requests.get(
-        f"{API_SERVER_URL}/llm/persona/{accessible_persona.id}/providers",
+        f"{API_SERVER_URL}/llm/agent/{accessible_agent.id}/providers",
         headers=basic_user.headers,
     )
 
@@ -104,15 +104,15 @@ def test_authorized_persona_access_returns_filtered_providers(
     assert response.status_code == 200
     providers = response.json()
 
-    # Should include the restricted provider since basic_user can access the persona
+    # Should include the restricted provider since basic_user can access the agent
     provider_names = [p["name"] for p in providers]
     assert restricted_provider.name in provider_names
 
 
-def test_persona_id_zero_applies_rbac(
+def test_agent_id_zero_applies_rbac(
     users_and_groups: tuple[DATestUser, DATestUser, int, int],
 ) -> None:
-    """Test that persona_id=0 (default persona) properly applies RBAC."""
+    """Test that agent_id=0 (default agent) properly applies RBAC."""
     admin_user, basic_user, group1_id, group2_id = users_and_groups
 
     # Create a restricted provider accessible only to group2
@@ -124,16 +124,16 @@ def test_persona_id_zero_applies_rbac(
         default_model_name="gpt-4o",
         is_public=False,
         groups=[group2_id],
-        personas=[],
+        agents=[],
     )
 
-    # Query providers with persona_id=0 as basic_user
+    # Query providers with agent_id=0 as basic_user
     response = requests.get(
-        f"{API_SERVER_URL}/llm/persona/0/providers",
+        f"{API_SERVER_URL}/llm/agent/0/providers",
         headers=basic_user.headers,
     )
 
-    # Should succeed (persona_id=0 refers to default persona, which is public)
+    # Should succeed (agent_id=0 refers to default agent, which is public)
     assert response.status_code == 200
     providers = response.json()
 
@@ -142,22 +142,22 @@ def test_persona_id_zero_applies_rbac(
     assert restricted_provider.name not in provider_names
 
 
-def test_admin_can_query_any_persona(
+def test_admin_can_query_any_agent(
     users_and_groups: tuple[DATestUser, DATestUser, int, int],
 ) -> None:
-    """Test that admin users can query any persona's providers."""
+    """Test that admin users can query any agent's providers."""
     admin_user, basic_user, group1_id, group2_id = users_and_groups
 
-    # Create a persona restricted to group2 (admin is not explicitly in this group)
-    restricted_persona = PersonaManager.create(
+    # Create a agent restricted to group2 (admin is not explicitly in this group)
+    restricted_agent = AgentManager.create(
         user_performing_action=admin_user,
-        name="Admin Test Persona",
+        name="Admin Test Agent",
         description="Only accessible to group2",
         is_public=False,
         groups=[group2_id],
     )
 
-    # Create a restricted provider accessible only to the persona
+    # Create a restricted provider accessible only to the agent
     restricted_provider = LLMProviderManager.create(
         user_performing_action=admin_user,
         name="Admin Test Provider",
@@ -166,16 +166,16 @@ def test_admin_can_query_any_persona(
         default_model_name="gpt-4o",
         is_public=False,
         groups=[],
-        personas=[restricted_persona.id],
+        agents=[restricted_agent.id],
     )
 
-    # Query providers for the restricted persona as admin_user
+    # Query providers for the restricted agent as admin_user
     response = requests.get(
-        f"{API_SERVER_URL}/llm/persona/{restricted_persona.id}/providers",
+        f"{API_SERVER_URL}/llm/agent/{restricted_agent.id}/providers",
         headers=admin_user.headers,
     )
 
-    # Should succeed - admins can access any persona
+    # Should succeed - admins can access any agent
     assert response.status_code == 200
     providers = response.json()
 
@@ -184,10 +184,10 @@ def test_admin_can_query_any_persona(
     assert restricted_provider.name in provider_names
 
 
-def test_public_persona_accessible_to_all(
+def test_public_agent_accessible_to_all(
     users_and_groups: tuple[DATestUser, DATestUser, int, int],
 ) -> None:
-    """Test that public personas are accessible to all users."""
+    """Test that public agents are accessible to all users."""
     admin_user, basic_user, group1_id, group2_id = users_and_groups
 
     # Create a public LLM provider so there's something to return
@@ -201,18 +201,18 @@ def test_public_persona_accessible_to_all(
         set_as_default=True,
     )
 
-    # Create a public persona
-    public_persona = PersonaManager.create(
+    # Create a public agent
+    public_agent = AgentManager.create(
         user_performing_action=admin_user,
-        name="Public Persona",
+        name="Public Agent",
         description="Accessible to everyone",
         is_public=True,
         groups=[],
     )
 
-    # Query providers for the public persona as basic_user
+    # Query providers for the public agent as basic_user
     response = requests.get(
-        f"{API_SERVER_URL}/llm/persona/{public_persona.id}/providers",
+        f"{API_SERVER_URL}/llm/agent/{public_agent.id}/providers",
         headers=basic_user.headers,
     )
 
@@ -226,18 +226,18 @@ def test_public_persona_accessible_to_all(
     assert public_provider.name in provider_names
 
 
-def test_nonexistent_persona_returns_404(
+def test_nonexistent_agent_returns_404(
     users_and_groups: tuple[DATestUser, DATestUser, int, int],
 ) -> None:
-    """Test that querying a nonexistent persona returns 404."""
+    """Test that querying a nonexistent agent returns 404."""
     admin_user, basic_user, group1_id, group2_id = users_and_groups
 
-    # Query providers for a nonexistent persona
+    # Query providers for a nonexistent agent
     response = requests.get(
-        f"{API_SERVER_URL}/llm/persona/99999/providers",
+        f"{API_SERVER_URL}/llm/agent/99999/providers",
         headers=basic_user.headers,
     )
 
     # Should return 404
     assert response.status_code == 404
-    assert "Persona not found" in response.json()["detail"]
+    assert "Agent not found" in response.json()["detail"]

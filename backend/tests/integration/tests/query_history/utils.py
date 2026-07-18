@@ -20,14 +20,14 @@ def _create_chat_session_with_feedback(
     print(f"Creating chat session {i} with feedback type {feedback_type}")
     # Create chat session with timestamp spread over 30 days
     chat_session = ChatSessionManager.create(
-        persona_id=0,
+        agent_id=0,
         description=f"Test chat session {i}",
         user_performing_action=admin_user,
     )
 
     test_session = DAQueryHistoryEntry(
         id=chat_session.id,
-        persona_id=0,
+        agent_id=0,
         description=f"Test chat session {i}",
         feedback_type=feedback_type,
     )

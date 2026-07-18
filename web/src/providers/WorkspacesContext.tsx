@@ -37,7 +37,8 @@ import {
   linkFileToWorkspace as svcLinkFileToWorkspace,
   KnowledgeFileStatus,
 } from "@/app/app/workspaces/workspacesService";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import type { Route } from "next";
 import { SEARCH_PARAM_NAMES } from "@/app/app/services/searchParams";
 import { useAppRouter } from "@/hooks/appNavigation";
 import { ChatFileType } from "@/app/app/interfaces";
@@ -157,6 +158,7 @@ export function WorkspacesProvider({ children }: WorkspacesProviderProps) {
     new Map()
   );
   const route = useAppRouter();
+  const router = useRouter();
 
   // Use SWR's mutate to refresh workspaces - returns the new data
   const fetchWorkspaces = useCallback(async (): Promise<Workspace[]> => {
@@ -183,6 +185,18 @@ export function WorkspacesProvider({ children }: WorkspacesProviderProps) {
             ...(workspaceToUploadFilesMapRef.current.get(currentWorkspaceId) || []),
           ]);
         }
+      } catch (err) {
+        // A soft-deleted or otherwise inaccessible workspace returns 404 from the
+        // details endpoint. Don't render it — tell the user and send them back to
+        // the workspaces dashboard.
+        const notFound =
+          err instanceof Error && err.message.includes("(Status: 404)");
+        if (notFound) {
+          setCurrentWorkspaceDetails(null);
+          setAllCurrentWorkspaceFiles([]);
+          toast.warning("This workspace is no longer available");
+          router.push("/app/workspaces" as Route);
+        }
       } finally {
         setIsLoadingWorkspaceDetails(false);
       }
@@ -192,6 +206,7 @@ export function WorkspacesProvider({ children }: WorkspacesProviderProps) {
     currentWorkspaceId,
     setCurrentWorkspaceDetails,
     workspaceToUploadFilesMapRef,
+    router,
   ]);
 
   const upsertInstructions = useCallback(
@@ -263,13 +278,13 @@ export function WorkspacesProvider({ children }: WorkspacesProviderProps) {
           setCurrentWorkspaceDetails(null);
           setAllCurrentWorkspaceFiles([]);
           workspaceToUploadFilesMapRef.current.delete(workspaceId);
-          route();
+          router.push("/app/workspaces" as Route);
         }
       } catch (err) {
         throw err;
       }
     },
-    [fetchWorkspaces, currentWorkspaceId, workspaceToUploadFilesMapRef, route]
+    [fetchWorkspaces, currentWorkspaceId, workspaceToUploadFilesMapRef, router]
   );
 
   const getRecentFiles = useCallback(async (): Promise<WorkspaceFile[]> => {

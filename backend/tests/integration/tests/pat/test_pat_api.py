@@ -478,13 +478,13 @@ def test_pat_role_based_access_control(reset: None) -> None:  # noqa: ARG001
         (global_curator_pat, "Global Curator"),
     ]:
         assert pat.token is not None
-        persona_response = requests.get(
-            f"{API_SERVER_URL}/persona",
+        agent_response = requests.get(
+            f"{API_SERVER_URL}/agent",
             headers=PATManager.get_auth_headers(pat.token),
             timeout=60,
         )
-        assert persona_response.status_code == 200
-        print(f"[✓] {user_name} PAT can access /persona endpoint")
+        assert agent_response.status_code == 200
+        print(f"[✓] {user_name} PAT can access /agent endpoint")
 
     print("\n[✓] All role-based access control tests passed!")
     print("Summary:")
@@ -500,5 +500,5 @@ def test_pat_role_based_access_control(reset: None) -> None:  # noqa: ARG001
         "denied on admin-only (/admin/*)"
     )
     print("  - Basic PAT: Denied access to admin and management endpoints")
-    print("  - All PATs: Can access basic endpoints (/persona, /me, etc.)")
+    print("  - All PATs: Can access basic endpoints (/agent, /me, etc.)")
     print("  - All PATs: Authenticate with correct user identity and role")

@@ -23,7 +23,7 @@ class LLMProviderManager:
         api_base: str | None = None,
         api_version: str | None = None,
         groups: list[int] | None = None,
-        personas: list[int] | None = None,
+        agents: list[int] | None = None,
         is_public: bool | None = None,
         set_as_default: bool = True,
         user_performing_action: DATestUser | None = None,
@@ -44,7 +44,7 @@ class LLMProviderManager:
             custom_config=None,
             is_public=True if is_public is None else is_public,
             groups=groups or [],
-            personas=personas or [],
+            agents=agents or [],
             model_configurations=[
                 ModelConfigurationUpsertRequest(
                     name=default_model_name or "gpt-4o-mini",
@@ -78,7 +78,7 @@ class LLMProviderManager:
             is_public=response_data["is_public"],
             is_auto_mode=response_data.get("is_auto_mode", False),
             groups=response_data["groups"],
-            personas=response_data.get("personas", []),
+            agents=response_data.get("agents", []),
             api_base=response_data["api_base"],
             api_version=response_data["api_version"],
         )
@@ -150,7 +150,7 @@ class LLMProviderManager:
                     and llm_provider.default_model_name
                     == fetched_llm_provider.default_model_name
                     and llm_provider.is_public == fetched_llm_provider.is_public
-                    and set(fetched_llm_provider.personas) == set(llm_provider.personas)
+                    and set(fetched_llm_provider.agents) == set(llm_provider.agents)
                 ):
                     return
         if not verify_deleted:

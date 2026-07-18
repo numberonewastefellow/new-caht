@@ -20,7 +20,7 @@ export const WorkflowPauseRenderer: MessageRenderer<
     (p) => p.obj.type === PacketType.WORKFLOW_PAUSE_FOR_INPUT
   );
   const pauseData = pausePacket?.obj as WorkflowPauseForInput | undefined;
-  const personaName = pauseData?.persona_name || "Agent";
+  const agentName = pauseData?.agent_name || "Agent";
 
   // The full questions text is emitted as main message content
   // (AgentResponseStart/Delta), so the timeline only shows a compact status.
@@ -28,7 +28,7 @@ export const WorkflowPauseRenderer: MessageRenderer<
   return children([
     {
       icon: SvgCircle,
-      status: `${personaName} — Waiting for input`,
+      status: `${agentName} — Waiting for input`,
       content: <></>,
       accent: "blue",
     },

@@ -31,7 +31,7 @@ from om.db.models import ChatSessionSharedStatus
 from om.db.models import SearchDoc as DBSearchDoc
 from om.db.models import ToolCall
 from om.db.models import User
-from om.db.persona import get_best_persona_id_for_user
+from om.db.agent import get_best_agent_id_for_user
 from om.file_store.file_store import get_default_file_store
 from om.file_store.models import FileDescriptor
 from om.llm.override_models import LLMOverride
@@ -181,7 +181,7 @@ def create_chat_session(
     db_session: Session,
     description: str | None,
     user_id: UUID | None,
-    persona_id: int | None,  # Can be none if temporary persona is used
+    agent_id: int | None,  # Can be none if temporary agent is used
     llm_override: LLMOverride | None = None,
     prompt_override: PromptOverride | None = None,
     onyxbot_flow: bool = False,
@@ -190,7 +190,7 @@ def create_chat_session(
 ) -> ChatSession:
     chat_session = ChatSession(
         user_id=user_id,
-        persona_id=persona_id,
+        agent_id=agent_id,
         description=description,
         llm_override=llm_override,
         prompt_override=prompt_override,
@@ -213,7 +213,7 @@ def duplicate_chat_session_for_user_from_slack(
     """
     This takes a chat session id for a session in Slack and:
     - Creates a new chat session in the DB
-    - Tries to copy the persona from the original chat session
+    - Tries to copy the agent from the original chat session
         (if it is available to the user clicking the button)
     - Sets the user to the given user (if provided)
     """
@@ -226,16 +226,16 @@ def duplicate_chat_session_for_user_from_slack(
         raise HTTPException(status_code=400, detail="Invalid Chat Session ID provided")
 
     # This enforces permissions and sets a default
-    new_persona_id = get_best_persona_id_for_user(
+    new_agent_id = get_best_agent_id_for_user(
         db_session=db_session,
         user=user,
-        persona_id=chat_session.persona_id,
+        agent_id=chat_session.agent_id,
     )
 
     return create_chat_session(
         db_session=db_session,
         user_id=user.id,
-        persona_id=new_persona_id,
+        agent_id=new_agent_id,
         # Set this to empty string so the frontend will force a rename
         description="",
         llm_override=chat_session.llm_override,

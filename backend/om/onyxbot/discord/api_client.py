@@ -31,7 +31,7 @@ class OmAPIClient:
                 message="What is our deployment process?",
                 tenant_id="tenant_123",
                 api_key="dn_xxx...",
-                persona_id=1,
+                agent_id=1,
             )
             print(response.answer)
         finally:
@@ -92,7 +92,7 @@ class OmAPIClient:
         self,
         message: str,
         api_key: str,
-        persona_id: int | None = None,
+        agent_id: int | None = None,
     ) -> ChatFullResponse:
         """Send a chat message to the VertualAi API server and get a response.
 
@@ -102,7 +102,7 @@ class OmAPIClient:
         Args:
             message: The user's message to process.
             api_key: The API key for authentication.
-            persona_id: Optional persona ID to use for the response.
+            agent_id: Optional agent ID to use for the response.
 
         Returns:
             ChatFullResponse containing the answer, citations, and metadata.
@@ -125,7 +125,7 @@ class OmAPIClient:
             stream=False,
             origin=MessageOrigin.DISCORDBOT,
             chat_session_info=ChatSessionCreationRequest(
-                persona_id=persona_id if persona_id is not None else 0,
+                agent_id=agent_id if agent_id is not None else 0,
             ),
         )
 

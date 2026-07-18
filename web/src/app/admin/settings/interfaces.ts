@@ -58,7 +58,7 @@ export interface Settings {
 }
 
 export enum NotificationType {
-  PERSONA_SHARED = "persona_shared",
+  AGENT_SHARED = "agent_shared",
   REINDEX = "reindex",
   TRIAL_ENDS_TWO_DAYS = "two_day_trial_ending",
   ASSISTANT_FILES_READY = "assistant_files_ready",
@@ -75,7 +75,7 @@ export interface Notification {
   first_shown: string;
   last_shown: string;
   additional_data?: {
-    persona_id?: number;
+    agent_id?: number;
     link?: string;
     version?: string; // For release notes notifications
     [key: string]: any;

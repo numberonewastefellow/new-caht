@@ -12,8 +12,8 @@ from om.configs.chat_configs import CONTEXT_CHUNKS_BELOW
 from om.context.search.enums import RecencyBiasSetting
 from om.db.models import AgentWorkflow
 from om.db.models import AgentWorkflowStep
-from om.db.models import Persona
-from om.db.models import PersonaLabel
+from om.db.models import Agent
+from om.db.models import AgentLabel
 from om.db.models import WorkflowExecution
 from om.utils.logger import setup_logger
 from om.workflows.models import WorkflowCheckpoint
@@ -68,8 +68,8 @@ def get_workflow_by_id(
         .where(AgentWorkflow.deleted.is_(False))
         .options(
             selectinload(AgentWorkflow.steps)
-            .selectinload(AgentWorkflowStep.persona)
-            .selectinload(Persona.tools)
+            .selectinload(AgentWorkflowStep.agent)
+            .selectinload(Agent.tools)
         )
     ).scalar_one_or_none()
 
@@ -85,8 +85,8 @@ def list_workflows(
         .where(AgentWorkflow.is_visible.is_(True))
         .options(
             selectinload(AgentWorkflow.steps)
-            .selectinload(AgentWorkflowStep.persona)
-            .selectinload(Persona.tools)
+            .selectinload(AgentWorkflowStep.agent)
+            .selectinload(Agent.tools)
         )
         .order_by(AgentWorkflow.created_at.desc())
     )
@@ -158,32 +158,32 @@ def delete_workflow(
 
     workflow.deleted = True
 
-    # Also soft-delete the wrapper persona
-    wrapper_persona = _get_workflow_persona(db_session, workflow_id)
-    if wrapper_persona:
-        wrapper_persona.deleted = True
+    # Also soft-delete the wrapper agent
+    wrapper_agent = _get_workflow_agent(db_session, workflow_id)
+    if wrapper_agent:
+        wrapper_agent.deleted = True
 
     db_session.commit()
     return True
 
 
 # ========================
-# Workflow ↔ Persona bridge
+# Workflow ↔ Agent bridge
 # ========================
 
 
-def _get_workflow_persona(
+def _get_workflow_agent(
     db_session: Session,
     workflow_id: int,
-) -> Persona | None:
-    """Find the wrapper persona for a given workflow."""
+) -> Agent | None:
+    """Find the wrapper agent for a given workflow."""
     return db_session.execute(
-        select(Persona).where(Persona.workflow_id == workflow_id)
+        select(Agent).where(Agent.workflow_id == workflow_id)
     ).scalar_one_or_none()
 
 
 def _build_workflow_description(workflow: AgentWorkflow) -> str:
-    """Build a user-facing description for the wrapper persona.
+    """Build a user-facing description for the wrapper agent.
 
     Shows the workflow's own description plus a summary of its agent pipeline.
     """
@@ -203,40 +203,40 @@ def _build_workflow_description(workflow: AgentWorkflow) -> str:
     return "\n".join(parts) if parts else f"Multi-agent workflow: {workflow.name}"
 
 
-def _get_or_create_label(db_session: Session, name: str) -> PersonaLabel:
+def _get_or_create_label(db_session: Session, name: str) -> AgentLabel:
     """Get a label by name, or create it if it doesn't exist."""
     label = db_session.execute(
-        select(PersonaLabel).where(PersonaLabel.name == name)
+        select(AgentLabel).where(AgentLabel.name == name)
     ).scalar_one_or_none()
     if label is None:
-        label = PersonaLabel(name=name)
+        label = AgentLabel(name=name)
         db_session.add(label)
         db_session.flush()
     return label
 
 
-def create_or_update_workflow_persona(
+def create_or_update_workflow_agent(
     db_session: Session,
     workflow: AgentWorkflow,
-) -> Persona:
-    """Create or update the wrapper Persona for a workflow.
+) -> Agent:
+    """Create or update the wrapper Agent for a workflow.
 
     This ensures the workflow appears in the agent listing (/app/agents)
-    and can be used in the chat page. The wrapper persona inherits the
+    and can be used in the chat page. The wrapper agent inherits the
     workflow's name, description, icon, and visibility settings.
 
-    When a user starts a chat with this persona, the chat system detects
-    persona.workflow_id and routes to the workflow engine instead of
+    When a user starts a chat with this agent, the chat system detects
+    agent.workflow_id and routes to the workflow engine instead of
     the standard LLM loop.
     """
-    existing = _get_workflow_persona(db_session, workflow.id)
+    existing = _get_workflow_agent(db_session, workflow.id)
     description = _build_workflow_description(workflow)
 
     # Resolve the "Workflow" label (auto-create if missing)
     workflow_label = _get_or_create_label(db_session, "Workflow")
 
     if existing:
-        # Update the existing wrapper persona to stay in sync
+        # Update the existing wrapper agent to stay in sync
         existing.name = workflow.name
         existing.description = description
         existing.is_public = workflow.is_public
@@ -248,12 +248,12 @@ def create_or_update_workflow_persona(
             existing.labels.append(workflow_label)
         db_session.commit()
         logger.info(
-            f"Updated wrapper persona id={existing.id} for workflow id={workflow.id}"
+            f"Updated wrapper agent id={existing.id} for workflow id={workflow.id}"
         )
         return existing
 
-    # Create a new wrapper persona
-    persona = Persona(
+    # Create a new wrapper agent
+    agent = Agent(
         user_id=workflow.user_id,
         name=workflow.name,
         description=description,
@@ -276,13 +276,13 @@ def create_or_update_workflow_persona(
         replace_base_system_prompt=False,
         workflow_id=workflow.id,
     )
-    persona.labels = [workflow_label]
-    db_session.add(persona)
+    agent.labels = [workflow_label]
+    db_session.add(agent)
     db_session.commit()
     logger.info(
-        f"Created wrapper persona id={persona.id} for workflow id={workflow.id}"
+        f"Created wrapper agent id={agent.id} for workflow id={workflow.id}"
     )
-    return persona
+    return agent
 
 
 # ========================
@@ -298,7 +298,7 @@ def _add_step(
     step = AgentWorkflowStep(
         workflow_id=workflow_id,
         step_type=step_create.step_type,
-        persona_id=step_create.persona_id,
+        agent_id=step_create.agent_id,
         step_order=step_create.step_order,
         step_name=step_create.step_name,
         step_description=step_create.step_description,

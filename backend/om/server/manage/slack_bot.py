@@ -5,17 +5,17 @@ from sqlalchemy.orm import Session
 
 from om.auth.users import current_admin_user
 from om.configs.constants import MilestoneRecordType
-from om.db.constants import SLACK_BOT_PERSONA_PREFIX
+from om.db.constants import SLACK_BOT_AGENT_PREFIX
 from om.db.engine.sql_engine import get_session
 from om.db.models import ChannelConfig
 from om.db.models import User
-from om.db.persona import get_persona_by_id
+from om.db.agent import get_agent_by_id
 from om.db.slack_bot import fetch_slack_bot
 from om.db.slack_bot import fetch_slack_bots
 from om.db.slack_bot import insert_slack_bot
 from om.db.slack_bot import remove_slack_bot
 from om.db.slack_bot import update_slack_bot
-from om.db.slack_channel_config import create_slack_channel_persona
+from om.db.slack_channel_config import create_slack_channel_agent
 from om.db.slack_channel_config import fetch_slack_channel_config
 from om.db.slack_channel_config import fetch_slack_channel_configs
 from om.db.slack_channel_config import insert_slack_channel_config
@@ -128,21 +128,21 @@ def create_slack_channel_config(
             detail="Channel name is required",
         )
 
-    persona_id = None
-    if slack_channel_config_creation_request.persona_id is not None:
-        persona_id = slack_channel_config_creation_request.persona_id
+    agent_id = None
+    if slack_channel_config_creation_request.agent_id is not None:
+        agent_id = slack_channel_config_creation_request.agent_id
     elif slack_channel_config_creation_request.document_sets:
-        persona_id = create_slack_channel_persona(
+        agent_id = create_slack_channel_agent(
             db_session=db_session,
             channel_name=channel_config["channel_name"],
             document_set_ids=slack_channel_config_creation_request.document_sets,
-            existing_persona_id=None,
+            existing_agent_id=None,
         ).id
 
     slack_channel_config_model = insert_slack_channel_config(
         db_session=db_session,
         slack_bot_id=slack_channel_config_creation_request.slack_bot_id,
-        persona_id=persona_id,
+        agent_id=agent_id,
         channel_config=channel_config,
         standard_answer_category_ids=slack_channel_config_creation_request.standard_answer_categories,
         enable_auto_filters=slack_channel_config_creation_request.enable_auto_filters,
@@ -163,9 +163,9 @@ def patch_slack_channel_config(
         current_slack_channel_config_id=slack_channel_config_id,
     )
 
-    persona_id = None
-    if slack_channel_config_creation_request.persona_id is not None:
-        persona_id = slack_channel_config_creation_request.persona_id
+    agent_id = None
+    if slack_channel_config_creation_request.agent_id is not None:
+        agent_id = slack_channel_config_creation_request.agent_id
     elif slack_channel_config_creation_request.document_sets:
         existing_slack_channel_config = fetch_slack_channel_config(
             db_session=db_session, slack_channel_config_id=slack_channel_config_id
@@ -176,35 +176,35 @@ def patch_slack_channel_config(
                 detail="Slack channel config not found",
             )
 
-        existing_persona_id = existing_slack_channel_config.persona_id
-        if existing_persona_id is not None:
-            persona = get_persona_by_id(
-                persona_id=existing_persona_id,
+        existing_agent_id = existing_slack_channel_config.agent_id
+        if existing_agent_id is not None:
+            agent = get_agent_by_id(
+                agent_id=existing_agent_id,
                 user=None,
                 db_session=db_session,
                 is_for_edit=False,
             )
 
-            if not persona.name.startswith(SLACK_BOT_PERSONA_PREFIX):
-                # Don't update actual non-slackbot specific personas
-                # Since this one specified document sets, we have to create a new persona
+            if not agent.name.startswith(SLACK_BOT_AGENT_PREFIX):
+                # Don't update actual non-slackbot specific agents
+                # Since this one specified document sets, we have to create a new agent
                 # for this VertualAi Bot config
-                existing_persona_id = None
+                existing_agent_id = None
             else:
-                existing_persona_id = existing_slack_channel_config.persona_id
+                existing_agent_id = existing_slack_channel_config.agent_id
 
-        persona_id = create_slack_channel_persona(
+        agent_id = create_slack_channel_agent(
             db_session=db_session,
             channel_name=channel_config["channel_name"],
             document_set_ids=slack_channel_config_creation_request.document_sets,
-            existing_persona_id=existing_persona_id,
+            existing_agent_id=existing_agent_id,
             enable_auto_filters=slack_channel_config_creation_request.enable_auto_filters,
         ).id
 
     slack_channel_config_model = update_slack_channel_config(
         db_session=db_session,
         slack_channel_config_id=slack_channel_config_id,
-        persona_id=persona_id,
+        agent_id=agent_id,
         channel_config=channel_config,
         standard_answer_category_ids=slack_channel_config_creation_request.standard_answer_categories,
         enable_auto_filters=slack_channel_config_creation_request.enable_auto_filters,
@@ -267,7 +267,7 @@ def create_bot(
     insert_slack_channel_config(
         db_session=db_session,
         slack_bot_id=slack_bot_model.id,
-        persona_id=None,
+        agent_id=None,
         channel_config=default_channel_config,
         standard_answer_category_ids=[],
         enable_auto_filters=False,

@@ -401,5 +401,5 @@ class SyncStreamController(Generic[T]):
 def use_mock_llm() -> Generator[MockLLMController, None, None]:
     mock_llm = MockLLM()
 
-    with patch("om.chat.process_message.get_llm_for_persona", return_value=mock_llm):
+    with patch("om.chat.message_handler.get_llm_for_agent", return_value=mock_llm):
         yield mock_llm

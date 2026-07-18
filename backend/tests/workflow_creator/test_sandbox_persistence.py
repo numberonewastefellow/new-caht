@@ -15,7 +15,7 @@ Each message uses forced_tool_id to guarantee PythonTool is called
 
 Usage:
     python test_sandbox_persistence.py
-    python test_sandbox_persistence.py --persona-id 303
+    python test_sandbox_persistence.py --agent-id 303
     python test_sandbox_persistence.py --url http://host:3000 --key YOUR_KEY
 """
 
@@ -36,9 +36,9 @@ from config import (
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 
-def create_chat_session(persona_id: int) -> str | None:
+def create_chat_session(agent_id: int) -> str | None:
     """Create a chat session and return its UUID."""
-    resp = api("POST", "converse/create-chat-session", {"persona_id": persona_id})
+    resp = api("POST", "converse/create-chat-session", {"agent_id": agent_id})
     if resp.status_code != 200:
         print(f"[ERROR] Could not create chat session: {resp.status_code} {resp.text[:300]}")
         return None
@@ -63,9 +63,9 @@ def find_python_tool_id() -> int | None:
     return None
 
 
-def find_persona_with_python(python_tool_id: int) -> int | None:
-    """Find a persona that has PythonTool enabled."""
-    resp = api("GET", "persona")
+def find_agent_with_python(python_tool_id: int) -> int | None:
+    """Find a agent that has PythonTool enabled."""
+    resp = api("GET", "agent")
     if resp.status_code != 200:
         return None
     for p in resp.json():
@@ -173,7 +173,7 @@ def check_sandbox_session_id(chat_session_id: str) -> str | None:
 # ── Main Test ────────────────────────────────────────────────────────────────
 
 
-def run_test(persona_id: int | None = None):
+def run_test(agent_id: int | None = None):
     print("\n" + "=" * 60)
     print("SANDBOX PERSISTENCE TEST")
     print("=" * 60)
@@ -184,16 +184,16 @@ def run_test(persona_id: int | None = None):
         sys.exit(1)
     print(f"  PythonTool ID: {python_tool_id}")
 
-    # Find or use specified persona
-    if persona_id is None:
-        persona_id = find_persona_with_python(python_tool_id)
-        if persona_id is None:
-            print("[ERROR] No persona with PythonTool found")
+    # Find or use specified agent
+    if agent_id is None:
+        agent_id = find_agent_with_python(python_tool_id)
+        if agent_id is None:
+            print("[ERROR] No agent with PythonTool found")
             sys.exit(1)
-    print(f"  Persona ID: {persona_id}")
+    print(f"  Agent ID: {agent_id}")
 
     # Create chat session
-    chat_session_id = create_chat_session(persona_id)
+    chat_session_id = create_chat_session(agent_id)
     if not chat_session_id:
         sys.exit(1)
     print(f"  Chat Session: {chat_session_id}")
@@ -351,15 +351,15 @@ def main():
         description="Test Code Interpreter sandbox persistence across messages",
     )
     parser.add_argument(
-        "--persona-id", type=int, default=None,
-        help="Persona ID with PythonTool enabled (auto-detected if omitted)",
+        "--agent-id", type=int, default=None,
+        help="Agent ID with PythonTool enabled (auto-detected if omitted)",
     )
     add_common_args(parser)
 
     args = parser.parse_args()
     apply_common_args(args)
 
-    success = run_test(persona_id=args.persona_id)
+    success = run_test(agent_id=args.agent_id)
     sys.exit(0 if success else 1)
 
 

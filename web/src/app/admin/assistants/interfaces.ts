@@ -2,7 +2,7 @@ import { ValidSources } from "@/lib/types";
 import { ToolSnapshot } from "@/lib/tools/interfaces";
 import { DocumentSetSummary, MinimalUserSnapshot } from "@/lib/types";
 
-// Represents a hierarchy node (folder, space, channel, etc.) attached to a persona
+// Represents a hierarchy node (folder, space, channel, etc.) attached to a agent
 export interface HierarchyNodeSnapshot {
   id: number;
   raw_node_id: string;
@@ -12,7 +12,7 @@ export interface HierarchyNodeSnapshot {
   node_type: string; // HierarchyNodeType enum value
 }
 
-// Represents a document attached to a persona
+// Represents a document attached to a agent
 export interface AttachedDocumentSnapshot {
   id: string;
   title: string;
@@ -31,7 +31,7 @@ export interface StarterMessage extends StarterMessageBase {
   name: string;
 }
 
-export interface MinimalPersonaSnapshot {
+export interface MinimalAgentSnapshot {
   id: number;
   name: string;
   description: string;
@@ -55,17 +55,17 @@ export interface MinimalPersonaSnapshot {
   is_public: boolean;
   is_visible: boolean;
   display_priority: number | null;
-  is_default_persona: boolean;
-  builtin_persona: boolean;
+  is_default_agent: boolean;
+  builtin_agent: boolean;
 
-  labels?: PersonaLabel[];
+  labels?: AgentLabel[];
   owner: MinimalUserSnapshot | null;
 
   // Multi-agent workflow link — set when this agent is a workflow wrapper
   workflow_id?: number | null;
 }
 
-export interface Persona extends MinimalPersonaSnapshot {
+export interface Agent extends MinimalAgentSnapshot {
   knowledge_file_ids: string[];
   users: MinimalUserSnapshot[];
   groups: number[];
@@ -75,21 +75,21 @@ export interface Persona extends MinimalPersonaSnapshot {
   // Individual documents attached for scoped search
   attached_documents?: AttachedDocumentSnapshot[];
 
-  // Embedded prompt fields on persona
+  // Embedded prompt fields on agent
   system_prompt: string | null;
   replace_base_system_prompt: boolean;
   task_prompt: string | null;
   datetime_aware: boolean;
 }
 
-export interface FullPersona extends Persona {
+export interface FullAgent extends Agent {
   search_start_date: string | null;
   llm_relevance_filter?: boolean;
   llm_filter_extraction?: boolean;
   max_output_tokens?: number | null;
 }
 
-export interface PersonaLabel {
+export interface AgentLabel {
   id: number;
   name: string;
 }

@@ -74,12 +74,12 @@ class StreamPacketData(TypedDict, total=False):
 class ChatSessionManager:
     @staticmethod
     def create(
-        persona_id: int = 0,
+        agent_id: int = 0,
         description: str = "Test chat session",
         user_performing_action: DATestUser | None = None,
     ) -> DATestChatSession:
         chat_session_creation_req = ChatSessionCreationRequest(
-            persona_id=persona_id, description=description
+            agent_id=agent_id, description=description
         )
         response = requests.post(
             f"{API_SERVER_URL}/converse/create-chat-session",
@@ -93,7 +93,7 @@ class ChatSessionManager:
         response.raise_for_status()
         chat_session_id = response.json()["chat_session_id"]
         return DATestChatSession(
-            id=chat_session_id, persona_id=persona_id, description=description
+            id=chat_session_id, agent_id=agent_id, description=description
         )
 
     @staticmethod

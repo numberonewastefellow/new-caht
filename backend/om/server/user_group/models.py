@@ -7,7 +7,7 @@ from om.server.documents.models import ConnectorCredentialPairDescriptor
 from om.server.documents.models import ConnectorSnapshot
 from om.server.documents.models import CredentialSnapshot
 from om.server.features.document_set.models import DocumentSet
-from om.server.features.persona.models import PersonaSnapshot
+from om.server.features.agent.models import AgentSnapshot
 from om.server.manage.models import UserInfo
 from om.server.manage.models import UserPreferences
 
@@ -19,7 +19,7 @@ class UserGroup(BaseModel):
     curator_ids: list[UUID]
     cc_pairs: list[ConnectorCredentialPairDescriptor]
     document_sets: list[DocumentSet]
-    personas: list[PersonaSnapshot]
+    agents: list[AgentSnapshot]
     is_up_to_date: bool
     is_up_for_deletion: bool
 
@@ -66,10 +66,10 @@ class UserGroup(BaseModel):
             document_sets=[
                 DocumentSet.from_model(ds) for ds in user_group_model.document_sets
             ],
-            personas=[
-                PersonaSnapshot.from_model(persona)
-                for persona in user_group_model.personas
-                if not persona.deleted
+            agents=[
+                AgentSnapshot.from_model(agent)
+                for agent in user_group_model.agents
+                if not agent.deleted
             ],
             is_up_to_date=user_group_model.is_up_to_date,
             is_up_for_deletion=user_group_model.is_up_for_deletion,

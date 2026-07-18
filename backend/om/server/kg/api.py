@@ -3,7 +3,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from om.auth.users import current_admin_user
-from om.configs.constants import TMP_DRALPHA_PERSONA_NAME
+from om.configs.constants import TMP_DRALPHA_AGENT_NAME
 from om.configs.kg_configs import KG_BETA_ASSISTANT_DESCRIPTION
 from om.context.search.enums import RecencyBiasSetting
 from om.db.engine.sql_engine import get_session
@@ -15,10 +15,10 @@ from om.db.kg_config import enable_kg
 from om.db.kg_config import get_kg_config_settings
 from om.db.kg_config import set_kg_config_settings
 from om.db.models import User
-from om.db.persona import create_update_persona
-from om.db.persona import get_persona_by_id
-from om.db.persona import mark_persona_as_deleted
-from om.db.persona import mark_persona_as_not_deleted
+from om.db.agent import create_update_agent
+from om.db.agent import get_agent_by_id
+from om.db.agent import mark_agent_as_deleted
+from om.db.agent import mark_agent_as_not_deleted
 from om.db.tools import get_builtin_tool
 from om.kg.resets.reset_index import reset_full_kg_index__commit
 from om.kg.setup.kg_default_entity_definitions import (
@@ -26,7 +26,7 @@ from om.kg.setup.kg_default_entity_definitions import (
 )
 from om.prompts.kg_prompts import KG_BETA_ASSISTANT_SYSTEM_PROMPT
 from om.prompts.kg_prompts import KG_BETA_ASSISTANT_TASK_PROMPT
-from om.server.features.persona.models import PersonaUpsertRequest
+from om.server.features.agent.models import AgentUpsertRequest
 from om.server.kg.models import DisableKGConfigRequest
 from om.server.kg.models import EnableKGConfigRequest
 from om.server.kg.models import EntityType
@@ -82,12 +82,12 @@ def enable_or_disable_kg(
     db_session: Session = Depends(get_session),
 ) -> None:
     if isinstance(req, DisableKGConfigRequest):
-        # Get the KG Beta persona ID and delete it
+        # Get the KG Beta agent ID and delete it
         kg_config_settings = get_kg_config_settings()
-        persona_id = kg_config_settings.KG_BETA_PERSONA_ID
-        if persona_id is not None:
-            mark_persona_as_deleted(
-                persona_id=persona_id,
+        agent_id = kg_config_settings.KG_BETA_AGENT_ID
+        if agent_id is not None:
+            mark_agent_as_deleted(
+                agent_id=agent_id,
                 user=user,
                 db_session=db_session,
             )
@@ -102,34 +102,34 @@ def enable_or_disable_kg(
     search_tool = get_builtin_tool(db_session=db_session, tool_type=SearchTool)
     kg_tool = get_builtin_tool(db_session=db_session, tool_type=KnowledgeGraphTool)
 
-    # Check if we have a previously created persona
+    # Check if we have a previously created agent
     kg_config_settings = get_kg_config_settings()
-    persona_id = kg_config_settings.KG_BETA_PERSONA_ID
+    agent_id = kg_config_settings.KG_BETA_AGENT_ID
 
-    if persona_id is not None:
-        # Try to restore the existing persona
+    if agent_id is not None:
+        # Try to restore the existing agent
         try:
-            persona = get_persona_by_id(
-                persona_id=persona_id,
+            agent = get_agent_by_id(
+                agent_id=agent_id,
                 user=user,
                 db_session=db_session,
                 include_deleted=True,
             )
-            if persona.deleted:
-                mark_persona_as_not_deleted(
-                    persona_id=persona_id,
+            if agent.deleted:
+                mark_agent_as_not_deleted(
+                    agent_id=agent_id,
                     user=user,
                     db_session=db_session,
                 )
             return
 
         except ValueError:
-            # If persona doesn't exist or can't be restored, create a new one below
+            # If agent doesn't exist or can't be restored, create a new one below
             pass
 
-    # Create KG Beta persona (private to the admin who enabled KG)
-    persona_request = PersonaUpsertRequest(
-        name=TMP_DRALPHA_PERSONA_NAME,
+    # Create KG Beta agent (private to the admin who enabled KG)
+    agent_request = AgentUpsertRequest(
+        name=TMP_DRALPHA_AGENT_NAME,
         description=KG_BETA_ASSISTANT_DESCRIPTION,
         system_prompt=KG_BETA_ASSISTANT_SYSTEM_PROMPT,
         task_prompt=KG_BETA_ASSISTANT_TASK_PROMPT,
@@ -147,19 +147,19 @@ def enable_or_disable_kg(
         users=[user.id],
         groups=[],
         label_ids=[],
-        is_default_persona=False,
+        is_default_agent=False,
         display_priority=0,
         knowledge_file_ids=[],
     )
 
-    persona_snapshot = create_update_persona(
-        persona_id=None,
-        create_persona_request=persona_request,
+    agent_snapshot = create_update_agent(
+        agent_id=None,
+        create_agent_request=agent_request,
         user=user,
         db_session=db_session,
     )
-    # Store the persona ID in the KG config
-    kg_config_settings.KG_BETA_PERSONA_ID = persona_snapshot.id
+    # Store the agent ID in the KG config
+    kg_config_settings.KG_BETA_AGENT_ID = agent_snapshot.id
     set_kg_config_settings(kg_config_settings)
 
 

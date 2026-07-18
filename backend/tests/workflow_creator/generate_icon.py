@@ -1,12 +1,12 @@
 """
-Generate professional avatar icons for workflow wrapper personas and upload them.
+Generate professional avatar icons for workflow wrapper agents and upload them.
 
 Reuses the icon generation logic from agents_creator/generate_icon.py with
 workflow-specific color palette additions.
 
 Usage:
-    python generate_icon.py --all-workflows       # Generate & upload for all workflow personas
-    python generate_icon.py --id ID               # Generate & upload for a specific persona ID
+    python generate_icon.py --all-workflows       # Generate & upload for all workflow agents
+    python generate_icon.py --id ID               # Generate & upload for a specific agent ID
     python generate_icon.py --preview             # Generate preview images without uploading
 """
 
@@ -25,7 +25,7 @@ from agents_creator.generate_icon import (  # noqa: E402
     DEPARTMENT_COLORS,
     generate_icon,
     process_agent,
-    get_all_personas,
+    get_all_agents,
 )
 
 # ── Workflow-specific colors ────────────────────────────────────────────────
@@ -38,20 +38,20 @@ DEPARTMENT_COLORS["customer support"] = ("#E65100", "#FF9800")  # Orange
 DEPARTMENT_COLORS["travel"] = ("#00695C", "#26A69A")  # Teal
 
 
-def get_workflow_personas() -> list[dict]:
-    """Fetch all personas that are workflow wrappers (have the 'Workflow' label)."""
-    personas = get_all_personas()
+def get_workflow_agents() -> list[dict]:
+    """Fetch all agents that are workflow wrappers (have the 'Workflow' label)."""
+    agents = get_all_agents()
     return [
-        p for p in personas
+        p for p in agents
         if any(lbl.lower() == "workflow" for lbl in p.get("labels", []))
     ]
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate and upload workflow persona icons")
+    parser = argparse.ArgumentParser(description="Generate and upload workflow agent icons")
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--all-workflows", action="store_true", help="Process all workflow wrapper personas")
-    group.add_argument("--id", type=int, help="Process a specific persona ID")
+    group.add_argument("--all-workflows", action="store_true", help="Process all workflow wrapper agents")
+    group.add_argument("--id", type=int, help="Process a specific agent ID")
     group.add_argument("--preview", action="store_true", help="Generate preview images only (no upload)")
     parser.add_argument("--preview-dir", type=str, default="workflow_icons_preview", help="Directory for preview images")
 
@@ -59,34 +59,34 @@ def main():
     resolve_api_key()
 
     if args.preview:
-        personas = get_workflow_personas()
-        if not personas:
-            print("No workflow personas found. Create workflows first or run --backfill-personas.")
+        agents = get_workflow_agents()
+        if not agents:
+            print("No workflow agents found. Create workflows first or run --backfill-agents.")
             return
         os.makedirs(args.preview_dir, exist_ok=True)
-        print(f"Generating preview icons for {len(personas)} workflow personas...")
-        for agent in personas:
+        print(f"Generating preview icons for {len(agents)} workflow agents...")
+        for agent in agents:
             process_agent(agent, preview_dir=args.preview_dir, upload=False)
         print(f"\nDone! Preview icons saved to: {args.preview_dir}/")
         return
 
     if args.id:
-        personas = get_all_personas()
-        agent = next((p for p in personas if p["id"] == args.id), None)
+        agents = get_all_agents()
+        agent = next((p for p in agents if p["id"] == args.id), None)
         if not agent:
-            print(f"Persona ID {args.id} not found")
+            print(f"Agent ID {args.id} not found")
             sys.exit(1)
         process_agent(agent)
         return
 
     if args.all_workflows:
-        personas = get_workflow_personas()
-        if not personas:
-            print("No workflow personas found. Create workflows first or run --backfill-personas.")
+        agents = get_workflow_agents()
+        if not agents:
+            print("No workflow agents found. Create workflows first or run --backfill-agents.")
             return
-        print(f"Processing {len(personas)} workflow personas...")
+        print(f"Processing {len(agents)} workflow agents...")
         ok, fail = 0, 0
-        for agent in personas:
+        for agent in agents:
             if process_agent(agent):
                 ok += 1
             else:

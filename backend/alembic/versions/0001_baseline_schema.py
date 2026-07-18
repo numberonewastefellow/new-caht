@@ -11,8 +11,10 @@ default search settings). It replaces the entire prior migration history.
 `down_revision = None` -- this is the new base of the public Alembic tree.
 
 The DDL + seed SQL lives in the sibling ``0001_baseline_schema.sql`` (a
-schema-relative pg_dump of the migrated schema, verified byte-identical to the
-old chain's output). It is executed via ``exec_driver_sql`` so the whole
+schema-relative pg_dump of the migrated schema, with the Project->Workspace and
+UserFile->KnowledgeFile rename folded in directly — so the baseline creates the
+final ``workspace`` / ``knowledge_file`` schema and no follow-up rename
+migration is needed). It is executed via ``exec_driver_sql`` so the whole
 multi-statement script -- including ``$$``-quoted PL/pgSQL function bodies --
 runs verbatim without Python-string escaping. The DDL is schema-relative
 (unqualified object names) so it applies into whatever schema Alembic's

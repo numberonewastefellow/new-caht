@@ -28,8 +28,8 @@ from om.chat.chat_utils import create_chat_session_from_request
 from om.chat.chat_utils import extract_headers
 from om.chat.models import ChatFullResponse
 from om.chat.models import CreateChatSessionID
-from om.chat.process_message import gather_stream_full
-from om.chat.process_message import handle_stream_message_objects
+from om.chat.message_handler import collect_stream_response
+from om.chat.message_handler import stream_chat_message
 from om.chat.prompt_utils import get_default_base_system_prompt
 from om.chat.stop_signal_checker import set_fence
 from om.configs.app_configs import WEB_DOMAIN
@@ -56,9 +56,9 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.feedback import create_chat_message_feedback
 from om.db.feedback import remove_chat_message_feedback
 from om.db.models import ChatSessionSharedStatus
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
-from om.db.persona import get_persona_by_id
+from om.db.agent import get_agent_by_id
 from om.db.usage import increment_usage
 from om.db.usage import UsageType
 from om.db.knowledge_file import get_file_id_by_knowledge_file_id
@@ -66,7 +66,7 @@ from om.file_processing.extract_file_text import docx_to_txt_filename
 from om.file_store.file_store import get_default_file_store
 from om.llm.constants import LlmProviderNames
 from om.llm.factory import get_default_llm
-from om.llm.factory import get_llm_for_persona
+from om.llm.factory import get_llm_for_agent
 from om.llm.factory import get_llm_token_counter
 from om.redis.redis_pool import get_redis_client
 from om.secondary_llm_flows.chat_session_naming import generate_chat_session_name
@@ -109,8 +109,8 @@ logger = setup_logger()
 router = APIRouter(prefix="/converse")
 
 
-def _get_available_tokens_for_persona(
-    persona: Persona,
+def _get_available_tokens_for_agent(
+    agent: Agent,
     db_session: Session,
     user: User,
 ) -> int:
@@ -129,22 +129,22 @@ def _get_available_tokens_for_persona(
             - default_reserved_tokens
         )
 
-    llm = get_llm_for_persona(persona=persona, user=user)
+    llm = get_llm_for_agent(agent=agent, user=user)
     token_counter = get_llm_token_counter(llm)
 
-    if persona.replace_base_system_prompt and persona.system_prompt:
+    if agent.replace_base_system_prompt and agent.system_prompt:
         # User has opted to replace the base system prompt entirely
-        combined_prompt_tokens = token_counter(persona.system_prompt)
+        combined_prompt_tokens = token_counter(agent.system_prompt)
     else:
         # Default behavior: prepend custom prompt to base system prompt
         system_prompt = get_default_base_system_prompt(db_session)
-        agent_prompt = persona.system_prompt + " " if persona.system_prompt else ""
+        agent_prompt = agent.system_prompt + " " if agent.system_prompt else ""
         combined_prompt_tokens = token_counter(agent_prompt + system_prompt)
 
     return _get_non_reserved_input_tokens(
         model_max_input_tokens=llm.config.max_input_tokens,
         system_and_agent_prompt_tokens=combined_prompt_tokens,
-        num_tools=len(persona.tools),
+        num_tools=len(agent.tools),
     )
 
 
@@ -176,7 +176,7 @@ def get_user_chat_sessions(
             ChatSessionDetails(
                 id=chat.id,
                 name=chat.description,
-                persona_id=chat.persona_id,
+                agent_id=chat.agent_id,
                 time_created=chat.time_created.isoformat(),
                 time_updated=chat.time_updated.isoformat(),
                 shared_status=chat.shared_status,
@@ -343,9 +343,9 @@ def get_chat_session(
     return ChatSessionDetailResponse(
         chat_session_id=session_id,
         description=chat_session.description,
-        persona_id=chat_session.persona_id,
-        persona_name=chat_session.persona.name if chat_session.persona else None,
-        personal_icon_name=chat_session.persona.icon_name,
+        agent_id=chat_session.agent_id,
+        agent_name=chat_session.agent.name if chat_session.agent else None,
+        personal_icon_name=chat_session.agent.icon_name,
         current_alternate_model=chat_session.current_alternate_model,
         messages=chat_message_details,
         time_created=chat_session.time_created,
@@ -377,7 +377,7 @@ def create_new_chat_session(
         raise HTTPException(status_code=403, detail=str(e))
     except Exception as e:
         logger.exception(e)
-        raise HTTPException(status_code=400, detail="Invalid Persona provided.")
+        raise HTTPException(status_code=400, detail="Invalid Agent provided.")
 
     return CreateChatSessionID(chat_session_id=new_chat_session.id)
 
@@ -579,7 +579,7 @@ def handle_send_chat_message(
                 db_session.commit()
 
             state_container = ChatStateContainer()
-            packets = handle_stream_message_objects(
+            packets = stream_chat_message(
                 new_msg_req=chat_message_req,
                 user=user,
                 db_session=db_session,
@@ -592,7 +592,7 @@ def handle_send_chat_message(
                 mcp_headers=chat_message_req.mcp_headers,
                 external_state_container=state_container,
             )
-            result = gather_stream_full(packets, state_container)
+            result = collect_stream_response(packets, state_container)
             # Note: LLM cost tracking is now handled in multi_llm.py
             return result
 
@@ -601,7 +601,7 @@ def handle_send_chat_message(
         state_container = ChatStateContainer()
         try:
             with get_session_with_current_tenant() as db_session:
-                for obj in handle_stream_message_objects(
+                for obj in stream_chat_message(
                     new_msg_req=chat_message_req,
                     user=user,
                     db_session=db_session,
@@ -687,23 +687,23 @@ class MaxSelectedDocumentTokens(BaseModel):
 
 @router.get("/max-selected-document-tokens")
 def get_max_document_tokens(
-    persona_id: int,
+    agent_id: int,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> MaxSelectedDocumentTokens:
     try:
-        persona = get_persona_by_id(
-            persona_id=persona_id,
+        agent = get_agent_by_id(
+            agent_id=agent_id,
             user=user,
             db_session=db_session,
             is_for_edit=False,
         )
     except ValueError:
-        raise HTTPException(status_code=404, detail="Persona not found")
+        raise HTTPException(status_code=404, detail="Agent not found")
 
     return MaxSelectedDocumentTokens(
-        max_tokens=_get_available_tokens_for_persona(
-            persona=persona,
+        max_tokens=_get_available_tokens_for_agent(
+            agent=agent,
             user=user,
             db_session=db_session,
         ),
@@ -720,7 +720,7 @@ def get_available_context_tokens_for_session(
     user: User = Depends(current_chat_accessible_user),
     db_session: Session = Depends(get_session),
 ) -> AvailableContextTokensResponse:
-    """Return available context tokens for a chat session based on its persona."""
+    """Return available context tokens for a chat session based on its agent."""
 
     try:
         chat_session = get_chat_session_by_id(
@@ -733,11 +733,11 @@ def get_available_context_tokens_for_session(
     except ValueError:
         raise HTTPException(status_code=404, detail="Chat session not found")
 
-    if not chat_session.persona:
-        raise HTTPException(status_code=400, detail="Chat session has no persona")
+    if not chat_session.agent:
+        raise HTTPException(status_code=400, detail="Chat session has no agent")
 
-    available = _get_available_tokens_for_persona(
-        persona=chat_session.persona,
+    available = _get_available_tokens_for_agent(
+        agent=chat_session.agent,
         user=user,
         db_session=db_session,
     )
@@ -873,7 +873,7 @@ async def search_chats(
         chat_summary = ChatSessionSummary(
             id=session.id,
             name=session.description,
-            persona_id=session.persona_id,
+            agent_id=session.agent_id,
             time_created=session.time_created,
             shared_status=session.shared_status,
             current_alternate_model=session.current_alternate_model,

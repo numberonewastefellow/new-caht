@@ -8,12 +8,16 @@ import { workspaceUpdatedAt, type WorkspaceTab } from "./workspaceTheme";
 import WorkspaceGlyph from "./WorkspaceGlyph";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import ButtonRenaming from "@/refresh-components/buttons/ButtonRenaming";
+import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
+import Button from "@/refresh-components/buttons/Button";
+import { toast } from "@/hooks/useToast";
 import {
   SvgEdit,
   SvgFileText,
   SvgBubbleText,
   SvgUser,
   SvgClock,
+  SvgTrash,
 } from "@opal/icons";
 
 const TABS: WorkspaceTab[] = ["overview", "files", "chats"];
@@ -47,9 +51,11 @@ export default function WorkspaceDetailHeader({
     currentWorkspaceDetails,
     workspaces,
     renameWorkspace,
+    deleteWorkspace,
     allCurrentWorkspaceFiles,
   } = useWorkspacesContext();
   const [isEditingName, setIsEditingName] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   if (!currentWorkspaceId) return null;
 
@@ -61,8 +67,35 @@ export default function WorkspaceDetailHeader({
   const fileCount = allCurrentWorkspaceFiles.length;
   const chatCount = workspace?.chat_sessions?.length ?? 0;
 
+  async function handleDelete() {
+    if (currentWorkspaceId == null) return;
+    setDeleteConfirmOpen(false);
+    try {
+      await deleteWorkspace(currentWorkspaceId);
+      toast.success("Workspace deleted");
+    } catch {
+      toast.error("Failed to delete workspace");
+    }
+  }
+
   return (
     <div className="mx-auto w-full max-w-[72rem] px-4 pt-6">
+      {deleteConfirmOpen && (
+        <ConfirmationModalLayout
+          title="Delete Workspace"
+          icon={SvgTrash}
+          onClose={() => setDeleteConfirmOpen(false)}
+          submit={
+            <Button danger onClick={handleDelete}>
+              Delete
+            </Button>
+          }
+        >
+          Are you sure you want to delete{" "}
+          <span className="font-semibold">{workspaceName}</span>? It will be
+          hidden from your workspaces.
+        </ConfirmationModalLayout>
+      )}
       {/* Breadcrumb + Classic-view toggle now live in the workspace top banner */}
       {/* Title block */}
       <div className="mt-4 rounded-2xl border border-border-01 bg-background-tint-01 p-5">
@@ -118,6 +151,13 @@ export default function WorkspaceDetailHeader({
               )}
             </div>
           </div>
+          <IconButton
+            danger
+            tertiary
+            icon={SvgTrash}
+            onClick={() => setDeleteConfirmOpen(true)}
+            tooltip="Delete workspace"
+          />
         </div>
 
         {/* Tabs */}

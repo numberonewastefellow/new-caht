@@ -143,8 +143,8 @@ def snapshot_from_chat_session(
             for message in messages
             if message.message_type != MessageType.SYSTEM
         ],
-        assistant_id=chat_session.persona_id,
-        assistant_name=chat_session.persona.name if chat_session.persona else None,
+        assistant_id=chat_session.agent_id,
+        assistant_name=chat_session.agent.name if chat_session.agent else None,
         time_created=chat_session.time_created,
         flow_type=flow_type,
     )
@@ -178,7 +178,7 @@ def admin_get_chat_sessions(
             ChatSessionDetails(
                 id=chat.id,
                 name=chat.description,
-                persona_id=chat.persona_id,
+                agent_id=chat.agent_id,
                 time_created=chat.time_created.isoformat(),
                 time_updated=chat.time_updated.isoformat(),
                 shared_status=chat.shared_status,

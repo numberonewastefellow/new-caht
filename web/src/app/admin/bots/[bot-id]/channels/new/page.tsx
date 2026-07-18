@@ -63,7 +63,7 @@ async function NewChannelConfigPage(props: {
       <SlackChannelConfigCreationForm
         slack_bot_id={slack_bot_id}
         documentSets={documentSets}
-        personas={assistantsResponse[0]}
+        agents={assistantsResponse[0]}
         standardAnswerCategoryResponse={standardAnswerCategoryResponse}
       />
     </>

@@ -2,8 +2,8 @@ import { ThreeDotsLoader } from "@/components/Loading";
 import { X, Search } from "lucide-react";
 import {
   getDatesList,
-  usePersonaMessages,
-  usePersonaUniqueUsers,
+  useAgentMessages,
+  useAgentUniqueUsers,
 } from "../lib";
 import { DateRangePickerValue } from "@/components/dateRangeSelectors/AdminDateRangeSelector";
 import Text from "@/components/ui/text";
@@ -18,42 +18,42 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState, useMemo, useEffect } from "react";
-import { Persona } from "@/app/admin/assistants/interfaces";
+import { Agent } from "@/app/admin/assistants/interfaces";
 
-export function PersonaMessagesChart({
-  availablePersonas,
+export function AgentMessagesChart({
+  availableAgents,
   timeRange,
 }: {
-  availablePersonas: Persona[];
+  availableAgents: Agent[];
   timeRange: DateRangePickerValue;
 }) {
-  const [selectedPersonaId, setSelectedPersonaId] = useState<
+  const [selectedAgentId, setSelectedAgentId] = useState<
     number | undefined
   >(undefined);
   const [searchQuery, setSearchQuery] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const {
-    data: personaMessagesData,
-    isLoading: isPersonaMessagesLoading,
-    error: personaMessagesError,
-  } = usePersonaMessages(selectedPersonaId, timeRange);
+    data: agentMessagesData,
+    isLoading: isAgentMessagesLoading,
+    error: agentMessagesError,
+  } = useAgentMessages(selectedAgentId, timeRange);
 
   const {
-    data: personaUniqueUsersData,
-    isLoading: isPersonaUniqueUsersLoading,
-    error: personaUniqueUsersError,
-  } = usePersonaUniqueUsers(selectedPersonaId, timeRange);
+    data: agentUniqueUsersData,
+    isLoading: isAgentUniqueUsersLoading,
+    error: agentUniqueUsersError,
+  } = useAgentUniqueUsers(selectedAgentId, timeRange);
 
-  const isLoading = isPersonaMessagesLoading || isPersonaUniqueUsersLoading;
-  const hasError = personaMessagesError || personaUniqueUsersError;
+  const isLoading = isAgentMessagesLoading || isAgentUniqueUsersLoading;
+  const hasError = agentMessagesError || agentUniqueUsersError;
 
-  const filteredPersonaList = useMemo(() => {
-    if (!availablePersonas) return [];
-    return availablePersonas.filter((persona) =>
-      persona.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAgentList = useMemo(() => {
+    if (!availableAgents) return [];
+    return availableAgents.filter((agent) =>
+      agent.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [availablePersonas, searchQuery]);
+  }, [availableAgents, searchQuery]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     e.stopPropagation();
@@ -62,7 +62,7 @@ export function PersonaMessagesChart({
       case "ArrowDown":
         e.preventDefault();
         setHighlightedIndex((prev) =>
-          prev < filteredPersonaList.length - 1 ? prev + 1 : prev
+          prev < filteredAgentList.length - 1 ? prev + 1 : prev
         );
         break;
       case "ArrowUp":
@@ -72,11 +72,11 @@ export function PersonaMessagesChart({
       case "Enter":
         if (
           highlightedIndex >= 0 &&
-          highlightedIndex < filteredPersonaList.length
+          highlightedIndex < filteredAgentList.length
         ) {
-          const filteredPersona = filteredPersonaList[highlightedIndex];
-          if (filteredPersona !== undefined) {
-            setSelectedPersonaId(filteredPersona.id);
+          const filteredAgent = filteredAgentList[highlightedIndex];
+          if (filteredAgent !== undefined) {
+            setSelectedAgentId(filteredAgent.id);
             setSearchQuery("");
             setHighlightedIndex(-1);
           }
@@ -96,9 +96,9 @@ export function PersonaMessagesChart({
 
   const chartData = useMemo(() => {
     if (
-      !personaMessagesData?.length ||
-      !personaUniqueUsersData?.length ||
-      selectedPersonaId === undefined
+      !agentMessagesData?.length ||
+      !agentUniqueUsersData?.length ||
+      selectedAgentId === undefined
     ) {
       return null;
     }
@@ -107,17 +107,17 @@ export function PersonaMessagesChart({
       timeRange.from ||
       new Date(
         Math.min(
-          ...personaMessagesData.map((entry) => new Date(entry.date).getTime())
+          ...agentMessagesData.map((entry) => new Date(entry.date).getTime())
         )
       );
     const dateRange = getDatesList(initialDate);
 
     // Create maps for messages and unique users data
     const messagesMap = new Map(
-      personaMessagesData.map((entry) => [entry.date, entry])
+      agentMessagesData.map((entry) => [entry.date, entry])
     );
     const uniqueUsersMap = new Map(
-      personaUniqueUsersData.map((entry) => [entry.date, entry])
+      agentUniqueUsersData.map((entry) => [entry.date, entry])
     );
 
     return dateRange.map((dateStr) => {
@@ -130,10 +130,10 @@ export function PersonaMessagesChart({
       };
     });
   }, [
-    personaMessagesData,
-    personaUniqueUsersData,
+    agentMessagesData,
+    agentUniqueUsersData,
     timeRange.from,
-    selectedPersonaId,
+    selectedAgentId,
   ]);
 
   let content;
@@ -143,19 +143,19 @@ export function PersonaMessagesChart({
         <ThreeDotsLoader />
       </div>
     );
-  } else if (!availablePersonas || hasError) {
+  } else if (!availableAgents || hasError) {
     content = (
       <div className="h-80 text-red-600 text-bold flex flex-col">
         <p className="m-auto">Failed to fetch data...</p>
       </div>
     );
-  } else if (selectedPersonaId === undefined) {
+  } else if (selectedAgentId === undefined) {
     content = (
       <div className="h-80 text-text-500 flex flex-col">
         <p className="m-auto">Select an assistant to view analytics</p>
       </div>
     );
-  } else if (!personaMessagesData?.length) {
+  } else if (!agentMessagesData?.length) {
     content = (
       <div className="h-80 text-text-500 flex flex-col">
         <p className="m-auto">
@@ -185,9 +185,9 @@ export function PersonaMessagesChart({
         </Text>
         <div className="flex items-center gap-4">
           <Select
-            value={selectedPersonaId?.toString() ?? ""}
+            value={selectedAgentId?.toString() ?? ""}
             onValueChange={(value) => {
-              setSelectedPersonaId(parseInt(value));
+              setSelectedAgentId(parseInt(value));
             }}
           >
             <SelectTrigger className="flex w-full max-w-xs">
@@ -215,14 +215,14 @@ export function PersonaMessagesChart({
                   />
                 )}
               </div>
-              {filteredPersonaList.map((persona, index) => (
+              {filteredAgentList.map((agent, index) => (
                 <SelectItem
-                  key={persona.id}
-                  value={persona.id.toString()}
+                  key={agent.id}
+                  value={agent.id.toString()}
                   className={`${highlightedIndex === index ? "hover" : ""}`}
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
-                  {persona.name}
+                  {agent.name}
                 </SelectItem>
               ))}
             </SelectContent>

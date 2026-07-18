@@ -5,10 +5,10 @@ from sqlalchemy.orm import Session
 
 from om.chat.models import AnswerStreamPart
 from om.chat.models import StreamingError
-from om.chat.process_message import handle_stream_message_objects
+from om.chat.message_handler import stream_chat_message
 from om.db.chat import create_chat_session
 from om.db.models import User
-from om.db.persona import get_persona_by_id
+from om.db.agent import get_agent_by_id
 from om.server.query_and_chat.models import MessageResponseIDInfo
 from om.server.query_and_chat.models import SendMessageRequest
 from om.server.query_and_chat.streaming_models import AgentResponseDelta
@@ -23,22 +23,22 @@ def test_stream_chat_current_date_response(
 ) -> None:
     """Smoke test that asking for current date yields a streamed response.
 
-    This exercises the full chat path using the default persona, ensuring
+    This exercises the full chat path using the default agent, ensuring
     the system prompt makes it to the LLM and a response is returned.
     """
     # Ensure LLM provider exists
     ensure_default_llm_provider(db_session)
 
-    # Create user, persona, session
+    # Create user, agent, session
     test_user: User = create_test_user(db_session, email_prefix="test_current_date")
-    default_persona = get_persona_by_id(
-        persona_id=0, user=test_user, db_session=db_session, is_for_edit=False
+    default_agent = get_agent_by_id(
+        agent_id=0, user=test_user, db_session=db_session, is_for_edit=False
     )
     chat_session = create_chat_session(
         db_session=db_session,
         description="Test current date question",
         user_id=test_user.id if test_user else None,
-        persona_id=default_persona.id,
+        agent_id=default_agent.id,
     )
 
     chat_request = SendMessageRequest(
@@ -46,7 +46,7 @@ def test_stream_chat_current_date_response(
         chat_session_id=chat_session.id,
     )
 
-    gen = handle_stream_message_objects(
+    gen = stream_chat_message(
         new_msg_req=chat_request,
         user=test_user,
         db_session=db_session,

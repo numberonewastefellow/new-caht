@@ -4,7 +4,7 @@ import { useCallback, memo, useMemo, useState, useEffect, useRef } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { useSettingsContext } from "@/providers/SettingsProvider";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import Text from "@/refresh-components/texts/Text";
 import ChatButton from "@/sections/sidebar/ChatButton";
 import AgentButton from "@/sections/sidebar/AgentButton";
@@ -43,7 +43,7 @@ import SidebarWrapper from "@/sections/sidebar/SidebarWrapper";
 import { cn } from "@/lib/utils";
 import {
   DRAG_TYPES,
-  DEFAULT_PERSONA_ID,
+  DEFAULT_AGENT_ID,
   FEATURE_FLAGS,
   LOCAL_STORAGE_KEYS,
 } from "@/sections/sidebar/constants";
@@ -95,9 +95,9 @@ import { useQueryController } from "@/providers/QueryControllerProvider";
 // Visible-agents = pinned-agents + current-agent (if current-agent not in pinned-agents)
 // OR Visible-agents = pinned-agents (if current-agent in pinned-agents)
 function buildVisibleAgents(
-  pinnedAgents: MinimalPersonaSnapshot[],
-  currentAgent: MinimalPersonaSnapshot | null
-): [MinimalPersonaSnapshot[], boolean] {
+  pinnedAgents: MinimalAgentSnapshot[],
+  currentAgent: MinimalAgentSnapshot | null
+): [MinimalAgentSnapshot[], boolean] {
   /* NOTE: The unified agent (id = 0) is not visible in the sidebar,
   so we filter it out. */
   if (!currentAgent)
@@ -322,7 +322,7 @@ const MemoizedAppSidebarInner = memo(
           (agentId) => agentId === over.id
         );
 
-        let newPinnedAgents: MinimalPersonaSnapshot[];
+        let newPinnedAgents: MinimalAgentSnapshot[];
 
         if (currentAgent && !currentAgentIsPinned) {
           // This is the case in which the user is dragging the UNPINNED agent and moving it to somewhere else in the list.
@@ -413,7 +413,7 @@ const MemoizedAppSidebarInner = memo(
             ) === "true";
 
           const isChatUsingDefaultAssistant =
-            chatSession.persona_id === DEFAULT_PERSONA_ID;
+            chatSession.agent_id === DEFAULT_AGENT_ID;
 
           if (!isChatUsingDefaultAssistant && !hideModal) {
             setPendingMoveChatSession(chatSession);

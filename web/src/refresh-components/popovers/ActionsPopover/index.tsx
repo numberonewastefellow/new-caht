@@ -12,7 +12,7 @@ import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import SwitchList, {
   SwitchListItem,
 } from "@/refresh-components/popovers/ActionsPopover/SwitchList";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import {
   MCPAuthenticationType,
   MCPAuthenticationPerformer,
@@ -134,7 +134,7 @@ type SecondaryViewState =
   | { type: "mcp"; serverId: number };
 
 export interface ActionsPopoverProps {
-  selectedAssistant: MinimalPersonaSnapshot;
+  selectedAssistant: MinimalAgentSnapshot;
   filterManager: FilterManager;
   availableSources?: ValidSources[];
   disabled?: boolean;
@@ -479,7 +479,7 @@ export default function ActionsPopover({
     const fetchMCPServers = async () => {
       try {
         const response = await fetch(
-          `/api/mcp/servers/persona/${selectedAssistant.id}`,
+          `/api/mcp/servers/agent/${selectedAssistant.id}`,
           {
             signal: abortController.signal,
           }

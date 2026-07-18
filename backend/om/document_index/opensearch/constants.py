@@ -11,7 +11,7 @@ DEFAULT_MAX_CHUNK_SIZE = 512
 DEFAULT_OPENSEARCH_MAX_RESULT_WINDOW = 10_000
 
 
-# For documents which do not have a value for LAST_UPDATED_FIELD_NAME, we assume
+# For documents which do not have a value for UPDATED_AT_FIELD_NAME, we assume
 # that the document was last updated this many days ago for the purpose of time
 # cutoff filtering during retrieval.
 ASSUMED_DOCUMENT_AGE_DAYS = 90

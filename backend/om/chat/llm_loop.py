@@ -33,7 +33,7 @@ from om.context.search.models import SearchDocsResponse
 from om.db.memory import add_memory
 from om.db.memory import update_memory_at_index
 from om.db.memory import UserMemoryContext
-from om.db.models import Persona
+from om.db.models import Agent
 from om.llm.constants import LlmProviderNames
 from om.llm.interfaces import LLM
 from om.llm.interfaces import LLMUserIdentity
@@ -582,7 +582,7 @@ def run_llm_loop(
     tools: list[Tool],
     custom_agent_prompt: str | None,
     workspace_files: ExtractedWorkspaceFiles,
-    persona: Persona | None,
+    agent: Agent | None,
     user_memory_context: UserMemoryContext | None,
     llm: LLM,
     token_counter: Callable[[str], int],
@@ -686,15 +686,15 @@ def run_llm_loop(
             # Handling the system prompt and custom agent prompt
             # The section below calculates the available tokens for history a bit more accurately
             # now that workspace files are loaded in.
-            if persona and persona.replace_base_system_prompt:
+            if agent and agent.replace_base_system_prompt:
                 # Handles the case where user has checked off the "Replace base system prompt" checkbox
                 system_prompt = (
                     ChatMessageSimple(
-                        message=persona.system_prompt,
-                        token_count=token_counter(persona.system_prompt),
+                        message=agent.system_prompt,
+                        token_count=token_counter(agent.system_prompt),
                         message_type=MessageType.SYSTEM,
                     )
-                    if persona.system_prompt
+                    if agent.system_prompt
                     else None
                 )
                 custom_agent_prompt_msg = None
@@ -712,7 +712,7 @@ def run_llm_loop(
                     )
                     system_prompt_str = build_system_prompt(
                         base_system_prompt=default_base_system_prompt,
-                        datetime_aware=persona.datetime_aware if persona else True,
+                        datetime_aware=agent.datetime_aware if agent else True,
                         user_memory_context=prompt_memory_context,
                         tools=tools,
                         should_cite_documents=should_cite_documents
@@ -758,7 +758,7 @@ def run_llm_loop(
                 # to include the reminder. Potentially this should also mention citation
                 reminder_message_text = build_reminder_message(
                     reminder_text=(
-                        persona.task_prompt if persona and persona.task_prompt else None
+                        agent.task_prompt if agent and agent.task_prompt else None
                     ),
                     include_citation_reminder=should_cite_documents
                     or always_cite_documents,
@@ -795,10 +795,10 @@ def run_llm_loop(
             # This measures how long the user waits before the answer starts streaming
             pre_answer_processing_time = time.monotonic() - loop_start_time
 
-            # Resolve max output tokens: persona-specific or default 5000
+            # Resolve max output tokens: agent-specific or default 5000
             _max_tokens = (
-                persona.max_output_tokens
-                if persona and persona.max_output_tokens
+                agent.max_output_tokens
+                if agent and agent.max_output_tokens
                 else 5000
             )
 

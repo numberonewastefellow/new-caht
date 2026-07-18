@@ -12,8 +12,8 @@ interface TestMessage {
 }
 
 export interface AgentTestTarget {
-  personaId: number;
-  personaName: string;
+  agentId: number;
+  agentName: string;
   stepName: string;
 }
 
@@ -26,7 +26,7 @@ export function AgentTestModal({ target, onClose }: AgentTestModalProps) {
   const [messages, setMessages] = useState<TestMessage[]>([
     {
       role: "system",
-      content: `Testing "${target.personaName}" — send a message to begin.`,
+      content: `Testing "${target.agentName}" — send a message to begin.`,
     },
   ]);
   const [input, setInput] = useState("");
@@ -66,7 +66,7 @@ export function AgentTestModal({ target, onClose }: AgentTestModalProps) {
       // Create chat session on first message
       if (!chatSessionRef.current) {
         const sessionId = await createChatSession(
-          target.personaId,
+          target.agentId,
           "Workflow Builder Test",
           null
         );
@@ -126,7 +126,7 @@ export function AgentTestModal({ target, onClose }: AgentTestModalProps) {
       setStreaming(false);
       abortRef.current = null;
     }
-  }, [input, streaming, target.personaId]);
+  }, [input, streaming, target.agentId]);
 
   const handleStop = useCallback(() => {
     abortRef.current?.abort();
@@ -166,9 +166,9 @@ export function AgentTestModal({ target, onClose }: AgentTestModalProps) {
             >
               <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
-            Test: {target.personaName}
+            Test: {target.agentName}
             {target.stepName &&
-              target.stepName !== target.personaName &&
+              target.stepName !== target.agentName &&
               ` (${target.stepName})`}
           </div>
           <button

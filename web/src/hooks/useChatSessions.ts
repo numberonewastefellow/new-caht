@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import useSWR, { KeyedMutator } from "swr";
 import { ChatSession, ChatSessionSharedStatus } from "@/app/app/interfaces";
 import { errorHandlingFetcher } from "@/lib/fetcher";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import useAppFocus from "./useAppFocus";
 import { useAgents } from "./useAgents";
 import { useWorkspaces } from "@/lib/hooks/useWorkspaces";
@@ -16,7 +16,7 @@ interface ChatSessionsResponse {
 
 export interface PendingChatSessionParams {
   chatSessionId: string;
-  personaId: number;
+  agentId: number;
   workspaceId?: number | null;
 }
 
@@ -24,7 +24,7 @@ interface UseChatSessionsOutput {
   chatSessions: ChatSession[];
   currentChatSessionId: string | null;
   currentChatSession: ChatSession | null;
-  agentForCurrentChatSession: MinimalPersonaSnapshot | null;
+  agentForCurrentChatSession: MinimalAgentSnapshot | null;
   isLoading: boolean;
   error: any;
   refreshChatSessions: KeyedMutator<ChatSessionsResponse>;
@@ -88,7 +88,7 @@ function usePendingSessions(): ChatSession[] {
 
 function useFindAgentForCurrentChatSession(
   currentChatSession: ChatSession | null
-): MinimalPersonaSnapshot | null {
+): MinimalAgentSnapshot | null {
   const { agents } = useAgents();
   const appFocus = useAppFocus();
 
@@ -96,7 +96,7 @@ function useFindAgentForCurrentChatSession(
 
   // This could be an alreaady existing chat session.
   if (currentChatSession) {
-    agentIdToFind = currentChatSession.persona_id;
+    agentIdToFind = currentChatSession.agent_id;
   }
 
   // This could be a new chat-session. Therefore, `currentChatSession` is false, but there could still be some agent.
@@ -181,7 +181,7 @@ export default function useChatSessions(): UseChatSessionsOutput {
   // Add a pending chat session that will persist across SWR revalidations
   // The session will be automatically removed once it appears in the server response
   const addPendingChatSession = useCallback(
-    ({ chatSessionId, personaId, workspaceId }: PendingChatSessionParams) => {
+    ({ chatSessionId, agentId, workspaceId }: PendingChatSessionParams) => {
       // Don't add sessions that belong to a workspace
       if (workspaceId != null) {
         return;
@@ -201,7 +201,7 @@ export default function useChatSessions(): UseChatSessionsOutput {
       const pendingSession: ChatSession = {
         id: chatSessionId,
         name: "", // Empty name will display as "New Chat" via UNNAMED_CHAT constant
-        persona_id: personaId,
+        agent_id: agentId,
         time_created: now,
         time_updated: now,
         shared_status: ChatSessionSharedStatus.Private,

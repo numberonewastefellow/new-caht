@@ -380,7 +380,7 @@ class IntermediateReportCitedDocs(BaseObj):
 class WorkflowStepStart(BaseObj):
     type: Literal["workflow_step_start"] = StreamingType.WORKFLOW_STEP_START.value
     step_name: str
-    persona_name: str | None = None
+    agent_name: str | None = None
     step_order: int
     step_type: str = "agent"
     promote_output: bool = False
@@ -396,7 +396,7 @@ class WorkflowStepDelta(BaseObj):
     # delta will DOUBLE the output (streamed chunks + the authoritative block),
     # since the accumulated chunks already equal agent_output. This is safe here
     # only because the frontend renderer, the persistence writer
-    # (process_message._run_workflow_and_save), and the backend ship together and
+    # (message_handler._run_workflow_and_save), and the backend ship together and
     # all honor `replace`.
     replace: bool = False
 
@@ -437,7 +437,7 @@ class WorkflowPauseForInput(BaseObj):
         StreamingType.WORKFLOW_PAUSE_FOR_INPUT.value
     )
     step_name: str
-    persona_name: str
+    agent_name: str
     questions: str  # The agent's clarification text
 
 

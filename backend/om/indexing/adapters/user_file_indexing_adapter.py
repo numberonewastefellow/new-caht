@@ -16,7 +16,7 @@ from om.configs.constants import DEFAULT_BOOST
 from om.configs.constants import NotificationType
 from om.connectors.models import Document
 from om.db.enums import KnowledgeFileStatus
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import KnowledgeFile
 from om.db.notification import create_notification
 from om.db.knowledge_file import fetch_chunk_counts_for_knowledge_files
@@ -228,7 +228,7 @@ class KnowledgeFileIndexingAdapter:
                             title="Your files are ready!",
                             description=f"All files for agent {assistant.name} have been processed and are now available.",
                             additional_data={
-                                "persona_id": assistant.id,
+                                "agent_id": assistant.id,
                                 "link": f"/assistants/{assistant.id}",
                             },
                             autocommit=False,
@@ -245,7 +245,7 @@ class KnowledgeFileIndexingAdapter:
 
         knowledge_files = (
             self.db_session.query(KnowledgeFile)
-            .options(selectinload(KnowledgeFile.assistants).selectinload(Persona.knowledge_files))
+            .options(selectinload(KnowledgeFile.assistants).selectinload(Agent.knowledge_files))
             .filter(KnowledgeFile.id.in_(knowledge_file_ids))
             .all()
         )

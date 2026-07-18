@@ -798,7 +798,7 @@ class GoogleDriveConnector(
         start: SecondsSinceUnixEpoch | None = None,
         end: SecondsSinceUnixEpoch | None = None,
     ) -> Iterator[RetrievedDriveFile]:
-        logger.info(f"Impersonating user {user_email}")
+        logger.info(f"Imagentting user {user_email}")
         curr_stage = checkpoint.completion_map[user_email]
         resuming = True
         if curr_stage.stage == DriveRetrievalStage.START:

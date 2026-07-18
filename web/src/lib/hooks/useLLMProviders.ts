@@ -2,14 +2,14 @@ import useSWR from "swr";
 import { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 
-export function useLLMProviders(personaId?: number) {
-  // personaId can be:
+export function useLLMProviders(agentId?: number) {
+  // agentId can be:
   // - undefined: public providers only (/api/llm/provider)
-  // - number (personaId): persona-specific providers with RBAC enforcement
+  // - number (agentId): agent-specific providers with RBAC enforcement
 
   const url =
-    typeof personaId === "number"
-      ? `/api/llm/persona/${personaId}/providers`
+    typeof agentId === "number"
+      ? `/api/llm/agent/${agentId}/providers`
       : "/api/llm/provider";
 
   const { data, error, mutate } = useSWR<LLMProviderDescriptor[] | undefined>(

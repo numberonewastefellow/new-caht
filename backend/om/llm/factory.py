@@ -12,7 +12,7 @@ from om.db.llm import fetch_existing_llm_provider
 from om.db.llm import fetch_existing_models
 from om.db.llm import fetch_llm_provider_view
 from om.db.llm import fetch_user_group_ids
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
 from om.llm.constants import LlmProviderNames
 from om.llm.interfaces import LLM
@@ -75,21 +75,21 @@ def _build_model_kwargs(
     return model_kwargs
 
 
-def get_llm_for_persona(
-    persona: Persona | None,
+def get_llm_for_agent(
+    agent: Agent | None,
     user: User,
     llm_override: LLMOverride | None = None,
     additional_headers: dict[str, str] | None = None,
 ) -> LLM:
-    if persona is None:
-        logger.warning("No persona provided, using default LLM")
+    if agent is None:
+        logger.warning("No agent provided, using default LLM")
         return get_default_llm()
 
     provider_name_override = llm_override.model_provider if llm_override else None
     model_version_override = llm_override.model_version if llm_override else None
     temperature_override = llm_override.temperature if llm_override else None
 
-    provider_name = provider_name_override or persona.llm_model_provider_override
+    provider_name = provider_name_override or agent.llm_model_provider_override
     if not provider_name:
         return get_default_llm(
             temperature=temperature_override or GEN_AI_TEMPERATURE,
@@ -105,12 +105,12 @@ def get_llm_for_persona(
         user_group_ids = fetch_user_group_ids(db_session, user)
 
         if not can_user_access_llm_provider(
-            provider_model, user_group_ids, persona, user.role == UserRole.ADMIN
+            provider_model, user_group_ids, agent, user.role == UserRole.ADMIN
         ):
             logger.warning(
-                "User %s with persona %s cannot access provider %s. Falling back to default provider.",
+                "User %s with agent %s cannot access provider %s. Falling back to default provider.",
                 user.id,
-                persona.id,
+                agent.id,
                 provider_model.name,
             )
             return get_default_llm(
@@ -120,7 +120,7 @@ def get_llm_for_persona(
 
         llm_provider = LLMProviderView.from_model(provider_model)
 
-    model = model_version_override or persona.llm_model_version_override
+    model = model_version_override or agent.llm_model_version_override
     if not model:
         raise ValueError("No model name found")
 

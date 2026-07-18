@@ -3,9 +3,9 @@
 import useSWR from "swr";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import { buildApiPath } from "@/lib/urlBuilder";
-import { Persona } from "@/app/admin/assistants/interfaces";
+import { Agent } from "@/app/admin/assistants/interfaces";
 
-interface UseAdminPersonasOptions {
+interface UseAdminAgentsOptions {
   includeDeleted?: boolean;
   getEditable?: boolean;
   includeDefault?: boolean;
@@ -15,12 +15,12 @@ interface UseAdminPersonasOptions {
   searchQuery?: string;
 }
 
-interface PaginatedPersonasResponse {
-  items: Persona[];
+interface PaginatedAgentsResponse {
+  items: Agent[];
   total_items: number;
 }
 
-export const useAdminPersonas = (options?: UseAdminPersonasOptions) => {
+export const useAdminAgents = (options?: UseAdminAgentsOptions) => {
   const {
     includeDeleted = false,
     getEditable = false,
@@ -44,26 +44,26 @@ export const useAdminPersonas = (options?: UseAdminPersonasOptions) => {
         page_size: pageSize,
         ...(trimmedQuery ? { q: trimmedQuery } : {}),
       })
-    : buildApiPath("/api/admin/persona", {
+    : buildApiPath("/api/admin/agent", {
         include_deleted: includeDeleted,
         get_editable: getEditable,
       });
 
   const { data, error, isLoading, mutate } = useSWR<
-    Persona[] | PaginatedPersonasResponse
+    Agent[] | PaginatedAgentsResponse
   >(url, errorHandlingFetcher, { keepPreviousData: true });
 
   // Handle both paginated and non-paginated responses
-  const personas = usePagination
-    ? (data as PaginatedPersonasResponse)?.items || []
-    : (data as Persona[]) || [];
+  const agents = usePagination
+    ? (data as PaginatedAgentsResponse)?.items || []
+    : (data as Agent[]) || [];
 
   const totalItems = usePagination
-    ? (data as PaginatedPersonasResponse)?.total_items || 0
-    : personas.length;
+    ? (data as PaginatedAgentsResponse)?.total_items || 0
+    : agents.length;
 
   return {
-    personas,
+    agents,
     totalItems,
     error,
     isLoading,

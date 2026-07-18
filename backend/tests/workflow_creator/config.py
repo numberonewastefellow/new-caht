@@ -24,7 +24,7 @@ if str(_tests_dir) not in sys.path:
 
 from agents_creator.config import (  # noqa: E402
     CONFIG,
-    DEFAULTS as PERSONA_DEFAULTS,
+    DEFAULTS as AGENT_DEFAULTS,
     add_common_args,
     api,
     apply_common_args,
@@ -45,8 +45,8 @@ WORKFLOW_DEFAULTS = {
     "is_public": True,
 }
 
-# ── Default persona payload for auto-created step personas ──────────────────
-STEP_PERSONA_DEFAULTS = {
+# ── Default agent payload for auto-created step agents ──────────────────
+STEP_AGENT_DEFAULTS = {
     "num_chunks": 10.0,
     "is_public": True,
     "recency_bias": "base_decay",
@@ -111,29 +111,29 @@ def resolve_tool_names(tool_names: list[str]) -> list[int]:
     return ids
 
 
-# ── Persona Resolution ──────────────────────────────────────────────────────
+# ── Agent Resolution ──────────────────────────────────────────────────────
 
-_persona_cache: dict[str, int] = {}
+_agent_cache: dict[str, int] = {}
 
 
-def resolve_persona_id(name: str) -> int | None:
-    """Resolve a persona name to its ID. Returns None if not found."""
-    if not _persona_cache:
-        resp = api("GET", "persona")
+def resolve_agent_id(name: str) -> int | None:
+    """Resolve a agent name to its ID. Returns None if not found."""
+    if not _agent_cache:
+        resp = api("GET", "agent")
         if resp.status_code == 200:
             for p in resp.json():
-                _persona_cache[p["name"].lower()] = p["id"]
+                _agent_cache[p["name"].lower()] = p["id"]
 
-    return _persona_cache.get(name.lower())
+    return _agent_cache.get(name.lower())
 
 
-def create_step_persona(persona_def: dict) -> int | None:
-    """Create a persona for a workflow step. Returns the new persona ID.
+def create_step_agent(agent_def: dict) -> int | None:
+    """Create a agent for a workflow step. Returns the new agent ID.
 
-    The created persona stays visible in the agent listing so users can
+    The created agent stays visible in the agent listing so users can
     edit its prompt, tools, or knowledge sources directly from the UI.
     """
-    body = {**STEP_PERSONA_DEFAULTS, **persona_def}
+    body = {**STEP_AGENT_DEFAULTS, **agent_def}
 
     # Resolve label names → IDs if present
     label_names = body.pop("labels", None)
@@ -145,49 +145,49 @@ def create_step_persona(persona_def: dict) -> int | None:
     if tool_names and isinstance(tool_names, list):
         body["tool_ids"] = resolve_tool_names(tool_names)
 
-    resp = api("POST", "persona", body)
+    resp = api("POST", "agent", body)
     if resp.status_code == 200:
         result = resp.json()
-        persona_id = result["id"]
+        agent_id = result["id"]
         name = body.get("name", "Unknown")
-        _persona_cache[name.lower()] = persona_id
-        print(f"  [PERSONA] Created: {name} (ID={persona_id})")
-        return persona_id
+        _agent_cache[name.lower()] = agent_id
+        print(f"  [AGENT] Created: {name} (ID={agent_id})")
+        return agent_id
     else:
-        print(f"  [FAIL] Could not create persona: {resp.status_code} {resp.text[:200]}")
+        print(f"  [FAIL] Could not create agent: {resp.status_code} {resp.text[:200]}")
         return None
 
 
-def _update_step_persona(persona_id: int, persona_def: dict) -> bool:
-    """Update an existing step persona's prompt, description, tools, and labels.
+def _update_step_agent(agent_id: int, agent_def: dict) -> bool:
+    """Update an existing step agent's prompt, description, tools, and labels.
 
     Compares all mutable fields against the current server state and only
     PATCHes when something actually changed.  Returns True if a PATCH was
     performed, False otherwise.
     """
-    resp = api("GET", f"persona/{persona_id}")
+    resp = api("GET", f"agent/{agent_id}")
     if resp.status_code != 200:
-        print(f"  [WARN] Could not fetch persona {persona_id} for update")
+        print(f"  [WARN] Could not fetch agent {agent_id} for update")
         return False
 
     p = resp.json()
 
     # ── Compute old vs new for every mutable field ──
     old_prompt = p.get("system_prompt") or ""
-    new_prompt = persona_def.get("system_prompt", "")
+    new_prompt = agent_def.get("system_prompt", "")
 
     old_desc = p.get("description") or ""
-    new_desc = persona_def.get("description", old_desc)
+    new_desc = agent_def.get("description", old_desc)
 
     old_tool_ids = sorted(t["id"] for t in p.get("tools", []))
     new_tool_ids = old_tool_ids  # default: keep existing
-    tool_names = persona_def.get("tool_names")
+    tool_names = agent_def.get("tool_names")
     if tool_names and isinstance(tool_names, list):
         new_tool_ids = sorted(resolve_tool_names(tool_names))
 
     old_label_ids = sorted(l["id"] for l in p.get("labels", []))
     new_label_ids = old_label_ids  # default: keep existing
-    label_names = persona_def.get("labels")
+    label_names = agent_def.get("labels")
     if label_names and isinstance(label_names, list):
         new_label_ids = sorted(get_or_create_labels(label_names))
 
@@ -216,9 +216,9 @@ def _update_step_persona(persona_id: int, persona_def: dict) -> bool:
         "document_ids": [], "knowledge_file_ids": [],
     }
 
-    resp = api("PATCH", f"persona/{persona_id}", patch_body)
+    resp = api("PATCH", f"agent/{agent_id}", patch_body)
     if resp.status_code == 200:
-        print(f"  [PATCH] Updated {p['name']} (ID={persona_id})")
+        print(f"  [PATCH] Updated {p['name']} (ID={agent_id})")
         return True
     else:
         try:
@@ -229,44 +229,44 @@ def _update_step_persona(persona_id: int, persona_def: dict) -> bool:
         return False
 
 
-def resolve_or_create_persona(step_def: dict) -> int | None:
-    """Resolve persona_name to persona_id, auto-creating if needed.
+def resolve_or_create_agent(step_def: dict) -> int | None:
+    """Resolve agent_name to agent_id, auto-creating if needed.
 
     The step definition should have either:
-      - persona_id: int (used directly)
-      - persona_name: str (resolved by name, auto-created if missing)
-      - persona_def: dict (full persona definition for auto-creation)
+      - agent_id: int (used directly)
+      - agent_name: str (resolved by name, auto-created if missing)
+      - agent_def: dict (full agent definition for auto-creation)
 
-    If the persona already exists and a persona_def is provided, the existing
-    persona's prompt, description, and tools are updated to match the definition.
+    If the agent already exists and a agent_def is provided, the existing
+    agent's prompt, description, and tools are updated to match the definition.
     """
     # Direct ID
-    if "persona_id" in step_def and step_def["persona_id"]:
-        return step_def["persona_id"]
+    if "agent_id" in step_def and step_def["agent_id"]:
+        return step_def["agent_id"]
 
     # By name
-    name = step_def.get("persona_name", "")
+    name = step_def.get("agent_name", "")
     if name:
-        pid = resolve_persona_id(name)
+        pid = resolve_agent_id(name)
         if pid is not None:
-            # Update the existing persona's prompt if a persona_def is provided
-            persona_def = step_def.get("persona_def", {})
-            if persona_def and persona_def.get("system_prompt"):
-                _update_step_persona(pid, persona_def)
+            # Update the existing agent's prompt if a agent_def is provided
+            agent_def = step_def.get("agent_def", {})
+            if agent_def and agent_def.get("system_prompt"):
+                _update_step_agent(pid, agent_def)
             return pid
 
     # Auto-create from embedded definition
-    persona_def = step_def.get("persona_def", {})
-    if not persona_def and name:
+    agent_def = step_def.get("agent_def", {})
+    if not agent_def and name:
         # Minimal auto-creation with just the name and system_prompt
-        persona_def = {
+        agent_def = {
             "name": name,
             "description": step_def.get("step_description", f"Agent: {name}"),
             "system_prompt": step_def.get("system_prompt", f"You are {name}."),
         }
 
-    if persona_def:
-        return create_step_persona(persona_def)
+    if agent_def:
+        return create_step_agent(agent_def)
 
-    print(f"  [WARN] Cannot resolve persona for step: {step_def.get('step_name', '?')}")
+    print(f"  [WARN] Cannot resolve agent for step: {step_def.get('step_name', '?')}")
     return None

@@ -27,7 +27,7 @@ from om.db.enums import MCPAuthenticationType
 from om.db.enums import MCPTransport
 from om.db.mcp import create_mcp_server__no_commit
 from om.db.models import OAuthAccount
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import Tool
 from om.db.models import User
 from om.llm.factory import get_default_llm
@@ -40,13 +40,13 @@ from tests.external_dependency_unit.answer.conftest import ensure_default_llm_pr
 from tests.external_dependency_unit.conftest import create_test_user
 
 
-def _create_test_persona_with_mcp_tool(
+def _create_test_agent_with_mcp_tool(
     db_session: Session, user: User, tools: list[Tool]
-) -> Persona:
-    """Helper to create a test persona with MCP tools"""
-    persona = Persona(
-        name=f"Test MCP Persona {uuid4().hex[:8]}",
-        description="Test persona with MCP tools",
+) -> Agent:
+    """Helper to create a test agent with MCP tools"""
+    agent = Agent(
+        name=f"Test MCP Agent {uuid4().hex[:8]}",
+        description="Test agent with MCP tools",
         num_chunks=10.0,
         chunks_above=0,
         chunks_below=0,
@@ -65,10 +65,10 @@ def _create_test_persona_with_mcp_tool(
         starter_messages=None,
         deleted=False,
     )
-    db_session.add(persona)
+    db_session.add(agent)
     db_session.commit()
-    db_session.refresh(persona)
-    return persona
+    db_session.refresh(agent)
+    return agent
 
 
 class TestMCPPassThroughOAuth:
@@ -134,15 +134,15 @@ class TestMCPPassThroughOAuth:
         db_session.commit()
         db_session.refresh(mcp_tool_db)
 
-        # Create persona with the MCP tool
-        persona = _create_test_persona_with_mcp_tool(db_session, user, [mcp_tool_db])
+        # Create agent with the MCP tool
+        agent = _create_test_agent_with_mcp_tool(db_session, user, [mcp_tool_db])
         llm = get_default_llm()
 
         # Construct tools
         search_tool_config = SearchToolConfig()
 
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,
@@ -200,12 +200,12 @@ class TestMCPPassThroughOAuth:
         db_session.commit()
         db_session.refresh(mcp_tool_db)
 
-        # Create persona
-        persona = _create_test_persona_with_mcp_tool(db_session, user, [mcp_tool_db])
+        # Create agent
+        agent = _create_test_agent_with_mcp_tool(db_session, user, [mcp_tool_db])
         llm = get_default_llm()
 
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,
@@ -275,12 +275,12 @@ class TestMCPPassThroughOAuth:
         db_session.commit()
         db_session.refresh(mcp_tool_db)
 
-        # Create persona
-        persona = _create_test_persona_with_mcp_tool(db_session, user, [mcp_tool_db])
+        # Create agent
+        agent = _create_test_agent_with_mcp_tool(db_session, user, [mcp_tool_db])
         llm = get_default_llm()
 
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,
@@ -350,12 +350,12 @@ class TestMCPPassThroughOAuth:
         db_session.commit()
         db_session.refresh(mcp_tool_db)
 
-        # Create persona
-        persona = _create_test_persona_with_mcp_tool(db_session, user, [mcp_tool_db])
+        # Create agent
+        agent = _create_test_agent_with_mcp_tool(db_session, user, [mcp_tool_db])
         llm = get_default_llm()
 
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,
@@ -456,13 +456,13 @@ class TestMCPPassThroughOAuth:
         db_session.commit()
         db_session.refresh(mcp_tool_db)
 
-        # Create persona
-        persona = _create_test_persona_with_mcp_tool(db_session, user, [mcp_tool_db])
+        # Create agent
+        agent = _create_test_agent_with_mcp_tool(db_session, user, [mcp_tool_db])
         llm = get_default_llm()
 
         # Construct tools
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,
@@ -541,11 +541,11 @@ class TestMCPPassThroughOAuth:
         db_session.commit()
         db_session.refresh(mcp_tool_db)
 
-        persona = _create_test_persona_with_mcp_tool(db_session, user, [mcp_tool_db])
+        agent = _create_test_agent_with_mcp_tool(db_session, user, [mcp_tool_db])
         llm = get_default_llm()
 
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,

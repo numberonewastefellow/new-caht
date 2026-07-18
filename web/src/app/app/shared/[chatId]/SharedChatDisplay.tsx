@@ -9,7 +9,7 @@ import HumanMessage from "@/app/app/message/HumanMessage";
 import AgentMessage from "@/app/app/message/messageComponents/AgentMessage";
 import { Callout } from "@/components/ui/callout";
 import OmInitializingLoader from "@/components/OmInitializingLoader";
-import { Persona } from "@/app/admin/assistants/interfaces";
+import { Agent } from "@/app/admin/assistants/interfaces";
 import { MinimalOnyxDocument } from "@/lib/search/interfaces";
 import TextViewModal from "@/sections/modals/TextViewModal";
 import { UNNAMED_CHAT } from "@/lib/constants";
@@ -19,12 +19,12 @@ import SharedAppInputBar from "@/sections/input/SharedAppInputBar";
 
 export interface SharedChatDisplayProps {
   chatSession: BackendChatSession | null;
-  persona: Persona;
+  agent: Agent;
 }
 
 export default function SharedChatDisplay({
   chatSession,
-  persona,
+  agent,
 }: SharedChatDisplayProps) {
   const [presentingDocument, setPresentingDocument] =
     useState<MinimalOnyxDocument | null>(null);
@@ -106,7 +106,7 @@ export default function SharedChatDisplay({
                       key={message.messageId}
                       rawPackets={message.packets}
                       chatState={{
-                        assistant: persona,
+                        assistant: agent,
                         docs: message.documents,
                         citations: message.citations,
                         setPresentingDocument: setPresentingDocument,

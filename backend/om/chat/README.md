@@ -161,7 +161,7 @@ Turn: User sends a message and AI does some set of things and responds
 Step/Cycle: 1 single LLM inference given some context and some tools
 
 
-## 1. Top Level (process_message function):
+## 1. Top Level (message_handler function):
 This function can be thought of as the set-up and validation layer. It ensures that the database is in a valid state, reads the
 messages in the session and sets up all the necessary items to run the chat loop and state containers. The major things it does
 are:

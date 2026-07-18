@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import * as GeneralLayouts from "@/layouts/general-layouts";
 import Button from "@/refresh-components/buttons/Button";
-import { FullPersona } from "@/app/admin/assistants/interfaces";
+import { FullAgent } from "@/app/admin/assistants/interfaces";
 import { buildImgUrl } from "@/app/app/components/files/images/utils";
 import { Formik, Form, FieldArray } from "formik";
 import * as Yup from "yup";
@@ -76,9 +76,9 @@ import InputAvatar from "@/refresh-components/inputs/InputAvatar";
 import SquareButton from "@/refresh-components/buttons/SquareButton";
 import { useAgents } from "@/hooks/useAgents";
 import {
-  createPersona,
-  updatePersona,
-  PersonaUpsertParameters,
+  createAgent,
+  updateAgent,
+  AgentUpsertParameters,
 } from "@/app/admin/assistants/lib";
 import useMcpServersForAgentEditor from "@/hooks/useMcpServersForAgentEditor";
 import useOpenApiTools from "@/hooks/useOpenApiTools";
@@ -238,7 +238,7 @@ function WizardSectionHeader({ icon: Icon, title, description, color }: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface AgentIconEditorProps {
-  existingAgent?: FullPersona | null;
+  existingAgent?: FullAgent | null;
 }
 
 function FormWarningsEffect() {
@@ -294,7 +294,7 @@ function AgentIconEditor({ existingAgent }: AgentIconEditorProps) {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await fetch("/api/admin/persona/upload-image", {
+      const response = await fetch("/api/admin/agent/upload-image", {
         method: "POST",
         body: formData,
       });
@@ -586,7 +586,7 @@ function StarterMessages() {
 }
 
 export interface AgentEditorPageProps {
-  agent?: FullPersona;
+  agent?: FullAgent;
   refreshAgent?: () => void;
 }
 
@@ -983,7 +983,7 @@ export default function AgentEditorPage({
       });
 
       // Build submission data
-      const submissionData: PersonaUpsertParameters = {
+      const submissionData: AgentUpsertParameters = {
         name: values.name,
         description: values.description,
         document_set_ids: values.enable_knowledge
@@ -1006,7 +1006,7 @@ export default function AgentEditorPage({
         icon_name: values.icon_name,
         search_start_date: values.knowledge_cutoff_date || null,
         label_ids: null,
-        is_default_persona: false,
+        is_default_agent: false,
         // display_priority: ...,
 
         knowledge_file_ids: values.enable_knowledge ? values.knowledge_file_ids : [],
@@ -1023,17 +1023,17 @@ export default function AgentEditorPage({
       };
 
       // Call API
-      let personaResponse;
+      let agentResponse;
       if (!!existingAgent) {
-        personaResponse = await updatePersona(existingAgent.id, submissionData);
+        agentResponse = await updateAgent(existingAgent.id, submissionData);
       } else {
-        personaResponse = await createPersona(submissionData);
+        agentResponse = await createAgent(submissionData);
       }
 
       // Handle response
-      if (!personaResponse || !personaResponse.ok) {
-        const error = personaResponse
-          ? await personaResponse.text()
+      if (!agentResponse || !agentResponse.ok) {
+        const error = agentResponse
+          ? await agentResponse.text()
           : "No response received";
         toast.error(
           `Failed to ${existingAgent ? "update" : "create"} agent - ${error}`
@@ -1042,7 +1042,7 @@ export default function AgentEditorPage({
       }
 
       // Success
-      const agent = await personaResponse.json();
+      const agent = await agentResponse.json();
       toast.success(
         `Agent "${agent.name}" ${
           existingAgent ? "updated" : "created"

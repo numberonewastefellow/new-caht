@@ -39,7 +39,7 @@ export enum ChatSessionSharedStatus {
 export interface ChatSessionSummary {
   id: string;
   name: string | null;
-  persona_id: number | null;
+  agent_id: number | null;
   time_created: string;
   shared_status: ChatSessionSharedStatus;
   current_alternate_model: string | null;
@@ -120,7 +120,7 @@ export interface ToolCallFinalResult {
 export interface ChatSession {
   id: string;
   name: string;
-  persona_id: number;
+  agent_id: number;
   time_created: string;
   time_updated: string;
   shared_status: ChatSessionSharedStatus;
@@ -177,8 +177,8 @@ export interface Message {
 export interface BackendChatSession {
   chat_session_id: string;
   description: string;
-  persona_id: number;
-  persona_name: string;
+  agent_id: number;
+  agent_name: string;
   messages: BackendMessage[];
   time_created: string;
   time_updated: string;
@@ -194,7 +194,7 @@ export function toChatSession(backend: BackendChatSession): ChatSession {
   return {
     id: backend.chat_session_id,
     name: backend.description,
-    persona_id: backend.persona_id,
+    agent_id: backend.agent_id,
     time_created: backend.time_created,
     time_updated: backend.time_updated,
     shared_status: backend.shared_status,

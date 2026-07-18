@@ -726,7 +726,7 @@ if __name__ == "__main__":
     from om.db.engine.sql_engine import get_session_with_current_tenant
     from om.db.engine.sql_engine import SqlEngine
     from om.db.models import User
-    from om.db.persona import get_default_behavior_persona
+    from om.db.agent import get_default_behavior_agent
     from om.llm.factory import get_default_llm
     from om.llm.factory import get_llm_token_counter
     from om.llm.utils import model_is_reasoning_model
@@ -747,9 +747,9 @@ if __name__ == "__main__":
             llm.config.model_name, llm.config.model_provider
         )
 
-        persona = get_default_behavior_persona(db_session)
-        if persona is None:
-            raise ValueError("No default persona found")
+        agent = get_default_behavior_agent(db_session)
+        if agent is None:
+            raise ValueError("No default agent found")
 
         user = db_session.query(User).first()
         if user is None:
@@ -760,7 +760,7 @@ if __name__ == "__main__":
         state_container = ChatStateContainer()
 
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=emitter,
             user=user,

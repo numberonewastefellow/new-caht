@@ -13,9 +13,9 @@ from om.chat.models import ChatLoadedFile
 from om.chat.models import ChatMessageSimple
 from om.chat.models import FileToolMetadata
 from om.chat.models import ToolCallSimple
-from om.configs.constants import DEFAULT_PERSONA_ID
+from om.configs.constants import DEFAULT_AGENT_ID
 from om.configs.constants import MessageType
-from om.configs.constants import TMP_DRALPHA_PERSONA_NAME
+from om.configs.constants import TMP_DRALPHA_AGENT_NAME
 from om.db.chat import create_chat_session
 from om.db.chat import get_chat_messages_by_session
 from om.db.chat import get_or_create_root_message
@@ -23,7 +23,7 @@ from om.db.kg_config import get_kg_config_settings
 from om.db.kg_config import is_kg_config_settings_enabled_valid
 from om.db.models import ChatMessage
 from om.db.models import ChatSession
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import SearchDoc as DbSearchDoc
 from om.db.models import KnowledgeFile
 from om.db.workspaces import check_workspace_ownership
@@ -59,7 +59,7 @@ def create_chat_session_from_request(
     Includes workspace ownership validation when workspace_id is provided.
 
     Args:
-        chat_session_request: The request containing persona_id, description, and workspace_id
+        chat_session_request: The request containing agent_id, description, and workspace_id
         user_id: The ID of the user creating the session (can be None for anonymous)
         db_session: The database session
 
@@ -68,7 +68,7 @@ def create_chat_session_from_request(
 
     Raises:
         ValueError: If user lacks access to the specified workspace
-        Exception: If the persona is invalid
+        Exception: If the agent is invalid
     """
     workspace_id = chat_session_request.workspace_id
     if workspace_id:
@@ -79,7 +79,7 @@ def create_chat_session_from_request(
         db_session=db_session,
         description=chat_session_request.description or "",
         user_id=user_id,
-        persona_id=chat_session_request.persona_id,
+        agent_id=chat_session_request.agent_id,
         workspace_id=chat_session_request.workspace_id,
     )
 
@@ -270,11 +270,11 @@ def extract_headers(
 
 
 def process_kg_commands(
-    message: str, persona_name: str, tenant_id: str, db_session: Session  # noqa: ARG001
+    message: str, agent_name: str, tenant_id: str, db_session: Session  # noqa: ARG001
 ) -> None:
     # Temporarily, until we have a draft UI for the KG Operations/Management
     # TODO: move to api endpoint once we get frontend
-    if not persona_name.startswith(TMP_DRALPHA_PERSONA_NAME):
+    if not agent_name.startswith(TMP_DRALPHA_AGENT_NAME):
         return
 
     kg_config_settings = get_kg_config_settings()
@@ -706,29 +706,29 @@ def convert_chat_history(
     )
 
 
-def get_custom_agent_prompt(persona: Persona, chat_session: ChatSession) -> str | None:
-    """Get the custom agent prompt from persona or workspace instructions. If it's replacing the base system prompt,
+def get_custom_agent_prompt(agent: Agent, chat_session: ChatSession) -> str | None:
+    """Get the custom agent prompt from agent or workspace instructions. If it's replacing the base system prompt,
     it does not count as a custom agent prompt (logic exists later also to drop it in this case).
 
     Chat Sessions in Workspaces that are using a custom agent will retain the custom agent prompt.
-    Priority: persona.system_prompt (if not default Agent) > chat_session.workspace.workspace_instructions
+    Priority: agent.system_prompt (if not default Agent) > chat_session.workspace.workspace_instructions
 
     # NOTE: Logic elsewhere allows saving empty strings for potentially other purposes but for constructing the prompts
     # we never want to return an empty string for a prompt so it's translated into an explicit None.
 
     Args:
-        persona: The Persona object
+        agent: The Agent object
         chat_session: The ChatSession object
 
     Returns:
         The prompt to use for the custom Agent part of the prompt.
     """
     # If using a custom Agent, always respect its prompt, even if in a Workspace, and even if it's an empty custom prompt.
-    if persona.id != DEFAULT_PERSONA_ID:
+    if agent.id != DEFAULT_AGENT_ID:
         # Logic exists later also to drop it in this case but this is strictly correct anyhow.
-        if persona.replace_base_system_prompt:
+        if agent.replace_base_system_prompt:
             return None
-        return persona.system_prompt or None
+        return agent.system_prompt or None
 
     # If in a workspace and using the default Agent, respect the workspace instructions.
     if chat_session.workspace and chat_session.workspace.workspace_instructions:

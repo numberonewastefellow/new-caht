@@ -46,7 +46,7 @@ from om.chat.stop_signal_checker import is_connected as check_stop_signal
 from om.chat.stop_signal_checker import reset_cancel_status
 from om.configs.app_configs import DISABLE_VECTOR_DB
 from om.configs.app_configs import INTEGRATION_TESTS_MODE
-from om.configs.constants import DEFAULT_PERSONA_ID
+from om.configs.constants import DEFAULT_AGENT_ID
 from om.configs.constants import DocumentSource
 from om.configs.constants import MessageType
 from om.configs.constants import MilestoneRecordType
@@ -59,7 +59,7 @@ from om.db.chat import reserve_message_id
 from om.db.memory import get_memories
 from om.db.models import ChatMessage
 from om.db.models import ChatSession
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
 from om.db.models import KnowledgeFile
 from om.db.workspaces import get_workspace_token_count
@@ -69,7 +69,7 @@ from om.deep_research.dr_loop import run_deep_research_llm_loop
 from om.file_store.models import ChatFileType
 from om.file_store.utils import load_in_memory_chat_files
 from om.file_store.utils import verify_knowledge_files
-from om.llm.factory import get_llm_for_persona
+from om.llm.factory import get_llm_for_agent
 from om.llm.factory import get_llm_token_counter
 from om.llm.interfaces import LLM
 from om.llm.interfaces import LLMUserIdentity
@@ -111,7 +111,7 @@ ERROR_TYPE_CANCELLED = "cancelled"
 class _AvailableFiles(BaseModel):
     """Separated file IDs for the FileReaderTool so it knows which loader to use."""
 
-    # IDs from the ``knowledge_file`` table (workspace / persona-attached files).
+    # IDs from the ``knowledge_file`` table (workspace / agent-attached files).
     knowledge_file_ids: list[UUID] = []
     # IDs from the ``file_record`` table (chat-attached files).
     chat_file_ids: list[UUID] = []
@@ -156,18 +156,18 @@ def _collect_available_file_ids(
 
 
 def _should_enable_slack_search(
-    persona: Persona,
+    agent: Agent,
     filters: BaseFilters | None,
 ) -> bool:
     """Determine if Slack search should be enabled.
 
     Returns True if:
     - Source type filter exists and includes Slack, OR
-    - Default persona with no source type filter
+    - Default agent with no source type filter
     """
     source_types = filters.source_type if filters else None
     return (source_types is not None and DocumentSource.SLACK in source_types) or (
-        persona.id == DEFAULT_PERSONA_ID and source_types is None
+        agent.id == DEFAULT_AGENT_ID and source_types is None
     )
 
 
@@ -385,23 +385,28 @@ def _build_file_tool_metadata_for_knowledge_files(
 
 def _get_workspace_search_availability(
     workspace_id: int | None,
-    persona_id: int | None,
+    agent_id: int | None,
     loaded_workspace_files: bool,
     workspace_has_files: bool,
     forced_tool_id: int | None,
     search_tool_id: int | None,
+    deep_research: bool = False,
 ) -> WorkspaceSearchConfig:
     """Determine search tool availability based on workspace context.
 
     Search is disabled when ALL of the following are true:
     - User is in a workspace
-    - Using the default persona (not a custom agent)
+    - Using the default agent (not a custom agent)
     - Workspace files are already loaded in context
 
     When search is disabled and the user tried to force the search tool,
     that forcing is also disabled.
 
-    Returns AUTO (follow persona config) in all other cases.
+    Deep Research retrieves workspace documents via scoped search rather than
+    loading them into context, so it always keeps the search tool available
+    (regardless of whether the files would fit in context).
+
+    Returns AUTO (follow agent config) in all other cases.
     """
     # Not in a workspace, this should have no impact on search tool availability
     if not workspace_id:
@@ -409,14 +414,22 @@ def _get_workspace_search_availability(
             search_usage=SearchToolUsage.AUTO, disable_forced_tool=False
         )
 
-    # Custom persona in workspace - let persona config decide
-    # Even if there are no files in the workspace, it's still guided by the persona config.
-    if persona_id != DEFAULT_PERSONA_ID:
+    # Deep Research relies on workspace-scoped retrieval instead of injecting the
+    # workspace files into context, so keep the search tool enabled even when the
+    # files would otherwise fit (which would normally disable it below).
+    if deep_research:
+        return WorkspaceSearchConfig(
+            search_usage=SearchToolUsage.ENABLED, disable_forced_tool=False
+        )
+
+    # Custom agent in workspace - let agent config decide
+    # Even if there are no files in the workspace, it's still guided by the agent config.
+    if agent_id != DEFAULT_AGENT_ID:
         return WorkspaceSearchConfig(
             search_usage=SearchToolUsage.AUTO, disable_forced_tool=False
         )
 
-    # If in a workspace with the default persona and the files have been already loaded into the context or
+    # If in a workspace with the default agent and the files have been already loaded into the context or
     # there are no files in the workspace, disable search as there is nothing to search for.
     if loaded_workspace_files or not workspace_has_files:
         user_forced_search = (
@@ -429,7 +442,7 @@ def _get_workspace_search_availability(
             disable_forced_tool=user_forced_search,
         )
 
-    # Default persona in a workspace with files, but also the files have not been loaded into the context already.
+    # Default agent in a workspace with files, but also the files have not been loaded into the context already.
     return WorkspaceSearchConfig(
         search_usage=SearchToolUsage.ENABLED, disable_forced_tool=False
     )
@@ -505,7 +518,7 @@ def _run_workflow_and_save(
         elif ptype == StreamingType.WORKFLOW_STEP_START.value:
             _cur_step = {
                 "step_name": getattr(packet.obj, "step_name", ""),
-                "persona_name": getattr(packet.obj, "persona_name", ""),
+                "agent_name": getattr(packet.obj, "agent_name", ""),
                 "step_order": getattr(packet.obj, "step_order", 0),
                 "turn_index": packet.placement.turn_index,
                 "content_parts": [],
@@ -541,7 +554,7 @@ def _run_workflow_and_save(
         elif ptype == StreamingType.WORKFLOW_PAUSE_FOR_INPUT.value:
             pause_data = {
                 "step_name": getattr(packet.obj, "step_name", ""),
-                "persona_name": getattr(packet.obj, "persona_name", ""),
+                "agent_name": getattr(packet.obj, "agent_name", ""),
                 "questions": getattr(packet.obj, "questions", ""),
             }
 
@@ -573,7 +586,7 @@ def _run_workflow_and_save(
                 tool_call_arguments={
                     "_workflow_step": True,
                     "step_name": rec["step_name"],
-                    "persona_name": rec["persona_name"],
+                    "agent_name": rec["agent_name"],
                     "step_order": rec["step_order"],
                     **({"_file_ids": rec["file_ids"]} if rec.get("file_ids") else {}),
                 },
@@ -599,7 +612,7 @@ def _run_workflow_and_save(
                     "_workflow_step": True,
                     "_workflow_pause": True,
                     "step_name": pause_data["step_name"],
-                    "persona_name": pause_data["persona_name"],
+                    "agent_name": pause_data["agent_name"],
                 },
                 tool_call_response=pause_data["questions"],
             )
@@ -616,7 +629,7 @@ def _run_workflow_and_save(
     )
 
 
-def handle_stream_message_objects(
+def stream_chat_message(
     new_msg_req: SendMessageRequest,
     user: User,
     db_session: Session,
@@ -673,7 +686,7 @@ def handle_stream_message_objects(
                 db_session=db_session,
             )
 
-        persona = chat_session.persona
+        agent = chat_session.agent
 
         message_text = new_msg_req.message
         user_identity = LLMUserIdentity(
@@ -695,13 +708,13 @@ def handle_stream_message_objects(
                 "origin": new_msg_req.origin.value,
                 "has_files": len(new_msg_req.file_descriptors) > 0,
                 "has_workspace": chat_session.workspace_id is not None,
-                "has_persona": persona is not None and persona.id != DEFAULT_PERSONA_ID,
+                "has_agent": agent is not None and agent.id != DEFAULT_AGENT_ID,
                 "deep_research": new_msg_req.deep_research,
             },
         )
 
-        llm = get_llm_for_persona(
-            persona=persona,
+        llm = get_llm_for_agent(
+            agent=agent,
             user=user,
             llm_override=new_msg_req.llm_override or chat_session.llm_override,
             additional_headers=litellm_additional_headers,
@@ -821,7 +834,7 @@ def handle_stream_message_objects(
         # This is the custom prompt which may come from the Agent or Workspace. We fetch it earlier because the inner loop
         # (run_llm_loop and run_deep_research_llm_loop) should not need to be aware of the Chat History in the DB form processed
         # here, however we need this early for token reservation.
-        custom_agent_prompt = get_custom_agent_prompt(persona, chat_session)
+        custom_agent_prompt = get_custom_agent_prompt(agent, chat_session)
 
         # When use_memories is disabled, strip memories from the prompt context
         # but keep user info/preferences. The full context is still passed
@@ -832,13 +845,13 @@ def handle_stream_message_objects(
             else user_memory_context.without_memories()
         )
 
-        max_reserved_system_prompt_tokens_str = (persona.system_prompt or "") + (
+        max_reserved_system_prompt_tokens_str = (agent.system_prompt or "") + (
             custom_agent_prompt or ""
         )
 
         reserved_token_count = calculate_reserved_tokens(
             db_session=db_session,
-            persona_system_prompt=max_reserved_system_prompt_tokens_str,
+            agent_system_prompt=max_reserved_system_prompt_tokens_str,
             token_counter=token_counter,
             files=new_msg_req.file_descriptors,
             user_memory_context=prompt_memory_context,
@@ -853,15 +866,15 @@ def handle_stream_message_objects(
             db_session=db_session,
         )
 
-        # When the vector DB is disabled, persona-attached knowledge_files have no
+        # When the vector DB is disabled, agent-attached knowledge_files have no
         # search pipeline path. Inject them as file_metadata_for_tool so the
         # LLM can read them via the FileReaderTool.
-        if DISABLE_VECTOR_DB and persona.knowledge_files:
-            persona_file_metadata = _build_file_tool_metadata_for_knowledge_files(
-                persona.knowledge_files
+        if DISABLE_VECTOR_DB and agent.knowledge_files:
+            agent_file_metadata = _build_file_tool_metadata_for_knowledge_files(
+                agent.knowledge_files
             )
-            # Merge persona file metadata into the extracted workspace files
-            extracted_workspace_files.file_metadata_for_tool.extend(persona_file_metadata)
+            # Merge agent file metadata into the extracted workspace files
+            extracted_workspace_files.file_metadata_for_tool.extend(agent_file_metadata)
 
         # Build a mapping of tool_id to tool_name for history reconstruction
         all_tools = get_tools(db_session)
@@ -876,44 +889,54 @@ def handle_stream_message_objects(
         forced_tool_id = new_msg_req.forced_tool_id
         workspace_search_config = _get_workspace_search_availability(
             workspace_id=chat_session.workspace_id,
-            persona_id=persona.id,
+            agent_id=agent.id,
             loaded_workspace_files=bool(extracted_workspace_files.workspace_file_texts),
             workspace_has_files=bool(
                 extracted_workspace_files.workspace_uncapped_token_count
             ),
             forced_tool_id=new_msg_req.forced_tool_id,
             search_tool_id=search_tool_id,
+            deep_research=bool(new_msg_req.deep_research),
         )
         if workspace_search_config.disable_forced_tool:
             forced_tool_id = None
 
         emitter = get_default_emitter()
 
-        # Also grant access to persona-attached user files
-        if persona.knowledge_files:
+        # Also grant access to agent-attached user files
+        if agent.knowledge_files:
             existing = set(available_files.knowledge_file_ids)
-            for uf in persona.knowledge_files:
+            for uf in agent.knowledge_files:
                 if uf.id not in existing:
                     available_files.knowledge_file_ids.append(uf.id)
 
-        # Construct tools based on the persona configurations
+        # Construct tools based on the agent configurations
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=emitter,
             user=user,
             llm=llm,
             search_tool_config=SearchToolConfig(
                 user_selected_filters=new_msg_req.internal_search_filters,
+                # Deep Research always scopes retrieval to the workspace (it uses
+                # search instead of loading files into context), so pass the
+                # workspace_id even when the files would fit (workspace_as_filter False).
                 workspace_id=(
                     chat_session.workspace_id
-                    if extracted_workspace_files.workspace_as_filter
+                    if (
+                        extracted_workspace_files.workspace_as_filter
+                        or (
+                            new_msg_req.deep_research
+                            and chat_session.workspace_id is not None
+                        )
+                    )
                     else None
                 ),
                 bypass_acl=bypass_acl,
                 slack_context=slack_context,
                 enable_slack_search=_should_enable_slack_search(
-                    persona, new_msg_req.internal_search_filters
+                    agent, new_msg_req.internal_search_filters
                 ),
             ),
             custom_tool_config=CustomToolConfig(
@@ -1053,18 +1076,18 @@ def handle_stream_message_objects(
         # Note: DB session is not thread safe but nothing else uses it and the
         # reference is passed directly so it's ok.
 
-        # Multi-agent workflow routing — if the persona is a workflow wrapper,
+        # Multi-agent workflow routing — if the agent is a workflow wrapper,
         # route to the workflow engine instead of the standard LLM loop.
-        if persona and persona.workflow_id:
+        if agent and agent.workflow_id:
             from om.db.workflow import get_workflow_by_id
             from om.workflows.workflow_engine import run_workflow
 
             workflow = get_workflow_by_id(
-                db_session=db_session, workflow_id=persona.workflow_id
+                db_session=db_session, workflow_id=agent.workflow_id
             )
             if workflow is None or not workflow.steps:
                 raise ValueError(
-                    f"Workflow {persona.workflow_id} not found or has no steps"
+                    f"Workflow {agent.workflow_id} not found or has no steps"
                 )
 
             yield from _run_workflow_and_save(
@@ -1081,9 +1104,6 @@ def handle_stream_message_objects(
             )
 
         elif new_msg_req.deep_research:
-            if chat_session.workspace_id:
-                raise RuntimeError("Deep research is not supported for workspaces")
-
             # Skip clarification if the last assistant message was a clarification
             # (user has already responded to a clarification question)
             skip_clarification = is_last_assistant_message_clarification(chat_history)
@@ -1116,7 +1136,7 @@ def handle_stream_message_objects(
                 tools=tools,
                 custom_agent_prompt=custom_agent_prompt,
                 workspace_files=extracted_workspace_files,
-                persona=persona,
+                agent=agent,
                 user_memory_context=user_memory_context,
                 llm=llm,
                 token_counter=token_counter,
@@ -1319,7 +1339,7 @@ def gather_stream(
 
 
 @log_function_time()
-def gather_stream_full(
+def collect_stream_response(
     packets: AnswerStream,
     state_container: ChatStateContainer,
 ) -> ChatFullResponse:
@@ -1331,7 +1351,7 @@ def gather_stream_full(
     including answer, reasoning, citations, and tool calls.
 
     Args:
-        packets: The stream of packets from handle_stream_message_objects
+        packets: The stream of packets from stream_chat_message
         state_container: The state container that accumulates tool calls, reasoning, etc.
 
     Returns:

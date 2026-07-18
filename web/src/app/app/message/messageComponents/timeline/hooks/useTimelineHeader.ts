@@ -122,7 +122,7 @@ export function useTimelineHeader(
     if (packetType === PacketType.WORKFLOW_STEP_START) {
       const stepStart = firstPacket.obj as WorkflowStepStart;
       const agentName =
-        stepStart.persona_name || stepStart.step_name || "agent";
+        stepStart.agent_name || stepStart.step_name || "agent";
       return {
         headerText: `Running ${agentName}`,
         hasPackets,

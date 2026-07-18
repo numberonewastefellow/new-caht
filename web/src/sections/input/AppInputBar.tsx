@@ -9,7 +9,7 @@ import React, {
   useState,
 } from "react";
 import LineItem from "@/refresh-components/buttons/LineItem";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import LLMPopover from "@/refresh-components/popovers/LLMPopover";
 import { InputPrompt } from "@/app/app/interfaces";
 import { FilterManager, LlmManager, useFederatedConnectors } from "@/lib/hooks";
@@ -130,7 +130,7 @@ export interface AppInputBarProps {
   availableContextTokens: number;
 
   // assistants
-  selectedAssistant: MinimalPersonaSnapshot | undefined;
+  selectedAssistant: MinimalAgentSnapshot | undefined;
 
   toggleDocumentSidebar: () => void;
   handleFileUpload: (files: File[]) => void;

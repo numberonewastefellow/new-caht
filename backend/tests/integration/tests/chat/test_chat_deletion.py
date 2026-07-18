@@ -30,7 +30,7 @@ def test_soft_delete_chat_session(
     """
     # Create a chat session
     test_chat_session = ChatSessionManager.create(
-        persona_id=0,  # Use default persona
+        agent_id=0,  # Use default agent
         description="Test chat session for soft deletion",
         user_performing_action=basic_user,
     )
@@ -84,7 +84,7 @@ def test_hard_delete_chat_session(
     """
     # Create a chat session
     test_chat_session = ChatSessionManager.create(
-        persona_id=0,  # Use default persona
+        agent_id=0,  # Use default agent
         description="Test chat session for hard deletion",
         user_performing_action=basic_user,
     )
@@ -147,7 +147,7 @@ def test_multiple_soft_deletions(
     # Create multiple chat sessions with potential agent behavior
     for i in range(3):
         chat_session = ChatSessionManager.create(
-            persona_id=0,
+            agent_id=0,
             description=f"Test chat session {i} for multi-soft-deletion",
             user_performing_action=basic_user,
         )
@@ -194,7 +194,7 @@ def test_multiple_hard_deletions_with_agent_data(
     # Create multiple chat sessions with potential agent behavior
     for i in range(3):
         chat_session = ChatSessionManager.create(
-            persona_id=0,
+            agent_id=0,
             description=f"Test chat session {i} for multi-hard-deletion",
             user_performing_action=basic_user,
         )
@@ -237,7 +237,7 @@ def test_soft_vs_hard_delete_edge_cases(
     """
     # Test 1: Soft delete a chat session with no messages
     empty_chat_session_soft = ChatSessionManager.create(
-        persona_id=0,
+        agent_id=0,
         description="Empty chat session for soft delete",
         user_performing_action=basic_user,
     )
@@ -255,7 +255,7 @@ def test_soft_vs_hard_delete_edge_cases(
 
     # Test 2: Hard delete a chat session with no messages
     empty_chat_session_hard = ChatSessionManager.create(
-        persona_id=0,
+        agent_id=0,
         description="Empty chat session for hard delete",
         user_performing_action=basic_user,
     )
@@ -273,7 +273,7 @@ def test_soft_vs_hard_delete_edge_cases(
 
     # Test 3: Soft delete a chat session with multiple messages
     multi_message_chat_soft = ChatSessionManager.create(
-        persona_id=0,
+        agent_id=0,
         description="Multi-message chat session for soft delete",
         user_performing_action=basic_user,
     )
@@ -306,7 +306,7 @@ def test_soft_vs_hard_delete_edge_cases(
 
     # Test 4: Hard delete a chat session with multiple messages
     multi_message_chat_hard = ChatSessionManager.create(
-        persona_id=0,
+        agent_id=0,
         description="Multi-message chat session for hard delete",
         user_performing_action=basic_user,
     )

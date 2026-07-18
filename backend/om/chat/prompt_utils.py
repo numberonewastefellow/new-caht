@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from om.db.memory import UserMemoryContext
-from om.db.persona import get_default_behavior_persona
+from om.db.agent import get_default_behavior_agent
 from om.db.knowledge_file import calculate_knowledge_files_token_count
 from om.file_store.models import FileDescriptor
 from om.prompts.chat_prompts import CITATION_REMINDER
@@ -45,10 +45,10 @@ from om.utils.timing import log_function_time
 
 
 def get_default_base_system_prompt(db_session: Session) -> str:
-    default_persona = get_default_behavior_persona(db_session)
+    default_agent = get_default_behavior_agent(db_session)
     return (
-        default_persona.system_prompt
-        if default_persona and default_persona.system_prompt is not None
+        default_agent.system_prompt
+        if default_agent and default_agent.system_prompt is not None
         else DEFAULT_SYSTEM_PROMPT
     )
 
@@ -56,7 +56,7 @@ def get_default_base_system_prompt(db_session: Session) -> str:
 @log_function_time(print_only=True)
 def calculate_reserved_tokens(
     db_session: Session,
-    persona_system_prompt: str,
+    agent_system_prompt: str,
     token_counter: Callable[[str], int],
     files: list[FileDescriptor] | None = None,
     user_memory_context: UserMemoryContext | None = None,
@@ -70,7 +70,7 @@ def calculate_reserved_tokens(
 
     Args:
         db_session: Database session
-        persona_system_prompt: Custom agent system prompt (can be empty string)
+        agent_system_prompt: Custom agent system prompt (can be empty string)
         token_counter: Function that counts tokens in text
         files: List of file descriptors from the chat message (optional)
         user_memory_context: User memory context (optional)
@@ -90,7 +90,7 @@ def calculate_reserved_tokens(
         include_all_guidance=True,
     )
 
-    custom_agent_prompt = persona_system_prompt if persona_system_prompt else ""
+    custom_agent_prompt = agent_system_prompt if agent_system_prompt else ""
 
     reserved_token_count = token_counter(
         # Annoying that the dict has no attributes now

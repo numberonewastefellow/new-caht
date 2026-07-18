@@ -6,14 +6,14 @@ Verifies that workflow messages are persisted to the chat_message table
 so they survive page reloads.
 
 Flow:
-  1. Create a chat session with the Travel Planner persona
+  1. Create a chat session with the Travel Planner agent
   2. Send a message via the /chat/send-message API (same path as UI)
   3. Verify the assistant response is saved to DB by loading the session
   4. Check that the response contains actual content (not empty/placeholder)
 
 Usage:
-    python test_chat_history.py --persona-id <ID>
-    python test_chat_history.py --persona-id <ID> --workflow-id 17  # also run HITL round
+    python test_chat_history.py --agent-id <ID>
+    python test_chat_history.py --agent-id <ID> --workflow-id 17  # also run HITL round
 """
 
 import argparse
@@ -39,9 +39,9 @@ def _safe_print(text: str, **kwargs):
         print(safe, **kwargs)
 
 
-def create_chat_session(persona_id: int) -> str | None:
-    """Create a chat session with the given persona."""
-    resp = api("POST", "converse/create-chat-session", {"persona_id": persona_id})
+def create_chat_session(agent_id: int) -> str | None:
+    """Create a chat session with the given agent."""
+    resp = api("POST", "converse/create-chat-session", {"agent_id": agent_id})
     if resp.status_code != 200:
         print(f"[ERROR] Create session failed: {resp.status_code} {resp.text[:300]}")
         return None
@@ -52,7 +52,7 @@ def create_chat_session(persona_id: int) -> str | None:
 def send_chat_message(
     chat_session_id: str,
     message: str,
-    persona_id: int,
+    agent_id: int,
     parent_message_id: int | None = None,
 ) -> tuple[int | None, int | None, str]:
     """Send a message via the chat API and stream the response.
@@ -62,7 +62,7 @@ def send_chat_message(
     body = {
         "chat_session_id": chat_session_id,
         "message": message,
-        "persona_id": persona_id,
+        "agent_id": agent_id,
         "prompt_id": 0,
         "parent_message_id": parent_message_id or -1,
         "search_doc_ids": None,
@@ -107,7 +107,7 @@ def send_chat_message(
             elif ptype == "workflow_step_end":
                 _safe_print(f"  [{obj.get('step_name', '?')}] done")
             elif ptype == "workflow_pause_for_input":
-                _safe_print(f"  [PAUSED] {obj.get('persona_name', '?')}")
+                _safe_print(f"  [PAUSED] {obj.get('agent_name', '?')}")
             elif ptype == "message_delta":
                 content = obj.get("content", "")
                 answer_parts.append(content)
@@ -131,13 +131,13 @@ def load_chat_session(chat_session_id: str) -> dict | None:
 
 def main():
     parser = argparse.ArgumentParser(description="Test workflow chat history persistence")
-    parser.add_argument("--persona-id", type=int, required=True, help="Persona ID with workflow_id set")
+    parser.add_argument("--agent-id", type=int, required=True, help="Agent ID with workflow_id set")
     parser.add_argument("--workflow-id", type=int, default=None, help="Workflow ID (for info only)")
     add_common_args(parser)
     args = parser.parse_args()
     apply_common_args(args)
 
-    persona_id = args.persona_id
+    agent_id = args.agent_id
 
     print("\n" + "=" * 60)
     print("TEST: Workflow Chat History Persistence")
@@ -145,7 +145,7 @@ def main():
 
     # Step 1: Create chat session
     print("\n[1] Creating chat session...")
-    session_id = create_chat_session(persona_id)
+    session_id = create_chat_session(agent_id)
     if not session_id:
         sys.exit(1)
     print(f"  Session ID: {session_id}")
@@ -155,7 +155,7 @@ def main():
     message = "I want to travel to Georgia country for skiing with my family"
     print(f"  Message: \"{message}\"")
 
-    user_id, asst_id, answer = send_chat_message(session_id, message, persona_id)
+    user_id, asst_id, answer = send_chat_message(session_id, message, agent_id)
     print(f"  User msg ID: {user_id}")
     print(f"  Assistant msg ID: {asst_id}")
     answer_preview = answer[:200] + "..." if len(answer) > 200 else answer

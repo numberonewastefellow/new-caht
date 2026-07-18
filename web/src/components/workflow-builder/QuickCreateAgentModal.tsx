@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
-  createPersona,
-  type PersonaUpsertParameters,
+  createAgent,
+  type AgentUpsertParameters,
 } from "@/app/admin/assistants/lib";
-import type { DragPersonaData } from "./types";
+import type { DragAgentData } from "./types";
 
 interface QuickCreateAgentModalProps {
-  onCreated: (dragData: DragPersonaData) => void;
+  onCreated: (dragData: DragAgentData) => void;
   onClose: () => void;
 }
 
@@ -48,7 +48,7 @@ export function QuickCreateAgentModal({
     setSaving(true);
     setError(null);
 
-    const params: PersonaUpsertParameters = {
+    const params: AgentUpsertParameters = {
       name: trimmedName,
       description: description.trim(),
       system_prompt: systemPrompt.trim(),
@@ -67,13 +67,13 @@ export function QuickCreateAgentModal({
       search_start_date: null,
       uploaded_image_id: null,
       icon_name: null,
-      is_default_persona: false,
+      is_default_agent: false,
       label_ids: null,
       knowledge_file_ids: [],
     };
 
     try {
-      const resp = await createPersona(params);
+      const resp = await createAgent(params);
       if (!resp || !resp.ok) {
         const errText = resp ? await resp.text() : "Failed to create agent";
         setError(errText);
@@ -81,16 +81,16 @@ export function QuickCreateAgentModal({
         return;
       }
 
-      const persona = await resp.json();
-      const dragData: DragPersonaData = {
-        persona_id: persona.id,
-        persona_name: persona.name,
-        persona_description: persona.description || "",
-        persona_icon_url: null,
-        persona_num_tools: persona.tools?.length || 0,
-        persona_tool_names: (persona.tools || []).map((t: any) => t.name),
-        persona_llm_model: persona.llm_model_version_override || null,
-        persona_llm_provider: persona.llm_model_provider_override || null,
+      const agent = await resp.json();
+      const dragData: DragAgentData = {
+        agent_id: agent.id,
+        agent_name: agent.name,
+        agent_description: agent.description || "",
+        agent_icon_url: null,
+        agent_num_tools: agent.tools?.length || 0,
+        agent_tool_names: (agent.tools || []).map((t: any) => t.name),
+        agent_llm_model: agent.llm_model_version_override || null,
+        agent_llm_provider: agent.llm_model_provider_override || null,
       };
 
       onCreated(dragData);

@@ -39,7 +39,7 @@ interface ChatSessionData {
   lastAccessed: Date;
   isLoaded: boolean;
   description?: string;
-  personaId?: number;
+  agentId?: number;
 
   // Streaming duration tracking
   streamingStartTime?: number;
@@ -514,7 +514,7 @@ export const useChatSessionStore = create<ChatSessionStore>()((set, get) => ({
     const initialData: Partial<ChatSessionData> = {
       isLoaded: true,
       description: backendSession?.description,
-      personaId: backendSession?.persona_id,
+      agentId: backendSession?.agent_id,
     };
 
     const existingSession = get().sessions.get(sessionId);

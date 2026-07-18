@@ -101,7 +101,7 @@ class DocMetadataAwareIndexChunk(IndexChunk):
     access: holds all information about which users should have access to the
             source document for this chunk.
     document_sets: all document sets the source document for this chunk is a part
-                   of. This is used for filtering / personas.
+                   of. This is used for filtering / agents.
     boost: influences the ranking of this chunk at query time. Positive -> ranked higher,
            negative -> ranked lower. Not included in aggregated boost calculation
            for legacy reasons.
@@ -112,9 +112,9 @@ class DocMetadataAwareIndexChunk(IndexChunk):
     access: "DocumentAccess"
     document_sets: set[str]
     user_workspace: list[int]
-    # Persona IDs the document is associated with; indexed for persona-based
-    # filtering. Empty list means no persona association.
-    personas: list[int]
+    # Agent IDs the document is associated with; indexed for agent-based
+    # filtering. Empty list means no agent association.
+    agents: list[int]
     boost: int
     aggregated_chunk_boost_factor: float
     # Full ancestor path from root hierarchy node to document's parent.
@@ -133,7 +133,7 @@ class DocMetadataAwareIndexChunk(IndexChunk):
         aggregated_chunk_boost_factor: float,
         tenant_id: str,
         ancestor_hierarchy_node_ids: list[int] | None = None,
-        personas: list[int] | None = None,
+        agents: list[int] | None = None,
     ) -> "DocMetadataAwareIndexChunk":
         index_chunk_data = index_chunk.model_dump()
         return cls(
@@ -141,7 +141,7 @@ class DocMetadataAwareIndexChunk(IndexChunk):
             access=access,
             document_sets=document_sets,
             user_workspace=user_workspace,
-            personas=personas or [],
+            agents=agents or [],
             boost=boost,
             aggregated_chunk_boost_factor=aggregated_chunk_boost_factor,
             tenant_id=tenant_id,

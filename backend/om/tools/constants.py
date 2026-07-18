@@ -8,7 +8,7 @@ PYTHON_TOOL_NAME = "run_python"
 HTTP_REQUEST_TOOL_NAME = "http_request"
 OPEN_URL_TOOL_NAME = "open_url"
 
-# In-code tool IDs that also correspond to the tool's name when associated with a persona
+# In-code tool IDs that also correspond to the tool's name when associated with a agent
 SEARCH_TOOL_ID = "SearchTool"
 IMAGE_GENERATION_TOOL_ID = "ImageGenerationTool"
 WEB_SEARCH_TOOL_ID = "WebSearchTool"

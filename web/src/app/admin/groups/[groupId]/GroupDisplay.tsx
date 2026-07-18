@@ -432,12 +432,12 @@ export const GroupDisplay = ({
       <div>
         {userGroup.document_sets.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {userGroup.personas.map((persona) => {
+            {userGroup.agents.map((agent) => {
               return (
-                <Bubble isSelected key={persona.id}>
+                <Bubble isSelected key={agent.id}>
                   <div className="flex">
                     <RobotIcon />
-                    <Text className="ml-1">{persona.name}</Text>
+                    <Text className="ml-1">{agent.name}</Text>
                   </div>
                 </Bubble>
               );

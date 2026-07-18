@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { getDemoDataEnabled } from "@/app/craft/v1/constants";
 import {
-  getBuildUserPersona,
+  getBuildUserAgent,
   getBuildLlmSelection,
 } from "@/app/craft/onboarding/constants";
 import { DELETE_SUCCESS_DISPLAY_DURATION_MS } from "@/app/craft/constants";
@@ -1473,14 +1473,14 @@ export const useBuildSessionStore = create<BuildSessionStore>()((set, get) => ({
 
     const promise = (async (): Promise<string | null> => {
       try {
-        // Parse user persona and LLM selection from cookies
-        const persona = getBuildUserPersona();
+        // Parse user agent and LLM selection from cookies
+        const agent = getBuildUserAgent();
         const llmSelection = getBuildLlmSelection();
 
         const sessionData = await apiCreateSession({
           demoDataEnabled,
-          userWorkArea: persona?.workArea || null,
-          userLevel: persona?.level || null,
+          userWorkArea: agent?.workArea || null,
+          userLevel: agent?.level || null,
           llmProviderType: llmSelection?.provider || null,
           llmModelName: llmSelection?.modelName || null,
         });

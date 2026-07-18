@@ -25,8 +25,8 @@ from om.db.models import StandardAnswer as StandardAnswerModel
 from om.db.models import StandardAnswerCategory as StandardAnswerCategoryModel
 from om.db.models import User
 from om.onyxbot.slack.config import VALID_SLACK_FILTERS
-from om.server.features.persona.models import FullPersonaSnapshot
-from om.server.features.persona.models import PersonaSnapshot
+from om.server.features.agent.models import FullAgentSnapshot
+from om.server.features.agent.models import AgentSnapshot
 from om.server.models import FullUserSnapshot
 from om.server.models import InvitedUserSnapshot
 
@@ -276,14 +276,14 @@ class SlackBotResponseType(str, Enum):
 
 class SlackChannelConfigCreationRequest(BaseModel):
     slack_bot_id: int
-    # currently, a persona is created for each Slack channel config
+    # currently, a agent is created for each Slack channel config
     # in the future, `document_sets` will probably be replaced
-    # by an optional `PersonaSnapshot` object. Keeping it like this
+    # by an optional `AgentSnapshot` object. Keeping it like this
     # for now for simplicity / speed of development
     document_sets: list[int] | None = None
 
-    # NOTE: only one of `document_sets` / `persona_id` should be set
-    persona_id: int | None = None
+    # NOTE: only one of `document_sets` / `agent_id` should be set
+    agent_id: int | None = None
 
     channel_name: str
     respond_tag_only: bool = False
@@ -311,11 +311,11 @@ class SlackChannelConfigCreationRequest(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_document_sets_and_persona_id(
+    def validate_document_sets_and_agent_id(
         self,
     ) -> "SlackChannelConfigCreationRequest":
-        if self.document_sets and self.persona_id:
-            raise ValueError("Only one of `document_sets` / `persona_id` should be set")
+        if self.document_sets and self.agent_id:
+            raise ValueError("Only one of `document_sets` / `agent_id` should be set")
 
         return self
 
@@ -323,7 +323,7 @@ class SlackChannelConfigCreationRequest(BaseModel):
 class SlackChannelConfig(BaseModel):
     slack_bot_id: int
     id: int
-    persona: PersonaSnapshot | None
+    agent: AgentSnapshot | None
     channel_config: ChannelConfig
     # XXX this is going away soon
     standard_answer_categories: list["StandardAnswerCategory"]
@@ -337,11 +337,11 @@ class SlackChannelConfig(BaseModel):
         return cls(
             id=slack_channel_config_model.id,
             slack_bot_id=slack_channel_config_model.slack_bot_id,
-            persona=(
-                FullPersonaSnapshot.from_model(
-                    slack_channel_config_model.persona, allow_deleted=True
+            agent=(
+                FullAgentSnapshot.from_model(
+                    slack_channel_config_model.agent, allow_deleted=True
                 )
-                if slack_channel_config_model.persona
+                if slack_channel_config_model.agent
                 else None
             ),
             channel_config=slack_channel_config_model.channel_config,

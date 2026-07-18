@@ -284,7 +284,7 @@ const ChatButton = memo(
 
     // Pin the chat's agent when clicking on the conversation
     async function handleClick() {
-      const agent = agents.find((a) => a.id === chatSession.persona_id);
+      const agent = agents.find((a) => a.id === chatSession.agent_id);
       if (agent) {
         const isAlreadyPinned = pinnedAgents.some((a) => a.id === agent.id);
         if (!isAlreadyPinned) {

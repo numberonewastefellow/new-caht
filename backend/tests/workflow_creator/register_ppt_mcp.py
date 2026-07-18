@@ -2,13 +2,13 @@
 Register PPT MCP Server in VirtualAI
 =====================================
 Registers the GongRzhe/Office-PowerPoint-MCP-Server as an MCP server,
-discovers its tools, and optionally attaches them to workflow agent personas.
+discovers its tools, and optionally attaches them to workflow agent agents.
 
 Usage:
     python register_ppt_mcp.py                           # Register with defaults
     python register_ppt_mcp.py --url http://host:8100    # Custom server URL
     python register_ppt_mcp.py --list-tools              # Just list discovered tools
-    python register_ppt_mcp.py --attach-to-personas      # Attach MCP tools to PPT Builder/Reviewer personas
+    python register_ppt_mcp.py --attach-to-agents      # Attach MCP tools to PPT Builder/Reviewer agents
     python register_ppt_mcp.py --delete                  # Remove the MCP server
 
 Requires the PPT MCP server to be running (see ppt-generator/docker-compose.yml).
@@ -120,7 +120,7 @@ def list_tools(server_id: int) -> None:
     # Print tool IDs array for workflow JSON
     tool_ids = [t.get("id", t.get("tool_id")) for t in tools if t.get("id") or t.get("tool_id")]
     if tool_ids:
-        print(f"\n  Tool IDs for persona config: {json.dumps(tool_ids)}")
+        print(f"\n  Tool IDs for agent config: {json.dumps(tool_ids)}")
 
 
 def get_tool_ids_from_db(server_id: int) -> list[int]:
@@ -132,49 +132,49 @@ def get_tool_ids_from_db(server_id: int) -> list[int]:
     return []
 
 
-def attach_tools_to_personas(mcp_tool_ids: list[int]) -> None:
-    """Attach MCP PPT tools to the PPT Builder and Reviewer personas."""
-    persona_names = ["WF PPT Builder", "WF PPT Reviewer"]
+def attach_tools_to_agents(mcp_tool_ids: list[int]) -> None:
+    """Attach MCP PPT tools to the PPT Builder and Reviewer agents."""
+    agent_names = ["WF PPT Builder", "WF PPT Reviewer"]
 
-    resp = api("GET", "admin/persona")
+    resp = api("GET", "admin/agent")
     if resp.status_code != 200:
-        print(f"  [FAIL] Could not fetch personas: {resp.status_code}")
+        print(f"  [FAIL] Could not fetch agents: {resp.status_code}")
         return
 
-    all_personas = resp.json()
-    for pname in persona_names:
-        persona = next((p for p in all_personas if p["name"] == pname), None)
-        if not persona:
-            print(f"  [SKIP] Persona '{pname}' not found — deploy the workflow first")
+    all_agents = resp.json()
+    for pname in agent_names:
+        agent = next((p for p in all_agents if p["name"] == pname), None)
+        if not agent:
+            print(f"  [SKIP] Agent '{pname}' not found — deploy the workflow first")
             continue
 
         # Merge existing tool_ids with MCP tool_ids (avoid duplicates)
-        existing_ids = [t["id"] for t in persona.get("tools", [])]
+        existing_ids = [t["id"] for t in agent.get("tools", [])]
         merged_ids = list(set(existing_ids + mcp_tool_ids))
 
         patch_body = {
-            "name": persona["name"],
-            "description": persona.get("description") or "",
-            "system_prompt": persona.get("system_prompt") or "",
-            "task_prompt": persona.get("task_prompt") or "",
-            "num_chunks": persona.get("num_chunks", 0),
-            "is_public": persona.get("is_public", True),
-            "recency_bias": persona.get("recency_bias", "base_decay"),
-            "llm_filter_extraction": persona.get("llm_filter_extraction", False),
-            "llm_relevance_filter": persona.get("llm_relevance_filter", False),
-            "replace_base_system_prompt": persona.get("replace_base_system_prompt", True),
-            "datetime_aware": persona.get("datetime_aware", True),
-            "document_set_ids": persona.get("document_set_ids", []),
+            "name": agent["name"],
+            "description": agent.get("description") or "",
+            "system_prompt": agent.get("system_prompt") or "",
+            "task_prompt": agent.get("task_prompt") or "",
+            "num_chunks": agent.get("num_chunks", 0),
+            "is_public": agent.get("is_public", True),
+            "recency_bias": agent.get("recency_bias", "base_decay"),
+            "llm_filter_extraction": agent.get("llm_filter_extraction", False),
+            "llm_relevance_filter": agent.get("llm_relevance_filter", False),
+            "replace_base_system_prompt": agent.get("replace_base_system_prompt", True),
+            "datetime_aware": agent.get("datetime_aware", True),
+            "document_set_ids": agent.get("document_set_ids", []),
             "tool_ids": merged_ids,
-            "label_ids": [l["id"] for l in persona.get("labels", [])],
-            "starter_messages": persona.get("starter_messages") or [],
+            "label_ids": [l["id"] for l in agent.get("labels", [])],
+            "starter_messages": agent.get("starter_messages") or [],
             "users": [], "groups": [], "hierarchy_node_ids": [],
             "document_ids": [], "knowledge_file_ids": [],
         }
 
-        resp = api("PATCH", f"persona/{persona['id']}", patch_body)
+        resp = api("PATCH", f"agent/{agent['id']}", patch_body)
         if resp.status_code == 200:
-            print(f"  [OK] Attached {len(mcp_tool_ids)} MCP tools to '{pname}' (ID={persona['id']})")
+            print(f"  [OK] Attached {len(mcp_tool_ids)} MCP tools to '{pname}' (ID={agent['id']})")
         else:
             try:
                 err = resp.json()
@@ -206,8 +206,8 @@ def main():
         help="Just list discovered tools (server must already be registered)",
     )
     parser.add_argument(
-        "--attach-to-personas", action="store_true",
-        help="Attach discovered MCP tools to WF PPT Builder and WF PPT Reviewer personas",
+        "--attach-to-agents", action="store_true",
+        help="Attach discovered MCP tools to WF PPT Builder and WF PPT Reviewer agents",
     )
     parser.add_argument(
         "--delete", action="store_true",
@@ -247,14 +247,14 @@ def main():
     # Step 3: Get DB tool IDs for workflow config
     db_tool_ids = get_tool_ids_from_db(server_id)
     if db_tool_ids:
-        print(f"\n  DB Tool IDs (use in workflow persona_def.tool_ids): {json.dumps(db_tool_ids)}")
+        print(f"\n  DB Tool IDs (use in workflow agent_def.tool_ids): {json.dumps(db_tool_ids)}")
         print(f"  Total DB tools: {len(db_tool_ids)}")
 
-    # Step 4: Optionally attach tools to workflow personas
-    if args.attach_to_personas and db_tool_ids:
-        print(f"\n--- Attaching MCP tools to workflow personas ---\n")
-        attach_tools_to_personas(db_tool_ids)
-    elif args.attach_to_personas and not db_tool_ids:
+    # Step 4: Optionally attach tools to workflow agents
+    if args.attach_to_agents and db_tool_ids:
+        print(f"\n--- Attaching MCP tools to workflow agents ---\n")
+        attach_tools_to_agents(db_tool_ids)
+    elif args.attach_to_agents and not db_tool_ids:
         print(f"\n  [WARN] No DB tool IDs to attach. Discover tools first.")
 
     print(f"\n--- Done ---\n")

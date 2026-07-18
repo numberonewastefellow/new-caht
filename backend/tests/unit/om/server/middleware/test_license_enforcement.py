@@ -30,7 +30,7 @@ BLOCKED_PATHS = [
     "/search",
     "/admin/connectors",
     "/connector",
-    "/persona",
+    "/agent",
 ]
 
 
@@ -75,7 +75,7 @@ class TestEEOnlyPaths:
             "/chat",
             "/search",
             "/connector",
-            "/persona",
+            "/agent",
         ],
     )
     def test_community_paths_are_not_ee_only(self, path: str) -> None:

@@ -56,10 +56,10 @@ def test_fail(name: str, reason: str) -> None:
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 
-def create_persona(name: str, system_prompt: str, tool_ids: list[int] | None = None) -> int | None:
+def create_agent(name: str, system_prompt: str, tool_ids: list[int] | None = None) -> int | None:
     body = {
         "name": name,
-        "description": f"Test persona: {name}",
+        "description": f"Test agent: {name}",
         "num_chunks": 0,
         "is_public": True,
         "system_prompt": system_prompt,
@@ -78,15 +78,15 @@ def create_persona(name: str, system_prompt: str, tool_ids: list[int] | None = N
         "hierarchy_node_ids": [],
         "document_ids": [],
     }
-    r = api("POST", "persona", body)
+    r = api("POST", "agent", body)
     if r.status_code not in (200, 201):
-        log(f"Failed to create persona '{name}': {r.status_code} {r.text[:200]}")
+        log(f"Failed to create agent '{name}': {r.status_code} {r.text[:200]}")
         return None
     return r.json()["id"]
 
 
-def delete_persona(pid: int) -> None:
-    api("PATCH", f"admin/persona/{pid}/visible?is_visible=false")
+def delete_agent(pid: int) -> None:
+    api("PATCH", f"admin/agent/{pid}/visible?is_visible=false")
 
 
 def delete_workflow(wid: int) -> None:
@@ -197,9 +197,9 @@ def setup_combined_workflow() -> dict | None:
         log("PythonTool not found on server")
         return None
 
-    # Create personas
+    # Create agents
     if http_tool_id:
-        http_agent_id = create_persona(
+        http_agent_id = create_agent(
             f"HTTP Fetcher {ts}",
             "You are an HTTP request agent. Use the http_request tool to make the following request:\n"
             "Method: GET\n"
@@ -209,7 +209,7 @@ def setup_combined_workflow() -> dict | None:
         )
     else:
         # Fallback: use a regular agent that simulates HTTP output
-        http_agent_id = create_persona(
+        http_agent_id = create_agent(
             f"HTTP Simulator {ts}",
             'You simulate an HTTP response. Output exactly this JSON:\n'
             '{"origin": "1.2.3.4", "url": "https://httpbin.org/get", "headers": {"Host": "httpbin.org"}}\n'
@@ -219,7 +219,7 @@ def setup_combined_workflow() -> dict | None:
     if not http_agent_id:
         return None
 
-    code_agent_id = create_persona(
+    code_agent_id = create_agent(
         f"Code Processor {ts}",
         "You are a code executor. Use the run_python tool to execute this Python code:\n\n"
         "```python\n"
@@ -236,18 +236,18 @@ def setup_combined_workflow() -> dict | None:
         tool_ids=[python_tool_id],
     )
     if not code_agent_id:
-        delete_persona(http_agent_id)
+        delete_agent(http_agent_id)
         return None
 
-    error_agent_id = create_persona(
+    error_agent_id = create_agent(
         f"Error Handler {ts}",
         "You are an error handler. The previous HTTP request did not return expected data. "
         "Output a brief error message explaining the issue. "
         "Always include ERROR_HANDLED in your response.",
     )
     if not error_agent_id:
-        delete_persona(http_agent_id)
-        delete_persona(code_agent_id)
+        delete_agent(http_agent_id)
+        delete_agent(code_agent_id)
         return None
 
     workflow_body = {
@@ -261,7 +261,7 @@ def setup_combined_workflow() -> dict | None:
         "steps": [
             {
                 "step_type": "agent",
-                "persona_id": http_agent_id,
+                "agent_id": http_agent_id,
                 "step_order": 0,
                 "step_name": "HTTP Fetcher",
                 "step_description": "Fetch data from httpbin API",
@@ -272,7 +272,7 @@ def setup_combined_workflow() -> dict | None:
             },
             {
                 "step_type": "conditional_router",
-                "persona_id": None,
+                "agent_id": None,
                 "step_order": 1,
                 "step_name": "Response Validator",
                 "step_description": "Check if HTTP response is valid",
@@ -291,7 +291,7 @@ def setup_combined_workflow() -> dict | None:
             },
             {
                 "step_type": "agent",
-                "persona_id": code_agent_id,
+                "agent_id": code_agent_id,
                 "step_order": 2,
                 "step_name": "Code Processor",
                 "step_description": "Parse HTTP response with Python",
@@ -302,7 +302,7 @@ def setup_combined_workflow() -> dict | None:
             },
             {
                 "step_type": "agent",
-                "persona_id": error_agent_id,
+                "agent_id": error_agent_id,
                 "step_order": 3,
                 "step_name": "Error Handler",
                 "step_description": "Handle failed HTTP response",
@@ -318,13 +318,13 @@ def setup_combined_workflow() -> dict | None:
     if r.status_code not in (200, 201):
         log(f"Failed to create workflow: {r.status_code} {r.text[:300]}")
         for pid in [http_agent_id, code_agent_id, error_agent_id]:
-            delete_persona(pid)
+            delete_agent(pid)
         return None
 
     wf = r.json()
     return {
         "workflow_id": wf["id"],
-        "persona_ids": [http_agent_id, code_agent_id, error_agent_id],
+        "agent_ids": [http_agent_id, code_agent_id, error_agent_id],
         "has_http_tool": bool(http_tool_id),
     }
 
@@ -412,8 +412,8 @@ if __name__ == "__main__":
     finally:
         print("\n--- Cleanup ---")
         delete_workflow(setup["workflow_id"])
-        for pid in setup["persona_ids"]:
-            delete_persona(pid)
+        for pid in setup["agent_ids"]:
+            delete_agent(pid)
         log("Cleaned up")
 
     print(f"\n{'='*60}")

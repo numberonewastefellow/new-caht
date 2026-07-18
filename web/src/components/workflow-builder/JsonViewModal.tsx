@@ -24,7 +24,7 @@ export function JsonViewModal({
     setLoading(true);
     Promise.all(
       Array.from(new Set(agentIds)).map((id) =>
-        fetch(`/api/persona/${id}`, { credentials: "include" })
+        fetch(`/api/agent/${id}`, { credentials: "include" })
           .then((r) => (r.ok ? r.json() : null))
           .catch(() => null)
       )

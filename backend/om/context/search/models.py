@@ -67,10 +67,10 @@ class BaseFilters(BaseModel):
     document_set: list[str] | None = None
     time_cutoff: datetime | None = None
     tags: list[Tag] | None = None
-    # Additive filters consumed by the document index for workspace / persona
+    # Additive filters consumed by the document index for workspace / agent
     # scoped retrieval. None means no restriction on that dimension.
     workspace_id_filter: int | None = None
-    persona_id_filter: int | None = None
+    agent_id_filter: int | None = None
 
 
 class KnowledgeFileFilters(BaseModel):
@@ -79,7 +79,7 @@ class KnowledgeFileFilters(BaseModel):
 
 
 class AssistantKnowledgeFilters(BaseModel):
-    """Filters for knowledge attached to an assistant (persona).
+    """Filters for knowledge attached to an assistant (agent).
 
     These filters scope search to documents/folders explicitly attached
     to the assistant. When present, only documents matching these criteria
@@ -121,7 +121,7 @@ class ChunkSearchRequest(BasicChunkRequest):
 
 
 # From the Chat Session we know what workspace (if any) this search should include
-# From the user uploads and persona uploaded files, we know which of those to include
+# From the user uploads and agent uploaded files, we know which of those to include
 class ChunkIndexRequest(BasicChunkRequest):
     # Calculated final filters
     filters: IndexFilters

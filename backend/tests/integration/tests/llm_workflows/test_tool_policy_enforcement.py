@@ -4,7 +4,7 @@ from om.tools.constants import SEARCH_TOOL_ID
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.chat import ChatSessionManager
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager
-from tests.integration.common_utils.managers.persona import PersonaManager
+from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.managers.tool import ToolManager
 from tests.integration.common_utils.test_models import DATestUser
 from tests.integration.common_utils.test_models import ToolName
@@ -48,11 +48,11 @@ def test_forced_tool_executes_when_available(admin_user: DATestUser) -> None:
     _ensure_llm_provider(admin_user)
 
     search_tool_id = _get_internal_search_tool_id(admin_user)
-    persona = PersonaManager.create(
+    agent = AgentManager.create(
         tool_ids=[search_tool_id], user_performing_action=admin_user
     )
     chat_session = ChatSessionManager.create(
-        persona_id=persona.id, user_performing_action=admin_user
+        agent_id=agent.id, user_performing_action=admin_user
     )
 
     response = ChatSessionManager.send_message(
@@ -72,7 +72,7 @@ def test_forced_tool_executes_when_available(admin_user: DATestUser) -> None:
     assert response.tool_call_debug[0].tool_args == {"queries": ["alpha"]}
 
 
-def test_forced_tool_rejected_when_not_in_persona_tools(
+def test_forced_tool_rejected_when_not_in_agent_tools(
     admin_user: DATestUser,
 ) -> None:
     _assert_integration_mode_enabled()
@@ -80,9 +80,9 @@ def test_forced_tool_rejected_when_not_in_persona_tools(
     _ensure_llm_provider(admin_user)
 
     search_tool_id = _get_internal_search_tool_id(admin_user)
-    persona = PersonaManager.create(tool_ids=[], user_performing_action=admin_user)
+    agent = AgentManager.create(tool_ids=[], user_performing_action=admin_user)
     chat_session = ChatSessionManager.create(
-        persona_id=persona.id, user_performing_action=admin_user
+        agent_id=agent.id, user_performing_action=admin_user
     )
 
     response = ChatSessionManager.send_message(
@@ -105,11 +105,11 @@ def test_allowed_tool_ids_excludes_tools_outside_allowlist(
     _ensure_llm_provider(admin_user)
 
     search_tool_id = _get_internal_search_tool_id(admin_user)
-    persona = PersonaManager.create(
+    agent = AgentManager.create(
         tool_ids=[search_tool_id], user_performing_action=admin_user
     )
     chat_session = ChatSessionManager.create(
-        persona_id=persona.id, user_performing_action=admin_user
+        agent_id=agent.id, user_performing_action=admin_user
     )
 
     response = ChatSessionManager.send_message(
@@ -133,11 +133,11 @@ def test_forced_and_allowlist_conflict_returns_validation_error(
     _ensure_llm_provider(admin_user)
 
     search_tool_id = _get_internal_search_tool_id(admin_user)
-    persona = PersonaManager.create(
+    agent = AgentManager.create(
         tool_ids=[search_tool_id], user_performing_action=admin_user
     )
     chat_session = ChatSessionManager.create(
-        persona_id=persona.id, user_performing_action=admin_user
+        agent_id=agent.id, user_performing_action=admin_user
     )
 
     response = ChatSessionManager.send_message(
@@ -159,11 +159,11 @@ def test_run_search_always_maps_to_forced_search_tool(admin_user: DATestUser) ->
     _ensure_llm_provider(admin_user)
 
     search_tool_id = _get_internal_search_tool_id(admin_user)
-    persona = PersonaManager.create(
+    agent = AgentManager.create(
         tool_ids=[search_tool_id], user_performing_action=admin_user
     )
     chat_session = ChatSessionManager.create(
-        persona_id=persona.id, user_performing_action=admin_user
+        agent_id=agent.id, user_performing_action=admin_user
     )
 
     response = ChatSessionManager.send_message(

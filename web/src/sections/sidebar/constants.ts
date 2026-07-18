@@ -8,7 +8,7 @@ export const LOCAL_STORAGE_KEYS = {
   HIDE_MOVE_CUSTOM_AGENT_MODAL: "onyx:hideMoveCustomAgentModal",
 } as const;
 
-export const DEFAULT_PERSONA_ID = 0;
+export const DEFAULT_AGENT_ID = 0;
 
 export const FEATURE_FLAGS = {
   CRAFT_ANIMATION_DISABLED: "craft-animation-disabled",

@@ -54,10 +54,10 @@ def test_fail(name: str, reason: str) -> None:
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 
-def create_chat_session(persona_id: int = 0) -> str | None:
+def create_chat_session(agent_id: int = 0) -> str | None:
     """Create a new chat session. Returns chat_session_id."""
     body = {
-        "persona_id": persona_id,
+        "agent_id": agent_id,
         "description": "test-execute-code",
     }
     resp = api("POST", "converse/create-chat-session", body)

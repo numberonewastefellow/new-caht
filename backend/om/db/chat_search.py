@@ -50,7 +50,7 @@ def search_chat_sessions(
         if not include_deleted:
             stmt = stmt.where(ChatSession.deleted.is_(False))
 
-        result = db_session.execute(stmt.options(joinedload(ChatSession.persona)))
+        result = db_session.execute(stmt.options(joinedload(ChatSession.agent)))
         sessions = result.scalars().all()
 
         has_more = len(sessions) > page_size
@@ -99,7 +99,7 @@ def search_chat_sessions(
         .distinct()
         .offset(offset_val)
         .limit(page_size + 1)
-        .options(joinedload(ChatSession.persona))
+        .options(joinedload(ChatSession.agent))
     )
 
     session_objs = db_session.execute(final_stmt).scalars().all()

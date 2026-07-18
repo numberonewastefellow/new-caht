@@ -331,7 +331,7 @@ def upload_image(image_bytes: bytes, filename: str) -> str | None:
     """Upload image to VirtualAI and return file_id."""
     import requests
 
-    url = f"{CONFIG['base_url']}/api/admin/persona/upload-image"
+    url = f"{CONFIG['base_url']}/api/admin/agent/upload-image"
     auth_headers = {"Authorization": f"Bearer {resolve_api_key()}"}
     files = {"file": (filename, io.BytesIO(image_bytes), "image/png")}
 
@@ -345,35 +345,35 @@ def upload_image(image_bytes: bytes, filename: str) -> str | None:
         return None
 
 
-def update_persona_image(persona_id: int, file_id: str) -> bool:
-    """Update persona with uploaded image by fetching existing data first."""
-    # Fetch current persona data
-    get_resp = api("GET", f"persona/{persona_id}")
+def update_agent_image(agent_id: int, file_id: str) -> bool:
+    """Update agent with uploaded image by fetching existing data first."""
+    # Fetch current agent data
+    get_resp = api("GET", f"agent/{agent_id}")
     if get_resp.status_code != 200:
-        print(f"  [ERR] GET persona {persona_id}: {get_resp.status_code}")
+        print(f"  [ERR] GET agent {agent_id}: {get_resp.status_code}")
         return False
 
-    persona = get_resp.json()
+    agent = get_resp.json()
 
     # Build the update payload with all required fields from existing data
     update_data = {
-        "name": persona["name"],
-        "description": persona.get("description", ""),
-        "system_prompt": persona.get("system_prompt", ""),
-        "task_prompt": persona.get("task_prompt", ""),
-        "num_chunks": persona.get("num_chunks", 10.0),
-        "is_public": persona.get("is_public", True),
-        "recency_bias": persona.get("recency_bias", "base_decay"),
-        "llm_filter_extraction": persona.get("llm_filter_extraction", False),
-        "llm_relevance_filter": persona.get("llm_relevance_filter", False),
-        "replace_base_system_prompt": persona.get("replace_base_system_prompt", True),
-        "datetime_aware": persona.get("datetime_aware", True),
-        "document_set_ids": [ds["id"] for ds in persona.get("document_sets", [])],
-        "tool_ids": [t["id"] for t in persona.get("tools", [])],
-        "starter_messages": persona.get("starter_messages", []),
-        "users": persona.get("users", []),
-        "groups": persona.get("groups", []),
-        "label_ids": [lbl["id"] for lbl in persona.get("labels", [])],
+        "name": agent["name"],
+        "description": agent.get("description", ""),
+        "system_prompt": agent.get("system_prompt", ""),
+        "task_prompt": agent.get("task_prompt", ""),
+        "num_chunks": agent.get("num_chunks", 10.0),
+        "is_public": agent.get("is_public", True),
+        "recency_bias": agent.get("recency_bias", "base_decay"),
+        "llm_filter_extraction": agent.get("llm_filter_extraction", False),
+        "llm_relevance_filter": agent.get("llm_relevance_filter", False),
+        "replace_base_system_prompt": agent.get("replace_base_system_prompt", True),
+        "datetime_aware": agent.get("datetime_aware", True),
+        "document_set_ids": [ds["id"] for ds in agent.get("document_sets", [])],
+        "tool_ids": [t["id"] for t in agent.get("tools", [])],
+        "starter_messages": agent.get("starter_messages", []),
+        "users": agent.get("users", []),
+        "groups": agent.get("groups", []),
+        "label_ids": [lbl["id"] for lbl in agent.get("labels", [])],
         "knowledge_file_ids": [],
         "hierarchy_node_ids": [],
         "document_ids": [],
@@ -382,21 +382,21 @@ def update_persona_image(persona_id: int, file_id: str) -> bool:
         "remove_image": False,
     }
 
-    resp = api("PATCH", f"persona/{persona_id}", update_data)
+    resp = api("PATCH", f"agent/{agent_id}", update_data)
     if resp.status_code != 200:
         print(f"  [ERR] PATCH {resp.status_code}: {resp.text[:300]}")
     return resp.status_code == 200
 
 
-def get_all_personas() -> list[dict]:
-    """Fetch all personas with their labels."""
-    resp = api("GET", "persona")
+def get_all_agents() -> list[dict]:
+    """Fetch all agents with their labels."""
+    resp = api("GET", "agent")
     if resp.status_code != 200:
-        print(f"Failed to list personas: {resp.status_code}")
+        print(f"Failed to list agents: {resp.status_code}")
         return []
-    personas = resp.json()
+    agents = resp.json()
     result = []
-    for p in personas:
+    for p in agents:
         result.append({
             "id": p["id"],
             "name": p["name"],
@@ -438,12 +438,12 @@ def process_agent(agent: dict, preview_dir: str | None = None, upload: bool = Tr
         return False
     print(f"  Uploaded: file_id={file_id}")
 
-    # Update persona
-    if update_persona_image(agent_id, file_id):
+    # Update agent
+    if update_agent_image(agent_id, file_id):
         print(f"  [OK] Image set for {name}")
         return True
     else:
-        print(f"  [FAIL] Could not update persona {agent_id}")
+        print(f"  [FAIL] Could not update agent {agent_id}")
         return False
 
 
@@ -462,8 +462,8 @@ def main():
 
     if args.preview:
         # Generate previews for all agents
-        personas = get_all_personas()
-        custom = [p for p in personas if p["labels"]]  # Only agents with labels
+        agents = get_all_agents()
+        custom = [p for p in agents if p["labels"]]  # Only agents with labels
         os.makedirs(args.preview_dir, exist_ok=True)
         print(f"Generating preview icons for {len(custom)} agents...")
         for agent in custom:
@@ -487,8 +487,8 @@ def main():
         return
 
     if args.id:
-        personas = get_all_personas()
-        agent = next((p for p in personas if p["id"] == args.id), None)
+        agents = get_all_agents()
+        agent = next((p for p in agents if p["id"] == args.id), None)
         if not agent:
             print(f"Agent ID {args.id} not found")
             sys.exit(1)
@@ -496,8 +496,8 @@ def main():
         return
 
     if args.all:
-        personas = get_all_personas()
-        custom = [p for p in personas if p["labels"]]  # Only agents with labels
+        agents = get_all_agents()
+        custom = [p for p in agents if p["labels"]]  # Only agents with labels
         print(f"Processing {len(custom)} agents with labels...")
         ok, fail = 0, 0
         for agent in custom:

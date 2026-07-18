@@ -24,8 +24,8 @@ import {
 } from "@/app/admin/discord-bot/lib";
 import { DiscordChannelsTable } from "@/app/admin/discord-bot/[guild-id]/DiscordChannelsTable";
 import { DiscordChannelConfig } from "@/app/admin/discord-bot/types";
-import { useAdminPersonas } from "@/hooks/useAdminPersonas";
-import { Persona } from "@/app/admin/assistants/interfaces";
+import { useAdminAgents } from "@/hooks/useAdminAgents";
+import { Agent } from "@/app/admin/assistants/interfaces";
 
 interface Props {
   params: Promise<{ "guild-id": string }>;
@@ -33,7 +33,7 @@ interface Props {
 
 function GuildDetailContent({
   guildId,
-  personas,
+  agents,
   localChannels,
   onChannelUpdate,
   handleEnableAll,
@@ -41,7 +41,7 @@ function GuildDetailContent({
   disabled,
 }: {
   guildId: number;
-  personas: Persona[];
+  agents: Agent[];
   localChannels: DiscordChannelConfig[];
   onChannelUpdate: (
     channelId: number,
@@ -49,7 +49,7 @@ function GuildDetailContent({
       | "enabled"
       | "require_bot_invocation"
       | "thread_only_mode"
-      | "persona_override_id",
+      | "agent_override_id",
     value: boolean | number | null
   ) => void;
   handleEnableAll: () => void;
@@ -131,7 +131,7 @@ function GuildDetailContent({
         ) : (
           <DiscordChannelsTable
             channels={localChannels}
-            personas={personas}
+            agents={agents}
             onChannelUpdate={onChannelUpdate}
             disabled={disabled}
           />
@@ -151,7 +151,7 @@ export default function Page({ params }: Props) {
     error: channelsError,
     refreshChannels,
   } = useDiscordChannels(guildId);
-  const { personas, isLoading: personasLoading } = useAdminPersonas({
+  const { agents, isLoading: agentsLoading } = useAdminAgents({
     includeDefault: true,
   });
   const [isUpdating, setIsUpdating] = useState(false);
@@ -183,7 +183,7 @@ export default function Page({ params }: Props) {
         local.enabled !== original.enabled ||
         local.require_bot_invocation !== original.require_bot_invocation ||
         local.thread_only_mode !== original.thread_only_mode ||
-        local.persona_override_id !== original.persona_override_id
+        local.agent_override_id !== original.agent_override_id
       ) {
         return true;
       }
@@ -199,7 +199,7 @@ export default function Page({ params }: Props) {
         enabled: boolean;
         require_bot_invocation: boolean;
         thread_only_mode: boolean;
-        persona_override_id: number | null;
+        agent_override_id: number | null;
       };
     }[] = [];
 
@@ -210,7 +210,7 @@ export default function Page({ params }: Props) {
         local.enabled !== original.enabled ||
         local.require_bot_invocation !== original.require_bot_invocation ||
         local.thread_only_mode !== original.thread_only_mode ||
-        local.persona_override_id !== original.persona_override_id
+        local.agent_override_id !== original.agent_override_id
       ) {
         changes.push({
           channelConfigId: local.id,
@@ -218,7 +218,7 @@ export default function Page({ params }: Props) {
             enabled: local.enabled,
             require_bot_invocation: local.require_bot_invocation,
             thread_only_mode: local.thread_only_mode,
-            persona_override_id: local.persona_override_id,
+            agent_override_id: local.agent_override_id,
           },
         });
       }
@@ -234,7 +234,7 @@ export default function Page({ params }: Props) {
         | "enabled"
         | "require_bot_invocation"
         | "thread_only_mode"
-        | "persona_override_id",
+        | "agent_override_id",
       value: boolean | number | null
     ) => {
       setLocalChannels((prev) =>
@@ -289,17 +289,17 @@ export default function Page({ params }: Props) {
     }
   };
 
-  const handleDefaultPersonaChange = async (personaId: number | null) => {
+  const handleDefaultAgentChange = async (agentId: number | null) => {
     if (!guild) return;
     setIsUpdating(true);
     try {
       await updateGuildConfig(guildId, {
         enabled: guild.enabled,
-        default_persona_id: personaId,
+        default_agent_id: agentId,
       });
       refreshGuild();
       toast.success(
-        personaId ? "Default assistant updated" : "Default assistant cleared"
+        agentId ? "Default assistant updated" : "Default assistant cleared"
       );
     } catch (err) {
       toast.error(
@@ -337,32 +337,32 @@ export default function Page({ params }: Props) {
         }
       />
       <SettingsLayouts.Body>
-        {/* Default Persona Selector */}
+        {/* Default Agent Selector */}
         <Card variant={!guild?.enabled ? "disabled" : "primary"}>
           <LineItemLayout
             title="Default Agent"
             description="The agent used by the bot in all channels unless overridden."
             rightChildren={
               <InputSelect
-                value={guild?.default_persona_id?.toString() ?? "default"}
+                value={guild?.default_agent_id?.toString() ?? "default"}
                 onValueChange={(value: string) =>
-                  handleDefaultPersonaChange(
+                  handleDefaultAgentChange(
                     value === "default" ? null : parseInt(value)
                   )
                 }
-                disabled={isUpdating || !guild?.enabled || personasLoading}
+                disabled={isUpdating || !guild?.enabled || agentsLoading}
               >
                 <InputSelect.Trigger placeholder="Select agent" />
                 <InputSelect.Content>
                   <InputSelect.Item value="default">
                     Default Assistant
                   </InputSelect.Item>
-                  {personas.map((persona) => (
+                  {agents.map((agent) => (
                     <InputSelect.Item
-                      key={persona.id}
-                      value={persona.id.toString()}
+                      key={agent.id}
+                      value={agent.id.toString()}
                     >
-                      {persona.name}
+                      {agent.name}
                     </InputSelect.Item>
                   ))}
                 </InputSelect.Content>
@@ -373,7 +373,7 @@ export default function Page({ params }: Props) {
 
         <GuildDetailContent
           guildId={guildId}
-          personas={personas}
+          agents={agents}
           localChannels={localChannels}
           onChannelUpdate={handleChannelUpdate}
           handleEnableAll={handleEnableAll}

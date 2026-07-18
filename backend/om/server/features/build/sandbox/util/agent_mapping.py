@@ -1,6 +1,6 @@
-"""Persona mapping utility for demo user identities and org structure.
+"""Agent mapping utility for demo user identities and org structure.
 
-Maps frontend persona selections (work_area + level) to demo user profiles
+Maps frontend agent selections (work_area + level) to demo user profiles
 with name and email for sandbox provisioning.
 
 Also provides organizational structure data and content generators for org_info files.
@@ -10,15 +10,15 @@ Single source of truth for both local and Kubernetes sandbox provisioning.
 from typing import TypedDict
 
 
-class PersonaInfo(TypedDict):
-    """Type for persona information."""
+class AgentInfo(TypedDict):
+    """Type for agent information."""
 
     name: str
     email: str
 
 
-# Persona mapping: work_area -> level -> PersonaInfo
-PERSONA_MAPPING: dict[str, dict[str, PersonaInfo]] = {
+# Agent mapping: work_area -> level -> AgentInfo
+AGENT_MAPPING: dict[str, dict[str, AgentInfo]] = {
     "engineering": {
         "ic": {
             "name": "Jiwon Kang",
@@ -155,15 +155,15 @@ The file `organization_structure.json` contains a json with the organization's g
 """
 
 
-def get_persona_info(work_area: str | None, level: str | None) -> PersonaInfo | None:
-    """Get persona info from work area and level.
+def get_agent_info(work_area: str | None, level: str | None) -> AgentInfo | None:
+    """Get agent info from work area and level.
 
     Args:
         work_area: User's work area (e.g., "engineering", "product", "sales")
         level: User's level (e.g., "ic", "manager")
 
     Returns:
-        PersonaInfo with name and email, or None if no matching persona
+        AgentInfo with name and email, or None if no matching agent
     """
     if not work_area:
         return None
@@ -171,20 +171,20 @@ def get_persona_info(work_area: str | None, level: str | None) -> PersonaInfo | 
     work_area_lower = work_area.lower().strip()
     level_lower = (level or "manager").lower().strip()
 
-    work_area_mapping = PERSONA_MAPPING.get(work_area_lower)
+    work_area_mapping = AGENT_MAPPING.get(work_area_lower)
     if not work_area_mapping:
         return None
 
     return work_area_mapping.get(level_lower)
 
 
-def generate_user_identity_content(persona: PersonaInfo) -> str:
+def generate_user_identity_content(agent: AgentInfo) -> str:
     """Generate user identity profile content.
 
     Args:
-        persona: PersonaInfo with name and email
+        agent: AgentInfo with name and email
 
     Returns:
         Content for user_identity_profile.txt
     """
-    return f"Your name is {persona['name']}. Your email is {persona['email']}. You are working at Netherite Extraction Corp.\n"
+    return f"Your name is {agent['name']}. Your email is {agent['email']}. You are working at Netherite Extraction Corp.\n"

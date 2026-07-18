@@ -53,10 +53,10 @@ def get_empty_chat_messages_entries__paginated(
             # Get user email
             user_email = chat_session.user.email if chat_session.user else None
 
-            # Get assistant name (from session persona, or alternate if specified)
+            # Get assistant name (from session agent, or alternate if specified)
             assistant_name = None
-            if chat_session.persona:
-                assistant_name = chat_session.persona.name
+            if chat_session.agent:
+                assistant_name = chat_session.agent.name
 
             message_skeletons.append(
                 ChatMessageSkeleton(

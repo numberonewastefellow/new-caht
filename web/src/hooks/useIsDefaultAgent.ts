@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { SEARCH_PARAM_NAMES } from "@/app/app/services/searchParams";
 import { CombinedSettings } from "@/app/admin/settings/interfaces";
 import { ChatSession } from "@/app/app/interfaces";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { DEFAULT_ASSISTANT_ID } from "@/lib/constants";
 
 /**
@@ -20,13 +20,13 @@ export default function useIsDefaultAgent({
   selectedChatSession,
   settings,
 }: {
-  liveAssistant: MinimalPersonaSnapshot | undefined;
+  liveAssistant: MinimalAgentSnapshot | undefined;
   existingChatSessionId: string | null;
   selectedChatSession: ChatSession | undefined;
   settings: CombinedSettings | null;
 }) {
   const searchParams = useSearchParams();
-  const urlAssistantId = searchParams?.get(SEARCH_PARAM_NAMES.PERSONA_ID);
+  const urlAssistantId = searchParams?.get(SEARCH_PARAM_NAMES.AGENT_ID);
 
   return useMemo(() => {
     // If default assistant is disabled, it can never be the default agent
@@ -42,10 +42,10 @@ export default function useIsDefaultAgent({
       return false;
     }
 
-    // If there's an existing chat session with a persona_id, it's not default
+    // If there's an existing chat session with a agent_id, it's not default
     if (
       existingChatSessionId &&
-      selectedChatSession?.persona_id !== DEFAULT_ASSISTANT_ID
+      selectedChatSession?.agent_id !== DEFAULT_ASSISTANT_ID
     ) {
       return false;
     }
@@ -56,7 +56,7 @@ export default function useIsDefaultAgent({
     settings?.settings?.disable_default_assistant,
     urlAssistantId,
     existingChatSessionId,
-    selectedChatSession?.persona_id,
+    selectedChatSession?.agent_id,
     liveAssistant?.id,
   ]);
 }

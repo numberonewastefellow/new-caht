@@ -7,7 +7,7 @@ This module provides reusable access filtering logic for documents based on:
 - User email matching external_user_emails
 - User group overlap with external_user_group_ids
 
-This is a standalone module to avoid circular imports between document.py and persona.py.
+This is a standalone module to avoid circular imports between document.py and agent.py.
 """
 
 from sqlalchemy import and_

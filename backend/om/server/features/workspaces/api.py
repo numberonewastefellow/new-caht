@@ -24,7 +24,8 @@ from om.db.models import Workspace__KnowledgeFile
 from om.db.models import User
 from om.db.models import KnowledgeFile
 from om.db.models import Workspace
-from om.db.persona import get_personas_by_ids
+from om.db.agent import get_agents_by_ids
+from om.db.workspaces import get_owned_workspace
 from om.db.workspaces import get_workspace_token_count
 from om.db.workspaces import upload_files_to_knowledge_files_with_indexing
 from om.server.features.workspaces.models import CategorizedFilesSnapshot
@@ -54,7 +55,9 @@ def get_workspaces(
 ) -> list[WorkspaceSnapshot]:
     user_id = user.id
     workspaces = (
-        db_session.query(Workspace).filter(Workspace.user_id == user_id).all()
+        db_session.query(Workspace)
+        .filter(Workspace.user_id == user_id, Workspace.deleted.is_(False))
+        .all()
     )
     return [WorkspaceSnapshot.from_model(workspace) for workspace in workspaces]
 
@@ -122,11 +125,7 @@ def get_workspace(
     db_session: Session = Depends(get_session),
 ) -> WorkspaceSnapshot:
     user_id = user.id
-    workspace = (
-        db_session.query(Workspace)
-        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
-        .one_or_none()
-    )
+    workspace = get_owned_workspace(workspace_id, user_id, db_session)
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
     return WorkspaceSnapshot.from_model(workspace)
@@ -165,11 +164,7 @@ def unlink_user_file_from_workspace(
     Does not delete the underlying file; only removes the association.
     """
     user_id = user.id
-    workspace = (
-        db_session.query(Workspace)
-        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
-        .one_or_none()
-    )
+    workspace = get_owned_workspace(workspace_id, user_id, db_session)
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
@@ -219,11 +214,7 @@ def link_user_file_to_workspace(
     Returns the linked user file snapshot.
     """
     user_id = user.id
-    workspace = (
-        db_session.query(Workspace)
-        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
-        .one_or_none()
-    )
+    workspace = get_owned_workspace(workspace_id, user_id, db_session)
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
@@ -299,11 +290,7 @@ def upsert_workspace_instructions(
     """Create or update this workspace's instructions stored on the workspace itself."""
     # Ensure the workspace exists and belongs to the user
     user_id = user.id
-    workspace = (
-        db_session.query(Workspace)
-        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
-        .one_or_none()
-    )
+    workspace = get_owned_workspace(workspace_id, user_id, db_session)
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
     workspace.workspace_instructions = body.instructions
@@ -316,7 +303,7 @@ def upsert_workspace_instructions(
 class WorkspacePayload(BaseModel):
     workspace: WorkspaceSnapshot
     files: list[KnowledgeFileSnapshot] | None = None
-    persona_id_to_is_default: dict[int, bool] | None = None
+    agent_id_to_is_default: dict[int, bool] | None = None
 
 
 @router.get(
@@ -329,19 +316,19 @@ def get_workspace_details(
 ) -> WorkspacePayload:
     workspace = get_workspace(workspace_id, user, db_session)
     files = get_files_in_workspace(workspace_id, user, db_session)
-    persona_ids = [
-        session.persona_id
+    agent_ids = [
+        session.agent_id
         for session in workspace.chat_sessions
-        if session.persona_id is not None
+        if session.agent_id is not None
     ]
-    personas = get_personas_by_ids(persona_ids, db_session)
-    persona_id_to_is_default = {
-        persona.id: persona.is_default_persona for persona in personas
+    agents = get_agents_by_ids(agent_ids, db_session)
+    agent_id_to_is_default = {
+        agent.id: agent.is_default_agent for agent in agents
     }
     return WorkspacePayload(
         workspace=workspace,
         files=files,
-        persona_id_to_is_default=persona_id_to_is_default,
+        agent_id_to_is_default=agent_id_to_is_default,
     )
 
 
@@ -358,11 +345,7 @@ def update_workspace(
     db_session: Session = Depends(get_session),
 ) -> WorkspaceSnapshot:
     user_id = user.id
-    workspace = (
-        db_session.query(Workspace)
-        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
-        .one_or_none()
-    )
+    workspace = get_owned_workspace(workspace_id, user_id, db_session)
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
@@ -383,24 +366,46 @@ def delete_workspace(
     db_session: Session = Depends(get_session),
 ) -> Response:
     user_id = user.id
-    workspace = (
-        db_session.query(Workspace)
-        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
-        .one_or_none()
-    )
+    workspace = get_owned_workspace(workspace_id, user_id, db_session)
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
-    # Unlink chat sessions from this workspace
-    for chat in workspace.chat_sessions:
-        chat.workspace_id = None
+    # Soft-delete the workspace (row retained, hidden from the dashboard), and
+    # permanently delete any of its knowledge files that are now orphaned -- i.e.
+    # not linked to any OTHER workspace or any assistant. Shared files are only
+    # unlinked from this workspace. The heavy per-file delete (OpenSearch chunks +
+    # MinIO blob + DB row) runs in the background via DELETE_SINGLE_USER_FILE.
+    tenant_id = get_current_tenant_id()
+    orphaned_file_ids: list[str] = []
+    for knowledge_file in list(workspace.knowledge_files):
+        used_elsewhere = (
+            any(w.id != workspace_id for w in knowledge_file.workspaces)
+            or len(knowledge_file.assistants) > 0
+        )
+        # Unlink from this workspace. This removes the workspace__knowledge_file
+        # join row, which has no ON DELETE CASCADE, so it must be gone before the
+        # delete task removes the KnowledgeFile row.
+        workspace.knowledge_files.remove(knowledge_file)
+        if not used_elsewhere:
+            knowledge_file.status = KnowledgeFileStatus.DELETING
+            orphaned_file_ids.append(str(knowledge_file.id))
 
-    # Unlink many-to-many user files association (Workspace__KnowledgeFile)
-    for uf in list(workspace.knowledge_files):
-        workspace.knowledge_files.remove(uf)
-
-    db_session.delete(workspace)
+    workspace.deleted = True
     db_session.commit()
+
+    # Enqueue the actual store deletions AFTER commit, so the join rows are already
+    # gone when the task deletes the KnowledgeFile row.
+    for knowledge_file_id in orphaned_file_ids:
+        task = client_app.send_task(
+            OmCeleryTask.DELETE_SINGLE_USER_FILE,
+            kwargs={"knowledge_file_id": knowledge_file_id, "tenant_id": tenant_id},
+            queue=OmCeleryQueues.USER_FILE_DELETE,
+            priority=OmCeleryPriority.HIGH,
+        )
+        logger.info(
+            f"Triggered delete for orphaned knowledge_file_id={knowledge_file_id} "
+            f"(workspace {workspace_id} deleted) with task_id={task.id}"
+        )
     return Response(status_code=204)
 
 
@@ -423,7 +428,7 @@ def delete_user_file(
     if knowledge_file is None:
         raise HTTPException(status_code=404, detail="File not found")
 
-    # Check associations with workspaces and assistants (personas)
+    # Check associations with workspaces and assistants (agents)
     workspace_names = [workspace.name for workspace in knowledge_file.workspaces]
     assistant_names = [assistant.name for assistant in knowledge_file.assistants]
 
@@ -621,11 +626,7 @@ def get_workspace_total_token_count(
 
     # Verify the workspace belongs to the current user
     user_id = user.id
-    workspace = (
-        db_session.query(Workspace)
-        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
-        .one_or_none()
-    )
+    workspace = get_owned_workspace(workspace_id, user_id, db_session)
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 

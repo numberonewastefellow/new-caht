@@ -18,7 +18,7 @@ describe("useLLMProviders", () => {
     mockUseSWR.mockReset();
   });
 
-  test("uses public providers endpoint when personaId is not provided", () => {
+  test("uses public providers endpoint when agentId is not provided", () => {
     const mockMutate = jest.fn();
     mockUseSWR.mockReturnValue({
       data: undefined,
@@ -41,9 +41,9 @@ describe("useLLMProviders", () => {
     expect(result.refetch).toBe(mockMutate);
   });
 
-  test("uses persona-specific providers endpoint when personaId is provided", () => {
+  test("uses agent-specific providers endpoint when agentId is provided", () => {
     const mockMutate = jest.fn();
-    const providers = [{ name: "Persona Provider" }];
+    const providers = [{ name: "Agent Provider" }];
     mockUseSWR.mockReturnValue({
       data: providers,
       error: undefined,
@@ -54,7 +54,7 @@ describe("useLLMProviders", () => {
     const result = useLLMProviders(42);
 
     expect(mockUseSWR).toHaveBeenCalledWith(
-      "/api/llm/persona/42/providers",
+      "/api/llm/agent/42/providers",
       errorHandlingFetcher,
       expect.objectContaining({
         revalidateOnFocus: false,

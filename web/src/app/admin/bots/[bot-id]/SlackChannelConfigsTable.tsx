@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import type { Route } from "next";
 import { useState } from "react";
-import { deleteSlackChannelConfig, isPersonaASlackBotPersona } from "./lib";
+import { deleteSlackChannelConfig, isAgentASlackBotAgent } from "./lib";
 import { Card } from "@/components/ui/card";
 import Button from "@/refresh-components/buttons/Button";
 import CreateButton from "@/refresh-components/buttons/CreateButton";
@@ -94,17 +94,17 @@ export default function SlackChannelConfigsTable({
                         </div>
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
-                        {slackChannelConfig.persona &&
-                        !isPersonaASlackBotPersona(
-                          slackChannelConfig.persona
+                        {slackChannelConfig.agent &&
+                        !isAgentASlackBotAgent(
+                          slackChannelConfig.agent
                         ) ? (
                           <Link
                             href={
-                              `/app/agents/edit/${slackChannelConfig.persona.id}` as Route
+                              `/app/agents/edit/${slackChannelConfig.agent.id}` as Route
                             }
                             className="text-primary hover:underline"
                           >
-                            {slackChannelConfig.persona.name}
+                            {slackChannelConfig.agent.name}
                           </Link>
                         ) : (
                           "-"
@@ -112,9 +112,9 @@ export default function SlackChannelConfigsTable({
                       </TableCell>
                       <TableCell>
                         <div>
-                          {slackChannelConfig.persona &&
-                          slackChannelConfig.persona.document_sets.length > 0
-                            ? slackChannelConfig.persona.document_sets
+                          {slackChannelConfig.agent &&
+                          slackChannelConfig.agent.document_sets.length > 0
+                            ? slackChannelConfig.agent.document_sets
                                 .map((documentSet) => documentSet.name)
                                 .join(", ")
                             : "-"}

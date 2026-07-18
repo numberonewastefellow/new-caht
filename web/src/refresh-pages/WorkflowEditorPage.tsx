@@ -148,7 +148,7 @@ function WorkflowStepRow({
 }: WorkflowStepRowProps) {
   const { values, setFieldValue, errors, touched } = useFormikContext<any>();
   const stepType = values.steps?.[index]?.step_type ?? "agent";
-  const currentPersonaId = values.steps?.[index]?.persona_id ?? 0;
+  const currentAgentId = values.steps?.[index]?.agent_id ?? 0;
   const stepErrors = (errors.steps as any)?.[index];
   const stepTouched = (touched.steps as any)?.[index];
 
@@ -209,7 +209,7 @@ function WorkflowStepRow({
                 onChange={(e) => {
                   setFieldValue(`steps.${index}.step_type`, e.target.value);
                   if (e.target.value === "conditional_router") {
-                    setFieldValue(`steps.${index}.persona_id`, null);
+                    setFieldValue(`steps.${index}.agent_id`, null);
                     setFieldValue(`steps.${index}.condition`, {
                       condition_field: "",
                       operator: "contains",
@@ -219,7 +219,7 @@ function WorkflowStepRow({
                       false_steps: [],
                     });
                   } else {
-                    setFieldValue(`steps.${index}.persona_id`, 0);
+                    setFieldValue(`steps.${index}.agent_id`, 0);
                     setFieldValue(`steps.${index}.condition`, null);
                   }
                 }}
@@ -230,35 +230,35 @@ function WorkflowStepRow({
             </div>
           </div>
 
-          {/* Agent-specific: persona selector */}
+          {/* Agent-specific: agent selector */}
           {!isConditionalRouter && (
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-1">
                 <Text mainContentEmphasis text04>Agent</Text>
                 <Text text03 mainContentMuted className="text-status-error-05">*</Text>
                 <InfoTip>
-                  Select which agent (persona) handles this step. The agent&apos;s own LLM, tools, and system prompt will be used. Create agents first in the Agents page.
+                  Select which agent (agent) handles this step. The agent&apos;s own LLM, tools, and system prompt will be used. Create agents first in the Agents page.
                 </InfoTip>
               </div>
               <select
-                name={`steps.${index}.persona_id`}
-                value={currentPersonaId}
+                name={`steps.${index}.agent_id`}
+                value={currentAgentId}
                 className={cn(
                   "w-full h-10 px-3 rounded-8 border bg-background-tint-00 text-text-05 text-sm",
-                  stepTouched?.persona_id && stepErrors?.persona_id
+                  stepTouched?.agent_id && stepErrors?.agent_id
                     ? "border-status-error-05"
                     : "border-border"
                 )}
                 onChange={(e) => {
                   setFieldValue(
-                    `steps.${index}.persona_id`,
+                    `steps.${index}.agent_id`,
                     parseInt(e.target.value) || 0
                   );
                 }}
                 onBlur={() => {
                   const touchedArr = Array.isArray(touched.steps) ? touched.steps : [];
                   const touchedSteps = [...touchedArr];
-                  touchedSteps[index] = { ...touchedSteps[index], persona_id: true };
+                  touchedSteps[index] = { ...touchedSteps[index], agent_id: true };
                 }}
               >
                 <option value={0}>-- Select Agent --</option>
@@ -268,9 +268,9 @@ function WorkflowStepRow({
                   </option>
                 ))}
               </select>
-              {stepTouched?.persona_id && stepErrors?.persona_id && (
+              {stepTouched?.agent_id && stepErrors?.agent_id && (
                 <Text secondaryBody className="text-status-error-05 text-xs mt-0.5">
-                  {stepErrors.persona_id}
+                  {stepErrors.agent_id}
                 </Text>
               )}
             </div>
@@ -533,7 +533,7 @@ export default function WorkflowEditorPage({
     is_public: existingWorkflow?.is_public ?? true,
     steps: existingWorkflow?.steps?.map((s) => ({
       step_type: s.step_type ?? "agent",
-      persona_id: s.persona_id,
+      agent_id: s.agent_id,
       step_order: s.step_order,
       step_name: s.step_name,
       step_description: s.step_description ?? "",
@@ -545,7 +545,7 @@ export default function WorkflowEditorPage({
     })) ?? [
       {
         step_type: "agent" as const,
-        persona_id: 0,
+        agent_id: 0,
         step_order: 0,
         step_name: "",
         step_description: "",
@@ -570,7 +570,7 @@ export default function WorkflowEditorPage({
       .of(
         Yup.object().shape({
           step_type: Yup.string().oneOf(["agent", "conditional_router"]).required(),
-          persona_id: Yup.number().when("step_type", {
+          agent_id: Yup.number().when("step_type", {
             is: "agent",
             then: (schema) => schema.min(1, "Please select an agent").required("Agent is required"),
             otherwise: (schema) => schema.nullable(),
@@ -598,7 +598,7 @@ export default function WorkflowEditorPage({
         const s = values.steps[i];
         if (!s) continue;
         if (!s.step_name?.trim()) return `Step ${i + 1}: Please enter a step name.`;
-        if (s.step_type === "agent" && (!s.persona_id || s.persona_id === 0)) {
+        if (s.step_type === "agent" && (!s.agent_id || s.agent_id === 0)) {
           return `Step ${i + 1}: Please select an agent.`;
         }
         if (s.step_type === "conditional_router" && !s.condition?.condition_field) {
@@ -613,7 +613,7 @@ export default function WorkflowEditorPage({
     try {
       const steps: WorkflowStepCreate[] = values.steps.map((s, i) => ({
         step_type: s.step_type || "agent",
-        persona_id: s.step_type === "conditional_router" ? null : s.persona_id,
+        agent_id: s.step_type === "conditional_router" ? null : s.agent_id,
         step_order: i,
         step_name: s.step_name,
         step_description: s.step_description || null,
@@ -814,7 +814,7 @@ export default function WorkflowEditorPage({
                             <Text as="p" mainContentEmphasis>Agent Steps</Text>
                             <Text as="p" secondaryBody text03>
                               Define the agents that participate in this workflow and their execution order. Each step runs a specific agent
-                              (persona) with its own LLM and tools. In LLM Decision mode, the orchestrator dynamically chooses which agent
+                              (agent) with its own LLM and tools. In LLM Decision mode, the orchestrator dynamically chooses which agent
                               to call next. In Sequential mode, agents run top-to-bottom in order.
                             </Text>
                           </div>
@@ -860,7 +860,7 @@ export default function WorkflowEditorPage({
                                   onClick={() =>
                                     arrayHelpers.push({
                                       step_type: "agent",
-                                      persona_id: 0,
+                                      agent_id: 0,
                                       step_order: values.steps.length,
                                       step_name: "",
                                       step_description: "",
@@ -880,7 +880,7 @@ export default function WorkflowEditorPage({
                                   onClick={() =>
                                     arrayHelpers.push({
                                       step_type: "conditional_router",
-                                      persona_id: null,
+                                      agent_id: null,
                                       step_order: values.steps.length,
                                       step_name: "",
                                       step_description: "",

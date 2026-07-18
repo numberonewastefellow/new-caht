@@ -41,7 +41,7 @@ def _api(method: str, path: str, data: dict | None = None, **kwargs):
 def create_chat_session():
     """Create a new chat session for the Document Generator."""
     resp = _api("POST", "converse/create-chat-session", {
-        "persona_id": ASSISTANT_ID,
+        "agent_id": ASSISTANT_ID,
         "description": "DOCX download test",
     })
     assert resp.status_code == 200, f"Failed to create session: {resp.status_code} {resp.text}"

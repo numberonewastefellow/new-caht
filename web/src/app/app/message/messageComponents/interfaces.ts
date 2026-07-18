@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { Packet, StopReason } from "../../services/streamingModels";
 import { OmDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
 import { WorkspaceFile } from "../../workspaces/workspacesService";
@@ -23,7 +23,7 @@ export enum RenderType {
 export type TimelineLayout = "timeline" | "content";
 
 export interface FullChatState {
-  assistant: MinimalPersonaSnapshot;
+  assistant: MinimalAgentSnapshot;
   // Backend assistant message id (for per-message lookups, e.g. workflow trace)
   messageId?: number;
   // Document-related context for citations

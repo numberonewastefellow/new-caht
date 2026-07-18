@@ -75,7 +75,7 @@ from config import (  # noqa: E402
     apply_common_args,
 )
 
-# ── Test Personas & Workflows ────────────────────────────────────────────────
+# ── Test Agents & Workflows ────────────────────────────────────────────────
 
 ECHO_PROMPT = (
     "You are Echo Agent. Repeat the user's message with the prefix 'ECHO: '. "
@@ -98,10 +98,10 @@ ORCHESTRATOR_PROMPT = (
 TEST_MESSAGE = "The quick brown fox jumps over the lazy dog."
 
 
-def create_persona(name: str, prompt: str) -> int | None:
+def create_agent(name: str, prompt: str) -> int | None:
     body = {
         "name": name,
-        "description": f"Test persona: {name}",
+        "description": f"Test agent: {name}",
         "num_chunks": 0,
         "is_public": True,
         "system_prompt": prompt,
@@ -120,31 +120,31 @@ def create_persona(name: str, prompt: str) -> int | None:
         "hierarchy_node_ids": [],
         "document_ids": [],
     }
-    r = api("POST", "persona", body)
+    r = api("POST", "agent", body)
     if r.status_code not in (200, 201):
-        print(f"  [ERR] Create persona '{name}': {r.status_code} {r.text[:200]}")
+        print(f"  [ERR] Create agent '{name}': {r.status_code} {r.text[:200]}")
         return None
     pid = r.json()["id"]
-    print(f"  [OK] Persona '{name}' -> ID={pid}")
+    print(f"  [OK] Agent '{name}' -> ID={pid}")
     return pid
 
 
-def find_or_create_persona(name: str, prompt: str) -> int | None:
-    """Find existing persona by name, or create new one."""
-    resp = api("GET", "persona")
+def find_or_create_agent(name: str, prompt: str) -> int | None:
+    """Find existing agent by name, or create new one."""
+    resp = api("GET", "agent")
     if resp.status_code == 200:
         for p in resp.json():
             if p["name"] == name:
-                print(f"  [OK] Reusing persona '{name}' -> ID={p['id']}")
+                print(f"  [OK] Reusing agent '{name}' -> ID={p['id']}")
                 return p["id"]
-    return create_persona(name, prompt)
+    return create_agent(name, prompt)
 
 
 def create_workflow(name: str, mode: str, echo_pid: int, summary_pid: int,
                     orchestrator_prompt: str = "") -> int | None:
     steps = [
         {
-            "persona_id": echo_pid,
+            "agent_id": echo_pid,
             "step_order": 0,
             "step_name": "Echo Agent",
             "step_description": "Echoes the input",
@@ -154,7 +154,7 @@ def create_workflow(name: str, mode: str, echo_pid: int, summary_pid: int,
             "promote_output": False,
         },
         {
-            "persona_id": summary_pid,
+            "agent_id": summary_pid,
             "step_order": 1,
             "step_name": "Summary Agent",
             "step_description": "Summarizes all outputs",
@@ -362,14 +362,14 @@ def main():
     # ── Setup ──
     if not args.skip_create:
         print("\n" + "=" * 70)
-        print("  SETUP: Creating test personas and workflows")
+        print("  SETUP: Creating test agents and workflows")
         print("=" * 70)
 
-        echo_pid = find_or_create_persona("ZZ_Test_Echo_Agent", ECHO_PROMPT)
-        summary_pid = find_or_create_persona("ZZ_Test_Summary_Agent", SUMMARY_PROMPT)
+        echo_pid = find_or_create_agent("ZZ_Test_Echo_Agent", ECHO_PROMPT)
+        summary_pid = find_or_create_agent("ZZ_Test_Summary_Agent", SUMMARY_PROMPT)
 
         if not echo_pid or not summary_pid:
-            print("[FATAL] Could not create test personas")
+            print("[FATAL] Could not create test agents")
             sys.exit(1)
 
         # Check if workflows already exist

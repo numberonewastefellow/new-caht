@@ -71,12 +71,12 @@ export default function WorkspaceChatSessionList({
         <div className="flex flex-col gap-0.5">
           {workspaceChats.map((chat) => {
             const isActive = chat.id === activeChatId;
-            const personaIdToDefault =
-              currentWorkspaceDetails?.persona_id_to_is_default || {};
+            const agentIdToDefault =
+              currentWorkspaceDetails?.agent_id_to_is_default || {};
             const isCustomAgent =
-              personaIdToDefault[chat.persona_id] === false;
+              agentIdToDefault[chat.agent_id] === false;
             const assistant = isCustomAgent
-              ? assistants.find((a) => a.id === chat.persona_id)
+              ? assistants.find((a) => a.id === chat.agent_id)
               : undefined;
             const n = swatchIndexForKey(chat.id);
             return (

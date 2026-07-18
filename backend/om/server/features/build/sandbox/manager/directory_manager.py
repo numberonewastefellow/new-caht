@@ -15,12 +15,12 @@ from om.server.features.build.sandbox.util.agent_instructions import (
 from om.server.features.build.sandbox.util.opencode_config import (
     build_opencode_config,
 )
-from om.server.features.build.sandbox.util.persona_mapping import (
+from om.server.features.build.sandbox.util.agent_mapping import (
     generate_user_identity_content,
 )
-from om.server.features.build.sandbox.util.persona_mapping import get_persona_info
-from om.server.features.build.sandbox.util.persona_mapping import ORG_INFO_AGENTS_MD
-from om.server.features.build.sandbox.util.persona_mapping import (
+from om.server.features.build.sandbox.util.agent_mapping import get_agent_info
+from om.server.features.build.sandbox.util.agent_mapping import ORG_INFO_AGENTS_MD
+from om.server.features.build.sandbox.util.agent_mapping import (
     ORGANIZATION_STRUCTURE,
 )
 from om.utils.logger import setup_logger
@@ -181,21 +181,21 @@ class DirectoryManager:
 
         Creates an org_info/ directory at the session root level with:
         - AGENTS.md: Description of available org info files
-        - user_identity_profile.txt: User's persona information
+        - user_identity_profile.txt: User's agent information
         - organization_structure.json: Org hierarchy with managers and reports
 
-        Uses shared constants from persona_mapping module as single source of truth.
+        Uses shared constants from agent_mapping module as single source of truth.
 
         Args:
             session_path: Path to the session directory
             user_work_area: User's work area (e.g., "engineering", "product")
             user_level: User's level (e.g., "ic", "manager")
         """
-        # Get persona info from mapping
-        persona = get_persona_info(user_work_area, user_level)
-        if not persona:
+        # Get agent info from mapping
+        agent = get_agent_info(user_work_area, user_level)
+        if not agent:
             logger.debug(
-                f"No persona found for work_area={user_work_area}, "
+                f"No agent found for work_area={user_work_area}, "
                 f"level={user_level}, skipping org_info setup"
             )
             return
@@ -208,9 +208,9 @@ class DirectoryManager:
             # 1. AGENTS.md - Description of org info contents
             (org_info_dir / "AGENTS.md").write_text(ORG_INFO_AGENTS_MD)
 
-            # 2. user_identity_profile.txt - User's persona
+            # 2. user_identity_profile.txt - User's agent
             (org_info_dir / "user_identity_profile.txt").write_text(
-                generate_user_identity_content(persona)
+                generate_user_identity_content(agent)
             )
 
             # 3. organization_structure.json - Org hierarchy
@@ -219,7 +219,7 @@ class DirectoryManager:
             )
 
             logger.info(
-                f"Created org_info with identity: {persona['name']} <{persona['email']}>"
+                f"Created org_info with identity: {agent['name']} <{agent['email']}>"
             )
         except Exception as e:
             # Don't fail provisioning if org_info setup fails

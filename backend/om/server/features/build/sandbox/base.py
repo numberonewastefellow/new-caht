@@ -147,8 +147,8 @@ class SandboxManager(ABC):
             snapshot_path: Optional storage path to restore outputs from
             user_name: User's name for personalization in AGENTS.md
             user_role: User's role/title for personalization in AGENTS.md
-            user_work_area: User's work area for demo persona (e.g., "engineering")
-            user_level: User's level for demo persona (e.g., "ic", "manager")
+            user_work_area: User's work area for demo agent (e.g., "engineering")
+            user_level: User's level for demo agent (e.g., "ic", "manager")
             use_demo_data: If True, symlink files/ to demo data; else to user files
             excluded_user_library_paths: List of paths within user_library to exclude
                 from the sandbox (e.g., ["/data/file.xlsx"]). Only applies when

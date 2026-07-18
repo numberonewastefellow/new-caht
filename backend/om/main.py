@@ -111,10 +111,10 @@ from om.server.features.oauth_config.api import (
 )
 from om.server.features.oauth_config.api import router as oauth_config_router
 from om.server.features.password.api import router as password_router
-from om.server.features.persona.api import admin_agents_router
-from om.server.features.persona.api import admin_router as admin_persona_router
-from om.server.features.persona.api import agents_router
-from om.server.features.persona.api import basic_router as persona_router
+from om.server.features.agent.api import admin_agents_router
+from om.server.features.agent.api import admin_router as admin_agent_router
+from om.server.features.agent.api import agents_router
+from om.server.features.agent.api import basic_router as agent_router
 from om.server.features.workspaces.api import router as workspaces_router
 from om.server.features.tool.api import admin_router as admin_tool_router
 from om.server.features.tool.api import router as tool_router
@@ -433,8 +433,8 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
         application, slack_bot_management_router
     )
     include_router_with_global_prefix_prepended(application, discord_bot_router)
-    include_router_with_global_prefix_prepended(application, persona_router)
-    include_router_with_global_prefix_prepended(application, admin_persona_router)
+    include_router_with_global_prefix_prepended(application, agent_router)
+    include_router_with_global_prefix_prepended(application, admin_agent_router)
     include_router_with_global_prefix_prepended(application, agents_router)
     include_router_with_global_prefix_prepended(application, admin_agents_router)
     include_router_with_global_prefix_prepended(application, default_assistant_router)

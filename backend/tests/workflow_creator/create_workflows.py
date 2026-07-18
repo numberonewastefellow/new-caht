@@ -11,7 +11,7 @@ Usage:
     python create_workflows.py --export out.json        # Export all workflows to JSON
     python create_workflows.py --run 1 "Hello world"    # Run a workflow with a message
     python create_workflows.py --update                 # Update existing workflows by name
-    python create_workflows.py --backfill-personas      # Create wrapper personas for all workflows
+    python create_workflows.py --backfill-agents      # Create wrapper agents for all workflows
     python create_workflows.py --no-icons               # Create without generating icons
 
 API key is read from agents_creator/apikey.txt, .env, or VIRTUALAI_API_KEY env var.
@@ -28,7 +28,7 @@ from config import (
     add_common_args,
     api,
     apply_common_args,
-    resolve_or_create_persona,
+    resolve_or_create_agent,
     stream_api,
 )
 
@@ -51,12 +51,12 @@ def list_workflows():
     print(f"\nTotal: {len(workflows)} workflows\n")
 
 
-def _update_persona_starter_messages(persona_id: int, starter_messages: list[dict]) -> None:
-    """Update an existing persona's starter_messages via PATCH."""
-    # First fetch the current persona to preserve existing fields
-    resp = api("GET", f"persona/{persona_id}")
+def _update_agent_starter_messages(agent_id: int, starter_messages: list[dict]) -> None:
+    """Update an existing agent's starter_messages via PATCH."""
+    # First fetch the current agent to preserve existing fields
+    resp = api("GET", f"agent/{agent_id}")
     if resp.status_code != 200:
-        print(f"  [WARN] Could not fetch persona {persona_id} for starter messages")
+        print(f"  [WARN] Could not fetch agent {agent_id} for starter messages")
         return
 
     p = resp.json()
@@ -80,9 +80,9 @@ def _update_persona_starter_messages(persona_id: int, starter_messages: list[dic
         "document_ids": [], "knowledge_file_ids": [],
     }
 
-    resp = api("PATCH", f"persona/{persona_id}", patch_body)
+    resp = api("PATCH", f"agent/{agent_id}", patch_body)
     if resp.status_code == 200:
-        print(f"  [OK]  Starter messages set for {p['name']} (ID={persona_id})")
+        print(f"  [OK]  Starter messages set for {p['name']} (ID={agent_id})")
     else:
         try:
             err = resp.json()
@@ -92,28 +92,28 @@ def _update_persona_starter_messages(persona_id: int, starter_messages: list[dic
 
 
 def _resolve_steps(raw_steps: list[dict]) -> list[dict]:
-    """Resolve persona references in step definitions.
+    """Resolve agent references in step definitions.
 
     Each step can have:
-      - persona_id: int (used directly)
-      - persona_name: str (resolved by lookup, auto-created if missing)
-      - persona_def: dict (full definition for auto-creation)
+      - agent_id: int (used directly)
+      - agent_name: str (resolved by lookup, auto-created if missing)
+      - agent_def: dict (full definition for auto-creation)
     """
     resolved = []
     for step in raw_steps:
-        persona_id = resolve_or_create_persona(step)
-        if persona_id is None:
-            print(f"  [SKIP] Step '{step.get('step_name', '?')}': no persona resolved")
+        agent_id = resolve_or_create_agent(step)
+        if agent_id is None:
+            print(f"  [SKIP] Step '{step.get('step_name', '?')}': no agent resolved")
             continue
 
-        # Update starter_messages on the sub-agent persona if defined
-        persona_def = step.get("persona_def", {})
-        sub_starter = persona_def.get("starter_messages")
-        if sub_starter and persona_id:
-            _update_persona_starter_messages(persona_id, sub_starter)
+        # Update starter_messages on the sub-agent agent if defined
+        agent_def = step.get("agent_def", {})
+        sub_starter = agent_def.get("starter_messages")
+        if sub_starter and agent_id:
+            _update_agent_starter_messages(agent_id, sub_starter)
 
         resolved.append({
-            "persona_id": persona_id,
+            "agent_id": agent_id,
             "step_order": step.get("step_order", len(resolved)),
             "step_name": step["step_name"],
             "step_description": step.get("step_description"),
@@ -127,19 +127,19 @@ def _resolve_steps(raw_steps: list[dict]) -> list[dict]:
     return resolved
 
 
-def _update_wrapper_persona_starter_messages(
+def _update_wrapper_agent_starter_messages(
     workflow_name: str,
     starter_messages: list[dict],
 ) -> None:
-    """Update the wrapper persona's starter_messages after workflow creation.
+    """Update the wrapper agent's starter_messages after workflow creation.
 
-    The backend auto-creates a wrapper persona with the same name as the
+    The backend auto-creates a wrapper agent with the same name as the
     workflow. This function finds it and PATCHes the starter_messages.
     """
-    # Find the wrapper persona by name
-    resp = api("GET", "admin/persona")
+    # Find the wrapper agent by name
+    resp = api("GET", "admin/agent")
     if resp.status_code != 200:
-        print(f"  [WARN] Could not fetch personas to set starter messages")
+        print(f"  [WARN] Could not fetch agents to set starter messages")
         return
 
     wrapper = None
@@ -149,7 +149,7 @@ def _update_wrapper_persona_starter_messages(
             break
 
     if wrapper is None:
-        print(f"  [WARN] Wrapper persona '{workflow_name}' not found for starter messages")
+        print(f"  [WARN] Wrapper agent '{workflow_name}' not found for starter messages")
         return
 
     # Build PATCH body preserving existing fields
@@ -176,9 +176,9 @@ def _update_wrapper_persona_starter_messages(
         "knowledge_file_ids": [],
     }
 
-    resp = api("PATCH", f"persona/{wrapper['id']}", patch_body)
+    resp = api("PATCH", f"agent/{wrapper['id']}", patch_body)
     if resp.status_code == 200:
-        print(f"  [OK]  Starter messages set for wrapper persona ID={wrapper['id']}")
+        print(f"  [OK]  Starter messages set for wrapper agent ID={wrapper['id']}")
     else:
         try:
             err_detail = resp.json()
@@ -195,7 +195,7 @@ def create_workflow(payload: dict) -> dict | None:
     # Extract wrapper starter_messages before sending to workflow API
     wrapper_starter_messages = body.pop("starter_messages", None)
 
-    # Resolve step persona references
+    # Resolve step agent references
     raw_steps = body.pop("steps", [])
     body["steps"] = _resolve_steps(raw_steps)
 
@@ -210,9 +210,9 @@ def create_workflow(payload: dict) -> dict | None:
         step_count = len(result.get("steps", []))
         print(f"  [OK]  ID={result['id']}  {name}  ({step_count} steps)")
 
-        # Set starter messages on the wrapper persona
+        # Set starter messages on the wrapper agent
         if wrapper_starter_messages:
-            _update_wrapper_persona_starter_messages(name, wrapper_starter_messages)
+            _update_wrapper_agent_starter_messages(name, wrapper_starter_messages)
 
         return result
     else:
@@ -276,8 +276,8 @@ def export_workflows(output_file: str):
             "icon_name": w.get("icon_name"),
             "steps": [
                 {
-                    "persona_id": s["persona_id"],
-                    "persona_name": s.get("persona_name"),
+                    "agent_id": s["agent_id"],
+                    "agent_name": s.get("agent_name"),
                     "step_order": s["step_order"],
                     "step_name": s["step_name"],
                     "step_description": s.get("step_description"),
@@ -338,8 +338,8 @@ def run_workflow_cli(workflow_id: int, message: str):
 
             if ptype == "workflow_step_start":
                 step_name = obj.get("step_name", "?")
-                persona = obj.get("persona_name", "?")
-                _safe_print(f"\n[Step: {step_name}] (Agent: {persona})")
+                agent = obj.get("agent_name", "?")
+                _safe_print(f"\n[Step: {step_name}] (Agent: {agent})")
                 print("-" * 50)
 
             elif ptype == "workflow_step_delta":
@@ -356,10 +356,10 @@ def run_workflow_cli(workflow_id: int, message: str):
 
             elif ptype == "workflow_pause_for_input":
                 step_name = obj.get("step_name", "?")
-                persona = obj.get("persona_name", "?")
+                agent = obj.get("agent_name", "?")
                 questions = obj.get("questions", "")
                 _safe_print(f"\n{'='*60}")
-                _safe_print(f"[PAUSED] {persona} ({step_name}) needs more information:")
+                _safe_print(f"[PAUSED] {agent} ({step_name}) needs more information:")
                 _safe_print(f"{'='*60}")
                 _safe_print(questions)
                 _safe_print(f"{'='*60}")
@@ -401,9 +401,9 @@ def run_workflow_cli(workflow_id: int, message: str):
     print()
 
 
-def backfill_personas():
-    """Create wrapper personas for all existing workflows."""
-    resp = api("POST", "admin/workflow/backfill-personas")
+def backfill_agents():
+    """Create wrapper agents for all existing workflows."""
+    resp = api("POST", "admin/workflow/backfill-agents")
     if resp.status_code == 200:
         print(resp.json().get("detail", "Done"))
     else:
@@ -414,28 +414,28 @@ def backfill_personas():
 
 
 def generate_workflow_icons():
-    """Generate and upload icons for all workflow wrapper personas.
+    """Generate and upload icons for all workflow wrapper agents.
 
     Imports generate_icon from the sibling workflow generate_icon module,
     which in turn uses agents_creator/generate_icon.py for the actual
     image generation and upload logic.
     """
     try:
-        from generate_icon import get_workflow_personas
+        from generate_icon import get_workflow_agents
         from agents_creator.generate_icon import process_agent
     except ImportError as e:
         print(f"  [WARN] Icon generation skipped (missing dependency: {e})")
         print("         Install Pillow: pip install Pillow")
         return
 
-    personas = get_workflow_personas()
-    if not personas:
-        print("  [INFO] No workflow wrapper personas found for icon generation")
+    agents = get_workflow_agents()
+    if not agents:
+        print("  [INFO] No workflow wrapper agents found for icon generation")
         return
 
-    print(f"\n--- Generating icons for {len(personas)} workflow persona(s) ---\n")
+    print(f"\n--- Generating icons for {len(agents)} workflow agent(s) ---\n")
     ok, fail = 0, 0
-    for agent in personas:
+    for agent in agents:
         if process_agent(agent):
             ok += 1
         else:
@@ -505,7 +505,7 @@ def bulk_create(source: str | None, skip_existing: bool = True, gen_icons: bool 
 
     print(f"\nDone: {created} created, {skipped} skipped, {failed} failed\n")
 
-    # Auto-generate icons for the newly created workflow wrapper personas
+    # Auto-generate icons for the newly created workflow wrapper agents
     if created > 0 and gen_icons:
         generate_workflow_icons()
 
@@ -556,7 +556,7 @@ Examples:
   python create_workflows.py --delete 5               # Delete workflow ID=5
   python create_workflows.py --export backup.json     # Export workflows to JSON
   python create_workflows.py --run 1 "test message"   # Run a workflow
-  python create_workflows.py --backfill-personas      # Create wrapper personas
+  python create_workflows.py --backfill-agents      # Create wrapper agents
   python create_workflows.py --force                  # Create even if name exists
   python create_workflows.py --no-icons               # Skip icon generation
         """,
@@ -567,7 +567,7 @@ Examples:
     parser.add_argument("--delete", "-d", type=int, help="Delete workflow by ID")
     parser.add_argument("--export", "-e", help="Export all workflows to a JSON file")
     parser.add_argument("--run", "-r", nargs=2, metavar=("ID", "MESSAGE"), help="Run a workflow: --run 1 'Hello'")
-    parser.add_argument("--backfill-personas", action="store_true", help="Create wrapper personas for existing workflows")
+    parser.add_argument("--backfill-agents", action="store_true", help="Create wrapper agents for existing workflows")
     parser.add_argument("--force", action="store_true", help="Create even if workflow name already exists")
     parser.add_argument("--no-icons", action="store_true", help="Skip automatic icon generation after create")
     add_common_args(parser)
@@ -583,8 +583,8 @@ Examples:
         export_workflows(args.export)
     elif args.run:
         run_workflow_cli(int(args.run[0]), args.run[1])
-    elif args.backfill_personas:
-        backfill_personas()
+    elif args.backfill_agents:
+        backfill_agents()
     elif args.update:
         bulk_update(args.file)
     else:

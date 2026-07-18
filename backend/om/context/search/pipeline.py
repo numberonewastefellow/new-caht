@@ -15,7 +15,7 @@ from om.context.search.preprocessing.access_filters import (
 )
 from om.context.search.retrieval.search_runner import search_chunks
 from om.context.search.utils import inference_section_from_chunks
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
 from om.document_index.interfaces_new import DocumentIndex
 from om.llm.interfaces import LLM
@@ -38,8 +38,8 @@ def _build_index_filters(
     user: User,  # Used for ACLs, anonymous users only see public docs
     workspace_id: int | None,
     knowledge_file_ids: list[UUID] | None,
-    persona_document_sets: list[str] | None,
-    persona_time_cutoff: datetime | None,
+    agent_document_sets: list[str] | None,
+    agent_time_cutoff: datetime | None,
     db_session: Session,
     auto_detect_filters: bool = False,
     query: str | None = None,
@@ -57,11 +57,11 @@ def _build_index_filters(
     if (
         user_provided_filters
         and user_provided_filters.document_set is None
-        and persona_document_sets is not None
+        and agent_document_sets is not None
     ):
-        base_filters.document_set = persona_document_sets
+        base_filters.document_set = agent_document_sets
 
-    time_filter = base_filters.time_cutoff or persona_time_cutoff
+    time_filter = base_filters.time_cutoff or agent_time_cutoff
     source_filter = base_filters.source_type
 
     detected_time_filter = None
@@ -110,7 +110,7 @@ def _build_index_filters(
         knowledge_file_ids=knowledge_file_ids,
         workspace_id=workspace_id,
         source_type=source_filter,
-        document_set=persona_document_sets,
+        document_set=agent_document_sets,
         time_cutoff=time_filter,
         tags=base_filters.tags,
         access_control_list=user_acl_filters,
@@ -250,7 +250,7 @@ def search_pipeline(
     # Used for ACLs and federated search, anonymous users only see public docs
     user: User,
     # Used for default filters and settings
-    persona: Persona | None,
+    agent: Agent | None,
     db_session: Session,
     auto_detect_filters: bool = False,
     llm: LLM | None = None,
@@ -258,28 +258,28 @@ def search_pipeline(
     workspace_id: int | None = None,
 ) -> list[InferenceChunk]:
     from om.external_permissions.post_query_censoring import _post_query_chunk_censoring as _impl__post_query_chunk_censoring
-    user_uploaded_persona_files: list[UUID] | None = (
-        [user_file.id for user_file in persona.knowledge_files] if persona else None
+    user_uploaded_agent_files: list[UUID] | None = (
+        [user_file.id for user_file in agent.knowledge_files] if agent else None
     )
 
-    persona_document_sets: list[str] | None = (
-        [persona_document_set.name for persona_document_set in persona.document_sets]
-        if persona
+    agent_document_sets: list[str] | None = (
+        [agent_document_set.name for agent_document_set in agent.document_sets]
+        if agent
         else None
     )
-    persona_time_cutoff: datetime | None = (
-        persona.search_start_date if persona else None
+    agent_time_cutoff: datetime | None = (
+        agent.search_start_date if agent else None
     )
 
-    # Extract assistant knowledge filters from persona
+    # Extract assistant knowledge filters from agent
     attached_document_ids: list[str] | None = (
-        [doc.id for doc in persona.attached_documents]
-        if persona and persona.attached_documents
+        [doc.id for doc in agent.attached_documents]
+        if agent and agent.attached_documents
         else None
     )
     hierarchy_node_ids: list[int] | None = (
-        [node.id for node in persona.hierarchy_nodes]
-        if persona and persona.hierarchy_nodes
+        [node.id for node in agent.hierarchy_nodes]
+        if agent and agent.hierarchy_nodes
         else None
     )
 
@@ -287,9 +287,9 @@ def search_pipeline(
         user_provided_filters=chunk_search_request.user_selected_filters,
         user=user,
         workspace_id=workspace_id,
-        knowledge_file_ids=user_uploaded_persona_files,
-        persona_document_sets=persona_document_sets,
-        persona_time_cutoff=persona_time_cutoff,
+        knowledge_file_ids=user_uploaded_agent_files,
+        agent_document_sets=agent_document_sets,
+        agent_time_cutoff=agent_time_cutoff,
         db_session=db_session,
         auto_detect_filters=auto_detect_filters,
         query=chunk_search_request.query,

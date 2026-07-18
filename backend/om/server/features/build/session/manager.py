@@ -398,8 +398,8 @@ class SessionManager:
         Args:
             user_id: The user ID
             name: Optional session name
-            user_work_area: User's work area for demo persona (e.g., "engineering")
-            user_level: User's level for demo persona (e.g., "ic", "manager")
+            user_work_area: User's work area for demo agent (e.g., "engineering")
+            user_level: User's level for demo agent (e.g., "ic", "manager")
             llm_provider_type: Provider type from user's cookie (e.g., "anthropic", "openai")
             llm_model_name: Model name from user's cookie (e.g., "claude-opus-4-5")
             demo_data_enabled: Explicit flag for demo data mode. Defaults to True if not provided.
@@ -620,8 +620,8 @@ class SessionManager:
 
         Args:
             user_id: The user ID
-            user_work_area: User's work area for demo persona (e.g., "engineering")
-            user_level: User's level for demo persona (e.g., "ic", "manager")
+            user_work_area: User's work area for demo agent (e.g., "engineering")
+            user_level: User's level for demo agent (e.g., "ic", "manager")
             llm_provider_type: Provider type from user's cookie (e.g., "anthropic", "openai")
             llm_model_name: Model name from user's cookie (e.g., "claude-opus-4-5")
             demo_data_enabled: Explicit flag for demo data mode. Defaults to True if not provided.

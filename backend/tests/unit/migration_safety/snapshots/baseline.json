@@ -208,7 +208,7 @@
     "<root>.chat.llm_loop",
     "<root>.chat.llm_step",
     "<root>.chat.models",
-    "<root>.chat.process_message",
+    "<root>.chat.message_handler",
     "<root>.chat.prompt_utils",
     "<root>.chat.save_chat",
     "<root>.chat.stop_signal_checker",

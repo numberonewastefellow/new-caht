@@ -20,7 +20,7 @@ import { PopoverSearchInput } from "@/sections/sidebar/ChatButton";
 import LineItem from "@/refresh-components/buttons/LineItem";
 import { SvgFolder, SvgFolderIn, SvgShare, SvgTrash } from "@opal/icons";
 // Constants
-const DEFAULT_PERSONA_ID = 0;
+const DEFAULT_AGENT_ID = 0;
 const LS_HIDE_MOVE_CUSTOM_AGENT_MODAL_KEY = "onyx:hideMoveCustomAgentModal";
 
 interface ChatSessionMorePopupProps {
@@ -62,7 +62,7 @@ export function ChatSessionMorePopup({
     useState(false);
 
   const isChatUsingDefaultAssistant =
-    chatSession.persona_id === DEFAULT_PERSONA_ID;
+    chatSession.agent_id === DEFAULT_AGENT_ID;
 
   const [showMoveOptions, setShowMoveOptions] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");

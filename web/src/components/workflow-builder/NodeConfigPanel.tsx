@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useMemo } from "react";
-import type { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import type { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import type { ToolSnapshot } from "@/lib/tools/interfaces";
 import type { DocumentSetSummary } from "@/lib/types";
 import type { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
@@ -64,7 +64,7 @@ interface NodeConfigPanelProps {
   nodeId: string;
   nodeType?: string;
   data: AgentNodeData | ConditionalRouterNodeData;
-  agents: MinimalPersonaSnapshot[];
+  agents: MinimalAgentSnapshot[];
   availableTools: ToolSnapshot[];
   documentSets: DocumentSetSummary[];
   llmProviders: LLMProviderDescriptor[];
@@ -125,30 +125,30 @@ export function NodeConfigPanel({
 
   // After the early return above, rawData is guaranteed to be AgentNodeData.
   const data = rawData as AgentNodeData;
-  const currentPersona = agents.find((a) => a.id === data.persona_id);
+  const currentAgent = agents.find((a) => a.id === data.agent_id);
 
-  // Check if current persona is a utility agent
-  const isHttpRequestAgent = data.persona_name === "HTTP Request";
-  const isCodeExecutorAgent = data.persona_name === "Code Executor";
+  // Check if current agent is a utility agent
+  const isHttpRequestAgent = data.agent_name === "HTTP Request";
+  const isCodeExecutorAgent = data.agent_name === "Code Executor";
   const isUtilityAgent = isHttpRequestAgent || isCodeExecutorAgent;
 
-  // Effective tool IDs: step override > persona tools
+  // Effective tool IDs: step override > agent tools
   const effectiveToolIds = useMemo(() => {
     if (data.tool_ids_override != null) {
       return new Set(data.tool_ids_override);
     }
-    return new Set((currentPersona?.tools || []).map((t) => t.id));
-  }, [data.tool_ids_override, currentPersona?.tools]);
+    return new Set((currentAgent?.tools || []).map((t) => t.id));
+  }, [data.tool_ids_override, currentAgent?.tools]);
 
-  // Effective document set IDs: step override > persona doc sets
+  // Effective document set IDs: step override > agent doc sets
   const effectiveDocSetIds = useMemo(() => {
     if (data.document_set_ids_override != null) {
       return new Set(data.document_set_ids_override);
     }
     return new Set(
-      (currentPersona?.document_sets || []).map((d) => d.id)
+      (currentAgent?.document_sets || []).map((d) => d.id)
     );
-  }, [data.document_set_ids_override, currentPersona?.document_sets]);
+  }, [data.document_set_ids_override, currentAgent?.document_sets]);
 
   // JSON view of node data
   const nodeJson = useMemo(() => {
@@ -224,23 +224,23 @@ export function NodeConfigPanel({
               <div className="wfb-config-label">Agent</div>
               <select
                 className="wfb-agent-select"
-                value={data.persona_id}
+                value={data.agent_id}
                 onChange={(e) => {
                   const id = Number(e.target.value);
                   const agent = agents.find((a) => a.id === id);
                   if (agent) {
                     onUpdate(nodeId, {
-                      persona_id: agent.id,
-                      persona_name: agent.name,
-                      persona_description: agent.description || "",
-                      persona_icon_url: agent.uploaded_image_id
-                        ? `/api/persona/${agent.id}/uploaded_image`
+                      agent_id: agent.id,
+                      agent_name: agent.name,
+                      agent_description: agent.description || "",
+                      agent_icon_url: agent.uploaded_image_id
+                        ? `/api/agent/${agent.id}/uploaded_image`
                         : null,
-                      persona_num_tools: agent.tools?.length || 0,
-                      persona_tool_names: (agent.tools || []).map((t) => t.name),
-                      persona_llm_model:
+                      agent_num_tools: agent.tools?.length || 0,
+                      agent_tool_names: (agent.tools || []).map((t) => t.name),
+                      agent_llm_model:
                         agent.llm_model_version_override || null,
-                      persona_llm_provider:
+                      agent_llm_provider:
                         agent.llm_model_provider_override || null,
                       // Clear all overrides when switching agent
                       llm_provider_override: null,
@@ -373,7 +373,7 @@ export function NodeConfigPanel({
             </div>
 
             {/* Agent info (read-only) */}
-            {data.persona_description && (
+            {data.agent_description && (
               <div className="wfb-config-section">
                 <div className="wfb-config-label">Agent Description</div>
                 <div
@@ -383,7 +383,7 @@ export function NodeConfigPanel({
                     lineHeight: 1.5,
                   }}
                 >
-                  {data.persona_description}
+                  {data.agent_description}
                 </div>
               </div>
             )}
@@ -396,7 +396,7 @@ export function NodeConfigPanel({
             <LlmSection
               nodeId={nodeId}
               data={data}
-              currentPersona={currentPersona}
+              currentAgent={currentAgent}
               llmProviders={llmProviders}
               onUpdate={onUpdate}
             />
@@ -406,7 +406,7 @@ export function NodeConfigPanel({
               data={data}
               effectiveToolIds={effectiveToolIds}
               availableTools={availableTools}
-              currentPersona={currentPersona}
+              currentAgent={currentAgent}
               onUpdate={onUpdate}
             />
 
@@ -417,7 +417,7 @@ export function NodeConfigPanel({
               effectiveDocSetIds={effectiveDocSetIds}
               availableTools={availableTools}
               documentSets={documentSets}
-              currentPersona={currentPersona}
+              currentAgent={currentAgent}
               onUpdate={onUpdate}
             />
 
@@ -488,31 +488,31 @@ function OverrideBadge({ onReset }: { onReset: () => void }) {
 function LlmSection({
   nodeId,
   data,
-  currentPersona,
+  currentAgent,
   llmProviders,
   onUpdate,
 }: {
   nodeId: string;
   data: AgentNodeData;
-  currentPersona: MinimalPersonaSnapshot | undefined;
+  currentAgent: MinimalAgentSnapshot | undefined;
   llmProviders: LLMProviderDescriptor[];
   onUpdate: (nodeId: string, partial: Partial<AgentNodeData>) => void;
 }) {
-  // Effective LLM: step override > persona value > default
+  // Effective LLM: step override > agent value > default
   const effectiveProvider =
-    data.llm_provider_override ?? currentPersona?.llm_model_provider_override ?? null;
+    data.llm_provider_override ?? currentAgent?.llm_model_provider_override ?? null;
   const effectiveModel =
-    data.llm_model_override ?? currentPersona?.llm_model_version_override ?? null;
+    data.llm_model_override ?? currentAgent?.llm_model_version_override ?? null;
   const isLlmOverridden = data.llm_provider_override != null || data.llm_model_override != null;
 
-  // Effective max_output_tokens: step override > persona > null
+  // Effective max_output_tokens: step override > agent > null
   const effectiveMaxTokens =
-    data.max_output_tokens_override ?? currentPersona?.max_output_tokens ?? null;
+    data.max_output_tokens_override ?? currentAgent?.max_output_tokens ?? null;
   const isMaxTokensOverridden = data.max_output_tokens_override != null;
 
   // Effective replace_base_system_prompt
   const effectiveReplace =
-    data.replace_base_system_prompt_override ?? currentPersona?.replace_base_system_prompt ?? false;
+    data.replace_base_system_prompt_override ?? currentAgent?.replace_base_system_prompt ?? false;
   const isReplaceOverridden = data.replace_base_system_prompt_override != null;
 
   // Build current LLM value in structured format
@@ -546,7 +546,7 @@ function LlmSection({
   const handleLlmChange = useCallback(
     (value: string) => {
       if (value === "default") {
-        // Reset to persona default
+        // Reset to agent default
         onUpdate(nodeId, {
           llm_provider_override: null,
           llm_model_override: null,
@@ -680,14 +680,14 @@ function ToolsSection({
   data,
   effectiveToolIds,
   availableTools,
-  currentPersona,
+  currentAgent,
   onUpdate,
 }: {
   nodeId: string;
   data: AgentNodeData;
   effectiveToolIds: Set<number>;
   availableTools: ToolSnapshot[];
-  currentPersona: MinimalPersonaSnapshot | undefined;
+  currentAgent: MinimalAgentSnapshot | undefined;
   onUpdate: (nodeId: string, partial: Partial<AgentNodeData>) => void;
 }) {
   const isToolsOverridden = data.tool_ids_override != null;
@@ -973,7 +973,7 @@ function KnowledgeSection({
   effectiveDocSetIds,
   availableTools,
   documentSets,
-  currentPersona,
+  currentAgent,
   onUpdate,
 }: {
   nodeId: string;
@@ -982,7 +982,7 @@ function KnowledgeSection({
   effectiveDocSetIds: Set<number>;
   availableTools: ToolSnapshot[];
   documentSets: DocumentSetSummary[];
-  currentPersona: MinimalPersonaSnapshot | undefined;
+  currentAgent: MinimalAgentSnapshot | undefined;
   onUpdate: (nodeId: string, partial: Partial<AgentNodeData>) => void;
 }) {
   const isDocSetsOverridden = data.document_set_ids_override != null;

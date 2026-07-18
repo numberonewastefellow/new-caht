@@ -75,7 +75,7 @@ async function EditslackChannelConfigPage(props: {
     return (
       <ErrorCallout
         errorTitle="Something went wrong :("
-        errorMsg={`Failed to fetch personas - ${assistantsFetchError}`}
+        errorMsg={`Failed to fetch agents - ${assistantsFetchError}`}
       />
     );
   }
@@ -97,7 +97,7 @@ async function EditslackChannelConfigPage(props: {
       <SlackChannelConfigCreationForm
         slack_bot_id={slackChannelConfig.slack_bot_id}
         documentSets={documentSets}
-        personas={assistants}
+        agents={assistants}
         standardAnswerCategoryResponse={eeStandardAnswerCategoryResponse}
         existingSlackChannelConfig={slackChannelConfig}
       />

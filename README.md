@@ -181,18 +181,18 @@ docker compose -p virtualai-dashboards -f docker-compose.opensearch-dashboards.y
 
 ```jsonc
 GET _cat/indices?v
-GET chunk_nomic_ai_nomic_embed_text_v1/_count
-GET chunk_nomic_ai_nomic_embed_text_v1/_search
+GET danswer_chunk_nomic_ai_nomic_embed_text_v1/_count
+GET danswer_chunk_nomic_ai_nomic_embed_text_v1/_search
 { "query": { "term": { "source_type": "user_file" } }, "size": 5 }
 ```
 
 > Tip: the index name follows your embedding model (here `nomic-embed-text-v1`). Use
-> `GET _cat/indices?v` to list the actual `chunk_*` index.
+> `GET _cat/indices?v` to list the actual `danswer_chunk_*` index.
 
 ### Default "Files & Chunks" dashboard
 
 A ready-made dashboard (no query writing) shows **total files / chunks**, lets you **drill into
-chunks by file**, and breaks down **files per project**. Import it once (idempotent):
+chunks by file**, and breaks down **files per workspace**. Import it once (idempotent):
 
 ```bash
 cd deployment/docker_compose/opensearch_dashboards
@@ -206,13 +206,13 @@ tenant so it's visible to everyone; if you don't see it, switch tenant via the t
 
 - **Total Files** (unique `document_id`) and **Total Chunks** metrics.
 - **Files** table — each file (filename + `document_id`) with its chunk count.
-- **Files by Project** table — `user_projects` → number of files and chunks.
+- **Files by Workspace** table — `user_workspaces` → number of files and chunks.
 - **Chunk Text** panel — the chunk rows; expand a row to read the full `content`.
 
 **Drill-down:**
 
 - Click a file in the **Files** table → the **Chunk Text** panel filters to that file → expand a row to read its text.
-- Click a project value in **Files by Project** (e.g. `6`) → everything scopes to that project. You can also type KQL in the dashboard search bar, e.g. `user_projects: 6`.
+- Click a workspace value in **Files by Workspace** (e.g. `6`) → everything scopes to that workspace. You can also type KQL in the dashboard search bar, e.g. `user_workspaces: 6`.
 
 > The dashboard saved objects live in
 > `deployment/docker_compose/opensearch_dashboards/files_and_chunks.ndjson` (regenerate with

@@ -110,7 +110,7 @@ export function getToolName(packets: Packet[]): string {
       return "Memory";
     case PacketType.WORKFLOW_STEP_START: {
       const ws = firstPacket.obj as WorkflowStepStart;
-      return ws.persona_name || ws.step_name || "Workflow Step";
+      return ws.agent_name || ws.step_name || "Workflow Step";
     }
     case PacketType.WORKFLOW_ORCHESTRATOR_THINKING:
       return "Orchestrating";

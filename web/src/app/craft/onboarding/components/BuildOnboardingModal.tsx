@@ -89,7 +89,7 @@ function getStepsForMode(
 
       return steps;
 
-    case "edit-persona":
+    case "edit-agent":
       return ["user-info"];
 
     case "add-llm":

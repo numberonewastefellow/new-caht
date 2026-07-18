@@ -75,8 +75,7 @@ export const NEXT_PUBLIC_INCLUDE_ERROR_POPUP_SUPPORT_LINK =
 // Restrict markdown links to safe protocols
 export const ALLOWED_URL_PROTOCOLS = ["http:", "https:", "mailto:"] as const;
 
-// Agent/Persona related constants
-export const MAX_CHARACTERS_PERSONA_DESCRIPTION = 5000000;
+// Agent related constants
 export const MAX_CHARACTERS_AGENT_DESCRIPTION = 500;
 export const MAX_STARTER_MESSAGES = 4;
 export const MAX_CHARACTERS_STARTER_MESSAGE = 200;

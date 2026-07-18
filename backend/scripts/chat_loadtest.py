@@ -60,7 +60,7 @@ class ChatLoadTester:
         async with session.post(
             f"{self.base_url}/chat/create-chat-session",
             headers=self.headers,
-            json={"persona_id": 0, "description": "Load Test"},
+            json={"agent_id": 0, "description": "Load Test"},
         ) as response:
             response.raise_for_status()
             data = await response.json()

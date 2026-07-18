@@ -28,7 +28,7 @@ from config import ASSISTANTS_DIR, DEFAULTS, add_common_args, api, apply_common_
 
 
 def list_assistants():
-    resp = api("GET", "persona")
+    resp = api("GET", "agent")
     resp.raise_for_status()
     assistants = resp.json()
     print(f"\n{'ID':<6} {'Name':<30} {'Labels':<25} {'Tools'}")
@@ -69,7 +69,7 @@ def create_assistant(payload: dict) -> dict | None:
     if label_names and isinstance(label_names, list):
         body["label_ids"] = get_or_create_labels(label_names)
 
-    resp = api("POST", "persona", body)
+    resp = api("POST", "agent", body)
 
     if resp.status_code == 200:
         result = resp.json()
@@ -84,7 +84,7 @@ def create_assistant(payload: dict) -> dict | None:
         return None
 
 
-def update_assistant(persona_id: int, existing: dict, new_data: dict) -> dict | None:
+def update_assistant(agent_id: int, existing: dict, new_data: dict) -> dict | None:
     """Update an existing assistant via PATCH. Merges new_data on top of existing.
 
     The PATCH API requires a full payload (all required fields). We fetch the
@@ -93,7 +93,7 @@ def update_assistant(persona_id: int, existing: dict, new_data: dict) -> dict | 
     """
     name = new_data.get("name", existing.get("name", "Unnamed"))
 
-    # Build the PATCH body from the existing persona, then overlay new_data
+    # Build the PATCH body from the existing agent, then overlay new_data
     body = {
         "name": new_data.get("name", existing["name"]),
         "description": new_data.get("description", existing.get("description", "")),
@@ -132,39 +132,39 @@ def update_assistant(persona_id: int, existing: dict, new_data: dict) -> dict | 
     elif existing.get("labels"):
         body["label_ids"] = [l["id"] for l in existing["labels"]]
 
-    resp = api("PATCH", f"persona/{persona_id}", body)
+    resp = api("PATCH", f"agent/{agent_id}", body)
 
     if resp.status_code == 200:
         result = resp.json()
-        print(f"  [OK]  ID={persona_id}  {name}")
+        print(f"  [OK]  ID={agent_id}  {name}")
         return result
     else:
         try:
             err = resp.json()
         except Exception:
             err = resp.text
-        print(f"  [FAIL] ID={persona_id}  {name} -> {resp.status_code}: {err}")
+        print(f"  [FAIL] ID={agent_id}  {name} -> {resp.status_code}: {err}")
         return None
 
 
-def delete_assistant(persona_id: int):
-    resp = api("DELETE", f"persona/{persona_id}")
+def delete_assistant(agent_id: int):
+    resp = api("DELETE", f"agent/{agent_id}")
     if resp.status_code == 200:
-        print(f"Deleted assistant ID={persona_id}")
+        print(f"Deleted assistant ID={agent_id}")
     else:
-        print(f"Failed to delete ID={persona_id}: {resp.status_code} {resp.text}")
+        print(f"Failed to delete ID={agent_id}: {resp.status_code} {resp.text}")
 
 
 def export_assistants(output_file: str):
-    resp = api("GET", "persona")
+    resp = api("GET", "agent")
     resp.raise_for_status()
     assistants = resp.json()
 
     exported = []
     for a in assistants:
-        if a.get("builtin_persona"):
+        if a.get("builtin_agent"):
             continue
-        detail_resp = api("GET", f"persona/{a['id']}")
+        detail_resp = api("GET", f"agent/{a['id']}")
         if detail_resp.status_code == 200:
             d = detail_resp.json()
         else:
@@ -226,26 +226,26 @@ def load_json_files(source: str | None) -> list[dict]:
 def bulk_update(source: str | None, only_id: int | None = None):
     """Update existing assistants from JSON files, matching by name.
 
-    For each assistant in the JSON, find the matching server persona by name,
+    For each assistant in the JSON, find the matching server agent by name,
     fetch its full detail, merge the JSON fields on top, and PATCH.
-    If --id is given, only update that one persona (matched by ID, not name).
+    If --id is given, only update that one agent (matched by ID, not name).
     """
-    # Fetch all existing personas and build lookup by name
-    resp = api("GET", "admin/persona")
+    # Fetch all existing agents and build lookup by name
+    resp = api("GET", "admin/agent")
     if resp.status_code != 200:
-        print(f"ERROR: Could not fetch personas: {resp.status_code}")
+        print(f"ERROR: Could not fetch agents: {resp.status_code}")
         sys.exit(1)
-    all_personas = resp.json()
-    name_to_persona = {p["name"]: p for p in all_personas}
-    id_to_persona = {p["id"]: p for p in all_personas}
+    all_agents = resp.json()
+    name_to_agent = {p["name"]: p for p in all_agents}
+    id_to_agent = {p["id"]: p for p in all_agents}
 
-    # If --id is given, update just that one persona from JSON data
+    # If --id is given, update just that one agent from JSON data
     if only_id is not None:
-        if only_id not in id_to_persona:
-            print(f"ERROR: No persona with ID={only_id} on server")
+        if only_id not in id_to_agent:
+            print(f"ERROR: No agent with ID={only_id} on server")
             sys.exit(1)
 
-        existing = id_to_persona[only_id]
+        existing = id_to_agent[only_id]
         target_name = existing["name"]
 
         # Load JSON to find matching definition
@@ -268,15 +268,15 @@ def bulk_update(source: str | None, only_id: int | None = None):
     updated, skipped, failed = 0, 0, 0
     for a in assistants:
         name = a.get("name", "Unnamed")
-        if name not in name_to_persona:
+        if name not in name_to_agent:
             print(f"  [SKIP] {name} (not found on server)")
             skipped += 1
             continue
 
-        existing = name_to_persona[name]
-        persona_id = existing["id"]
+        existing = name_to_agent[name]
+        agent_id = existing["id"]
 
-        result = update_assistant(persona_id, existing, a)
+        result = update_assistant(agent_id, existing, a)
         if result:
             updated += 1
         else:
@@ -291,7 +291,7 @@ def bulk_create(source: str | None, skip_existing: bool = True):
 
     existing_names = set()
     if skip_existing:
-        resp = api("GET", "persona")
+        resp = api("GET", "agent")
         if resp.status_code == 200:
             existing_names = {a["name"] for a in resp.json()}
 

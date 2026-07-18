@@ -2,13 +2,13 @@
 Register Office MCP Server in VirtualAI
 ========================================
 Registers the unified Office MCP Server (PPT + DOCX + PDF) as an MCP server,
-discovers its 91 tools, and optionally attaches them to workflow agent personas.
+discovers its 91 tools, and optionally attaches them to workflow agent agents.
 
 Usage:
     python register_office_mcp.py                           # Register with defaults
     python register_office_mcp.py --url http://host:8100    # Custom server URL
     python register_office_mcp.py --list-tools              # Just list discovered tools
-    python register_office_mcp.py --attach-to-personas      # Attach MCP tools to all Office workflow personas
+    python register_office_mcp.py --attach-to-agents      # Attach MCP tools to all Office workflow agents
     python register_office_mcp.py --delete                  # Remove the MCP server
 
 Requires the Office MCP server to be running (see office-mcp-server/docker-compose.yml).
@@ -35,14 +35,14 @@ SERVER_DESCRIPTION = (
     "plus PDF generation via docx_convert_to_pdf."
 )
 
-# Personas that should get PPT tools (ppt_*)
-PPT_PERSONAS = ["WF PPT Builder", "WF PPT Reviewer"]
+# Agents that should get PPT tools (ppt_*)
+PPT_AGENTS = ["WF PPT Builder", "WF PPT Reviewer"]
 
-# Personas that should get the FULL DOCX toolset (docx_*) — builders that write
-DOCX_WRITE_PERSONAS = ["WF DOCX Builder"]
+# Agents that should get the FULL DOCX toolset (docx_*) — builders that write
+DOCX_WRITE_AGENTS = ["WF DOCX Builder"]
 
 # Read-only DOCX tools — inspection only, no document mutation. Review-only
-# personas get ONLY these so a "review" step can never write/re-save the
+# agents get ONLY these so a "review" step can never write/re-save the
 # document (which would create duplicate download files).
 DOCX_READONLY_TOOL_NAMES = {
     "docx_get_document_info",
@@ -53,11 +53,11 @@ DOCX_READONLY_TOOL_NAMES = {
     "docx_list_available_documents",
 }
 
-# Personas that should get ONLY the read-only DOCX subset (review-only)
-DOCX_READONLY_PERSONAS = ["WF DOCX Reviewer"]
+# Agents that should get ONLY the read-only DOCX subset (review-only)
+DOCX_READONLY_AGENTS = ["WF DOCX Reviewer"]
 
-# Personas that should get ALL tools (both ppt_* and docx_*)
-ALL_TOOL_PERSONAS = ["WF Document Builder"]
+# Agents that should get ALL tools (both ppt_* and docx_*)
+ALL_TOOL_AGENTS = ["WF Document Builder"]
 
 
 def find_existing_server(name: str) -> dict | None:
@@ -174,26 +174,26 @@ def get_tool_ids_from_db(server_id: int) -> dict:
     return result
 
 
-def attach_tools_to_personas(tool_ids: dict) -> None:
-    """Attach MCP tools to appropriate workflow personas."""
-    resp = api("GET", "admin/persona")
+def attach_tools_to_agents(tool_ids: dict) -> None:
+    """Attach MCP tools to appropriate workflow agents."""
+    resp = api("GET", "admin/agent")
     if resp.status_code != 200:
-        print(f"  [FAIL] Could not fetch personas: {resp.status_code}")
+        print(f"  [FAIL] Could not fetch agents: {resp.status_code}")
         return
 
-    all_personas = resp.json()
+    all_agents = resp.json()
 
-    # (persona_name, tool_ids_to_assign, replace_docx)
+    # (agent_name, tool_ids_to_assign, replace_docx)
     # replace_docx=True drops any DOCX tools NOT in the assigned set (used for
-    # review-only personas so previously-attached write tools are removed).
+    # review-only agents so previously-attached write tools are removed).
     assignments = []
-    for pname in PPT_PERSONAS:
+    for pname in PPT_AGENTS:
         assignments.append((pname, tool_ids["ppt"], False))
-    for pname in DOCX_WRITE_PERSONAS:
+    for pname in DOCX_WRITE_AGENTS:
         assignments.append((pname, tool_ids["docx"], False))
-    for pname in DOCX_READONLY_PERSONAS:
+    for pname in DOCX_READONLY_AGENTS:
         assignments.append((pname, tool_ids["docx_readonly"], True))
-    for pname in ALL_TOOL_PERSONAS:
+    for pname in ALL_TOOL_AGENTS:
         assignments.append((pname, tool_ids["all"], False))
 
     docx_all_ids = set(tool_ids.get("docx", []))
@@ -202,12 +202,12 @@ def attach_tools_to_personas(tool_ids: dict) -> None:
         if not mcp_tool_ids:
             continue
 
-        persona = next((p for p in all_personas if p["name"] == pname), None)
-        if not persona:
-            print(f"  [SKIP] Persona '{pname}' not found — deploy the workflow first")
+        agent = next((p for p in all_agents if p["name"] == pname), None)
+        if not agent:
+            print(f"  [SKIP] Agent '{pname}' not found — deploy the workflow first")
             continue
 
-        existing_ids = [t["id"] for t in persona.get("tools", [])]
+        existing_ids = [t["id"] for t in agent.get("tools", [])]
         if replace_docx:
             # Keep non-DOCX tools; drop existing DOCX write tools, then add the
             # read-only subset. Net effect: reviewer ends up with ONLY read-only
@@ -218,21 +218,21 @@ def attach_tools_to_personas(tool_ids: dict) -> None:
             merged_ids = list(set(existing_ids + mcp_tool_ids))
 
         patch_body = {
-            "name": persona["name"],
-            "description": persona.get("description") or "",
-            "system_prompt": persona.get("system_prompt") or "",
-            "task_prompt": persona.get("task_prompt") or "",
-            "num_chunks": persona.get("num_chunks", 0),
-            "is_public": persona.get("is_public", True),
-            "recency_bias": persona.get("recency_bias", "base_decay"),
-            "llm_filter_extraction": persona.get("llm_filter_extraction", False),
-            "llm_relevance_filter": persona.get("llm_relevance_filter", False),
-            "replace_base_system_prompt": persona.get("replace_base_system_prompt", True),
-            "datetime_aware": persona.get("datetime_aware", True),
-            "document_set_ids": persona.get("document_set_ids", []),
+            "name": agent["name"],
+            "description": agent.get("description") or "",
+            "system_prompt": agent.get("system_prompt") or "",
+            "task_prompt": agent.get("task_prompt") or "",
+            "num_chunks": agent.get("num_chunks", 0),
+            "is_public": agent.get("is_public", True),
+            "recency_bias": agent.get("recency_bias", "base_decay"),
+            "llm_filter_extraction": agent.get("llm_filter_extraction", False),
+            "llm_relevance_filter": agent.get("llm_relevance_filter", False),
+            "replace_base_system_prompt": agent.get("replace_base_system_prompt", True),
+            "datetime_aware": agent.get("datetime_aware", True),
+            "document_set_ids": agent.get("document_set_ids", []),
             "tool_ids": merged_ids,
-            "label_ids": [l["id"] for l in persona.get("labels", [])],
-            "starter_messages": persona.get("starter_messages") or [],
+            "label_ids": [l["id"] for l in agent.get("labels", [])],
+            "starter_messages": agent.get("starter_messages") or [],
             "users": [], "groups": [], "hierarchy_node_ids": [],
             "document_ids": [], "knowledge_file_ids": [],
         }
@@ -245,9 +245,9 @@ def attach_tools_to_personas(tool_ids: dict) -> None:
             prefix = "docx_* (read-only)"
         else:
             prefix = "all"
-        resp = api("PATCH", f"persona/{persona['id']}", patch_body)
+        resp = api("PATCH", f"agent/{agent['id']}", patch_body)
         if resp.status_code == 200:
-            print(f"  [OK] Attached {len(mcp_tool_ids)} MCP tools ({prefix}) to '{pname}' (ID={persona['id']})")
+            print(f"  [OK] Attached {len(mcp_tool_ids)} MCP tools ({prefix}) to '{pname}' (ID={agent['id']})")
         else:
             try:
                 err = resp.json()
@@ -279,8 +279,8 @@ def main():
         help="Just list discovered tools (server must already be registered)",
     )
     parser.add_argument(
-        "--attach-to-personas", action="store_true",
-        help="Attach discovered MCP tools to workflow personas (PPT→PPT personas, DOCX→DOCX personas)",
+        "--attach-to-agents", action="store_true",
+        help="Attach discovered MCP tools to workflow agents (PPT→PPT agents, DOCX→DOCX agents)",
     )
     parser.add_argument(
         "--delete", action="store_true",
@@ -322,11 +322,11 @@ def main():
     if tool_ids["all"]:
         print(f"\n  DB Tool IDs: {len(tool_ids['ppt'])} PPT, {len(tool_ids['docx'])} DOCX, {len(tool_ids['all'])} total")
 
-    # Step 4: Optionally attach tools to workflow personas
-    if args.attach_to_personas and tool_ids["all"]:
-        print(f"\n--- Attaching MCP tools to workflow personas ---\n")
-        attach_tools_to_personas(tool_ids)
-    elif args.attach_to_personas and not tool_ids["all"]:
+    # Step 4: Optionally attach tools to workflow agents
+    if args.attach_to_agents and tool_ids["all"]:
+        print(f"\n--- Attaching MCP tools to workflow agents ---\n")
+        attach_tools_to_agents(tool_ids)
+    elif args.attach_to_agents and not tool_ids["all"]:
         print(f"\n  [WARN] No DB tool IDs to attach. Discover tools first.")
 
     print(f"\n--- Done ---\n")

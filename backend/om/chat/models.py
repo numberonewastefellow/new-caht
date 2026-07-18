@@ -144,7 +144,7 @@ class FileToolMetadata(BaseModel):
     """Lightweight metadata for exposing files to the FileReaderTool.
 
     Used when files cannot be loaded directly into context (workspace too large
-    or persona-attached knowledge_files without direct-load path). The LLM receives
+    or agent-attached knowledge_files without direct-load path). The LLM receives
     a listing of these so it knows which files it can read via ``read_file``.
     """
 

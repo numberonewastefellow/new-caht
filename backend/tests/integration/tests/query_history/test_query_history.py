@@ -36,7 +36,7 @@ def setup_chat_session(reset: None) -> tuple[DATestUser, str]:  # noqa: ARG001
 
     # Create chat session and send a message
     chat_session = ChatSessionManager.create(
-        persona_id=0,
+        agent_id=0,
         description="Test chat session",
         user_performing_action=admin_user,
     )

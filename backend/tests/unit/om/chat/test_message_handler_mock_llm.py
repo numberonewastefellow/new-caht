@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from om.chat import process_message
+from om.chat import message_handler
 from om.configs import app_configs
 from om.server.query_and_chat.models import SendMessageRequest
 
@@ -12,8 +12,8 @@ def test_mock_llm_response_requires_integration_mode() -> None:
         app_configs.INTEGRATION_TESTS_MODE is False
     ), "Unit tests expect INTEGRATION_TESTS_MODE=false."
     assert (
-        process_message.INTEGRATION_TESTS_MODE is False
-    ), "process_message should reflect INTEGRATION_TESTS_MODE=false in unit tests."
+        message_handler.INTEGRATION_TESTS_MODE is False
+    ), "message_handler should reflect INTEGRATION_TESTS_MODE=false in unit tests."
 
     request = SendMessageRequest(
         message="test",
@@ -29,7 +29,7 @@ def test_mock_llm_response_requires_integration_mode() -> None:
         match="mock_llm_response can only be used when INTEGRATION_TESTS_MODE=true",
     ):
         next(
-            process_message.handle_stream_message_objects(
+            message_handler.stream_chat_message(
                 new_msg_req=request,
                 user=mock_user,
                 db_session=Mock(),

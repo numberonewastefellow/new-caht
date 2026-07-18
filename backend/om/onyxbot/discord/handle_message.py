@@ -32,7 +32,7 @@ class ShouldRespondContext(BaseModel):
     """Context for whether the bot should respond to a message."""
 
     should_respond: bool
-    persona_id: int | None
+    agent_id: int | None
     thread_only_mode: bool
 
 
@@ -46,11 +46,11 @@ async def should_respond(
     tenant_id: str,
     bot_user: discord.ClientUser,
 ) -> ShouldRespondContext:
-    """Determine if bot should respond and which persona to use."""
+    """Determine if bot should respond and which agent to use."""
     if not message.guild:
         logger.warning("Received a message that isn't in a server.")
         return ShouldRespondContext(
-            should_respond=False, persona_id=None, thread_only_mode=False
+            should_respond=False, agent_id=None, thread_only_mode=False
         )
 
     guild_id = message.guild.id
@@ -77,22 +77,22 @@ async def should_respond(
 
     if not guild_config or not channel_config or not channel_config.enabled:
         return ShouldRespondContext(
-            should_respond=False, persona_id=None, thread_only_mode=False
+            should_respond=False, agent_id=None, thread_only_mode=False
         )
 
-    # Determine persona (channel override or guild default)
-    persona_id = channel_config.persona_override_id or guild_config.default_persona_id
+    # Determine agent (channel override or guild default)
+    agent_id = channel_config.agent_override_id or guild_config.default_agent_id
 
     # Check mention requirement (with exceptions for implicit invocation)
     if channel_config.require_bot_invocation and not bot_mentioned:
         if not await check_implicit_invocation(message, bot_user):
             return ShouldRespondContext(
-                should_respond=False, persona_id=None, thread_only_mode=False
+                should_respond=False, agent_id=None, thread_only_mode=False
             )
 
     return ShouldRespondContext(
         should_respond=True,
-        persona_id=persona_id,
+        agent_id=agent_id,
         thread_only_mode=channel_config.thread_only_mode,
     )
 
@@ -158,7 +158,7 @@ async def check_implicit_invocation(
 async def process_chat_message(
     message: discord.Message,
     api_key: str,
-    persona_id: int | None,
+    agent_id: int | None,
     thread_only_mode: bool,
     api_client: OmAPIClient,
     bot_user: discord.ClientUser,
@@ -190,7 +190,7 @@ async def process_chat_message(
         response = await api_client.send_chat_message(
             message="\n\n".join(parts),
             api_key=api_key,
-            persona_id=persona_id,
+            agent_id=agent_id,
         )
 
         # Format response with citations

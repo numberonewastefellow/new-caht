@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { FilterManager, LlmDescriptor, LlmManager } from "@/lib/hooks";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { OmDocument } from "@/lib/search/interfaces";
 import {
   createChatSession,
@@ -43,7 +43,7 @@ const SYSTEM_MESSAGE_ID = -3;
 interface UseCompareControllerProps {
   filterManager: FilterManager;
   llmManager: LlmManager;
-  liveAssistant: MinimalPersonaSnapshot | undefined;
+  liveAssistant: MinimalAgentSnapshot | undefined;
   selectedDocuments: OmDocument[];
   resetInputBar: () => void;
 }
@@ -116,7 +116,7 @@ interface StreamOnePanelArgs {
   deepResearch: boolean;
   filterManager: FilterManager;
   llmManager: LlmManager;
-  liveAssistant: MinimalPersonaSnapshot | undefined;
+  liveAssistant: MinimalAgentSnapshot | undefined;
   selectedDocuments: OmDocument[];
   setPanelSessionId: (index: number, sessionId: string) => void;
 }

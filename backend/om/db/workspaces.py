@@ -145,23 +145,28 @@ def upload_files_to_knowledge_files_with_indexing(
     )
 
 
+def get_owned_workspace(
+    workspace_id: int, user_id: UUID | None, db_session: Session
+) -> Workspace | None:
+    """Return the non-deleted workspace with this id owned by user_id, else None.
+
+    Excludes soft-deleted workspaces (``deleted == True``). In no-auth mode
+    (``user_id is None``) the owner filter is skipped.
+    """
+    query = db_session.query(Workspace).filter(
+        Workspace.id == workspace_id,
+        Workspace.deleted.is_(False),
+    )
+    if user_id is not None:
+        query = query.filter(Workspace.user_id == user_id)
+    return query.one_or_none()
+
+
 def check_workspace_ownership(
     workspace_id: int, user_id: UUID | None, db_session: Session
 ) -> bool:
-    # In no-auth mode, all workspaces are accessible
-    if user_id is None:
-        # Verify workspace exists
-        return (
-            db_session.query(Workspace).filter(Workspace.id == workspace_id).first()
-            is not None
-        )
-
-    return (
-        db_session.query(Workspace)
-        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
-        .first()
-        is not None
-    )
+    # In no-auth mode, all (non-deleted) workspaces are accessible
+    return get_owned_workspace(workspace_id, user_id, db_session) is not None
 
 
 def get_knowledge_files_from_workspace(
@@ -189,7 +194,7 @@ def get_workspace_instructions(db_session: Session, workspace_id: int | None) ->
     try:
         workspace = (
             db_session.query(Workspace)
-            .filter(Workspace.id == workspace_id)
+            .filter(Workspace.id == workspace_id, Workspace.deleted.is_(False))
             .one_or_none()
         )
         if not workspace or not workspace.workspace_instructions:

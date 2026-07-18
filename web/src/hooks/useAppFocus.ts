@@ -107,7 +107,7 @@ export default function useAppFocus(): AppFocus {
   const chatId = searchParams.get(SEARCH_PARAM_NAMES.CHAT_ID);
   if (chatId) return new AppFocus({ type: "chat", id: chatId });
 
-  const agentId = searchParams.get(SEARCH_PARAM_NAMES.PERSONA_ID);
+  const agentId = searchParams.get(SEARCH_PARAM_NAMES.AGENT_ID);
   if (agentId) return new AppFocus({ type: "agent", id: agentId });
 
   const workspaceId = searchParams.get(SEARCH_PARAM_NAMES.PROJECT_ID);

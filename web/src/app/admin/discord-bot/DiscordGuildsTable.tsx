@@ -62,7 +62,7 @@ export function DiscordGuildsTable({ guilds, onRefresh }: Props) {
     try {
       await updateGuildConfig(guild.id, {
         enabled: !guild.enabled,
-        default_persona_id: guild.default_persona_id,
+        default_agent_id: guild.default_agent_id,
       });
       onRefresh();
       toast.success(`Server ${!guild.enabled ? "enabled" : "disabled"}`);

@@ -23,7 +23,7 @@ import { OrchestratorNode } from "./OrchestratorNode";
 import { FinishNode } from "./FinishNode";
 import { ConditionalRouterNode } from "./ConditionalRouterNode";
 import { StepEdge } from "./StepEdge";
-import type { WorkflowNode, WorkflowEdge, DragPersonaData, OrchestratorNodeData } from "./types";
+import type { WorkflowNode, WorkflowEdge, DragAgentData, OrchestratorNodeData } from "./types";
 import { ORCHESTRATOR_NODE_ID } from "./types";
 
 const nodeTypes: NodeTypes = {
@@ -44,7 +44,7 @@ interface WorkflowCanvasProps {
   onEdgesChange: OnEdgesChange<WorkflowEdge>;
   onConnect: OnConnect;
   onNodeClick: (nodeId: string) => void;
-  onDrop: (persona: DragPersonaData, position: { x: number; y: number }) => void;
+  onDrop: (agent: DragAgentData, position: { x: number; y: number }) => void;
   onConditionDrop?: (position: { x: number; y: number }) => void;
 }
 
@@ -138,17 +138,17 @@ export function WorkflowCanvas({
         return;
       }
 
-      // Check for agent persona drop
+      // Check for agent agent drop
       const raw = event.dataTransfer.getData("application/reactflow");
       if (!raw) return;
 
       try {
-        const persona: DragPersonaData = JSON.parse(raw);
+        const agent: DragAgentData = JSON.parse(raw);
         const position = screenToFlowPosition({
           x: event.clientX,
           y: event.clientY,
         });
-        onDrop(persona, position);
+        onDrop(agent, position);
       } catch {
         // Invalid drag data
       }

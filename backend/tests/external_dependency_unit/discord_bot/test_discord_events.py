@@ -369,7 +369,7 @@ class TestMessageHandling:
         await process_chat_message(
             message=mock_discord_message,
             api_key="test_key",
-            persona_id=None,
+            agent_id=None,
             thread_only_mode=False,
             api_client=mock_api_client,
             bot_user=mock_bot_user,
@@ -388,7 +388,7 @@ class TestMessageHandling:
         await process_chat_message(
             message=mock_discord_message,
             api_key="test_key",
-            persona_id=None,
+            agent_id=None,
             thread_only_mode=False,
             api_client=mock_api_client,
             bot_user=mock_bot_user,
@@ -412,7 +412,7 @@ class TestMessageHandling:
         await process_chat_message(
             message=mock_discord_message,
             api_key="test_key",
-            persona_id=None,
+            agent_id=None,
             thread_only_mode=False,
             api_client=mock_api_client,
             bot_user=mock_bot_user,

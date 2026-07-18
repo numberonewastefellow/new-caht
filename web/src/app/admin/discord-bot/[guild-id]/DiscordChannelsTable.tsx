@@ -19,7 +19,7 @@ import {
 } from "@/app/admin/discord-bot/types";
 import { SvgHash, SvgBubbleText, SvgLock } from "@opal/icons";
 import { IconProps } from "@opal/types";
-import { Persona } from "@/app/admin/assistants/interfaces";
+import { Agent } from "@/app/admin/assistants/interfaces";
 
 function getChannelIcon(
   channelType: DiscordChannelType,
@@ -40,14 +40,14 @@ function getChannelIcon(
 
 interface Props {
   channels: DiscordChannelConfig[];
-  personas: Persona[];
+  agents: Agent[];
   onChannelUpdate: (
     channelId: number,
     field:
       | "enabled"
       | "require_bot_invocation"
       | "thread_only_mode"
-      | "persona_override_id",
+      | "agent_override_id",
     value: boolean | number | null
   ) => void;
   disabled?: boolean;
@@ -55,7 +55,7 @@ interface Props {
 
 export function DiscordChannelsTable({
   channels,
-  personas,
+  agents,
   onChannelUpdate,
   disabled = false,
 }: Props) {
@@ -135,11 +135,11 @@ export function DiscordChannelsTable({
               </TableCell>
               <TableCell>
                 <InputSelect
-                  value={channel.persona_override_id?.toString() ?? "default"}
+                  value={channel.agent_override_id?.toString() ?? "default"}
                   onValueChange={(value: string) =>
                     onChannelUpdate(
                       channel.id,
-                      "persona_override_id",
+                      "agent_override_id",
                       value === "default" ? null : parseInt(value)
                     )
                   }
@@ -148,12 +148,12 @@ export function DiscordChannelsTable({
                   <InputSelect.Trigger placeholder="-" />
                   <InputSelect.Content>
                     <InputSelect.Item value="default">-</InputSelect.Item>
-                    {personas.map((persona) => (
+                    {agents.map((agent) => (
                       <InputSelect.Item
-                        key={persona.id}
-                        value={persona.id.toString()}
+                        key={agent.id}
+                        value={agent.id.toString()}
                       >
-                        {persona.name}
+                        {agent.name}
                       </InputSelect.Item>
                     ))}
                   </InputSelect.Content>

@@ -9,9 +9,9 @@ from slack_sdk import WebClient
 
 from om.auth.users import get_anonymous_user
 from om.chat.models import ChatBasicResponse
-from om.chat.process_message import gather_stream
-from om.chat.process_message import handle_stream_message_objects
-from om.configs.constants import DEFAULT_PERSONA_ID
+from om.chat.message_handler import gather_stream
+from om.chat.message_handler import stream_chat_message
+from om.configs.constants import DEFAULT_AGENT_ID
 from om.configs.constants import MessageType
 from om.configs.onyxbot_configs import OM_BOT_DISABLE_DOCS_ONLY_ANSWER
 from om.configs.onyxbot_configs import OM_BOT_DISPLAY_ERROR_MSGS
@@ -21,7 +21,7 @@ from om.context.search.models import BaseFilters
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.models import SlackChannelConfig
 from om.db.models import User
-from om.db.persona import get_persona_by_id
+from om.db.agent import get_agent_by_id
 from om.db.users import get_user_by_email
 from om.onyxbot.slack.blocks import build_slack_response_blocks
 from om.onyxbot.slack.handlers.utils import send_team_member_message
@@ -138,20 +138,20 @@ def handle_regular_answer(
     )
 
     document_set_names: list[str] | None = None
-    # If no persona is specified, use the default search based persona
-    # This way slack flow always has a persona
-    persona = slack_channel_config.persona
-    if not persona:
-        logger.warning("No persona found for channel config, using default persona")
+    # If no agent is specified, use the default search based agent
+    # This way slack flow always has a agent
+    agent = slack_channel_config.agent
+    if not agent:
+        logger.warning("No agent found for channel config, using default agent")
         with get_session_with_current_tenant() as db_session:
-            persona = get_persona_by_id(DEFAULT_PERSONA_ID, user, db_session)
+            agent = get_agent_by_id(DEFAULT_AGENT_ID, user, db_session)
             document_set_names = [
-                document_set.name for document_set in persona.document_sets
+                document_set.name for document_set in agent.document_sets
             ]
     else:
-        logger.info(f"Using persona {persona.name} for channel config")
+        logger.info(f"Using agent {agent.name} for channel config")
         document_set_names = [
-            document_set.name for document_set in persona.document_sets
+            document_set.name for document_set in agent.document_sets
         ]
 
     user_message = messages[-1]
@@ -185,7 +185,7 @@ def handle_regular_answer(
         onyx_user: User,
     ) -> ChatBasicResponse:
         with get_session_with_current_tenant() as db_session:
-            packets = handle_stream_message_objects(
+            packets = stream_chat_message(
                 new_msg_req=new_message_request,
                 user=onyx_user,
                 db_session=db_session,
@@ -218,7 +218,7 @@ def handle_regular_answer(
             deep_research=False,
             origin=MessageOrigin.SLACKBOT,
             chat_session_info=ChatSessionCreationRequest(
-                persona_id=persona.id,
+                agent_id=agent.id,
             ),
         )
 

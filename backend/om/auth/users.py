@@ -117,7 +117,7 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.models import AccessToken
 from om.db.models import OAuthAccount
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
 from om.db.pat import fetch_user_for_pat
 from om.db.users import get_user_by_email
@@ -516,27 +516,27 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             return
 
         result = await db_session.execute(
-            select(Persona.id)
+            select(Agent.id)
             .where(
-                Persona.is_default_persona.is_(True),
-                Persona.is_public.is_(True),
-                Persona.is_visible.is_(True),
-                Persona.deleted.is_(False),
+                Agent.is_default_agent.is_(True),
+                Agent.is_public.is_(True),
+                Agent.is_visible.is_(True),
+                Agent.deleted.is_(False),
             )
             .order_by(
-                nulls_last(Persona.display_priority.asc()),
-                Persona.id.asc(),
+                nulls_last(Agent.display_priority.asc()),
+                Agent.id.asc(),
             )
         )
-        default_persona_ids = list(result.scalars().all())
-        if not default_persona_ids:
+        default_agent_ids = list(result.scalars().all())
+        if not default_agent_ids:
             return
 
         await self.user_db.update(
             user,
-            {"pinned_assistants": default_persona_ids},
+            {"pinned_assistants": default_agent_ids},
         )
-        user.pinned_assistants = default_persona_ids
+        user.pinned_assistants = default_agent_ids
 
     async def validate_password(self, password: str, _: schemas.UC | models.UP) -> None:
         # Validate password according to configurable security policy (defined via environment variables)

@@ -1,6 +1,6 @@
 /**
  * Example prompts for the Build Mode welcome screen.
- * Organized by user persona to allow different prompts for different user types.
+ * Organized by user agent to allow different prompts for different user types.
  */
 
 export interface BuildPrompt {
@@ -13,13 +13,13 @@ export interface BuildPrompt {
   image?: string;
 }
 
-export type UserPersona = "default" | "engineering" | "sales" | "product";
+export type UserAgent = "default" | "engineering" | "sales" | "product";
 
 /**
- * Example prompts organized by user persona.
- * Each persona has a set of prompts tailored to their typical use cases.
+ * Example prompts organized by user agent.
+ * Each agent has a set of prompts tailored to their typical use cases.
  */
-export const exampleBuildPrompts: Record<UserPersona, BuildPrompt[]> = {
+export const exampleBuildPrompts: Record<UserAgent, BuildPrompt[]> = {
   default: [
     {
       id: "default-1",
@@ -102,7 +102,7 @@ export const exampleBuildPrompts: Record<UserPersona, BuildPrompt[]> = {
       id: "sales-1",
       summary: "Identify sales blockers and quantify their revenue impact",
       fullText:
-        "Look at the customer calls that my team had last month and identify the 3 most important sales blockers. Those could be product-related, messaging-related, or persona-chemistry. Create a dashboard showing how much revenue seems to be associated with each blocker.",
+        "Look at the customer calls that my team had last month and identify the 3 most important sales blockers. Those could be product-related, messaging-related, or agent-chemistry. Create a dashboard showing how much revenue seems to be associated with each blocker.",
       image: "/craft_suggested_image_1.png",
     },
     {
@@ -176,18 +176,18 @@ export const exampleBuildPrompts: Record<UserPersona, BuildPrompt[]> = {
 };
 
 /**
- * Get prompts for a specific user persona.
- * Falls back to default prompts if persona is not found.
+ * Get prompts for a specific user agent.
+ * Falls back to default prompts if agent is not found.
  */
-export function getPromptsForPersona(persona: UserPersona): BuildPrompt[] {
-  return exampleBuildPrompts[persona] ?? exampleBuildPrompts.default;
+export function getPromptsForAgent(agent: UserAgent): BuildPrompt[] {
+  return exampleBuildPrompts[agent] ?? exampleBuildPrompts.default;
 }
 
 /**
- * Maps a workArea value from the build_user_persona cookie to a UserPersona.
+ * Maps a workArea value from the build_user_agent cookie to a UserAgent.
  * Work areas that don't have dedicated prompts (executive, marketing, other) fall back to default.
  */
-export function workAreaToPersona(workArea: string | undefined): UserPersona {
+export function workAreaToAgent(workArea: string | undefined): UserAgent {
   switch (workArea) {
     case "engineering":
       return "engineering";

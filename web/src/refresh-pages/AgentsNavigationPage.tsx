@@ -5,7 +5,7 @@ import AgentCard from "@/sections/cards/AgentCard";
 import { useUser } from "@/providers/UserProvider";
 import { checkUserOwnsAssistant as checkUserOwnsAgent } from "@/lib/agents";
 import { useAgents } from "@/hooks/useAgents";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import Text from "@/refresh-components/texts/Text";
 import { cn } from "@/lib/utils";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
@@ -39,7 +39,7 @@ const PAGE_SIZE = 24;
 interface AgentsSectionProps {
   title: string;
   description?: string;
-  agents: MinimalPersonaSnapshot[];
+  agents: MinimalAgentSnapshot[];
   visibleCount: number;
   onLabelClick?: (labelId: number) => void;
 }
@@ -150,7 +150,7 @@ export default function AgentsNavigationPage() {
 
           if (agentWithServer) {
             const response = await fetch(
-              `/api/mcp/servers/persona/${agentWithServer.id}`
+              `/api/mcp/servers/agent/${agentWithServer.id}`
             );
             if (response.ok) {
               const data = await response.json();
@@ -477,14 +477,14 @@ export default function AgentsNavigationPage() {
   const featuredAgents = useMemo(
     () =>
       memoizedCurrentlyVisibleAgents.filter(
-        (agent) => agent.is_default_persona
+        (agent) => agent.is_default_agent
       ),
     [memoizedCurrentlyVisibleAgents]
   );
   const allAgents = useMemo(
     () =>
       memoizedCurrentlyVisibleAgents.filter(
-        (agent) => !agent.is_default_persona
+        (agent) => !agent.is_default_agent
       ),
     [memoizedCurrentlyVisibleAgents]
   );

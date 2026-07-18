@@ -16,7 +16,7 @@ LOADING_RESPONSE_MESSAGE = "Message is loading... Please refresh the page soon."
 def test_send_two_messages(basic_user: DATestUser) -> None:
     # Create a chat session
     test_chat_session = ChatSessionManager.create(
-        persona_id=0,  # Use default persona
+        agent_id=0,  # Use default agent
         description="Test chat session for multiple messages",
         user_performing_action=basic_user,
     )

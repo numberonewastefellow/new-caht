@@ -295,8 +295,8 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     input_prompts: Mapped[list["InputPrompt"]] = relationship(
         "InputPrompt", back_populates="user"
     )
-    # Personas owned by this user
-    personas: Mapped[list["Persona"]] = relationship("Persona", back_populates="user")
+    # Agents owned by this user
+    agents: Mapped[list["Agent"]] = relationship("Agent", back_populates="user")
     # Custom tools created by this user
     custom_tools: Mapped[list["Tool"]] = relationship("Tool", back_populates="user")
     # Notifications for the UI
@@ -480,19 +480,19 @@ NOTE: must be at the top since they are referenced by other tables
 """
 
 
-class Persona__DocumentSet(Base):
-    __tablename__ = "persona__document_set"
+class Agent__DocumentSet(Base):
+    __tablename__ = "agent__document_set"
 
-    persona_id: Mapped[int] = mapped_column(ForeignKey("persona.id"), primary_key=True)
+    agent_id: Mapped[int] = mapped_column(ForeignKey("agent.id"), primary_key=True)
     document_set_id: Mapped[int] = mapped_column(
         ForeignKey("document_set.id"), primary_key=True
     )
 
 
-class Persona__User(Base):
-    __tablename__ = "persona__user"
+class Agent__User(Base):
+    __tablename__ = "agent__user"
 
-    persona_id: Mapped[int] = mapped_column(ForeignKey("persona.id"), primary_key=True)
+    agent_id: Mapped[int] = mapped_column(ForeignKey("agent.id"), primary_key=True)
     user_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), primary_key=True, nullable=True
     )
@@ -566,19 +566,19 @@ class Document__Tag(Base):
     )
 
 
-class Persona__Tool(Base):
-    """An entry in this table represents a tool that is **available** to a persona.
-    It does NOT necessarily mean that the tool is actually usable to the persona.
+class Agent__Tool(Base):
+    """An entry in this table represents a tool that is **available** to a agent.
+    It does NOT necessarily mean that the tool is actually usable to the agent.
 
-    For example, a persona may have the image generation tool attached to it, even though
+    For example, a agent may have the image generation tool attached to it, even though
     the image generation tool is not set up / enabled. In this case, the tool should not
-    show up in the UI for the persona + it should not be usable by the persona in chat.
+    show up in the UI for the agent + it should not be usable by the agent in chat.
     """
 
-    __tablename__ = "persona__tool"
+    __tablename__ = "agent__tool"
 
-    persona_id: Mapped[int] = mapped_column(
-        ForeignKey("persona.id", ondelete="CASCADE"), primary_key=True
+    agent_id: Mapped[int] = mapped_column(
+        ForeignKey("agent.id", ondelete="CASCADE"), primary_key=True
     )
     tool_id: Mapped[int] = mapped_column(
         ForeignKey("tool.id", ondelete="CASCADE"), primary_key=True
@@ -822,10 +822,10 @@ class HierarchyNode(Base):
         foreign_keys="Document.parent_hierarchy_node_id",
         passive_deletes=True,
     )
-    # Personas that have this hierarchy node attached for scoped search
-    personas: Mapped[list["Persona"]] = relationship(
-        "Persona",
-        secondary="persona__hierarchy_node",
+    # Agents that have this hierarchy node attached for scoped search
+    agents: Mapped[list["Agent"]] = relationship(
+        "Agent",
+        secondary="agent__hierarchy_node",
         back_populates="hierarchy_nodes",
         viewonly=True,
     )
@@ -947,10 +947,10 @@ class Document(Base):
         foreign_keys="HierarchyNode.document_id",
         passive_deletes=True,
     )
-    # Personas that have this document directly attached for scoped search
-    attached_personas: Mapped[list["Persona"]] = relationship(
-        "Persona",
-        secondary="persona__document",
+    # Agents that have this document directly attached for scoped search
+    attached_agents: Mapped[list["Agent"]] = relationship(
+        "Agent",
+        secondary="agent__document",
         back_populates="attached_documents",
         viewonly=True,
     )
@@ -2324,8 +2324,8 @@ class ChatSession(Base):
     user_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), nullable=True
     )
-    persona_id: Mapped[int | None] = mapped_column(
-        ForeignKey("persona.id"), nullable=True
+    agent_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent.id"), nullable=True
     )
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     # This chat created by VertualAi Bot
@@ -2360,7 +2360,7 @@ class ChatSession(Base):
     )
 
     # the latest "overrides" specified by the user. These take precedence over
-    # the attached persona. However, overrides specified directly in the
+    # the attached agent. However, overrides specified directly in the
     # `send-message` call will take precedence over these.
     # NOTE: currently only used by the chat seeding flow, will be used in the
     # future once we allow users to override default values via the Chat UI
@@ -2391,7 +2391,7 @@ class ChatSession(Base):
         cascade="all, delete-orphan",
         foreign_keys="ChatMessage.chat_session_id",
     )
-    persona: Mapped["Persona"] = relationship("Persona")
+    agent: Mapped["Agent"] = relationship("Agent")
 
 
 class ChatMessage(Base):
@@ -2740,9 +2740,9 @@ class LLMProvider(Base):
         secondary="llm_provider__user_group",
         viewonly=True,
     )
-    personas: Mapped[list["Persona"]] = relationship(
-        "Persona",
-        secondary="llm_provider__persona",
+    agents: Mapped[list["Agent"]] = relationship(
+        "Agent",
+        secondary="llm_provider__agent",
         back_populates="allowed_by_llm_providers",
         viewonly=True,
     )
@@ -2963,9 +2963,9 @@ class DocumentSet(Base):
         back_populates="document_sets",
         overlaps="document_set",
     )
-    personas: Mapped[list["Persona"]] = relationship(
-        "Persona",
-        secondary=Persona__DocumentSet.__table__,
+    agents: Mapped[list["Agent"]] = relationship(
+        "Agent",
+        secondary=Agent__DocumentSet.__table__,
         back_populates="document_sets",
     )
     # Other users with access
@@ -3032,10 +3032,10 @@ class Tool(Base):
     oauth_config: Mapped["OAuthConfig | None"] = relationship(
         "OAuthConfig", back_populates="tools"
     )
-    # Relationship to Persona through the association table
-    personas: Mapped[list["Persona"]] = relationship(
-        "Persona",
-        secondary=Persona__Tool.__table__,
+    # Relationship to Agent through the association table
+    agents: Mapped[list["Agent"]] = relationship(
+        "Agent",
+        secondary=Agent__Tool.__table__,
         back_populates="tools",
     )
     # MCP server relationship
@@ -3137,23 +3137,23 @@ class OAuthUserToken(Base):
 
 
 class StarterMessage(BaseModel):
-    """Starter message for a persona."""
+    """Starter message for a agent."""
 
     name: str
     message: str
 
 
-class Persona__PersonaLabel(Base):
-    __tablename__ = "persona__persona_label"
+class Agent__AgentLabel(Base):
+    __tablename__ = "agent__agent_label"
 
-    persona_id: Mapped[int] = mapped_column(ForeignKey("persona.id"), primary_key=True)
-    persona_label_id: Mapped[int] = mapped_column(
-        ForeignKey("persona_label.id", ondelete="CASCADE"), primary_key=True
+    agent_id: Mapped[int] = mapped_column(ForeignKey("agent.id"), primary_key=True)
+    agent_label_id: Mapped[int] = mapped_column(
+        ForeignKey("agent_label.id", ondelete="CASCADE"), primary_key=True
     )
 
 
-class Persona(Base):
-    __tablename__ = "persona"
+class Agent(Base):
+    __tablename__ = "agent"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[UUID | None] = mapped_column(
@@ -3175,7 +3175,7 @@ class Persona(Base):
         Enum(RecencyBiasSetting, native_enum=False)
     )
 
-    # Allows the persona to specify a specific default LLM model
+    # Allows the agent to specify a specific default LLM model
     # NOTE: only is applied on the actual response generation - is not used for things like
     # auto-detected time filters, relevance filters, etc.
     llm_model_provider_override: Mapped[str | None] = mapped_column(
@@ -3190,7 +3190,7 @@ class Persona(Base):
         nullable=True,
     )
 
-    # Maximum output tokens for this persona's LLM responses.
+    # Maximum output tokens for this agent's LLM responses.
     # When set, overrides the default (1000). NULL = use default.
     max_output_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
@@ -3200,19 +3200,19 @@ class Persona(Base):
     search_start_date: Mapped[datetime.datetime | None] = mapped_column(
         DateTime(timezone=True), default=None
     )
-    # Built-in personas are configured via backend during deployment
+    # Built-in agents are configured via backend during deployment
     # Treated specially (cannot be user edited etc.)
-    builtin_persona: Mapped[bool] = mapped_column(Boolean, default=False)
+    builtin_agent: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    # Default personas are personas created by admins and are automatically added
+    # Default agents are agents created by admins and are automatically added
     # to all users' assistants list.
-    is_default_persona: Mapped[bool] = mapped_column(
+    is_default_agent: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False
     )
-    # controls whether the persona is available to be selected by users
+    # controls whether the agent is available to be selected by users
     is_visible: Mapped[bool] = mapped_column(Boolean, default=True)
-    # controls the ordering of personas in the UI
-    # higher priority personas are displayed first, ties are resolved by the ID,
+    # controls the ordering of agents in the UI
+    # higher priority agents are displayed first, ties are resolved by the ID,
     # where lower value IDs (e.g. created earlier) are displayed first
     display_priority: Mapped[int | None] = mapped_column(
         Integer, nullable=True, default=None
@@ -3235,61 +3235,61 @@ class Persona(Base):
     # These are only defaults, users can select from all if desired
     document_sets: Mapped[list[DocumentSet]] = relationship(
         "DocumentSet",
-        secondary=Persona__DocumentSet.__table__,
-        back_populates="personas",
+        secondary=Agent__DocumentSet.__table__,
+        back_populates="agents",
     )
     tools: Mapped[list[Tool]] = relationship(
         "Tool",
-        secondary=Persona__Tool.__table__,
-        back_populates="personas",
+        secondary=Agent__Tool.__table__,
+        back_populates="agents",
     )
     # Owner
-    user: Mapped[User | None] = relationship("User", back_populates="personas")
+    user: Mapped[User | None] = relationship("User", back_populates="agents")
     # Other users with access
     users: Mapped[list[User]] = relationship(
         "User",
-        secondary=Persona__User.__table__,
+        secondary=Agent__User.__table__,
         viewonly=True,
     )
     # EE only
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     groups: Mapped[list["UserGroup"]] = relationship(
         "UserGroup",
-        secondary="persona__user_group",
+        secondary="agent__user_group",
         viewonly=True,
     )
     allowed_by_llm_providers: Mapped[list["LLMProvider"]] = relationship(
         "LLMProvider",
-        secondary="llm_provider__persona",
-        back_populates="personas",
+        secondary="llm_provider__agent",
+        back_populates="agents",
         viewonly=True,
     )
     # Relationship to KnowledgeFile
     knowledge_files: Mapped[list["KnowledgeFile"]] = relationship(
         "KnowledgeFile",
-        secondary="persona__knowledge_file",
+        secondary="agent__knowledge_file",
         back_populates="assistants",
     )
-    labels: Mapped[list["PersonaLabel"]] = relationship(
-        "PersonaLabel",
-        secondary=Persona__PersonaLabel.__table__,
-        back_populates="personas",
+    labels: Mapped[list["AgentLabel"]] = relationship(
+        "AgentLabel",
+        secondary=Agent__AgentLabel.__table__,
+        back_populates="agents",
     )
-    # Hierarchy nodes attached to this persona for scoped search
+    # Hierarchy nodes attached to this agent for scoped search
     hierarchy_nodes: Mapped[list["HierarchyNode"]] = relationship(
         "HierarchyNode",
-        secondary="persona__hierarchy_node",
-        back_populates="personas",
+        secondary="agent__hierarchy_node",
+        back_populates="agents",
     )
-    # Individual documents attached to this persona for scoped search
+    # Individual documents attached to this agent for scoped search
     attached_documents: Mapped[list["Document"]] = relationship(
         "Document",
-        secondary="persona__document",
-        back_populates="attached_personas",
+        secondary="agent__document",
+        back_populates="attached_agents",
     )
 
-    # Multi-agent workflow link — when set, this persona is a wrapper for a workflow.
-    # Chat messages sent to this persona are routed to the workflow engine instead
+    # Multi-agent workflow link — when set, this agent is a wrapper for a workflow.
+    # Chat messages sent to this agent are routed to the workflow engine instead
     # of the standard LLM loop.
     workflow_id: Mapped[int | None] = mapped_column(
         ForeignKey("agent_workflow.id", ondelete="SET NULL"), nullable=True
@@ -3298,80 +3298,80 @@ class Persona(Base):
         "AgentWorkflow", foreign_keys=[workflow_id]
     )
 
-    # Default personas loaded via yaml cannot have the same name
+    # Default agents loaded via yaml cannot have the same name
     __table_args__ = (
         Index(
-            "_builtin_persona_name_idx",
+            "_builtin_agent_name_idx",
             "name",
             unique=True,
-            postgresql_where=(builtin_persona == True),  # noqa: E712
+            postgresql_where=(builtin_agent == True),  # noqa: E712
         ),
     )
 
 
-class Persona__KnowledgeFile(Base):
-    __tablename__ = "persona__knowledge_file"
+class Agent__KnowledgeFile(Base):
+    __tablename__ = "agent__knowledge_file"
 
-    persona_id: Mapped[int] = mapped_column(
-        ForeignKey("persona.id", ondelete="CASCADE"), primary_key=True
+    agent_id: Mapped[int] = mapped_column(
+        ForeignKey("agent.id", ondelete="CASCADE"), primary_key=True
     )
     knowledge_file_id: Mapped[UUID] = mapped_column(
         ForeignKey("knowledge_file.id", ondelete="CASCADE"), primary_key=True
     )
 
 
-class Persona__HierarchyNode(Base):
-    """Association table linking personas to hierarchy nodes.
+class Agent__HierarchyNode(Base):
+    """Association table linking agents to hierarchy nodes.
 
     This allows assistants to be configured with specific hierarchy nodes
     (folders, spaces, channels, etc.) for scoped search/retrieval.
     """
 
-    __tablename__ = "persona__hierarchy_node"
+    __tablename__ = "agent__hierarchy_node"
 
-    persona_id: Mapped[int] = mapped_column(
-        ForeignKey("persona.id", ondelete="CASCADE"), primary_key=True
+    agent_id: Mapped[int] = mapped_column(
+        ForeignKey("agent.id", ondelete="CASCADE"), primary_key=True
     )
     hierarchy_node_id: Mapped[int] = mapped_column(
         ForeignKey("hierarchy_node.id", ondelete="CASCADE"), primary_key=True
     )
 
 
-class Persona__Document(Base):
-    """Association table linking personas to individual documents.
+class Agent__Document(Base):
+    """Association table linking agents to individual documents.
 
     This allows assistants to be configured with specific documents
     for scoped search/retrieval. Complements hierarchy_nodes which
     allow attaching folders/spaces.
     """
 
-    __tablename__ = "persona__document"
+    __tablename__ = "agent__document"
 
-    persona_id: Mapped[int] = mapped_column(
-        ForeignKey("persona.id", ondelete="CASCADE"), primary_key=True
+    agent_id: Mapped[int] = mapped_column(
+        ForeignKey("agent.id", ondelete="CASCADE"), primary_key=True
     )
     document_id: Mapped[str] = mapped_column(
         ForeignKey("document.id", ondelete="CASCADE"), primary_key=True
     )
 
 
-class PersonaLabel(Base):
-    __tablename__ = "persona_label"
+class AgentLabel(Base):
+    __tablename__ = "agent_label"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String, unique=True)
-    personas: Mapped[list["Persona"]] = relationship(
-        "Persona",
-        secondary=Persona__PersonaLabel.__table__,
+    agents: Mapped[list["Agent"]] = relationship(
+        "Agent",
+        secondary=Agent__AgentLabel.__table__,
         back_populates="labels",
     )
 
 
-class Assistant__UserSpecificConfig(Base):
-    __tablename__ = "assistant__user_specific_config"
+class Agent__UserSpecificConfig(Base):
+    __tablename__ = "agent__user_specific_config"
 
-    assistant_id: Mapped[int] = mapped_column(
-        ForeignKey("persona.id", ondelete="CASCADE"), primary_key=True
+    agent_id: Mapped[int] = mapped_column(
+        ForeignKey("agent.id", ondelete="CASCADE"), primary_key=True
     )
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), primary_key=True
@@ -3410,8 +3410,8 @@ class SlackChannelConfig(Base):
     slack_bot_id: Mapped[int] = mapped_column(
         ForeignKey("slack_bot.id"), nullable=False
     )
-    persona_id: Mapped[int | None] = mapped_column(
-        ForeignKey("persona.id"), nullable=True
+    agent_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent.id"), nullable=True
     )
     channel_config: Mapped[ChannelConfig] = mapped_column(
         postgresql.JSONB(), nullable=False
@@ -3423,7 +3423,7 @@ class SlackChannelConfig(Base):
 
     is_default: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
-    persona: Mapped[Persona | None] = relationship("Persona")
+    agent: Mapped[Agent | None] = relationship("Agent")
 
     slack_bot: Mapped["SlackBot"] = relationship(
         "SlackBot",
@@ -3519,16 +3519,16 @@ class DiscordGuildConfig(Base):
     )
 
     # Configuration
-    default_persona_id: Mapped[int | None] = mapped_column(
-        ForeignKey("persona.id", ondelete="SET NULL"), nullable=True
+    default_agent_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent.id", ondelete="SET NULL"), nullable=True
     )
     enabled: Mapped[bool] = mapped_column(
         Boolean, server_default=text("true"), nullable=False
     )
 
     # Relationships
-    default_persona: Mapped["Persona | None"] = relationship(
-        "Persona", foreign_keys=[default_persona_id]
+    default_agent: Mapped["Agent | None"] = relationship(
+        "Agent", foreign_keys=[default_agent_id]
     )
     channels: Mapped[list["DiscordChannelConfig"]] = relationship(
         back_populates="guild_config", cascade="all, delete-orphan"
@@ -3574,9 +3574,9 @@ class DiscordChannelConfig(Base):
         Boolean, server_default=text("true"), nullable=False
     )
 
-    # Override the guild's default persona for this channel
-    persona_override_id: Mapped[int | None] = mapped_column(
-        ForeignKey("persona.id", ondelete="SET NULL"), nullable=True
+    # Override the guild's default agent for this channel
+    agent_override_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent.id", ondelete="SET NULL"), nullable=True
     )
 
     enabled: Mapped[bool] = mapped_column(
@@ -3585,7 +3585,7 @@ class DiscordChannelConfig(Base):
 
     # Relationships
     guild_config: Mapped["DiscordGuildConfig"] = relationship(back_populates="channels")
-    persona_override: Mapped["Persona | None"] = relationship()
+    agent_override: Mapped["Agent | None"] = relationship()
 
     # Constraints
     __table_args__ = (
@@ -3757,28 +3757,28 @@ class UserGroup__ConnectorCredentialPair(Base):
     )
 
 
-class Persona__UserGroup(Base):
-    __tablename__ = "persona__user_group"
+class Agent__UserGroup(Base):
+    __tablename__ = "agent__user_group"
 
-    persona_id: Mapped[int] = mapped_column(ForeignKey("persona.id"), primary_key=True)
+    agent_id: Mapped[int] = mapped_column(ForeignKey("agent.id"), primary_key=True)
     user_group_id: Mapped[int] = mapped_column(
         ForeignKey("user_group.id"), primary_key=True
     )
 
 
-class LLMProvider__Persona(Base):
-    """Association table restricting LLM providers to specific personas.
+class LLMProvider__Agent(Base):
+    """Association table restricting LLM providers to specific agents.
 
-    If no such rows exist for a given LLM provider, then it is accessible by all personas.
+    If no such rows exist for a given LLM provider, then it is accessible by all agents.
     """
 
-    __tablename__ = "llm_provider__persona"
+    __tablename__ = "llm_provider__agent"
 
     llm_provider_id: Mapped[int] = mapped_column(
         ForeignKey("llm_provider.id", ondelete="CASCADE"), primary_key=True
     )
-    persona_id: Mapped[int] = mapped_column(
-        ForeignKey("persona.id", ondelete="CASCADE"), primary_key=True
+    agent_id: Mapped[int] = mapped_column(
+        ForeignKey("agent.id", ondelete="CASCADE"), primary_key=True
     )
 
 
@@ -3851,9 +3851,9 @@ class UserGroup(Base):
             viewonly=True,
         )
     )
-    personas: Mapped[list[Persona]] = relationship(
-        "Persona",
-        secondary=Persona__UserGroup.__table__,
+    agents: Mapped[list[Agent]] = relationship(
+        "Agent",
+        secondary=Agent__UserGroup.__table__,
         viewonly=True,
     )
     document_sets: Mapped[list[DocumentSet]] = relationship(
@@ -4139,6 +4139,8 @@ class Workspace(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    # Soft-delete flag: hidden from the workspaces dashboard when True (row retained).
+    deleted: Mapped[bool] = mapped_column(Boolean, default=False)
     user: Mapped["User"] = relationship(back_populates="workspaces")
     knowledge_files: Mapped[list["KnowledgeFile"]] = relationship(
         "KnowledgeFile",
@@ -4162,9 +4164,9 @@ class KnowledgeFile(Base):
 
     id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
     user_id: Mapped[UUID | None] = mapped_column(ForeignKey("user.id"), nullable=False)
-    assistants: Mapped[list["Persona"]] = relationship(
-        "Persona",
-        secondary=Persona__KnowledgeFile.__table__,
+    assistants: Mapped[list["Agent"]] = relationship(
+        "Agent",
+        secondary=Agent__KnowledgeFile.__table__,
         back_populates="knowledge_files",
     )
     file_id: Mapped[str] = mapped_column(nullable=False)
@@ -4900,7 +4902,7 @@ class ScimGroupMapping(Base):
 
 
 class AgentWorkflow(Base):
-    """Defines a multi-agent workflow that coordinates multiple personas."""
+    """Defines a multi-agent workflow that coordinates multiple agents."""
 
     __tablename__ = "agent_workflow"
 
@@ -4951,7 +4953,7 @@ class AgentWorkflow(Base):
 
 
 class AgentWorkflowStep(Base):
-    """A single step in a multi-agent workflow, referencing an existing Persona."""
+    """A single step in a multi-agent workflow, referencing an existing Agent."""
 
     __tablename__ = "agent_workflow_step"
 
@@ -4959,8 +4961,8 @@ class AgentWorkflowStep(Base):
     workflow_id: Mapped[int] = mapped_column(
         ForeignKey("agent_workflow.id", ondelete="CASCADE"), nullable=False
     )
-    persona_id: Mapped[int | None] = mapped_column(
-        ForeignKey("persona.id", ondelete="CASCADE"), nullable=True
+    agent_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent.id", ondelete="CASCADE"), nullable=True
     )
 
     # Step type: "agent" (default) or "conditional_router"
@@ -4992,9 +4994,9 @@ class AgentWorkflowStep(Base):
     # collapsible timeline panel (WORKFLOW_STEP_DELTA).
     promote_output: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    # ── Step-level overrides (workflow-specific, override persona defaults) ──
-    # When set, these override the corresponding persona fields at runtime.
-    # When NULL, the persona's own values are used (inheritance).
+    # ── Step-level overrides (workflow-specific, override agent defaults) ──
+    # When set, these override the corresponding agent fields at runtime.
+    # When NULL, the agent's own values are used (inheritance).
     llm_provider_override: Mapped[str | None] = mapped_column(String, nullable=True)
     llm_model_override: Mapped[str | None] = mapped_column(String, nullable=True)
     max_output_tokens_override: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -5012,7 +5014,7 @@ class AgentWorkflowStep(Base):
     workflow: Mapped[AgentWorkflow] = relationship(
         "AgentWorkflow", back_populates="steps"
     )
-    persona: Mapped[Persona | None] = relationship("Persona")
+    agent: Mapped[Agent | None] = relationship("Agent")
 
 
 class WorkflowExecution(Base):
@@ -5034,7 +5036,7 @@ class WorkflowExecution(Base):
     )
 
     status: Mapped[str] = mapped_column(String, default="running")
-    # [{step_id, persona_id, step_name, input, output, duration_ms, tokens_used}]
+    # [{step_id, agent_id, step_name, input, output, duration_ms, tokens_used}]
     steps_executed: Mapped[list | None] = mapped_column(PGJSONB, nullable=True)
     total_tokens: Mapped[int] = mapped_column(Integer, default=0)
     total_duration_ms: Mapped[int] = mapped_column(Integer, default=0)

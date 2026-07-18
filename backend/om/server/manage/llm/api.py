@@ -25,16 +25,16 @@ from om.db.llm import can_user_access_llm_provider
 from om.db.llm import fetch_existing_llm_provider
 from om.db.llm import fetch_existing_llm_providers
 from om.db.llm import fetch_existing_models
-from om.db.llm import fetch_persona_with_groups
+from om.db.llm import fetch_agent_with_groups
 from om.db.llm import fetch_user_group_ids
 from om.db.llm import remove_llm_provider
 from om.db.llm import sync_model_configurations
 from om.db.llm import update_default_provider
 from om.db.llm import update_default_vision_provider
 from om.db.llm import upsert_llm_provider
-from om.db.llm import validate_persona_ids_exist
+from om.db.llm import validate_agent_ids_exist
 from om.db.models import User
-from om.db.persona import user_can_access_persona
+from om.db.agent import user_can_access_agent
 from om.llm.factory import get_default_llm
 from om.llm.factory import get_llm
 from om.llm.factory import get_max_input_tokens_from_llm_provider
@@ -374,24 +374,24 @@ def put_llm_provider(
             api_key_changed=llm_provider_upsert_request.api_key_changed,
         )
 
-    persona_ids = llm_provider_upsert_request.personas
-    if persona_ids:
-        _fetched_persona_ids, missing_personas = validate_persona_ids_exist(
-            db_session, persona_ids
+    agent_ids = llm_provider_upsert_request.agents
+    if agent_ids:
+        _fetched_agent_ids, missing_agents = validate_agent_ids_exist(
+            db_session, agent_ids
         )
-        if missing_personas:
+        if missing_agents:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid persona IDs: {', '.join(map(str, missing_personas))}",
+                detail=f"Invalid agent IDs: {', '.join(map(str, missing_agents))}",
             )
         # Remove duplicates while preserving order
         seen: set[int] = set()
-        deduplicated_personas: list[int] = []
-        for persona_id in persona_ids:
-            if persona_id not in seen:
-                seen.add(persona_id)
-                deduplicated_personas.append(persona_id)
-        llm_provider_upsert_request.personas = deduplicated_personas
+        deduplicated_agents: list[int] = []
+        for agent_id in agent_ids:
+            if agent_id not in seen:
+                seen.add(agent_id)
+                deduplicated_agents.append(agent_id)
+        llm_provider_upsert_request.agents = deduplicated_agents
 
     default_model_found = False
 
@@ -575,14 +575,14 @@ def list_llm_provider_basics(
     accessible_providers = []
 
     for provider in all_providers:
-        # Use centralized access control logic with persona=None since we're
-        # listing providers without a specific persona context. This correctly:
+        # Use centralized access control logic with agent=None since we're
+        # listing providers without a specific agent context. This correctly:
         # - Includes all public providers
         # - Includes providers user can access via group membership
-        # - Excludes persona-only restricted providers (requires specific persona)
+        # - Excludes agent-only restricted providers (requires specific agent)
         # - Excludes non-public providers with no restrictions (admin-only)
         if can_user_access_llm_provider(
-            provider, user_group_ids, persona=None, is_admin=is_admin
+            provider, user_group_ids, agent=None, is_admin=is_admin
         ):
             accessible_providers.append(LLMProviderDescriptor.from_model(provider))
 
@@ -595,19 +595,19 @@ def list_llm_provider_basics(
     return accessible_providers
 
 
-def get_valid_model_names_for_persona(
-    persona_id: int,
+def get_valid_model_names_for_agent(
+    agent_id: int,
     user: User,
     db_session: Session,
 ) -> list[str]:
-    """Get all valid model names that a user can access for this persona.
+    """Get all valid model names that a user can access for this agent.
 
     Returns a list of model names (e.g., ["gpt-4o", "claude-3-5-sonnet"]) that are
-    available to the user when using this persona, respecting all RBAC restrictions.
+    available to the user when using this agent, respecting all RBAC restrictions.
     Public providers are always included.
     """
-    persona = fetch_persona_with_groups(db_session, persona_id)
-    if not persona:
+    agent = fetch_agent_with_groups(db_session, agent_id)
+    if not agent:
         return []
 
     is_admin = user.role == UserRole.ADMIN
@@ -620,7 +620,7 @@ def get_valid_model_names_for_persona(
     for llm_provider_model in all_providers:
         # Public providers always included, restricted checked via RBAC
         if can_user_access_llm_provider(
-            llm_provider_model, user_group_ids, persona, is_admin=is_admin
+            llm_provider_model, user_group_ids, agent, is_admin=is_admin
         ):
             # Collect all model names from this provider
             for model_config in llm_provider_model.model_configurations:
@@ -630,30 +630,30 @@ def get_valid_model_names_for_persona(
     return valid_models
 
 
-@basic_router.get("/persona/{persona_id}/providers")
-def list_llm_providers_for_persona(
-    persona_id: int,
+@basic_router.get("/agent/{agent_id}/providers")
+def list_llm_providers_for_agent(
+    agent_id: int,
     user: User = Depends(current_chat_accessible_user),
     db_session: Session = Depends(get_session),
 ) -> list[LLMProviderDescriptor]:
-    """Get LLM providers for a specific persona.
+    """Get LLM providers for a specific agent.
 
-    Returns providers that the user can access when using this persona:
+    Returns providers that the user can access when using this agent:
     - All public providers (is_public=True) - ALWAYS included
-    - Restricted providers user can access via group/persona restrictions
+    - Restricted providers user can access via group/agent restrictions
 
     This endpoint is used for background fetching of restricted providers
     and should NOT block the UI.
     """
     start_time = datetime.now(timezone.utc)
-    logger.debug(f"Starting to fetch LLM providers for persona {persona_id}")
+    logger.debug(f"Starting to fetch LLM providers for agent {agent_id}")
 
-    persona = fetch_persona_with_groups(db_session, persona_id)
-    if not persona:
-        raise HTTPException(status_code=404, detail="Persona not found")
+    agent = fetch_agent_with_groups(db_session, agent_id)
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
 
-    # Verify user has access to this persona
-    if not user_can_access_persona(db_session, persona_id, user, get_editable=False):
+    # Verify user has access to this agent
+    if not user_can_access_agent(db_session, agent_id, user, get_editable=False):
         raise HTTPException(
             status_code=403,
             detail="You don't have access to this assistant",
@@ -670,7 +670,7 @@ def list_llm_providers_for_persona(
     for llm_provider_model in all_providers:
         # Use simplified access check - public providers always included
         if can_user_access_llm_provider(
-            llm_provider_model, user_group_ids, persona, is_admin=is_admin
+            llm_provider_model, user_group_ids, agent, is_admin=is_admin
         ):
             llm_provider_list.append(
                 LLMProviderDescriptor.from_model(llm_provider_model)
@@ -679,7 +679,7 @@ def list_llm_providers_for_persona(
     end_time = datetime.now(timezone.utc)
     duration = (end_time - start_time).total_seconds()
     logger.debug(
-        f"Completed fetching {len(llm_provider_list)} LLM providers for persona {persona_id} in {duration:.2f} seconds"
+        f"Completed fetching {len(llm_provider_list)} LLM providers for agent {agent_id} in {duration:.2f} seconds"
     )
 
     return llm_provider_list

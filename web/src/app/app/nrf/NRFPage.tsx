@@ -47,7 +47,7 @@ import { useAppBackground } from "@/providers/AppBackgroundProvider";
 import { MinimalOnyxDocument } from "@/lib/search/interfaces";
 import DocumentsSidebar from "@/sections/document-sidebar/DocumentsSidebar";
 import TextViewModal from "@/sections/modals/TextViewModal";
-import { personaIncludesRetrieval } from "@/app/app/services/lib";
+import { agentIncludesRetrieval } from "@/app/app/services/lib";
 import { useQueryController } from "@/providers/QueryControllerProvider";
 import SearchUI from "@/sections/SearchUI";
 
@@ -183,7 +183,7 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
   // Determine if retrieval (search) is enabled based on the assistant
   const retrievalEnabled = useMemo(() => {
     if (liveAssistant) {
-      return personaIncludesRetrieval(liveAssistant);
+      return agentIncludesRetrieval(liveAssistant);
     }
     return false;
   }, [liveAssistant]);

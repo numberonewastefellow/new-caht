@@ -97,7 +97,7 @@ function WorkflowCard({
             </Text>
             <Text secondaryBody text02 className="text-xs truncate">
               {workflow.steps
-                .map((s) => s.persona_name || `Agent #${s.persona_id}`)
+                .map((s) => s.agent_name || `Agent #${s.agent_id}`)
                 .join(" → ")}
             </Text>
           </div>

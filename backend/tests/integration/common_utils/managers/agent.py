@@ -4,16 +4,16 @@ from uuid import uuid4
 import requests
 
 from om.context.search.enums import RecencyBiasSetting
-from om.server.features.persona.models import FullPersonaSnapshot
-from om.server.features.persona.models import PersonaUpsertRequest
+from om.server.features.agent.models import FullAgentSnapshot
+from om.server.features.agent.models import AgentUpsertRequest
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import GENERAL_HEADERS
-from tests.integration.common_utils.test_models import DATestPersona
-from tests.integration.common_utils.test_models import DATestPersonaLabel
+from tests.integration.common_utils.test_models import DATestAgent
+from tests.integration.common_utils.test_models import DATestAgentLabel
 from tests.integration.common_utils.test_models import DATestUser
 
 
-class PersonaManager:
+class AgentManager:
     @staticmethod
     def create(
         name: str | None = None,
@@ -36,13 +36,13 @@ class PersonaManager:
         knowledge_file_ids: list[str] | None = None,
         user_performing_action: DATestUser | None = None,
         display_priority: int | None = None,
-    ) -> DATestPersona:
-        name = name or f"test-persona-{uuid4()}"
+    ) -> DATestAgent:
+        name = name or f"test-agent-{uuid4()}"
         description = description or f"Description for {name}"
         system_prompt = system_prompt or f"System prompt for {name}"
         task_prompt = task_prompt or f"Task prompt for {name}"
 
-        persona_creation_request = PersonaUpsertRequest(
+        agent_creation_request = AgentUpsertRequest(
             name=name,
             description=description,
             system_prompt=system_prompt,
@@ -65,8 +65,8 @@ class PersonaManager:
         )
 
         response = requests.post(
-            f"{API_SERVER_URL}/persona",
-            json=persona_creation_request.model_dump(mode="json"),
+            f"{API_SERVER_URL}/agent",
+            json=agent_creation_request.model_dump(mode="json"),
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -74,10 +74,10 @@ class PersonaManager:
             ),
         )
         response.raise_for_status()
-        persona_data = response.json()
+        agent_data = response.json()
 
-        return DATestPersona(
-            id=persona_data["id"],
+        return DATestAgent(
+            id=agent_data["id"],
             name=name,
             description=description,
             num_chunks=num_chunks,
@@ -99,7 +99,7 @@ class PersonaManager:
 
     @staticmethod
     def edit(
-        persona: DATestPersona,
+        agent: DATestAgent,
         name: str | None = None,
         description: str | None = None,
         system_prompt: str | None = None,
@@ -118,39 +118,39 @@ class PersonaManager:
         groups: list[int] | None = None,
         label_ids: list[int] | None = None,
         user_performing_action: DATestUser | None = None,
-    ) -> DATestPersona:
-        system_prompt = system_prompt or f"System prompt for {persona.name}"
-        task_prompt = task_prompt or f"Task prompt for {persona.name}"
+    ) -> DATestAgent:
+        system_prompt = system_prompt or f"System prompt for {agent.name}"
+        task_prompt = task_prompt or f"Task prompt for {agent.name}"
 
-        persona_update_request = PersonaUpsertRequest(
-            name=name or persona.name,
-            description=description or persona.description,
+        agent_update_request = AgentUpsertRequest(
+            name=name or agent.name,
+            description=description or agent.description,
             system_prompt=system_prompt,
             task_prompt=task_prompt,
             datetime_aware=datetime_aware,
-            num_chunks=num_chunks or persona.num_chunks,
-            llm_relevance_filter=llm_relevance_filter or persona.llm_relevance_filter,
-            is_public=persona.is_public if is_public is None else is_public,
+            num_chunks=num_chunks or agent.num_chunks,
+            llm_relevance_filter=llm_relevance_filter or agent.llm_relevance_filter,
+            is_public=agent.is_public if is_public is None else is_public,
             llm_filter_extraction=(
-                llm_filter_extraction or persona.llm_filter_extraction
+                llm_filter_extraction or agent.llm_filter_extraction
             ),
-            recency_bias=recency_bias or persona.recency_bias,
-            document_set_ids=document_set_ids or persona.document_set_ids,
-            tool_ids=tool_ids or persona.tool_ids,
+            recency_bias=recency_bias or agent.recency_bias,
+            document_set_ids=document_set_ids or agent.document_set_ids,
+            tool_ids=tool_ids or agent.tool_ids,
             llm_model_provider_override=(
-                llm_model_provider_override or persona.llm_model_provider_override
+                llm_model_provider_override or agent.llm_model_provider_override
             ),
             llm_model_version_override=(
-                llm_model_version_override or persona.llm_model_version_override
+                llm_model_version_override or agent.llm_model_version_override
             ),
-            users=[UUID(user) for user in (users or persona.users)],
-            groups=groups or persona.groups,
-            label_ids=label_ids or persona.label_ids,
+            users=[UUID(user) for user in (users or agent.users)],
+            groups=groups or agent.groups,
+            label_ids=label_ids or agent.label_ids,
         )
 
         response = requests.patch(
-            f"{API_SERVER_URL}/persona/{persona.id}",
-            json=persona_update_request.model_dump(mode="json"),
+            f"{API_SERVER_URL}/agent/{agent.id}",
+            json=agent_update_request.model_dump(mode="json"),
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -158,39 +158,39 @@ class PersonaManager:
             ),
         )
         response.raise_for_status()
-        updated_persona_data = response.json()
+        updated_agent_data = response.json()
 
-        return DATestPersona(
-            id=updated_persona_data["id"],
-            name=updated_persona_data["name"],
-            description=updated_persona_data["description"],
-            num_chunks=updated_persona_data["num_chunks"],
-            llm_relevance_filter=updated_persona_data["llm_relevance_filter"],
-            is_public=updated_persona_data["is_public"],
-            llm_filter_extraction=updated_persona_data["llm_filter_extraction"],
-            recency_bias=recency_bias or persona.recency_bias,
+        return DATestAgent(
+            id=updated_agent_data["id"],
+            name=updated_agent_data["name"],
+            description=updated_agent_data["description"],
+            num_chunks=updated_agent_data["num_chunks"],
+            llm_relevance_filter=updated_agent_data["llm_relevance_filter"],
+            is_public=updated_agent_data["is_public"],
+            llm_filter_extraction=updated_agent_data["llm_filter_extraction"],
+            recency_bias=recency_bias or agent.recency_bias,
             system_prompt=system_prompt,
             task_prompt=task_prompt,
             datetime_aware=datetime_aware,
-            document_set_ids=updated_persona_data["document_sets"],
-            tool_ids=updated_persona_data["tools"],
-            llm_model_provider_override=updated_persona_data[
+            document_set_ids=updated_agent_data["document_sets"],
+            tool_ids=updated_agent_data["tools"],
+            llm_model_provider_override=updated_agent_data[
                 "llm_model_provider_override"
             ],
-            llm_model_version_override=updated_persona_data[
+            llm_model_version_override=updated_agent_data[
                 "llm_model_version_override"
             ],
-            users=[user["email"] for user in updated_persona_data["users"]],
-            groups=updated_persona_data["groups"],
-            label_ids=updated_persona_data["labels"],
+            users=[user["email"] for user in updated_agent_data["users"]],
+            groups=updated_agent_data["groups"],
+            label_ids=updated_agent_data["labels"],
         )
 
     @staticmethod
     def get_all(
         user_performing_action: DATestUser | None = None,
-    ) -> list[FullPersonaSnapshot]:
+    ) -> list[FullAgentSnapshot]:
         response = requests.get(
-            f"{API_SERVER_URL}/admin/persona",
+            f"{API_SERVER_URL}/admin/agent",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -198,15 +198,15 @@ class PersonaManager:
             ),
         )
         response.raise_for_status()
-        return [FullPersonaSnapshot(**persona) for persona in response.json()]
+        return [FullAgentSnapshot(**agent) for agent in response.json()]
 
     @staticmethod
     def get_one(
-        persona_id: int,
+        agent_id: int,
         user_performing_action: DATestUser | None = None,
-    ) -> list[FullPersonaSnapshot]:
+    ) -> list[FullAgentSnapshot]:
         response = requests.get(
-            f"{API_SERVER_URL}/persona/{persona_id}",
+            f"{API_SERVER_URL}/agent/{agent_id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -214,109 +214,109 @@ class PersonaManager:
             ),
         )
         response.raise_for_status()
-        return [FullPersonaSnapshot(**response.json())]
+        return [FullAgentSnapshot(**response.json())]
 
     @staticmethod
     def verify(
-        persona: DATestPersona,
+        agent: DATestAgent,
         user_performing_action: DATestUser | None = None,
     ) -> bool:
-        all_personas = PersonaManager.get_one(
-            persona_id=persona.id,
+        all_agents = AgentManager.get_one(
+            agent_id=agent.id,
             user_performing_action=user_performing_action,
         )
-        for fetched_persona in all_personas:
-            if fetched_persona.id == persona.id:
+        for fetched_agent in all_agents:
+            if fetched_agent.id == agent.id:
                 mismatches: list[tuple[str, object, object]] = []
 
-                if fetched_persona.name != persona.name:
-                    mismatches.append(("name", persona.name, fetched_persona.name))
-                if fetched_persona.description != persona.description:
+                if fetched_agent.name != agent.name:
+                    mismatches.append(("name", agent.name, fetched_agent.name))
+                if fetched_agent.description != agent.description:
                     mismatches.append(
                         (
                             "description",
-                            persona.description,
-                            fetched_persona.description,
+                            agent.description,
+                            fetched_agent.description,
                         )
                     )
-                if fetched_persona.num_chunks != persona.num_chunks:
+                if fetched_agent.num_chunks != agent.num_chunks:
                     mismatches.append(
-                        ("num_chunks", persona.num_chunks, fetched_persona.num_chunks)
+                        ("num_chunks", agent.num_chunks, fetched_agent.num_chunks)
                     )
-                if fetched_persona.llm_relevance_filter != persona.llm_relevance_filter:
+                if fetched_agent.llm_relevance_filter != agent.llm_relevance_filter:
                     mismatches.append(
                         (
                             "llm_relevance_filter",
-                            persona.llm_relevance_filter,
-                            fetched_persona.llm_relevance_filter,
+                            agent.llm_relevance_filter,
+                            fetched_agent.llm_relevance_filter,
                         )
                     )
-                if fetched_persona.is_public != persona.is_public:
+                if fetched_agent.is_public != agent.is_public:
                     mismatches.append(
-                        ("is_public", persona.is_public, fetched_persona.is_public)
+                        ("is_public", agent.is_public, fetched_agent.is_public)
                     )
                 if (
-                    fetched_persona.llm_filter_extraction
-                    != persona.llm_filter_extraction
+                    fetched_agent.llm_filter_extraction
+                    != agent.llm_filter_extraction
                 ):
                     mismatches.append(
                         (
                             "llm_filter_extraction",
-                            persona.llm_filter_extraction,
-                            fetched_persona.llm_filter_extraction,
+                            agent.llm_filter_extraction,
+                            fetched_agent.llm_filter_extraction,
                         )
                     )
                 if (
-                    fetched_persona.llm_model_provider_override
-                    != persona.llm_model_provider_override
+                    fetched_agent.llm_model_provider_override
+                    != agent.llm_model_provider_override
                 ):
                     mismatches.append(
                         (
                             "llm_model_provider_override",
-                            persona.llm_model_provider_override,
-                            fetched_persona.llm_model_provider_override,
+                            agent.llm_model_provider_override,
+                            fetched_agent.llm_model_provider_override,
                         )
                     )
                 if (
-                    fetched_persona.llm_model_version_override
-                    != persona.llm_model_version_override
+                    fetched_agent.llm_model_version_override
+                    != agent.llm_model_version_override
                 ):
                     mismatches.append(
                         (
                             "llm_model_version_override",
-                            persona.llm_model_version_override,
-                            fetched_persona.llm_model_version_override,
+                            agent.llm_model_version_override,
+                            fetched_agent.llm_model_version_override,
                         )
                     )
-                if fetched_persona.system_prompt != persona.system_prompt:
+                if fetched_agent.system_prompt != agent.system_prompt:
                     mismatches.append(
                         (
                             "system_prompt",
-                            persona.system_prompt,
-                            fetched_persona.system_prompt,
+                            agent.system_prompt,
+                            fetched_agent.system_prompt,
                         )
                     )
-                if fetched_persona.task_prompt != persona.task_prompt:
+                if fetched_agent.task_prompt != agent.task_prompt:
                     mismatches.append(
                         (
                             "task_prompt",
-                            persona.task_prompt,
-                            fetched_persona.task_prompt,
+                            agent.task_prompt,
+                            fetched_agent.task_prompt,
                         )
                     )
-                if fetched_persona.datetime_aware != persona.datetime_aware:
+                if fetched_agent.datetime_aware != agent.datetime_aware:
                     mismatches.append(
                         (
                             "datetime_aware",
-                            persona.datetime_aware,
-                            fetched_persona.datetime_aware,
+                            agent.datetime_aware,
+                            fetched_agent.datetime_aware,
                         )
                     )
 
                 fetched_document_set_ids = {
-                    document_set.id for document_set in fetched_persona.document_sets
+                    document_set.id for document_set in fetched_agent.document_sets
                 }
-                expected_document_set_ids = set(persona.document_set_ids)
+                expected_document_set_ids = set(agent.document_set_ids)
                 if fetched_document_set_ids != expected_document_set_ids:
                     mismatches.append(
                         (
@@ -326,8 +326,8 @@ class PersonaManager:
                         )
                     )
 
-                fetched_tool_ids = {tool.id for tool in fetched_persona.tools}
-                expected_tool_ids = set(persona.tool_ids)
+                fetched_tool_ids = {tool.id for tool in fetched_agent.tools}
+                expected_tool_ids = set(agent.tool_ids)
                 if fetched_tool_ids != expected_tool_ids:
                     mismatches.append(
                         (
@@ -337,8 +337,8 @@ class PersonaManager:
                         )
                     )
 
-                fetched_user_emails = {user.email for user in fetched_persona.users}
-                expected_user_emails = set(persona.users)
+                fetched_user_emails = {user.email for user in fetched_agent.users}
+                expected_user_emails = set(agent.users)
                 if fetched_user_emails != expected_user_emails:
                     mismatches.append(
                         (
@@ -348,8 +348,8 @@ class PersonaManager:
                         )
                     )
 
-                fetched_group_ids = set(fetched_persona.groups)
-                expected_group_ids = set(persona.groups)
+                fetched_group_ids = set(fetched_agent.groups)
+                expected_group_ids = set(agent.groups)
                 if fetched_group_ids != expected_group_ids:
                     mismatches.append(
                         (
@@ -359,8 +359,8 @@ class PersonaManager:
                         )
                     )
 
-                fetched_label_ids = {label.id for label in fetched_persona.labels}
-                expected_label_ids = set(persona.label_ids)
+                fetched_label_ids = {label.id for label in fetched_agent.labels}
+                expected_label_ids = set(agent.label_ids)
                 if fetched_label_ids != expected_label_ids:
                     mismatches.append(
                         (
@@ -372,7 +372,7 @@ class PersonaManager:
 
                 if mismatches:
                     print(
-                        f"Persona verification failed for id={persona.id}. Fields mismatched:"
+                        f"Agent verification failed for id={agent.id}. Fields mismatched:"
                     )
                     for field_name, expected_value, actual_value in mismatches:
                         print(
@@ -381,17 +381,17 @@ class PersonaManager:
                     return False
                 return True
         print(
-            f"Persona verification failed: persona with id={persona.id} not found in fetched results."
+            f"Agent verification failed: agent with id={agent.id} not found in fetched results."
         )
         return False
 
     @staticmethod
     def delete(
-        persona: DATestPersona,
+        agent: DATestAgent,
         user_performing_action: DATestUser | None = None,
     ) -> bool:
         response = requests.delete(
-            f"{API_SERVER_URL}/persona/{persona.id}",
+            f"{API_SERVER_URL}/agent/{agent.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -401,14 +401,14 @@ class PersonaManager:
         return response.ok
 
 
-class PersonaLabelManager:
+class AgentLabelManager:
     @staticmethod
     def create(
-        label: DATestPersonaLabel,
+        label: DATestAgentLabel,
         user_performing_action: DATestUser | None = None,
-    ) -> DATestPersonaLabel:
+    ) -> DATestAgentLabel:
         response = requests.post(
-            f"{API_SERVER_URL}/persona/labels",
+            f"{API_SERVER_URL}/agent/labels",
             json={
                 "name": label.name,
             },
@@ -426,9 +426,9 @@ class PersonaLabelManager:
     @staticmethod
     def get_all(
         user_performing_action: DATestUser | None = None,
-    ) -> list[DATestPersonaLabel]:
+    ) -> list[DATestAgentLabel]:
         response = requests.get(
-            f"{API_SERVER_URL}/persona/labels",
+            f"{API_SERVER_URL}/agent/labels",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -436,15 +436,15 @@ class PersonaLabelManager:
             ),
         )
         response.raise_for_status()
-        return [DATestPersonaLabel(**label) for label in response.json()]
+        return [DATestAgentLabel(**label) for label in response.json()]
 
     @staticmethod
     def update(
-        label: DATestPersonaLabel,
+        label: DATestAgentLabel,
         user_performing_action: DATestUser | None = None,
-    ) -> DATestPersonaLabel:
+    ) -> DATestAgentLabel:
         response = requests.patch(
-            f"{API_SERVER_URL}/admin/persona/label/{label.id}",
+            f"{API_SERVER_URL}/admin/agent/label/{label.id}",
             json={
                 "label_name": label.name,
             },
@@ -459,11 +459,11 @@ class PersonaLabelManager:
 
     @staticmethod
     def delete(
-        label: DATestPersonaLabel,
+        label: DATestAgentLabel,
         user_performing_action: DATestUser | None = None,
     ) -> bool:
         response = requests.delete(
-            f"{API_SERVER_URL}/admin/persona/label/{label.id}",
+            f"{API_SERVER_URL}/admin/agent/label/{label.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -474,10 +474,10 @@ class PersonaLabelManager:
 
     @staticmethod
     def verify(
-        label: DATestPersonaLabel,
+        label: DATestAgentLabel,
         user_performing_action: DATestUser | None = None,
     ) -> bool:
-        all_labels = PersonaLabelManager.get_all(user_performing_action)
+        all_labels = AgentLabelManager.get_all(user_performing_action)
         for fetched_label in all_labels:
             if fetched_label.id == label.id:
                 return fetched_label.name == label.name

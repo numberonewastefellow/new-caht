@@ -1,7 +1,7 @@
-"""AgentTool: Wraps an existing Persona as a callable tool for the workflow orchestrator.
+"""AgentTool: Wraps an existing Agent as a callable tool for the workflow orchestrator.
 
 This follows the same pattern as dr_mock_tools.py RESEARCH_AGENT_TOOL_DESCRIPTION,
-but generalized to support any Persona as a sub-agent.
+but generalized to support any Agent as a sub-agent.
 """
 
 import json
@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy.orm import Session
 
 from om.chat.emitter import Emitter
-from om.db.models import Persona
+from om.db.models import Agent
 from om.server.query_and_chat.placement import Placement  # used by run() signature
 from om.server.query_and_chat.streaming_models import Packet
 from om.server.query_and_chat.streaming_models import SectionEnd
@@ -33,7 +33,7 @@ AGENT_TOOL_RESPONSE_ID = "agent_tool_response"
 
 
 def _sanitize_tool_name(name: str) -> str:
-    """Convert persona name to a valid tool name (alphanumeric + underscores only)."""
+    """Convert agent name to a valid tool name (alphanumeric + underscores only)."""
     sanitized = re.sub(r"[^a-zA-Z0-9_]", "_", name.lower().strip())
     sanitized = re.sub(r"_+", "_", sanitized).strip("_")
     return f"delegate_to_{sanitized}"
@@ -109,15 +109,15 @@ def _build_attached_files_section(
 
 
 class AgentTool(Tool[None]):
-    """Wraps an existing Persona as a callable tool for the orchestrator LLM.
+    """Wraps an existing Agent as a callable tool for the orchestrator LLM.
 
-    When the orchestrator decides to call this tool, it runs the persona's
+    When the orchestrator decides to call this tool, it runs the agent's
     full LLM loop with its own tools and knowledge configuration.
     """
 
     def __init__(
         self,
-        persona: Persona,
+        agent: Agent,
         emitter: Emitter,
         db_session: Session,
         step_name: str | None = None,
@@ -130,7 +130,7 @@ class AgentTool(Tool[None]):
         promote_output: bool = False,
         chat_files: list[ChatFile] | None = None,
         sandbox_session_id: str | None = None,
-        # Step-level overrides (override persona defaults)
+        # Step-level overrides (override agent defaults)
         max_cycles_override: int | None = None,
         max_output_tokens_override: int | None = None,
         system_prompt_override: str | None = None,
@@ -140,16 +140,16 @@ class AgentTool(Tool[None]):
         replace_base_system_prompt_override: bool | None = None,
     ) -> None:
         super().__init__(emitter=emitter)
-        self._persona = persona
+        self._agent = agent
         self._db_session = db_session
-        self._step_name = step_name or persona.name
+        self._step_name = step_name or agent.name
         self._step_order = step_order
         self._step_id = step_id
         self._output_key = output_key
         self._cached_user = user
         self._cached_llm = llm
-        # Pre-check whether persona has tools (avoids lazy-load in bg thread)
-        self._has_tools = has_tools if has_tools is not None else bool(persona.tools)
+        # Pre-check whether agent has tools (avoids lazy-load in bg thread)
+        self._has_tools = has_tools if has_tools is not None else bool(agent.tools)
         self._promote_output = promote_output
         self._chat_files = chat_files or []
         self._sandbox_session_id = sandbox_session_id
@@ -164,12 +164,12 @@ class AgentTool(Tool[None]):
 
     @property
     def id(self) -> int:
-        return self._persona.id
+        return self._agent.id
 
     @property
     def step_id(self) -> int:
         """Return the workflow step ID (for execution tracking)."""
-        return self._step_id if self._step_id is not None else self._persona.id
+        return self._step_id if self._step_id is not None else self._agent.id
 
     @property
     def output_key(self) -> str:
@@ -181,18 +181,18 @@ class AgentTool(Tool[None]):
 
     @property
     def name(self) -> str:
-        return _sanitize_tool_name(self._persona.name)
+        return _sanitize_tool_name(self._agent.name)
 
     @property
     def description(self) -> str:
         return (
-            f"Delegate task to agent '{self._persona.name}': "
-            f"{self._persona.description or 'No description'}"
+            f"Delegate task to agent '{self._agent.name}': "
+            f"{self._agent.description or 'No description'}"
         )
 
     @property
     def display_name(self) -> str:
-        return f"Agent: {self._persona.name}"
+        return f"Agent: {self._agent.name}"
 
     def tool_definition(self) -> dict:
         return {
@@ -207,7 +207,7 @@ class AgentTool(Tool[None]):
                             "type": "string",
                             "description": (
                                 f"The task/query to delegate to the "
-                                f"'{self._persona.name}' agent. "
+                                f"'{self._agent.name}' agent. "
                                 f"Be specific about what you need this agent to do."
                             ),
                         }
@@ -227,10 +227,10 @@ class AgentTool(Tool[None]):
         override_kwargs: None = None,  # noqa: ARG002
         **llm_kwargs: Any,
     ) -> ToolResponse:
-        """Run the persona's full LLM loop as a sub-agent.
+        """Run the agent's full LLM loop as a sub-agent.
 
         This is the core of the multi-agent system: it reuses the existing
-        llm_loop infrastructure to run a full agent cycle with the persona's
+        llm_loop infrastructure to run a full agent cycle with the agent's
         own LLM, tools, and knowledge configuration.
         """
         task = llm_kwargs.get("task", "")
@@ -250,7 +250,7 @@ class AgentTool(Tool[None]):
         from om.chat.models import ChatMessageSimple
         from om.chat.models import ToolCallSimple
         from om.configs.constants import MessageType
-        from om.llm.factory import get_llm_for_persona
+        from om.llm.factory import get_llm_for_agent
         from om.llm.models import ToolChoiceOptions
         from om.llm.factory import get_llm_token_counter
 
@@ -259,7 +259,7 @@ class AgentTool(Tool[None]):
 
         user = self._cached_user
         if user is None:
-            user = self._db_session.get(User, self._persona.user_id)
+            user = self._db_session.get(User, self._agent.user_id)
         if user is None:
             from sqlalchemy import select
             user = self._db_session.execute(select(User).limit(1)).scalar_one_or_none()
@@ -272,10 +272,10 @@ class AgentTool(Tool[None]):
             )
 
         # Use cached LLM or create one (bug fix: pass user, not db_session)
-        llm = self._cached_llm or get_llm_for_persona(self._persona, user)
+        llm = self._cached_llm or get_llm_for_agent(self._agent, user)
         token_counter = get_llm_token_counter(llm)
 
-        # Build persona's tools — skip entirely if persona has none (Tier 1.1)
+        # Build agent's tools — skip entirely if agent has none (Tier 1.1)
         tools: list = []
         # Unique scope ID for MCP session persistence within this agent step
         mcp_scope_id = f"agent_step_{self._step_id}_{id(self)}"
@@ -284,7 +284,7 @@ class AgentTool(Tool[None]):
             from om.tools.tool_constructor import SearchToolConfig
 
             tool_dict = construct_tools(
-                persona=self._persona,
+                agent=self._agent,
                 db_session=self._db_session,
                 emitter=self.emitter,
                 user=user,
@@ -296,16 +296,16 @@ class AgentTool(Tool[None]):
             for tool_list in tool_dict.values():
                 tools.extend(tool_list)
 
-        # Build system prompt: step override > persona value
+        # Build system prompt: step override > agent value
         effective_system = (
             self._system_prompt_override
             if self._system_prompt_override is not None
-            else (self._persona.system_prompt or "")
+            else (self._agent.system_prompt or "")
         )
         effective_task = (
             self._task_prompt_override
             if self._task_prompt_override is not None
-            else (self._persona.task_prompt or "")
+            else (self._agent.task_prompt or "")
         )
 
         system_prompt_text = effective_system
@@ -313,7 +313,7 @@ class AgentTool(Tool[None]):
             system_prompt_text += f"\n\n{effective_task}"
         if not system_prompt_text:
             system_prompt_text = (
-                f"You are {self._persona.name}. {self._persona.description or ''}"
+                f"You are {self._agent.name}. {self._agent.description or ''}"
             )
 
         # Append tool-specific guidance (mirrors prompt_utils.py behaviour)
@@ -343,7 +343,7 @@ class AgentTool(Tool[None]):
 
         logger.info(
             "[Trace] agent='%s' has_python_tool=%s files=%d branch=%s",
-            self._persona.name,
+            self._agent.name,
             has_python_tool,
             len(self._chat_files),
             ("sandbox" if has_python_tool else "inlined")
@@ -386,10 +386,10 @@ class AgentTool(Tool[None]):
                 available_tokens=llm.config.max_input_tokens,
             )
 
-            # Resolve max output tokens: step override > persona > default 5000
+            # Resolve max output tokens: step override > agent > default 5000
             _max_tokens = (
                 self._max_output_tokens_override
-                or (self._persona.max_output_tokens if self._persona else None)
+                or (self._agent.max_output_tokens if self._agent else None)
                 or 5000
             )
 
@@ -559,7 +559,7 @@ class AgentTool(Tool[None]):
         # all intermediate packets (search, reasoning, etc.) as they are emitted.
 
         response_dict: dict[str, Any] = {
-            "agent_name": self._persona.name,
+            "agent_name": self._agent.name,
             "agent_output": final_answer,
         }
         # Persist file metadata so session reload can reconstruct download

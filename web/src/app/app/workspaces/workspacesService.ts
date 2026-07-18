@@ -59,7 +59,7 @@ export enum KnowledgeFileStatus {
 export type WorkspaceDetails = {
   workspace: Workspace;
   files?: WorkspaceFile[];
-  persona_id_to_is_default?: Record<number, boolean>;
+  agent_id_to_is_default?: Record<number, boolean>;
 };
 
 export async function fetchWorkspaces(): Promise<Workspace[]> {
@@ -307,10 +307,10 @@ export async function getWorkspaceTokenCount(workspaceId: number): Promise<numbe
 }
 
 export async function getMaxSelectedDocumentTokens(
-  personaId: number
+  agentId: number
 ): Promise<number> {
   const response = await fetch(
-    `/api/converse/max-selected-document-tokens?persona_id=${personaId}`
+    `/api/converse/max-selected-document-tokens?agent_id=${agentId}`
   );
   if (!response.ok) {
     return 128_000;

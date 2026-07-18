@@ -4,17 +4,17 @@ import { AdminDateRangeSelector } from "@/components/dateRangeSelectors/AdminDat
 import { OmBotChart } from "@/app/admin/performance/usage/OmBotChart";
 import { FeedbackChart } from "@/app/admin/performance/usage/FeedbackChart";
 import { QueryPerformanceChart } from "@/app/admin/performance/usage/QueryPerformanceChart";
-import { PersonaMessagesChart } from "@/app/admin/performance/usage/PersonaMessagesChart";
+import { AgentMessagesChart } from "@/app/admin/performance/usage/AgentMessagesChart";
 import { useTimeRange } from "@/app/admin/performance/lib";
 import { AdminPageTitle } from "@/components/admin/Title";
 import UsageReports from "@/app/admin/performance/usage/UsageReports";
 import Separator from "@/refresh-components/Separator";
-import { useAdminPersonas } from "@/hooks/useAdminPersonas";
+import { useAdminAgents } from "@/hooks/useAdminAgents";
 import { SvgActivity } from "@opal/icons";
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useTimeRange();
-  const { personas } = useAdminPersonas();
+  const { agents } = useAdminAgents();
 
   return (
     <>
@@ -26,8 +26,8 @@ export default function AnalyticsPage() {
       <QueryPerformanceChart timeRange={timeRange} />
       <FeedbackChart timeRange={timeRange} />
       <OmBotChart timeRange={timeRange} />
-      <PersonaMessagesChart
-        availablePersonas={personas}
+      <AgentMessagesChart
+        availableAgents={agents}
         timeRange={timeRange}
       />
       <Separator />

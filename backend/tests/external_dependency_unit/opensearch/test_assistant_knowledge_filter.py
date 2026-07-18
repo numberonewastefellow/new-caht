@@ -1,6 +1,6 @@
 """Tests for OpenSearch assistant knowledge filter construction.
 
-These tests verify that when an assistant (persona) has user files attached,
+These tests verify that when an assistant (agent) has user files attached,
 the search filter includes those user file IDs in the assistant knowledge filter
 with OR logic (not AND), ensuring user files are discoverable alongside other
 knowledge types like attached documents and hierarchy nodes.

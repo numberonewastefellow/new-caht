@@ -43,9 +43,9 @@ export default function WorkflowGalleryPage() {
     if (!isLoading) prune(workflows.map((w) => w.id));
   }, [isLoading, workflows, prune]);
 
-  // Map workflow id -> wrapper persona id, so a card can launch the workflow by
-  // opening its wrapper assistant in chat. Personas expose `workflow_id`.
-  const workflowToPersona = useMemo(() => {
+  // Map workflow id -> wrapper agent id, so a card can launch the workflow by
+  // opening its wrapper assistant in chat. Agents expose `workflow_id`.
+  const workflowToAgent = useMemo(() => {
     const map = new Map<number, number>();
     for (const a of agents) {
       if (a.workflow_id != null) map.set(a.workflow_id, a.id);
@@ -79,8 +79,8 @@ export default function WorkflowGalleryPage() {
   );
 
   const launchWorkflow = (w: WorkflowSnapshot) => {
-    const personaId = workflowToPersona.get(w.id);
-    if (personaId != null) route({ assistantId: personaId });
+    const agentId = workflowToAgent.get(w.id);
+    if (agentId != null) route({ assistantId: agentId });
   };
 
   function renderGrid(list: WorkflowSnapshot[]) {
@@ -91,7 +91,7 @@ export default function WorkflowGalleryPage() {
             key={w.id}
             workflow={w}
             pinned={isPinned(w.id)}
-            launchable={workflowToPersona.has(w.id)}
+            launchable={workflowToAgent.has(w.id)}
             onOpen={() => launchWorkflow(w)}
             onTogglePin={() => togglePin(w.id)}
           />
@@ -104,9 +104,9 @@ export default function WorkflowGalleryPage() {
     return (
       <div className="mt-3 overflow-hidden rounded-xl border border-border-01 bg-background-tint-01">
         {list.map((w, i) => {
-          const launchable = workflowToPersona.has(w.id);
+          const launchable = workflowToAgent.has(w.id);
           const agentCount = w.steps.filter(
-            (s) => s.step_type === "agent" && !!s.persona_name
+            (s) => s.step_type === "agent" && !!s.agent_name
           ).length;
           return (
             <button
@@ -116,7 +116,7 @@ export default function WorkflowGalleryPage() {
               title={
                 launchable
                   ? undefined
-                  : "Not yet available — needs a persona backfill by an admin."
+                  : "Not yet available — needs a agent backfill by an admin."
               }
               className={cn(
                 "flex w-full items-center gap-3 px-4 py-3 text-left",

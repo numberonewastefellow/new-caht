@@ -42,8 +42,8 @@ export async function deleteWorkflow(
   });
 }
 
-export async function backfillWorkflowPersonas(): Promise<Response> {
-  return fetch("/api/admin/workflow/backfill-personas", {
+export async function backfillWorkflowAgents(): Promise<Response> {
+  return fetch("/api/admin/workflow/backfill-agents", {
     method: "POST",
   });
 }

@@ -453,7 +453,7 @@ CREATE TABLE chat_session (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     temperature_override double precision,
     description_tsv tsvector GENERATED ALWAYS AS (to_tsvector('english'::regconfig, COALESCE(description, ''::text))) STORED,
-    project_id integer,
+    workspace_id integer,
     sandbox_session_id character varying
 );
 
@@ -2050,12 +2050,12 @@ CREATE TABLE persona__user (
 
 
 --
--- Name: persona__user_file; Type: TABLE; Schema: public; Owner: -
+-- Name: persona__knowledge_file; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE persona__user_file (
+CREATE TABLE persona__knowledge_file (
     persona_id integer NOT NULL,
-    user_file_id uuid NOT NULL
+    knowledge_file_id uuid NOT NULL
 );
 
 
@@ -2158,12 +2158,12 @@ ALTER SEQUENCE personal_access_token_id_seq OWNED BY personal_access_token.id;
 
 
 --
--- Name: project__user_file; Type: TABLE; Schema: public; Owner: -
+-- Name: workspace__knowledge_file; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE project__user_file (
-    project_id integer NOT NULL,
-    user_file_id uuid NOT NULL,
+CREATE TABLE workspace__knowledge_file (
+    workspace_id integer NOT NULL,
+    knowledge_file_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
@@ -2917,10 +2917,10 @@ CREATE TABLE user__user_group (
 
 
 --
--- Name: user_file; Type: TABLE; Schema: public; Owner: -
+-- Name: knowledge_file; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE user_file (
+CREATE TABLE knowledge_file (
     user_id uuid,
     link_url character varying,
     token_count integer,
@@ -2933,31 +2933,31 @@ CREATE TABLE user_file (
     status character varying(10) DEFAULT 'PROCESSING'::character varying NOT NULL,
     chunk_count integer,
     last_accessed_at timestamp with time zone,
-    needs_project_sync boolean DEFAULT false NOT NULL,
-    last_project_sync_at timestamp with time zone
+    needs_workspace_sync boolean DEFAULT false NOT NULL,
+    last_workspace_sync_at timestamp with time zone
 );
 
 
 --
--- Name: user_project; Type: TABLE; Schema: public; Owner: -
+-- Name: workspace; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE user_project (
+CREATE TABLE workspace (
     id integer NOT NULL,
     user_id uuid,
     name character varying(255),
     description character varying(255),
     display_priority integer,
     created_at timestamp with time zone DEFAULT now(),
-    instructions character varying
+    workspace_instructions character varying
 );
 
 
 --
--- Name: user_folder_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: workspace_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE user_folder_id_seq
+CREATE SEQUENCE workspace_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -2967,10 +2967,10 @@ CREATE SEQUENCE user_folder_id_seq
 
 
 --
--- Name: user_folder_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: workspace_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE user_folder_id_seq OWNED BY user_project.id;
+ALTER SEQUENCE workspace_id_seq OWNED BY workspace.id;
 
 
 --
@@ -3444,10 +3444,10 @@ ALTER TABLE ONLY user_group ALTER COLUMN id SET DEFAULT nextval('user_group_id_s
 
 
 --
--- Name: user_project id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: workspace id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user_project ALTER COLUMN id SET DEFAULT nextval('user_folder_id_seq'::regclass);
+ALTER TABLE ONLY workspace ALTER COLUMN id SET DEFAULT nextval('workspace_id_seq'::regclass);
 
 
 --
@@ -4178,11 +4178,11 @@ ALTER TABLE ONLY persona__tool
 
 
 --
--- Name: persona__user_file persona__user_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: persona__knowledge_file persona__knowledge_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY persona__user_file
-    ADD CONSTRAINT persona__user_file_pkey PRIMARY KEY (persona_id, user_file_id);
+ALTER TABLE ONLY persona__knowledge_file
+    ADD CONSTRAINT persona__knowledge_file_pkey PRIMARY KEY (persona_id, knowledge_file_id);
 
 
 --
@@ -4242,11 +4242,11 @@ ALTER TABLE ONLY personal_access_token
 
 
 --
--- Name: project__user_file project__user_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: workspace__knowledge_file workspace__knowledge_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY project__user_file
-    ADD CONSTRAINT project__user_file_pkey PRIMARY KEY (project_id, user_file_id);
+ALTER TABLE ONLY workspace__knowledge_file
+    ADD CONSTRAINT workspace__knowledge_file_pkey PRIMARY KEY (workspace_id, knowledge_file_id);
 
 
 --
@@ -4642,19 +4642,19 @@ ALTER TABLE ONLY user__user_group
 
 
 --
--- Name: user_file user_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: knowledge_file knowledge_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user_file
-    ADD CONSTRAINT user_file_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY knowledge_file
+    ADD CONSTRAINT knowledge_file_pkey PRIMARY KEY (id);
 
 
 --
--- Name: user_project user_folder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: workspace workspace_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user_project
-    ADD CONSTRAINT user_folder_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY workspace
+    ADD CONSTRAINT workspace_pkey PRIMARY KEY (id);
 
 
 --
@@ -4754,10 +4754,10 @@ CREATE UNIQUE INDEX idx_license_singleton ON license USING btree ((true));
 
 
 --
--- Name: idx_project__user_file_user_file_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_workspace__knowledge_file_knowledge_file_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_project__user_file_user_file_id ON project__user_file USING btree (user_file_id);
+CREATE INDEX idx_workspace__knowledge_file_knowledge_file_id ON workspace__knowledge_file USING btree (knowledge_file_id);
 
 
 --
@@ -4803,10 +4803,10 @@ CREATE INDEX ix_build_session_user_created ON build_session USING btree (user_id
 
 
 --
--- Name: ix_chat_session_project_id; Type: INDEX; Schema: public; Owner: -
+-- Name: ix_chat_session_workspace_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ix_chat_session_project_id ON chat_session USING btree (project_id);
+CREATE INDEX ix_chat_session_workspace_id ON chat_session USING btree (workspace_id);
 
 
 --
@@ -5475,10 +5475,10 @@ CREATE INDEX ix_personal_access_token_expires_at ON personal_access_token USING 
 
 
 --
--- Name: ix_project__user_file_project_id_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: ix_workspace__knowledge_file_workspace_id_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ix_project__user_file_project_id_created_at ON project__user_file USING btree (project_id, created_at DESC);
+CREATE INDEX ix_workspace__knowledge_file_workspace_id_created_at ON workspace__knowledge_file USING btree (workspace_id, created_at DESC);
 
 
 --
@@ -6051,11 +6051,11 @@ ALTER TABLE ONLY chat_session
 
 
 --
--- Name: chat_session fk_chat_session_project_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: chat_session fk_chat_session_workspace_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY chat_session
-    ADD CONSTRAINT fk_chat_session_project_id FOREIGN KEY (project_id) REFERENCES user_project(id);
+    ADD CONSTRAINT fk_chat_session_workspace_id FOREIGN KEY (workspace_id) REFERENCES workspace(id);
 
 
 --
@@ -6099,19 +6099,19 @@ ALTER TABLE ONLY persona
 
 
 --
--- Name: project__user_file fk_project__user_file_project_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workspace__knowledge_file fk_workspace__knowledge_file_workspace_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY project__user_file
-    ADD CONSTRAINT fk_project__user_file_project_id FOREIGN KEY (project_id) REFERENCES user_project(id);
+ALTER TABLE ONLY workspace__knowledge_file
+    ADD CONSTRAINT fk_workspace__knowledge_file_workspace_id FOREIGN KEY (workspace_id) REFERENCES workspace(id);
 
 
 --
--- Name: project__user_file fk_project__user_file_user_file_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workspace__knowledge_file fk_workspace__knowledge_file_knowledge_file_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY project__user_file
-    ADD CONSTRAINT fk_project__user_file_user_file_id FOREIGN KEY (user_file_id) REFERENCES user_file(id);
+ALTER TABLE ONLY workspace__knowledge_file
+    ADD CONSTRAINT fk_workspace__knowledge_file_knowledge_file_id FOREIGN KEY (knowledge_file_id) REFERENCES knowledge_file(id);
 
 
 --
@@ -6595,19 +6595,19 @@ ALTER TABLE ONLY persona__tool
 
 
 --
--- Name: persona__user_file persona__user_file_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: persona__knowledge_file persona__knowledge_file_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY persona__user_file
-    ADD CONSTRAINT persona__user_file_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id);
+ALTER TABLE ONLY persona__knowledge_file
+    ADD CONSTRAINT persona__knowledge_file_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id);
 
 
 --
--- Name: persona__user_file persona__user_file_user_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: persona__knowledge_file persona__knowledge_file_knowledge_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY persona__user_file
-    ADD CONSTRAINT persona__user_file_user_file_id_fkey FOREIGN KEY (user_file_id) REFERENCES user_file(id);
+ALTER TABLE ONLY persona__knowledge_file
+    ADD CONSTRAINT persona__knowledge_file_knowledge_file_id_fkey FOREIGN KEY (knowledge_file_id) REFERENCES knowledge_file(id);
 
 
 --
@@ -6859,11 +6859,11 @@ ALTER TABLE ONLY user__user_group
 
 
 --
--- Name: user_project user_folder_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workspace workspace_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user_project
-    ADD CONSTRAINT user_folder_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+ALTER TABLE ONLY workspace
+    ADD CONSTRAINT workspace_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
 
 
 --
@@ -6938,7 +6938,7 @@ INSERT INTO persona__tool (persona_id, tool_id) VALUES (0, 1);
 INSERT INTO persona__tool (persona_id, tool_id) VALUES (0, 2);
 INSERT INTO persona__tool (persona_id, tool_id) VALUES (0, 6);
 INSERT INTO persona__tool (persona_id, tool_id) VALUES (0, 7);
-INSERT INTO search_settings (id, model_name, model_dim, "normalize", query_prefix, passage_prefix, index_name, status, provider_type, multipass_indexing, multilingual_expansion, embedding_precision, reduced_dimension, enable_contextual_rag, contextual_rag_llm_name, contextual_rag_llm_provider, switchover_type) VALUES (2, 'nomic-ai/nomic-embed-text-v1', 768, true, 'search_query: ', 'search_document: ', 'danswer_chunk_nomic_ai_nomic_embed_text_v1', 'PRESENT', NULL, false, '{}', 'FLOAT', NULL, false, NULL, NULL, 'REINDEX');
+INSERT INTO search_settings (id, model_name, model_dim, "normalize", query_prefix, passage_prefix, index_name, status, provider_type, multipass_indexing, multilingual_expansion, embedding_precision, reduced_dimension, enable_contextual_rag, contextual_rag_llm_name, contextual_rag_llm_provider, switchover_type) VALUES (2, 'nomic-ai/nomic-embed-text-v1', 768, true, 'search_query: ', 'search_document: ', 'chunk_nomic_ai_nomic_embed_text_v1', 'PRESENT', NULL, false, '{}', 'FLOAT', NULL, false, NULL, NULL, 'REINDEX');
 
 SELECT setval(pg_get_serial_sequence('tool','id'), (SELECT max(id) FROM tool), true);
 SELECT setval(pg_get_serial_sequence('search_settings','id'), (SELECT max(id) FROM search_settings), true);

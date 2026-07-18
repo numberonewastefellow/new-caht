@@ -66,7 +66,7 @@ class TestChatFileConversion:
     def test_convert_loaded_files_to_chat_files(self) -> None:
         """Test conversion of ChatLoadedFile to ChatFile."""
         from om.chat.models import ChatLoadedFile
-        from om.chat.process_message import _convert_loaded_files_to_chat_files
+        from om.chat.message_handler import _convert_loaded_files_to_chat_files
         from om.file_store.models import ChatFileType
 
         # Create sample ChatLoadedFile objects
@@ -101,7 +101,7 @@ class TestChatFileConversion:
     def test_convert_files_with_none_content_skipped(self) -> None:
         """Test that files with None content are skipped."""
         from om.chat.models import ChatLoadedFile
-        from om.chat.process_message import _convert_loaded_files_to_chat_files
+        from om.chat.message_handler import _convert_loaded_files_to_chat_files
         from om.file_store.models import ChatFileType
 
         loaded_files = [
@@ -132,7 +132,7 @@ class TestChatFileConversion:
     def test_convert_files_with_missing_filename_uses_fallback(self) -> None:
         """Test that files without filename use file_id as fallback."""
         from om.chat.models import ChatLoadedFile
-        from om.chat.process_message import _convert_loaded_files_to_chat_files
+        from om.chat.message_handler import _convert_loaded_files_to_chat_files
         from om.file_store.models import ChatFileType
 
         loaded_files = [
@@ -153,7 +153,7 @@ class TestChatFileConversion:
 
     def test_convert_empty_list_returns_empty(self) -> None:
         """Test that empty input returns empty output."""
-        from om.chat.process_message import _convert_loaded_files_to_chat_files
+        from om.chat.message_handler import _convert_loaded_files_to_chat_files
 
         chat_files = _convert_loaded_files_to_chat_files([])
         assert chat_files == []

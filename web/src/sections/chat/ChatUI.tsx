@@ -5,7 +5,7 @@ import { Message } from "@/app/app/interfaces";
 import { OmDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
 import HumanMessage from "@/app/app/message/HumanMessage";
 import { ErrorBanner } from "@/app/app/message/Resubmit";
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { LlmDescriptor, LlmManager } from "@/lib/hooks";
 import AgentMessage from "@/app/app/message/messageComponents/AgentMessage";
 import Spacer from "@/refresh-components/Spacer";
@@ -22,7 +22,7 @@ import { patchMessageToBeLatest } from "@/app/app/services/lib";
 import type { Packet } from "@/app/app/services/streamingModels";
 
 export interface ChatUIProps {
-  liveAssistant: MinimalPersonaSnapshot;
+  liveAssistant: MinimalAgentSnapshot;
   llmManager: LlmManager;
   setPresentingDocument: (doc: MinimalOnyxDocument | null) => void;
   onMessageSelection: (nodeId: number) => void;

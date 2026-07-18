@@ -17,9 +17,9 @@ from om.chat.emitter import Emitter
 from om.chat.emitter import get_default_emitter
 from om.db.engine.sql_engine import get_session
 from om.db.models import ChatMessage
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
-from om.db.workflow import create_or_update_workflow_persona
+from om.db.workflow import create_or_update_workflow_agent
 from om.db.workflow import create_workflow
 from om.db.workflow import delete_workflow
 from om.db.workflow import get_latest_execution_by_chat_session
@@ -54,14 +54,14 @@ def _workflow_to_response(workflow) -> WorkflowResponse:
     """Convert a DB model to a response schema."""
     steps = []
     for step in sorted(workflow.steps, key=lambda s: s.step_order):
-        persona = step.persona
+        agent = step.agent
         steps.append(
             WorkflowStepResponse(
                 id=step.id,
                 workflow_id=step.workflow_id,
                 step_type=step.step_type or "agent",
-                persona_id=step.persona_id,
-                persona_name=persona.name if persona else None,
+                agent_id=step.agent_id,
+                agent_name=agent.name if agent else None,
                 step_order=step.step_order,
                 step_name=step.step_name,
                 step_description=step.step_description,
@@ -187,15 +187,15 @@ def create_workflow_endpoint(
     db_session: Session = Depends(get_session),
 ) -> WorkflowResponse:
     """Create a new multi-agent workflow."""
-    # Validate that all referenced personas exist (skip conditional_router steps)
+    # Validate that all referenced agents exist (skip conditional_router steps)
     for step in workflow_data.steps:
         if step.step_type == "conditional_router":
             continue
-        persona = db_session.get(Persona, step.persona_id)
-        if persona is None or persona.deleted:
+        agent = db_session.get(Agent, step.agent_id)
+        if agent is None or agent.deleted:
             raise HTTPException(
                 status_code=400,
-                detail=f"Persona with id {step.persona_id} not found or deleted",
+                detail=f"Agent with id {step.agent_id} not found or deleted",
             )
 
     workflow = create_workflow(
@@ -204,8 +204,8 @@ def create_workflow_endpoint(
         user_id=user.id,
     )
 
-    # Create a wrapper persona so the workflow appears in the agent listing
-    create_or_update_workflow_persona(db_session=db_session, workflow=workflow)
+    # Create a wrapper agent so the workflow appears in the agent listing
+    create_or_update_workflow_agent(db_session=db_session, workflow=workflow)
 
     return _workflow_to_response(workflow)
 
@@ -218,14 +218,14 @@ def update_workflow_endpoint(
     db_session: Session = Depends(get_session),
 ) -> WorkflowResponse:
     """Update an existing workflow."""
-    # Validate personas if steps are being updated
+    # Validate agents if steps are being updated
     if workflow_data.steps is not None:
         for step in workflow_data.steps:
-            persona = db_session.get(Persona, step.persona_id)
-            if persona is None or persona.deleted:
+            agent = db_session.get(Agent, step.agent_id)
+            if agent is None or agent.deleted:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Persona with id {step.persona_id} not found or deleted",
+                    detail=f"Agent with id {step.agent_id} not found or deleted",
                 )
 
     workflow = update_workflow(
@@ -236,8 +236,8 @@ def update_workflow_endpoint(
     if workflow is None:
         raise HTTPException(status_code=404, detail="Workflow not found")
 
-    # Keep wrapper persona in sync with workflow changes
-    create_or_update_workflow_persona(db_session=db_session, workflow=workflow)
+    # Keep wrapper agent in sync with workflow changes
+    create_or_update_workflow_agent(db_session=db_session, workflow=workflow)
 
     return _workflow_to_response(workflow)
 
@@ -255,12 +255,12 @@ def delete_workflow_endpoint(
     return {"detail": "Workflow deleted"}
 
 
-@admin_router.post("/backfill-personas")
-def backfill_workflow_personas_endpoint(
+@admin_router.post("/backfill-agents")
+def backfill_workflow_agents_endpoint(
     user: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> dict:
-    """Create wrapper personas for all existing workflows that don't have one.
+    """Create wrapper agents for all existing workflows that don't have one.
 
     Call this once after upgrading to populate the agent listing with
     previously created workflows.
@@ -268,10 +268,10 @@ def backfill_workflow_personas_endpoint(
     workflows = list_workflows(db_session=db_session, user_id=None, include_public=True)
     created = 0
     for workflow in workflows:
-        persona = create_or_update_workflow_persona(db_session=db_session, workflow=workflow)
-        if persona:
+        agent = create_or_update_workflow_agent(db_session=db_session, workflow=workflow)
+        if agent:
             created += 1
-    return {"detail": f"Backfilled {created} workflow persona(s)"}
+    return {"detail": f"Backfilled {created} workflow agent(s)"}
 
 
 # ========================

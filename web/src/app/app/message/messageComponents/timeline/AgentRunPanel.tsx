@@ -15,7 +15,7 @@ const ACCENT = "var(--virtualai-accent, var(--theme-primary-05))";
 const ACCENT_SUBTLE = "var(--virtualai-accent-subtle, var(--theme-primary-04))";
 
 export interface AgentRunPanelProps {
-  /** Assistant persona, for the avatar. */
+  /** Assistant agent, for the avatar. */
   agent: FullChatState["assistant"];
   /** Whether the run is still streaming (drives live badge + title). */
   isLive: boolean;

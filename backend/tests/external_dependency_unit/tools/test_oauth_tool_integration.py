@@ -20,7 +20,7 @@ from om.chat.emitter import get_default_emitter
 from om.context.search.enums import RecencyBiasSetting
 from om.db.models import OAuthAccount
 from om.db.models import OAuthConfig
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import Tool
 from om.db.models import User
 from om.db.oauth_config import create_oauth_config
@@ -51,12 +51,12 @@ SIMPLE_OPENAPI_SCHEMA: dict[str, Any] = {
 }
 
 
-def _create_test_persona(db_session: Session, user: User, tools: list[Tool]) -> Persona:
-    """Helper to create a test persona with the given tools"""
-    # Create persona with prompts directly on it
-    persona = Persona(
-        name=f"Test Persona {uuid4().hex[:8]}",
-        description="Test persona",
+def _create_test_agent(db_session: Session, user: User, tools: list[Tool]) -> Agent:
+    """Helper to create a test agent with the given tools"""
+    # Create agent with prompts directly on it
+    agent = Agent(
+        name=f"Test Agent {uuid4().hex[:8]}",
+        description="Test agent",
         num_chunks=10.0,
         chunks_above=0,
         chunks_below=0,
@@ -75,10 +75,10 @@ def _create_test_persona(db_session: Session, user: User, tools: list[Tool]) -> 
         starter_messages=None,
         deleted=False,
     )
-    db_session.add(persona)
+    db_session.add(agent)
     db_session.commit()
-    db_session.refresh(persona)
-    return persona
+    db_session.refresh(agent)
+    return agent
 
 
 def _create_test_oauth_config(
@@ -171,15 +171,15 @@ class TestOAuthToolIntegrationPriority:
         db_session.commit()
         db_session.refresh(tool)
 
-        # Create persona and chat session
-        persona = _create_test_persona(db_session, user, [tool])
+        # Create agent and chat session
+        agent = _create_test_agent(db_session, user, [tool])
         llm = get_default_llm()
 
         # Construct tools
         search_tool_config = SearchToolConfig()
 
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,
@@ -231,13 +231,13 @@ class TestOAuthToolIntegrationPriority:
         db_session.commit()
         db_session.refresh(tool)
 
-        # Create persona
-        persona = _create_test_persona(db_session, user, [tool])
+        # Create agent
+        agent = _create_test_agent(db_session, user, [tool])
         llm = get_default_llm()
 
         # Construct tools
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,
@@ -282,14 +282,14 @@ class TestOAuthToolIntegrationPriority:
         db_session.commit()
         db_session.refresh(tool)
 
-        # Create persona
-        persona = _create_test_persona(db_session, user, [tool])
+        # Create agent
+        agent = _create_test_agent(db_session, user, [tool])
         llm = get_default_llm()
 
         # Construct tools
         with caplog.at_level("WARNING"):
             tool_dict = construct_tools(
-                persona=persona,
+                agent=agent,
                 db_session=db_session,
                 emitter=get_default_emitter(),
                 user=user,
@@ -344,13 +344,13 @@ class TestOAuthToolIntegrationPriority:
         db_session.commit()
         db_session.refresh(tool)
 
-        # Create persona
-        persona = _create_test_persona(db_session, user, [tool])
+        # Create agent
+        agent = _create_test_agent(db_session, user, [tool])
         llm = get_default_llm()
 
         # Construct tools
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,
@@ -402,8 +402,8 @@ class TestOAuthToolIntegrationPriority:
         db_session.commit()
         db_session.refresh(tool)
 
-        # Create persona
-        persona = _create_test_persona(db_session, user, [tool])
+        # Create agent
+        agent = _create_test_agent(db_session, user, [tool])
         llm = get_default_llm()
 
         # Mock the token refresh response
@@ -421,7 +421,7 @@ class TestOAuthToolIntegrationPriority:
 
             # Construct tools
             tool_dict = construct_tools(
-                persona=persona,
+                agent=agent,
                 db_session=db_session,
                 emitter=get_default_emitter(),
                 user=user,
@@ -482,13 +482,13 @@ class TestOAuthToolIntegrationPriority:
         db_session.commit()
         db_session.refresh(tool)
 
-        # Create persona
-        persona = _create_test_persona(db_session, user, [tool])
+        # Create agent
+        agent = _create_test_agent(db_session, user, [tool])
         llm = get_default_llm()
 
         # Construct tools
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,
@@ -535,13 +535,13 @@ class TestOAuthToolIntegrationPriority:
         db_session.commit()
         db_session.refresh(tool)
 
-        # Create persona
-        persona = _create_test_persona(db_session, user, [tool])
+        # Create agent
+        agent = _create_test_agent(db_session, user, [tool])
         llm = get_default_llm()
 
         # Construct tools
         tool_dict = construct_tools(
-            persona=persona,
+            agent=agent,
             db_session=db_session,
             emitter=get_default_emitter(),
             user=user,

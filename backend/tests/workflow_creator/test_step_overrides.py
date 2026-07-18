@@ -2,8 +2,8 @@
 Test: Step-Level Overrides (Workflow-Level Overrides Architecture)
 
 Verifies that workflow step overrides:
-1. Are saved correctly to the workflow step (not the persona)
-2. Do NOT mutate the original shared persona
+1. Are saved correctly to the workflow step (not the agent)
+2. Do NOT mutate the original shared agent
 3. Are returned in the workflow GET response
 4. Are applied at runtime (system_prompt_override, llm_model_override, etc.)
 
@@ -52,15 +52,15 @@ def mark_fail(name: str, reason: str) -> None:
 
 # --helpers --─────────────────────────────────────────────────────────────────
 
-def create_test_persona(
+def create_test_agent(
     name: str,
     system_prompt: str = "You are a helpful assistant.",
     max_output_tokens: int | None = None,
 ) -> dict | None:
-    """Create a minimal persona for testing."""
+    """Create a minimal agent for testing."""
     body = {
         "name": name,
-        "description": f"Test persona for step overrides",
+        "description": f"Test agent for step overrides",
         "num_chunks": 0,
         "is_public": True,
         "system_prompt": system_prompt,
@@ -82,19 +82,19 @@ def create_test_persona(
     if max_output_tokens is not None:
         body["max_output_tokens"] = max_output_tokens
 
-    r = api("POST", "persona", body)
+    r = api("POST", "agent", body)
     if r.status_code not in (200, 201):
-        log(f"Failed to create persona '{name}': {r.status_code} {r.text[:200]}")
+        log(f"Failed to create agent '{name}': {r.status_code} {r.text[:200]}")
         return None
     return r.json()
 
 
-def delete_persona(persona_id: int) -> None:
-    api("PATCH", f"admin/persona/{persona_id}/visible?is_visible=false")
+def delete_agent(agent_id: int) -> None:
+    api("PATCH", f"admin/agent/{agent_id}/visible?is_visible=false")
 
 
 def create_workflow_with_override(
-    persona_id: int,
+    agent_id: int,
     system_prompt_override: str | None = None,
     llm_provider_override: str | None = None,
     llm_model_override: str | None = None,
@@ -102,7 +102,7 @@ def create_workflow_with_override(
 ) -> dict | None:
     """Create a workflow with one step that has overrides."""
     step = {
-        "persona_id": persona_id,
+        "agent_id": agent_id,
         "step_order": 0,
         "step_name": "Test Step",
         "step_description": "Step with overrides",
@@ -147,8 +147,8 @@ def get_workflow(workflow_id: int) -> dict | None:
     return r.json()
 
 
-def get_persona(persona_id: int) -> dict | None:
-    r = api("GET", f"persona/{persona_id}")
+def get_agent(agent_id: int) -> dict | None:
+    r = api("GET", f"agent/{agent_id}")
     if r.status_code != 200:
         return None
     return r.json()
@@ -168,25 +168,25 @@ def test_overrides_saved():
     OVERRIDE_PROMPT = "You are a specialized workflow agent with custom instructions."
     ts = int(time.time())
 
-    persona = create_test_persona(
+    agent = create_test_agent(
         f"Override Test Agent {ts}",
         system_prompt=ORIGINAL_PROMPT,
     )
-    if not persona:
-        mark_fail("Create persona", "Failed to create")
+    if not agent:
+        mark_fail("Create agent", "Failed to create")
         return
 
-    persona_id = persona["id"]
-    log(f"Created persona id={persona_id} with prompt='{ORIGINAL_PROMPT}'")
+    agent_id = agent["id"]
+    log(f"Created agent id={agent_id} with prompt='{ORIGINAL_PROMPT}'")
 
     workflow = create_workflow_with_override(
-        persona_id=persona_id,
+        agent_id=agent_id,
         system_prompt_override=OVERRIDE_PROMPT,
         max_output_tokens_override=500,
     )
     if not workflow:
         mark_fail("Create workflow", "Failed to create")
-        delete_persona(persona_id)
+        delete_agent(agent_id)
         return
 
     workflow_id = workflow["id"]
@@ -197,7 +197,7 @@ def test_overrides_saved():
     if not fetched:
         mark_fail("Fetch workflow", "Failed to fetch")
         delete_workflow(workflow_id)
-        delete_persona(persona_id)
+        delete_agent(agent_id)
         return
 
     step = fetched["steps"][0]
@@ -219,55 +219,55 @@ def test_overrides_saved():
             f"Expected 500, got {step.get('max_output_tokens_override')}",
         )
 
-    # CRITICAL: Verify persona is NOT modified
-    persona_after = get_persona(persona_id)
-    if not persona_after:
-        mark_fail("Fetch persona after", "Failed to fetch")
+    # CRITICAL: Verify agent is NOT modified
+    agent_after = get_agent(agent_id)
+    if not agent_after:
+        mark_fail("Fetch agent after", "Failed to fetch")
     else:
-        if persona_after.get("system_prompt") == ORIGINAL_PROMPT:
-            mark_pass("Persona system_prompt NOT mutated")
+        if agent_after.get("system_prompt") == ORIGINAL_PROMPT:
+            mark_pass("Agent system_prompt NOT mutated")
         else:
             mark_fail(
-                "Persona system_prompt NOT mutated",
-                f"Expected '{ORIGINAL_PROMPT}', got '{persona_after.get('system_prompt')}'",
+                "Agent system_prompt NOT mutated",
+                f"Expected '{ORIGINAL_PROMPT}', got '{agent_after.get('system_prompt')}'",
             )
 
-        if persona_after.get("max_output_tokens") is None:
-            mark_pass("Persona max_output_tokens NOT mutated")
+        if agent_after.get("max_output_tokens") is None:
+            mark_pass("Agent max_output_tokens NOT mutated")
         else:
             mark_fail(
-                "Persona max_output_tokens NOT mutated",
-                f"Expected None, got {persona_after.get('max_output_tokens')}",
+                "Agent max_output_tokens NOT mutated",
+                f"Expected None, got {agent_after.get('max_output_tokens')}",
             )
 
     # Cleanup
     delete_workflow(workflow_id)
-    delete_persona(persona_id)
+    delete_agent(agent_id)
 
 
-# --Test 2: NULL overrides use persona defaults --────────────────────────────
+# --Test 2: NULL overrides use agent defaults --────────────────────────────
 
 def test_null_overrides():
     """Create a workflow with no overrides, verify NULLs in response."""
     print("\n--Test 2: NULL Overrides (Inheritance) --")
 
     ts = int(time.time())
-    persona = create_test_persona(
+    agent = create_test_agent(
         f"Inheritance Test Agent {ts}",
         system_prompt="Base agent prompt",
         max_output_tokens=2000,
     )
-    if not persona:
-        mark_fail("Create persona", "Failed to create")
+    if not agent:
+        mark_fail("Create agent", "Failed to create")
         return
 
-    persona_id = persona["id"]
+    agent_id = agent["id"]
 
     # Create workflow WITHOUT overrides
-    workflow = create_workflow_with_override(persona_id=persona_id)
+    workflow = create_workflow_with_override(agent_id=agent_id)
     if not workflow:
         mark_fail("Create workflow", "Failed to create")
-        delete_persona(persona_id)
+        delete_agent(agent_id)
         return
 
     workflow_id = workflow["id"]
@@ -275,7 +275,7 @@ def test_null_overrides():
     if not fetched:
         mark_fail("Fetch workflow", "Failed to fetch")
         delete_workflow(workflow_id)
-        delete_persona(persona_id)
+        delete_agent(agent_id)
         return
 
     step = fetched["steps"][0]
@@ -304,7 +304,7 @@ def test_null_overrides():
 
     # Cleanup
     delete_workflow(workflow_id)
-    delete_persona(persona_id)
+    delete_agent(agent_id)
 
 
 # --Test 3: Update workflow with overrides --─────────────────────────────────
@@ -317,21 +317,21 @@ def test_update_workflow_overrides():
     OVERRIDE_PROMPT = "Updated override prompt"
     ts = int(time.time())
 
-    persona = create_test_persona(
+    agent = create_test_agent(
         f"Update Test Agent {ts}",
         system_prompt=ORIGINAL_PROMPT,
     )
-    if not persona:
-        mark_fail("Create persona", "Failed to create")
+    if not agent:
+        mark_fail("Create agent", "Failed to create")
         return
 
-    persona_id = persona["id"]
+    agent_id = agent["id"]
 
     # Create workflow without overrides
-    workflow = create_workflow_with_override(persona_id=persona_id)
+    workflow = create_workflow_with_override(agent_id=agent_id)
     if not workflow:
         mark_fail("Create workflow", "Failed to create")
-        delete_persona(persona_id)
+        delete_agent(agent_id)
         return
 
     workflow_id = workflow["id"]
@@ -340,7 +340,7 @@ def test_update_workflow_overrides():
     update_body = {
         "steps": [
             {
-                "persona_id": persona_id,
+                "agent_id": agent_id,
                 "step_order": 0,
                 "step_name": "Updated Step",
                 "output_key": "output",
@@ -355,7 +355,7 @@ def test_update_workflow_overrides():
     if r.status_code != 200:
         mark_fail("Update workflow", f"Status {r.status_code}: {r.text[:200]}")
         delete_workflow(workflow_id)
-        delete_persona(persona_id)
+        delete_agent(agent_id)
         return
 
     # Fetch and verify
@@ -363,7 +363,7 @@ def test_update_workflow_overrides():
     if not fetched:
         mark_fail("Fetch updated workflow", "Failed to fetch")
         delete_workflow(workflow_id)
-        delete_persona(persona_id)
+        delete_agent(agent_id)
         return
 
     step = fetched["steps"][0]
@@ -384,19 +384,19 @@ def test_update_workflow_overrides():
             f"Got {step.get('tool_ids_override')}",
         )
 
-    # Verify persona still unchanged
-    persona_after = get_persona(persona_id)
-    if persona_after and persona_after.get("system_prompt") == ORIGINAL_PROMPT:
-        mark_pass("Persona unchanged after workflow update")
+    # Verify agent still unchanged
+    agent_after = get_agent(agent_id)
+    if agent_after and agent_after.get("system_prompt") == ORIGINAL_PROMPT:
+        mark_pass("Agent unchanged after workflow update")
     else:
         mark_fail(
-            "Persona unchanged after workflow update",
-            f"Got '{persona_after.get('system_prompt') if persona_after else 'N/A'}'",
+            "Agent unchanged after workflow update",
+            f"Got '{agent_after.get('system_prompt') if agent_after else 'N/A'}'",
         )
 
     # Cleanup
     delete_workflow(workflow_id)
-    delete_persona(persona_id)
+    delete_agent(agent_id)
 
 
 # --main --───────────────────────────────────────────────────────────────────

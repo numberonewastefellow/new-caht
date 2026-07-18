@@ -1,6 +1,6 @@
 """Built-in HTTP Request tool for making arbitrary HTTP calls.
 
-Used by the pre-built "HTTP Request" persona in workflows to call
+Used by the pre-built "HTTP Request" agent in workflows to call
 REST APIs without requiring an OpenAPI schema.
 
 Security:

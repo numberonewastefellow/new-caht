@@ -25,17 +25,17 @@ from om.db.discord_bot import get_or_create_discord_service_api_key
 from om.db.discord_bot import sync_channel_configs
 from om.db.discord_bot import update_discord_channel_config
 from om.db.discord_bot import update_guild_config
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.utils import DiscordChannelView
 from om.server.manage.discord_bot.utils import generate_discord_registration_key
 
 
-def _create_test_persona(db_session: Session, persona_id: int, name: str) -> Persona:
-    """Create a minimal test persona."""
-    persona = Persona(
-        id=persona_id,
+def _create_test_agent(db_session: Session, agent_id: int, name: str) -> Agent:
+    """Create a minimal test agent."""
+    agent = Agent(
+        id=agent_id,
         name=name,
-        description="Test persona for Discord bot tests",
+        description="Test agent for Discord bot tests",
         num_chunks=5.0,
         chunks_above=1,
         chunks_below=1,
@@ -43,18 +43,18 @@ def _create_test_persona(db_session: Session, persona_id: int, name: str) -> Per
         llm_filter_extraction=False,
         recency_bias=RecencyBiasSetting.FAVOR_RECENT,
         is_visible=True,
-        is_default_persona=False,
+        is_default_agent=False,
         deleted=False,
-        builtin_persona=False,
+        builtin_agent=False,
     )
-    db_session.add(persona)
+    db_session.add(agent)
     db_session.flush()
-    return persona
+    return agent
 
 
-def _delete_test_persona(db_session: Session, persona_id: int) -> None:
-    """Delete a test persona."""
-    db_session.query(Persona).filter(Persona.id == persona_id).delete()
+def _delete_test_agent(db_session: Session, agent_id: int) -> None:
+    """Delete a test agent."""
+    db_session.query(Agent).filter(Agent.id == agent_id).delete()
     db_session.flush()
 
 
@@ -230,7 +230,7 @@ class TestGuildConfigAPI:
 
         # Disable
         updated = update_guild_config(
-            db_session, config, enabled=False, default_persona_id=None
+            db_session, config, enabled=False, default_agent_id=None
         )
         db_session.commit()
 
@@ -240,27 +240,27 @@ class TestGuildConfigAPI:
         delete_guild_config(db_session, config.id)
         db_session.commit()
 
-    def test_update_guild_persona(self, db_session: Session) -> None:
-        """Update guild default persona."""
-        # Create test persona first to satisfy foreign key constraint
-        _create_test_persona(db_session, 5, "Test Persona 5")
+    def test_update_guild_agent(self, db_session: Session) -> None:
+        """Update guild default agent."""
+        # Create test agent first to satisfy foreign key constraint
+        _create_test_agent(db_session, 5, "Test Agent 5")
         db_session.commit()
 
         key = generate_discord_registration_key("tenant")
         config = create_guild_config(db_session, registration_key=key)
         db_session.commit()
 
-        # Set persona
+        # Set agent
         updated = update_guild_config(
-            db_session, config, enabled=True, default_persona_id=5
+            db_session, config, enabled=True, default_agent_id=5
         )
         db_session.commit()
 
-        assert updated.default_persona_id == 5
+        assert updated.default_agent_id == 5
 
         # Cleanup
         delete_guild_config(db_session, config.id)
-        _delete_test_persona(db_session, 5)
+        _delete_test_agent(db_session, 5)
         db_session.commit()
 
 
@@ -499,40 +499,40 @@ class TestChannelConfigAPI:
         db_session.commit()
 
 
-class TestPersonaConfigurationAPI:
-    """Tests for persona configuration in API."""
+class TestAgentConfigurationAPI:
+    """Tests for agent configuration in API."""
 
-    def test_guild_persona_used_in_api_call(self, db_session: Session) -> None:
-        """Guild default_persona_id is used when no channel override."""
-        # Create test persona first
-        _create_test_persona(db_session, 42, "Test Persona 42")
+    def test_guild_agent_used_in_api_call(self, db_session: Session) -> None:
+        """Guild default_agent_id is used when no channel override."""
+        # Create test agent first
+        _create_test_agent(db_session, 42, "Test Agent 42")
         db_session.commit()
 
         key = generate_discord_registration_key("tenant")
         guild = create_guild_config(db_session, registration_key=key)
-        update_guild_config(db_session, guild, enabled=True, default_persona_id=42)
+        update_guild_config(db_session, guild, enabled=True, default_agent_id=42)
         db_session.commit()
 
-        # Verify persona is set
+        # Verify agent is set
         config = get_guild_config_by_internal_id(db_session, guild.id)
         assert config is not None
-        assert config.default_persona_id == 42
+        assert config.default_agent_id == 42
 
         # Cleanup
         delete_guild_config(db_session, guild.id)
-        _delete_test_persona(db_session, 42)
+        _delete_test_agent(db_session, 42)
         db_session.commit()
 
-    def test_channel_persona_override_in_api_call(self, db_session: Session) -> None:
-        """Channel persona_override_id takes precedence over guild default."""
-        # Create test personas first
-        _create_test_persona(db_session, 42, "Test Persona 42")
-        _create_test_persona(db_session, 99, "Test Persona 99")
+    def test_channel_agent_override_in_api_call(self, db_session: Session) -> None:
+        """Channel agent_override_id takes precedence over guild default."""
+        # Create test agents first
+        _create_test_agent(db_session, 42, "Test Agent 42")
+        _create_test_agent(db_session, 99, "Test Agent 99")
         db_session.commit()
 
         key = generate_discord_registration_key("tenant")
         guild = create_guild_config(db_session, registration_key=key)
-        update_guild_config(db_session, guild, enabled=True, default_persona_id=42)
+        update_guild_config(db_session, guild, enabled=True, default_agent_id=42)
         db_session.commit()
 
         channels = [
@@ -546,7 +546,7 @@ class TestPersonaConfigurationAPI:
         created = bulk_create_channel_configs(db_session, guild.id, channels)
         db_session.commit()
 
-        # Set channel persona override
+        # Set channel agent override
         updated = update_discord_channel_config(
             db_session,
             created[0],
@@ -554,28 +554,28 @@ class TestPersonaConfigurationAPI:
             thread_only_mode=False,
             require_bot_invocation=True,
             enabled=True,
-            persona_override_id=99,  # Override!
+            agent_override_id=99,  # Override!
         )
         db_session.commit()
 
-        assert updated.persona_override_id == 99
+        assert updated.agent_override_id == 99
 
         # Cleanup
         delete_guild_config(db_session, guild.id)
-        _delete_test_persona(db_session, 42)
-        _delete_test_persona(db_session, 99)
+        _delete_test_agent(db_session, 42)
+        _delete_test_agent(db_session, 99)
         db_session.commit()
 
-    def test_no_persona_uses_default(self, db_session: Session) -> None:
-        """Neither guild nor channel has persona - uses API default."""
+    def test_no_agent_uses_default(self, db_session: Session) -> None:
+        """Neither guild nor channel has agent - uses API default."""
         key = generate_discord_registration_key("tenant")
         guild = create_guild_config(db_session, registration_key=key)
-        # No persona set
+        # No agent set
         db_session.commit()
 
         config = get_guild_config_by_internal_id(db_session, guild.id)
         assert config is not None
-        assert config.default_persona_id is None
+        assert config.default_agent_id is None
 
         # Cleanup
         delete_guild_config(db_session, guild.id)

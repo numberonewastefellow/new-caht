@@ -7,65 +7,65 @@ from sqlalchemy.orm import Session
 
 from om.configs.chat_configs import MAX_CHUNKS_FED_TO_CHAT
 from om.context.search.enums import RecencyBiasSetting
-from om.db.constants import DEFAULT_PERSONA_SLACK_CHANNEL_NAME
-from om.db.constants import SLACK_BOT_PERSONA_PREFIX
+from om.db.constants import DEFAULT_AGENT_SLACK_CHANNEL_NAME
+from om.db.constants import SLACK_BOT_AGENT_PREFIX
 from om.db.models import ChannelConfig
-from om.db.models import Persona
-from om.db.models import Persona__DocumentSet
+from om.db.models import Agent
+from om.db.models import Agent__DocumentSet
 from om.db.models import SlackChannelConfig
 from om.db.models import User
-from om.db.persona import mark_persona_as_deleted
-from om.db.persona import upsert_persona
+from om.db.agent import mark_agent_as_deleted
+from om.db.agent import upsert_agent
 from om.db.tools import get_builtin_tool
 from om.tools.tool_implementations.search.search_tool import SearchTool
 from om.utils.errors import EERequiredError
 
 
-def _build_persona_name(channel_name: str | None) -> str:
-    return f"{SLACK_BOT_PERSONA_PREFIX}{channel_name if channel_name else DEFAULT_PERSONA_SLACK_CHANNEL_NAME}"
+def _build_agent_name(channel_name: str | None) -> str:
+    return f"{SLACK_BOT_AGENT_PREFIX}{channel_name if channel_name else DEFAULT_AGENT_SLACK_CHANNEL_NAME}"
 
 
-def _cleanup_relationships(db_session: Session, persona_id: int) -> None:
+def _cleanup_relationships(db_session: Session, agent_id: int) -> None:
     """NOTE: does not commit changes"""
-    # delete existing persona-document_set relationships
+    # delete existing agent-document_set relationships
     existing_relationships = db_session.scalars(
-        select(Persona__DocumentSet).where(
-            Persona__DocumentSet.persona_id == persona_id
+        select(Agent__DocumentSet).where(
+            Agent__DocumentSet.agent_id == agent_id
         )
     )
     for rel in existing_relationships:
         db_session.delete(rel)
 
 
-def create_slack_channel_persona(
+def create_slack_channel_agent(
     db_session: Session,
     channel_name: str | None,
     document_set_ids: list[int],
-    existing_persona_id: int | None = None,
+    existing_agent_id: int | None = None,
     num_chunks: float = MAX_CHUNKS_FED_TO_CHAT,
     enable_auto_filters: bool = False,
-) -> Persona:
+) -> Agent:
     """NOTE: does not commit changes"""
 
     search_tool = get_builtin_tool(db_session=db_session, tool_type=SearchTool)
 
-    # create/update persona associated with the Slack channel
-    persona_name = _build_persona_name(channel_name)
-    persona_id_to_update = existing_persona_id
-    if persona_id_to_update is None:
-        # Reuse any previous Slack persona for this channel (even if the config was
-        # temporarily switched to a different persona) so we don't trip duplicate name
-        # validation inside `upsert_persona`.
-        existing_persona = db_session.scalar(
-            select(Persona).where(Persona.name == persona_name)
+    # create/update agent associated with the Slack channel
+    agent_name = _build_agent_name(channel_name)
+    agent_id_to_update = existing_agent_id
+    if agent_id_to_update is None:
+        # Reuse any previous Slack agent for this channel (even if the config was
+        # temporarily switched to a different agent) so we don't trip duplicate name
+        # validation inside `upsert_agent`.
+        existing_agent = db_session.scalar(
+            select(Agent).where(Agent.name == agent_name)
         )
-        if existing_persona:
-            persona_id_to_update = existing_persona.id
+        if existing_agent:
+            agent_id_to_update = existing_agent.id
 
-    persona = upsert_persona(
-        user=None,  # Slack channel Personas are not attached to users
-        persona_id=persona_id_to_update,
-        name=persona_name,
+    agent = upsert_agent(
+        user=None,  # Slack channel Agents are not attached to users
+        agent_id=agent_id_to_update,
+        name=agent_name,
         description="",
         system_prompt="",
         task_prompt="",
@@ -80,12 +80,12 @@ def create_slack_channel_persona(
         llm_model_version_override=None,
         starter_messages=None,
         is_public=True,
-        is_default_persona=False,
+        is_default_agent=False,
         db_session=db_session,
         commit=False,
     )
 
-    return persona
+    return agent
 
 
 def _no_ee_standard_answer_categories(
@@ -97,7 +97,7 @@ def _no_ee_standard_answer_categories(
 def insert_slack_channel_config(
     db_session: Session,
     slack_bot_id: int,
-    persona_id: int | None,
+    agent_id: int | None,
     channel_config: ChannelConfig,
     standard_answer_category_ids: list[int],
     enable_auto_filters: bool,
@@ -139,7 +139,7 @@ def insert_slack_channel_config(
 
     slack_channel_config = SlackChannelConfig(
         slack_bot_id=slack_bot_id,
-        persona_id=persona_id,
+        agent_id=agent_id,
         channel_config=channel_config,
         standard_answer_categories=existing_standard_answer_categories,
         enable_auto_filters=enable_auto_filters,
@@ -154,7 +154,7 @@ def insert_slack_channel_config(
 def update_slack_channel_config(
     db_session: Session,
     slack_channel_config_id: int,
-    persona_id: int | None,
+    agent_id: int | None,
     channel_config: ChannelConfig,
     standard_answer_category_ids: list[int],
     enable_auto_filters: bool,
@@ -186,7 +186,7 @@ def update_slack_channel_config(
         )
 
     # update the config
-    slack_channel_config.persona_id = persona_id
+    slack_channel_config.agent_id = agent_id
     slack_channel_config.channel_config = channel_config
     slack_channel_config.standard_answer_categories = list(
         existing_standard_answer_categories
@@ -213,21 +213,21 @@ def remove_slack_channel_config(
             f"Unable to find Slack channel config with ID {slack_channel_config_id}"
         )
 
-    existing_persona_id = slack_channel_config.persona_id
-    if existing_persona_id:
-        existing_persona = db_session.scalar(
-            select(Persona).where(Persona.id == existing_persona_id)
+    existing_agent_id = slack_channel_config.agent_id
+    if existing_agent_id:
+        existing_agent = db_session.scalar(
+            select(Agent).where(Agent.id == existing_agent_id)
         )
-        # if the existing persona was one created just for use with this Slack channel,
+        # if the existing agent was one created just for use with this Slack channel,
         # then clean it up
-        if existing_persona and existing_persona.name.startswith(
-            SLACK_BOT_PERSONA_PREFIX
+        if existing_agent and existing_agent.name.startswith(
+            SLACK_BOT_AGENT_PREFIX
         ):
             _cleanup_relationships(
-                db_session=db_session, persona_id=existing_persona_id
+                db_session=db_session, agent_id=existing_agent_id
             )
-            mark_persona_as_deleted(
-                persona_id=existing_persona_id, user=user, db_session=db_session
+            mark_agent_as_deleted(
+                agent_id=existing_agent_id, user=user, db_session=db_session
             )
 
     db_session.delete(slack_channel_config)
@@ -264,7 +264,7 @@ def fetch_slack_channel_config_for_channel_or_default(
     if channel_name is not None:
         sc_config = db_session.scalar(
             select(SlackChannelConfig)
-            .options(joinedload(SlackChannelConfig.persona))
+            .options(joinedload(SlackChannelConfig.agent))
             .where(
                 SlackChannelConfig.slack_bot_id == slack_bot_id,
                 SlackChannelConfig.channel_config["channel_name"].astext
@@ -280,7 +280,7 @@ def fetch_slack_channel_config_for_channel_or_default(
     # if none found, see if there is a default
     default_sc = db_session.scalar(
         select(SlackChannelConfig)
-        .options(joinedload(SlackChannelConfig.persona))
+        .options(joinedload(SlackChannelConfig.agent))
         .where(
             SlackChannelConfig.slack_bot_id == slack_bot_id,
             SlackChannelConfig.is_default == True,  # noqa: E712

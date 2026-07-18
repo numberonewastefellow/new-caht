@@ -1,6 +1,6 @@
 "use client";
 
-import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { buildImgUrl } from "@/app/app/components/files/images/utils";
 import { OmIcon } from "@/components/icons/icons";
 import { useSettingsContext } from "@/providers/SettingsProvider";
@@ -12,7 +12,7 @@ import CustomAgentAvatar from "@/refresh-components/avatars/CustomAgentAvatar";
 import Image from "next/image";
 
 export interface AgentAvatarProps {
-  agent: MinimalPersonaSnapshot;
+  agent: MinimalAgentSnapshot;
   size?: number;
 }
 

@@ -1,10 +1,10 @@
 import {
-  MinimalPersonaSnapshot,
-  Persona,
+  MinimalAgentSnapshot,
+  Agent,
   StarterMessage,
 } from "@/app/admin/assistants/interfaces";
 
-interface PersonaUpsertRequest {
+interface AgentUpsertRequest {
   name: string;
   description: string;
   system_prompt: string;
@@ -26,7 +26,7 @@ interface PersonaUpsertRequest {
   uploaded_image_id: string | null;
   icon_name: string | null;
   search_start_date: Date | null;
-  is_default_persona: boolean;
+  is_default_agent: boolean;
   display_priority: number | null;
   label_ids: number[] | null;
   knowledge_file_ids: string[] | null;
@@ -38,7 +38,7 @@ interface PersonaUpsertRequest {
   document_ids: string[];
 }
 
-export interface PersonaUpsertParameters {
+export interface AgentUpsertParameters {
   name: string;
   description: string;
   system_prompt: string;
@@ -59,7 +59,7 @@ export interface PersonaUpsertParameters {
   search_start_date: Date | null;
   uploaded_image_id: string | null;
   icon_name: string | null;
-  is_default_persona: boolean;
+  is_default_agent: boolean;
   label_ids: number[] | null;
   knowledge_file_ids: string[];
   max_output_tokens?: number | null;
@@ -69,7 +69,7 @@ export interface PersonaUpsertParameters {
   document_ids?: string[];
 }
 
-function buildPersonaUpsertRequest({
+function buildAgentUpsertRequest({
   name,
   description,
   system_prompt,
@@ -88,7 +88,7 @@ function buildPersonaUpsertRequest({
   document_ids,
   icon_name,
   uploaded_image_id,
-  is_default_persona,
+  is_default_agent,
   llm_relevance_filter,
   llm_model_provider_override,
   llm_model_version_override,
@@ -96,7 +96,7 @@ function buildPersonaUpsertRequest({
   label_ids,
   replace_base_system_prompt,
   max_output_tokens,
-}: PersonaUpsertParameters): PersonaUpsertRequest {
+}: AgentUpsertParameters): AgentUpsertRequest {
   return {
     name,
     description,
@@ -113,7 +113,7 @@ function buildPersonaUpsertRequest({
     remove_image,
     search_start_date,
     datetime_aware,
-    is_default_persona: is_default_persona ?? false,
+    is_default_agent: is_default_agent ?? false,
     recency_bias: "base_decay",
     llm_filter_extraction: false,
     llm_relevance_filter: llm_relevance_filter ?? null,
@@ -133,7 +133,7 @@ function buildPersonaUpsertRequest({
 export async function uploadFile(file: File): Promise<string | null> {
   const formData = new FormData();
   formData.append("file", file);
-  const response = await fetch("/api/admin/persona/upload-image", {
+  const response = await fetch("/api/admin/agent/upload-image", {
     method: "POST",
     body: formData,
     credentials: "include",
@@ -148,39 +148,39 @@ export async function uploadFile(file: File): Promise<string | null> {
   return responseJson.file_id;
 }
 
-export async function createPersona(
-  personaUpsertParams: PersonaUpsertParameters
+export async function createAgent(
+  agentUpsertParams: AgentUpsertParameters
 ): Promise<Response | null> {
-  const createPersonaResponse = await fetch("/api/persona", {
+  const createAgentResponse = await fetch("/api/agent", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(buildPersonaUpsertRequest(personaUpsertParams)),
+    body: JSON.stringify(buildAgentUpsertRequest(agentUpsertParams)),
     credentials: "include",
   });
 
-  return createPersonaResponse;
+  return createAgentResponse;
 }
 
-export async function updatePersona(
+export async function updateAgent(
   id: number,
-  personaUpsertParams: PersonaUpsertParameters
+  agentUpsertParams: AgentUpsertParameters
 ): Promise<Response | null> {
-  const updatePersonaResponse = await fetch(`/api/persona/${id}`, {
+  const updateAgentResponse = await fetch(`/api/agent/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(buildPersonaUpsertRequest(personaUpsertParams)),
+    body: JSON.stringify(buildAgentUpsertRequest(agentUpsertParams)),
     credentials: "include",
   });
 
-  return updatePersonaResponse;
+  return updateAgentResponse;
 }
 
-export function deletePersona(personaId: number) {
-  return fetch(`/api/persona/${personaId}`, {
+export function deleteAgent(agentId: number) {
+  return fetch(`/api/agent/${agentId}`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -208,9 +208,9 @@ function closerToZeroNegativesFirstComparator(a: number, b: number) {
   return absA > absB ? 1 : -1;
 }
 
-export function personaComparator(
-  a: MinimalPersonaSnapshot | Persona,
-  b: MinimalPersonaSnapshot | Persona
+export function agentComparator(
+  a: MinimalAgentSnapshot | Agent,
+  b: MinimalAgentSnapshot | Agent
 ) {
   if (a.display_priority === null && b.display_priority === null) {
     return closerToZeroNegativesFirstComparator(a.id, b.id);
@@ -230,28 +230,28 @@ export function personaComparator(
   return closerToZeroNegativesFirstComparator(a.id, b.id);
 }
 
-export async function togglePersonaDefault(
-  personaId: number,
+export async function toggleAgentDefault(
+  agentId: number,
   isDefault: boolean
 ) {
-  const response = await fetch(`/api/admin/persona/${personaId}/default`, {
+  const response = await fetch(`/api/admin/agent/${agentId}/default`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      is_default_persona: !isDefault,
+      is_default_agent: !isDefault,
     }),
     credentials: "include",
   });
   return response;
 }
 
-export async function togglePersonaVisibility(
-  personaId: number,
+export async function toggleAgentVisibility(
+  agentId: number,
   isVisible: boolean
 ) {
-  const response = await fetch(`/api/admin/persona/${personaId}/visible`, {
+  const response = await fetch(`/api/admin/agent/${agentId}/visible`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

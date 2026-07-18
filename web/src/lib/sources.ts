@@ -50,7 +50,7 @@ import {
 } from "@/components/icons/icons";
 import { ValidSources } from "./types";
 import { SourceCategory, SourceMetadata } from "./search/interfaces";
-import { Persona } from "@/app/admin/assistants/interfaces";
+import { Agent } from "@/app/admin/assistants/interfaces";
 import React from "react";
 import { DOCS_ADMINS_PATH } from "./constants";
 import { SvgFileText, SvgFolder, SvgGlobe } from "@opal/icons";
@@ -518,16 +518,16 @@ export function getSourceMetadataForSources(sources: ValidSources[]) {
   return sources.map((source) => getSourceMetadata(source));
 }
 
-export function getSourcesForPersona(persona: Persona): ValidSources[] {
-  const personaSources: ValidSources[] = [];
-  persona.document_sets.forEach((documentSet) => {
+export function getSourcesForAgent(agent: Agent): ValidSources[] {
+  const agentSources: ValidSources[] = [];
+  agent.document_sets.forEach((documentSet) => {
     documentSet.cc_pair_summaries.forEach((ccPair) => {
-      if (!personaSources.includes(ccPair.source)) {
-        personaSources.push(ccPair.source);
+      if (!agentSources.includes(ccPair.source)) {
+        agentSources.push(ccPair.source);
       }
     });
   });
-  return personaSources;
+  return agentSources;
 }
 
 export async function fetchTitleFromUrl(url: string): Promise<string | null> {

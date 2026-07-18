@@ -14,7 +14,7 @@ from om.db.enums import MCPAuthenticationType
 from om.db.mcp import get_all_mcp_tools_for_server
 from om.db.mcp import get_mcp_server_by_id
 from om.db.mcp import get_user_connection_config
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
 from om.db.oauth_config import get_oauth_config
 from om.db.search_settings import get_current_search_settings
@@ -64,7 +64,7 @@ class SearchToolConfig(BaseModel):
 
 
 class FileReaderToolConfig(BaseModel):
-    # IDs from the ``knowledge_file`` table (workspace / persona-attached files).
+    # IDs from the ``knowledge_file`` table (workspace / agent-attached files).
     knowledge_file_ids: list[UUID] = []
     # IDs from the ``file_record`` table (chat-attached files).
     chat_file_ids: list[UUID] = []
@@ -109,7 +109,7 @@ def _get_image_generation_config(llm: LLM, db_session: Session) -> LLMConfig:
 
 
 def construct_tools(
-    persona: Persona,
+    agent: Agent,
     db_session: Session,
     emitter: Emitter,
     user: User,
@@ -121,15 +121,15 @@ def construct_tools(
     chat_session_id: str | None = None,
     search_usage_forcing_setting: SearchToolUsage = SearchToolUsage.AUTO,
 ) -> dict[int, list[Tool]]:
-    """Constructs tools based on persona configuration and available APIs.
+    """Constructs tools based on agent configuration and available APIs.
 
     Will simply skip tools that are not allowed/available."""
     tool_dict: dict[int, list[Tool]] = {}
 
-    # Log which tools are attached to the persona for debugging
-    persona_tool_names = [t.name for t in persona.tools]
+    # Log which tools are attached to the agent for debugging
+    agent_tool_names = [t.name for t in agent.tools]
     logger.debug(
-        f"Constructing tools for persona '{persona.name}' (id={persona.id}): {persona_tool_names}"
+        f"Constructing tools for agent '{agent.name}' (id={agent.id}): {agent_tool_names}"
     )
 
     mcp_tool_cache: dict[int, dict[int, MCPTool]] = {}
@@ -143,7 +143,7 @@ def construct_tools(
     document_index = get_default_document_index(search_settings, None)
 
     added_search_tool = False
-    for db_tool_model in persona.tools:
+    for db_tool_model in agent.tools:
         # If allowed_tool_ids is specified, skip tools not in the allowed list
         if allowed_tool_ids is not None and db_tool_model.id not in allowed_tool_ids:
             continue
@@ -181,7 +181,7 @@ def construct_tools(
                     db_session=db_session,
                     emitter=emitter,
                     user=user,
-                    persona=persona,
+                    agent=agent,
                     llm=llm,
                     document_index=document_index,
                     user_selected_filters=search_tool_config.user_selected_filters,
@@ -290,10 +290,10 @@ def construct_tools(
             #         logger.debug("Knowledge Graph Tool is not enabled/exposed")
             #         continue
 
-            #     if persona.name != TMP_DRALPHA_PERSONA_NAME:
+            #     if agent.name != TMP_DRALPHA_AGENT_NAME:
             #         # TODO: remove this after the beta period
             #         raise ValueError(
-            #             f"The Knowledge Graph Tool should only be used by the '{TMP_DRALPHA_PERSONA_NAME}' Agent."
+            #             f"The Knowledge Graph Tool should only be used by the '{TMP_DRALPHA_AGENT_NAME}' Agent."
             #         )
             #     tool_dict[db_tool_model.id] = [
             #         KnowledgeGraphTool(tool_id=db_tool_model.id)
@@ -445,7 +445,7 @@ def construct_tools(
             db_session=db_session,
             emitter=emitter,
             user=user,
-            persona=persona,
+            agent=agent,
             llm=llm,
             document_index=document_index,
             user_selected_filters=search_tool_config.user_selected_filters,
@@ -458,7 +458,7 @@ def construct_tools(
         tool_dict[search_tool_db_model.id] = [search_tool]
 
     # Always inject MemoryTool when the user has the memory tool enabled,
-    # bypassing persona tool associations and allowed_tool_ids filtering
+    # bypassing agent tool associations and allowed_tool_ids filtering
     if user.enable_memory_tool:
         try:
             memory_tool_db_model = get_builtin_tool(db_session, MemoryTool)

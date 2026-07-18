@@ -36,8 +36,8 @@ export interface WorkflowStepSnapshot {
   id: number;
   workflow_id: number;
   step_type: string;
-  persona_id: number | null;
-  persona_name: string | null;
+  agent_id: number | null;
+  agent_name: string | null;
   step_order: number;
   step_name: string;
   step_description: string | null;
@@ -82,7 +82,7 @@ export interface WorkflowSnapshot {
 
 export interface WorkflowStepCreate {
   step_type?: string;
-  persona_id?: number | null;
+  agent_id?: number | null;
   step_order: number;
   step_name: string;
   step_description?: string | null;
@@ -136,7 +136,7 @@ export interface WorkflowUpdate {
 
 export interface StepExecutionRecord {
   step_id: number;
-  persona_id: number;
+  agent_id: number;
   step_name: string;
   input_text: string;
   output_text: string;

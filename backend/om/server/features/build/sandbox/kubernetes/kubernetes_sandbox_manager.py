@@ -86,12 +86,12 @@ from om.server.features.build.sandbox.util.agent_instructions import (
 from om.server.features.build.sandbox.util.opencode_config import (
     build_opencode_config,
 )
-from om.server.features.build.sandbox.util.persona_mapping import (
+from om.server.features.build.sandbox.util.agent_mapping import (
     generate_user_identity_content,
 )
-from om.server.features.build.sandbox.util.persona_mapping import get_persona_info
-from om.server.features.build.sandbox.util.persona_mapping import ORG_INFO_AGENTS_MD
-from om.server.features.build.sandbox.util.persona_mapping import (
+from om.server.features.build.sandbox.util.agent_mapping import get_agent_info
+from om.server.features.build.sandbox.util.agent_mapping import ORG_INFO_AGENTS_MD
+from om.server.features.build.sandbox.util.agent_mapping import (
     ORGANIZATION_STRUCTURE,
 )
 from om.utils.logger import setup_logger
@@ -1211,8 +1211,8 @@ done
             snapshot_path: Optional S3 path - logged but ignored (no S3 access)
             user_name: User's name for personalization in AGENTS.md
             user_role: User's role/title for personalization in AGENTS.md
-            user_work_area: User's work area for demo persona (e.g., "engineering")
-            user_level: User's level for demo persona (e.g., "ic", "manager")
+            user_work_area: User's work area for demo agent (e.g., "engineering")
+            user_level: User's level for demo agent (e.g., "ic", "manager")
             use_demo_data: If True, symlink files/ to /workspace/demo_data;
                           else to /workspace/files (S3-synced user files)
             excluded_user_library_paths: List of paths within user_library/ to exclude
@@ -1264,15 +1264,15 @@ done
         opencode_json_escaped = opencode_json.replace("'", "'\\''")
         agent_instructions_escaped = agent_instructions.replace("'", "'\\''")
 
-        # Build org_info setup script if persona is set
-        # Uses shared constants from persona_mapping module as single source of truth
+        # Build org_info setup script if agent is set
+        # Uses shared constants from agent_mapping module as single source of truth
         org_info_setup = ""
         if user_work_area:
-            persona = get_persona_info(user_work_area, user_level)
-            if persona:
+            agent = get_agent_info(user_work_area, user_level)
+            if agent:
                 # Escape content for shell (single quotes)
                 agents_md_escaped = ORG_INFO_AGENTS_MD.replace("'", "'\\''")
-                identity_escaped = generate_user_identity_content(persona).replace(
+                identity_escaped = generate_user_identity_content(agent).replace(
                     "'", "'\\''"
                 )
                 org_structure_escaped = json.dumps(

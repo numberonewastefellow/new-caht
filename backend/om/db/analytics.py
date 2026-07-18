@@ -15,7 +15,7 @@ from om.configs.constants import MessageType
 from om.db.models import ChatMessage
 from om.db.models import ChatMessageFeedback
 from om.db.models import ChatSession
-from om.db.models import Persona
+from om.db.models import Agent
 from om.db.models import User
 from om.db.models import UserRole
 
@@ -182,13 +182,13 @@ def fetch_onyxbot_analytics(
     return [tuple(row) for row in results]
 
 
-def fetch_persona_message_analytics(
+def fetch_agent_message_analytics(
     db_session: Session,
-    persona_id: int,
+    agent_id: int,
     start: datetime.datetime,
     end: datetime.datetime,
 ) -> list[tuple[int, datetime.date]]:
-    """Gets the daily message counts for a specific persona within the given time range."""
+    """Gets the daily message counts for a specific agent within the given time range."""
     query = (
         select(
             func.count(ChatMessage.id),
@@ -199,7 +199,7 @@ def fetch_persona_message_analytics(
             ChatMessage.chat_session_id == ChatSession.id,
         )
         .where(
-            ChatSession.persona_id == persona_id,
+            ChatSession.agent_id == agent_id,
             ChatMessage.time_sent >= start,
             ChatMessage.time_sent <= end,
             ChatMessage.message_type == MessageType.ASSISTANT,
@@ -211,13 +211,13 @@ def fetch_persona_message_analytics(
     return [tuple(row) for row in db_session.execute(query).all()]
 
 
-def fetch_persona_unique_users(
+def fetch_agent_unique_users(
     db_session: Session,
-    persona_id: int,
+    agent_id: int,
     start: datetime.datetime,
     end: datetime.datetime,
 ) -> list[tuple[int, datetime.date]]:
-    """Gets the daily unique user counts for a specific persona within the given time range."""
+    """Gets the daily unique user counts for a specific agent within the given time range."""
     query = (
         select(
             func.count(func.distinct(ChatSession.user_id)),
@@ -228,7 +228,7 @@ def fetch_persona_unique_users(
             ChatMessage.chat_session_id == ChatSession.id,
         )
         .where(
-            ChatSession.persona_id == persona_id,
+            ChatSession.agent_id == agent_id,
             ChatMessage.time_sent >= start,
             ChatMessage.time_sent <= end,
             ChatMessage.message_type == MessageType.ASSISTANT,
@@ -259,7 +259,7 @@ def fetch_assistant_message_analytics(
             ChatMessage.chat_session_id == ChatSession.id,
         )
         .where(
-            ChatSession.persona_id == assistant_id,
+            ChatSession.agent_id == assistant_id,
             ChatMessage.time_sent >= start,
             ChatMessage.time_sent <= end,
             ChatMessage.message_type == MessageType.ASSISTANT,
@@ -290,7 +290,7 @@ def fetch_assistant_unique_users(
             ChatMessage.chat_session_id == ChatSession.id,
         )
         .where(
-            ChatSession.persona_id == assistant_id,
+            ChatSession.agent_id == assistant_id,
             ChatMessage.time_sent >= start,
             ChatMessage.time_sent <= end,
             ChatMessage.message_type == MessageType.ASSISTANT,
@@ -320,7 +320,7 @@ def fetch_assistant_unique_users_total(
             ChatMessage.chat_session_id == ChatSession.id,
         )
         .where(
-            ChatSession.persona_id == assistant_id,
+            ChatSession.agent_id == assistant_id,
             ChatMessage.time_sent >= start,
             ChatMessage.time_sent <= end,
             ChatMessage.message_type == MessageType.ASSISTANT,
@@ -331,7 +331,7 @@ def fetch_assistant_unique_users_total(
     return result if result else 0
 
 
-# Users can view assistant stats if they created the persona,
+# Users can view assistant stats if they created the agent,
 # or if they are an admin
 def user_can_view_assistant_stats(
     db_session: Session, user: User, assistant_id: int
@@ -339,10 +339,10 @@ def user_can_view_assistant_stats(
     if user.role == UserRole.ADMIN:
         return True
 
-    # Check if the user created the persona
-    stmt = select(Persona).where(
-        and_(Persona.id == assistant_id, Persona.user_id == user.id)
+    # Check if the user created the agent
+    stmt = select(Agent).where(
+        and_(Agent.id == assistant_id, Agent.user_id == user.id)
     )
 
-    persona = db_session.execute(stmt).scalar_one_or_none()
-    return persona is not None
+    agent = db_session.execute(stmt).scalar_one_or_none()
+    return agent is not None

@@ -19,7 +19,7 @@ The Discord bot uses a **single-client, multi-tenant** architecture where one `O
 │  │  guild_id → tenant_id   │───▶│  send_chat_message(         │    │
 │  │  tenant_id → api_key    │    │    message,                 │    │
 │  │                         │    │    api_key=<per-tenant>,    │    │
-│  └─────────────────────────┘    │    persona_id=...           │    │
+│  └─────────────────────────┘    │    agent_id=...           │    │
 │                                 │  )                          │    │
 │                                 └─────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────────┘
@@ -101,7 +101,7 @@ class OnyxAPIClient:
         self,
         message: str,
         api_key: str,           # Injected per-request
-        persona_id: int | None,
+        agent_id: int | None,
         ...
     ) -> ChatFullResponse:
         headers = {
@@ -146,7 +146,7 @@ async def on_message(self, message: Message) -> None:
     await process_chat_message(
         message=message,
         api_key=api_key,              # Tenant-specific
-        persona_id=persona_id,         # Tenant-specific
+        agent_id=agent_id,         # Tenant-specific
         api_client=self.api_client,
     )
 ```

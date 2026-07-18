@@ -26,7 +26,7 @@ class OmDiscordClient(commands.Bot):
 
     This client handles:
     - Guild registration via !register command
-    - Message processing with persona-based responses
+    - Message processing with agent-based responses
     - Thread context for conversation continuity
     - Multi-tenant support via cached API keys
     """
@@ -170,14 +170,14 @@ class OmDiscordClient(commands.Bot):
             logger.debug(
                 f"Processing message: '{message.content[:50]}' in "
                 f"#{getattr(message.channel, 'name', 'unknown')} ({message.guild.name}), "
-                f"persona_id={should_respond_context.persona_id}"
+                f"agent_id={should_respond_context.agent_id}"
             )
 
             # Process the message
             await process_chat_message(
                 message=message,
                 api_key=api_key,
-                persona_id=should_respond_context.persona_id,
+                agent_id=should_respond_context.agent_id,
                 thread_only_mode=should_respond_context.thread_only_mode,
                 api_client=self.api_client,
                 bot_user=self.user,

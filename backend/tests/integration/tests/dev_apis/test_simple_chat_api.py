@@ -31,7 +31,7 @@ def test_send_message_simple_with_history(
                     "role": MessageType.USER.value,
                 }
             ],
-            "persona_id": 0,
+            "agent_id": 0,
         },
         headers=admin_user.headers,
     )
@@ -77,7 +77,7 @@ def test_using_reference_docs_with_simple_with_history_api_flow(
                     "role": MessageType.USER.value,
                 }
             ],
-            "persona_id": 0,
+            "agent_id": 0,
         },
         headers=admin_user.headers,
     )
@@ -97,7 +97,7 @@ def test_using_reference_docs_with_simple_with_history_api_flow(
                     "role": MessageType.USER.value,
                 }
             ],
-            "persona_id": 0,
+            "agent_id": 0,
             "search_doc_ids": [first_db_doc_id],
         },
         headers=admin_user.headers,
@@ -131,7 +131,7 @@ def test_send_message_simple_with_history_strict_json(
                     "role": MessageType.USER.value,
                 }
             ],
-            "persona_id": 0,
+            "agent_id": 0,
             "structured_response_format": {
                 "type": "json_schema",
                 "json_schema": {
@@ -215,7 +215,7 @@ def test_answer_with_citation_api(
                     "role": MessageType.USER.value,
                 }
             ],
-            "persona_id": 0,
+            "agent_id": 0,
         },
         headers=admin_user.headers,
         cookies=admin_user.cookies,
