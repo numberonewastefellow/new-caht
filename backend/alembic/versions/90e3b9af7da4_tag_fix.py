@@ -209,18 +209,6 @@ def _get_batch_documents_with_multiple_tags(
         offset_clause = f"AND document__tag.document_id > '{doc_ids[-1]}'"
 
 
-def _get_vespa_metadata(
-    document_id: str, index_name: str
-) -> dict[str, str | list[str]]:
-    # Vespa has been removed; this helper is retained only so the historical
-    # migration remains importable. It is no longer reachable (remove_old_tags is
-    # now a no-op).
-    raise NotImplementedError(
-        "Vespa has been removed; document metadata reconciliation is no longer "
-        "performed."
-    )
-
-
 def _get_document_tags(document_id: str) -> list[tuple[int, str, str]]:
     bind = op.get_bind()
     result = bind.execute(

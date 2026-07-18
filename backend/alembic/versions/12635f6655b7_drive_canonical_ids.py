@@ -277,25 +277,6 @@ def update_document_id_in_database(
     # print(f"Successfully deleted document {old_doc_id} from database")
 
 
-def delete_document_chunks_from_vespa(index_name: str, doc_id: str) -> None:
-    """No-op: Vespa has been removed from the codebase.
-
-    This historical migration used to delete a document's chunks from Vespa as
-    part of canonicalizing document IDs. On an OpenSearch-only deployment there
-    is no Vespa to touch: a fresh install runs this migration against an empty
-    index, and any deployment that already applied it will not re-run it. The
-    accompanying Postgres changes are unaffected.
-    """
-    return
-
-
-def update_document_id_in_vespa(
-    index_name: str, old_doc_id: str, new_doc_id: str
-) -> None:
-    """No-op: Vespa has been removed. See delete_document_chunks_from_vespa."""
-    return
-
-
 def delete_document_from_db(current_doc_id: str, index_name: str) -> None:
     # Delete all foreign key references first, then delete the document
     try:
@@ -407,9 +388,6 @@ def delete_document_from_db(current_doc_id: str, index_name: str) -> None:
             {"doc_id": current_doc_id},
         )
 
-        # Delete chunks from vespa
-        delete_document_chunks_from_vespa(index_name, current_doc_id)
-
     except Exception as e:
         print(f"Failed to delete duplicate document {current_doc_id}: {e}")
         # Continue with other documents instead of failing the entire migration
@@ -456,14 +434,10 @@ def upgrade() -> None:
             continue
 
         try:
-            # Update both database and Vespa in order
-            # Database first to ensure consistency
+            # Update the database
             update_document_id_in_database(
                 current_doc_id, normalized_doc_id, index_name
             )
-
-            # For Vespa, we can now use the original document IDs since we're using contains matching
-            update_document_id_in_vespa(index_name, current_doc_id, normalized_doc_id)
             updated_count += 1
             # print(f"Finished updating document {current_doc_id} -> {normalized_doc_id}")
         except Exception as e:
