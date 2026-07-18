@@ -39,7 +39,7 @@ jobs:
 
       - name: Generate OpenAPI schema and Python client
         shell: bash
-        # TODO(Nik): https://linear.app/onyx-app/issue/ENG-1/update-test-infra-to-use-test-license
+        # TODO(Nik): update test infra to use a test license
         env:
           LICENSE_ENFORCEMENT_ENABLED: "false"
         run: |

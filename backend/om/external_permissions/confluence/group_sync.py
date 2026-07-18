@@ -3,7 +3,7 @@ from collections.abc import Generator
 from om.db.external_perm import ExternalUserGroup
 from om.external_permissions.confluence.constants import ALL_CONF_EMAILS_GROUP_NAME
 from om.background.error_logging import emit_background_error
-from om.configs.app_configs import CONFLUENCE_USE_ONYX_USERS_FOR_GROUP_SYNC
+from om.configs.app_configs import CONFLUENCE_USE_OM_USERS_FOR_GROUP_SYNC
 from om.connectors.confluence.onyx_confluence import (
     get_user_email_from_username__server,
 )
@@ -126,7 +126,7 @@ def _build_final_group_to_member_email_map(
     # if set, will infer confluence usernames from onyx users in addition to using the
     # confluence users API. This is a hacky workaround for the fact that the Confluence
     # users API is broken before Confluence Data Center 10.1.0.
-    use_onyx_users: bool = CONFLUENCE_USE_ONYX_USERS_FOR_GROUP_SYNC,
+    use_onyx_users: bool = CONFLUENCE_USE_OM_USERS_FOR_GROUP_SYNC,
 ) -> dict[str, set[str]]:
     group_to_member_email_map = _build_group_member_email_map(
         confluence_client=confluence_client,

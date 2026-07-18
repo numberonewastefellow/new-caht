@@ -77,13 +77,13 @@ If you're running the backend Python process directly on your machine, you need 
 
 #### Web Template
 
-The web template is a lightweight Next.js app (Next.js 16, React 19, shadcn/ui, Recharts) checked into the codebase at `backend/onyx/server/features/build/templates/outputs/web/`.
+The web template is a lightweight Next.js app (Next.js 16, React 19, shadcn/ui, Recharts) checked into the codebase at `backend/om/server/features/build/templates/outputs/web/`.
 
 For local development, create a symlink to this template:
 
 ```bash
 sudo mkdir -p /templates/outputs
-sudo ln -s $(pwd)/backend/onyx/server/features/build/templates/outputs/web /templates/outputs/web
+sudo ln -s $(pwd)/backend/om/server/features/build/templates/outputs/web /templates/outputs/web
 ```
 
 #### Python Venv Template
@@ -97,7 +97,7 @@ python -m onyx.server.features.build.sandbox.util.build_venv_template
 
 # Or manually
 python3 -m venv /templates/venv
-/templates/venv/bin/pip install -r backend/onyx/server/features/build/sandbox/kubernetes/docker/initial-requirements.txt
+/templates/venv/bin/pip install -r backend/om/server/features/build/sandbox/kubernetes/docker/initial-requirements.txt
 ```
 
 #### System Dependencies (for PPTX skill)
@@ -281,11 +281,11 @@ curl -X POST http://localhost:3000/api/build/session/{session_id}/message \
 
 ```bash
 # Symlink web template
-sudo ln -s $(pwd)/backend/onyx/server/features/build/templates/outputs/web /templates/outputs/web
+sudo ln -s $(pwd)/backend/om/server/features/build/templates/outputs/web /templates/outputs/web
 
 # Create Python venv
 python3 -m venv /templates/venv
-/templates/venv/bin/pip install -r backend/onyx/server/features/build/sandbox/kubernetes/docker/initial-requirements.txt
+/templates/venv/bin/pip install -r backend/om/server/features/build/sandbox/kubernetes/docker/initial-requirements.txt
 ```
 
 ### Permission Denied
@@ -300,7 +300,7 @@ export VENV_TEMPLATE_PATH=$HOME/.onyx/templates/venv
 
 # Then symlink to your home directory
 mkdir -p $HOME/.onyx/templates/outputs
-ln -s $(pwd)/backend/onyx/server/features/build/templates/outputs/web $HOME/.onyx/templates/outputs/web
+ln -s $(pwd)/backend/om/server/features/build/templates/outputs/web $HOME/.onyx/templates/outputs/web
 ```
 
 ## Security Considerations
@@ -350,7 +350,7 @@ Update `templates/opencode_config.py` to add/remove tool permissions in the `per
 
 ### Web Template
 
-The lightweight Next.js template (`backend/onyx/server/features/build/templates/outputs/web/`) includes:
+The lightweight Next.js template (`backend/om/server/features/build/templates/outputs/web/`) includes:
 
 - **Framework**: Next.js 16.1.4 with React 19.2.3
 - **UI Library**: shadcn/ui components with Radix UI primitives

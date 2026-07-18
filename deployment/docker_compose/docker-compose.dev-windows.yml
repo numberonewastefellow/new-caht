@@ -76,7 +76,7 @@ services:
       - NEXT_PUBLIC_POSTHOG_KEY=
       - NEXT_PUBLIC_POSTHOG_HOST=
 
-  # Uncomment the block below to enable the MCP server for Onyx.
+  # Uncomment the block below to enable the MCP server for VertualAI.
   # mcp_server:
   #   ports:
   #     - "8090:8090"

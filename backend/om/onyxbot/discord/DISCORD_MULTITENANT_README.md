@@ -29,7 +29,7 @@ The Discord bot uses a **single-client, multi-tenant** architecture where one `O
 
 ## Component Details
 
-### 1. Cache Manager (`backend/onyx/onyxbot/discord/cache.py`)
+### 1. Cache Manager (`backend/om/onyxbot/discord/cache.py`)
 
 The `DiscordCacheManager` maintains two critical in-memory mappings:
 
@@ -89,7 +89,7 @@ Read operations (`get_tenant`, `get_api_key`) are lock-free since Python dict lo
 
 ---
 
-### 2. API Client (`backend/onyx/onyxbot/discord/api_client.py`)
+### 2. API Client (`backend/om/onyxbot/discord/api_client.py`)
 
 The `OnyxAPIClient` is a **stateless async HTTP client** that communicates with VertualAI API pods.
 
@@ -194,7 +194,7 @@ async def close(self) -> None:
 Each tenant has a dedicated service API key:
 
 ```python
-# backend/onyx/db/discord_bot.py
+# backend/om/db/discord_bot.py
 def get_or_create_discord_service_api_key(db_session: Session, tenant_id: str) -> str:
     existing = get_discord_service_api_key(db_session)
     if existing:
@@ -279,9 +279,9 @@ for tenant_id in get_all_tenant_ids():
 
 | Component | Path |
 |-----------|------|
-| Cache Manager | `backend/onyx/onyxbot/discord/cache.py` |
-| API Client | `backend/onyx/onyxbot/discord/api_client.py` |
-| Discord Client | `backend/onyx/onyxbot/discord/client.py` |
-| API Key DB Operations | `backend/onyx/db/discord_bot.py` |
+| Cache Manager | `backend/om/onyxbot/discord/cache.py` |
+| API Client | `backend/om/onyxbot/discord/api_client.py` |
+| Discord Client | `backend/om/onyxbot/discord/client.py` |
+| API Key DB Operations | `backend/om/db/discord_bot.py` |
 | Cache Manager Tests | `backend/tests/unit/onyx/onyxbot/discord/test_cache_manager.py` |
 | API Client Tests | `backend/tests/unit/onyx/onyxbot/discord/test_api_client.py` |

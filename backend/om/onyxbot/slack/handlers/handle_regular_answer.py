@@ -272,7 +272,7 @@ def handle_regular_answer(
     if not answer.answer and disable_docs_only_answer:
         logger.notice(
             "Unable to find answer - not responding since the "
-            "`ONYX_BOT_DISABLE_DOCS_ONLY_ANSWER` env variable is set"
+            "`OM_BOT_DISABLE_DOCS_ONLY_ANSWER` env variable is set"
         )
         return True
 

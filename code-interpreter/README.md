@@ -15,7 +15,7 @@ The security first architecture and an overview of the implementation can be fou
 ## Quick Start
 
 > Note: This repo powers the Code Interpreter feature in [VertualAI](https://github.com/vertualai/vertualai).
-Check out the implementation [here](https://github.com/vertualai/vertualai/tree/main/backend/onyx/tools/tool_implementations/python) as a reference for using it in your app.
+Check out the implementation [here](https://github.com/vertualai/vertualai/tree/main/backend/om/tools/tool_implementations/python) as a reference for using it in your app.
 
 ### Docker Deployment
 

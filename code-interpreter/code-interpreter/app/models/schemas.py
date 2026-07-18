@@ -58,6 +58,10 @@ class ExecuteResponse(BaseModel):
     exit_code: int | None
     timed_out: bool
     duration_ms: StrictInt
+    error_kind: StrictStr | None = Field(
+        default=None,
+        description="Non-timeout failure mode when set: 'oom', 'kernel_died', or 'timeout'.",
+    )
     files: list[WorkspaceFile] = Field(
         default_factory=list,
         description="Snapshot of the execution workspace after completion.",
@@ -95,6 +99,10 @@ class StreamResultEvent(SSEModel):
     exit_code: int | None
     timed_out: bool
     duration_ms: StrictInt
+    error_kind: StrictStr | None = Field(
+        default=None,
+        description="Non-timeout failure mode when set: 'oom', 'kernel_died', or 'timeout'.",
+    )
     files: list[WorkspaceFile] = Field(
         default_factory=list,
         description="Snapshot of the execution workspace after completion.",

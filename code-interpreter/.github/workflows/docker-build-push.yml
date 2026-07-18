@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKERHUB_USERNAME: onyxdotapp
+  # TODO(fork): set to your Docker Hub / registry namespace before enabling publish (local-only for now).
+  DOCKERHUB_USERNAME: om
 
 jobs:
   build-executor:

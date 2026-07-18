@@ -20,9 +20,9 @@ onyx/backend$ python -m dotenv -f .vscode/.env run -- python onyx/evals/eval_cli
 You can also run the CLI directly from the command line:
 
 ```bash
-onyx$ python -m dotenv -f .vscode/.env run -- python backend/onyx/evals/eval_cli.py --local-dataset-path backend/onyx/evals/data/eval.json --search-permissions-email richard@vertualai.app
+onyx$ python -m dotenv -f .vscode/.env run -- python backend/om/evals/eval_cli.py --local-dataset-path backend/om/evals/data/eval.json --search-permissions-email richard@vertualai.app
 ```
-Save the env var ONYX_EVAL_API_KEY in your .env file so you don't have to specify it every time for triggering remote runs.
+Save the env var OM_EVAL_API_KEY in your .env file so you don't have to specify it every time for triggering remote runs.
 You'll need to create an API key in the admin panel to run evals.
 
 

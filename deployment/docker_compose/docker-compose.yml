@@ -1,12 +1,12 @@
 # =============================================================================
 # ONYX DOCKER COMPOSE
 # =============================================================================
-# This is the default configuration for Onyx. This file is fairly configurable,
+# This is the default configuration for VertualAI. This file is fairly configurable,
 # also see env.template for possible settings.
 #
 # PRODUCTION DEPLOYMENT CHECKLIST:
 # To convert this setup to a production deployment following best practices,
-# follow the checklist below. Note that there are other ways to secure the Onyx
+# follow the checklist below. Note that there are other ways to secure the VertualAI
 # deployment so these are not strictly necessary for all teams.
 #
 # 1. SECURITY HARDENING:
@@ -47,7 +47,7 @@ services:
         - PREBAKE_CRAFT_TEMPLATES=${PREBAKE_CRAFT_TEMPLATES:-true}
     command: >
       /bin/sh -c "alembic upgrade head &&
-      echo \"Starting Onyx Api Server\" &&
+      echo \"Starting VertualAI Api Server\" &&
       uvicorn om.main:app --host 0.0.0.0 --port 8080"
     # Check env.template and copy to .env for env vars
     env_file:
@@ -81,19 +81,19 @@ services:
       - POSTGRES_HOST=${POSTGRES_HOST:-relational_db}
       - VESPA_HOST=${VESPA_HOST:-index}
       # Search engine selection (Vespa is the default). OpenSearch is opt-in:
-      # add "opensearch" to COMPOSE_PROFILES and set ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true.
+      # add "opensearch" to COMPOSE_PROFILES and set ENABLE_OPENSEARCH_INDEXING_FOR_OM=true.
       - OPENSEARCH_HOST=${OPENSEARCH_HOST:-opensearch}
       - OPENSEARCH_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
       - OPENSEARCH_USE_SSL=${OPENSEARCH_USE_SSL:-true}
-      - ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=${ENABLE_OPENSEARCH_INDEXING_FOR_ONYX:-false}
-      - ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX=${ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX:-false}
-      - ONYX_DISABLE_VESPA=${ONYX_DISABLE_VESPA:-false}
+      - ENABLE_OPENSEARCH_INDEXING_FOR_OM=${ENABLE_OPENSEARCH_INDEXING_FOR_OM:-false}
+      - ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM=${ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM:-false}
+      - OM_DISABLE_VESPA=${OM_DISABLE_VESPA:-false}
       - REDIS_HOST=${REDIS_HOST:-cache}
       - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
       - S3_ENDPOINT_URL=${S3_ENDPOINT_URL:-http://minio:9000}
       - S3_AWS_ACCESS_KEY_ID=${S3_AWS_ACCESS_KEY_ID:-minioadmin}
       - S3_AWS_SECRET_ACCESS_KEY=${S3_AWS_SECRET_ACCESS_KEY:-minioadmin}
-      # Onyx Craft configuration (disabled by default, set ENABLE_CRAFT=true in .env to enable)
+      # VertualAI Craft configuration (disabled by default, set ENABLE_CRAFT=true in .env to enable)
       # Use --include-craft with install script, or manually set in .env file
       - ENABLE_CRAFT=${ENABLE_CRAFT:-false}
       - OUTPUTS_TEMPLATE_PATH=${OUTPUTS_TEMPLATE_PATH:-/app/om/server/features/build/sandbox/kubernetes/docker/templates/outputs}
@@ -166,13 +166,13 @@ services:
       - POSTGRES_HOST=${POSTGRES_HOST:-relational_db}
       - VESPA_HOST=${VESPA_HOST:-index}
       # Search engine selection (Vespa is the default). OpenSearch is opt-in:
-      # add "opensearch" to COMPOSE_PROFILES and set ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true.
+      # add "opensearch" to COMPOSE_PROFILES and set ENABLE_OPENSEARCH_INDEXING_FOR_OM=true.
       - OPENSEARCH_HOST=${OPENSEARCH_HOST:-opensearch}
       - OPENSEARCH_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
       - OPENSEARCH_USE_SSL=${OPENSEARCH_USE_SSL:-true}
-      - ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=${ENABLE_OPENSEARCH_INDEXING_FOR_ONYX:-false}
-      - ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX=${ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX:-false}
-      - ONYX_DISABLE_VESPA=${ONYX_DISABLE_VESPA:-false}
+      - ENABLE_OPENSEARCH_INDEXING_FOR_OM=${ENABLE_OPENSEARCH_INDEXING_FOR_OM:-false}
+      - ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM=${ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM:-false}
+      - OM_DISABLE_VESPA=${OM_DISABLE_VESPA:-false}
       - REDIS_HOST=${REDIS_HOST:-cache}
       - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
       - INDEXING_MODEL_SERVER_HOST=${INDEXING_MODEL_SERVER_HOST:-indexing_model_server}
@@ -184,7 +184,7 @@ services:
       # API Server connection for Discord bot message processing
       - API_SERVER_PROTOCOL=${API_SERVER_PROTOCOL:-http}
       - API_SERVER_HOST=${API_SERVER_HOST:-api_server}
-      # Onyx Craft configuration (set up automatically on container startup)
+      # VertualAI Craft configuration (set up automatically on container startup)
       - ENABLE_CRAFT=${ENABLE_CRAFT:-false}
       - OUTPUTS_TEMPLATE_PATH=${OUTPUTS_TEMPLATE_PATH:-/app/om/server/features/build/sandbox/kubernetes/docker/templates/outputs}
       - VENV_TEMPLATE_PATH=${VENV_TEMPLATE_PATH:-/app/om/server/features/build/sandbox/kubernetes/docker/templates/venv}
@@ -244,7 +244,7 @@ services:
       # toggle / ?legacy=1. See AGENTIC_AI_REBRAND_PLAN.md.
       - DEFAULT_UI_VERSION=${DEFAULT_UI_VERSION:-new}
 
-  # Uncomment the block below to enable the MCP server for Onyx.
+  # Uncomment the block below to enable the MCP server for VertualAI.
   # mcp_server:
   #   image: ${OM_BACKEND_IMAGE:-om/om-backend:${IMAGE_TAG:-latest}}
   #   build:
@@ -435,8 +435,8 @@ services:
   # Optional second search engine. Vespa (service `index`) stays the default.
   # This service only starts when "opensearch" is included in COMPOSE_PROFILES
   # (e.g. in .env: COMPOSE_PROFILES=s3-filestore,opensearch). To actually use it,
-  # also set ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true (and optionally
-  # ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX / ONYX_DISABLE_VESPA).
+  # also set ENABLE_OPENSEARCH_INDEXING_FOR_OM=true (and optionally
+  # ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM / OM_DISABLE_VESPA).
   opensearch:
     image: opensearchproject/opensearch:${OPENSEARCH_IMAGE_TAG:-3.6.0}
     restart: unless-stopped
@@ -569,7 +569,7 @@ services:
     build:
       context: ../../code-interpreter/code-interpreter
       dockerfile: Dockerfile
-    image: onyxdotapp/code-interpreter:local
+    image: om/code-interpreter:local
     entrypoint: ["/bin/bash", "-c"]
     command: >
       "

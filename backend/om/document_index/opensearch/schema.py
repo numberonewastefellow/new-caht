@@ -61,6 +61,25 @@ PRIMARY_OWNERS_FIELD_NAME = "primary_owners"
 SECONDARY_OWNERS_FIELD_NAME = "secondary_owners"
 # Hierarchy filtering - list of ancestor hierarchy node IDs
 ANCESTOR_HIERARCHY_NODE_IDS_FIELD_NAME = "ancestor_hierarchy_node_ids"
+# Knowledge graph chunk fields.
+# - kg_entities / kg_terms are flat lists of id strings -> `keyword` arrays
+#   (keyword accepts arrays natively; the right type for "chunks containing
+#   entity X" term matching).
+# - kg_relationships is an array of {source, rel_type, target} triples -> a
+#   `nested` field so the three endpoints/type can be queried together (e.g.
+#   source=X AND rel_type=Y), mirroring the Vespa `kg_relationship` struct.
+#   A flat keyword array would lose this (OpenSearch cannot reliably match
+#   multiple values within the same object of a flattened array).
+# All are additive to the mapping so adding them requires no reindex; note that
+# changing kg_relationships' type LATER would require a reindex, which is why it
+# is modeled structurally up front.
+KG_ENTITIES_FIELD_NAME = "kg_entities"
+KG_RELATIONSHIPS_FIELD_NAME = "kg_relationships"
+KG_TERMS_FIELD_NAME = "kg_terms"
+# Subfields of the kg_relationships nested objects.
+KG_RELATIONSHIP_SOURCE_FIELD_NAME = "source"
+KG_RELATIONSHIP_TYPE_FIELD_NAME = "rel_type"
+KG_RELATIONSHIP_TARGET_FIELD_NAME = "target"
 
 
 # Faiss was also tried but it didn't have any benefits
@@ -139,6 +158,22 @@ def set_or_convert_timezone_to_utc(value: datetime) -> datetime:
     return value
 
 
+class KGRelationship(BaseModel):
+    """A single knowledge-graph relationship stored on a chunk.
+
+    Modeled as an OpenSearch ``nested`` object (see get_document_schema) so the
+    endpoints and type can be queried together (e.g. source=X AND rel_type=Y).
+    Mirrors the Vespa ``kg_relationship`` struct. The three fields correspond to
+    the parts of a relationship id_name split on ``__``.
+    """
+
+    model_config = {"frozen": True}
+
+    source: str
+    rel_type: str
+    target: str
+
+
 class DocumentChunkWithoutVectors(BaseModel):
     """
     Represents a chunk of a document in the OpenSearch index without vectors.
@@ -203,6 +238,14 @@ class DocumentChunkWithoutVectors(BaseModel):
     # None means no hierarchy info (document will be excluded from
     # hierarchy-filtered searches).
     ancestor_hierarchy_node_ids: list[int] | None = None
+
+    # Knowledge graph fields. kg_entities/kg_terms are keyword-string lists;
+    # kg_relationships is a list of nested {source, rel_type, target} objects.
+    # None means the field was never populated for this chunk (excluded from the
+    # serialized doc, like the other optional list fields above).
+    kg_entities: list[str] | None = None
+    kg_relationships: list[KGRelationship] | None = None
+    kg_terms: list[str] | None = None
 
     tenant_id: TenantState = Field(
         default_factory=lambda: TenantState(
@@ -564,6 +607,22 @@ class DocumentSchema:
                 # efficiently check if any value in this array matches a
                 # query bitmap.
                 ANCESTOR_HIERARCHY_NODE_IDS_FIELD_NAME: {"type": "integer"},
+                # Knowledge graph fields. kg_entities/kg_terms are keyword
+                # arrays (keyword accepts arrays natively). kg_relationships is a
+                # nested field of {source, rel_type, target} objects so the
+                # endpoints/type can be queried together (mirrors the Vespa
+                # struct); a flat keyword array would lose per-object matching.
+                # Additive to the mapping, so no reindex is required now.
+                KG_ENTITIES_FIELD_NAME: {"type": "keyword"},
+                KG_RELATIONSHIPS_FIELD_NAME: {
+                    "type": "nested",
+                    "properties": {
+                        KG_RELATIONSHIP_SOURCE_FIELD_NAME: {"type": "keyword"},
+                        KG_RELATIONSHIP_TYPE_FIELD_NAME: {"type": "keyword"},
+                        KG_RELATIONSHIP_TARGET_FIELD_NAME: {"type": "keyword"},
+                    },
+                },
+                KG_TERMS_FIELD_NAME: {"type": "keyword"},
             },
         }
 

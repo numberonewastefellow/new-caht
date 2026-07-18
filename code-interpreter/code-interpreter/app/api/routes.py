@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import AsyncIterator, Iterator
 from pathlib import Path
 
-from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, File, HTTPException, Request, UploadFile, status
 from fastapi.responses import Response, StreamingResponse
+from starlette.concurrency import run_in_threadpool
 
-from app.app_configs import get_settings
+from app.app_configs import EXECUTOR_BACKEND, get_settings
 from app.models.schemas import (
     CreateSessionResponse,
     ExecuteRequest,
@@ -19,10 +20,26 @@ from app.models.schemas import (
     UploadFileResponse,
     WorkspaceFile,
 )
-from app.services.executor_base import EntryKind, StreamChunk, StreamResult, WorkspaceEntry
+from app.services.executor_base import (
+    EntryKind,
+    StreamChunk,
+    StreamEvent,
+    StreamResult,
+    WorkspaceEntry,
+)
 from app.services.executor_factory import execute_python, execute_python_streaming
 from app.services.file_storage import FileStorageService
-from app.services.session_manager import SessionManager
+from app.services.session_manager import _STREAM_SENTINEL, SessionManager
+
+# Sentinel returned by _safe_next when the wrapped sync generator is exhausted.
+_STREAM_DONE = object()
+
+# SSE headers that defeat proxy buffering so chunks reach the browser immediately.
+_SSE_HEADERS = {
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "X-Accel-Buffering": "no",
+}
 
 router = APIRouter()
 
@@ -212,48 +229,137 @@ def execute(req: ExecuteRequest) -> ExecuteResponse:
     )
 
 
+def _safe_next(gen: Iterator[StreamEvent]) -> object:
+    """Advance a sync stream generator by one item without raising.
+
+    Returns the next StreamEvent, ``_STREAM_DONE`` on exhaustion, or the raised
+    exception object (so the async wrapper can surface it as an error event).
+    """
+    try:
+        return next(gen)
+    except StopIteration:
+        return _STREAM_DONE
+    except Exception as exc:  # noqa: BLE001 - forwarded to the client as an error event
+        return exc
+
+
 @router.post("/execute/stream")
-def execute_stream(req: ExecuteRequest) -> StreamingResponse:
-    """Execute Python code with streaming output via Server-Sent Events."""
+async def execute_stream(req: ExecuteRequest, request: Request) -> StreamingResponse:
+    """Execute Python code with streaming output via Server-Sent Events.
+
+    Ephemeral (no ``session_id``) and session-based streaming are both supported.
+    Session streaming requires the Docker executor backend (persistent kernels are
+    Docker-only), mirroring the constraint on the blocking session path.
+    """
     _validate_timeout(req)
     settings = get_settings()
     storage = get_file_storage()
     staged_files, input_files_map = _stage_request_files(req, storage)
 
-    def generate() -> Iterator[str]:
+    def _result_to_sse(result: StreamResult) -> str:
+        return StreamResultEvent(
+            exit_code=result.exit_code,
+            timed_out=result.timed_out,
+            duration_ms=result.duration_ms,
+            error_kind=result.error_kind,
+            files=_save_workspace_files(result.files, input_files_map, storage),
+        ).to_sse()
+
+    # --- Session streaming (persistent kernel; Docker-only) ---
+    if req.session_id:
+        # Case-insensitive to match how the executor factory selects the backend.
+        if EXECUTOR_BACKEND.lower() != "docker":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Session streaming requires the docker executor backend.",
+            )
+        mgr = get_session_manager()
+        if not mgr.has_session(req.session_id):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Session '{req.session_id}' not found",
+            )
+        if mgr.is_session_busy(req.session_id):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Session is busy with another execution.",
+            )
+
+        sid = req.session_id
+
+        async def session_gen() -> AsyncIterator[str]:
+            stream = None
+            try:
+                stream = mgr.stream_session(
+                    sid,
+                    req.code,
+                    req.timeout_ms,
+                    settings.max_output_bytes,
+                    staged_files or None,
+                )
+                while True:
+                    if await request.is_disconnected():
+                        break
+                    # Poll off the anyio pool so a worker is held for <=1s, never
+                    # for the whole cell (the reader thread owns the blocking read).
+                    ev = await run_in_threadpool(stream.poll, 1.0)
+                    if ev is None:
+                        yield ": keepalive\n\n"
+                        continue
+                    if ev is _STREAM_SENTINEL:
+                        break
+                    if isinstance(ev, StreamChunk):
+                        yield StreamOutputEvent(stream=ev.stream, data=ev.data).to_sse()
+                    elif isinstance(ev, StreamResult):
+                        yield _result_to_sse(ev)
+                    elif isinstance(ev, BaseException):
+                        yield StreamErrorEvent(message=str(ev)).to_sse()
+                        break
+            except Exception as exc:
+                # A result-serialization / file-save failure must surface as an error
+                # event, not a silently truncated stream.
+                yield StreamErrorEvent(message=str(exc)).to_sse()
+            finally:
+                if stream is not None:
+                    stream.cancel()
+
+        return StreamingResponse(
+            session_gen(), media_type="text/event-stream", headers=_SSE_HEADERS
+        )
+
+    # --- Ephemeral streaming (stateless; original behavior + disconnect handling) ---
+    async def ephemeral_gen() -> AsyncIterator[str]:
+        gen = execute_python_streaming(
+            code=req.code,
+            stdin=req.stdin,
+            timeout_ms=req.timeout_ms,
+            max_output_bytes=settings.max_output_bytes,
+            cpu_time_limit_sec=settings.cpu_time_limit_sec,
+            memory_limit_mb=settings.memory_limit_mb,
+            files=staged_files,
+            last_line_interactive=req.last_line_interactive,
+        )
         try:
-            for event in execute_python_streaming(
-                code=req.code,
-                stdin=req.stdin,
-                timeout_ms=req.timeout_ms,
-                max_output_bytes=settings.max_output_bytes,
-                cpu_time_limit_sec=settings.cpu_time_limit_sec,
-                memory_limit_mb=settings.memory_limit_mb,
-                files=staged_files,
-                last_line_interactive=req.last_line_interactive,
-            ):
-                if isinstance(event, StreamChunk):
-                    yield StreamOutputEvent(stream=event.stream, data=event.data).to_sse()
-
-                elif isinstance(event, StreamResult):
-                    yield StreamResultEvent(
-                        exit_code=event.exit_code,
-                        timed_out=event.timed_out,
-                        duration_ms=event.duration_ms,
-                        files=_save_workspace_files(event.files, input_files_map, storage),
-                    ).to_sse()
-
+            while True:
+                if await request.is_disconnected():
+                    break
+                ev = await run_in_threadpool(_safe_next, gen)
+                if ev is _STREAM_DONE:
+                    break
+                if isinstance(ev, StreamChunk):
+                    yield StreamOutputEvent(stream=ev.stream, data=ev.data).to_sse()
+                elif isinstance(ev, StreamResult):
+                    yield _result_to_sse(ev)
+                elif isinstance(ev, BaseException):
+                    yield StreamErrorEvent(message=str(ev)).to_sse()
+                    break
         except Exception as exc:
             yield StreamErrorEvent(message=str(exc)).to_sse()
+        finally:
+            gen.close()
 
     return StreamingResponse(
-        generate(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",
-        },
+        ephemeral_gen(), media_type="text/event-stream", headers=_SSE_HEADERS
     )
 
 

@@ -1,6 +1,6 @@
 variable "name" {
   type        = string
-  description = "Name of the Onyx resources. Example: 'onyx'"
+  description = "Name of the VertualAI resources. Example: 'onyx'"
   default     = "onyx"
 }
 

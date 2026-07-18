@@ -1,4 +1,11 @@
-import { useEffect, useMemo } from "react";
+import {
+  RefObject,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   PacketType,
   PythonToolPacket,
@@ -54,7 +61,25 @@ function isImageFile(filename: string): boolean {
   return IMAGE_EXTENSIONS.has(ext);
 }
 
-// Helper function to construct current Python execution state
+// One self-heal attempt's accumulated streams. Deltas are split into attempts at
+// `reset` boundaries so a failed attempt's output/traceback never mixes with the
+// successful retry.
+interface Attempt {
+  stdout: string;
+  stderr: string;
+}
+
+// A delta is "terminal" when it carries execution result metadata (exit_code is a
+// real number, or it timed out, or it reports a duration). Streamed chunk deltas
+// leave these at their null/false defaults, so this reliably finds the final frame.
+function isTerminalDelta(d: PythonToolDelta): boolean {
+  return (
+    (d.exit_code !== undefined && d.exit_code !== null) ||
+    d.timed_out === true ||
+    (d.duration_ms !== undefined && d.duration_ms !== null)
+  );
+}
+
 function constructCurrentPythonState(packets: PythonToolPacket[]) {
   const pythonStart = packets.find(
     (packet) => packet.obj.type === PacketType.PYTHON_TOOL_START
@@ -69,35 +94,100 @@ function constructCurrentPythonState(packets: PythonToolPacket[]) {
   )?.obj as SectionEnd | null;
 
   const code = pythonStart?.code || "";
-  const stdout = pythonDeltas
-    .map((delta) => delta?.stdout || "")
-    .filter((s) => s)
-    .join("");
-  const stderr = pythonDeltas
-    .map((delta) => delta?.stderr || "")
-    .filter((s) => s)
-    .join("");
-  const fileIds = pythonDeltas.flatMap((delta) => delta?.file_ids || []);
 
-  // Collect enriched file metadata (with fallback to bare file_ids)
+  // Fold deltas into attempts (split at self-heal `reset` boundaries) and find the
+  // single terminal delta (which drives status/elapsed, not stderr presence).
+  const attempts: Attempt[] = [{ stdout: "", stderr: "" }];
+  let terminal: PythonToolDelta | null = null;
+  for (const d of pythonDeltas) {
+    if (d.reset) {
+      // Any text on the reset delta describes the OUTGOING (failing) attempt, so
+      // append it there before starting the fresh pane for the retry.
+      const cur = attempts[attempts.length - 1]!;
+      cur.stdout += d.stdout || "";
+      cur.stderr += d.stderr || "";
+      attempts.push({ stdout: "", stderr: "" });
+    } else {
+      const seg = attempts[attempts.length - 1]!;
+      seg.stdout += d.stdout || "";
+      seg.stderr += d.stderr || "";
+    }
+    if (isTerminalDelta(d)) {
+      terminal = d;
+    }
+  }
+  const current = attempts[attempts.length - 1]!;
+  const archivedAttempts = attempts.slice(0, -1);
+
+  const fileIds = pythonDeltas.flatMap((delta) => delta?.file_ids || []);
   const files: PythonToolFile[] = pythonDeltas.flatMap(
     (delta) => delta?.files || []
   );
 
-  const isExecuting = pythonStart && !pythonEnd;
-  const isComplete = pythonStart && pythonEnd;
-  const hasError = stderr.length > 0;
+  const isExecuting = Boolean(pythonStart) && !pythonEnd && !terminal;
+  const isComplete = Boolean(pythonStart) && Boolean(pythonEnd);
+
+  // Outcome is driven by the terminal delta's exit_code / timed_out / error_kind —
+  // NEVER by stderr presence (tqdm, logging, and warnings all write to stderr on a
+  // perfectly successful run).
+  const succeeded = terminal ? terminal.exit_code === 0 : false;
+  const failed = terminal ? !succeeded : false;
+  const timedOut = terminal?.timed_out === true;
+  const errorKind = terminal?.error_kind ?? null;
+  const durationMs = terminal?.duration_ms ?? null;
 
   return {
     code,
-    stdout,
-    stderr,
+    current,
+    archivedAttempts,
     fileIds,
     files,
     isExecuting,
     isComplete,
-    hasError,
+    hasTerminal: Boolean(terminal),
+    succeeded,
+    failed,
+    timedOut,
+    errorKind,
+    durationMs,
   };
+}
+
+// Monospace output pane. stderr is tinted as an error only when the run actually
+// failed; on a successful run stderr is shown muted (secondary), not red.
+function OutputPane({
+  stdout,
+  stderr,
+  failed,
+  scrollRef,
+}: {
+  stdout: string;
+  stderr: string;
+  failed: boolean;
+  scrollRef?: RefObject<HTMLDivElement | null>;
+}) {
+  if (!stdout && !stderr) return null;
+  return (
+    <div
+      ref={scrollRef}
+      className="rounded-md bg-background-neutral-02 p-3 max-h-[420px] overflow-y-auto"
+    >
+      {stdout && (
+        <pre className="text-sm whitespace-pre-wrap font-mono text-text-01">
+          {stdout}
+        </pre>
+      )}
+      {stderr && (
+        <pre
+          className={`text-sm whitespace-pre-wrap font-mono ${
+            failed ? "text-status-error-05" : "text-text-03"
+          }`}
+        >
+          {stderr}
+        </pre>
+      )}
+    </div>
+  );
 }
 
 export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
@@ -108,14 +198,18 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
 }) => {
   const {
     code,
-    stdout,
-    stderr,
+    current,
+    archivedAttempts,
     fileIds,
     files,
     isExecuting,
     isComplete,
-    hasError,
-  } = constructCurrentPythonState(packets);
+    succeeded,
+    failed,
+    timedOut,
+    errorKind,
+    durationMs,
+  } = useMemo(() => constructCurrentPythonState(packets), [packets]);
 
   // Separate image files from non-image files
   const imageFiles = useMemo(
@@ -126,7 +220,6 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
     () => files.filter((f) => !isImageFile(f.filename)),
     [files]
   );
-  // Fallback: if we have file_ids but no enriched files, show count
   const hasOnlyBareFileIds = fileIds.length > 0 && files.length === 0;
 
   useEffect(() => {
@@ -135,20 +228,59 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
     }
   }, [isComplete, onComplete]);
 
+  // --- Live elapsed timer (per-card, shown after ~2s while executing) ---
+  const startedAtRef = useRef<number | null>(null);
+  const [elapsedS, setElapsedS] = useState(0);
+  useEffect(() => {
+    if (isExecuting && startedAtRef.current === null) {
+      startedAtRef.current = Date.now();
+    }
+    if (!isExecuting) return;
+    const id = setInterval(() => {
+      if (startedAtRef.current !== null) {
+        setElapsedS(Math.floor((Date.now() - startedAtRef.current) / 1000));
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [isExecuting]);
+
+  // --- Sticky autoscroll of the live output pane while streaming ---
+  const liveScrollRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = liveScrollRef.current;
+    if (!el || !isExecuting) return;
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    if (nearBottom) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [current.stdout, current.stderr, isExecuting]);
+
   const status = useMemo(() => {
     if (isExecuting) {
-      return "Executing Python code...";
+      return elapsedS >= 2 ? `Running code… ${elapsedS}s` : "Running code…";
     }
-    if (hasError) {
-      return "Python execution failed";
+    if (timedOut) return "Timed out";
+    if (errorKind === "oom") return "Ran out of memory";
+    if (errorKind === "kernel_died") return "Kernel crashed";
+    if (failed) return "Failed";
+    if (succeeded) {
+      return durationMs != null
+        ? `Analyzed · ${(durationMs / 1000).toFixed(1)}s`
+        : "Analyzed";
     }
-    if (isComplete) {
-      return "Python execution completed";
-    }
+    if (isComplete) return "Python execution completed";
     return "Python execution";
-  }, [isComplete, isExecuting, hasError]);
+  }, [
+    isExecuting,
+    elapsedS,
+    timedOut,
+    errorKind,
+    failed,
+    succeeded,
+    durationMs,
+    isComplete,
+  ]);
 
-  // Shared content for all states - used by both FULL and compact modes
   const content = (
     <div className="flex flex-col mb-1 space-y-2">
       {/* Loading indicator when executing */}
@@ -165,7 +297,7 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
               style={{ animationDelay: "0.2s" }}
             ></div>
           </div>
-          <span>Running code...</span>
+          <span>Running code…</span>
         </div>
       )}
 
@@ -178,27 +310,28 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
         </div>
       )}
 
-      {/* Output */}
-      {stdout && (
-        <div className="rounded-md bg-background-neutral-02 p-3">
-          <div className="text-xs font-semibold mb-1 text-text-03">Output:</div>
-          <pre className="text-sm whitespace-pre-wrap font-mono text-text-01">
-            {stdout}
-          </pre>
-        </div>
-      )}
-
-      {/* Error */}
-      {stderr && (
-        <div className="rounded-md bg-status-error-01 p-3 border border-status-error-02">
-          <div className="text-xs font-semibold mb-1 text-status-error-05">
-            Error:
+      {/* Superseded self-heal attempts (collapsed) */}
+      {archivedAttempts.map((att, i) => (
+        <details
+          key={i}
+          className="rounded-md bg-background-neutral-02 px-3 py-2"
+        >
+          <summary className="text-xs font-semibold text-text-03 cursor-pointer">
+            Attempt {i + 1} (failed) — click to expand
+          </summary>
+          <div className="mt-2">
+            <OutputPane stdout={att.stdout} stderr={att.stderr} failed />
           </div>
-          <pre className="text-sm whitespace-pre-wrap font-mono text-status-error-05">
-            {stderr}
-          </pre>
-        </div>
-      )}
+        </details>
+      ))}
+
+      {/* Live / final output for the current attempt */}
+      <OutputPane
+        stdout={current.stdout}
+        stderr={current.stderr}
+        failed={failed}
+        scrollRef={liveScrollRef}
+      />
 
       {/* Generated images — rendered inline */}
       {imageFiles.length > 0 && (
@@ -238,12 +371,15 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
       )}
 
       {/* No output fallback - only when complete with no output */}
-      {isComplete && !stdout && !stderr && files.length === 0 && (
-        <div className="py-2 text-center text-text-04">
-          <SvgTerminal className="w-4 h-4 mx-auto mb-1 opacity-50" />
-          <p className="text-xs">No output</p>
-        </div>
-      )}
+      {isComplete &&
+        !current.stdout &&
+        !current.stderr &&
+        files.length === 0 && (
+          <div className="py-2 text-center text-text-04">
+            <SvgTerminal className="w-4 h-4 mx-auto mb-1 opacity-50" />
+            <p className="text-xs">No output</p>
+          </div>
+        )}
     </div>
   );
 

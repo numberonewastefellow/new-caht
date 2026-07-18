@@ -105,7 +105,7 @@ The orchestrator does NOT call all 7 agents every time. It picks the relevant 2-
 
 | # | File | Action |
 |---|------|--------|
-| 1 | `backend/onyx/chat/llm_loop.py` line 202 | **Modify**: `MAX_LLM_CYCLES = 6` → `20` |
+| 1 | `backend/om/chat/llm_loop.py` line 202 | **Modify**: `MAX_LLM_CYCLES = 6` → `20` |
 | 2 | `backend/tests/workflow_creator/workflows/20_universal_problem_solver.json` | **Create**: 7-agent workflow definition |
 | 3 | `backend/tests/agents_creator/assistants/29_universal_agent.json` | **Create**: Super-agent persona definition |
 
@@ -113,7 +113,7 @@ The orchestrator does NOT call all 7 agents every time. It picks the relevant 2-
 
 1. **Bump cycle limit** (enables Super Agent persona to iterate sufficiently):
    ```python
-   # backend/onyx/chat/llm_loop.py line 202
+   # backend/om/chat/llm_loop.py line 202
    MAX_LLM_CYCLES = 20  # was 6
    ```
 
@@ -195,14 +195,14 @@ Test prompts (verify correct agents appear in timeline):
 
 | Component | File | What It Does |
 |-----------|------|-------------|
-| Workflow engine | `backend/onyx/workflows/workflow_engine.py` | `llm_decision` orchestration loop |
-| AgentTool | `backend/onyx/tools/tool_implementations/agent_tool.py` | Wraps personas as callable tools for orchestrator |
-| Tool constructor | `backend/onyx/tools/tool_constructor.py` | Builds tool instances for personas |
-| PythonTool | `backend/onyx/tools/tool_implementations/python/python_tool.py` | Code execution sandbox |
-| SearchTool | `backend/onyx/tools/tool_implementations/search/search_tool.py` | Internal KB search |
-| WebSearchTool | `backend/onyx/tools/tool_implementations/web_search/web_search_tool.py` | Internet search |
+| Workflow engine | `backend/om/workflows/workflow_engine.py` | `llm_decision` orchestration loop |
+| AgentTool | `backend/om/tools/tool_implementations/agent_tool.py` | Wraps personas as callable tools for orchestrator |
+| Tool constructor | `backend/om/tools/tool_constructor.py` | Builds tool instances for personas |
+| PythonTool | `backend/om/tools/tool_implementations/python/python_tool.py` | Code execution sandbox |
+| SearchTool | `backend/om/tools/tool_implementations/search/search_tool.py` | Internal KB search |
+| WebSearchTool | `backend/om/tools/tool_implementations/web_search/web_search_tool.py` | Internet search |
 | HITL (pause/resume) | `workflow_engine.py` lines 115-146, 1740-1866 | Checkpoint, pause, resume |
-| Streaming packets | `backend/onyx/server/query_and_chat/streaming_models.py` | WorkflowStep*, AgentResponse* |
+| Streaming packets | `backend/om/server/query_and_chat/streaming_models.py` | WorkflowStep*, AgentResponse* |
 | Deployment scripts | `create_workflows.py`, `create_assistants.py` | Create workflows/personas via API |
 
 ---

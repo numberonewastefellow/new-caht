@@ -23,7 +23,6 @@ from sqlalchemy.orm import Session
 from om.background.celery.apps.app_base import task_logger
 from om.background.celery.celery_redis import celery_find_task
 from om.background.celery.celery_redis import celery_get_unacked_task_ids
-from om.background.celery.celery_utils import httpx_init_vespa_pool
 from om.background.celery.memory_monitoring import emit_process_memory
 from om.background.celery.tasks.beat_schedule import CLOUD_BEAT_MULTIPLIER_DEFAULT
 from om.background.celery.tasks.docfetching.task_creation_utils import (
@@ -42,9 +41,6 @@ from om.background.indexing.checkpointing_utils import (
 from om.background.indexing.index_attempt_utils import cleanup_index_attempts
 from om.background.indexing.index_attempt_utils import get_old_index_attempts
 from om.configs.app_configs import AUTH_TYPE
-from om.configs.app_configs import MANAGED_VESPA
-from om.configs.app_configs import VESPA_CLOUD_CERT_PATH
-from om.configs.app_configs import VESPA_CLOUD_KEY_PATH
 from om.configs.constants import AuthType
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import CELERY_INDEXING_LOCK_TIMEOUT
@@ -90,7 +86,6 @@ from om.db.swap_index import check_and_perform_index_swap
 from om.document_index.factory import get_all_document_indices
 from om.file_store.document_batch_storage import DocumentBatchStorage
 from om.file_store.document_batch_storage import get_document_batch_storage
-from om.httpx.httpx_pool import HttpxPool
 from om.indexing.adapters.document_indexing_adapter import (
     DocumentIndexingBatchAdapter,
 )
@@ -1350,14 +1345,6 @@ def _docprocessing_task(
     redis_connector = RedisConnector(tenant_id, cc_pair_id)
     r = get_redis_client(tenant_id=tenant_id)
 
-    # 20 is the documented default for httpx max_keepalive_connections
-    if MANAGED_VESPA:
-        httpx_init_vespa_pool(
-            20, ssl_cert=VESPA_CLOUD_CERT_PATH, ssl_key=VESPA_CLOUD_KEY_PATH
-        )
-    else:
-        httpx_init_vespa_pool(20)
-
     # dummy lock to satisfy linter
     per_batch_lock: RedisLock | None = None
     try:
@@ -1439,7 +1426,6 @@ def _docprocessing_task(
             document_indices = get_all_document_indices(
                 index_attempt.search_settings,
                 None,
-                httpx_client=HttpxPool.get("vespa"),
             )
 
             # Set up metadata for this batch

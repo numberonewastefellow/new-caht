@@ -263,22 +263,136 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
             for keyword in ("connection", "404", "not found", "502", "503", "504")
         )
 
+    @staticmethod
+    def _is_code_error(response: "ExecuteResponse") -> bool:  # noqa: F821
+        """True only for a genuine *code* error worth self-healing.
+
+        Excludes clean success (exit 0) and the non-error terminal states the LLM
+        cannot repair: timeout, oom/kernel_died, and a missing result frame
+        (``exit_code is None``). Self-healing those would just burn the LLM budget.
+        """
+        return (
+            response.exit_code not in (0, None)
+            and not response.timed_out
+            and response.error_kind is None
+        )
+
+    def _execute_streaming(
+        self,
+        client: CodeInterpreterClient,
+        placement: Placement,
+        code: str,
+        timeout_ms: int,
+        files: list[FileInput] | None,
+        session_id: str | None,
+    ) -> "tuple[ExecuteResponse, bool]":  # noqa: F821
+        """Execute code with live streaming, emitting one PythonToolDelta per chunk.
+
+        Each output chunk is emitted immediately as its own delta carrying exactly
+        one populated stream field, so the wire order equals the true stdout/stderr
+        interleave order and the UI updates in real time. Returns
+        ``(aggregated_response, emitted_any)`` — the aggregated response carries the
+        full stdout/stderr for the LLM-facing result (the terminal frame itself
+        carries none, since it was already streamed), and ``emitted_any`` records
+        whether any byte reached the UI (a fresh-session replay is unsafe once it has).
+        """
+        from om.tools.tool_implementations.python.code_interpreter_client import (
+            ExecuteResponse,
+        )
+
+        out_parts: list[str] = []
+        err_parts: list[str] = []
+        emitted_any = False
+        final: ExecuteResponse | None = None
+
+        try:
+            for ev in client.execute_stream(
+                code=code,
+                timeout_ms=timeout_ms,
+                files=files,
+                session_id=session_id,
+            ):
+                if ev.kind == "output":
+                    data = ev.data or ""
+                    if not data:
+                        continue
+                    if ev.stream == "stderr":
+                        err_parts.append(data)
+                    else:
+                        out_parts.append(data)
+                    emitted_any = True
+                    # One populated stream field per delta → wire order == interleave.
+                    self.emitter.emit(
+                        Packet(
+                            placement=placement,
+                            obj=PythonToolDelta(
+                                stdout=data if ev.stream == "stdout" else "",
+                                stderr=data if ev.stream == "stderr" else "",
+                                file_ids=[],
+                            ),
+                        )
+                    )
+                elif ev.result is not None:
+                    final = ev.result
+        except Exception as stream_err:
+            if emitted_any:
+                # Partial output is already on screen; a state-less replay on a fresh
+                # session would duplicate it and desync. Surface the failure instead
+                # of letting _execute_with_retry replay (raise a NON-retriable error).
+                self.emitter.emit(
+                    Packet(
+                        placement=placement,
+                        obj=PythonToolDelta(
+                            stdout="",
+                            stderr="\n[connection lost — partial output above]",
+                            file_ids=[],
+                        ),
+                    )
+                )
+                raise RuntimeError(
+                    "code interpreter stream interrupted after partial output"
+                ) from stream_err
+            # Nothing emitted yet → let the caller decide whether to retry.
+            raise
+
+        aggregated = ExecuteResponse(
+            stdout="".join(out_parts),
+            stderr="".join(err_parts),
+            exit_code=final.exit_code if final else None,
+            timed_out=final.timed_out if final else False,
+            duration_ms=final.duration_ms if final else 0,
+            error_kind=final.error_kind if final else None,
+            files=final.files if final else [],
+        )
+        return aggregated, emitted_any
+
     def _execute_with_retry(
         self,
         client: CodeInterpreterClient,
+        placement: Placement,
         code: str,
         timeout_ms: int,
         files: list[FileInput] | None,
         session_id: str | None,
     ) -> "ExecuteResponse":  # noqa: F821
-        """Execute code, retrying once with a fresh session on retriable failures."""
+        """Stream-execute code, retrying once with a fresh session on a retriable
+        failure — but only when nothing has streamed yet.
+
+        A retriable error at stream setup (``raise_for_status`` fires before any byte
+        is read) means the UI is still empty, so a fresh-session replay is safe. Once
+        output has streamed, ``_execute_streaming`` converts the failure into a
+        non-retriable error so we never replay over visible output.
+        """
         try:
-            return client.execute(
+            response, _emitted = self._execute_streaming(
+                client=client,
+                placement=placement,
                 code=code,
                 timeout_ms=timeout_ms,
                 files=files,
                 session_id=session_id,
             )
+            return response
         except Exception as first_err:
             if not self._is_retriable_error(first_err):
                 raise
@@ -295,12 +409,15 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                 raise
 
             # Retry with the new session
-            return client.execute(
+            response, _emitted = self._execute_streaming(
+                client=client,
+                placement=placement,
                 code=code,
                 timeout_ms=timeout_ms,
                 files=files,
                 session_id=new_session_id,
             )
+            return response
 
     def _request_code_fix(
         self,
@@ -377,6 +494,7 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
         )
         response = self._execute_with_retry(
             client=client,
+            placement=placement,
             code=current_code,
             timeout_ms=first_timeout_ms,
             files=files,
@@ -388,7 +506,7 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
 
         attempt = 0
         while (
-            response.exit_code != 0
+            self._is_code_error(response)
             and attempt < CODE_INTERPRETER_MAX_SELF_HEAL_ATTEMPTS
             and self._llm is not None
             and (deadline - time.monotonic()) > DEADLINE_GUARD_SECONDS
@@ -396,7 +514,11 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
             attempt += 1
             attempt_errors.append(response.stderr)
 
-            # Real-time UI feedback (stdout, not stderr, so status stays correct)
+            # Real-time UI feedback into the CURRENT (failing) attempt's pane — a normal
+            # delta (NO reset) so the notice stays grouped with the traceback of the
+            # attempt it describes. The reset boundary is emitted below, only once a
+            # usable fix is confirmed and there is budget to re-execute; that way a run
+            # which produces no fix keeps the failed attempt's traceback on screen.
             self.emitter.emit(
                 Packet(
                     placement=placement,
@@ -436,6 +558,16 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                 )
                 break
 
+            # A usable fix is confirmed and the budget allows a re-execute: emit the
+            # attempt boundary NOW (renderer archives the failed attempt as a collapsed
+            # block and clears the live pane) so the retry streams into a clean surface.
+            self.emitter.emit(
+                Packet(
+                    placement=placement,
+                    obj=PythonToolDelta(stdout="", stderr="", file_ids=[], reset=True),
+                )
+            )
+
             current_code = fixed_code
             logger.info(f"Self-heal: re-executing corrected code (attempt {attempt})")
             retry_timeout_ms = min(
@@ -446,6 +578,7 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
             # don't re-upload them on retries (same session_id keeps the workspace).
             response = self._execute_with_retry(
                 client=client,
+                placement=placement,
                 code=current_code,
                 timeout_ms=retry_timeout_ms,
                 files=None,
@@ -638,11 +771,31 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                 for file_id, gen_file in zip(generated_file_ids, generated_files)
             ]
 
-            # Fold the self-heal summary into the streams so both the UI and the
-            # agent can see that automatic repair happened. On success it goes to
-            # stdout (keeps the section status as "completed"); on failure it goes
-            # to stderr alongside the real traceback.
             succeeded = response.exit_code == 0
+
+            # Terminal delta for the UI: program stdout/stderr already streamed live
+            # (one delta per chunk), so re-sending it here would double-render. Carry
+            # ONLY the self-heal note (never streamed) + files + status/elapsed metadata.
+            note_stdout = self_heal_note if (self_heal_note and succeeded) else ""
+            note_stderr = self_heal_note if (self_heal_note and not succeeded) else ""
+            self.emitter.emit(
+                Packet(
+                    placement=placement,
+                    obj=PythonToolDelta(
+                        stdout=note_stdout,
+                        stderr=note_stderr,
+                        file_ids=generated_file_ids,
+                        files=python_tool_files,
+                        exit_code=response.exit_code,
+                        timed_out=response.timed_out,
+                        duration_ms=response.duration_ms,
+                        error_kind=response.error_kind,
+                    ),
+                )
+            )
+
+            # For the LLM-facing result, fold the note into the FULL aggregated output
+            # (the model should see everything, including that automatic repair ran).
             if self_heal_note:
                 if succeeded:
                     truncated_stdout = (
@@ -656,19 +809,6 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                         if truncated_stderr
                         else self_heal_note
                     )
-
-            # Emit delta with stdout/stderr and generated files
-            self.emitter.emit(
-                Packet(
-                    placement=placement,
-                    obj=PythonToolDelta(
-                        stdout=truncated_stdout,
-                        stderr=truncated_stderr,
-                        file_ids=generated_file_ids,
-                        files=python_tool_files,
-                    ),
-                )
-            )
 
             # Build result
             result = LlmPythonExecutionResult(
@@ -702,7 +842,7 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
             else:
                 error_msg = raw_msg
 
-            # Emit error delta
+            # Emit error delta (terminal): exit_code drives the failed status in the UI.
             self.emitter.emit(
                 Packet(
                     placement=placement,
@@ -710,6 +850,7 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                         stdout="",
                         stderr=error_msg,
                         file_ids=[],
+                        exit_code=-1,
                     ),
                 )
             )

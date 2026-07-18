@@ -5,11 +5,8 @@ from sqlalchemy.orm import Session
 from om.configs.app_configs import DISABLE_INDEX_UPDATE_ON_SWAP
 from om.configs.app_configs import DISABLE_VECTOR_DB
 from om.configs.app_configs import INTEGRATION_TESTS_MODE
-from om.configs.app_configs import MANAGED_VESPA
-from om.configs.app_configs import VESPA_NUM_ATTEMPTS_ON_STARTUP
+from om.configs.app_configs import NUM_ATTEMPTS_ON_STARTUP
 from om.configs.constants import KV_REINDEX_KEY
-from om.configs.embedding_configs import SUPPORTED_EMBEDDING_MODELS
-from om.configs.embedding_configs import SupportedEmbeddingModel
 from om.configs.model_configs import GEN_AI_API_KEY
 from om.configs.model_configs import GEN_AI_MODEL_VERSION
 from om.context.search.models import SavedSearchSettings
@@ -20,7 +17,6 @@ from om.db.connector_credential_pair import get_connector_credential_pairs
 from om.db.connector_credential_pair import resync_cc_pair
 from om.db.credentials import create_initial_public_credential
 from om.db.document import check_docs_exist
-from om.db.enums import EmbeddingPrecision
 from om.db.index_attempt import cancel_indexing_attempts_past_model
 from om.db.index_attempt import expire_index_attempts
 from om.db.llm import fetch_default_llm_model
@@ -32,9 +28,6 @@ from om.db.search_settings import update_current_search_settings
 from om.db.swap_index import check_and_perform_index_swap
 from om.document_index.factory import get_all_document_indices
 from om.document_index.interfaces_new import DocumentIndex
-from om.document_index.vespa.vespa_document_index import (
-    register_multitenant_vespa_indices,
-)
 from om.indexing.models import IndexingSetting
 from om.key_value_store.factory import get_kv_store
 from om.key_value_store.interface import KvKeyNotFoundError
@@ -48,7 +41,6 @@ from om.server.settings.store import load_settings
 from om.server.settings.store import store_settings
 from om.utils.gpu_utils import gpu_status_request
 from om.utils.logger import setup_logger
-from shared_configs.configs import ALT_INDEX_SUFFIX
 from shared_configs.configs import MODEL_SERVER_HOST
 from shared_configs.configs import MODEL_SERVER_PORT
 from shared_configs.configs import MULTI_TENANT
@@ -129,7 +121,6 @@ def setup_onyx(
         document_indices = get_all_document_indices(
             search_settings,
             secondary_search_settings,
-            None,
         )
 
         success = setup_document_indices(
@@ -181,7 +172,7 @@ def mark_reindex_flag(db_session: Session) -> None:
 def setup_document_indices(
     document_indices: list[DocumentIndex],
     index_setting: IndexingSetting,
-    num_attempts: int = VESPA_NUM_ATTEMPTS_ON_STARTUP,
+    num_attempts: int = NUM_ATTEMPTS_ON_STARTUP,
 ) -> bool:
     """Sets up all input document indices.
 
@@ -294,47 +285,15 @@ def update_default_multipass_indexing(db_session: Session) -> None:
 
 def setup_multitenant_onyx() -> None:
     if DISABLE_VECTOR_DB:
-        logger.notice("DISABLE_VECTOR_DB is set — skipping multitenant Vespa setup.")
+        logger.notice(
+            "DISABLE_VECTOR_DB is set — skipping multitenant document index setup."
+        )
         return
 
-    # For Managed Vespa, the schema is sent over via the Vespa Console manually.
-    if not MANAGED_VESPA:
-        setup_vespa_multitenant(SUPPORTED_EMBEDDING_MODELS)
-
-
-def setup_vespa_multitenant(supported_indices: list[SupportedEmbeddingModel]) -> bool:
-    # TODO(andrei): We don't yet support OpenSearch for multi-tenant instances
-    # so this function remains unchanged.
-    # This is for local testing
-    WAIT_SECONDS = 5
-    VESPA_ATTEMPTS = 5
-    for x in range(VESPA_ATTEMPTS):
-        try:
-            logger.notice(f"Setting up Vespa (attempt {x+1}/{VESPA_ATTEMPTS})...")
-            register_multitenant_vespa_indices(
-                indices=[index.index_name for index in supported_indices]
-                + [
-                    f"{index.index_name}{ALT_INDEX_SUFFIX}"
-                    for index in supported_indices
-                ],
-                embedding_dims=[index.dim for index in supported_indices]
-                + [index.dim for index in supported_indices],
-                # on the cloud, just use float for all indices, the option to change this
-                # is not exposed to the user
-                embedding_precisions=[
-                    EmbeddingPrecision.FLOAT for _ in range(len(supported_indices) * 2)
-                ],
-            )
-
-            logger.notice("Vespa setup complete.")
-            return True
-        except Exception:
-            logger.notice(
-                f"Vespa setup did not succeed. The Vespa service may not be ready yet. Retrying in {WAIT_SECONDS} seconds."
-            )
-            time.sleep(WAIT_SECONDS)
-
-    logger.error(
-        f"Vespa setup did not succeed. Attempt limit reached. ({VESPA_ATTEMPTS})"
+    # OpenSearch multitenant indices are created on demand the first time an
+    # OpenSearchDocumentIndex is constructed for a tenant (see
+    # VERIFY_CREATE_OPENSEARCH_INDEX_ON_INIT_MT), so there is no explicit
+    # multitenant registration step to run here.
+    logger.notice(
+        "Multitenant OpenSearch indices are created on-demand; no setup step required."
     )
-    return False

@@ -5,14 +5,11 @@ from datetime import datetime
 from datetime import timezone
 from pathlib import Path
 from typing import Any
-from typing import cast
 from typing import TypeVar
 
-import httpx
 from pydantic import BaseModel
 
 from om.configs.app_configs import MAX_PRUNING_DOCUMENT_RETRIEVAL_PER_MINUTE
-from om.configs.app_configs import VESPA_REQUEST_TIMEOUT
 from om.connectors.connector_runner import CheckpointOutputWrapper
 from om.connectors.cross_connector_utils.rate_limit_wrapper import (
     rate_limit_builder,
@@ -28,7 +25,6 @@ from om.connectors.models import ConnectorFailure
 from om.connectors.models import Document
 from om.connectors.models import HierarchyNode
 from om.connectors.models import SlimDocument
-from om.httpx.httpx_pool import HttpxPool
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.utils.logger import setup_logger
 
@@ -213,28 +209,6 @@ def celery_is_worker_primary(worker: Any) -> bool:
         return True
 
     return False
-
-
-def httpx_init_vespa_pool(
-    max_keepalive_connections: int,
-    timeout: int = VESPA_REQUEST_TIMEOUT,
-    ssl_cert: str | None = None,
-    ssl_key: str | None = None,
-) -> None:
-    httpx_cert = None
-    httpx_verify = False
-    if ssl_cert and ssl_key:
-        httpx_cert = cast(tuple[str, str], (ssl_cert, ssl_key))
-        httpx_verify = True
-
-    HttpxPool.init_client(
-        name="vespa",
-        cert=httpx_cert,
-        verify=httpx_verify,
-        timeout=timeout,
-        http2=False,
-        limits=httpx.Limits(max_keepalive_connections=max_keepalive_connections),
-    )
 
 
 def make_probe_path(probe: str, hostname: str) -> Path:

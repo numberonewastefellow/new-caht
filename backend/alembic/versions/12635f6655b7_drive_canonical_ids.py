@@ -12,11 +12,6 @@ from urllib.parse import urlparse, urlunparse
 from httpx import HTTPStatusError
 import httpx
 from om.db.search_settings import SearchSettings
-from om.document_index.vespa.shared_utils.utils import get_vespa_http_client
-from om.document_index.vespa.shared_utils.utils import (
-    replace_invalid_doc_id_characters,
-)
-from om.document_index.vespa_constants import DOCUMENT_ID_ENDPOINT
 from om.utils.logger import setup_logger
 import os
 
@@ -282,118 +277,23 @@ def update_document_id_in_database(
     # print(f"Successfully deleted document {old_doc_id} from database")
 
 
-def _visit_chunks(
-    *,
-    http_client: httpx.Client,
-    index_name: str,
-    selection: str,
-    continuation: str | None = None,
-) -> tuple[list[dict], str | None]:
-    """Helper that calls the /document/v1 visit API once and returns (docs, next_token)."""
-
-    # Use the same URL as the document API, but with visit-specific params
-    base_url = DOCUMENT_ID_ENDPOINT.format(index_name=index_name)
-
-    params: dict[str, str] = {
-        "selection": selection,
-        "wantedDocumentCount": "1000",
-    }
-    if continuation:
-        params["continuation"] = continuation
-
-    # print(f"Visiting chunks for selection '{selection}' with params {params}")
-    resp = http_client.get(base_url, params=params, timeout=None)
-    # print(f"Visited chunks for document {selection}")
-    resp.raise_for_status()
-
-    payload = resp.json()
-    return payload.get("documents", []), payload.get("continuation")
-
-
 def delete_document_chunks_from_vespa(index_name: str, doc_id: str) -> None:
-    """Delete all chunks for *doc_id* from Vespa using continuation-token paging (no offset)."""
+    """No-op: Vespa has been removed from the codebase.
 
-    total_deleted = 0
-    # Use exact match instead of contains - Document Selector Language doesn't support contains
-    selection = f'{index_name}.document_id=="{doc_id}"'
-
-    with get_vespa_http_client() as http_client:
-        continuation: str | None = None
-        while True:
-            docs, continuation = _visit_chunks(
-                http_client=http_client,
-                index_name=index_name,
-                selection=selection,
-                continuation=continuation,
-            )
-
-            if not docs:
-                break
-
-            for doc in docs:
-                vespa_full_id = doc.get("id")
-                if not vespa_full_id:
-                    continue
-
-                vespa_doc_uuid = vespa_full_id.split("::")[-1]
-                delete_url = f"{DOCUMENT_ID_ENDPOINT.format(index_name=index_name)}/{vespa_doc_uuid}"
-
-                try:
-                    resp = http_client.delete(delete_url)
-                    resp.raise_for_status()
-                    total_deleted += 1
-                except Exception as e:
-                    print(f"Failed to delete chunk {vespa_doc_uuid}: {e}")
-
-            if not continuation:
-                break
+    This historical migration used to delete a document's chunks from Vespa as
+    part of canonicalizing document IDs. On an OpenSearch-only deployment there
+    is no Vespa to touch: a fresh install runs this migration against an empty
+    index, and any deployment that already applied it will not re-run it. The
+    accompanying Postgres changes are unaffected.
+    """
+    return
 
 
 def update_document_id_in_vespa(
     index_name: str, old_doc_id: str, new_doc_id: str
 ) -> None:
-    """Update all chunks' document_id field from *old_doc_id* to *new_doc_id* using continuation paging."""
-
-    clean_new_doc_id = replace_invalid_doc_id_characters(new_doc_id)
-
-    # Use exact match instead of contains - Document Selector Language doesn't support contains
-    selection = f'{index_name}.document_id=="{old_doc_id}"'
-
-    with get_vespa_http_client() as http_client:
-        continuation: str | None = None
-        while True:
-            # print(f"Visiting chunks for document {old_doc_id} -> {new_doc_id}")
-            docs, continuation = _visit_chunks(
-                http_client=http_client,
-                index_name=index_name,
-                selection=selection,
-                continuation=continuation,
-            )
-
-            if not docs:
-                break
-
-            for doc in docs:
-                vespa_full_id = doc.get("id")
-                if not vespa_full_id:
-                    continue
-
-                vespa_doc_uuid = vespa_full_id.split("::")[-1]
-                vespa_url = f"{DOCUMENT_ID_ENDPOINT.format(index_name=index_name)}/{vespa_doc_uuid}"
-
-                update_request = {
-                    "fields": {"document_id": {"assign": clean_new_doc_id}}
-                }
-
-                try:
-                    resp = http_client.put(vespa_url, json=update_request)
-                    resp.raise_for_status()
-                except Exception as e:
-                    print(f"Failed to update chunk {vespa_doc_uuid}: {e}")
-                    raise
-
-            if not continuation:
-                break
+    """No-op: Vespa has been removed. See delete_document_chunks_from_vespa."""
+    return
 
 
 def delete_document_from_db(current_doc_id: str, index_name: str) -> None:

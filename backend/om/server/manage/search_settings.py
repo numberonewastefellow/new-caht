@@ -84,7 +84,7 @@ def set_new_search_settings(
 
     # if search_settings_new.index_name is None:
     #     # We define index name here
-    #     index_name = f"danswer_chunk_{clean_model_name(search_settings_new.model_name)}"
+    #     index_name = f"chunk_{clean_model_name(search_settings_new.model_name)}"
     #     if (
     #         search_settings_new.model_name == search_settings.model_name
     #         and not search_settings.index_name.endswith(ALT_INDEX_SUFFIX)
@@ -167,9 +167,7 @@ def cancel_new_embedding(
 
         # remove the old index from the vector db
         primary_search_settings = get_current_search_settings(db_session)
-        document_index = get_default_document_index(
-            primary_search_settings, None, db_session
-        )
+        document_index = get_default_document_index(primary_search_settings, None)
         document_index.verify_and_create_index_if_necessary(
             embedding_dim=primary_search_settings.final_embedding_dim,
             embedding_precision=primary_search_settings.embedding_precision,

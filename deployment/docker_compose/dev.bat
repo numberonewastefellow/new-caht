@@ -229,7 +229,7 @@ if /i "%~1"=="logs" (
 
 :: ==================== PS ====================
 if /i "%~1"=="ps" (
-    echo === Onyx Services ===
+    echo === VertualAI Services ===
     %COMPOSE_CMD% ps
     echo.
     echo === Office MCP Server ===
@@ -368,7 +368,7 @@ goto :eof
 :: ==================== USAGE ====================
 :usage
 echo.
-echo   Onyx Dev Helper
+echo   VertualAI Dev Helper
 echo   ===============
 echo.
 echo   Usage: dev.bat [command] [services...]

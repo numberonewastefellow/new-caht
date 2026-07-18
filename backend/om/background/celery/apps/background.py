@@ -12,10 +12,6 @@ from celery.signals import worker_ready
 from celery.signals import worker_shutdown
 
 import om.background.celery.apps.app_base as app_base
-from om.background.celery.celery_utils import httpx_init_vespa_pool
-from om.configs.app_configs import MANAGED_VESPA
-from om.configs.app_configs import VESPA_CLOUD_CERT_PATH
-from om.configs.app_configs import VESPA_CLOUD_KEY_PATH
 from om.configs.constants import POSTGRES_CELERY_WORKER_BACKGROUND_APP_NAME
 from om.db.engine.sql_engine import SqlEngine
 from om.utils.logger import setup_logger
@@ -70,19 +66,9 @@ def on_worker_init(sender: Worker, **kwargs: Any) -> None:
     pool_size = cast(int, sender.concurrency)  # type: ignore
     SqlEngine.init_engine(pool_size=pool_size, max_overflow=EXTRA_CONCURRENCY)
 
-    # Initialize Vespa httpx pool (needed for light worker tasks)
-    if MANAGED_VESPA:
-        httpx_init_vespa_pool(
-            sender.concurrency + EXTRA_CONCURRENCY,  # type: ignore
-            ssl_cert=VESPA_CLOUD_CERT_PATH,
-            ssl_key=VESPA_CLOUD_KEY_PATH,
-        )
-    else:
-        httpx_init_vespa_pool(sender.concurrency + EXTRA_CONCURRENCY)  # type: ignore
-
     app_base.wait_for_redis(sender, **kwargs)
     app_base.wait_for_db(sender, **kwargs)
-    app_base.wait_for_vespa_or_shutdown(sender, **kwargs)
+    app_base.wait_for_document_index_or_shutdown(sender, **kwargs)
 
     # Less startup checks in multi-tenant case
     if MULTI_TENANT:
@@ -130,7 +116,6 @@ celery_app.autodiscover_tasks(
             "om.background.celery.tasks.document_index",
             "om.background.celery.tasks.connector_deletion",
             "om.background.celery.tasks.doc_permission_syncing",
-            "om.background.celery.tasks.opensearch_migration",
             # Docprocessing worker tasks
             "om.background.celery.tasks.docprocessing",
             # Docfetching worker tasks

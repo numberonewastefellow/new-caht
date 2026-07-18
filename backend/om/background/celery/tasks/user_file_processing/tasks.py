@@ -1,24 +1,17 @@
 import datetime
 import time
-from typing import Any
 from uuid import UUID
 
-import httpx
 import sqlalchemy as sa
 from celery import shared_task
 from celery import Task
 from redis.lock import Lock as RedisLock
-from retry import retry
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from om.background.celery.apps.app_base import task_logger
-from om.background.celery.celery_utils import httpx_init_vespa_pool
 from om.background.celery.tasks.shared.RetryDocumentIndex import RetryDocumentIndex
 from om.configs.app_configs import DISABLE_VECTOR_DB
-from om.configs.app_configs import MANAGED_VESPA
-from om.configs.app_configs import VESPA_CLOUD_CERT_PATH
-from om.configs.app_configs import VESPA_CLOUD_KEY_PATH
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import CELERY_USER_FILE_PROCESSING_LOCK_TIMEOUT
 from om.configs.constants import CELERY_USER_FILE_PROJECT_SYNC_LOCK_TIMEOUT
@@ -37,11 +30,9 @@ from om.db.search_settings import get_active_search_settings
 from om.db.search_settings import get_active_search_settings_list
 from om.document_index.factory import get_all_document_indices
 from om.document_index.interfaces_new import MetadataUpdateRequest
-from om.document_index.vespa_constants import DOCUMENT_ID_ENDPOINT
 from om.file_store.file_store import get_default_file_store
 from om.file_store.utils import store_user_file_plaintext
 from om.file_store.utils import user_file_id_to_plaintext_file_name
-from om.httpx.httpx_pool import HttpxPool
 from om.indexing.adapters.user_file_indexing_adapter import UserFileIndexingAdapter
 from om.indexing.embedder import DefaultIndexingEmbedder
 from om.indexing.indexing_pipeline import run_indexing_pipeline
@@ -63,52 +54,6 @@ def _user_file_project_sync_lock_key(user_file_id: str | UUID) -> str:
 
 def _user_file_delete_lock_key(user_file_id: str | UUID) -> str:
     return f"{OmRedisLocks.USER_FILE_DELETE_LOCK_PREFIX}:{user_file_id}"
-
-
-@retry(tries=3, delay=1, backoff=2, jitter=(0.0, 1.0))
-def _visit_chunks(
-    *,
-    http_client: httpx.Client,
-    index_name: str,
-    selection: str,
-    continuation: str | None = None,
-) -> tuple[list[dict[str, Any]], str | None]:
-    task_logger.info(
-        f"Visiting chunks for index={index_name} with selection={selection}"
-    )
-    base_url = DOCUMENT_ID_ENDPOINT.format(index_name=index_name)
-    params: dict[str, str] = {
-        "selection": selection,
-        "wantedDocumentCount": "100",  # Use smaller batch size to avoid timeouts
-    }
-    if continuation:
-        params["continuation"] = continuation
-    resp = http_client.get(base_url, params=params, timeout=None)
-    resp.raise_for_status()
-    payload = resp.json()
-    return payload.get("documents", []), payload.get("continuation")
-
-
-def _get_document_chunk_count(
-    *,
-    index_name: str,
-    selection: str,
-) -> int:
-    chunk_count = 0
-    continuation = None
-    while True:
-        docs, continuation = _visit_chunks(
-            http_client=HttpxPool.get("vespa"),
-            index_name=index_name,
-            selection=selection,
-            continuation=continuation,
-        )
-        if not docs:
-            break
-        chunk_count += len(docs)
-        if not continuation:
-            break
-    return chunk_count
 
 
 @shared_task(
@@ -226,14 +171,6 @@ def _process_user_file_with_indexing(
     db_session: Session,
 ) -> None:
     """Process a user file through the full indexing pipeline (vector DB path)."""
-    # 20 is the documented default for httpx max_keepalive_connections
-    if MANAGED_VESPA:
-        httpx_init_vespa_pool(
-            20, ssl_cert=VESPA_CLOUD_CERT_PATH, ssl_key=VESPA_CLOUD_KEY_PATH
-        )
-    else:
-        httpx_init_vespa_pool(20)
-
     search_settings_list = get_active_search_settings_list(db_session)
     current_search_settings = next(
         (ss for ss in search_settings_list if ss.status.is_current()),
@@ -257,7 +194,6 @@ def _process_user_file_with_indexing(
     document_indices = get_all_document_indices(
         current_search_settings,
         None,
-        httpx_client=HttpxPool.get("vespa"),
     )
 
     index_pipeline_result = run_indexing_pipeline(
@@ -484,39 +420,21 @@ def process_single_user_file_delete(
 
             # 1) Delete vector DB chunks (skip when disabled)
             if not DISABLE_VECTOR_DB:
-                if MANAGED_VESPA:
-                    httpx_init_vespa_pool(
-                        20, ssl_cert=VESPA_CLOUD_CERT_PATH, ssl_key=VESPA_CLOUD_KEY_PATH
-                    )
-                else:
-                    httpx_init_vespa_pool(20)
-
                 active_search_settings = get_active_search_settings(db_session)
                 document_indices = get_all_document_indices(
                     search_settings=active_search_settings.primary,
                     secondary_search_settings=active_search_settings.secondary,
-                    httpx_client=HttpxPool.get("vespa"),
                 )
                 retry_document_indices: list[RetryDocumentIndex] = [
                     RetryDocumentIndex(document_index)
                     for document_index in document_indices
                 ]
-                index_name = active_search_settings.primary.index_name
-                selection = f"{index_name}.document_id=='{user_file_id}'"
-
-                chunk_count = 0
-                if user_file.chunk_count is None or user_file.chunk_count == 0:
-                    chunk_count = _get_document_chunk_count(
-                        index_name=index_name,
-                        selection=selection,
-                    )
-                else:
-                    chunk_count = user_file.chunk_count
-
+                # OpenSearch deletes by document_id; chunk_count (from the DB) is a
+                # hint and may be None (the index handles an unknown count).
                 for retry_document_index in retry_document_indices:
                     retry_document_index.delete(
                         user_file_id,
-                        chunk_count=chunk_count,
+                        chunk_count=user_file.chunk_count,
                     )
 
             # 2) Delete the user-uploaded file content from filestore (blob + metadata)
@@ -638,18 +556,10 @@ def process_single_user_file_project_sync(
 
             # Sync project metadata to vector DB (skip when disabled)
             if not DISABLE_VECTOR_DB:
-                if MANAGED_VESPA:
-                    httpx_init_vespa_pool(
-                        20, ssl_cert=VESPA_CLOUD_CERT_PATH, ssl_key=VESPA_CLOUD_KEY_PATH
-                    )
-                else:
-                    httpx_init_vespa_pool(20)
-
                 active_search_settings = get_active_search_settings(db_session)
                 document_indices = get_all_document_indices(
                     search_settings=active_search_settings.primary,
                     secondary_search_settings=active_search_settings.secondary,
-                    httpx_client=HttpxPool.get("vespa"),
                 )
                 retry_document_indices: list[RetryDocumentIndex] = [
                     RetryDocumentIndex(document_index)

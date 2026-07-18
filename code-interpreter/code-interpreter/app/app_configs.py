@@ -10,14 +10,14 @@ EXECUTOR_BACKEND = os.environ.get("EXECUTOR_BACKEND") or "docker"
 # Docker executor configuration
 PYTHON_EXECUTOR_DOCKER_BIN = os.environ.get("PYTHON_EXECUTOR_DOCKER_BIN") or "docker"
 PYTHON_EXECUTOR_DOCKER_IMAGE = (
-    os.environ.get("PYTHON_EXECUTOR_DOCKER_IMAGE") or "onyxdotapp/python-executor-sci"
+    os.environ.get("PYTHON_EXECUTOR_DOCKER_IMAGE") or "om/python-executor-sci"
 )
 PYTHON_EXECUTOR_DOCKER_RUN_ARGS = os.environ.get("PYTHON_EXECUTOR_DOCKER_RUN_ARGS") or ""
 
 # Kubernetes executor configuration
 KUBERNETES_EXECUTOR_NAMESPACE = os.environ.get("KUBERNETES_EXECUTOR_NAMESPACE") or "default"
 KUBERNETES_EXECUTOR_IMAGE = (
-    os.environ.get("KUBERNETES_EXECUTOR_IMAGE") or "onyxdotapp/python-executor-sci"
+    os.environ.get("KUBERNETES_EXECUTOR_IMAGE") or "om/python-executor-sci"
 )
 KUBERNETES_EXECUTOR_SERVICE_ACCOUNT = os.environ.get("KUBERNETES_EXECUTOR_SERVICE_ACCOUNT") or ""
 

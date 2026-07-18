@@ -49,8 +49,8 @@ slack_token_user_ids: dict[str, str | None] = {}
 slack_token_bot_ids: dict[str, str | None] = {}
 slack_token_lock = threading.Lock()
 
-_ONYX_BOT_MESSAGE_COUNT: int = 0
-_ONYX_BOT_COUNT_START_TIME: float = time.time()
+_OM_BOT_MESSAGE_COUNT: int = 0
+_OM_BOT_COUNT_START_TIME: float = time.time()
 
 
 def get_onyx_bot_auth_ids(
@@ -120,20 +120,20 @@ def check_message_limit() -> bool:
     """
     if OM_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD <= 0:
         return True
-    global _ONYX_BOT_MESSAGE_COUNT
-    global _ONYX_BOT_COUNT_START_TIME
-    time_since_start = time.time() - _ONYX_BOT_COUNT_START_TIME
+    global _OM_BOT_MESSAGE_COUNT
+    global _OM_BOT_COUNT_START_TIME
+    time_since_start = time.time() - _OM_BOT_COUNT_START_TIME
     if time_since_start > OM_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS:
-        _ONYX_BOT_MESSAGE_COUNT = 0
-        _ONYX_BOT_COUNT_START_TIME = time.time()
-    if (_ONYX_BOT_MESSAGE_COUNT + 1) > OM_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD:
+        _OM_BOT_MESSAGE_COUNT = 0
+        _OM_BOT_COUNT_START_TIME = time.time()
+    if (_OM_BOT_MESSAGE_COUNT + 1) > OM_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD:
         logger.error(
             f"VertualAi Bot has reached the message limit {OM_BOT_RESPONSE_LIMIT_PER_TIME_PERIOD}"
             f" for the time period {OM_BOT_RESPONSE_LIMIT_TIME_PERIOD_SECONDS} seconds."
             " These limits are configurable in backend/om/configs/onyxbot_configs.py"
         )
         return False
-    _ONYX_BOT_MESSAGE_COUNT += 1
+    _OM_BOT_MESSAGE_COUNT += 1
     return True
 
 
@@ -393,7 +393,7 @@ def get_view_values(state_values: dict[str, Any]) -> dict[str, str]:
     return view_values
 
 
-def translate_vespa_highlight_to_slack(match_strs: list[str], used_chars: int) -> str:
+def translate_highlight_to_slack(match_strs: list[str], used_chars: int) -> str:
     def _replace_highlight(s: str) -> str:
         s = re.sub(r"(?<=[^\s])<hi>(.*?)</hi>", r"\1", s)
         s = s.replace("</hi>", "*").replace("<hi>", "*")

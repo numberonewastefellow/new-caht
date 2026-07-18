@@ -28,6 +28,7 @@ from app.app_configs import (
     KUBERNETES_EXECUTOR_SERVICE_ACCOUNT,
 )
 from app.services.executor_base import (
+    FIGURE_CAPTURE_PROLOGUE,
     BaseExecutor,
     EntryKind,
     ExecutionResult,
@@ -212,6 +213,10 @@ class KubernetesExecutor(BaseExecutor):
             if last_line_interactive:
                 # Wrap to make the last expression value print to stdout like Jupyter/REPL
                 code_to_execute = wrap_last_line_interactive(code)
+
+            # Prepend the figure-capture prologue so open matplotlib figures are
+            # persisted at exit even if the user code raises (see constant docs).
+            code_to_execute = FIGURE_CAPTURE_PROLOGUE + "\n" + code_to_execute
 
             code_bytes = code_to_execute.encode("utf-8")
             code_info = tarfile.TarInfo(name="__main__.py")

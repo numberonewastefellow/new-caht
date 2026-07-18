@@ -7,12 +7,12 @@ REM RETRIEVAL engine to OpenSearch via the admin API.
 REM
 REM Use this AFTER starting both engines (mode [B] in .env:
 REM   COMPOSE_PROFILES=s3-filestore,vespa,opensearch
-REM   ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true) and running `dev up`.
+REM   ENABLE_OPENSEARCH_INDEXING_FOR_OM=true) and running `dev up`.
 REM
 REM Requires an ADMIN API key (create one in the UI: Admin ^> API Keys).
 REM
 REM Usage:
-REM   set ONYX_API_KEY=^<key^>
+REM   set OM_API_KEY=^<key^>
 REM   switch-retrieval-to-opensearch.bat            ::  wait + switch to OpenSearch
 REM   switch-retrieval-to-opensearch.bat --revert   ::  switch back to Vespa (no wait)
 REM
@@ -29,9 +29,9 @@ if "%TIMEOUT%"=="" set "TIMEOUT=3600"
 set "ENABLE=true"
 if /i "%~1"=="--revert" set "ENABLE=false"
 
-if "%ONYX_API_KEY%"=="" (
-    echo ERROR: ONYX_API_KEY is not set. Create an admin API key in the UI ^(Admin ^> API Keys^)
-    echo        then run:  set ONYX_API_KEY=^<key^> ^&^& switch-retrieval-to-opensearch.bat
+if "%OM_API_KEY%"=="" (
+    echo ERROR: OM_API_KEY is not set. Create an admin API key in the UI ^(Admin ^> API Keys^)
+    echo        then run:  set OM_API_KEY=^<key^> ^&^& switch-retrieval-to-opensearch.bat
     exit /b 1
 )
 
@@ -44,7 +44,7 @@ if /i "%ENABLE%"=="true" (
     echo   status endpoint: %STATUS_URL%
     set /a ELAPSED=0
     :poll
-    curl -fsS -H "Authorization: Bearer %ONYX_API_KEY%" "%STATUS_URL%" -o "%TMP_STATUS%" 2>nul
+    curl -fsS -H "Authorization: Bearer %OM_API_KEY%" "%STATUS_URL%" -o "%TMP_STATUS%" 2>nul
     if exist "%TMP_STATUS%" (
         type "%TMP_STATUS%"
         echo.
@@ -68,10 +68,10 @@ if /i "%ENABLE%"=="true" (
 
 :switch
 echo Setting enable_opensearch_retrieval=%ENABLE% ...
-curl -fsS -X PUT -H "Authorization: Bearer %ONYX_API_KEY%" -H "Content-Type: application/json" -d "{\"enable_opensearch_retrieval\": %ENABLE%}" "%RETRIEVAL_URL%"
+curl -fsS -X PUT -H "Authorization: Bearer %OM_API_KEY%" -H "Content-Type: application/json" -d "{\"enable_opensearch_retrieval\": %ENABLE%}" "%RETRIEVAL_URL%"
 echo.
 echo Current retrieval state:
-curl -fsS -H "Authorization: Bearer %ONYX_API_KEY%" "%RETRIEVAL_URL%"
+curl -fsS -H "Authorization: Bearer %OM_API_KEY%" "%RETRIEVAL_URL%"
 echo.
 if /i "%ENABLE%"=="true" (
     echo Done. Retrieval is now served by OpenSearch.

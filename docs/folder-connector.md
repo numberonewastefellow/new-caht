@@ -49,16 +49,16 @@ The search and indexing pipeline is **enum-driven**. When a document is indexed,
 
 | Component | File | How FOLDER is handled |
 | --- | --- | --- |
-| **Search filters** | `backend/onyx/context/search/models.py` | `BaseFilters.source_type: list[DocumentSource]` — auto-includes FOLDER |
-| **Search pipeline** | `backend/onyx/context/search/pipeline.py` | Source filtering via enum, no hardcoded lists |
-| **Source string parsing** | `backend/onyx/secondary_llm_flows/source_filter.py` | `strings_to_document_sources()` auto-converts `"folder"` to enum |
-| **Vespa queries** | `backend/onyx/document_index/vespa/shared_utils/vespa_request_builders.py` | Extracts source string from `filters.source_type` — auto-works |
-| **OpenSearch queries** | `backend/onyx/document_index/opensearch/opensearch_document_index.py` | `DocumentSource(chunk.source_type)` — auto-converts |
-| **Document sets** | `backend/onyx/db/document_set.py` | Links to CC pairs (not source types) — auto-works when folder CC pair is added to a set |
-| **Persona/assistant filtering** | `backend/onyx/server/features/persona/models.py` | Filters via document sets which link to CC pairs — auto-works |
+| **Search filters** | `backend/om/context/search/models.py` | `BaseFilters.source_type: list[DocumentSource]` — auto-includes FOLDER |
+| **Search pipeline** | `backend/om/context/search/pipeline.py` | Source filtering via enum, no hardcoded lists |
+| **Source string parsing** | `backend/om/secondary_llm_flows/source_filter.py` | `strings_to_document_sources()` auto-converts `"folder"` to enum |
+| **Vespa queries** | `backend/om/document_index/vespa/shared_utils/vespa_request_builders.py` | Extracts source string from `filters.source_type` — auto-works |
+| **OpenSearch queries** | `backend/om/document_index/opensearch/opensearch_document_index.py` | `DocumentSource(chunk.source_type)` — auto-converts |
+| **Document sets** | `backend/om/db/document_set.py` | Links to CC pairs (not source types) — auto-works when folder CC pair is added to a set |
+| **Persona/assistant filtering** | `backend/om/server/features/persona/models.py` | Filters via document sets which link to CC pairs — auto-works |
 | **Knowledge base UI** | `web/src/sections/knowledge/AgentKnowledgePane.tsx` | Shows collections/doc sets — folder CC pairs appear automatically |
-| **Connector validation** | `backend/onyx/server/documents/connector.py` | `ENABLED_CONNECTOR_TYPES` env var — FOLDER auto-validated if enabled |
-| **Indexing status** | `backend/onyx/server/documents/connector.py` | Uses `cc_pair.connector.source` dynamically — auto-shows FOLDER |
+| **Connector validation** | `backend/om/server/documents/connector.py` | `ENABLED_CONNECTOR_TYPES` env var — FOLDER auto-validated if enabled |
+| **Indexing status** | `backend/om/server/documents/connector.py` | Uses `cc_pair.connector.source` dynamically — auto-shows FOLDER |
 | **Source selector filter UI** | `web/src/components/filters/SourceSelector.tsx` | Pulls available sources from indexed data — auto-includes FOLDER |
 
 ### What DOES need explicit changes
@@ -67,7 +67,7 @@ These places have **hardcoded lists or maps** that must be updated:
 
 | What | File | Change needed |
 | --- | --- | --- |
-| `DocumentSourceDescription` dict | `backend/onyx/configs/constants.py` | Add `DocumentSource.FOLDER: "local folder — recursive file indexing from filesystem directories"` |
+| `DocumentSourceDescription` dict | `backend/om/configs/constants.py` | Add `DocumentSource.FOLDER: "local folder — recursive file indexing from filesystem directories"` |
 | `isLoadState()` function | `web/src/lib/connectors/connectors.tsx` | Do NOT add `"folder"` — folder uses PollConnector (not load-only) |
 | `_SOURCE_TO_SYNC_CONFIG` (EE) | `backend/ee/onyx/external_permissions/sync_params.py` | Add `DocumentSource.FOLDER` entry with `folder_doc_sync` function |
 | `validAutoSyncSources` array | `web/src/lib/types.ts` | Add `ValidSources.Folder` to enable SYNC option in UI |
@@ -92,7 +92,7 @@ The platform has 3 access modes stored on `ConnectorCredentialPair.access_type`:
 2. **Frontend**: `AccessTypeGroupSelector` lets admin pick UserGroups when PRIVATE is selected
 3. **Backend**: `access_type` + `groups[]` sent via `ConnectorCredentialPairMetadata`
 4. **Backend**: Stored on `ConnectorCredentialPair.access_type` + linked via `UserGroup__ConnectorCredentialPair`
-5. **Query time**: `apply_document_access_filter()` in `backend/onyx/db/document_access.py` enforces visibility
+5. **Query time**: `apply_document_access_filter()` in `backend/om/db/document_access.py` enforces visibility
 
 ### SYNC Mode — OS Permission Mapping (New, EE only)
 
@@ -117,9 +117,9 @@ On **Windows**: Uses `win32security` to read file DACLs, maps SIDs to usernames/
 
 Permission sync uses existing infrastructure:
 
-- Initial indexing with `include_permissions=True` (controlled by `backend/onyx/background/indexing/run_docfetching.py`)
+- Initial indexing with `include_permissions=True` (controlled by `backend/om/background/indexing/run_docfetching.py`)
 - Periodic sync via `RedisConnectorPermissionSync` (runs every 30s for SYNC connectors)
-- Tracking via `DocPermissionSyncAttempt` (`backend/onyx/db/models.py`)
+- Tracking via `DocPermissionSyncAttempt` (`backend/om/db/models.py`)
 
 ### Key Security Files (existing, reused as-is)
 
@@ -127,11 +127,11 @@ Permission sync uses existing infrastructure:
 | --- | --- |
 | `web/src/components/admin/connectors/AccessTypeForm.tsx` | UI for PUBLIC/PRIVATE/SYNC selection |
 | `web/src/components/admin/connectors/AccessTypeGroupSelector.tsx` | UI for UserGroup assignment (PRIVATE mode) |
-| `backend/onyx/access/models.py` | `ExternalAccess`, `DocExternalAccess`, `DocumentAccess` |
-| `backend/onyx/db/enums.py` | `AccessType` enum (PUBLIC/PRIVATE/SYNC) |
-| `backend/onyx/db/document_access.py` | Query-time access filtering |
-| `backend/onyx/db/connector_credential_pair.py` | CC Pair creation with access_type + groups |
-| `backend/onyx/redis/redis_connector_doc_perm_sync.py` | Async permission sync coordination |
+| `backend/om/access/models.py` | `ExternalAccess`, `DocExternalAccess`, `DocumentAccess` |
+| `backend/om/db/enums.py` | `AccessType` enum (PUBLIC/PRIVATE/SYNC) |
+| `backend/om/db/document_access.py` | Query-time access filtering |
+| `backend/om/db/connector_credential_pair.py` | CC Pair creation with access_type + groups |
+| `backend/om/redis/redis_connector_doc_perm_sync.py` | Async permission sync coordination |
 
 ---
 
@@ -139,7 +139,7 @@ Permission sync uses existing infrastructure:
 
 ### 1. Add `FOLDER` to DocumentSource enum + description
 
-**File**: `backend/onyx/configs/constants.py`
+**File**: `backend/om/configs/constants.py`
 
 - Add `FOLDER = "folder"` after `FILE = "file"`
 - Add `DocumentSource.FOLDER` to `DocumentSourceRequiringTenantContext`
@@ -151,7 +151,7 @@ Permission sync uses existing infrastructure:
 
 ### 2. Add config variables
 
-**File**: `backend/onyx/configs/app_configs.py`
+**File**: `backend/om/configs/app_configs.py`
 
 ```python
 # Folder Connector settings
@@ -164,17 +164,17 @@ FOLDER_CONNECTOR_MAX_FILE_SIZE_MB = int(os.environ.get("FOLDER_CONNECTOR_MAX_FIL
 
 ### 3. Extract shared utils from File Connector
 
-**New file**: `backend/onyx/connectors/file/utils.py`
+**New file**: `backend/om/connectors/file/utils.py`
 
-- Move `_process_file()` and `_create_image_section()` from `backend/onyx/connectors/file/connector.py`
+- Move `_process_file()` and `_create_image_section()` from `backend/om/connectors/file/connector.py`
 - Update imports in `file/connector.py` to use `from onyx.connectors.file.utils import _process_file, _create_image_section`
 
 ### 4. Create Folder Connector
 
 **New files**:
 
-- `backend/onyx/connectors/folder/__init__.py` (empty)
-- `backend/onyx/connectors/folder/connector.py`
+- `backend/om/connectors/folder/__init__.py` (empty)
+- `backend/om/connectors/folder/connector.py`
 
 ```python
 class LocalFolderConnector(LoadConnector, PollConnector, SlimConnector):
@@ -207,7 +207,7 @@ class LocalFolderConnector(LoadConnector, PollConnector, SlimConnector):
 - **Path security**: Validate against `FOLDER_CONNECTOR_ALLOWED_DIRECTORIES` via `os.path.realpath()`
 - **File filtering**: Extension check vs `OnyxFileExtensions.ALL_ALLOWED_EXTENSIONS`, `exclude_patterns` via `fnmatch`, size limit
 - **mtime filtering**: `os.path.getmtime()` for incremental polling
-- **Parallel extraction**: `run_functions_tuples_in_parallel()` from `backend/onyx/utils/threadpool_concurrency.py` with `max_workers=FOLDER_CONNECTOR_MAX_WORKERS`
+- **Parallel extraction**: `run_functions_tuples_in_parallel()` from `backend/om/utils/threadpool_concurrency.py` with `max_workers=FOLDER_CONNECTOR_MAX_WORKERS`
 - **Document ID**: `f"FOLDER_CONNECTOR__{sha256(abs_path)}"` for stable IDs
 - **Reuses**: `_process_file()` from `file/utils.py`
 - **Error handling**: Per-file try/except, log and continue
@@ -216,7 +216,7 @@ class LocalFolderConnector(LoadConnector, PollConnector, SlimConnector):
 
 ### 5. Register connector
 
-**File**: `backend/onyx/connectors/registry.py`
+**File**: `backend/om/connectors/registry.py`
 
 ```python
 DocumentSource.FOLDER: ConnectorMapping(
@@ -227,7 +227,7 @@ DocumentSource.FOLDER: ConnectorMapping(
 
 ### 6. Add SYNC config (EE — permission sync registration)
 
-**New file**: `backend/onyx/connectors/folder/doc_sync.py`
+**New file**: `backend/om/connectors/folder/doc_sync.py`
 
 ```python
 def folder_doc_sync(
@@ -254,8 +254,8 @@ DocumentSource.FOLDER: SyncConfig(
 
 ### Reference patterns
 
-- `backend/onyx/connectors/blob/connector.py` — `BlobStorageConnector` (Load + Poll with mtime)
-- `backend/onyx/connectors/google_drive/connector.py` — Permission syncing with `include_permissions` flag
+- `backend/om/connectors/blob/connector.py` — `BlobStorageConnector` (Load + Poll with mtime)
+- `backend/om/connectors/google_drive/connector.py` — Permission syncing with `include_permissions` flag
 - `backend/ee/onyx/external_permissions/sync_params.py` — SyncConfig registration pattern
 
 ---
@@ -338,14 +338,14 @@ folder: null,  // dummy credential (same as file connector)
 
 | Action | File | What |
 | --- | --- | --- |
-| **Create** | `backend/onyx/connectors/folder/__init__.py` | Package init (empty) |
-| **Create** | `backend/onyx/connectors/folder/connector.py` | `LocalFolderConnector` (Load + Poll + Slim + Permissions) |
-| **Create** | `backend/onyx/connectors/folder/doc_sync.py` | Permission sync function for SYNC mode |
-| **Create** | `backend/onyx/connectors/file/utils.py` | Shared `_process_file` + `_create_image_section` |
-| **Modify** | `backend/onyx/connectors/file/connector.py` | Update imports to use `file/utils.py` |
-| **Modify** | `backend/onyx/configs/constants.py` | Add `FOLDER` enum + `DocumentSourceDescription` + tenant context |
-| **Modify** | `backend/onyx/configs/app_configs.py` | Add 3 env vars |
-| **Modify** | `backend/onyx/connectors/registry.py` | Add FOLDER mapping |
+| **Create** | `backend/om/connectors/folder/__init__.py` | Package init (empty) |
+| **Create** | `backend/om/connectors/folder/connector.py` | `LocalFolderConnector` (Load + Poll + Slim + Permissions) |
+| **Create** | `backend/om/connectors/folder/doc_sync.py` | Permission sync function for SYNC mode |
+| **Create** | `backend/om/connectors/file/utils.py` | Shared `_process_file` + `_create_image_section` |
+| **Modify** | `backend/om/connectors/file/connector.py` | Update imports to use `file/utils.py` |
+| **Modify** | `backend/om/configs/constants.py` | Add `FOLDER` enum + `DocumentSourceDescription` + tenant context |
+| **Modify** | `backend/om/configs/app_configs.py` | Add 3 env vars |
+| **Modify** | `backend/om/connectors/registry.py` | Add FOLDER mapping |
 | **Modify** | `backend/ee/onyx/external_permissions/sync_params.py` | Add FOLDER to `_SOURCE_TO_SYNC_CONFIG` |
 | **Modify** | `web/src/lib/types.ts` | Add `Folder` to `ValidSources` + `validAutoSyncSources` |
 | **Modify** | `web/src/lib/sources.ts` | Add folder source metadata |
@@ -356,15 +356,15 @@ folder: null,  // dummy credential (same as file connector)
 
 | File | Why no change needed |
 | --- | --- |
-| `backend/onyx/context/search/models.py` | `BaseFilters.source_type` uses `list[DocumentSource]` |
-| `backend/onyx/context/search/pipeline.py` | Source filtering via enum |
-| `backend/onyx/secondary_llm_flows/source_filter.py` | `strings_to_document_sources()` auto-converts |
-| `backend/onyx/document_index/vespa/` | Source stored as string, filtered dynamically |
-| `backend/onyx/document_index/opensearch/` | `DocumentSource(chunk.source_type)` auto-converts |
-| `backend/onyx/db/document_set.py` | Links to CC pairs, not source types |
-| `backend/onyx/server/features/persona/` | Filters via document sets -> CC pairs |
-| `backend/onyx/server/documents/connector.py` | Indexing status uses `cc_pair.connector.source` dynamically |
-| `backend/onyx/db/document_access.py` | Access filtering via `access_type`, not source |
+| `backend/om/context/search/models.py` | `BaseFilters.source_type` uses `list[DocumentSource]` |
+| `backend/om/context/search/pipeline.py` | Source filtering via enum |
+| `backend/om/secondary_llm_flows/source_filter.py` | `strings_to_document_sources()` auto-converts |
+| `backend/om/document_index/vespa/` | Source stored as string, filtered dynamically |
+| `backend/om/document_index/opensearch/` | `DocumentSource(chunk.source_type)` auto-converts |
+| `backend/om/db/document_set.py` | Links to CC pairs, not source types |
+| `backend/om/server/features/persona/` | Filters via document sets -> CC pairs |
+| `backend/om/server/documents/connector.py` | Indexing status uses `cc_pair.connector.source` dynamically |
+| `backend/om/db/document_access.py` | Access filtering via `access_type`, not source |
 | `web/src/components/filters/SourceSelector.tsx` | Pulls sources from indexed data dynamically |
 | `web/src/sections/knowledge/` | Shows document sets, auto-includes folder CC pairs |
 | `web/src/lib/sourceColors.ts` | Category-based color system, inherits from `SourceCategory.Storage` |
@@ -453,7 +453,7 @@ No new backend endpoint needed.
 
 #### Task 1: Backend — Path Validation Endpoint (NEW)
 
-**File**: `backend/onyx/server/documents/connector.py`
+**File**: `backend/om/server/documents/connector.py`
 
 Add a lightweight endpoint for pre-creation validation:
 
@@ -630,13 +630,13 @@ def get_cc_pair_documents(
     """List documents indexed by this cc_pair with pagination."""
 ```
 
-Uses `get_document_ids_for_connector_credential_pair()` from `backend/onyx/db/document.py:154`.
+Uses `get_document_ids_for_connector_credential_pair()` from `backend/om/db/document.py:154`.
 
 ---
 
 #### Task 6: Backend — Surface Blocked Path Errors in Index Attempts
 
-**File**: `backend/onyx/connectors/folder/connector.py`
+**File**: `backend/om/connectors/folder/connector.py`
 
 Currently `_is_path_allowed()` silently returns False and `validate_connector_settings()` raises.
 But during `_walk_all_files()`, blocked paths may be silently skipped.
@@ -667,10 +667,10 @@ These warnings already flow into the indexing attempt error/log display in the a
 | --- | --- | --- |
 | **Create** | `web/src/app/admin/connector/[ccPairId]/InlineFolderManagement.tsx` | Folder path management component |
 | **Modify** | `web/src/app/admin/connector/[ccPairId]/page.tsx` | Wire in InlineFolderManagement + Prune button |
-| **Create** | `backend/onyx/server/documents/connector.py` (add endpoint) | `POST /admin/connector/folder/validate-paths` |
-| **Modify** | `backend/onyx/connectors/folder/connector.py` | Better warning logs for blocked/missing paths |
+| **Create** | `backend/om/server/documents/connector.py` (add endpoint) | `POST /admin/connector/folder/validate-paths` |
+| **Modify** | `backend/om/connectors/folder/connector.py` | Better warning logs for blocked/missing paths |
 | **Create** | `web/src/app/admin/connector/[ccPairId]/IndexedDocumentsList.tsx` | (Optional) Document browser |
-| **Create** | `backend/onyx/server/documents/cc_pair.py` (add endpoint) | (Optional) `GET /admin/cc-pair/{id}/documents` |
+| **Create** | `backend/om/server/documents/cc_pair.py` (add endpoint) | (Optional) `GET /admin/cc-pair/{id}/documents` |
 
 ### Implementation Order
 

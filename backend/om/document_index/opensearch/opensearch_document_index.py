@@ -27,12 +27,14 @@ from om.document_index.interfaces_new import DocumentIndex
 from om.document_index.interfaces_new import DocumentInsertionRecord
 from om.document_index.interfaces_new import DocumentSectionRequest
 from om.document_index.interfaces_new import IndexingMetadata
+from om.document_index.interfaces_new import KGUChunkUpdateRequest
 from om.document_index.interfaces_new import MetadataUpdateRequest
 from om.document_index.interfaces_new import TenantState
 from om.document_index.opensearch.client import OpenSearchClient
 from om.document_index.opensearch.client import OpenSearchIndexClient
 from om.document_index.opensearch.client import SearchHit
 from om.document_index.opensearch.cluster_settings import OPENSEARCH_CLUSTER_SETTINGS
+from om.document_index.opensearch.constants import DEFAULT_MAX_CHUNK_SIZE
 from om.document_index.opensearch.constants import OpenSearchSearchType
 from om.document_index.opensearch.schema import ACCESS_CONTROL_LIST_FIELD_NAME
 from om.document_index.opensearch.schema import CONTENT_FIELD_NAME
@@ -43,6 +45,12 @@ from om.document_index.opensearch.schema import DocumentSchema
 from om.document_index.opensearch.schema import get_opensearch_doc_chunk_id
 from om.document_index.opensearch.schema import GLOBAL_BOOST_FIELD_NAME
 from om.document_index.opensearch.schema import HIDDEN_FIELD_NAME
+from om.document_index.opensearch.schema import KG_ENTITIES_FIELD_NAME
+from om.document_index.opensearch.schema import KG_RELATIONSHIP_SOURCE_FIELD_NAME
+from om.document_index.opensearch.schema import KG_RELATIONSHIP_TARGET_FIELD_NAME
+from om.document_index.opensearch.schema import KG_RELATIONSHIP_TYPE_FIELD_NAME
+from om.document_index.opensearch.schema import KG_RELATIONSHIPS_FIELD_NAME
+from om.document_index.opensearch.schema import KG_TERMS_FIELD_NAME
 from om.document_index.opensearch.schema import PERSONAS_FIELD_NAME
 from om.document_index.opensearch.schema import USER_PROJECTS_FIELD_NAME
 from om.document_index.opensearch.search import DocumentQuery
@@ -57,6 +65,7 @@ from om.document_index.opensearch.search import (
 )
 from om.indexing.models import DocMetadataAwareIndexChunk
 from om.indexing.models import Document
+from om.kg.utils.formatting_utils import split_relationship_id
 from om.redis.lock_context import redis_shared_lock
 from om.utils.logger import setup_logger
 from om.utils.text_processing import remove_invalid_unicode_chars
@@ -702,6 +711,126 @@ class OpenSearchDocumentIndex(DocumentIndex):
             results.extend(inference_chunks)
         return results
 
+    def kg_chunk_updates(
+        self,
+        kg_update_requests: list[KGUChunkUpdateRequest],
+        tenant_id: str,  # noqa: ARG002
+    ) -> None:
+        """Applies a batch of knowledge-graph metadata updates to chunks.
+
+        For each request, the KG fields (kg_entities, kg_relationships,
+        kg_terms) are full-replaced with the sorted contents of the request's
+        corresponding sets. A field whose set is None is left untouched; a field
+        whose set is empty is replaced with an empty array (this is how a reset
+        clears the fields). kg_relationships stores the raw relationship id_name
+        strings (not exploded into nested structs).
+
+        Requests whose chunk IDs resolve to identical property payloads are
+        batched into a single bulk update, mirroring how ``update`` issues one
+        ``bulk_update_documents`` call per property set. In the common case
+        (every chunk of a document shares the same entities/relationships) this
+        collapses to a single bulk call.
+
+        NOTE: The ``tenant_id`` parameter exists for signature parity with the
+        Vespa implementation; OpenSearch derives the tenant from
+        ``self._tenant_state`` (which is used for chunk-id computation).
+
+        Args:
+            kg_update_requests: The per-chunk KG update requests.
+            tenant_id: Unused; see note above.
+        """
+        # Group chunk ids by their (identical) serialized property payload so we
+        # can issue one bulk_update_documents call per distinct payload.
+        chunk_ids_by_payload_key: dict[str, list[str]] = {}
+        payload_by_key: dict[str, dict[str, Any]] = {}
+
+        for req in kg_update_requests:
+            properties_to_update: dict[str, Any] = dict()
+            if req.entities is not None:
+                properties_to_update[KG_ENTITIES_FIELD_NAME] = sorted(req.entities)
+            if req.relationships is not None:
+                # Explode each relationship id_name (source__rel_type__target)
+                # into a nested {source, rel_type, target} object so the endpoints
+                # and type stay independently queryable. Sorted first for a
+                # deterministic payload (the payload_key dedup below relies on it).
+                nested_relationships: list[dict[str, str]] = []
+                for relationship_id in sorted(req.relationships):
+                    parts = split_relationship_id(relationship_id)
+                    if len(parts) != 3:
+                        logger.warning(
+                            "Skipping malformed KG relationship id %r (expected "
+                            "source__rel_type__target)",
+                            relationship_id,
+                        )
+                        continue
+                    source, rel_type, target = parts
+                    nested_relationships.append(
+                        {
+                            KG_RELATIONSHIP_SOURCE_FIELD_NAME: source,
+                            KG_RELATIONSHIP_TYPE_FIELD_NAME: rel_type,
+                            KG_RELATIONSHIP_TARGET_FIELD_NAME: target,
+                        }
+                    )
+                properties_to_update[KG_RELATIONSHIPS_FIELD_NAME] = nested_relationships
+            if req.terms is not None:
+                properties_to_update[KG_TERMS_FIELD_NAME] = sorted(req.terms)
+
+            if not properties_to_update:
+                continue
+
+            document_chunk_id = get_opensearch_doc_chunk_id(
+                tenant_state=self._tenant_state,
+                document_id=req.document_id,
+                chunk_index=req.chunk_id,
+            )
+            payload_key = json.dumps(properties_to_update, sort_keys=True)
+            chunk_ids_by_payload_key.setdefault(payload_key, []).append(
+                document_chunk_id
+            )
+            payload_by_key[payload_key] = properties_to_update
+
+        for payload_key, doc_chunk_ids in chunk_ids_by_payload_key.items():
+            self._client.bulk_update_documents(
+                document_chunk_ids=doc_chunk_ids,
+                properties_to_update=payload_by_key[payload_key],
+            )
+
+    def get_document_chunks_without_vectors(
+        self,
+        document_id: str,
+    ) -> list[DocumentChunkWithoutVectors]:
+        """Retrieves all chunks for a document as raw (unvectored) chunk models.
+
+        Unlike ``id_based_retrieval`` this returns the raw
+        ``DocumentChunkWithoutVectors`` models (preserving fields like
+        ``metadata_list`` and owners) rather than cleaned ``InferenceChunk``s.
+        Used by the KG read path to reconstruct ``KGChunkFormat``.
+
+        NOTE: Hidden chunks are included, since KG processing should operate over
+        the full document regardless of search visibility.
+
+        NOTE: The underlying search is currently capped at a max result window
+        (see ``get_from_document_id_query``); very large documents may need
+        scroll/point-in-time paging in the future.
+        """
+        query_body = DocumentQuery.get_from_document_id_query(
+            document_id=document_id,
+            tenant_state=self._tenant_state,
+            index_filters=IndexFilters(
+                access_control_list=None, tenant_id=self._tenant_state.tenant_id
+            ),
+            include_hidden=True,
+            max_chunk_size=DEFAULT_MAX_CHUNK_SIZE,
+            min_chunk_index=None,
+            max_chunk_index=None,
+        )
+        search_hits: list[SearchHit[DocumentChunkWithoutVectors]] = self._client.search(
+            body=query_body,
+            search_pipeline_id=None,
+            search_type=OpenSearchSearchType.DOC_ID_RETRIEVAL,
+        )
+        return [search_hit.document_chunk for search_hit in search_hits]
+
     def hybrid_retrieval(
         self,
         query: str,
@@ -1032,6 +1161,22 @@ class OpenSearchIndexPair(DocumentIndex):
         dirty: bool | None = None,
     ) -> list[InferenceChunk]:
         return self._primary.random_retrieval(filters, num_to_retrieve, dirty)
+
+    def kg_chunk_updates(
+        self,
+        kg_update_requests: list[KGUChunkUpdateRequest],
+        tenant_id: str,
+    ) -> None:
+        self._primary.kg_chunk_updates(kg_update_requests, tenant_id)
+        if self._secondary is not None:
+            self._secondary.kg_chunk_updates(kg_update_requests, tenant_id)
+
+    def get_document_chunks_without_vectors(
+        self,
+        document_id: str,
+    ) -> list[DocumentChunkWithoutVectors]:
+        # Reads go to primary only, mirroring the retrieval methods above.
+        return self._primary.get_document_chunks_without_vectors(document_id)
 
     @property
     def primary(self) -> OpenSearchDocumentIndex:

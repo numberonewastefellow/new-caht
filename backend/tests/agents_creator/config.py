@@ -95,14 +95,14 @@ def resolve_api_key() -> str:
     if key:
         return key
 
-    # 3. .env file (check VIRTUALAI_API_KEY first, fallback to ONYX_API_KEY)
+    # 3. .env file (check VIRTUALAI_API_KEY first, fallback to OM_API_KEY)
     env = _load_env_file()
-    key = env.get("VIRTUALAI_API_KEY", "") or env.get("ONYX_API_KEY", "")
+    key = env.get("VIRTUALAI_API_KEY", "") or env.get("OM_API_KEY", "")
     if key:
         return key
 
     # 4. System environment variable
-    key = os.environ.get("VIRTUALAI_API_KEY", "") or os.environ.get("ONYX_API_KEY", "")
+    key = os.environ.get("VIRTUALAI_API_KEY", "") or os.environ.get("OM_API_KEY", "")
     if key:
         return key
 

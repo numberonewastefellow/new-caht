@@ -27,7 +27,6 @@ from om.db.relationships import delete_document_references_from_kg
 from om.db.search_settings import get_active_search_settings
 from om.document_index.factory import get_all_document_indices
 from om.document_index.interfaces_new import MetadataUpdateRequest
-from om.httpx.httpx_pool import HttpxPool
 from om.redis.redis_pool import get_redis_client
 from om.server.documents.models import ConnectorCredentialPairIdentifier
 
@@ -101,7 +100,6 @@ def document_by_cc_pair_cleanup_task(
             document_indices = get_all_document_indices(
                 active_search_settings.primary,
                 active_search_settings.secondary,
-                httpx_client=HttpxPool.get("vespa"),
             )
 
             retry_document_indices: list[RetryDocumentIndex] = [

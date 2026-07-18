@@ -3,11 +3,11 @@
 # Declare variables to be passed into your templates.
 
 global:
-  # Global version for all Onyx components (overrides .Chart.AppVersion)
+  # Global version for all VertualAI components (overrides .Chart.AppVersion)
   version: "latest"
-  # Global pull policy for all Onyx component images
+  # Global pull policy for all VertualAI component images
   pullPolicy: "IfNotPresent"
-  # Host for all Onyx components
+  # Host for all VertualAI components
   host: "0.0.0.0"
 
 postgresql:
@@ -746,7 +746,7 @@ celery_worker_user_file_processing:
   tolerations: []
   affinity: {}
 
-# Discord bot for Onyx
+# Discord bot for VertualAI
 # The bot offloads message processing to scalable API pods via HTTP requests.
 discordbot:
   enabled: false  # Disabled by default - requires bot token configuration
@@ -809,8 +809,8 @@ slackbot:
   tolerations: []
   affinity: {}
 
-# Onyx Model Context Protocol (MCP) Server
-# Allows LLMs to use Onyx like invoking tools or accessing resources
+# VertualAI Model Context Protocol (MCP) Server
+# Allows LLMs to use VertualAI like invoking tools or accessing resources
 mcpServer:
   enabled: false  # Disabled by default
   replicaCount: 1
@@ -962,7 +962,7 @@ codeInterpreter:
   replicaCount: 1
 
   image:
-    repository: onyxdotapp/code-interpreter
+    repository: om/code-interpreter  # TODO(fork): publish to your registry
     pullPolicy: Always
     tag: ""  # Empty uses chart appVersion
 
@@ -1175,10 +1175,10 @@ auth:
     # CHANGE THIS FOR PRODUCTION.
     values:
       opensearch_admin_username: "admin"
-      opensearch_admin_password: "OnyxDev1!"
+      opensearch_admin_password: "OmDev123!"
 
 configMap:
-  # Change this for production uses unless Onyx is only accessible behind VPN
+  # Change this for production uses unless VertualAI is only accessible behind VPN
   AUTH_TYPE: "disabled"
   # 1 Day Default
   SESSION_EXPIRE_TIME_SECONDS: "86400"
@@ -1233,10 +1233,10 @@ configMap:
   CELERY_WORKER_LIGHT_CONCURRENCY: ""
   CELERY_WORKER_LIGHT_PREFETCH_MULTIPLIER: ""
   CELERY_WORKER_USER_FILE_PROCESSING_CONCURRENCY: ""
-  # OnyxBot SlackBot Configs
-  ONYX_BOT_DISABLE_DOCS_ONLY_ANSWER: ""
-  ONYX_BOT_DISPLAY_ERROR_MSGS: ""
-  ONYX_BOT_RESPOND_EVERY_CHANNEL: ""
+  # VertualAIBot SlackBot Configs
+  OM_BOT_DISABLE_DOCS_ONLY_ANSWER: ""
+  OM_BOT_DISPLAY_ERROR_MSGS: ""
+  OM_BOT_RESPOND_EVERY_CHANNEL: ""
   NOTIFY_SLACKBOT_NO_ANSWER: ""
   DISCORD_BOT_TOKEN: ""
   DISCORD_BOT_INVOKE_CHAR: ""
@@ -1245,7 +1245,7 @@ configMap:
   DISABLE_TELEMETRY: ""
   LOG_LEVEL: ""
   LOG_ALL_MODEL_INTERACTIONS: ""
-  LOG_ONYX_MODEL_INTERACTIONS: ""
+  LOG_OM_MODEL_INTERACTIONS: ""
   LOG_VESPA_TIMING_INFORMATION: ""
   # Shared or Non-backend Related
   WEB_DOMAIN: "http://localhost:3000"

@@ -404,8 +404,6 @@ class OmCeleryQueues:
     # Sandbox processing queue
     SANDBOX = "sandbox"
 
-    OPENSEARCH_MIGRATION = "opensearch_migration"
-
 
 class OmRedisLocks:
     PRIMARY_WORKER = "da_lock:primary_worker"
@@ -422,7 +420,6 @@ class OmRedisLocks:
     CHECK_CONNECTOR_EXTERNAL_GROUP_SYNC_BEAT_LOCK = (
         "da_lock:check_connector_external_group_sync_beat"
     )
-    OPENSEARCH_MIGRATION_BEAT_LOCK = "da_lock:opensearch_migration_beat"
 
     MONITOR_BACKGROUND_PROCESSES_LOCK = "da_lock:monitor_background_processes"
     CHECK_AVAILABLE_TENANTS_LOCK = "da_lock:check_available_tenants"
@@ -584,16 +581,6 @@ class OmCeleryTask:
 
     # Sandbox file sync
     SANDBOX_FILE_SYNC = "sandbox_file_sync"
-
-    CHECK_FOR_DOCUMENTS_FOR_OPENSEARCH_MIGRATION_TASK = (
-        "check_for_documents_for_opensearch_migration_task"
-    )
-    MIGRATE_DOCUMENTS_FROM_VESPA_TO_OPENSEARCH_TASK = (
-        "migrate_documents_from_vespa_to_opensearch_task"
-    )
-    MIGRATE_CHUNKS_FROM_VESPA_TO_OPENSEARCH_TASK = (
-        "migrate_chunks_from_vespa_to_opensearch_task"
-    )
 
 
 # this needs to correspond to the matching entry in supervisord

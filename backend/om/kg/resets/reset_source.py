@@ -15,17 +15,17 @@ from om.db.models import KGRelationshipType
 from om.db.models import KGRelationshipTypeExtractionStaging
 from om.db.models import KGStage
 from om.kg.resets.reset_index import reset_full_kg_index__commit
-from om.kg.resets.reset_vespa import reset_vespa_kg_index
+from om.kg.resets.reset_opensearch import reset_opensearch_kg_index
 
 
 def reset_source_kg_index(
     source_name: str | None, tenant_id: str, index_name: str, lock: RedisLock
 ) -> None:
     """
-    Resets the knowledge graph index and vespa for a source.
+    Resets the knowledge graph index and the document index for a source.
     """
-    # reset vespa for the source
-    reset_vespa_kg_index(tenant_id, index_name, lock, source_name)
+    # reset the document index (OpenSearch) for the source
+    reset_opensearch_kg_index(tenant_id, index_name, lock, source_name)
 
     with get_session_with_current_tenant() as db_session:
         if source_name is None:

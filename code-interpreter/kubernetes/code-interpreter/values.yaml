@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: onyxdotapp/code-interpreter
+  repository: om/code-interpreter  # TODO(fork): publish to your registry
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"

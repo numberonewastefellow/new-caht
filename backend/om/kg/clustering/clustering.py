@@ -25,10 +25,12 @@ from om.db.relationships import transfer_relationship
 from om.db.relationships import transfer_relationship_type
 from om.db.relationships import upsert_relationship
 from om.db.relationships import upsert_relationship_type
-from om.document_index.vespa.kg_interactions import (
-    get_kg_vespa_info_update_requests_for_document,
+from om.kg.opensearch.opensearch_interactions import (
+    get_kg_opensearch_info_update_requests_for_document,
 )
-from om.document_index.vespa.kg_interactions import update_kg_chunks_vespa_info
+from om.kg.opensearch.opensearch_interactions import (
+    update_kg_chunks_opensearch_info,
+)
 from om.kg.models import KGGroundingType
 from om.kg.utils.formatting_utils import make_relationship_id
 from om.kg.utils.lock_utils import extend_lock
@@ -203,19 +205,19 @@ def _cluster_one_grounded_entity(
     with get_session_with_current_tenant() as db_session:
         if best_entity:
             logger.debug(f"Merged {entity.name} with {best_entity.name}")
-            update_vespa = (
+            update_index = (
                 best_entity.document_id is None and entity.document_id is not None
             )
             transferred_entity = merge_entities(
                 db_session=db_session, parent=best_entity, child=entity
             )
         else:
-            update_vespa = entity.document_id is not None
+            update_index = entity.document_id is not None
             transferred_entity = transfer_entity(db_session=db_session, entity=entity)
 
         db_session.commit()
 
-    return transferred_entity, update_vespa
+    return transferred_entity, update_index
 
 
 def _create_one_parent_child_relationship(entity: KGEntityExtractionStaging) -> None:
@@ -397,7 +399,7 @@ def kg_clustering(
         f"Finished transferring {i_batch+1} relationship batches in {time_delta:.2f}s"
     )
 
-    # Update vespa for each document
+    # Update the document index for each document
     start_time = time.monotonic()
     i_batch = 0
     for i_batch, documents in enumerate(
@@ -405,19 +407,21 @@ def kg_clustering(
     ):
         batch_update_requests = run_functions_tuples_in_parallel(
             [
-                (get_kg_vespa_info_update_requests_for_document, (document.id,))
+                (get_kg_opensearch_info_update_requests_for_document, (document.id,))
                 for document in documents
             ]
         )
         for update_requests, document in zip(batch_update_requests, documents):
             try:
-                update_kg_chunks_vespa_info(update_requests, index_name, tenant_id)
+                update_kg_chunks_opensearch_info(update_requests, index_name, tenant_id)
             except Exception as e:
-                logger.error(f"Error updating vespa for document {document.id}: {e}")
+                logger.error(
+                    f"Error updating document index for document {document.id}: {e}"
+                )
         last_lock_time = extend_lock(
             lock, CELERY_GENERIC_BEAT_LOCK_TIMEOUT, last_lock_time
         )
-        # logger.debug(f"Updated vespa for documents batch {i}")
+        # logger.debug(f"Updated document index for documents batch {i}")
     time_delta = time.monotonic() - start_time
     logger.info(f"Finished updating {i_batch+1} document batches in {time_delta:.2f}s")
 

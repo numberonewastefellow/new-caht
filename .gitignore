@@ -61,6 +61,9 @@ node_modules
 # plans
 plans/
 
+# Vespa-removal runbook — local working doc, not checked in
+/remove-vespa.md
+
 # graphify — regenerable local cache & per-run churn.
 # Queries only need graph.json / manifest.json / GRAPH_REPORT.md / .graphify_labels.json,
 # which stay tracked. The cache is rebuilt for free by `graphify update`.

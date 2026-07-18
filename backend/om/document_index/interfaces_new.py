@@ -30,6 +30,7 @@ __all__ = [
     "DocumentSectionRequest",
     "IndexingMetadata",
     "MetadataUpdateRequest",
+    "KGUChunkUpdateRequest",
     # Capability mixins - for custom compositions or type checking
     "SchemaVerifiable",
     "Indexable",
@@ -63,6 +64,25 @@ class TenantState(BaseModel):
         if self.multitenant and not self.tenant_id:
             raise ValueError("Bug: Tenant ID must be set in multitenant mode.")
         return self
+
+
+class KGUChunkUpdateRequest(BaseModel):
+    """Knowledge-graph field update for a single document chunk.
+
+    Backend-agnostic request model. Lives here (rather than in a specific
+    document-index backend module) so that both the Vespa and OpenSearch KG
+    codepaths can depend on it without importing each other. The Vespa module
+    re-exports it for backwards compatibility.
+
+    ``core_entity`` is legacy and currently unused by the update path.
+    """
+
+    document_id: str
+    chunk_id: int
+    core_entity: str
+    entities: set[str] | None = None
+    relationships: set[str] | None = None
+    terms: set[str] | None = None
 
 
 class DocumentInsertionRecord(BaseModel):

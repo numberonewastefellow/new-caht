@@ -2,7 +2,7 @@
 """
 Test LiteLLM integration and output raw stream events.
 
-This script uses Onyx's LiteLLM instance (with monkey patches) to make a completion
+This script uses VertualAI's LiteLLM instance (with monkey patches) to make a completion
 request and outputs the raw stream events as JSON, one per line.
 
 Usage:

@@ -26,21 +26,21 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --help|-h)
-            echo "Onyx Installation Script"
+            echo "VertualAI Installation Script"
             echo ""
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
-            echo "  --include-craft  Enable Onyx Craft (AI-powered web app building)"
-            echo "  --shutdown       Stop (pause) Onyx containers"
-            echo "  --delete-data    Remove all Onyx data (containers, volumes, and files)"
+            echo "  --include-craft  Enable VertualAI Craft (AI-powered web app building)"
+            echo "  --shutdown       Stop (pause) VertualAI containers"
+            echo "  --delete-data    Remove all VertualAI data (containers, volumes, and files)"
             echo "  --help, -h       Show this help message"
             echo ""
             echo "Examples:"
-            echo "  $0                    # Install Onyx"
-            echo "  $0 --include-craft    # Install Onyx with Craft enabled"
-            echo "  $0 --shutdown         # Pause Onyx services"
-            echo "  $0 --delete-data      # Completely remove Onyx and all data"
+            echo "  $0                    # Install VertualAI"
+            echo "  $0 --include-craft    # Install VertualAI with Craft enabled"
+            echo "  $0 --shutdown         # Pause VertualAI services"
+            echo "  $0 --delete-data      # Completely remove VertualAI and all data"
             exit 0
             ;;
         *)
@@ -92,11 +92,11 @@ print_warning() {
 # Handle shutdown mode
 if [ "$SHUTDOWN_MODE" = true ]; then
     echo ""
-    echo -e "${BLUE}${BOLD}=== Shutting down Onyx ===${NC}"
+    echo -e "${BLUE}${BOLD}=== Shutting down VertualAI ===${NC}"
     echo ""
     
     if [ -d "${INSTALL_ROOT}/deployment" ]; then
-        print_info "Stopping Onyx containers..."
+        print_info "Stopping VertualAI containers..."
 
         # Check if docker-compose.yml exists
         if [ -f "${INSTALL_ROOT}/deployment/docker-compose.yml" ]; then
@@ -113,7 +113,7 @@ if [ "$SHUTDOWN_MODE" = true ]; then
             # Stop containers (without removing them)
             (cd "${INSTALL_ROOT}/deployment" && $COMPOSE_CMD -f docker-compose.yml stop)
             if [ $? -eq 0 ]; then
-                print_success "Onyx containers stopped (paused)"
+                print_success "VertualAI containers stopped (paused)"
             else
                 print_error "Failed to stop containers"
                 exit 1
@@ -122,21 +122,21 @@ if [ "$SHUTDOWN_MODE" = true ]; then
             print_warning "docker-compose.yml not found in ${INSTALL_ROOT}/deployment"
         fi
     else
-        print_warning "Onyx data directory not found. Nothing to shutdown."
+        print_warning "VertualAI data directory not found. Nothing to shutdown."
     fi
 
     echo ""
-    print_success "Onyx shutdown complete!"
+    print_success "VertualAI shutdown complete!"
     exit 0
 fi
 
 # Handle delete data mode
 if [ "$DELETE_DATA_MODE" = true ]; then
     echo ""
-    echo -e "${RED}${BOLD}=== WARNING: This will permanently delete all Onyx data ===${NC}"
+    echo -e "${RED}${BOLD}=== WARNING: This will permanently delete all VertualAI data ===${NC}"
     echo ""
     print_warning "This action will remove:"
-    echo "  • All Onyx containers and volumes"
+    echo "  • All VertualAI containers and volumes"
     echo "  • All downloaded files and configurations"
     echo "  • All user data and documents"
     echo ""
@@ -148,7 +148,7 @@ if [ "$DELETE_DATA_MODE" = true ]; then
         exit 0
     fi
 
-    print_info "Removing Onyx containers and volumes..."
+    print_info "Removing VertualAI containers and volumes..."
 
     if [ -d "${INSTALL_ROOT}/deployment" ]; then
         # Check if docker-compose.yml exists
@@ -166,7 +166,7 @@ if [ "$DELETE_DATA_MODE" = true ]; then
             # Stop and remove containers with volumes
             (cd "${INSTALL_ROOT}/deployment" && $COMPOSE_CMD -f docker-compose.yml down -v)
             if [ $? -eq 0 ]; then
-                print_success "Onyx containers and volumes removed"
+                print_success "VertualAI containers and volumes removed"
             else
                 print_error "Failed to remove containers and volumes"
             fi
@@ -182,7 +182,7 @@ if [ "$DELETE_DATA_MODE" = true ]; then
     fi
 
     echo ""
-    print_success "All Onyx data has been permanently deleted!"
+    print_success "All VertualAI data has been permanently deleted!"
     exit 0
 fi
 
@@ -198,13 +198,13 @@ echo " \____/|_| |_|\__, /_/\_\ "
 echo "               __/ |      "
 echo "              |___/       "
 echo -e "${NC}"
-echo "Welcome to Onyx Installation Script"
+echo "Welcome to VertualAI Installation Script"
 echo "===================================="
 echo ""
 
 # User acknowledgment section
 echo -e "${YELLOW}${BOLD}This script will:${NC}"
-echo "1. Download deployment files for Onyx into a new '${INSTALL_ROOT}' directory"
+echo "1. Download deployment files for VertualAI into a new '${INSTALL_ROOT}' directory"
 echo "2. Check your system resources (Docker, memory, disk space)"
 echo "3. Guide you through deployment options (version, authentication)"
 echo ""
@@ -369,7 +369,7 @@ fi
 
 if [ "$RESOURCE_WARNING" = true ]; then
     echo ""
-    print_warning "Onyx recommends at least ${EXPECTED_DOCKER_RAM_GB}GB RAM and ${EXPECTED_DISK_GB}GB disk space for optimal performance."
+    print_warning "VertualAI recommends at least ${EXPECTED_DOCKER_RAM_GB}GB RAM and ${EXPECTED_DISK_GB}GB disk space for optimal performance."
     echo ""
     read -p "Do you want to continue anyway? (y/N): " -n 1 -r
     echo ""
@@ -392,7 +392,7 @@ else
 fi
 
 # Download all required files
-print_step "Downloading Onyx configuration files"
+print_step "Downloading VertualAI configuration files"
 print_info "This step downloads all necessary configuration files from GitHub..."
 echo ""
 print_info "Downloading the following files:"
@@ -515,11 +515,11 @@ if [ -d "${INSTALL_ROOT}/deployment" ] && [ -f "${INSTALL_ROOT}/deployment/docke
         # Check if any containers are running
         RUNNING_CONTAINERS=$(cd "${INSTALL_ROOT}/deployment" && $COMPOSE_CMD -f docker-compose.yml ps -q 2>/dev/null | wc -l)
         if [ "$RUNNING_CONTAINERS" -gt 0 ]; then
-            print_error "Onyx services are currently running!"
+            print_error "VertualAI services are currently running!"
             echo ""
             print_info "To make configuration changes, you must first shut down the services."
             echo ""
-            print_info "Please run the following command to shut down Onyx:"
+            print_info "Please run the following command to shut down VertualAI:"
             echo -e "   ${BOLD}./install.sh --shutdown${NC}"
             echo ""
             print_info "Then run this script again to make your changes."
@@ -670,9 +670,9 @@ else
     if [ "$INCLUDE_CRAFT" = true ] || [[ "$VERSION" == craft-* ]]; then
         # Set ENABLE_CRAFT=true for runtime configuration (handles commented and uncommented lines)
         sed -i.bak 's/^#* *ENABLE_CRAFT=.*/ENABLE_CRAFT=true/' "$ENV_FILE" 2>/dev/null || true
-        print_success "Onyx Craft enabled (ENABLE_CRAFT=true)"
+        print_success "VertualAI Craft enabled (ENABLE_CRAFT=true)"
     else
-        print_info "Onyx Craft disabled (use --include-craft to enable)"
+        print_info "VertualAI Craft disabled (use --include-craft to enable)"
     fi
 
     print_success ".env file created with your preferences"
@@ -682,7 +682,7 @@ else
     echo "  • Advanced authentication (OAuth, SAML, etc.)"
     echo "  • AI model configuration"
     echo "  • Domain settings (for production)"
-    echo "  • Onyx Craft (set ENABLE_CRAFT=true)"
+    echo "  • VertualAI Craft (set ENABLE_CRAFT=true)"
     echo ""
 fi
 
@@ -780,7 +780,7 @@ else
 fi
 
 # Start services
-print_step "Starting Onyx services"
+print_step "Starting VertualAI services"
 print_info "Launching containers..."
 echo ""
 if [ "$USE_LATEST" = true ]; then
@@ -790,7 +790,7 @@ else
     (cd "${INSTALL_ROOT}/deployment" && $COMPOSE_CMD -f docker-compose.yml up -d)
 fi
 if [ $? -ne 0 ]; then
-    print_error "Failed to start Onyx services"
+    print_error "Failed to start VertualAI services"
     exit 1
 fi
 
@@ -852,7 +852,7 @@ check_onyx_health() {
     local attempt=1
     local port=${HOST_PORT:-3000}
 
-    print_info "Checking Onyx service health..."
+    print_info "Checking VertualAI service health..."
     echo "Containers are healthy, waiting for database migrations and service initialization to finish."
     echo ""
 
@@ -877,7 +877,7 @@ check_onyx_health() {
         esac
 
         # Clear line and show progress with fixed spacing
-        printf "\r\033[KChecking Onyx service%s (%dm %ds elapsed)" "$dots" "$minutes" "$seconds"
+        printf "\r\033[KChecking VertualAI service%s (%dm %ds elapsed)" "$dots" "$minutes" "$seconds"
 
         sleep 1
         attempt=$((attempt + 1))
@@ -896,18 +896,18 @@ echo ""
 if check_onyx_health; then
     echo ""
     echo -e "${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${GREEN}${BOLD}   🎉 Onyx service is ready! 🎉${NC}"
+    echo -e "${GREEN}${BOLD}   🎉 VertualAI service is ready! 🎉${NC}"
     echo -e "${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 else
     print_warning "Health check timed out after 10 minutes"
     print_info "Containers are running, but the web service may still be initializing (or something went wrong)"
     echo ""
     echo -e "${YELLOW}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${YELLOW}${BOLD}   ⚠️  Onyx containers are running ⚠️${NC}"
+    echo -e "${YELLOW}${BOLD}   ⚠️  VertualAI containers are running ⚠️${NC}"
     echo -e "${YELLOW}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 fi
 echo ""
-print_info "Access Onyx at:"
+print_info "Access VertualAI at:"
 echo -e "   ${BOLD}http://localhost:${HOST_PORT}${NC}"
 echo ""
 print_info "If authentication is enabled, you can create your admin account here:"

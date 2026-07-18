@@ -88,7 +88,7 @@ User sends answer
 
 ## Phase 1: Checkpoint Enhancement
 
-### File: `backend/onyx/workflows/models.py`
+### File: `backend/om/workflows/models.py`
 
 Add 2 fields to `WorkflowCheckpoint` (lines 157-171):
 
@@ -124,7 +124,7 @@ No DB migration needed — stored in existing `checkpoint_data` JSONB column wit
 
 ## Phase 2: Clarification Task Builder
 
-### File: `backend/onyx/workflows/workflow_engine.py` — new helper functions
+### File: `backend/om/workflows/workflow_engine.py` — new helper functions
 
 ```python
 def _build_clarification_task(
@@ -178,7 +178,7 @@ still need more details, ask your follow-up questions.
 
 ## Phase 3: Sequential Mode Changes
 
-### File: `backend/onyx/workflows/workflow_engine.py`
+### File: `backend/om/workflows/workflow_engine.py`
 
 ### 3.1 First Pause — Save original task (lines ~661-678)
 
@@ -258,7 +258,7 @@ if step.can_request_input and _agent_requests_input(agent_output):
 
 ## Phase 4: LLM-Decision Mode Changes
 
-### File: `backend/onyx/workflows/workflow_engine.py`
+### File: `backend/om/workflows/workflow_engine.py`
 
 ### 4.1 First Pause — Save original task (lines ~1280-1302)
 
@@ -355,8 +355,8 @@ if checkpoint and checkpoint.clarification_conversation:
 
 | File | Change |
 |------|--------|
-| `backend/onyx/workflows/models.py` | Add `clarification_conversation` + `paused_agent_original_task` to `WorkflowCheckpoint` |
-| `backend/onyx/workflows/workflow_engine.py` | Add `_build_clarification_task()`, `_strip_needs_input_prefix()`. Modify sequential resume, sequential first-pause, llm_decision resume, llm_decision first-pause |
+| `backend/om/workflows/models.py` | Add `clarification_conversation` + `paused_agent_original_task` to `WorkflowCheckpoint` |
+| `backend/om/workflows/workflow_engine.py` | Add `_build_clarification_task()`, `_strip_needs_input_prefix()`. Modify sequential resume, sequential first-pause, llm_decision resume, llm_decision first-pause |
 
 No other files need changes. No DB migration. No frontend changes.
 
@@ -395,5 +395,5 @@ No other files need changes. No DB migration. No frontend changes.
 
 | Bug | File | Fix |
 |-----|------|-----|
-| `/workflow/{id}/run` didn't pass `chat_session_id` to engine | `backend/onyx/server/features/workflow/api.py` | Added `chat_session_id=run_request.chat_session_id` |
-| `WorkflowRunRequest.chat_session_id` was `int` instead of `UUID` | `backend/onyx/workflows/models.py` | Changed to `UUID \| None` |
+| `/workflow/{id}/run` didn't pass `chat_session_id` to engine | `backend/om/server/features/workflow/api.py` | Added `chat_session_id=run_request.chat_session_id` |
+| `WorkflowRunRequest.chat_session_id` was `int` instead of `UUID` | `backend/om/workflows/models.py` | Changed to `UUID \| None` |

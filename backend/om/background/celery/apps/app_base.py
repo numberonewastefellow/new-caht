@@ -27,16 +27,12 @@ from om.background.celery.celery_utils import make_probe_path
 from om.background.celery.tasks.document_index.document_sync import DOCUMENT_SYNC_PREFIX
 from om.background.celery.tasks.document_index.document_sync import DOCUMENT_SYNC_TASKSET_KEY
 from om.configs.app_configs import DISABLE_VECTOR_DB
-from om.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
-from om.configs.app_configs import OM_DISABLE_VESPA
 from om.configs.constants import OM_CLOUD_CELERY_TASK_PREFIX
 from om.configs.constants import OmRedisLocks
 from om.db.engine.sql_engine import get_sqlalchemy_engine
 from om.document_index.opensearch.client import (
     wait_for_opensearch_with_timeout,
 )
-from om.document_index.vespa.shared_utils.utils import wait_for_vespa_with_timeout
-from om.httpx.httpx_pool import HttpxPool
 from om.redis.redis_connector import RedisConnector
 from om.redis.redis_connector_delete import RedisConnectorDelete
 from om.redis.redis_connector_doc_perm_sync import RedisConnectorPermissionSync
@@ -377,8 +373,6 @@ def on_worker_ready(sender: Any, **kwargs: Any) -> None:  # noqa: ARG001
 
 
 def on_worker_shutdown(sender: Any, **kwargs: Any) -> None:  # noqa: ARG001
-    HttpxPool.close_all()
-
     hostname: str = cast(str, sender.hostname)
     path = make_probe_path("readiness", hostname)
     path.unlink(missing_ok=True)
@@ -523,31 +517,18 @@ def reset_tenant_id(
     CURRENT_TENANT_ID_CONTEXTVAR.set(POSTGRES_DEFAULT_SCHEMA)
 
 
-def wait_for_vespa_or_shutdown(sender: Any, **kwargs: Any) -> None:  # noqa: ARG001
-    """Waits for the configured document index(es) to become ready subject to a
-    timeout. Raises WorkerShutdown if the timeout is reached.
-
-    Each engine is probed only when it is actually enabled, so OpenSearch-only
-    deployments (ONYX_DISABLE_VESPA=true) do not block on a non-existent Vespa.
-    """
+def wait_for_document_index_or_shutdown(sender: Any, **kwargs: Any) -> None:  # noqa: ARG001
+    """Waits for OpenSearch (the document index) to become ready subject to a
+    timeout. Raises WorkerShutdown if the timeout is reached."""
 
     if DISABLE_VECTOR_DB:
-        logger.info(
-            "DISABLE_VECTOR_DB is set — skipping Vespa/OpenSearch readiness check."
-        )
+        logger.info("DISABLE_VECTOR_DB is set — skipping OpenSearch readiness check.")
         return
 
-    if not OM_DISABLE_VESPA:
-        if not wait_for_vespa_with_timeout():
-            msg = "[Vespa] Readiness probe did not succeed within the timeout. Exiting..."
-            logger.error(msg)
-            raise WorkerShutdown(msg)
-
-    if ENABLE_OPENSEARCH_INDEXING_FOR_ONYX:
-        if not wait_for_opensearch_with_timeout():
-            msg = "[OpenSearch] Readiness probe did not succeed within the timeout. Exiting..."
-            logger.error(msg)
-            raise WorkerShutdown(msg)
+    if not wait_for_opensearch_with_timeout():
+        msg = "[OpenSearch] Readiness probe did not succeed within the timeout. Exiting..."
+        logger.error(msg)
+        raise WorkerShutdown(msg)
 
 
 # File for validating worker liveness
@@ -589,7 +570,6 @@ _VECTOR_DB_TASK_MODULES: set[str] = {
     "om.background.celery.tasks.docfetching",
     "om.background.celery.tasks.pruning",
     "om.background.celery.tasks.document_index",
-    "om.background.celery.tasks.opensearch_migration",
     "om.background.celery.tasks.doc_permission_syncing",
     "om.background.celery.tasks.hierarchyfetching",
     "om.background.celery.tasks.external_group_syncing",

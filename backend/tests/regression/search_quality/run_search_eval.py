@@ -436,8 +436,8 @@ class SearchAnswerAnalyzer:
             request_data = search_request.model_dump()
             headers = GENERAL_HEADERS.copy()
             # Add API key if present
-            if os.environ.get("ONYX_API_KEY"):
-                headers["Authorization"] = f"Bearer {os.environ.get('ONYX_API_KEY')}"
+            if os.environ.get("OM_API_KEY"):
+                headers["Authorization"] = f"Bearer {os.environ.get('OM_API_KEY')}"
 
             start_time = time.monotonic()
             response = requests.post(
@@ -614,9 +614,9 @@ def run_search_eval(
         )
 
     # check onyx api key is set (auth is always required)
-    if not os.environ.get("ONYX_API_KEY"):
+    if not os.environ.get("OM_API_KEY"):
         raise RuntimeError(
-            "ONYX_API_KEY is required. "
+            "OM_API_KEY is required. "
             "Please create one in the admin panel and add it to the root .vscode/.env file."
         )
 

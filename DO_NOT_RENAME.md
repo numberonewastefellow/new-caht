@@ -41,7 +41,6 @@ Found in `backend/om/configs/model_configs.py`, `backend/om/configs/embedding_co
 |---|---|---|
 | `onyx_tid`, `onyx_anonymous_user` | auth / session cookies | live browsers hold these; renaming logs everyone out / drops anon sessions |
 | `onyx:` key prefix | Redis namespace | renaming misses every existing key (locks, caches, taskset ids) |
-| `__danswer_alt_index`, `danswer_chunk_*` | Vespa index / suffix names | renaming orphans every existing index |
 | `github.com/onyx-dot-app/…`, `raw.githubusercontent.com/onyx-dot-app/…` | upstream repo + asset URLs | real upstream URLs (release notes, Slack icons); renaming 404s the asset |
 | `founders@onyx.app`, `onyx.app` | Dockerfile `LABEL` maintainer value / docs | real email + domain — the LABEL **keys** (`com.danswer.*`→`com.om.*`) and brand **prose** were renamed to `om`, but this email/domain **value** stays as-is |
 | `hub.docker.com/r/onyx/onyx-model-server` | `Dockerfile.model_server` `LABEL` description | Docker Hub URL — no `om/…` image is published there yet; renaming points the label at a 404 |
@@ -67,6 +66,30 @@ The Docker-runtime layer was fully renamed in lockstep and is done:
   `web/src/lib/version.ts`), and `DANSWER_RUNNING_IN_DOCKER` → **`OM_RUNNING_IN_DOCKER`** (both
   Dockerfile `ENV`s + the `OM_DOCKER_ENV_STR` constant in `backend/om/utils/logger.py`), all changed
   in lockstep.
+- **Fork-internal env-var KEYS `ONYX_*` → `OM_*` (hard switch, no fallback)** — the whole B2 family:
+  `ENABLE_OPENSEARCH_{INDEXING,RETRIEVAL}_FOR_OM`, `OM_DISABLE_VESPA`, `OM_QUERY_HISTORY_TYPE`,
+  `LOG_OM_MODEL_INTERACTIONS`, `OM_BOT_*`, `OM_API_KEY`, `OM_EVAL_API_KEY`,
+  `CONFLUENCE_USE_OM_USERS_FOR_GROUP_SYNC`, nginx `OM_{BACKEND_API,WEB_SERVER,MCP_SERVER}_HOST`,
+  CI `OM_{BACKEND,WEB_SERVER,MODEL_SERVER}_IMAGE`, web `OM_CRAFT_CALENDAR_URL`. Code reads ONLY the
+  `OM_*` name now, so a live `.env`/helm override on the old `ONYX_*` key silently reverts to default
+  — update deployments in tandem. Full old→new list in [`RENAME_AUDIT.md`](RENAME_AUDIT.md) §B2.
+  These are NOT frozen; kept here only so nobody "restores" the `ONYX_*` spellings.
+- Embedding chunk-index prefix `danswer_chunk_*` → **`chunk_*`** (greenfield, no data to preserve;
+  shared by both Vespa and OpenSearch since both read `SearchSettings.index_name`). Changed in
+  lockstep: the 21 literals in `backend/om/configs/embedding_configs.py`, the seed formula in
+  `backend/alembic/versions/dbaa756c2ccf_embedding_models.py:53,68`, the Cohere hardcode in
+  `backend/om/server/tenants/provisioning.py:476`, `DEFAULT_INDEX_NAME` in
+  `backend/om/document_index/document_index_utils.py:45`, the commented formula in
+  `backend/om/server/manage/search_settings.py:87`, the OpenSearch Dashboards index-pattern
+  (`deployment/docker_compose/opensearch_dashboards/build_ndjson.py:15` + `files_and_chunks.ndjson`),
+  and README examples. **Requires a fresh DB** for the new name to reach `SearchSettings.index_name`.
+- Alt/secondary index suffix `ALT_INDEX_SUFFIX = "__danswer_alt_index"` → **`"__alt_index"`**
+  (`backend/shared_configs/configs.py:45`, propagated via the constant to `setup.py:317`; the two
+  hardcoded literals in `backend/scripts/debugging/onyx_vespa_schemas.py:63,133` updated to match).
+  Greenfield; Vespa-setup-only. The migration `d9ec13955951` keeps the old literal on purpose (it
+  strips the legacy suffix from old `model_name` data).
+- Still left as-is: the Vespa schema *template* `danswer_chunk.sd.jinja` (template input, not a
+  physical index name) — belongs to the future Vespa-removal effort.
 
 ### Frozen items found in the full audit (Stage-2 sweep)
 
@@ -93,7 +116,7 @@ set.
 | Alembic revision ids | `backend/alembic/versions/*onyx*.py` (filenames + `down_revision`) | migration-chain identity — rename bodies/comments only, never ids |
 | Prometheus metric names `onyx_*` | `docs/METRICS.md` + backend emit sites | Grafana dashboards / alerts depend |
 | `ONYX_GITHUB_*` secret names | `.github/workflows/pr-integration-tests.yml:40-44` | must match repo secret settings |
-| `onyxdotapp/code-interpreter` image | `deployment/docker_compose/docker-compose.yml:572`, helm `values.yaml:965` | Onyx's published sandbox image; no `om/` republish yet |
+| ~~`onyxdotapp/code-interpreter` / `onyxdotapp/python-executor-sci`~~ **→ RENAMED to `om/code-interpreter` + `om/python-executor-sci` (local)** | dev compose, helm values, executor defaults (`app_configs.py`, `Dockerfile` ENV) all updated | **No longer frozen.** Remaining TODO: publish to a registry you own + republish the external helm subchart. |
 
 > **`standard-answer` is NOT a `danswer` reference.** `StandardAnswer` / `standardAnswer…` match
 > "…stan**dAnswer**" case-insensitively and account for ~95% of raw `danswer` hits. Never bulk-replace;

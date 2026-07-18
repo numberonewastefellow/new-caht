@@ -69,7 +69,7 @@ SHOW_EXTRA_CONNECTORS = os.environ.get("SHOW_EXTRA_CONNECTORS", "").lower() == "
 # 2. anonymized user emails
 # 3. no queries
 OM_QUERY_HISTORY_TYPE = QueryHistoryType(
-    (os.environ.get("ONYX_QUERY_HISTORY_TYPE") or QueryHistoryType.NORMAL.value).lower()
+    (os.environ.get("OM_QUERY_HISTORY_TYPE") or QueryHistoryType.NORMAL.value).lower()
 )
 
 #####
@@ -283,27 +283,11 @@ OPENSEARCH_TEXT_ANALYZER = os.environ.get("OPENSEARCH_TEXT_ANALYZER") or "englis
 # environments we always want to be dual indexing into both OpenSearch and Vespa
 # to stress test the new codepaths. Only enable this if there is some instance
 # of OpenSearch running for the relevant VertualAi instance.
-ENABLE_OPENSEARCH_INDEXING_FOR_ONYX = (
-    os.environ.get("ENABLE_OPENSEARCH_INDEXING_FOR_ONYX", "").lower() == "true"
-)
-# Given that the "base" config above is true, this enables whether we want to
-# retrieve from OpenSearch or Vespa. We want to be able to quickly toggle this
-# in the event we see issues with OpenSearch retrieval in our dev environments.
-ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX = (
-    ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
-    and os.environ.get("ENABLE_OPENSEARCH_RETRIEVAL_FOR_ONYX", "").lower() == "true"
-)
-# Skips scheduling the Vespa->OpenSearch backfill task. Set this on a brand-new
-# OpenSearch-only deployment (no Vespa to migrate from) so the task does not run
-# and error trying to reach a non-existent Vespa.
-DISABLE_OPENSEARCH_MIGRATION_TASK = (
-    os.environ.get("DISABLE_OPENSEARCH_MIGRATION_TASK", "").lower() == "true"
-)
-# When true, Vespa is not constructed/written-to and retrieval must come from
-# OpenSearch. Defaults to "false" so Vespa stays the default engine for this
-# deployment (upstream defaults this to "true"; do not copy that default here or
-# Vespa silently turns off).
-OM_DISABLE_VESPA = os.environ.get("ONYX_DISABLE_VESPA", "false").lower() == "true"
+# OpenSearch is the only document-index backend. These are retained as always-true
+# constants because a few call sites still reference them; they no longer gate
+# anything (Vespa has been removed).
+ENABLE_OPENSEARCH_INDEXING_FOR_OM = True
+ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM = True
 
 # --- Config vars required by the upgraded document_index module ---
 OPENSEARCH_USE_SSL = os.environ.get("OPENSEARCH_USE_SSL", "true").lower() == "true"
@@ -327,28 +311,8 @@ OPENSEARCH_INDEX_NUM_REPLICAS: int | None = (
     else None
 )
 MAX_CHUNKS_PER_DOC_BATCH = int(os.environ.get("MAX_CHUNKS_PER_DOC_BATCH") or 1000)
-VESPA_MIGRATION_REQUEST_TIMEOUT_S = int(
-    os.environ.get("VESPA_MIGRATION_REQUEST_TIMEOUT_S") or "120"
-)
-# Server-side traversal timeout Vespa uses to return partial results gracefully.
-# Should be lower than VESPA_MIGRATION_REQUEST_TIMEOUT_S. Formatted as "<seconds>s".
-VESPA_MIGRATION_SERVER_SIDE_REQUEST_TIMEOUT = os.environ.get(
-    "VESPA_MIGRATION_SERVER_SIDE_REQUEST_TIMEOUT", "110s"
-)
-
-VESPA_HOST = os.environ.get("VESPA_HOST") or "localhost"
-# NOTE: this is used if and only if the vespa config server is accessible via a
-# different host than the main vespa application
-VESPA_CONFIG_SERVER_HOST = os.environ.get("VESPA_CONFIG_SERVER_HOST") or VESPA_HOST
-VESPA_PORT = os.environ.get("VESPA_PORT") or "8081"
-VESPA_TENANT_PORT = os.environ.get("VESPA_TENANT_PORT") or "19071"
-# the number of times to try and connect to vespa on startup before giving up
-VESPA_NUM_ATTEMPTS_ON_STARTUP = int(os.environ.get("NUM_RETRIES_ON_STARTUP") or 10)
-
-VESPA_CLOUD_URL = os.environ.get("VESPA_CLOUD_URL", "")
-
-VESPA_CLOUD_CERT_PATH = os.environ.get("VESPA_CLOUD_CERT_PATH")
-VESPA_CLOUD_KEY_PATH = os.environ.get("VESPA_CLOUD_KEY_PATH")
+# the number of times to try and connect to the document index on startup before giving up
+NUM_ATTEMPTS_ON_STARTUP = int(os.environ.get("NUM_RETRIES_ON_STARTUP") or 10)
 
 # Number of documents in a batch during indexing (further batching done by chunks before passing to bi-encoder)
 INDEX_BATCH_SIZE = int(os.environ.get("INDEX_BATCH_SIZE") or 16)
@@ -677,8 +641,8 @@ CONFLUENCE_TIMEZONE_OFFSET = float(
     os.environ.get("CONFLUENCE_TIMEZONE_OFFSET", get_current_tz_offset())
 )
 
-CONFLUENCE_USE_ONYX_USERS_FOR_GROUP_SYNC = (
-    os.environ.get("CONFLUENCE_USE_ONYX_USERS_FOR_GROUP_SYNC", "").lower() == "true"
+CONFLUENCE_USE_OM_USERS_FOR_GROUP_SYNC = (
+    os.environ.get("CONFLUENCE_USE_OM_USERS_FOR_GROUP_SYNC", "").lower() == "true"
 )
 
 GOOGLE_DRIVE_CONNECTOR_SIZE_THRESHOLD = int(
@@ -874,17 +838,12 @@ CODE_INTERPRETER_MAX_SELF_HEAL_ATTEMPTS = int(
 #####
 JOB_TIMEOUT = 60 * 60 * 6  # 6 hours default
 # Logs VertualAi only model interactions like prompts, responses, messages etc.
-LOG_ONYX_MODEL_INTERACTIONS = (
-    os.environ.get("LOG_ONYX_MODEL_INTERACTIONS", "").lower() == "true"
+LOG_OM_MODEL_INTERACTIONS = (
+    os.environ.get("LOG_OM_MODEL_INTERACTIONS", "").lower() == "true"
 )
 
 PROMPT_CACHE_CHAT_HISTORY = (
     os.environ.get("PROMPT_CACHE_CHAT_HISTORY", "").lower() == "true"
-)
-# If set to `true` will enable additional logs about Vespa query performance
-# (time spent on finding the right docs + time spent fetching summaries from disk)
-LOG_VESPA_TIMING_INFORMATION = (
-    os.environ.get("LOG_VESPA_TIMING_INFORMATION", "").lower() == "true"
 )
 LOG_ENDPOINT_LATENCY = os.environ.get("LOG_ENDPOINT_LATENCY", "").lower() == "true"
 LOG_POSTGRES_LATENCY = os.environ.get("LOG_POSTGRES_LATENCY", "").lower() == "true"
@@ -944,8 +903,6 @@ CUSTOM_ANSWER_VALIDITY_CONDITIONS = json.loads(
     os.environ.get("CUSTOM_ANSWER_VALIDITY_CONDITIONS", "[]")
 )
 
-VESPA_REQUEST_TIMEOUT = int(os.environ.get("VESPA_REQUEST_TIMEOUT") or "15")
-
 SYSTEM_RECURSION_LIMIT = int(os.environ.get("SYSTEM_RECURSION_LIMIT") or "1000")
 
 PARSE_WITH_TRAFILATURA = os.environ.get("PARSE_WITH_TRAFILATURA", "").lower() == "true"
@@ -1002,9 +959,6 @@ AZURE_IMAGE_DEPLOYMENT_NAME = os.environ.get(
 # configurable image model
 IMAGE_MODEL_NAME = os.environ.get("IMAGE_MODEL_NAME", "gpt-image-1")
 IMAGE_MODEL_PROVIDER = os.environ.get("IMAGE_MODEL_PROVIDER", "openai")
-
-# Use managed Vespa (Vespa Cloud). If set, must also set VESPA_CLOUD_URL, VESPA_CLOUD_CERT_PATH and VESPA_CLOUD_KEY_PATH
-MANAGED_VESPA = os.environ.get("MANAGED_VESPA", "").lower() == "true"
 
 ENABLE_EMAIL_INVITES = os.environ.get("ENABLE_EMAIL_INVITES", "").lower() == "true"
 
@@ -1139,10 +1093,6 @@ S3_AWS_SECRET_ACCESS_KEY = os.environ.get("S3_AWS_SECRET_ACCESS_KEY")
 S3_GENERATE_LOCAL_CHECKSUM = (
     os.environ.get("S3_GENERATE_LOCAL_CHECKSUM", "").lower() == "true"
 )
-
-# Forcing Vespa Language
-# English: en, German:de, etc. See: https://docs.vespa.ai/en/linguistics.html
-VESPA_LANGUAGE_OVERRIDE = os.environ.get("VESPA_LANGUAGE_OVERRIDE")
 
 
 #####

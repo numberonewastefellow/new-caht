@@ -259,6 +259,19 @@ class PythonToolDelta(BaseObj):
     file_ids: list[str] = []  # Kept for backward compatibility
     files: list[PythonToolFile] = []  # Enriched file metadata
 
+    # --- Live-streaming metadata (all optional; older clients ignore them) ---
+    # Set only on the TERMINAL delta so the renderer can show accurate status and
+    # elapsed time without inferring failure from stderr presence.
+    exit_code: int | None = None
+    timed_out: bool = False
+    duration_ms: int | None = None
+    # Non-timeout failure mode when set: "oom", "kernel_died", "timeout".
+    error_kind: str | None = None
+    # Self-heal attempt boundary: when True, the renderer archives the failed
+    # attempt's live output as a collapsed block and clears the live pane so the
+    # next attempt streams into a clean surface.
+    reset: bool = False
+
 
 # Custom tool being called, first allocate a placeholder block for it on the UI
 class CustomToolStart(BaseObj):

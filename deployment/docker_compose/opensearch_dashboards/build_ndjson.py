@@ -12,7 +12,7 @@ import json
 import os
 
 INDEX_PATTERN_ID = "danswer-chunks"
-INDEX_PATTERN_TITLE = "danswer_chunk_*"
+INDEX_PATTERN_TITLE = "chunk_*"
 DASHBOARD_ID = "danswer-files-and-chunks"
 VERSION = "3.6.0"
 

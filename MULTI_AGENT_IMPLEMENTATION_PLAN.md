@@ -8,7 +8,7 @@
 
 ## Verdict: FEASIBLE — Architecture Already Has Strong Foundations
 
-The existing Deep Research system (`backend/onyx/deep_research/`) already implements a multi-agent pattern with an orchestrator LLM that spawns and coordinates sub-agents. The core primitives needed are already in place.
+The existing Deep Research system (`backend/om/deep_research/`) already implements a multi-agent pattern with an orchestrator LLM that spawns and coordinates sub-agents. The core primitives needed are already in place.
 
 ---
 
@@ -128,16 +128,16 @@ User Message → SessionManager → SandboxManager → OpenCode Agent → Stream
 
 | File | Role |
 |------|------|
-| `backend/onyx/server/features/build/api/api.py` | Main API router, rate limiting, webapp proxy |
-| `backend/onyx/server/features/build/api/messages_api.py` | Message send endpoint, SSE streaming |
-| `backend/onyx/server/features/build/session/manager.py` | Session lifecycle, agent invocation, streaming state |
-| `backend/onyx/server/features/build/sandbox/base.py` | Abstract SandboxManager interface |
-| `backend/onyx/server/features/build/sandbox/local/` | Filesystem-based sandbox (dev) |
-| `backend/onyx/server/features/build/sandbox/kubernetes/` | Pod-based sandbox (prod) |
-| `backend/onyx/server/features/build/sandbox/util/opencode_config.py` | LLM & tool config generation |
-| `backend/onyx/server/features/build/sandbox/util/agent_instructions.py` | AGENTS.md generation per session |
-| `backend/onyx/server/features/build/AGENTS.template.md` | Agent instruction template |
-| `backend/onyx/server/features/build/configs.py` | Environment variables, feature flags |
+| `backend/om/server/features/build/api/api.py` | Main API router, rate limiting, webapp proxy |
+| `backend/om/server/features/build/api/messages_api.py` | Message send endpoint, SSE streaming |
+| `backend/om/server/features/build/session/manager.py` | Session lifecycle, agent invocation, streaming state |
+| `backend/om/server/features/build/sandbox/base.py` | Abstract SandboxManager interface |
+| `backend/om/server/features/build/sandbox/local/` | Filesystem-based sandbox (dev) |
+| `backend/om/server/features/build/sandbox/kubernetes/` | Pod-based sandbox (prod) |
+| `backend/om/server/features/build/sandbox/util/opencode_config.py` | LLM & tool config generation |
+| `backend/om/server/features/build/sandbox/util/agent_instructions.py` | AGENTS.md generation per session |
+| `backend/om/server/features/build/AGENTS.template.md` | Agent instruction template |
+| `backend/om/server/features/build/configs.py` | Environment variables, feature flags |
 
 ### Key Frontend Files
 
@@ -220,45 +220,45 @@ User Message → SessionManager → SandboxManager → OpenCode Agent → Stream
 ### Orchestrator-Agent Pattern (Deep Research)
 | File | Role |
 |------|------|
-| `backend/onyx/deep_research/dr_loop.py` | Orchestrator LLM loop that decides what to do next |
-| `backend/onyx/tools/fake_tools/research_agent.py` | Sub-agents with their own LLM loops |
-| `backend/onyx/deep_research/dr_mock_tools.py` | "Fake tools" that act as agent-routing decisions |
+| `backend/om/deep_research/dr_loop.py` | Orchestrator LLM loop that decides what to do next |
+| `backend/om/tools/fake_tools/research_agent.py` | Sub-agents with their own LLM loops |
+| `backend/om/deep_research/dr_mock_tools.py` | "Fake tools" that act as agent-routing decisions |
 
 **Pattern**: `Orchestrator LLM → decides tool/agent → spawns agent → collects output → decides next step`
 
 ### Agentic LLM Loop
 | File | Role |
 |------|------|
-| `backend/onyx/chat/llm_loop.py` | Reusable agentic loop (LLM call → tool calls → repeat) |
-| `backend/onyx/chat/llm_step.py` | Single LLM step with tool call extraction |
-| `backend/onyx/chat/process_message.py` | Entry point for chat processing |
+| `backend/om/chat/llm_loop.py` | Reusable agentic loop (LLM call → tool calls → repeat) |
+| `backend/om/chat/llm_step.py` | Single LLM step with tool call extraction |
+| `backend/om/chat/process_message.py` | Entry point for chat processing |
 
 Already supports multi-turn, tool calling, streaming, citations.
 
 ### Tool System
 | File | Role |
 |------|------|
-| `backend/onyx/tools/interface.py` | Abstract `Tool` base class |
-| `backend/onyx/tools/tool_runner.py` | Parallel tool execution with timeouts |
-| `backend/onyx/tools/tool_constructor.py` | Builds tool instances from DB models |
+| `backend/om/tools/interface.py` | Abstract `Tool` base class |
+| `backend/om/tools/tool_runner.py` | Parallel tool execution with timeouts |
+| `backend/om/tools/tool_constructor.py` | Builds tool instances from DB models |
 
 8+ built-in tools + custom OpenAPI + MCP tools. Tools are M2M linked to Personas.
 
 ### Persona (Agent) System
 | File | Role |
 |------|------|
-| `backend/onyx/db/models.py:3255` | Persona model with system_prompt, tools, LLM config |
-| `backend/onyx/db/persona.py` | Persona CRUD (1346 lines) |
-| `backend/onyx/server/features/persona/api.py` | API endpoints |
+| `backend/om/db/models.py:3255` | Persona model with system_prompt, tools, LLM config |
+| `backend/om/db/persona.py` | Persona CRUD (1346 lines) |
+| `backend/om/server/features/persona/api.py` | API endpoints |
 
 Each Persona is independently configurable (own LLM, own tools, own knowledge sources).
 
 ### Streaming Infrastructure
 | File | Role |
 |------|------|
-| `backend/onyx/server/query_and_chat/streaming_models.py` | Packet-based streaming |
-| `backend/onyx/chat/emitter.py` | Queue-based decoupled emission |
-| `backend/onyx/server/query_and_chat/placement.py` | Multi-section output (turn_index, tab_index) |
+| `backend/om/server/query_and_chat/streaming_models.py` | Packet-based streaming |
+| `backend/om/chat/emitter.py` | Queue-based decoupled emission |
+| `backend/om/server/query_and_chat/placement.py` | Multi-section output (turn_index, tab_index) |
 
 ---
 
@@ -376,7 +376,7 @@ CREATE TABLE workflow_execution (
 ## 4. Backend Implementation
 
 ### 4a. Agent-as-Tool Adapter
-**New file**: `backend/onyx/tools/tool_implementations/agent_tool.py`
+**New file**: `backend/om/tools/tool_implementations/agent_tool.py`
 
 ```python
 class AgentTool(Tool):
@@ -425,7 +425,7 @@ class AgentTool(Tool):
 Follows the exact pattern of `dr_mock_tools.py` `RESEARCH_AGENT_TOOL_DESCRIPTION` but generalized.
 
 ### 4b. Workflow Engine
-**New file**: `backend/onyx/workflows/workflow_engine.py`
+**New file**: `backend/om/workflows/workflow_engine.py`
 
 ```python
 def run_workflow(workflow, user_message, emitter, db_session):
@@ -470,7 +470,7 @@ def run_agent_step(persona, context, emitter):
 ```
 
 ### 4c. API Endpoints
-**New file**: `backend/onyx/server/features/workflow/api.py`
+**New file**: `backend/om/server/features/workflow/api.py`
 
 ```
 POST   /api/workflow              - Create workflow
@@ -810,22 +810,22 @@ When Agent A runs in a workflow step:
 
 | File | Change |
 |------|--------|
-| `backend/onyx/db/models.py` | Add AgentWorkflow, AgentWorkflowStep, WorkflowExecution models |
-| `backend/onyx/server/manage.py` | Register new API router |
-| `backend/onyx/chat/process_message.py` | Add workflow execution entry point |
-| `backend/onyx/server/query_and_chat/streaming_models.py` | Add workflow packet types |
+| `backend/om/db/models.py` | Add AgentWorkflow, AgentWorkflowStep, WorkflowExecution models |
+| `backend/om/server/manage.py` | Register new API router |
+| `backend/om/chat/process_message.py` | Add workflow execution entry point |
+| `backend/om/server/query_and_chat/streaming_models.py` | Add workflow packet types |
 | `web/src/app/admin/` | Add workflow admin pages |
 | `web/src/refresh-pages/` | Add WorkflowEditorPage |
 
 ### New Files to Create
 | File | Purpose |
 |------|---------|
-| `backend/onyx/workflows/__init__.py` | New module |
-| `backend/onyx/workflows/workflow_engine.py` | Core orchestration engine |
-| `backend/onyx/workflows/models.py` | Pydantic schemas |
-| `backend/onyx/db/workflow.py` | DB CRUD operations |
-| `backend/onyx/server/features/workflow/api.py` | API endpoints |
-| `backend/onyx/tools/tool_implementations/agent_tool.py` | Agent-as-Tool adapter |
+| `backend/om/workflows/__init__.py` | New module |
+| `backend/om/workflows/workflow_engine.py` | Core orchestration engine |
+| `backend/om/workflows/models.py` | Pydantic schemas |
+| `backend/om/db/workflow.py` | DB CRUD operations |
+| `backend/om/server/features/workflow/api.py` | API endpoints |
+| `backend/om/tools/tool_implementations/agent_tool.py` | Agent-as-Tool adapter |
 | `web/src/refresh-pages/WorkflowEditorPage.tsx` | Frontend editor |
 | `web/src/refresh-pages/WorkflowListPage.tsx` | Frontend list |
 

@@ -23,7 +23,7 @@ The sandbox image must be built for **amd64** architecture since our Kubernetes 
 ### Build for amd64 only (fastest)
 
 ```bash
-cd backend/onyx/server/features/build/sandbox/kubernetes/docker
+cd backend/om/server/features/build/sandbox/kubernetes/docker
 docker build --platform linux/amd64 -t vertualai/sandbox:v0.1.x .
 docker push vertualai/sandbox:v0.1.x
 ```

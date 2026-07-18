@@ -1,14 +1,14 @@
 """Compare Vespa vs OpenSearch retrieval on the same corpus + queries.
 
 Used *after* the corpus has been seeded into both engines (seed with
-``ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true`` so docs land in both). For each
+``ENABLE_OPENSEARCH_INDEXING_FOR_OM=true`` so docs land in both). For each
 baseline query it runs the identical harness against each engine and reports
 overlap@k and a normalized rank-correlation, so we can quantify how closely
 OpenSearch reproduces the Vespa baseline.
 
 Run from ``backend/``:
 
-    ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true python -m tests.search_baseline.compare_engines
+    ENABLE_OPENSEARCH_INDEXING_FOR_OM=true python -m tests.search_baseline.compare_engines
 """
 
 from dataclasses import dataclass

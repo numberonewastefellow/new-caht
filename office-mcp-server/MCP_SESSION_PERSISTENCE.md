@@ -42,7 +42,7 @@ The presentation created in session `abc123` is gone by the time `add_slide` run
 ### Root Cause (Code)
 
 ```
-backend/onyx/tools/tool_implementations/mcp/mcp_client.py
+backend/om/tools/tool_implementations/mcp/mcp_client.py
 
   call_mcp_tool()                           # line 246
     -> _call_mcp_client_function_sync()     # line 179

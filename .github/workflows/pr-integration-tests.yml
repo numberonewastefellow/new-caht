@@ -320,8 +320,8 @@ jobs:
           POSTGRES_USE_NULL_POOL=true
           REQUIRE_EMAIL_VERIFICATION=false
           DISABLE_TELEMETRY=true
-          ONYX_BACKEND_IMAGE=${ECR_CACHE}:integration-test-backend-test-${RUN_ID}
-          ONYX_MODEL_SERVER_IMAGE=${ECR_CACHE}:integration-test-model-server-test-${RUN_ID}
+          OM_BACKEND_IMAGE=${ECR_CACHE}:integration-test-backend-test-${RUN_ID}
+          OM_MODEL_SERVER_IMAGE=${ECR_CACHE}:integration-test-model-server-test-${RUN_ID}
           INTEGRATION_TESTS_MODE=true
           MCP_SERVER_ENABLED=true
           AUTO_LLM_UPDATE_INTERVAL_SECONDS=10
@@ -330,7 +330,7 @@ jobs:
           # EE-only config
           if [ "$EDITION" = "ee" ]; then
             cat <<EOF >> deployment/docker_compose/.env
-          # TODO(Nik): https://linear.app/onyx-app/issue/ENG-1/update-test-infra-to-use-test-license
+          # TODO(Nik): update test infra to use a test license
           LICENSE_ENFORCEMENT_ENABLED=false
           CHECK_TTL_MANAGEMENT_TASK_FREQUENCY_IN_HOURS=0.001
           USE_LIGHTWEIGHT_BACKGROUND_WORKER=false
@@ -504,7 +504,7 @@ jobs:
           REQUIRE_EMAIL_VERIFICATION=false
           DISABLE_TELEMETRY=true
           DISABLE_VECTOR_DB=true
-          ONYX_BACKEND_IMAGE=${ECR_CACHE}:integration-test-backend-test-${RUN_ID}
+          OM_BACKEND_IMAGE=${ECR_CACHE}:integration-test-backend-test-${RUN_ID}
           INTEGRATION_TESTS_MODE=true
           USE_LIGHTWEIGHT_BACKGROUND_WORKER=true
           EOF
@@ -634,8 +634,8 @@ jobs:
           REQUIRE_EMAIL_VERIFICATION=false \
           DISABLE_TELEMETRY=true \
           OPENAI_DEFAULT_API_KEY=${OPENAI_API_KEY} \
-          ONYX_BACKEND_IMAGE=${ECR_CACHE}:integration-test-backend-test-${RUN_ID} \
-          ONYX_MODEL_SERVER_IMAGE=${ECR_CACHE}:integration-test-model-server-test-${RUN_ID} \
+          OM_BACKEND_IMAGE=${ECR_CACHE}:integration-test-backend-test-${RUN_ID} \
+          OM_MODEL_SERVER_IMAGE=${ECR_CACHE}:integration-test-model-server-test-${RUN_ID} \
           DEV_MODE=true \
           docker compose -f docker-compose.multitenant-dev.yml up \
             relational_db \

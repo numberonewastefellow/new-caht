@@ -15,7 +15,7 @@ from om.chat.citation_processor import DynamicCitationProcessor
 from om.chat.emitter import Emitter
 from om.chat.models import ChatMessageSimple
 from om.chat.models import LlmStepResult
-from om.configs.app_configs import LOG_ONYX_MODEL_INTERACTIONS
+from om.configs.app_configs import LOG_OM_MODEL_INTERACTIONS
 from om.configs.app_configs import PROMPT_CACHE_CHAT_HISTORY
 from om.configs.constants import MessageType
 from om.context.search.models import SearchDoc
@@ -1012,7 +1012,7 @@ def run_llm_step_pkt_generator(
     llm_msg_history = translate_history_to_llm_format(history, llm.config)
     has_reasoned = False
 
-    if LOG_ONYX_MODEL_INTERACTIONS:
+    if LOG_OM_MODEL_INTERACTIONS:
         logger.debug(
             f"Message history:\n{_format_message_history_for_logging(llm_msg_history)}"
         )
@@ -1297,7 +1297,7 @@ def run_llm_step_pkt_generator(
 
     # Note: Content (AgentResponseDelta) doesn't need an explicit end packet - OverallStop handles it
     # Tool calls are handled by tool execution code and emit their own packets (e.g., SectionEnd)
-    if LOG_ONYX_MODEL_INTERACTIONS:
+    if LOG_OM_MODEL_INTERACTIONS:
         logger.debug(f"Accumulated reasoning: {accumulated_reasoning}")
         logger.debug(f"Accumulated answer: {accumulated_answer}")
 

@@ -3,19 +3,19 @@ group "default" {
 }
 
 variable "BACKEND_REPOSITORY" {
-  default = "onyxdotapp/onyx-backend"
+  default = "om/om-backend"
 }
 
 variable "WEB_SERVER_REPOSITORY" {
-  default = "onyxdotapp/onyx-web-server"
+  default = "om/om-web-server"
 }
 
 variable "MODEL_SERVER_REPOSITORY" {
-  default = "onyxdotapp/onyx-model-server"
+  default = "om/om-model-server"
 }
 
 variable "INTEGRATION_REPOSITORY" {
-  default = "onyxdotapp/onyx-integration"
+  default = "om/om-integration"
 }
 
 variable "TAG" {

@@ -246,13 +246,13 @@ Pause/Resume:           Not possible    -->  Any step can pause for input
 
 | File | Phase | Change |
 |------|-------|--------|
-| `backend/onyx/db/models.py` | 1 | Add `can_request_input` to step, `paused_at_step_id` + `checkpoint_data` to execution |
-| `backend/onyx/workflows/models.py` | 1 | Add checkpoint schemas, pause/resume request models |
-| `backend/onyx/workflows/workflow_engine.py` | 1-2 | Checkpoint after each step, detect pause signal, resume logic |
-| `backend/onyx/server/query_and_chat/streaming_models.py` | 1 | New `WorkflowPauseForInput` packet type |
-| `backend/onyx/chat/process_message.py` | 1 | Detect paused workflow execution, route to resume |
-| `backend/onyx/db/workflow.py` | 1-2 | CRUD for checkpoints, pause/resume state |
+| `backend/om/db/models.py` | 1 | Add `can_request_input` to step, `paused_at_step_id` + `checkpoint_data` to execution |
+| `backend/om/workflows/models.py` | 1 | Add checkpoint schemas, pause/resume request models |
+| `backend/om/workflows/workflow_engine.py` | 1-2 | Checkpoint after each step, detect pause signal, resume logic |
+| `backend/om/server/query_and_chat/streaming_models.py` | 1 | New `WorkflowPauseForInput` packet type |
+| `backend/om/chat/process_message.py` | 1 | Detect paused workflow execution, route to resume |
+| `backend/om/db/workflow.py` | 1-2 | CRUD for checkpoints, pause/resume state |
 | `web/src/lib/workflows/interfaces.ts` | 1 | Add `can_request_input` to step interface |
 | `web/src/refresh-pages/WorkflowEditorPage.tsx` | 1 | UI toggle for "Can Request Input" per step |
 | Frontend chat components | 1 | Handle `WorkflowPauseForInput` packet, show input form |
-| `backend/onyx/db/memory.py` | 3 | Extend memory model with types, namespaces, scoring |
+| `backend/om/db/memory.py` | 3 | Extend memory model with types, namespaces, scoring |

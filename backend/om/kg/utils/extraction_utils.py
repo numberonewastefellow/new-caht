@@ -27,7 +27,7 @@ from om.kg.utils.formatting_utils import kg_email_processing
 from om.kg.utils.formatting_utils import make_entity_id
 from om.kg.utils.formatting_utils import make_relationship_id
 from om.kg.utils.formatting_utils import make_relationship_type_id
-from om.kg.vespa.vespa_interactions import get_document_vespa_contents
+from om.kg.opensearch.opensearch_interactions import get_document_opensearch_contents
 from om.llm.factory import get_default_llm
 from om.llm.models import UserMessage
 from om.llm.utils import llm_response_to_string
@@ -345,7 +345,7 @@ def kg_deep_extraction(
     relationship_types_str = get_relationship_types_str(active=True)
 
     for i, chunk_batch in enumerate(
-        get_document_vespa_contents(document_id, index_name, tenant_id)
+        get_document_opensearch_contents(document_id, index_name, tenant_id)
     ):
         # use first batch for classification
         if i == 0 and metadata.classification_enabled:

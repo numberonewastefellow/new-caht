@@ -60,7 +60,7 @@ ENV PATH="/app/.venv/bin:/usr/bin:${PATH}"
 # Set the Docker binary path for the executor_docker.py module when Docker is installed
 # Using ENV ensures it's available at runtime
 ENV PYTHON_EXECUTOR_DOCKER_BIN=/usr/bin/docker
-ENV PYTHON_EXECUTOR_DOCKER_IMAGE=onyxdotapp/python-executor-sci
+ENV PYTHON_EXECUTOR_DOCKER_IMAGE=om/python-executor-sci
 
 # Don't switch to api user - let the container decide at runtime
 # This allows running with --user root when Docker access is needed

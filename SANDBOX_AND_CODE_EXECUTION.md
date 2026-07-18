@@ -90,7 +90,7 @@ dev.bat up
 | Item | Detail |
 |------|--------|
 | **What it does** | Lets the AI run Python code during chat conversations |
-| **Docker image** | `vertualai/code-interpreter:latest` |
+| **Docker image** | `om/code-interpreter:latest` |
 | **Port** | `8000` (exposed in dev compose files) |
 | **Execution model** | Docker-out-of-Docker (mounts host Docker socket) |
 
@@ -164,8 +164,8 @@ Browser
 | `deployment/docker_compose/.env` | Environment variables for both features |
 | `backend/Dockerfile` | Conditional Node.js/opencode install (`ENABLE_CRAFT`) |
 | `backend/scripts/setup_craft_templates.sh` | Template setup (npm install, venv, demo data) |
-| `backend/onyx/server/features/build/configs.py` | All sandbox configuration variables |
-| `backend/onyx/server/features/build/sandbox/local/local_sandbox_manager.py` | Local sandbox implementation |
-| `backend/onyx/server/features/build/utils.py` | Feature flag logic (`is_onyx_craft_enabled`) |
+| `backend/om/server/features/build/configs.py` | All sandbox configuration variables |
+| `backend/om/server/features/build/sandbox/local/local_sandbox_manager.py` | Local sandbox implementation |
+| `backend/om/server/features/build/utils.py` | Feature flag logic (`is_onyx_craft_enabled`) |
 | `web/src/sections/sidebar/AppSidebar.tsx` | Sidebar Craft button (line 653) |
 | `web/src/app/craft/` | Craft frontend (React/TypeScript) |

@@ -26,9 +26,9 @@ Code (plt.savefig('chart.png'))
 
 | File | Role |
 |------|------|
-| `backend/onyx/server/query_and_chat/streaming_models.py` | `PythonToolFile` model, `PythonToolDelta.files` field |
-| `backend/onyx/tools/tool_implementations/python/python_tool.py` | Emits enriched `files` list in delta packets |
-| `backend/onyx/server/query_and_chat/session_loading.py` | `create_python_tool_packets()` for history reconstruction |
+| `backend/om/server/query_and_chat/streaming_models.py` | `PythonToolFile` model, `PythonToolDelta.files` field |
+| `backend/om/tools/tool_implementations/python/python_tool.py` | Emits enriched `files` list in delta packets |
+| `backend/om/server/query_and_chat/session_loading.py` | `create_python_tool_packets()` for history reconstruction |
 | `web/src/app/app/services/streamingModels.ts` | TypeScript `PythonToolFile` interface |
 | `web/src/app/app/message/messageComponents/timeline/renderers/code/PythonToolRenderer.tsx` | Renders chart images inline |
 | `web/src/app/app/components/files/images/InMessageImage.tsx` | Reusable image component (lazy load, modal, download) |

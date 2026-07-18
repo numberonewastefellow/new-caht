@@ -1,5 +1,6 @@
 import math
 import uuid
+from dataclasses import dataclass
 from uuid import UUID
 
 from sqlalchemy.orm import Session
@@ -8,13 +9,40 @@ from om.configs.app_configs import ENABLE_MULTIPASS_INDEXING
 from om.db.models import SearchSettings
 from om.db.search_settings import get_current_search_settings
 from om.db.search_settings import get_secondary_search_settings
-from om.document_index.vespa.internal_types import EnrichedDocumentIndexingInfo
 from om.indexing.models import DocMetadataAwareIndexChunk
 from om.indexing.models import MultipassConfig
 from shared_configs.configs import MULTI_TENANT
 
+
+@dataclass
+class MinimalDocumentIndexingInfo:
+    """Minimal information necessary for indexing a document."""
+
+    doc_id: str
+    chunk_start_index: int
+
+
+@dataclass
+class EnrichedDocumentIndexingInfo(MinimalDocumentIndexingInfo):
+    """Enriched information necessary for indexing a document, including
+    version and chunk range."""
+
+    old_version: bool
+    chunk_end_index: int
+
+
+def replace_invalid_doc_id_characters(text: str) -> str:
+    """Replaces invalid document ID characters in text.
+
+    Historically required by Vespa doc-id handling; retained as an
+    engine-neutral sanitizer used by the search and indexing paths.
+    """
+    # Users only seem to run into this with single quotes.
+    return text.replace("'", "_")
+
+
 DEFAULT_BATCH_SIZE = 30
-DEFAULT_INDEX_NAME = "danswer_chunk"
+DEFAULT_INDEX_NAME = "chunk"
 
 
 def should_use_multipass(search_settings: SearchSettings | None) -> bool:

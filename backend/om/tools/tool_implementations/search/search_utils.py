@@ -9,7 +9,7 @@ from om.context.search.models import InferenceSection
 from om.context.search.utils import inference_section_from_chunks
 from om.document_index.interfaces_new import DocumentIndex
 from om.document_index.interfaces_new import DocumentSectionRequest
-from om.document_index.vespa.shared_utils.utils import (
+from om.document_index.document_index_utils import (
     replace_invalid_doc_id_characters,
 )
 from om.llm.interfaces import LLM

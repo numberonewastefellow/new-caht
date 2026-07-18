@@ -4,15 +4,15 @@
 # RETRIEVAL engine to OpenSearch via the admin API.
 #
 # Use this AFTER you have started both engines (mode [B] in .env:
-# COMPOSE_PROFILES=s3-filestore,vespa,opensearch + ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true)
+# COMPOSE_PROFILES=s3-filestore,vespa,opensearch + ENABLE_OPENSEARCH_INDEXING_FOR_OM=true)
 # and run `dev up`. It polls the migration status until the existing corpus has
 # been copied into OpenSearch, then flips retrieval over.
 #
 # Requires an ADMIN API key (create one in the UI: Admin > API Keys).
 #
 # Usage:
-#   ONYX_API_KEY=<key> ./switch-retrieval-to-opensearch.sh            # wait + switch to OpenSearch
-#   ONYX_API_KEY=<key> ./switch-retrieval-to-opensearch.sh --revert   # switch back to Vespa (no wait)
+#   OM_API_KEY=<key> ./switch-retrieval-to-opensearch.sh            # wait + switch to OpenSearch
+#   OM_API_KEY=<key> ./switch-retrieval-to-opensearch.sh --revert   # switch back to Vespa (no wait)
 #
 # Optional env vars:
 #   BASE_URL        (default http://localhost:3000)
@@ -30,16 +30,16 @@ if [ "${1:-}" = "--revert" ]; then
   ENABLE=false
 fi
 
-if [ -z "${ONYX_API_KEY:-}" ]; then
-  echo "ERROR: ONYX_API_KEY is not set. Create an admin API key in the UI (Admin > API Keys)" >&2
-  echo "       and run:  ONYX_API_KEY=<key> $0" >&2
+if [ -z "${OM_API_KEY:-}" ]; then
+  echo "ERROR: OM_API_KEY is not set. Create an admin API key in the UI (Admin > API Keys)" >&2
+  echo "       and run:  OM_API_KEY=<key> $0" >&2
   exit 1
 fi
 
 base="${BASE_URL%/}"
 status_url="${base}/api/admin/opensearch-migration/status"
 retrieval_url="${base}/api/admin/opensearch-migration/retrieval"
-auth=(-H "Authorization: Bearer ${ONYX_API_KEY}")
+auth=(-H "Authorization: Bearer ${OM_API_KEY}")
 
 if [ "$ENABLE" = "true" ]; then
   echo "Waiting for the Vespa -> OpenSearch backfill to complete..."

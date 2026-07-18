@@ -7,9 +7,7 @@ from celery.schedules import crontab
 from om.configs.app_configs import AUTO_LLM_CONFIG_URL
 from om.configs.app_configs import AUTO_LLM_UPDATE_INTERVAL_SECONDS
 from om.configs.app_configs import CHECK_TTL_MANAGEMENT_TASK_FREQUENCY_IN_HOURS
-from om.configs.app_configs import DISABLE_OPENSEARCH_MIGRATION_TASK
 from om.configs.app_configs import DISABLE_VECTOR_DB
-from om.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_ONYX
 from om.configs.app_configs import SCHEDULED_EVAL_DATASET_NAMES
 from om.configs.constants import OM_CLOUD_CELERY_TASK_PREFIX
 from om.configs.constants import OmCeleryPriority
@@ -245,26 +243,6 @@ if SCHEDULED_EVAL_DATASET_NAMES:
         }
     )
 
-# Add OpenSearch migration (Vespa->OpenSearch backfill) task if enabled. Skipped
-# when DISABLE_OPENSEARCH_MIGRATION_TASK is set (e.g. a fresh OpenSearch-only
-# deployment with no Vespa to migrate from).
-if ENABLE_OPENSEARCH_INDEXING_FOR_ONYX and not DISABLE_OPENSEARCH_MIGRATION_TASK:
-    beat_task_templates.append(
-        {
-            "name": "migrate-chunks-from-vespa-to-opensearch",
-            "task": OmCeleryTask.MIGRATE_CHUNKS_FROM_VESPA_TO_OPENSEARCH_TASK,
-            # Try to enqueue an invocation of this task with this frequency.
-            "schedule": timedelta(seconds=120),  # 2 minutes
-            "options": {
-                "priority": OmCeleryPriority.LOW,
-                # If the task was not dequeued in this time, revoke it.
-                "expires": BEAT_EXPIRES_DEFAULT,
-                "queue": OmCeleryQueues.OPENSEARCH_MIGRATION,
-            },
-        }
-    )
-
-
 # Beat task names that require a vector DB. Filtered out when DISABLE_VECTOR_DB.
 _VECTOR_DB_BEAT_TASK_NAMES: set[str] = {
     "check-for-indexing",
@@ -276,8 +254,6 @@ _VECTOR_DB_BEAT_TASK_NAMES: set[str] = {
     "check-for-index-attempt-cleanup",
     "check-for-doc-permissions-sync",
     "check-for-external-group-sync",
-    "check-for-documents-for-opensearch-migration",
-    "migrate-documents-from-vespa-to-opensearch",
 }
 
 if DISABLE_VECTOR_DB:

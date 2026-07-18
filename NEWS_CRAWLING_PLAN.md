@@ -4,9 +4,9 @@
 
 | Component | File | What It Does |
 |-----------|------|-------------|
-| Web Connector | `backend/onyx/connectors/web/connector.py` | Playwright browser crawling. 4 modes: recursive, single, sitemap, upload. Bot evasion, retry, dedup. |
-| HTML Extraction | `backend/onyx/file_processing/html_utils.py` | BeautifulSoup cleanup + optional trafilatura (`PARSE_WITH_TRAFILATURA=true`) |
-| Sitemap Parser | `backend/onyx/utils/sitemap.py` | Extracts `<loc>` URLs from standard sitemaps. Does NOT parse `news:news` metadata. |
+| Web Connector | `backend/om/connectors/web/connector.py` | Playwright browser crawling. 4 modes: recursive, single, sitemap, upload. Bot evasion, retry, dedup. |
+| HTML Extraction | `backend/om/file_processing/html_utils.py` | BeautifulSoup cleanup + optional trafilatura (`PARSE_WITH_TRAFILATURA=true`) |
+| Sitemap Parser | `backend/om/utils/sitemap.py` | Extracts `<loc>` URLs from standard sitemaps. Does NOT parse `news:news` metadata. |
 | Frontend Config | `web/src/lib/connectors/connectors.tsx` (lines 149-183) | Web connector UI: base_url, scrape method, scroll checkbox |
 
 ### Using It for News Today (No Code Changes)
@@ -64,7 +64,7 @@ Current `sitemap.py` only extracts `<loc>` URLs and throws away all `news:news` 
 
 ### Step 1: Enhance Sitemap Parser for News Metadata
 
-**File:** `backend/onyx/utils/sitemap.py`
+**File:** `backend/om/utils/sitemap.py`
 
 - Add `SitemapEntry` dataclass: `url`, `lastmod`, `title`, `publication_date`, `keywords`, `language`, `image_url`
 - Parse `news:` namespace tags (`news:publication_date`, `news:title`, `news:keywords`)
@@ -74,7 +74,7 @@ Current `sitemap.py` only extracts `<loc>` URLs and throws away all `news:news` 
 
 ### Step 2: Wire News Metadata into Web Connector
 
-**File:** `backend/onyx/connectors/web/connector.py`
+**File:** `backend/om/connectors/web/connector.py`
 
 - In sitemap mode, call `list_pages_with_metadata()` instead of `extract_urls_from_sitemap()`
 - Store `SitemapEntry` metadata alongside URLs in `ScrapeSessionContext`
@@ -85,7 +85,7 @@ Current `sitemap.py` only extracts `<loc>` URLs and throws away all `news:news` 
 
 ### Step 3: Extract Article Metadata from HTML
 
-**File:** `backend/onyx/file_processing/html_utils.py`
+**File:** `backend/om/file_processing/html_utils.py`
 
 Add `extract_article_metadata(soup) -> dict` that parses:
 
@@ -109,9 +109,9 @@ WEB_CONNECTOR_IGNORED_ELEMENTS=nav,footer,meta,script,style,symbol,aside,iframe
 
 | File | Changes |
 |------|---------|
-| `backend/onyx/utils/sitemap.py` | Add `SitemapEntry`, `list_pages_with_metadata()`, parse news namespace |
-| `backend/onyx/connectors/web/connector.py` | Use metadata-aware sitemap parser, populate Document fields |
-| `backend/onyx/file_processing/html_utils.py` | Add `extract_article_metadata()` for JSON-LD / OG / meta |
+| `backend/om/utils/sitemap.py` | Add `SitemapEntry`, `list_pages_with_metadata()`, parse news namespace |
+| `backend/om/connectors/web/connector.py` | Use metadata-aware sitemap parser, populate Document fields |
+| `backend/om/file_processing/html_utils.py` | Add `extract_article_metadata()` for JSON-LD / OG / meta |
 
 ## Verification
 

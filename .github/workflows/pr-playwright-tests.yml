@@ -299,7 +299,7 @@ jobs:
         run: |
           cat <<EOF > deployment/docker_compose/.env
           COMPOSE_PROFILES=s3-filestore
-          # TODO(Nik): https://linear.app/onyx-app/issue/ENG-1/update-test-infra-to-use-test-license
+          # TODO(Nik): update test infra to use a test license
           LICENSE_ENFORCEMENT_ENABLED=false
           AUTH_TYPE=basic
           INTEGRATION_TESTS_MODE=true
@@ -307,9 +307,9 @@ jobs:
           EXA_API_KEY=${EXA_API_KEY_VALUE}
           REQUIRE_EMAIL_VERIFICATION=false
           DISABLE_TELEMETRY=true
-          ONYX_BACKEND_IMAGE=${ECR_CACHE}:playwright-test-backend-${RUN_ID}
-          ONYX_MODEL_SERVER_IMAGE=${ECR_CACHE}:playwright-test-model-server-${RUN_ID}
-          ONYX_WEB_SERVER_IMAGE=${ECR_CACHE}:playwright-test-web-${RUN_ID}
+          OM_BACKEND_IMAGE=${ECR_CACHE}:playwright-test-backend-${RUN_ID}
+          OM_MODEL_SERVER_IMAGE=${ECR_CACHE}:playwright-test-model-server-${RUN_ID}
+          OM_WEB_SERVER_IMAGE=${ECR_CACHE}:playwright-test-web-${RUN_ID}
           EOF
 
       # needed for pulling Vespa, Redis, Postgres, and Minio images

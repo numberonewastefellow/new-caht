@@ -52,8 +52,8 @@ pytest tests/search_baseline/test_vespa_baseline.py
 pytest tests/search_baseline/test_search_tool_layer.py -m "not llm"
 
 # 5. After OpenSearch migration: seed both, then compare
-ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true python -m tests.search_baseline.seed_search_corpus
-ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true python -m tests.search_baseline.compare_engines
+ENABLE_OPENSEARCH_INDEXING_FOR_OM=true python -m tests.search_baseline.seed_search_corpus
+ENABLE_OPENSEARCH_INDEXING_FOR_OM=true python -m tests.search_baseline.compare_engines
 ```
 
 Seeding is an idempotent upsert by document id, so re-running is safe. The `seeded_corpus`

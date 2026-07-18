@@ -150,7 +150,7 @@ rate even just moving the same statement a few sentences.
 
 
 ## Other related pointers
-- How messages, files, images are stored can be found in backend/onyx/db/models.py, there is also a README.md under that directory that may be helpful.
+- How messages, files, images are stored can be found in backend/om/db/models.py, there is also a README.md under that directory that may be helpful.
 
 ---
 

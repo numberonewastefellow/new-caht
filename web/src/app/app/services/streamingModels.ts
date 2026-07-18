@@ -162,6 +162,13 @@ export interface PythonToolDelta extends BaseObj {
   stderr: string;
   file_ids: string[];
   files: PythonToolFile[];
+  // Live-streaming metadata (all optional; present only on the terminal delta,
+  // except `reset` which marks a self-heal attempt boundary).
+  exit_code?: number | null;
+  timed_out?: boolean;
+  duration_ms?: number | null;
+  error_kind?: string | null;
+  reset?: boolean;
 }
 
 export interface FetchToolStart extends BaseObj {
@@ -411,10 +418,7 @@ export type WorkflowOrchestratorObj =
   | SectionEnd
   | PacketError;
 
-export type WorkflowPauseObj =
-  | WorkflowPauseForInput
-  | SectionEnd
-  | PacketError;
+export type WorkflowPauseObj = WorkflowPauseForInput | SectionEnd | PacketError;
 
 // Union type for all possible streaming objects
 export type ObjTypes =

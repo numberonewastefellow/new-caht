@@ -1,4 +1,4 @@
-<!-- ONYX_METADATA={"link": "https://github.com/vertualai/vertualai/blob/main/backend/onyx/connectors/README.md"} -->
+<!-- ONYX_METADATA={"link": "https://github.com/vertualai/vertualai/blob/main/backend/om/connectors/README.md"} -->
 
 # Writing a new VertualAI Connector
 
@@ -30,7 +30,7 @@ Connectors come in 3 different flows:
 
 ### Connector Implementation
 
-Refer to [interfaces.py](https://github.com/vertualai/vertualai/blob/main/backend/onyx/connectors/interfaces.py)
+Refer to [interfaces.py](https://github.com/vertualai/vertualai/blob/main/backend/om/connectors/interfaces.py)
 and this first contributor created Pull Request for a new connector (Shoutout to Dan Brown):
 [Reference Pull Request](https://github.com/vertualai/vertualai/pull/139)
 
@@ -81,9 +81,9 @@ if __name__ == "__main__":
 #### Backend Changes
 
 - Add a new type to
-  [DocumentSource](https://github.com/vertualai/vertualai/blob/main/backend/onyx/configs/constants.py)
+  [DocumentSource](https://github.com/vertualai/vertualai/blob/main/backend/om/configs/constants.py)
 - Add a mapping from DocumentSource (and optionally connector type) to the right connector class
-  [here](https://github.com/vertualai/vertualai/blob/main/backend/onyx/connectors/factory.py#L33)
+  [here](https://github.com/vertualai/vertualai/blob/main/backend/om/connectors/factory.py#L33)
 
 #### Frontend Changes
 

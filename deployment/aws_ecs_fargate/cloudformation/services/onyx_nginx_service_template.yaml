@@ -126,9 +126,9 @@ Resources:
               Value: ""
             - Name: DOMAIN
               Value: !Ref DomainName
-            - Name: ONYX_BACKEND_API_HOST
+            - Name: OM_BACKEND_API_HOST
               Value: !Sub ${Environment}-${OnyxBackendApiServiceName}.${OnyxNamespace}
-            - Name: ONYX_WEB_SERVER_HOST
+            - Name: OM_WEB_SERVER_HOST
               Value: !Sub ${Environment}-${OnyxWebServerServiceName}.${OnyxNamespace}
           MountPoints:
             - SourceVolume: efs-volume

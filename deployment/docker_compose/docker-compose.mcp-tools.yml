@@ -1,10 +1,10 @@
 # =============================================================================
-# MCP TOOLS - Free MCP Servers for Onyx
+# MCP TOOLS - Free MCP Servers for VertualAI
 # =============================================================================
 # This overlay adds free MCP tool servers that enhance AI chat and deep research.
 # Most community MCP servers use STDIO transport, so we use bridge containers
 # (supergateway for Node.js servers, mcp-proxy for Python servers) to expose
-# them as SSE endpoints that Onyx can connect to.
+# them as SSE endpoints that VertualAI can connect to.
 #
 # Usage:
 #   docker compose -f docker-compose.yml -f docker-compose.mcp-tools.yml up -d

@@ -55,7 +55,6 @@ from om.db.user_group import mark_user_group_as_synced
 from om.db.user_group import prepare_user_group_for_deletion
 from om.document_index.factory import get_all_document_indices
 from om.document_index.interfaces_new import MetadataUpdateRequest
-from om.httpx.httpx_pool import HttpxPool
 from om.redis.redis_document_set import RedisDocumentSet
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client
@@ -465,7 +464,6 @@ def document_index_metadata_sync_task(
             document_indices = get_all_document_indices(
                 search_settings=active_search_settings.primary,
                 secondary_search_settings=active_search_settings.secondary,
-                httpx_client=HttpxPool.get("vespa"),
             )
 
             retry_document_indices: list[RetryDocumentIndex] = [

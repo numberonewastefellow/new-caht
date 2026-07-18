@@ -3,5 +3,5 @@ The actual execution environment for Python.
 To build locally:
 
 ```
-docker build -t python-executor-sci -f Dockerfile .
+docker build -t om/python-executor-sci -f Dockerfile .
 ```

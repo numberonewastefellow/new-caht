@@ -2,7 +2,7 @@
 
 ## Adding New Metrics
 
-All Prometheus metrics live in the `backend/onyx/server/metrics/` package. Follow these steps to add a new metric.
+All Prometheus metrics live in the `backend/om/server/metrics/` package. Follow these steps to add a new metric.
 
 ### 1. Choose the right file (or create a new one)
 

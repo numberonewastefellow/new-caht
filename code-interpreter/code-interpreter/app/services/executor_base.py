@@ -55,6 +55,42 @@ if len(tree.body) > 0:
     return wrapper
 
 
+# Prologue prepended to every ephemeral __main__.py. It registers an atexit hook
+# that writes any matplotlib figures the user code left open to the workspace, so
+# charts are captured even when the user forgot ``plt.savefig`` / used ``plt.show()``.
+# It is registered BEFORE user code (not appended) so it still fires if the cell
+# raises — atexit runs on interpreter shutdown, including after an unhandled
+# exception. It is a no-op unless matplotlib.pyplot was actually imported, and it
+# never imports pyplot itself. Names are ``_onyx_``-prefixed to avoid clobbering
+# user globals (safe here: the ephemeral process is single-use and thrown away).
+FIGURE_CAPTURE_PROLOGUE = """\
+import atexit as _onyx_atexit
+import sys as _onyx_sys
+
+
+def _onyx_capture_open_figures():
+    plt = _onyx_sys.modules.get("matplotlib.pyplot")
+    if plt is None:
+        return
+    try:
+        fignums = list(plt.get_fignums())
+    except Exception:
+        return
+    _n = 0
+    for _num in fignums:
+        try:
+            _fig = plt.figure(_num)
+            _n += 1
+            _fig.savefig("/workspace/figure_%d.png" % _n, dpi=150, bbox_inches="tight")
+            plt.close(_fig)
+        except Exception:
+            continue
+
+
+_onyx_atexit.register(_onyx_capture_open_figures)
+"""
+
+
 @dataclass(frozen=True, slots=True)
 class ExecutionResult:
     stdout: str
@@ -93,6 +129,9 @@ class StreamResult:
     timed_out: bool
     duration_ms: int
     files: tuple[WorkspaceEntry, ...]
+    # Distinguishes non-timeout failure modes so the UI can label them precisely
+    # (kernel OOM-killed, kernel crashed, session reaped). None on a clean result.
+    error_kind: str | None = None
 
 
 StreamEvent = StreamChunk | StreamResult

@@ -17,32 +17,32 @@ already has a better, file-level plan**. The repo's docs predate this one and ar
 
 | Feature | Prior analysis? | Where | Real status |
 |---|---|---|---|
-| **F1** Parallel | **Yes — extensive** | `backend/onyx/workflows/PARALLEL_EXECUTION.md` (+ `LIMITATIONS.md` §2, `PERFORMANCE.md` §4 / Tier-3) | NOT IMPLEMENTED; **design complete — build that, not F1 below** |
+| **F1** Parallel | **Yes — extensive** | `backend/om/workflows/PARALLEL_EXECUTION.md` (+ `LIMITATIONS.md` §2, `PERFORMANCE.md` §4 / Tier-3) | NOT IMPLEMENTED; **design complete — build that, not F1 below** |
 | **F2** Triggers | **No — blank spot** | only "Event Based connectors" in `connectors/README.md`, marked *"not used… future design purposes"* (ingestion, not workflow triggering) | NOT IMPLEMENTED, NOT ANALYZED |
 | **F3** Connected agents | Yes | `MULTI_AGENT_IMPLEMENTATION_PLAN.md` §4a | **Primitive IMPLEMENTED** (`agent_tool.py`); only builder UX + cycle guard missing |
 | **F4** Gallery | Barely | one bullet "Workflow templates / marketplace", `MULTI_AGENT_IMPLEMENTATION_PLAN.md` Phase 4 | NOT IMPLEMENTED |
-| **F5** External data | Yes | `MULTI_AGENT_IMPLEMENTATION_PLAN.md` §5.5; `backend/onyx/mcp_server/README.md`; `docs/folder-connector.md` | **Tool/MCP mechanism IMPLEMENTED**; only live mail/DB tools undesigned |
+| **F5** External data | Yes | `MULTI_AGENT_IMPLEMENTATION_PLAN.md` §5.5; `backend/om/mcp_server/README.md`; `docs/folder-connector.md` | **Tool/MCP mechanism IMPLEMENTED**; only live mail/DB tools undesigned |
 
 **Net: F2 and F4 are the only features where new design work adds real value.**
 
 ### Stale-doc warnings (these docs contradict shipped code — trust the code)
 
-- `backend/onyx/workflows/PAUSE_RESUME_DESIGN.md` says *"Design Complete — Implementation Pending"* and that resume
+- `backend/om/workflows/PAUSE_RESUME_DESIGN.md` says *"Design Complete — Implementation Pending"* and that resume
   is broken. But `workflows/models.py:246-269` already has `WorkflowCheckpoint` with `clarification_conversation`
   and `paused_agent_original_task` — the exact redesign it proposes. **Shipped.**
-- `backend/onyx/workflows/PROMOTE_OUTPUT_DESIGN.md` says *"NOT IMPLEMENTED — research only."* But `promote_output`
+- `backend/om/workflows/PROMOTE_OUTPUT_DESIGN.md` says *"NOT IMPLEMENTED — research only."* But `promote_output`
   is a live field on `WorkflowStepCreate` and is used in workflow templates. **Shipped.**
 - `MULTI_AGENT_IMPLEMENTATION_PLAN.md`'s comparison table claims fan-out/fan-in = "Yes". **Wrong.** The Deep
   Research primitive exists; the workflow-engine feature does not. `PARALLEL_EXECUTION.md` is correct.
 
 ### What we already have (baseline — do not rebuild)
 
-- **Orchestration engine:** `backend/onyx/workflows/workflow_engine.py` — `run_workflow_sequential()` and `run_workflow_llm_decision()`.
-- **Modes today:** `OrchestrationMode = Literal["sequential", "llm_decision"]`; `StepType = Literal["agent", "conditional_router"]` (`backend/onyx/workflows/models.py:14-17`).
-- **A2A primitive:** `AgentTool` wraps any Persona as a callable tool (`backend/onyx/tools/tool_implementations/agent_tool.py`); a finished workflow becomes a reusable Persona via `create_or_update_workflow_persona()` (`backend/onyx/db/workflow.py`).
+- **Orchestration engine:** `backend/om/workflows/workflow_engine.py` — `run_workflow_sequential()` and `run_workflow_llm_decision()`.
+- **Modes today:** `OrchestrationMode = Literal["sequential", "llm_decision"]`; `StepType = Literal["agent", "conditional_router"]` (`backend/om/workflows/models.py:14-17`).
+- **A2A primitive:** `AgentTool` wraps any Persona as a callable tool (`backend/om/tools/tool_implementations/agent_tool.py`); a finished workflow becomes a reusable Persona via `create_or_update_workflow_persona()` (`backend/om/db/workflow.py`).
 - **Tools & templates:** MCP tool integration plus 36 JSON workflow templates in `backend/tests/workflow_creator/workflows/` deployed by `create_workflows.py`.
 - **Visual builder:** `web/src/components/workflow-builder/` (React Flow; Agent / Conditional Router / Orchestrator / Finish nodes).
-- **HITL:** pause/resume via `WorkflowCheckpoint` (`backend/onyx/workflows/models.py:246`).
+- **HITL:** pause/resume via `WorkflowCheckpoint` (`backend/om/workflows/models.py:246`).
 - **Step model:** already supports `input_mapping`, `output_key`, `is_terminal`, and per-step overrides.
 
 ### Cross-cutting constraints (from `CLAUDE.md`)
@@ -52,15 +52,15 @@ already has a better, file-level plan**. The repo's docs predate this one and ar
 - **Theming:** accent colors via CSS variables only; no hardcoded colors in any new gallery/node UI.
 - **Graph:** after code changes, run `graphify update .` to refresh the knowledge graph.
 
-ORM models live in `backend/onyx/db/models.py` (`AgentWorkflow`, `AgentWorkflowStep`, `WorkflowExecution`); Pydantic
-create/response schemas in `backend/onyx/workflows/models.py`. New fields go in **both** plus a migration.
+ORM models live in `backend/om/db/models.py` (`AgentWorkflow`, `AgentWorkflowStep`, `WorkflowExecution`); Pydantic
+create/response schemas in `backend/om/workflows/models.py`. New fields go in **both** plus a migration.
 
 ---
 
 ## F1 — Parallel Fan-Out / Fan-In Orchestration
 
 > ⚠️ **SUPERSEDED — do not build the design below.**
-> `backend/onyx/workflows/PARALLEL_EXECUTION.md` is the source of truth. It is better engineered: a flat nullable
+> `backend/om/workflows/PARALLEL_EXECUTION.md` is the source of truth. It is better engineered: a flat nullable
 > `parallel_group` **integer column** on `agent_workflow_step` (steps sharing a non-null group run concurrently;
 > `NULL` = sequential, fully backward compatible), thread-per-agent with per-thread DB sessions, and a shared
 > `step_outputs` dict under a lock. Sequential mode only. **No separate join step is needed** — a normal downstream
@@ -112,9 +112,9 @@ Result: the 3 reviewers run at once (~1× latency instead of 3×), then Lead Rev
 
 ### Touch points
 
-- `backend/onyx/workflows/workflow_engine.py` — new branch to execute a parallel group + join.
-- `backend/onyx/workflows/models.py` — `StepType` value + child/join schema.
-- `backend/onyx/db/models.py` — store children / join config.
+- `backend/om/workflows/workflow_engine.py` — new branch to execute a parallel group + join.
+- `backend/om/workflows/models.py` — `StepType` value + child/join schema.
+- `backend/om/db/models.py` — store children / join config.
 - `web/src/components/workflow-builder/` — new `ParallelGroupNode.tsx`, `graphUtils.ts`, `NodeConfigPanel.tsx`, side-by-side `autoLayout()`.
 
 ### Open design decisions
@@ -143,7 +143,7 @@ unattended and delivers output to a sink (chat session, notification, or webhook
 - **Schedule:** register with the existing background scheduler (Celery beat is already used by the Onyx backend)
   → enqueue a workflow execution with a synthesized `message` from the trigger payload.
 - **Webhook:** new public endpoint `POST /workflow/trigger/{url_token}` in
-  `backend/onyx/server/features/workflow/api.py` → validate token → start the workflow with the request body as input.
+  `backend/om/server/features/workflow/api.py` → validate token → start the workflow with the request body as input.
 - Execution reuses the **existing** `run_workflow()` path; only the *entry point* and *output sink* are new.
 - **Output sinks:** write to a chat session (current behavior), POST to a callback URL, or fire an in-app
   notification (`PushNotification` infra).
@@ -157,7 +157,7 @@ unattended and delivers output to a sink (chat session, notification, or webhook
 
 - New `WorkflowTrigger` table + Alembic migration.
 - Scheduler registration (Celery beat).
-- `backend/onyx/server/features/workflow/api.py` — webhook route.
+- `backend/om/server/features/workflow/api.py` — webhook route.
 - New triggers UI tab.
 
 ### Open design decisions
@@ -171,7 +171,7 @@ unattended and delivers output to a sink (chat session, notification, or webhook
 ## F3 — Connected Agents as First-Class Builder Nodes (A2A UX)
 
 > ✅ **The backend primitive is ALREADY IMPLEMENTED.** `MULTI_AGENT_IMPLEMENTATION_PLAN.md` §4a specifies
-> `AgentTool` (`backend/onyx/tools/tool_implementations/agent_tool.py`), and `PERFORMANCE.md` cites optimizations
+> `AgentTool` (`backend/om/tools/tool_implementations/agent_tool.py`), and `PERFORMANCE.md` cites optimizations
 > and bug fixes *inside* that file — i.e. it is live code, not a proposal. **Remaining work is only:** (a) the
 > visual-builder UX below, and (b) a nesting/cycle guard (flagged at ~70% confidence in the plan; arbitrary
 > agent→agent recursion and circular-delegation prevention are not yet designed).
@@ -201,8 +201,8 @@ and composes the itinerary — all within one agent step, decided by the LLM rat
 
 ### Touch points
 
-- `backend/onyx/db/models.py` + `backend/onyx/workflows/models.py` — add `connected_agent_ids` to the step.
-- `backend/onyx/tools/tool_constructor.py` — wire AgentTools (reuse `agent_tool.py` as-is).
+- `backend/om/db/models.py` + `backend/om/workflows/models.py` — add `connected_agent_ids` to the step.
+- `backend/om/tools/tool_constructor.py` — wire AgentTools (reuse `agent_tool.py` as-is).
 - `web/src/components/workflow-builder/` — `types.ts`, `NodeConfigPanel.tsx`, `graphUtils.ts` (dashed edges).
 
 > Mostly UX + plumbing; the backend execution primitive already exists → **lowest backend risk**.
@@ -251,7 +251,7 @@ starter messages → "Use this workflow" → opens in the Wizard/Visual builder 
 > ✅ **The agent→tool/MCP mechanism is ALREADY IMPLEMENTED.** `MULTI_AGENT_IMPLEMENTATION_PLAN.md` §5.5 states:
 > *"a workflow agent inherits ALL of its persona's tools — built-in, custom, and MCP. No special handling needed."*
 > All tool types are presented to the LLM identically as function definitions via `construct_tools()`. Onyx also
-> **hosts its own MCP server** (`backend/onyx/mcp_server/README.md`, FastMCP on port 8090), and filesystem
+> **hosts its own MCP server** (`backend/om/mcp_server/README.md`, FastMCP on port 8090), and filesystem
 > ingestion is "functionally complete" per `docs/folder-connector.md`.
 >
 > **So the generic extension path already works.** The genuine gap is narrower than first stated: there are no
@@ -261,14 +261,14 @@ starter messages → "Use this workflow" → opens in the Wizard/Visual builder 
 ### The problem
 
 Workflow agents are usually *configured* with only `SearchTool` / web search, so they *feel* limited — but the
-framework is not the limit. The repo has a rich tool framework (`backend/onyx/tools/built_in_tools.py`):
+framework is not the limit. The repo has a rich tool framework (`backend/om/tools/built_in_tools.py`):
 `SearchTool`, `WebSearchTool`, `OpenURLTool`, `PythonTool`, `FileReaderTool`, `HttpRequestTool`,
 `ImageGenerationTool`, `MemoryTool`, plus `CustomTool` (OpenAPI) and `MCPTool`. What's missing is **live external
 data access** (run SQL now, read this folder now, fetch the latest mail now).
 
 ### Can we reuse the `connectors/` folder? — Analysis
 
-- There are **60+ connectors** in `backend/onyx/connectors/` (Gmail, IMAP, SharePoint, Google Drive, S3,
+- There are **60+ connectors** in `backend/om/connectors/` (Gmail, IMAP, SharePoint, Google Drive, S3,
   Confluence, Jira, Slack, Salesforce, …) but they are **batch indexers**, not live tools: they implement
   `LoadConnector`/`PollConnector`/`CheckpointedConnector` (`connectors/interfaces.py`) and **yield whole
   `Document` batches into the Vespa index via Celery** (`background/celery/tasks/docfetching`).
@@ -284,7 +284,7 @@ provides the live query interface connectors lack.
 ### Worked example — wire the IMAP mail connector into an agent (the "simple one")
 
 IMAP is the simplest case: plain username/password (no OAuth), and the connector already exposes reusable
-module-level primitives in `backend/onyx/connectors/imap/connector.py`:
+module-level primitives in `backend/om/connectors/imap/connector.py`:
 
 - `_get_mail_client()` → logs into `imaplib.IMAP4_SSL` from `{imap_username, imap_password}`
 - `_fetch_email_ids_in_mailbox(client, mailbox, start, end)` → IMAP `SEARCH` with a date range
@@ -297,7 +297,7 @@ The connector's own `__main__` block (lines 444-484) already demonstrates instan
 
 1. **Credentials:** reuse the encrypted `Credential` table (`source=DocumentSource.IMAP`) via
    `OnyxDBCredentialsProvider`, or `OnyxStaticCredentialsProvider` for a quick PoC.
-2. **New tool class** `ImapMailTool(Tool)` in `backend/onyx/tools/tool_implementations/mail/imap_mail_tool.py`:
+2. **New tool class** `ImapMailTool(Tool)` in `backend/om/tools/tool_implementations/mail/imap_mail_tool.py`:
    - `tool_definition()` → exposes `search_mail(query, since_days, mailbox?)` as an OpenAI function.
    - `run()` → calls the connector's `_get_mail_client` / `_fetch_email_ids_in_mailbox` / `_fetch_email`, returns
      top-N emails as `ToolResponse.llm_facing_response`. No IMAP re-implementation.
@@ -324,7 +324,7 @@ use Approach A when you want to **reuse an existing connector**.
 
 ### Touch points
 
-- New tool file under `backend/onyx/tools/tool_implementations/<source>/`, `built_in_tools.py`,
+- New tool file under `backend/om/tools/tool_implementations/<source>/`, `built_in_tools.py`,
   `tool_constructor.py`, one Alembic migration, and the persona/workflow tool-selector UI.
 
 ---
@@ -345,7 +345,7 @@ new tool file + registration, then the same recipe generalizes to filesystem/obj
 
 **Caveats from the audit:** F1's design here is superseded by `PARALLEL_EXECUTION.md`. F3 and F5 are far smaller
 than their sections imply, because their backend primitives already ship. **F2 and F4 are the only features
-needing genuinely new design work** — F2's design now lives in `backend/onyx/workflows/EVENT_TRIGGERS.md`.
+needing genuinely new design work** — F2's design now lives in `backend/om/workflows/EVENT_TRIGGERS.md`.
 
 Note that F1 (per `PARALLEL_EXECUTION.md`) touches only the **Wizard** editor in its own plan; per `CLAUDE.md`'s
 dual-editor rule it must also update the **Visual Builder**.

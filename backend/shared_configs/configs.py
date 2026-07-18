@@ -42,7 +42,7 @@ INTENT_MODEL_TAG: str | None = None
 DOC_EMBEDDING_CONTEXT_SIZE = 512
 
 # Used to distinguish alternative indices
-ALT_INDEX_SUFFIX = "__danswer_alt_index"
+ALT_INDEX_SUFFIX = "__alt_index"
 
 # Used for loading defaults for automatic deployments and dev flows
 # For local, use: mixedbread-ai/mxbai-rerank-xsmall-v1
@@ -68,7 +68,7 @@ INDEXING_ONLY = os.environ.get("INDEXING_ONLY", "").lower() == "true"
 # The process needs to have this for the log file to write to
 # otherwise, it will not create additional log files
 # This should just be the filename base without extension or path.
-LOG_FILE_NAME = os.environ.get("LOG_FILE_NAME") or "onyx"
+LOG_FILE_NAME = os.environ.get("LOG_FILE_NAME") or "om"
 
 # Enable generating persistent log files for local dev environments
 DEV_LOGGING_ENABLED = os.environ.get("DEV_LOGGING_ENABLED", "").lower() == "true"

@@ -255,9 +255,9 @@ def main() -> None:
         print(f"Dataset size: {dataset_size}")
     if args.remote:
         if not args.api_key:
-            print("Using API Key from ONYX_EVAL_API_KEY")
+            print("Using API Key from OM_EVAL_API_KEY")
         api_key: str = (
-            args.api_key if args.api_key else os.environ.get("ONYX_EVAL_API_KEY", "")
+            args.api_key if args.api_key else os.environ.get("OM_EVAL_API_KEY", "")
         )
         print(f"Running evaluation on remote server: {args.base_url}")
 

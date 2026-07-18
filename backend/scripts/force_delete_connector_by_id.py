@@ -19,7 +19,7 @@ sys.path.append(parent_dir)
 # pylint: disable=E402
 # flake8: noqa: E402
 
-# Now import Onyx modules
+# Now import VertualAI modules
 from om.db.models import (
     DocumentSet__ConnectorCredentialPair,
     UserGroup__ConnectorCredentialPair,

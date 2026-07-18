@@ -6,7 +6,7 @@ server) running:
     python -m tests.search_baseline.seed_search_corpus
 
 By default this indexes into every index returned by ``get_all_document_indices``
-(Vespa always; OpenSearch too when ``ENABLE_OPENSEARCH_INDEXING_FOR_ONYX=true``),
+(Vespa always; OpenSearch too when ``ENABLE_OPENSEARCH_INDEXING_FOR_OM=true``),
 so the same corpus backs both the Vespa baseline and the later OpenSearch compare.
 
 This reuses the production indexing primitives (``VespaIndex.index`` /

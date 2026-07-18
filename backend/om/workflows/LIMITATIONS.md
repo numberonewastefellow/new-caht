@@ -57,7 +57,7 @@ The first agent (Details Collector) should be able to:
 
 ### Reference Implementation
 
-The existing **Deep Research** feature (`backend/onyx/agents/agent_search/`) implements a similar pattern:
+The existing **Deep Research** feature (`backend/om/agents/agent_search/`) implements a similar pattern:
 
 - Presents a research plan to the user
 - Waits for user confirmation/modification

@@ -23,9 +23,9 @@ are genuine policy decisions, not implementation details).
 
 The obvious design — register each user's cron as a Celery beat entry — **does not work here**:
 
-1. `get_tasks_to_schedule()` (`backend/onyx/background/celery/tasks/beat_schedule.py`) returns a **static list** of
+1. `get_tasks_to_schedule()` (`backend/om/background/celery/tasks/beat_schedule.py`) returns a **static list** of
    system tasks. It is not user data and is not DB-backed.
-2. `DynamicTenantScheduler._compare_schedules()` (`backend/onyx/background/celery/apps/beat.py:228-234`) compares
+2. `DynamicTenantScheduler._compare_schedules()` (`backend/om/background/celery/apps/beat.py:228-234`) compares
    **task names only**:
    ```python
    current_tasks = set(name for name, _ in schedule1)
@@ -66,9 +66,9 @@ add one more of exactly that shape.
 
 - Alembic migration creating `workflow_trigger`. **Do not run alembic directly** — the backend applies pending
   migrations on startup (restart the container).
-- ORM `WorkflowTrigger` in `backend/onyx/db/models.py`, next to `AgentWorkflow`.
-- Pydantic `WorkflowTriggerCreate` / `WorkflowTriggerResponse` in `backend/onyx/workflows/models.py`.
-- CRUD in `backend/onyx/db/workflow.py`: `create_trigger`, `list_triggers`, `get_due_triggers`, `set_last_fired`.
+- ORM `WorkflowTrigger` in `backend/om/db/models.py`, next to `AgentWorkflow`.
+- Pydantic `WorkflowTriggerCreate` / `WorkflowTriggerResponse` in `backend/om/workflows/models.py`.
+- CRUD in `backend/om/db/workflow.py`: `create_trigger`, `list_triggers`, `get_due_triggers`, `set_last_fired`.
 
 ### Cron parsing — decision required
 **`croniter` is not currently a dependency** (checked `backend/requirements/*.txt`). Two options:
@@ -85,7 +85,7 @@ first run) and compare to `now()`.
 
 ## Phase 2 — The dispatcher beat task
 
-**New task**: `backend/onyx/background/celery/tasks/workflow_triggers/tasks.py`
+**New task**: `backend/om/background/celery/tasks/workflow_triggers/tasks.py`
 
 ```python
 @shared_task(name="check_for_workflow_triggers", ...)
@@ -167,7 +167,7 @@ Recommend **(b)** — it reuses the shipped pause/resume machinery and degrades 
 
 ## Phase 4 — API + UI
 
-- `backend/onyx/server/features/workflow/api.py`: CRUD routes `POST/GET/PATCH/DELETE /workflow/{id}/triggers`.
+- `backend/om/server/features/workflow/api.py`: CRUD routes `POST/GET/PATCH/DELETE /workflow/{id}/triggers`.
 - A **Triggers** tab on the workflow editor listing triggers, cron, last fired, next fire, enabled toggle.
 - Colors via CSS variables only (see `CLAUDE.md`); no hardcoded accent colors.
 
@@ -190,12 +190,12 @@ Recommend **(b)** — it reuses the shipped pause/resume machinery and degrades 
 
 | File | Change |
 |------|--------|
-| `backend/onyx/db/models.py` | New `WorkflowTrigger` ORM model |
-| `backend/onyx/workflows/models.py` | `WorkflowTriggerCreate` / `WorkflowTriggerResponse` |
-| `backend/onyx/db/workflow.py` | Trigger CRUD + `get_due_triggers()` |
-| **NEW** `backend/onyx/background/celery/tasks/workflow_triggers/tasks.py` | Dispatcher + `run_triggered_workflow` |
-| `backend/onyx/background/celery/tasks/beat_schedule.py` | Register `check-for-workflow-triggers` |
-| `backend/onyx/server/features/workflow/api.py` | Trigger CRUD routes; later the webhook route |
+| `backend/om/db/models.py` | New `WorkflowTrigger` ORM model |
+| `backend/om/workflows/models.py` | `WorkflowTriggerCreate` / `WorkflowTriggerResponse` |
+| `backend/om/db/workflow.py` | Trigger CRUD + `get_due_triggers()` |
+| **NEW** `backend/om/background/celery/tasks/workflow_triggers/tasks.py` | Dispatcher + `run_triggered_workflow` |
+| `backend/om/background/celery/tasks/beat_schedule.py` | Register `check-for-workflow-triggers` |
+| `backend/om/server/features/workflow/api.py` | Trigger CRUD routes; later the webhook route |
 | **NEW** alembic migration | Create `workflow_trigger` table |
 | `web/` workflow editor | Triggers tab |
 | `backend/requirements/default.txt` | Add `croniter` (if Option A) |
@@ -204,12 +204,12 @@ Recommend **(b)** — it reuses the shipped pause/resume machinery and degrades 
 
 | Utility | Location |
 |---------|----------|
-| Beat scheduling / tenant fan-out | `backend/onyx/background/celery/apps/beat.py`, `tasks/beat_schedule.py` |
-| `TenantAwareTask` | `backend/onyx/background/celery/apps/app_base.py` |
-| `get_session_with_current_tenant()` | `backend/onyx/db/engine/sql_engine.py:311` |
+| Beat scheduling / tenant fan-out | `backend/om/background/celery/apps/beat.py`, `tasks/beat_schedule.py` |
+| `TenantAwareTask` | `backend/om/background/celery/apps/app_base.py` |
+| `get_session_with_current_tenant()` | `backend/om/db/engine/sql_engine.py:311` |
 | `RedisLock` (double-fire guard) | as used in `connectors/credentials_provider.py` |
-| `run_workflow()` + pause/resume checkpointing | `backend/onyx/workflows/workflow_engine.py` |
-| `WorkflowTraceBuilder` | `backend/onyx/workflows/trace_models.py` |
+| `run_workflow()` + pause/resume checkpointing | `backend/om/workflows/workflow_engine.py` |
+| `WorkflowTraceBuilder` | `backend/om/workflows/trace_models.py` |
 
 ---
 

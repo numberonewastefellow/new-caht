@@ -140,7 +140,7 @@ def construct_tools(
 
     search_settings = get_current_search_settings(db_session)
     # This flow is for search so we do not get all indices.
-    document_index = get_default_document_index(search_settings, None, db_session)
+    document_index = get_default_document_index(search_settings, None)
 
     added_search_tool = False
     for db_tool_model in persona.tools:

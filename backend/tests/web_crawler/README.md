@@ -21,11 +21,11 @@ Chat question → web_search tool (finds URLs) → open_url tool → WebContentP
 
 | File | Change |
 |------|--------|
-| `backend/onyx/tools/tool_implementations/open_url/virtualai_web_crawler.py` | **NEW** — robust crawler class |
-| `backend/onyx/tools/tool_implementations/open_url/onyx_web_crawler.py` | **UNCHANGED** — kept as-is for backward compat |
-| `backend/onyx/tools/tool_implementations/web_search/providers.py` | Updated imports: `OnyxWebCrawler` → `VirtualAIWebCrawler` |
-| `backend/onyx/server/features/web_search/api.py` | Updated imports: `OnyxWebCrawler` → `VirtualAIWebCrawler` |
-| `backend/onyx/file_processing/html_utils.py` | Added `extract_published_date()` helper |
+| `backend/om/tools/tool_implementations/open_url/virtualai_web_crawler.py` | **NEW** — robust crawler class |
+| `backend/om/tools/tool_implementations/open_url/onyx_web_crawler.py` | **UNCHANGED** — kept as-is for backward compat |
+| `backend/om/tools/tool_implementations/web_search/providers.py` | Updated imports: `OnyxWebCrawler` → `VirtualAIWebCrawler` |
+| `backend/om/server/features/web_search/api.py` | Updated imports: `OnyxWebCrawler` → `VirtualAIWebCrawler` |
+| `backend/om/file_processing/html_utils.py` | Added `extract_published_date()` helper |
 | `backend/shared_configs/enums.py` | `WebContentProviderType` unchanged — still uses `ONYX_WEB_CRAWLER` enum value |
 
 ## VirtualAIWebCrawler Design

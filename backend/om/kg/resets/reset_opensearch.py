@@ -1,5 +1,4 @@
 import time
-from typing import Any
 
 from redis.lock import Lock as RedisLock
 
@@ -10,67 +9,50 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.models import Connector
 from om.db.models import DocumentByConnectorCredentialPair
 from om.db.models import KGEntityType
-from om.document_index.document_index_utils import get_uuid_from_chunk_info
-from om.document_index.interfaces_new import TenantState
-from om.document_index.vespa.vespa_document_index import KGVespaChunkUpdateRequest
-from om.document_index.vespa.vespa_document_index import VespaDocumentIndex
-from om.document_index.vespa_constants import DOCUMENT_ID_ENDPOINT
+from om.document_index.interfaces_new import KGUChunkUpdateRequest
+from om.kg.opensearch.opensearch_interactions import update_kg_chunks_opensearch_info
 from om.kg.utils.lock_utils import extend_lock
 from om.utils.logger import setup_logger
-from shared_configs.configs import MULTI_TENANT
 
 logger = setup_logger()
 
 
-def _reset_vespa_for_doc(document_id: str, tenant_id: str, index_name: str) -> None:
-    vespa_index = VespaDocumentIndex(
-        index_name=index_name,
-        tenant_state=TenantState(tenant_id=tenant_id, multitenant=MULTI_TENANT),
-        large_chunks_enabled=False,
-        httpx_client=None,
-    )
+def _reset_opensearch_for_doc(
+    document_id: str, tenant_id: str, index_name: str
+) -> None:
+    """Clears the KG fields (kg_entities, kg_relationships, kg_terms) for every
+    chunk of a document by full-replacing them with empty arrays.
 
-    reset_update_dict: dict[str, Any] = {
-        "fields": {
-            "kg_entities": {"assign": []},
-            "kg_relationships": {"assign": []},
-            "kg_terms": {"assign": []},
-        }
-    }
-
+    Empty (non-None) sets cause kg_chunk_updates to write empty arrays, which is
+    how a reset clears the fields.
+    """
     with get_session_with_current_tenant() as db_session:
         num_chunks = get_num_chunks_for_document(db_session, document_id)
 
-    vespa_requests: list[KGVespaChunkUpdateRequest] = []
-    for chunk_num in range(num_chunks):
-        doc_chunk_id = get_uuid_from_chunk_info(
+    reset_requests: list[KGUChunkUpdateRequest] = [
+        KGUChunkUpdateRequest(
             document_id=document_id,
             chunk_id=chunk_num,
-            tenant_id=tenant_id,
-            large_chunk_id=None,
+            core_entity="unused",
+            entities=set(),
+            relationships=set(),
+            terms=set(),
         )
-        vespa_requests.append(
-            KGVespaChunkUpdateRequest(
-                document_id=document_id,
-                chunk_id=chunk_num,
-                url=f"{DOCUMENT_ID_ENDPOINT.format(index_name=vespa_index.index_name)}/{doc_chunk_id}",
-                update_request=reset_update_dict,
-            )
-        )
+        for chunk_num in range(num_chunks)
+    ]
 
-    with vespa_index.httpx_client_context as httpx_client:
-        vespa_index._apply_kg_chunk_updates_batched(vespa_requests, httpx_client)
+    update_kg_chunks_opensearch_info(reset_requests, index_name, tenant_id)
 
 
-def reset_vespa_kg_index(
+def reset_opensearch_kg_index(
     tenant_id: str, index_name: str, lock: RedisLock, source_name: str | None = None
 ) -> None:
     """
-    Reset the kg info in vespa for all documents of a given source name,
+    Reset the kg info in OpenSearch for all documents of a given source name,
     or all documents from kg grounded sources if source_name is None.
     """
     logger.info(
-        "Resetting kg vespa index %s for tenant %s, source: %s",
+        "Resetting kg opensearch index %s for tenant %s, source: %s",
         index_name,
         tenant_id,
         source_name if source_name else "all",
@@ -78,7 +60,7 @@ def reset_vespa_kg_index(
 
     last_lock_time = time.monotonic()
 
-    # Get all documents that need a vespa reset
+    # Get all documents that need an OpenSearch reset
     with get_session_with_current_tenant() as db_session:
         if source_name:
             # get all connectors of the given source name
@@ -117,13 +99,13 @@ def reset_vespa_kg_index(
 
     # Reset the kg fields
     for document_id in document_ids:
-        _reset_vespa_for_doc(document_id, tenant_id, index_name)
+        _reset_opensearch_for_doc(document_id, tenant_id, index_name)
         last_lock_time = extend_lock(
             lock, CELERY_GENERIC_BEAT_LOCK_TIMEOUT, last_lock_time
         )
 
     logger.info(
-        "Finished resetting kg vespa index %s for tenant %s, source: %s",
+        "Finished resetting kg opensearch index %s for tenant %s, source: %s",
         index_name,
         tenant_id,
         source_name if source_name else "all",

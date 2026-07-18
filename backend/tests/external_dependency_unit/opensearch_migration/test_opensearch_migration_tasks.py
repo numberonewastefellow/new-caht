@@ -236,15 +236,15 @@ def full_deployment_setup() -> Generator[None, None, None]:
     backend/tests/external_dependency_unit/conftest.py because we need to set
     opensearch_available just for this module, not the entire test session.
     """
-    # Patch ENABLE_OPENSEARCH_INDEXING_FOR_ONYX just for this test because we
+    # Patch ENABLE_OPENSEARCH_INDEXING_FOR_OM just for this test because we
     # don't yet want that enabled for all tests.
     # TODO(andrei): Remove this once CI enables OpenSearch for all tests.
     with (
         patch(
-            "om.configs.app_configs.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX",
+            "om.configs.app_configs.ENABLE_OPENSEARCH_INDEXING_FOR_OM",
             True,
         ),
-        patch("om.document_index.factory.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX", True),
+        patch("om.document_index.factory.ENABLE_OPENSEARCH_INDEXING_FOR_OM", True),
     ):
         ensure_full_deployment_setup(opensearch_available=True)
         yield  # Test runs here.
@@ -388,7 +388,7 @@ def clean_migration_tables(db_session: Session) -> Generator[None, None, None]:
 @pytest.fixture(scope="function")
 def enable_opensearch_indexing_for_onyx() -> Generator[None, None, None]:
     with patch(
-        "om.background.celery.tasks.opensearch_migration.tasks.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX",
+        "om.background.celery.tasks.opensearch_migration.tasks.ENABLE_OPENSEARCH_INDEXING_FOR_OM",
         True,
     ):
         yield  # Test runs here.
@@ -397,7 +397,7 @@ def enable_opensearch_indexing_for_onyx() -> Generator[None, None, None]:
 @pytest.fixture(scope="function")
 def disable_opensearch_indexing_for_onyx() -> Generator[None, None, None]:
     with patch(
-        "om.background.celery.tasks.opensearch_migration.tasks.ENABLE_OPENSEARCH_INDEXING_FOR_ONYX",
+        "om.background.celery.tasks.opensearch_migration.tasks.ENABLE_OPENSEARCH_INDEXING_FOR_OM",
         False,
     ):
         yield  # Test runs here.

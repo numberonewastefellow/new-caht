@@ -16,11 +16,9 @@ from typing import Generator
 from alembic import op
 import sqlalchemy as sa
 
-from om.document_index.vespa_constants import DOCUMENT_ID_ENDPOINT
 from om.db.search_settings import SearchSettings
 from om.configs.app_configs import AUTH_TYPE
 from om.configs.constants import AuthType
-from om.document_index.vespa.shared_utils.utils import get_vespa_http_client
 
 logger = logging.getLogger("alembic.runtime.migration")
 
@@ -119,53 +117,20 @@ def log_list_tags() -> None:
 
 
 def remove_old_tags() -> None:
+    """No-op: Vespa has been removed from the codebase.
+
+    This historical migration reconciled Postgres document tags against the
+    chunk metadata stored in Vespa (the source of truth) and deleted stale tag
+    rows. With Vespa gone there is no source of truth to compare against, so the
+    reconciliation is skipped. A fresh OpenSearch-only install has no documents
+    or tags at migration time; a deployment that already applied this migration
+    will not re-run it. The schema changes in ``upgrade`` are unaffected. This is
+    equivalent to running the migration with SKIP_TAG_FIX set.
     """
-    Removes old tags from the database.
-    Previously, there was a bug where if a document got indexed with a tag and then
-    the document got reindexed, the old tag would not be removed.
-    This function removes those old tags by comparing it against the tags in vespa.
-    """
-    current_search_settings, _ = active_search_settings()
-
-    # Get the index name
-    if hasattr(current_search_settings, "index_name"):
-        index_name = current_search_settings.index_name
-    else:
-        # Default index name if we can't get it from the document_index
-        index_name = "danswer_index"
-
-    for batch in _get_batch_documents_with_multiple_tags():
-        n_deleted = 0
-
-        for document_id in batch:
-            true_metadata = _get_vespa_metadata(document_id, index_name)
-            tags = _get_document_tags(document_id)
-
-            # identify document__tags to delete
-            to_delete: list[str] = []
-            for tag_id, tag_key, tag_value in tags:
-                true_val = true_metadata.get(tag_key, "")
-                if (isinstance(true_val, list) and tag_value not in true_val) or (
-                    isinstance(true_val, str) and tag_value != true_val
-                ):
-                    to_delete.append(str(tag_id))
-
-            if not to_delete:
-                continue
-
-            # delete old document__tags
-            bind = op.get_bind()
-            result = bind.execute(
-                sa.text(
-                    f"""
-                    DELETE FROM document__tag
-                    WHERE document_id = '{document_id}'
-                    AND tag_id IN ({','.join(to_delete)})
-                    """
-                )
-            )
-            n_deleted += result.rowcount
-        logger.info(f"Processed {len(batch)} documents and deleted {n_deleted} tags")
+    logger.warning(
+        "Skipping Vespa-based tag reconciliation (Vespa has been removed)."
+    )
+    return
 
 
 def active_search_settings() -> tuple[SearchSettings, SearchSettings | None]:
@@ -247,30 +212,13 @@ def _get_batch_documents_with_multiple_tags(
 def _get_vespa_metadata(
     document_id: str, index_name: str
 ) -> dict[str, str | list[str]]:
-    url = DOCUMENT_ID_ENDPOINT.format(index_name=index_name)
-
-    # Document-Selector language
-    selection = (
-        f"{index_name}.document_id=='{document_id}' and {index_name}.chunk_id==0"
+    # Vespa has been removed; this helper is retained only so the historical
+    # migration remains importable. It is no longer reachable (remove_old_tags is
+    # now a no-op).
+    raise NotImplementedError(
+        "Vespa has been removed; document metadata reconciliation is no longer "
+        "performed."
     )
-
-    params: dict[str, str | int] = {
-        "selection": selection,
-        "wantedDocumentCount": 1,
-        "fieldSet": f"{index_name}:metadata",
-    }
-
-    with get_vespa_http_client() as client:
-        resp = client.get(url, params=params)
-        resp.raise_for_status()
-
-    docs = resp.json().get("documents", [])
-    if not docs:
-        raise RuntimeError(f"No chunk-0 found for document {document_id}")
-
-    # for some reason, metadata is a string
-    metadata = docs[0]["fields"]["metadata"]
-    return json.loads(metadata)
 
 
 def _get_document_tags(document_id: str) -> list[tuple[int, str, str]]:

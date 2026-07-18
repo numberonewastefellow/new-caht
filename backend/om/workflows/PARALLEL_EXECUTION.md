@@ -46,7 +46,7 @@ Nullable integer. Steps with same non-null value run concurrently. `NULL` = sequ
 
 ### 1.2 SQLAlchemy Model
 
-**File**: `backend/onyx/db/models.py` (~line 5076, before `is_terminal`)
+**File**: `backend/om/db/models.py` (~line 5076, before `is_terminal`)
 
 ```python
 parallel_group: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -54,14 +54,14 @@ parallel_group: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
 ### 1.3 Pydantic Schemas
 
-**File**: `backend/onyx/workflows/models.py`
+**File**: `backend/om/workflows/models.py`
 
 - `WorkflowStepCreate`: add `parallel_group: int | None = None`
 - `WorkflowStepResponse`: add `parallel_group: int | None = None`
 
 ### 1.4 CRUD
 
-**File**: `backend/onyx/db/workflow.py` — pass `parallel_group=step_create.parallel_group` in `_add_step()`
+**File**: `backend/om/db/workflow.py` — pass `parallel_group=step_create.parallel_group` in `_add_step()`
 
 ### 1.5 TypeScript Interfaces
 
@@ -76,7 +76,7 @@ parallel_group: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
 ### `_group_steps()` function
 
-**File**: `backend/onyx/workflows/workflow_engine.py`
+**File**: `backend/om/workflows/workflow_engine.py`
 
 ```python
 def _group_steps(steps: list[AgentWorkflowStep]) -> list[list[AgentWorkflowStep]]:
@@ -93,7 +93,7 @@ def _group_steps(steps: list[AgentWorkflowStep]) -> list[list[AgentWorkflowStep]
 
 ### `_run_parallel_group()` — Core
 
-**File**: `backend/onyx/workflows/workflow_engine.py`
+**File**: `backend/om/workflows/workflow_engine.py`
 
 Thread architecture:
 
@@ -183,21 +183,21 @@ Add number input per step row with InfoTip tooltip:
 
 | File | Change |
 |------|--------|
-| `backend/onyx/db/models.py` | Add `parallel_group` column to `AgentWorkflowStep` |
-| `backend/onyx/workflows/models.py` | Add `parallel_group` to Pydantic schemas |
-| `backend/onyx/db/workflow.py` | Pass `parallel_group` in `_add_step()` |
+| `backend/om/db/models.py` | Add `parallel_group` column to `AgentWorkflowStep` |
+| `backend/om/workflows/models.py` | Add `parallel_group` to Pydantic schemas |
+| `backend/om/db/workflow.py` | Pass `parallel_group` in `_add_step()` |
 | `web/src/lib/workflows/interfaces.ts` | Add `parallel_group` to TS interfaces |
 | `web/src/refresh-pages/WorkflowEditorPage.tsx` | Add parallel group UI field + visual indicators |
-| `backend/onyx/workflows/workflow_engine.py` | Add `_group_steps()`, `_run_parallel_group()`, integrate into sequential runner |
+| `backend/om/workflows/workflow_engine.py` | Add `_group_steps()`, `_run_parallel_group()`, integrate into sequential runner |
 | **NEW** alembic migration | Add `parallel_group` column |
 
 ## Existing Utilities to Reuse
 
 | Utility | Location |
 |---------|----------|
-| `get_session_with_current_tenant()` | `backend/onyx/db/engine/sql_engine.py` |
-| `run_in_background()` | `backend/onyx/utils/threadpool_concurrency.py` |
-| `Emitter` | `backend/onyx/chat/emitter.py` |
+| `get_session_with_current_tenant()` | `backend/om/db/engine/sql_engine.py` |
+| `run_in_background()` | `backend/om/utils/threadpool_concurrency.py` |
+| `Emitter` | `backend/om/chat/emitter.py` |
 | `queue.Queue` | Python stdlib |
 | `threading.Lock` | Python stdlib |
 
