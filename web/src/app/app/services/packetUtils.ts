@@ -37,6 +37,7 @@ export function isToolPacket(
     // Workflow packets
     PacketType.WORKFLOW_STEP_START,
     PacketType.WORKFLOW_STEP_DELTA,
+    PacketType.WORKFLOW_STEP_REASONING_DELTA,
     PacketType.WORKFLOW_STEP_END,
     PacketType.WORKFLOW_ORCHESTRATOR_THINKING,
     PacketType.WORKFLOW_PAUSE_FOR_INPUT,
@@ -65,7 +66,8 @@ export function isActualToolCallPacket(packet: Packet): boolean {
     packet.obj.type !== PacketType.WORKFLOW_ORCHESTRATOR_THINKING &&
     packet.obj.type !== PacketType.WORKFLOW_STEP_START &&
     packet.obj.type !== PacketType.WORKFLOW_STEP_END &&
-    packet.obj.type !== PacketType.WORKFLOW_STEP_DELTA
+    packet.obj.type !== PacketType.WORKFLOW_STEP_DELTA &&
+    packet.obj.type !== PacketType.WORKFLOW_STEP_REASONING_DELTA
   );
 }
 

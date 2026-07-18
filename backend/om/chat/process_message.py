@@ -512,9 +512,18 @@ def _run_workflow_and_save(
             }
         elif ptype == StreamingType.WORKFLOW_STEP_DELTA.value:
             if _cur_step is not None:
-                _cur_step["content_parts"].append(
-                    getattr(packet.obj, "content", "") or ""
-                )
+                # Honor replace semantics (mirror the frontend fold): a
+                # replace=True delta is the authoritative agent_output and
+                # resets the accumulator, so live-streamed prose chunks are not
+                # double-counted into the persisted step output.
+                if getattr(packet.obj, "replace", False):
+                    _cur_step["content_parts"] = [
+                        getattr(packet.obj, "content", "") or ""
+                    ]
+                else:
+                    _cur_step["content_parts"].append(
+                        getattr(packet.obj, "content", "") or ""
+                    )
         elif ptype == StreamingType.CUSTOM_TOOL_DELTA.value:
             # Track file_ids emitted by post-step file capture
             fids = getattr(packet.obj, "file_ids", None)

@@ -61,6 +61,7 @@ export enum PacketType {
   // Workflow packets
   WORKFLOW_STEP_START = "workflow_step_start",
   WORKFLOW_STEP_DELTA = "workflow_step_delta",
+  WORKFLOW_STEP_REASONING_DELTA = "workflow_step_reasoning_delta",
   WORKFLOW_STEP_END = "workflow_step_end",
   WORKFLOW_ORCHESTRATOR_THINKING = "workflow_orchestrator_thinking",
   WORKFLOW_PAUSE_FOR_INPUT = "workflow_pause_for_input",
@@ -303,6 +304,15 @@ export interface WorkflowStepStart extends BaseObj {
 export interface WorkflowStepDelta extends BaseObj {
   type: "workflow_step_delta";
   content: string;
+  // When true, replace the step's accumulated live-streamed text with `content`
+  // (the authoritative agent_output) instead of appending. Optional for backward
+  // compatibility — absent/false means append.
+  replace?: boolean;
+}
+
+export interface WorkflowStepReasoningDelta extends BaseObj {
+  type: "workflow_step_reasoning_delta";
+  content: string;
 }
 
 export interface WorkflowStepEnd extends BaseObj {
@@ -409,6 +419,7 @@ export type ResearchAgentObj =
 export type WorkflowStepObj =
   | WorkflowStepStart
   | WorkflowStepDelta
+  | WorkflowStepReasoningDelta
   | WorkflowStepEnd
   | SectionEnd
   | PacketError;

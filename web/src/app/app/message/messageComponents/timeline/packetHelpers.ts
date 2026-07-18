@@ -103,8 +103,11 @@ export const stepHasCollapsedStreamingContent = (
     return true;
   }
 
-  // Workflow step has content when delta arrives
-  if (packetTypes.has(PacketType.WORKFLOW_STEP_DELTA)) {
+  // Workflow step has content when a prose or reasoning delta arrives
+  if (
+    packetTypes.has(PacketType.WORKFLOW_STEP_DELTA) ||
+    packetTypes.has(PacketType.WORKFLOW_STEP_REASONING_DELTA)
+  ) {
     return true;
   }
 
@@ -139,9 +142,7 @@ export const isWorkflowStepPackets = (packets: Packet[]): boolean =>
 
 // Check if packets belong to workflow orchestrator thinking
 export const isWorkflowOrchestratorPackets = (packets: Packet[]): boolean =>
-  packets.some(
-    (p) => p.obj.type === PacketType.WORKFLOW_ORCHESTRATOR_THINKING
-  );
+  packets.some((p) => p.obj.type === PacketType.WORKFLOW_ORCHESTRATOR_THINKING);
 
 // Check if packets belong to a workflow pause for input
 export const isWorkflowPausePackets = (packets: Packet[]): boolean =>

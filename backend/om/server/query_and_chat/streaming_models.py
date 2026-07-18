@@ -59,6 +59,7 @@ class StreamingType(Enum):
     # Workflow Packets
     WORKFLOW_STEP_START = "workflow_step_start"
     WORKFLOW_STEP_DELTA = "workflow_step_delta"
+    WORKFLOW_STEP_REASONING_DELTA = "workflow_step_reasoning_delta"
     WORKFLOW_STEP_END = "workflow_step_end"
     WORKFLOW_ORCHESTRATOR_THINKING = "workflow_orchestrator_thinking"
     WORKFLOW_PAUSE_FOR_INPUT = "workflow_pause_for_input"
@@ -388,6 +389,26 @@ class WorkflowStepStart(BaseObj):
 class WorkflowStepDelta(BaseObj):
     type: Literal["workflow_step_delta"] = StreamingType.WORKFLOW_STEP_DELTA.value
     content: str
+    # When True, consumers replace the step's accumulated live-streamed text with
+    # `content` (the authoritative agent_output) instead of appending. Live
+    # sub-agent prose chunks stream with replace=False; the final block reconciles
+    # with replace=True. NOTE: a consumer that ignores `replace` and appends every
+    # delta will DOUBLE the output (streamed chunks + the authoritative block),
+    # since the accumulated chunks already equal agent_output. This is safe here
+    # only because the frontend renderer, the persistence writer
+    # (process_message._run_workflow_and_save), and the backend ship together and
+    # all honor `replace`.
+    replace: bool = False
+
+
+class WorkflowStepReasoningDelta(BaseObj):
+    # Live sub-agent reasoning ("thinking") chunk, tagged to the current workflow
+    # step's placement so it renders in a collapsible block under the step. Ephemeral
+    # (not persisted / not reconstructed on reload).
+    type: Literal["workflow_step_reasoning_delta"] = (
+        StreamingType.WORKFLOW_STEP_REASONING_DELTA.value
+    )
+    content: str
 
 
 class WorkflowStepEnd(BaseObj):
@@ -469,6 +490,7 @@ PacketObj = Union[
     # Workflow Packets
     WorkflowStepStart,
     WorkflowStepDelta,
+    WorkflowStepReasoningDelta,
     WorkflowStepEnd,
     WorkflowOrchestratorThinking,
     WorkflowPauseForInput,

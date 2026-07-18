@@ -52,6 +52,7 @@ from om.server.query_and_chat.streaming_models import SectionEnd
 from om.server.query_and_chat.streaming_models import WorkflowOrchestratorThinking
 from om.server.query_and_chat.streaming_models import WorkflowStepDelta
 from om.server.query_and_chat.streaming_models import WorkflowStepEnd
+from om.server.query_and_chat.streaming_models import WorkflowStepReasoningDelta
 from om.server.query_and_chat.streaming_models import WorkflowPauseForInput
 from om.server.query_and_chat.streaming_models import WorkflowStepStart
 from om.tools.tool_implementations.agent_tool import AgentTool
@@ -282,6 +283,8 @@ def _stream_agent_packets(
     result: _StreamingAgentResult,
     is_connected: Callable[[], bool] | None = None,
     suppress_types: frozenset[str] | None = _AGENT_SUPPRESS_TYPES,
+    stream_answer_as_step: bool = True,
+    stream_reasoning_as_step: bool = True,
     **agent_kwargs: Any,
 ) -> Generator[Packet, None, None]:
     """Run agent in a background thread, yielding emitter packets in real-time.
@@ -290,6 +293,15 @@ def _stream_agent_packets(
     agent runs in a background thread emitting packets to emitter.bus, while
     the main (generator) thread polls the bus every 50ms and yields each
     packet immediately to the SSE endpoint for real-time streaming.
+
+    Sub-agent answer tokens (``message_delta``) and reasoning tokens
+    (``reasoning_delta``) are *translated* — not simply dropped — into
+    ``WorkflowStepDelta`` / ``WorkflowStepReasoningDelta`` packets tagged to the
+    step's ``placement``, so the step's prose and thinking stream live under the
+    step group. The caller then emits the authoritative ``agent_output`` as a
+    final ``WorkflowStepDelta(replace=True)`` to reconcile. Set
+    ``stream_answer_as_step`` / ``stream_reasoning_as_step`` False to suppress
+    (legacy block-per-agent behavior).
 
     The ToolResponse and max_turn_index are stored in `result` for the caller.
     If is_connected returns False, sets result.cancelled and returns early.
@@ -300,6 +312,39 @@ def _stream_agent_packets(
             result.response = agent_tool.run(placement, None, **agent_kwargs)
         except Exception as e:
             result.exception = e
+
+    def _process(pkt: Packet) -> Generator[Packet, None, None]:
+        """Translate/suppress one sub-agent packet; yield what should stream."""
+        otype = pkt.obj.type
+        # Answer tokens → live step prose chunk (append). message_start/end carry
+        # no step text and are dropped.
+        if otype in _ANSWER_SUPPRESS_TYPES:
+            if stream_answer_as_step and otype == "message_delta":
+                text = getattr(pkt.obj, "content", "") or ""
+                if text:
+                    yield Packet(
+                        placement=placement,
+                        obj=WorkflowStepDelta(content=text),
+                    )
+            return
+        # Reasoning tokens → live collapsible "thinking" chunk under the step.
+        if otype in _REASONING_SUPPRESS_TYPES:
+            if stream_reasoning_as_step and otype == "reasoning_delta":
+                rtext = getattr(pkt.obj, "reasoning", "") or ""
+                if rtext:
+                    yield Packet(
+                        placement=placement,
+                        obj=WorkflowStepReasoningDelta(content=rtext),
+                    )
+            return
+        # Any other suppressed type is dropped; everything else (tool packets,
+        # citations, etc.) passes through with its own placement, tracking
+        # max_turn_index so the next step doesn't collide.
+        if suppress_types and otype in suppress_types:
+            return
+        if pkt.placement.turn_index > result.max_turn_index:
+            result.max_turn_index = pkt.placement.turn_index
+        yield pkt
 
     thread = run_in_background(_run_agent)
 
@@ -322,11 +367,7 @@ def _stream_agent_packets(
             last_cancel_check = time.monotonic()
             continue
 
-        if suppress_types and pkt.obj.type in suppress_types:
-            continue
-        if pkt.placement.turn_index > result.max_turn_index:
-            result.max_turn_index = pkt.placement.turn_index
-        yield pkt
+        yield from _process(pkt)
 
         # Check stop signal periodically even when packets are flowing,
         # matching the pattern from chat_state.py (lines 253-264).
@@ -347,13 +388,9 @@ def _stream_agent_packets(
     while True:
         try:
             pkt = emitter.bus.get_nowait()
-            if suppress_types and pkt.obj.type in suppress_types:
-                continue
-            if pkt.placement.turn_index > result.max_turn_index:
-                result.max_turn_index = pkt.placement.turn_index
-            yield pkt
         except Empty:
             break
+        yield from _process(pkt)
 
     # Propagate any exception from the agent thread
     wait_on_background(thread)
@@ -937,12 +974,20 @@ def run_workflow_sequential(
                 logger.debug("[Trace] start_agent failed", exc_info=True)
 
             streaming_result = _StreamingAgentResult(start_turn_index=turn_index)
+            # HITL (can_request_input) steps: don't stream sub-agent prose/reasoning
+            # live. Their output is a clarification (may carry the [NEEDS_INPUT]
+            # marker) surfaced via the pause packet + main message, and reload shows
+            # an empty step row — streaming would leak the raw marker / chain-of-
+            # thought and diverge from the reloaded view.
+            _stream_step = not step.can_request_input
             yield from _stream_agent_packets(
                 agent_tool=agent_tool,
                 placement=placement,
                 emitter=emitter,
                 result=streaming_result,
                 is_connected=is_connected,
+                stream_answer_as_step=_stream_step,
+                stream_reasoning_as_step=_stream_step,
                 task=task_input,
             )
 
@@ -1114,10 +1159,14 @@ def run_workflow_sequential(
                 )
                 return  # Stop execution, free thread
 
-            # Yield the agent output as a WorkflowStepDelta (C1 fix)
+            # Yield the authoritative agent output as a WorkflowStepDelta,
+            # reconciling (replace=True) any live-streamed prose chunks. Empty
+            # output uses replace=False so it can't wipe streamed content.
             yield Packet(
                 placement=placement,
-                obj=WorkflowStepDelta(content=agent_output),
+                obj=WorkflowStepDelta(
+                    content=agent_output, replace=bool(agent_output)
+                ),
             )
 
             # Emit step end BEFORE promote_output so no tool packet
@@ -1644,12 +1693,17 @@ def run_workflow_llm_decision(
             streaming_result = _StreamingAgentResult(
                 start_turn_index=turn_index
             )
+            # Resuming a paused step is definitionally HITL, so don't stream its
+            # prose/reasoning live (keep the row clean, consistent with reload).
+            _stream_step = not _direct_resume_step.can_request_input
             yield from _stream_agent_packets(
                 agent_tool=_direct_resume_tool,
                 placement=agent_placement,
                 emitter=emitter,
                 result=streaming_result,
                 is_connected=is_connected,
+                stream_answer_as_step=_stream_step,
+                stream_reasoning_as_step=_stream_step,
                 task=_direct_resume_task,
             )
 
@@ -1901,10 +1955,13 @@ def run_workflow_llm_decision(
                 except Exception:
                     logger.debug("[Trace] resume finish_agent failed", exc_info=True)
 
-                # Emit step content and close
+                # Emit step content and close; reconcile live-streamed prose
+                # with the authoritative output (replace=True when non-empty).
                 yield Packet(
                     placement=agent_placement,
-                    obj=WorkflowStepDelta(content=agent_output),
+                    obj=WorkflowStepDelta(
+                        content=agent_output, replace=bool(agent_output)
+                    ),
                 )
 
                 # Emit step end BEFORE promote_output so no tool
@@ -2185,11 +2242,17 @@ def run_workflow_llm_decision(
                     streaming_result = _StreamingAgentResult(
                         start_turn_index=turn_index
                     )
+                    # HITL steps: don't stream prose/reasoning live (see sequential
+                    # path). The step's can_request_input comes from its WorkflowStep.
+                    _step_obj = steps_by_id.get(agent_tool.step_id)
+                    _stream_step = not (_step_obj and _step_obj.can_request_input)
                     yield from _stream_agent_packets(
                         agent_tool=agent_tool,
                         placement=agent_placement,
                         emitter=emitter,
                         result=streaming_result,
+                        stream_answer_as_step=_stream_step,
+                        stream_reasoning_as_step=_stream_step,
                         is_connected=is_connected,
                         **tool_call.tool_args,
                     )
@@ -2393,10 +2456,13 @@ def run_workflow_llm_decision(
                         )
                         return  # Stop execution, free thread
 
-                    # Yield the agent output as a WorkflowStepDelta (C1 fix)
+                    # Yield the authoritative agent output, reconciling
+                    # (replace=True) any live-streamed prose chunks.
                     yield Packet(
                         placement=agent_placement,
-                        obj=WorkflowStepDelta(content=agent_output),
+                        obj=WorkflowStepDelta(
+                            content=agent_output, replace=bool(agent_output)
+                        ),
                     )
 
                     # Store in context using output_key (M2 fix)
