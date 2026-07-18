@@ -67,15 +67,15 @@ class BaseFilters(BaseModel):
     document_set: list[str] | None = None
     time_cutoff: datetime | None = None
     tags: list[Tag] | None = None
-    # Additive filters consumed by the document index for project / persona
+    # Additive filters consumed by the document index for workspace / persona
     # scoped retrieval. None means no restriction on that dimension.
-    project_id_filter: int | None = None
+    workspace_id_filter: int | None = None
     persona_id_filter: int | None = None
 
 
-class UserFileFilters(BaseModel):
-    user_file_ids: list[UUID] | None = None
-    project_id: int | None = None
+class KnowledgeFileFilters(BaseModel):
+    knowledge_file_ids: list[UUID] | None = None
+    workspace_id: int | None = None
 
 
 class AssistantKnowledgeFilters(BaseModel):
@@ -93,7 +93,7 @@ class AssistantKnowledgeFilters(BaseModel):
     hierarchy_node_ids: list[int] | None = None
 
 
-class IndexFilters(BaseFilters, UserFileFilters, AssistantKnowledgeFilters):
+class IndexFilters(BaseFilters, KnowledgeFileFilters, AssistantKnowledgeFilters):
     # NOTE: These strings must be formatted in the same way as the output of
     # DocumentAccess::to_acl.
     access_control_list: list[str] | None
@@ -120,7 +120,7 @@ class ChunkSearchRequest(BasicChunkRequest):
     bypass_acl: bool = False
 
 
-# From the Chat Session we know what project (if any) this search should include
+# From the Chat Session we know what workspace (if any) this search should include
 # From the user uploads and persona uploaded files, we know which of those to include
 class ChunkIndexRequest(BasicChunkRequest):
     # Calculated final filters

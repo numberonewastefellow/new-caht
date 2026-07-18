@@ -31,14 +31,14 @@ import {
 } from "@dnd-kit/modifiers";
 import SidebarSection from "@/sections/sidebar/SidebarSection";
 import useChatSessions from "@/hooks/useChatSessions";
-import { useProjects } from "@/lib/hooks/useProjects";
+import { useWorkspaces } from "@/lib/hooks/useWorkspaces";
 import { useAgents, useCurrentAgent, usePinnedAgents } from "@/hooks/useAgents";
 import { useAppSidebarContext } from "@/providers/AppSidebarProvider";
-import CreateProjectModal from "@/components/modals/CreateProjectModal";
+import CreateWorkspaceModal from "@/components/modals/CreateWorkspaceModal";
 import MoveCustomAgentChatModal from "@/components/modals/MoveCustomAgentChatModal";
-import { useProjectsContext } from "@/providers/ProjectsContext";
-import { removeChatSessionFromProject } from "@/app/app/projects/projectsService";
-import type { Project } from "@/app/app/projects/projectsService";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
+import { removeChatSessionFromWorkspace } from "@/app/app/workspaces/workspacesService";
+import type { Workspace } from "@/app/app/workspaces/workspacesService";
 import SidebarWrapper from "@/sections/sidebar/SidebarWrapper";
 import { cn } from "@/lib/utils";
 import {
@@ -74,8 +74,8 @@ const ColorfulSearchChats = makeColorfulIcon(SvgSearchMenu, "sidebar_search");
 const ColorfulCraft = makeColorfulIcon(SvgDevKit, "sidebar_craft");
 const ColorfulExploreAgents = makeColorfulIcon(SvgOnyxOctagon, "sidebar_agents");
 const ColorfulMoreAgents = makeColorfulIcon(SvgMoreHorizontal, "sidebar_agents");
-const ColorfulNewProject = makeColorfulIcon(SvgFolderPlus, "sidebar_projects");
-const ColorfulWorkspaces = makeColorfulIcon(SvgDashboard, "sidebar_projects");
+const ColorfulNewWorkspace = makeColorfulIcon(SvgFolderPlus, "sidebar_workspaces");
+const ColorfulWorkspaces = makeColorfulIcon(SvgDashboard, "sidebar_workspaces");
 const ColorfulWorkflows = makeColorfulIcon(SvgSparkle, "sidebar_agents");
 import BuildModeIntroBackground from "@/app/craft/components/IntroBackground";
 import BuildModeIntroContent from "@/app/craft/components/IntroContent";
@@ -196,7 +196,7 @@ const MemoizedAppSidebarInner = memo(
       refreshChatSessions,
       isLoading: isLoadingChatSessions,
     } = useChatSessions();
-    const { refreshProjects, isLoading: isLoadingProjects } = useProjects();
+    const { refreshWorkspaces, isLoading: isLoadingWorkspaces } = useWorkspaces();
     const { isLoading: isLoadingAgents } = useAgents();
     const currentAgent = useCurrentAgent();
     const {
@@ -208,18 +208,18 @@ const MemoizedAppSidebarInner = memo(
     // Wait for ALL dynamic data before showing any sections
     const isLoadingDynamicContent =
       isLoadingChatSessions ||
-      isLoadingProjects ||
+      isLoadingWorkspaces ||
       isLoadingAgents ||
       isLoadingPinnedAgents;
 
     // Still need some context for stateful operations
-    const { refreshCurrentProjectDetails, currentProjectId } =
-      useProjectsContext();
+    const { refreshCurrentWorkspaceDetails, currentWorkspaceId } =
+      useWorkspacesContext();
 
     // State for custom agent modal
     const [pendingMoveChatSession, setPendingMoveChatSession] =
       useState<ChatSession | null>(null);
-    const [pendingMoveProjectId, setPendingMoveProjectId] = useState<
+    const [pendingMoveWorkspaceId, setPendingMoveWorkspaceId] = useState<
       number | null
     >(null);
     const [showMoveCustomAgentModal, setShowMoveCustomAgentModal] =
@@ -357,30 +357,30 @@ const MemoizedAppSidebarInner = memo(
 
     // Perform the actual move
     async function performChatMove(
-      targetProjectId: number,
+      targetWorkspaceId: number,
       chatSession: ChatSession
     ) {
       try {
         await handleMoveOperation({
           chatSession,
-          targetProjectId,
+          targetWorkspaceId,
           refreshChatSessions,
-          refreshCurrentProjectDetails,
-          fetchProjects: refreshProjects,
-          currentProjectId,
+          refreshCurrentWorkspaceDetails,
+          fetchWorkspaces: refreshWorkspaces,
+          currentWorkspaceId,
         });
-        const projectRefreshPromise = currentProjectId
-          ? refreshCurrentProjectDetails()
-          : refreshProjects();
-        await Promise.all([refreshChatSessions(), projectRefreshPromise]);
+        const workspaceRefreshPromise = currentWorkspaceId
+          ? refreshCurrentWorkspaceDetails()
+          : refreshWorkspaces();
+        await Promise.all([refreshChatSessions(), workspaceRefreshPromise]);
       } catch (error) {
         console.error("Failed to move chat:", error);
         throw error;
       }
     }
 
-    // Handle chat to project drag and drop
-    const handleChatProjectDragEnd = useCallback(
+    // Handle chat to workspace drag and drop
+    const handleChatWorkspaceDragEnd = useCallback(
       async (event: DragEndEvent) => {
         const { active, over } = event;
         if (!over) return;
@@ -392,17 +392,17 @@ const MemoizedAppSidebarInner = memo(
           return;
         }
 
-        // Check if we're dragging a chat onto a project
+        // Check if we're dragging a chat onto a workspace
         if (
           activeData?.type === DRAG_TYPES.CHAT &&
           overData?.type === DRAG_TYPES.PROJECT
         ) {
           const chatSession = activeData.chatSession as ChatSession;
-          const targetProject = overData.project as Project;
-          const sourceProjectId = activeData.projectId;
+          const targetWorkspace = overData.workspace as Workspace;
+          const sourceWorkspaceId = activeData.workspaceId;
 
-          // Don't do anything if dropping on the same project
-          if (sourceProjectId === targetProject.id) {
+          // Don't do anything if dropping on the same workspace
+          if (sourceWorkspaceId === targetWorkspace.id) {
             return;
           }
 
@@ -417,51 +417,51 @@ const MemoizedAppSidebarInner = memo(
 
           if (!isChatUsingDefaultAssistant && !hideModal) {
             setPendingMoveChatSession(chatSession);
-            setPendingMoveProjectId(targetProject.id);
+            setPendingMoveWorkspaceId(targetWorkspace.id);
             setShowMoveCustomAgentModal(true);
             return;
           }
 
           try {
-            await performChatMove(targetProject.id, chatSession);
+            await performChatMove(targetWorkspace.id, chatSession);
           } catch (error) {
             showErrorNotification("Failed to move chat. Please try again.");
           }
         }
 
-        // Check if we're dragging a chat from a project to the Recents section
+        // Check if we're dragging a chat from a workspace to the Recents section
         if (
           activeData?.type === DRAG_TYPES.CHAT &&
           overData?.type === DRAG_TYPES.RECENTS
         ) {
           const chatSession = activeData.chatSession as ChatSession;
-          const sourceProjectId = activeData.projectId;
+          const sourceWorkspaceId = activeData.workspaceId;
 
-          // Only remove from project if it was in a project
-          if (sourceProjectId) {
+          // Only remove from workspace if it was in a workspace
+          if (sourceWorkspaceId) {
             try {
-              await removeChatSessionFromProject(chatSession.id);
-              const projectRefreshPromise = currentProjectId
-                ? refreshCurrentProjectDetails()
-                : refreshProjects();
-              await Promise.all([refreshChatSessions(), projectRefreshPromise]);
+              await removeChatSessionFromWorkspace(chatSession.id);
+              const workspaceRefreshPromise = currentWorkspaceId
+                ? refreshCurrentWorkspaceDetails()
+                : refreshWorkspaces();
+              await Promise.all([refreshChatSessions(), workspaceRefreshPromise]);
             } catch (error) {
-              console.error("Failed to remove chat from project:", error);
+              console.error("Failed to remove chat from workspace:", error);
             }
           }
         }
       },
       [
-        currentProjectId,
+        currentWorkspaceId,
         refreshChatSessions,
-        refreshCurrentProjectDetails,
-        refreshProjects,
+        refreshCurrentWorkspaceDetails,
+        refreshWorkspaces,
       ]
     );
 
     const { user } = useUser();
     const activeSidebarTab = useAppFocus();
-    const createProjectModal = useCreateModal();
+    const createWorkspaceModal = useCreateModal();
     const defaultAppMode =
       (user?.preferences?.default_app_mode?.toLowerCase() as
         | "chat"
@@ -574,19 +574,19 @@ const MemoizedAppSidebarInner = memo(
       ),
       [folded, activeSidebarTab, visibleAgents]
     );
-    const newProjectButton = useMemo(
+    const newWorkspaceButton = useMemo(
       () => (
         <SidebarTab
-          leftIcon={ColorfulNewProject}
-          onClick={() => createProjectModal.toggle(true)}
-          transient={createProjectModal.isOpen}
+          leftIcon={ColorfulNewWorkspace}
+          onClick={() => createWorkspaceModal.toggle(true)}
+          transient={createWorkspaceModal.isOpen}
           folded={folded}
           lowlight={!folded}
         >
           New Workspace
         </SidebarTab>
       ),
-      [folded, createProjectModal.toggle, createProjectModal.isOpen]
+      [folded, createWorkspaceModal.toggle, createWorkspaceModal.isOpen]
     );
     const handleShowBuildIntro = useCallback(() => {
       setShowIntroAnimation(true);
@@ -608,16 +608,16 @@ const MemoizedAppSidebarInner = memo(
 
     return (
       <>
-        <createProjectModal.Provider>
-          <CreateProjectModal />
-        </createProjectModal.Provider>
+        <createWorkspaceModal.Provider>
+          <CreateWorkspaceModal />
+        </createWorkspaceModal.Provider>
 
         {showMoveCustomAgentModal && (
           <MoveCustomAgentChatModal
             onCancel={() => {
               setShowMoveCustomAgentModal(false);
               setPendingMoveChatSession(null);
-              setPendingMoveProjectId(null);
+              setPendingMoveWorkspaceId(null);
             }}
             onConfirm={async (doNotShowAgain: boolean) => {
               if (doNotShowAgain && typeof window !== "undefined") {
@@ -627,10 +627,10 @@ const MemoizedAppSidebarInner = memo(
                 );
               }
               const chat = pendingMoveChatSession;
-              const target = pendingMoveProjectId;
+              const target = pendingMoveWorkspaceId;
               setShowMoveCustomAgentModal(false);
               setPendingMoveChatSession(null);
-              setPendingMoveProjectId(null);
+              setPendingMoveWorkspaceId(null);
               if (chat && target != null) {
                 try {
                   await performChatMove(target, chat);
@@ -680,7 +680,7 @@ const MemoizedAppSidebarInner = memo(
                 {searchChatsButton}
                 {workspacesButton}
                 {workflowsButton}
-                {newProjectButton}
+                {newWorkspaceButton}
                 {isOnyxCraftEnabled && buildButton}
               </div>
             }
@@ -712,7 +712,7 @@ const MemoizedAppSidebarInner = memo(
                   </SidebarSection>
                 </DndContext>
 
-                {/* Wrap Projects and Recents in a shared DndContext for chat-to-project drag */}
+                {/* Wrap Workspaces and Recents in a shared DndContext for chat-to-workspace drag */}
                 <DndContext
                   sensors={sensors}
                   collisionDetection={pointerWithin}
@@ -720,7 +720,7 @@ const MemoizedAppSidebarInner = memo(
                     restrictToFirstScrollableAncestor,
                     restrictToVerticalAxis,
                   ]}
-                  onDragEnd={handleChatProjectDragEnd}
+                  onDragEnd={handleChatWorkspaceDragEnd}
                 >
                   {/* Recents */}
                   <RecentsSection chatSessions={chatSessions} />

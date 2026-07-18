@@ -53,7 +53,7 @@ class SearchToolUsage(str, Enum):
     AUTO = "auto"
 
 
-class CustomToolUserFileSnapshot(BaseModel):
+class CustomToolKnowledgeFileSnapshot(BaseModel):
     file_ids: list[str]  # References to saved images or CSVs
 
 

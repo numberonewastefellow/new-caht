@@ -5,7 +5,7 @@ the search filter includes those user file IDs in the assistant knowledge filter
 with OR logic (not AND), ensuring user files are discoverable alongside other
 knowledge types like attached documents and hierarchy nodes.
 
-This prevents a regression where user_file_ids were added as a separate AND
+This prevents a regression where knowledge_file_ids were added as a separate AND
 filter, making it impossible to find user files when the assistant also had
 attached documents or hierarchy nodes (since no document could match both).
 """
@@ -26,7 +26,7 @@ HIERARCHY_NODE_ID = 42
 
 def _get_search_filters(
     source_types: list[DocumentSource],
-    user_file_ids: list[UUID],
+    knowledge_file_ids: list[UUID],
     attached_document_ids: list[str] | None,
     hierarchy_node_ids: list[int] | None,
 ) -> list[dict[str, Any]]:
@@ -37,13 +37,13 @@ def _get_search_filters(
         source_types=source_types,
         tags=[],
         document_sets=[],
-        project_id=None,
+        workspace_id=None,
         time_cutoff=None,
         min_chunk_index=None,
         max_chunk_index=None,
         max_chunk_size=None,
         document_id=None,
-        user_file_ids=user_file_ids,
+        knowledge_file_ids=knowledge_file_ids,
         attached_document_ids=attached_document_ids,
         hierarchy_node_ids=hierarchy_node_ids,
     )
@@ -52,9 +52,9 @@ def _get_search_filters(
 class TestAssistantKnowledgeFilter:
     """Tests for assistant knowledge filter construction in OpenSearch queries."""
 
-    def test_user_file_ids_included_in_assistant_knowledge_filter(self) -> None:
+    def test_knowledge_file_ids_included_in_assistant_knowledge_filter(self) -> None:
         """
-        Tests that user_file_ids are included in the assistant knowledge filter
+        Tests that knowledge_file_ids are included in the assistant knowledge filter
         with OR logic when the assistant has both user files and attached documents.
 
         This prevents the regression where user files were ANDed with other
@@ -64,7 +64,7 @@ class TestAssistantKnowledgeFilter:
         # Under test: Call the filter construction method directly
         filter_clauses = _get_search_filters(
             source_types=[DocumentSource.FILE, DocumentSource.USER_FILE],
-            user_file_ids=[USER_FILE_ID],
+            knowledge_file_ids=[USER_FILE_ID],
             attached_document_ids=[ATTACHED_DOCUMENT_ID],
             hierarchy_node_ids=[HIERARCHY_NODE_ID],
         )
@@ -85,11 +85,11 @@ class TestAssistantKnowledgeFilter:
         # The knowledge filter should have 3 should clauses (user files, attached docs, hierarchy nodes)
         should_clauses = knowledge_filter["bool"]["should"]
         assert len(should_clauses) == 3, (
-            f"Expected 3 should clauses (user_file, attached_doc, hierarchy_node), "
+            f"Expected 3 should clauses (knowledge_file, attached_doc, hierarchy_node), "
             f"got {len(should_clauses)}"
         )
 
-        # Verify user_file_id is in one of the should clauses
+        # Verify knowledge_file_id is in one of the should clauses
         user_file_filter_found = False
         for should_clause in should_clauses:
             # The user file filter uses a nested bool with should for each file ID
@@ -102,13 +102,13 @@ class TestAssistantKnowledgeFilter:
                             break
 
         assert user_file_filter_found, (
-            f"Expected user_file_id {USER_FILE_ID} to be in the assistant knowledge "
+            f"Expected knowledge_file_id {USER_FILE_ID} to be in the assistant knowledge "
             f"filter's should clauses. Filter structure: {knowledge_filter}"
         )
 
-    def test_user_file_ids_only_creates_knowledge_filter(self) -> None:
+    def test_knowledge_file_ids_only_creates_knowledge_filter(self) -> None:
         """
-        Tests that when only user_file_ids are provided (no attached_documents or
+        Tests that when only knowledge_file_ids are provided (no attached_documents or
         hierarchy_nodes), the assistant knowledge filter is still created with the
         user file IDs.
         """
@@ -116,7 +116,7 @@ class TestAssistantKnowledgeFilter:
 
         filter_clauses = _get_search_filters(
             source_types=[DocumentSource.USER_FILE],
-            user_file_ids=[USER_FILE_ID],
+            knowledge_file_ids=[USER_FILE_ID],
             attached_document_ids=None,
             hierarchy_node_ids=None,
         )
@@ -130,46 +130,46 @@ class TestAssistantKnowledgeFilter:
                 break
 
         assert user_file_filter_found, (
-            f"Expected user_file_id {USER_FILE_ID} to be in the filter clauses. "
+            f"Expected knowledge_file_id {USER_FILE_ID} to be in the filter clauses. "
             f"Got: {filter_clauses}"
         )
 
     def test_no_separate_user_file_filter_when_assistant_has_knowledge(self) -> None:
         """
-        Tests that user_file_ids are NOT added as a separate AND filter when the
+        Tests that knowledge_file_ids are NOT added as a separate AND filter when the
         assistant has other knowledge attached (attached_documents or hierarchy_nodes).
         """
 
         filter_clauses = _get_search_filters(
             source_types=[DocumentSource.FILE, DocumentSource.USER_FILE],
-            user_file_ids=[USER_FILE_ID],
+            knowledge_file_ids=[USER_FILE_ID],
             attached_document_ids=[ATTACHED_DOCUMENT_ID],
             hierarchy_node_ids=None,
         )
 
-        # Postcondition: Count how many times user_file_id appears in filter clauses
+        # Postcondition: Count how many times knowledge_file_id appears in filter clauses
         # It should appear exactly once (in the knowledge filter), not twice
-        user_file_id_str = str(USER_FILE_ID)
+        knowledge_file_id_str = str(USER_FILE_ID)
         occurrences = 0
         for clause in filter_clauses:
-            if user_file_id_str in str(clause):
+            if knowledge_file_id_str in str(clause):
                 occurrences += 1
 
         assert occurrences == 1, (
-            f"Expected user_file_id to appear exactly once in filter clauses "
+            f"Expected knowledge_file_id to appear exactly once in filter clauses "
             f"(inside the assistant knowledge filter), but found {occurrences} "
-            f"occurrences. This suggests user_file_ids is being added as both a "
+            f"occurrences. This suggests knowledge_file_ids is being added as both a "
             f"separate AND filter and inside the knowledge filter. "
             f"Filter clauses: {filter_clauses}"
         )
 
-    def test_multiple_user_files_all_included_in_filter(self) -> None:
+    def test_multiple_knowledge_files_all_included_in_filter(self) -> None:
         """
         Tests that when multiple user files are attached to an assistant,
         all of them are included in the filter.
         """
         # Precondition
-        user_file_ids = [
+        knowledge_file_ids = [
             UUID("6ad84e45-4450-406c-9d36-fcb5e74aca6b"),
             UUID("7be95f56-5561-517d-ae47-acd6f85bdb7c"),
             UUID("8cf06a67-6672-628e-bf58-ade7a96cec8d"),
@@ -177,14 +177,14 @@ class TestAssistantKnowledgeFilter:
 
         filter_clauses = _get_search_filters(
             source_types=[DocumentSource.USER_FILE],
-            user_file_ids=user_file_ids,
+            knowledge_file_ids=knowledge_file_ids,
             attached_document_ids=[ATTACHED_DOCUMENT_ID],
             hierarchy_node_ids=None,
         )
 
         # Postcondition: All user file IDs should be in the filter
         filter_str = str(filter_clauses)
-        for user_file_id in user_file_ids:
+        for knowledge_file_id in knowledge_file_ids:
             assert (
-                str(user_file_id) in filter_str
-            ), f"Expected user_file_id {user_file_id} to be in the filter clauses"
+                str(knowledge_file_id) in filter_str
+            ), f"Expected knowledge_file_id {knowledge_file_id} to be in the filter clauses"

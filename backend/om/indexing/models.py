@@ -111,7 +111,7 @@ class DocMetadataAwareIndexChunk(IndexChunk):
     tenant_id: str
     access: "DocumentAccess"
     document_sets: set[str]
-    user_project: list[int]
+    user_workspace: list[int]
     # Persona IDs the document is associated with; indexed for persona-based
     # filtering. Empty list means no persona association.
     personas: list[int]
@@ -128,7 +128,7 @@ class DocMetadataAwareIndexChunk(IndexChunk):
         index_chunk: IndexChunk,
         access: "DocumentAccess",
         document_sets: set[str],
-        user_project: list[int],
+        user_workspace: list[int],
         boost: int,
         aggregated_chunk_boost_factor: float,
         tenant_id: str,
@@ -140,7 +140,7 @@ class DocMetadataAwareIndexChunk(IndexChunk):
             **index_chunk_data,
             access=access,
             document_sets=document_sets,
-            user_project=user_project,
+            user_workspace=user_workspace,
             personas=personas or [],
             boost=boost,
             aggregated_chunk_boost_factor=aggregated_chunk_boost_factor,
@@ -241,8 +241,8 @@ class BuildMetadataAwareChunksResult(BaseModel):
     chunks: list[DocMetadataAwareIndexChunk]
     doc_id_to_previous_chunk_cnt: dict[str, int]
     doc_id_to_new_chunk_cnt: dict[str, int]
-    user_file_id_to_raw_text: dict[str, str]
-    user_file_id_to_token_count: dict[str, int | None]
+    knowledge_file_id_to_raw_text: dict[str, str]
+    knowledge_file_id_to_token_count: dict[str, int | None]
 
 
 class IndexingBatchAdapter(Protocol):

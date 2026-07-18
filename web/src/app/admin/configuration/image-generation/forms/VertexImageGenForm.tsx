@@ -112,7 +112,7 @@ function VertexFormFields(
                   idle: (
                     <>
                       {"Upload or paste your "}
-                      <InlineExternalLink href="https://console.cloud.google.com/projectselector2/iam-admin/serviceaccounts?supportedpurview=project">
+                      <InlineExternalLink href="https://console.cloud.google.com/workspaceselector2/iam-admin/serviceaccounts?supportedpurview=workspace">
                         service account credentials
                       </InlineExternalLink>
                       {" from Google Cloud."}

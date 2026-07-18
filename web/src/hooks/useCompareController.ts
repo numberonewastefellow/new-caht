@@ -21,8 +21,8 @@ import {
   updateCurrentMessageFIFO,
 } from "@/app/app/services/currentMessageFIFO";
 import { buildFilters } from "@/lib/search/utils";
-import { projectFilesToFileDescriptors } from "@/app/app/services/fileUtils";
-import { ProjectFile } from "@/providers/ProjectsContext";
+import { workspaceFilesToFileDescriptors } from "@/app/app/services/fileUtils";
+import { WorkspaceFile } from "@/providers/WorkspacesContext";
 import {
   BackendMessage,
   ChatFileType,
@@ -50,7 +50,7 @@ interface UseCompareControllerProps {
 
 interface CompareSubmitProps {
   message: string;
-  currentMessageFiles: ProjectFile[];
+  currentMessageFiles: WorkspaceFile[];
   deepResearch: boolean;
 }
 
@@ -112,7 +112,7 @@ interface StreamOnePanelArgs {
   index: number;
   existingSessionId: string | undefined;
   message: string;
-  files: ProjectFile[];
+  files: WorkspaceFile[];
   deepResearch: boolean;
   filterManager: FilterManager;
   llmManager: LlmManager;
@@ -126,7 +126,7 @@ async function streamOnePanel({
   index,
   existingSessionId,
   message,
-  files: projectFiles,
+  files: workspaceFiles,
   deepResearch,
   filterManager,
   llmManager,
@@ -157,7 +157,7 @@ async function streamOnePanel({
     );
   }
 
-  const fileDescriptors = projectFilesToFileDescriptors(projectFiles);
+  const fileDescriptors = workspaceFilesToFileDescriptors(workspaceFiles);
 
   // 2. Compute parent + insert the user + (empty) assistant nodes immediately.
   const startTree =
@@ -273,8 +273,8 @@ async function streamOnePanel({
           .reserved_assistant_message_id;
       }
 
-      if (Object.hasOwn(packet, "user_files")) {
-        const userFiles = (packet as UserKnowledgeFilePacket).user_files;
+      if (Object.hasOwn(packet, "knowledge_files")) {
+        const userFiles = (packet as UserKnowledgeFilePacket).knowledge_files;
         files = files.concat(
           userFiles.filter((nf) => !files.some((ef) => ef.id === nf.id))
         );

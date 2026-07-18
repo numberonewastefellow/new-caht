@@ -3,12 +3,12 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import { ChatSessionMorePopup } from "@/components/sidebar/ChatSessionMorePopup";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { ChatSession } from "@/app/app/interfaces";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import { useAgents } from "@/hooks/useAgents";
 import useAppFocus from "@/hooks/useAppFocus";
-import { formatRelativeTime } from "./project_utils";
+import { formatRelativeTime } from "./workspace_utils";
 import { swatchIndexForKey } from "./workspace-v2/workspaceTheme";
 import Text from "@/refresh-components/texts/Text";
 import { cn } from "@/lib/utils";
@@ -16,17 +16,17 @@ import { UNNAMED_CHAT } from "@/lib/constants";
 import ChatSessionSkeleton from "@/refresh-components/skeletons/ChatSessionSkeleton";
 import { SvgBubbleText, SvgClock } from "@opal/icons";
 
-export default function ProjectChatSessionList({
+export default function WorkspaceChatSessionList({
   searchQuery,
 }: {
   searchQuery?: string;
 } = {}) {
   const {
-    currentProjectDetails,
-    currentProjectId,
-    refreshCurrentProjectDetails,
-    isLoadingProjectDetails,
-  } = useProjectsContext();
+    currentWorkspaceDetails,
+    currentWorkspaceId,
+    refreshCurrentWorkspaceDetails,
+    isLoadingWorkspaceDetails,
+  } = useWorkspacesContext();
   const { agents: assistants } = useAgents();
   const appFocus = useAppFocus();
   const activeChatId = appFocus.isChat() ? appFocus.getId() : null;
@@ -35,8 +35,8 @@ export default function ProjectChatSessionList({
   );
   const [hoveredChatId, setHoveredChatId] = React.useState<string | null>(null);
 
-  const projectChats: ChatSession[] = useMemo(() => {
-    const sessions = currentProjectDetails?.project?.chat_sessions || [];
+  const workspaceChats: ChatSession[] = useMemo(() => {
+    const sessions = currentWorkspaceDetails?.workspace?.chat_sessions || [];
     const sorted = [...sessions].sort(
       (a, b) =>
         new Date(b.time_updated).getTime() - new Date(a.time_updated).getTime()
@@ -45,9 +45,9 @@ export default function ProjectChatSessionList({
     return q
       ? sorted.filter((c) => (c.name || "").toLowerCase().includes(q))
       : sorted;
-  }, [currentProjectDetails?.project?.chat_sessions, searchQuery]);
+  }, [currentWorkspaceDetails?.workspace?.chat_sessions, searchQuery]);
 
-  if (!currentProjectId) return null;
+  if (!currentWorkspaceId) return null;
 
   return (
     <div className="flex flex-col gap-2 px-2 w-full mx-auto mt-4">
@@ -57,22 +57,22 @@ export default function ProjectChatSessionList({
         </span>
       </div>
 
-      {isLoadingProjectDetails && !currentProjectDetails ? (
+      {isLoadingWorkspaceDetails && !currentWorkspaceDetails ? (
         <div className="flex flex-col gap-2">
           <ChatSessionSkeleton />
           <ChatSessionSkeleton />
           <ChatSessionSkeleton />
         </div>
-      ) : projectChats.length === 0 ? (
+      ) : workspaceChats.length === 0 ? (
         <Text as="p" text02 secondaryBody className="p-2">
           No chats yet.
         </Text>
       ) : (
         <div className="flex flex-col gap-0.5">
-          {projectChats.map((chat) => {
+          {workspaceChats.map((chat) => {
             const isActive = chat.id === activeChatId;
             const personaIdToDefault =
-              currentProjectDetails?.persona_id_to_is_default || {};
+              currentWorkspaceDetails?.persona_id_to_is_default || {};
             const isCustomAgent =
               personaIdToDefault[chat.persona_id] === false;
             const assistant = isCustomAgent
@@ -84,7 +84,7 @@ export default function ProjectChatSessionList({
                 key={chat.id}
                 href={{
                   pathname: "/app",
-                  query: { chatId: chat.id, projectId: currentProjectId },
+                  query: { chatId: chat.id, workspaceId: currentWorkspaceId },
                 }}
                 className="relative block w-full"
                 onMouseEnter={() => setHoveredChatId(chat.id)}
@@ -136,20 +136,20 @@ export default function ProjectChatSessionList({
                       </Text>
                       <ChatSessionMorePopup
                         chatSession={chat}
-                        projectId={currentProjectId}
+                        workspaceId={currentWorkspaceId}
                         isRenamingChat={isRenamingChat === chat.id}
                         setIsRenamingChat={(value) =>
                           setIsRenamingChat(value ? chat.id : null)
                         }
                         search={false}
                         afterDelete={() => {
-                          refreshCurrentProjectDetails();
+                          refreshCurrentWorkspaceDetails();
                         }}
                         afterMove={() => {
-                          refreshCurrentProjectDetails();
+                          refreshCurrentWorkspaceDetails();
                         }}
-                        afterRemoveFromProject={() => {
-                          refreshCurrentProjectDetails();
+                        afterRemoveFromWorkspace={() => {
+                          refreshCurrentWorkspaceDetails();
                         }}
                         iconSize={20}
                         isVisible={hoveredChatId === chat.id}

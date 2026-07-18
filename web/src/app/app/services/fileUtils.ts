@@ -1,19 +1,19 @@
 import { FileDescriptor } from "../interfaces";
-import { ProjectFile } from "../projects/projectsService";
+import { WorkspaceFile } from "../workspaces/workspacesService";
 
-export function projectsFileToFileDescriptor(
-  file: ProjectFile
+export function workspacesFileToFileDescriptor(
+  file: WorkspaceFile
 ): FileDescriptor {
   return {
     id: file.file_id,
     type: file.chat_file_type,
     name: file.name,
-    user_file_id: file.id,
+    knowledge_file_id: file.id,
   };
 }
 
-export function projectFilesToFileDescriptors(
-  files: ProjectFile[]
+export function workspaceFilesToFileDescriptors(
+  files: WorkspaceFile[]
 ): FileDescriptor[] {
-  return files.map(projectsFileToFileDescriptor);
+  return files.map(workspacesFileToFileDescriptor);
 }

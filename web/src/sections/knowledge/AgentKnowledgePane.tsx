@@ -31,7 +31,7 @@ import { getSourceMetadata } from "@/lib/sources";
 import { ValidSources, DocumentSetSummary } from "@/lib/types";
 import useCCPairs from "@/hooks/useCCPairs";
 import { ConnectedSource } from "@/lib/hierarchy/interfaces";
-import { ProjectFile } from "@/app/app/projects/projectsService";
+import { WorkspaceFile } from "@/app/app/workspaces/workspacesService";
 import {
   AttachedDocumentSnapshot,
   HierarchyNodeSnapshot,
@@ -415,7 +415,7 @@ function SourcesTableContent({
 // ============================================================================
 
 interface RecentFilesTableContentProps {
-  allRecentFiles: ProjectFile[];
+  allRecentFiles: WorkspaceFile[];
   selectedFileIds: string[];
   onToggleFile: (fileId: string) => void;
   onUploadChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -437,7 +437,7 @@ function RecentFilesTableContent({
     return allRecentFiles.filter((f) => f.name.toLowerCase().includes(lower));
   }, [allRecentFiles, searchValue]);
 
-  const columns: KnowledgeTableColumn<ProjectFile>[] = [
+  const columns: KnowledgeTableColumn<WorkspaceFile>[] = [
     {
       key: "name",
       header: "Name",
@@ -524,7 +524,7 @@ interface KnowledgeTwoColumnViewProps {
   selectedFolderIds: number[];
   sourceSelectionCounts: Map<ValidSources, number>;
   documentSets: DocumentSetSummary[];
-  allRecentFiles: ProjectFile[];
+  allRecentFiles: WorkspaceFile[];
   onNavigateToRecent: () => void;
   onNavigateToDocumentSets: () => void;
   onNavigateToSource: (source: ValidSources) => void;
@@ -751,11 +751,11 @@ interface KnowledgeMainContentProps {
   selectedFileIds: string[];
   selectedSources: ValidSources[];
   documentSets: DocumentSetSummary[];
-  allRecentFiles: ProjectFile[];
+  allRecentFiles: WorkspaceFile[];
   connectedSources: ConnectedSource[];
   onAddKnowledge: () => void;
   onViewEdit: () => void;
-  onFileClick?: (file: ProjectFile) => void;
+  onFileClick?: (file: WorkspaceFile) => void;
 }
 
 const KnowledgeMainContent = memo(function KnowledgeMainContent({
@@ -842,8 +842,8 @@ interface AgentKnowledgePaneProps {
   onFolderIdsChange: (ids: number[]) => void;
   selectedFileIds: string[];
   onFileIdsChange: (ids: string[]) => void;
-  allRecentFiles: ProjectFile[];
-  onFileClick?: (file: ProjectFile) => void;
+  allRecentFiles: WorkspaceFile[];
+  onFileClick?: (file: WorkspaceFile) => void;
   onUploadChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   hasProcessingFiles: boolean;
   // Initial attached documents for existing agents (to populate selectedDocumentDetails)

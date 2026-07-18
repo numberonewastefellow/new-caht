@@ -7,7 +7,7 @@ import {
   usePathname,
 } from "next/navigation";
 import type { Route } from "next";
-import WorkspaceContextPanel from "@/app/app/components/projects/workspace-v2/WorkspaceContextPanel";
+import WorkspaceContextPanel from "@/app/app/components/workspaces/workspace-v2/WorkspaceContextPanel";
 import { useWorkspacePanelStore } from "@/app/app/stores/useWorkspacePanelStore";
 import { useAgentPanelStore } from "@/app/app/stores/useAgentPanelStore";
 import AgentPanelDock from "@/app/app/message/messageComponents/timeline/AgentPanelDock";
@@ -61,17 +61,17 @@ import FederatedOAuthModal from "@/components/chat/FederatedOAuthModal";
 import ChatScrollContainer, {
   ChatScrollContainerHandle,
 } from "@/sections/chat/ChatScrollContainer";
-import ProjectContextPanel from "@/app/app/components/projects/ProjectContextPanel";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import WorkspaceContextPanelLegacy from "@/app/app/components/workspaces/WorkspaceContextPanel";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import {
-  getProjectTokenCount,
+  getWorkspaceTokenCount,
   getMaxSelectedDocumentTokens,
-  UserFileStatus,
-} from "@/app/app/projects/projectsService";
-import ProjectChatSessionList from "@/app/app/components/projects/ProjectChatSessionList";
-import WorkspaceDetailHeader from "@/app/app/components/projects/workspace-v2/WorkspaceDetailHeader";
-import WorkspaceDetailBody from "@/app/app/components/projects/workspace-v2/WorkspaceDetailBody";
-import { type WorkspaceTab } from "@/app/app/components/projects/workspace-v2/workspaceTheme";
+  KnowledgeFileStatus,
+} from "@/app/app/workspaces/workspacesService";
+import WorkspaceChatSessionList from "@/app/app/components/workspaces/WorkspaceChatSessionList";
+import WorkspaceDetailHeader from "@/app/app/components/workspaces/workspace-v2/WorkspaceDetailHeader";
+import WorkspaceDetailBody from "@/app/app/components/workspaces/workspace-v2/WorkspaceDetailBody";
+import { type WorkspaceTab } from "@/app/app/components/workspaces/workspace-v2/workspaceTheme";
 import { usePageVersion } from "@/hooks/usePageVersion";
 import { cn } from "@/lib/utils";
 import Suggestions from "@/sections/Suggestions";
@@ -150,13 +150,13 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
 
   // Workspace UI version switch (dual-version, web-only). When "new", the
   // workspace detail uses the upgraded header/body; "legacy" keeps the classic
-  // ProjectContextPanel + ProjectChatSessionList. Mirrors the Agentic AI pattern.
+  // WorkspaceContextPanel + WorkspaceChatSessionList. Mirrors the Agentic AI pattern.
   const { setVersion: setWorkspaceVersion } = usePageVersion(
     "workspace-ui",
     "new"
   );
   const [wsTab, setWsTab] = useState<WorkspaceTab>("overview");
-  const useNewWorkspace = appFocus.isProject();
+  const useNewWorkspace = appFocus.isWorkspace();
 
   // Use SWR hooks for data fetching
   const {
@@ -172,17 +172,17 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   const {
     currentMessageFiles,
     setCurrentMessageFiles,
-    currentProjectId,
-    currentProjectDetails,
+    currentWorkspaceId,
+    currentWorkspaceDetails,
     lastFailedFiles,
     clearLastFailedFiles,
-  } = useProjectsContext();
+  } = useWorkspacesContext();
 
-  // When changing from project chat to main chat (or vice-versa), clear forced tools
+  // When changing from workspace chat to main chat (or vice-versa), clear forced tools
   const { setForcedToolIds } = useForcedTools();
   useEffect(() => {
     setForcedToolIds([]);
-  }, [currentProjectId, setForcedToolIds]);
+  }, [currentWorkspaceId, setForcedToolIds]);
 
   // handle redirect if chat page is disabled
   // NOTE: this must be done here, in a client component since
@@ -228,8 +228,8 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
     useAgentController({
       selectedChatSession: currentChatSession,
       onAssistantSelect: () => {
-        // Only remove project context if user explicitly selected an assistant
-        // (i.e., assistantId is present). Avoid clearing project when assistantId was removed.
+        // Only remove workspace context if user explicitly selected an assistant
+        // (i.e., assistantId is present). Avoid clearing workspace when assistantId was removed.
         const newSearchParams = new URLSearchParams(
           searchParams?.toString() || ""
         );
@@ -301,7 +301,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
     return deduplicatedSources;
   }, [availableSources, federatedConnectorsData]);
 
-  // Show toast if any files failed in ProjectsContext reconciliation
+  // Show toast if any files failed in WorkspacesContext reconciliation
   useEffect(() => {
     if (lastFailedFiles && lastFailedFiles.length > 0) {
       const names = lastFailedFiles.map((f) => f.name).join(", ");
@@ -317,7 +317,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   const chatInputBarRef = useRef<AppInputBarHandle>(null);
 
   // Focus the message composer (used by the new workspace "New chat" quick action,
-  // since the composer is already on screen in workspace/project mode).
+  // since the composer is already on screen in workspace/workspace mode).
   const focusComposer = useCallback(() => chatInputBarRef.current?.focus(), []);
 
   const filterManager = useFilters();
@@ -522,14 +522,14 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
     }
   }, [agentPanelOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Keep the `projectId` URL param in sync with the active chat's workspace so
+  // Keep the `workspaceId` URL param in sync with the active chat's workspace so
   // workspace context (files/instructions/name) is loaded in a workspace chat.
-  // (See plan: "keep projectId in the chat URL".)
+  // (See plan: "keep workspaceId in the chat URL".)
   useEffect(() => {
     if (!appFocus.isChat() || !currentChatSession) return;
     const desired =
-      currentChatSession.project_id != null
-        ? String(currentChatSession.project_id)
+      currentChatSession.workspace_id != null
+        ? String(currentChatSession.workspace_id)
         : null;
     const current = searchParams.get(SEARCH_PARAM_NAMES.PROJECT_ID);
     if (current === desired) return;
@@ -543,7 +543,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentChatSession?.id,
-    currentChatSession?.project_id,
+    currentChatSession?.workspace_id,
     appFocus.isChat(),
   ]);
 
@@ -672,7 +672,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   // for workspace chats. Separate from, and mutually exclusive with, Sources.
   const isWorkspaceChat =
     appFocus.isChat() &&
-    (currentChatSession?.project_id != null || currentProjectId != null);
+    (currentChatSession?.workspace_id != null || currentWorkspaceId != null);
   const workspaceContextPanel =
     isWorkspaceChat && !settings.isMobile ? (
       <div
@@ -687,11 +687,11 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
       </div>
     ) : null;
 
-  // When no chat session exists but a project is selected, fetch the
-  // total tokens for the project's files so upload UX can compare
+  // When no chat session exists but a workspace is selected, fetch the
+  // total tokens for the workspace's files so upload UX can compare
   // against available context similar to session-based flows.
-  const [projectContextTokenCount, setProjectContextTokenCount] = useState(0);
-  // Fetch project-level token count when no chat session exists.
+  const [workspaceContextTokenCount, setWorkspaceContextTokenCount] = useState(0);
+  // Fetch workspace-level token count when no chat session exists.
   // Note: useEffect cannot be async, so we define an inner async function (run)
   // and invoke it. The `cancelled` guard prevents setting state after the
   // component unmounts or when the dependencies change and a newer effect run
@@ -699,22 +699,22 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   useEffect(() => {
     let cancelled = false;
     async function run() {
-      if (!currentChatSessionId && currentProjectId !== null) {
+      if (!currentChatSessionId && currentWorkspaceId !== null) {
         try {
-          const total = await getProjectTokenCount(currentProjectId);
-          if (!cancelled) setProjectContextTokenCount(total || 0);
+          const total = await getWorkspaceTokenCount(currentWorkspaceId);
+          if (!cancelled) setWorkspaceContextTokenCount(total || 0);
         } catch {
-          if (!cancelled) setProjectContextTokenCount(0);
+          if (!cancelled) setWorkspaceContextTokenCount(0);
         }
       } else {
-        setProjectContextTokenCount(0);
+        setWorkspaceContextTokenCount(0);
       }
     }
     run();
     return () => {
       cancelled = true;
     };
-  }, [currentChatSessionId, currentProjectId, currentProjectDetails?.files]);
+  }, [currentChatSessionId, currentWorkspaceId, currentWorkspaceDetails?.files]);
 
   // Available context tokens source of truth:
   // - If a chat session exists, fetch from session API (dynamic per session/model)
@@ -775,7 +775,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
         ? // Compare mode uses the chat layout: panels fill the height,
           // input pinned to the bottom (no centered welcome/suggestions row).
           "1fr auto 0fr"
-        : appFocus.isProject()
+        : appFocus.isWorkspace()
           ? "auto auto 1fr"
           : "1fr auto 1fr",
   };
@@ -832,7 +832,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
 
       <FederatedOAuthModal />
 
-      <AppLayouts.Root enableBackground={!appFocus.isProject()}>
+      <AppLayouts.Root enableBackground={!appFocus.isWorkspace()}>
         <Dropzone
           onDrop={(acceptedFiles) =>
             handleMessageSpecificFileUpload(acceptedFiles)
@@ -849,7 +849,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                 className="flex-1 w-full grid min-h-0 transition-[grid-template-rows] duration-150 ease-in-out"
                 style={gridStyle}
               >
-                {/* ── Top row: ChatUI / WelcomeMessage / ProjectUI ── */}
+                {/* ── Top row: ChatUI / WelcomeMessage / WorkspaceUI ── */}
                 <div className="row-start-1 min-h-0 overflow-hidden flex flex-col items-center">
                   {/* ChatUI */}
                   <Fade
@@ -898,8 +898,8 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                     </div>
                   )}
 
-                  {/* ProjectUI — new workspace detail header (title + tabs) */}
-                  {appFocus.isProject() &&
+                  {/* WorkspaceUI — new workspace detail header (title + tabs) */}
+                  {appFocus.isWorkspace() &&
                     (useNewWorkspace ? (
                       <div className="w-full">
                         <WorkspaceDetailHeader tab={wsTab} setTab={setWsTab} />
@@ -914,8 +914,8 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                             Try the new workspace view
                           </button>
                         </div>
-                        <ProjectContextPanel
-                          projectTokenCount={projectContextTokenCount}
+                        <WorkspaceContextPanelLegacy
+                          workspaceTokenCount={workspaceContextTokenCount}
                           availableContextTokens={availableContextTokens}
                           setPresentingDocument={setPresentingDocument}
                         />
@@ -1020,7 +1020,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                         currentSessionFileTokenCount={
                           currentChatSessionId
                             ? currentSessionFileTokenCount
-                            : projectContextTokenCount
+                            : workspaceContextTokenCount
                         }
                         availableContextTokens={availableContextTokens}
                         selectedAssistant={selectedAssistant || liveAssistant}
@@ -1047,24 +1047,24 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                   </div>
                 </div>
 
-                {/* ── Bottom: SearchResults + SourceFilter / Suggestions / ProjectChatList ── */}
+                {/* ── Bottom: SearchResults + SourceFilter / Suggestions / WorkspaceChatList ── */}
                 <div className="row-start-3 min-h-0 overflow-hidden flex flex-col items-center w-full">
-                  {/* ProjectUI — new workspace detail body, or legacy chat list */}
-                  {appFocus.isProject() &&
+                  {/* WorkspaceUI — new workspace detail body, or legacy chat list */}
+                  {appFocus.isWorkspace() &&
                     (useNewWorkspace ? (
                       <div className="w-full h-full overflow-y-auto overscroll-y-none">
                         <WorkspaceDetailBody
                           tab={wsTab}
                           setTab={setWsTab}
                           setPresentingDocument={setPresentingDocument}
-                          projectTokenCount={projectContextTokenCount}
+                          workspaceTokenCount={workspaceContextTokenCount}
                           availableContextTokens={availableContextTokens}
                           onNewChat={focusComposer}
                         />
                       </div>
                     ) : (
                       <div className="w-full max-w-[var(--app-page-main-content-width)] h-full overflow-y-auto overscroll-y-none mx-auto">
-                        <ProjectChatSessionList />
+                        <WorkspaceChatSessionList />
                       </div>
                     ))}
 
@@ -1080,7 +1080,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                     <Suggestions
                       onSubmit={onChat}
                       disabled={currentMessageFiles.some(
-                        (file) => file.status === UserFileStatus.UPLOADING
+                        (file) => file.status === KnowledgeFileStatus.UPLOADING
                       )}
                     />
                   </Fade>

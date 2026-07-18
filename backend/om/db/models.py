@@ -67,7 +67,7 @@ from om.db.enums import (
     SyncType,
     SyncStatus,
     MCPAuthenticationType,
-    UserFileStatus,
+    KnowledgeFileStatus,
     MCPAuthenticationPerformer,
     MCPTransport,
     MCPServerStatus,
@@ -308,10 +308,12 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
         back_populates="creator",
         primaryjoin="User.id == foreign(ConnectorCredentialPair.creator_id)",
     )
-    projects: Mapped[list["UserProject"]] = relationship(
-        "UserProject", back_populates="user"
+    workspaces: Mapped[list["Workspace"]] = relationship(
+        "Workspace", back_populates="user"
     )
-    files: Mapped[list["UserFile"]] = relationship("UserFile", back_populates="user")
+    files: Mapped[list["KnowledgeFile"]] = relationship(
+        "KnowledgeFile", back_populates="user"
+    )
     # MCP servers accessible to this user
     accessible_mcp_servers: Mapped[list["MCPServer"]] = relationship(
         "MCPServer", secondary="mcp_server__user", back_populates="users"
@@ -2349,12 +2351,12 @@ class ChatSession(Base):
         String, nullable=True, default=None
     )
 
-    project_id: Mapped[int | None] = mapped_column(
-        ForeignKey("user_project.id"), nullable=True
+    workspace_id: Mapped[int | None] = mapped_column(
+        ForeignKey("workspace.id"), nullable=True
     )
 
-    project: Mapped["UserProject"] = relationship(
-        "UserProject", back_populates="chat_sessions", foreign_keys=[project_id]
+    workspace: Mapped["Workspace"] = relationship(
+        "Workspace", back_populates="chat_sessions", foreign_keys=[workspace_id]
     )
 
     # the latest "overrides" specified by the user. These take precedence over
@@ -3262,10 +3264,10 @@ class Persona(Base):
         back_populates="personas",
         viewonly=True,
     )
-    # Relationship to UserFile
-    user_files: Mapped[list["UserFile"]] = relationship(
-        "UserFile",
-        secondary="persona__user_file",
+    # Relationship to KnowledgeFile
+    knowledge_files: Mapped[list["KnowledgeFile"]] = relationship(
+        "KnowledgeFile",
+        secondary="persona__knowledge_file",
         back_populates="assistants",
     )
     labels: Mapped[list["PersonaLabel"]] = relationship(
@@ -3307,14 +3309,14 @@ class Persona(Base):
     )
 
 
-class Persona__UserFile(Base):
-    __tablename__ = "persona__user_file"
+class Persona__KnowledgeFile(Base):
+    __tablename__ = "persona__knowledge_file"
 
     persona_id: Mapped[int] = mapped_column(
         ForeignKey("persona.id", ondelete="CASCADE"), primary_key=True
     )
-    user_file_id: Mapped[UUID] = mapped_column(
-        ForeignKey("user_file.id", ondelete="CASCADE"), primary_key=True
+    knowledge_file_id: Mapped[UUID] = mapped_column(
+        ForeignKey("knowledge_file.id", ondelete="CASCADE"), primary_key=True
     )
 
 
@@ -4105,14 +4107,14 @@ class InputPrompt__User(Base):
     disabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
 
-class Project__UserFile(Base):
-    __tablename__ = "project__user_file"
+class Workspace__KnowledgeFile(Base):
+    __tablename__ = "workspace__knowledge_file"
 
-    project_id: Mapped[int] = mapped_column(
-        ForeignKey("user_project.id"), primary_key=True
+    workspace_id: Mapped[int] = mapped_column(
+        ForeignKey("workspace.id"), primary_key=True
     )
-    user_file_id: Mapped[UUID] = mapped_column(
-        ForeignKey("user_file.id"), primary_key=True
+    knowledge_file_id: Mapped[UUID] = mapped_column(
+        ForeignKey("knowledge_file.id"), primary_key=True
     )
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -4120,15 +4122,15 @@ class Project__UserFile(Base):
 
     __table_args__ = (
         Index(
-            "ix_project__user_file_project_id_created_at",
-            project_id,
+            "ix_workspace__knowledge_file_workspace_id_created_at",
+            workspace_id,
             created_at.desc(),
         ),
     )
 
 
-class UserProject(Base):
-    __tablename__ = "user_project"
+class Workspace(Base):
+    __tablename__ = "workspace"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[UUID | None] = mapped_column(ForeignKey("user.id"), nullable=False)
@@ -4137,16 +4139,16 @@ class UserProject(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    user: Mapped["User"] = relationship(back_populates="projects")
-    user_files: Mapped[list["UserFile"]] = relationship(
-        "UserFile",
-        secondary=Project__UserFile.__table__,
-        back_populates="projects",
+    user: Mapped["User"] = relationship(back_populates="workspaces")
+    knowledge_files: Mapped[list["KnowledgeFile"]] = relationship(
+        "KnowledgeFile",
+        secondary=Workspace__KnowledgeFile.__table__,
+        back_populates="workspaces",
     )
     chat_sessions: Mapped[list["ChatSession"]] = relationship(
-        "ChatSession", back_populates="project", lazy="selectin"
+        "ChatSession", back_populates="workspace", lazy="selectin"
     )
-    instructions: Mapped[str] = mapped_column(String)
+    workspace_instructions: Mapped[str] = mapped_column(String)
 
 
 class UserDocument(str, Enum):
@@ -4155,15 +4157,15 @@ class UserDocument(str, Enum):
     FILE = "file"
 
 
-class UserFile(Base):
-    __tablename__ = "user_file"
+class KnowledgeFile(Base):
+    __tablename__ = "knowledge_file"
 
     id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
     user_id: Mapped[UUID | None] = mapped_column(ForeignKey("user.id"), nullable=False)
     assistants: Mapped[list["Persona"]] = relationship(
         "Persona",
-        secondary=Persona__UserFile.__table__,
-        back_populates="user_files",
+        secondary=Persona__KnowledgeFile.__table__,
+        back_populates="knowledge_files",
     )
     file_id: Mapped[str] = mapped_column(nullable=False)
     name: Mapped[str] = mapped_column(nullable=False)
@@ -4175,15 +4177,15 @@ class UserFile(Base):
 
     file_type: Mapped[str] = mapped_column(String, nullable=False)
 
-    status: Mapped[UserFileStatus] = mapped_column(
-        Enum(UserFileStatus, native_enum=False, name="userfilestatus"),
+    status: Mapped[KnowledgeFileStatus] = mapped_column(
+        Enum(KnowledgeFileStatus, native_enum=False, name="knowledgefilestatus"),
         nullable=False,
-        default=UserFileStatus.PROCESSING,
+        default=KnowledgeFileStatus.PROCESSING,
     )
-    needs_project_sync: Mapped[bool] = mapped_column(
+    needs_workspace_sync: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False
     )
-    last_project_sync_at: Mapped[datetime.datetime | None] = mapped_column(
+    last_workspace_sync_at: Mapped[datetime.datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
     chunk_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -4194,10 +4196,10 @@ class UserFile(Base):
     link_url: Mapped[str | None] = mapped_column(String, nullable=True)
     content_type: Mapped[str | None] = mapped_column(String, nullable=True)
 
-    projects: Mapped[list["UserProject"]] = relationship(
-        "UserProject",
-        secondary=Project__UserFile.__table__,
-        back_populates="user_files",
+    workspaces: Mapped[list["Workspace"]] = relationship(
+        "Workspace",
+        secondary=Workspace__KnowledgeFile.__table__,
+        back_populates="knowledge_files",
         lazy="selectin",
     )
 

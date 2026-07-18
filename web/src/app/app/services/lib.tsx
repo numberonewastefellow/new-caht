@@ -62,7 +62,7 @@ export async function updateTemperatureOverrideForChatSession(
 export async function createChatSession(
   personaId: number,
   description: string | null,
-  projectId: number | null
+  workspaceId: number | null
 ): Promise<string> {
   const createChatSessionResponse = await fetch(
     "/api/converse/create-chat-session",
@@ -74,7 +74,7 @@ export async function createChatSession(
       body: JSON.stringify({
         persona_id: personaId,
         description,
-        project_id: projectId,
+        workspace_id: workspaceId,
       }),
     }
   );
@@ -396,7 +396,7 @@ const PARAMS_TO_SKIP = [
   SEARCH_PARAM_NAMES.CHAT_ID,
   SEARCH_PARAM_NAMES.PERSONA_ID,
   // NOTE: PROJECT_ID is intentionally NOT skipped — a new chat started inside a
-  // workspace keeps `projectId` so the workspace banner/context shows on the
+  // workspace keeps `workspaceId` so the workspace banner/context shows on the
   // first message. The AppPage URL-sync effect corrects stale params later.
 ];
 

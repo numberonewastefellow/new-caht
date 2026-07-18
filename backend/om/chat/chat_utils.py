@@ -25,8 +25,8 @@ from om.db.models import ChatMessage
 from om.db.models import ChatSession
 from om.db.models import Persona
 from om.db.models import SearchDoc as DbSearchDoc
-from om.db.models import UserFile
-from om.db.projects import check_project_ownership
+from om.db.models import KnowledgeFile
+from om.db.workspaces import check_workspace_ownership
 from om.file_processing.extract_file_text import extract_file_text
 from om.file_store.file_store import get_default_file_store
 from om.file_store.models import ChatFileType
@@ -56,10 +56,10 @@ def create_chat_session_from_request(
 ) -> ChatSession:
     """Create a chat session from a ChatSessionCreationRequest.
 
-    Includes project ownership validation when project_id is provided.
+    Includes workspace ownership validation when workspace_id is provided.
 
     Args:
-        chat_session_request: The request containing persona_id, description, and project_id
+        chat_session_request: The request containing persona_id, description, and workspace_id
         user_id: The ID of the user creating the session (can be None for anonymous)
         db_session: The database session
 
@@ -67,12 +67,12 @@ def create_chat_session_from_request(
         The newly created ChatSession
 
     Raises:
-        ValueError: If user lacks access to the specified project
+        ValueError: If user lacks access to the specified workspace
         Exception: If the persona is invalid
     """
-    project_id = chat_session_request.project_id
-    if project_id:
-        if not check_project_ownership(project_id, user_id, db_session):
+    workspace_id = chat_session_request.workspace_id
+    if workspace_id:
+        if not check_workspace_ownership(workspace_id, user_id, db_session):
             raise ValueError("User does not have access to workspace")
 
     return create_chat_session(
@@ -80,7 +80,7 @@ def create_chat_session_from_request(
         description=chat_session_request.description or "",
         user_id=user_id,
         persona_id=chat_session_request.persona_id,
-        project_id=chat_session_request.project_id,
+        workspace_id=chat_session_request.workspace_id,
     )
 
 
@@ -311,17 +311,17 @@ def load_chat_file(
                 f"Failed to retrieve content for file {file_descriptor['id']}: {str(e)}"
             )
 
-    # Get token count from UserFile if available
+    # Get token count from KnowledgeFile if available
     token_count = 0
-    user_file_id_str = file_descriptor.get("user_file_id")
-    if user_file_id_str:
+    knowledge_file_id_str = file_descriptor.get("knowledge_file_id")
+    if knowledge_file_id_str:
         try:
-            user_file_id = UUID(user_file_id_str)
-            user_file = (
-                db_session.query(UserFile).filter(UserFile.id == user_file_id).first()
+            knowledge_file_id = UUID(knowledge_file_id_str)
+            knowledge_file = (
+                db_session.query(KnowledgeFile).filter(KnowledgeFile.id == knowledge_file_id).first()
             )
-            if user_file and user_file.token_count:
-                token_count = user_file.token_count
+            if knowledge_file and knowledge_file.token_count:
+                token_count = knowledge_file.token_count
         except (ValueError, TypeError) as e:
             logger.warning(
                 f"Failed to get token count for file {file_descriptor['id']}: {e}"
@@ -491,7 +491,7 @@ def _extract_tabular_metadata(loaded_file: ChatLoadedFile) -> str | None:
 def convert_chat_history(
     chat_history: list[ChatMessage],
     files: list[ChatLoadedFile],
-    project_image_files: list[ChatLoadedFile],
+    workspace_image_files: list[ChatLoadedFile],
     additional_context: str | None,
     token_counter: Callable[[str], int],
     tool_id_to_name_map: dict[int, str],
@@ -593,17 +593,17 @@ def convert_chat_history(
                     approx_char_count=len(file_text),
                 )
 
-            # Sum token counts from image files (excluding project image files)
+            # Sum token counts from image files (excluding workspace image files)
             image_token_count = (
                 sum(img.token_count for img in image_files) if image_files else 0
             )
 
             # Add the user message with image files attached
-            # If this is the last USER message, also include project_image_files
-            # Note: project image file tokens are NOT counted in the token count
+            # If this is the last USER message, also include workspace_image_files
+            # Note: workspace image file tokens are NOT counted in the token count
             if idx == last_user_message_idx:
-                if project_image_files:
-                    image_files.extend(project_image_files)
+                if workspace_image_files:
+                    image_files.extend(workspace_image_files)
 
                 if additional_context:
                     simple_messages.append(
@@ -707,11 +707,11 @@ def convert_chat_history(
 
 
 def get_custom_agent_prompt(persona: Persona, chat_session: ChatSession) -> str | None:
-    """Get the custom agent prompt from persona or project instructions. If it's replacing the base system prompt,
+    """Get the custom agent prompt from persona or workspace instructions. If it's replacing the base system prompt,
     it does not count as a custom agent prompt (logic exists later also to drop it in this case).
 
-    Chat Sessions in Projects that are using a custom agent will retain the custom agent prompt.
-    Priority: persona.system_prompt (if not default Agent) > chat_session.project.instructions
+    Chat Sessions in Workspaces that are using a custom agent will retain the custom agent prompt.
+    Priority: persona.system_prompt (if not default Agent) > chat_session.workspace.workspace_instructions
 
     # NOTE: Logic elsewhere allows saving empty strings for potentially other purposes but for constructing the prompts
     # we never want to return an empty string for a prompt so it's translated into an explicit None.
@@ -723,16 +723,16 @@ def get_custom_agent_prompt(persona: Persona, chat_session: ChatSession) -> str 
     Returns:
         The prompt to use for the custom Agent part of the prompt.
     """
-    # If using a custom Agent, always respect its prompt, even if in a Project, and even if it's an empty custom prompt.
+    # If using a custom Agent, always respect its prompt, even if in a Workspace, and even if it's an empty custom prompt.
     if persona.id != DEFAULT_PERSONA_ID:
         # Logic exists later also to drop it in this case but this is strictly correct anyhow.
         if persona.replace_base_system_prompt:
             return None
         return persona.system_prompt or None
 
-    # If in a project and using the default Agent, respect the project instructions.
-    if chat_session.project and chat_session.project.instructions:
-        return chat_session.project.instructions
+    # If in a workspace and using the default Agent, respect the workspace instructions.
+    if chat_session.workspace and chat_session.workspace.workspace_instructions:
+        return chat_session.workspace.workspace_instructions
 
     return None
 

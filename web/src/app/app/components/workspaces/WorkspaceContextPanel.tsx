@@ -2,20 +2,20 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import FilePickerPopover from "@/refresh-components/popovers/FilePickerPopover";
-import type { ProjectFile } from "../../projects/projectsService";
+import type { WorkspaceFile } from "../../workspaces/workspacesService";
 import { MinimalOnyxDocument } from "@/lib/search/interfaces";
 import Button from "@/refresh-components/buttons/Button";
 
-import UserFilesModal from "@/components/modals/UserFilesModal";
+import KnowledgeFilesModal from "@/components/modals/KnowledgeFilesModal";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import Text from "@/refresh-components/texts/Text";
 import { FileCard, FileCardSkeleton } from "@/sections/cards/FileCard";
 import { cn, hasNonImageFiles } from "@/lib/utils";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import ButtonRenaming from "@/refresh-components/buttons/ButtonRenaming";
-import { UserFileStatus } from "../../projects/projectsService";
+import { KnowledgeFileStatus } from "../../workspaces/workspacesService";
 import InputTextArea from "@/refresh-components/inputs/InputTextArea";
 import { SvgEdit, SvgFiles, SvgPaperclip } from "@opal/icons";
 
@@ -43,8 +43,8 @@ function Chevron({ expanded }: { expanded: boolean }) {
   );
 }
 
-/* ── Colorful project icon — emerald rounded square with grid ── */
-function ProjectIcon({ size = 20 }: { size?: number }) {
+/* ── Colorful workspace icon — emerald rounded square with grid ── */
+function WorkspaceIcon({ size = 20 }: { size?: number }) {
   const innerSize = Math.round(size * 0.6);
   return (
     <span
@@ -67,20 +67,20 @@ function ProjectIcon({ size = 20 }: { size?: number }) {
   );
 }
 
-export interface ProjectContextPanelProps {
-  projectTokenCount?: number;
+export interface WorkspaceContextPanelProps {
+  workspaceTokenCount?: number;
   availableContextTokens?: number;
   setPresentingDocument?: (document: MinimalOnyxDocument) => void;
 }
 
-export default function ProjectContextPanel({
-  projectTokenCount = 0,
+export default function WorkspaceContextPanel({
+  workspaceTokenCount = 0,
   availableContextTokens = 128_000,
   setPresentingDocument,
-}: ProjectContextPanelProps) {
-  const projectFilesModal = useCreateModal();
+}: WorkspaceContextPanelProps) {
+  const workspaceFilesModal = useCreateModal();
 
-  // Edit project name
+  // Edit workspace name
   const [isEditingName, setIsEditingName] = useState(false);
 
   // Collapsible sections
@@ -92,20 +92,20 @@ export default function ProjectContextPanel({
   const [isSaving, setIsSaving] = useState(false);
 
   const {
-    currentProjectDetails,
-    currentProjectId,
-    unlinkFileFromProject,
-    linkFileToProject,
-    allCurrentProjectFiles,
-    isLoadingProjectDetails,
+    currentWorkspaceDetails,
+    currentWorkspaceId,
+    unlinkFileFromWorkspace,
+    linkFileToWorkspace,
+    allCurrentWorkspaceFiles,
+    isLoadingWorkspaceDetails,
     beginUpload,
-    projects,
-    renameProject,
+    workspaces,
+    renameWorkspace,
     upsertInstructions,
-  } = useProjectsContext();
+  } = useWorkspacesContext();
 
   const currentInstructions =
-    currentProjectDetails?.project?.instructions ?? "";
+    currentWorkspaceDetails?.workspace?.instructions ?? "";
 
   // Pre-fill guidelines text when expanding
   useEffect(() => {
@@ -114,12 +114,12 @@ export default function ProjectContextPanel({
     }
   }, [guidelinesExpanded, currentInstructions]);
 
-  // Convert ProjectFile to MinimalOnyxDocument format for viewing
+  // Convert WorkspaceFile to MinimalOnyxDocument format for viewing
   const handleOnView = useCallback(
-    (file: ProjectFile) => {
+    (file: WorkspaceFile) => {
       if (!setPresentingDocument) return;
       const documentForViewer: MinimalOnyxDocument = {
-        document_id: `project_file__${file.file_id}`,
+        document_id: `workspace_file__${file.file_id}`,
         semantic_identifier: file.name,
       };
       setPresentingDocument(documentForViewer);
@@ -130,12 +130,12 @@ export default function ProjectContextPanel({
   const handleUploadFiles = useCallback(
     async (files: File[]) => {
       if (!files || files.length === 0) return;
-      beginUpload(Array.from(files), currentProjectId);
+      beginUpload(Array.from(files), currentWorkspaceId);
     },
-    [currentProjectId, beginUpload]
+    [currentWorkspaceId, beginUpload]
   );
 
-  const totalFiles = allCurrentProjectFiles.length;
+  const totalFiles = allCurrentWorkspaceFiles.length;
   const displayFileCount = totalFiles > 100 ? "100+" : String(totalFiles);
 
   const handleUploadChange = useCallback(
@@ -159,9 +159,9 @@ export default function ProjectContextPanel({
     },
   });
 
-  // Project name
-  const currentProject = projects.find((p) => p.id === currentProjectId);
-  const projectName = currentProject?.name || "Loading workspace...";
+  // Workspace name
+  const currentWorkspace = workspaces.find((p) => p.id === currentWorkspaceId);
+  const workspaceName = currentWorkspace?.name || "Loading workspace...";
 
   // Save guidelines inline
   async function handleSaveGuidelines() {
@@ -175,39 +175,39 @@ export default function ProjectContextPanel({
     setGuidelinesExpanded(false);
   }
 
-  if (!currentProjectId) return null;
+  if (!currentWorkspaceId) return null;
 
-  const displayedFiles = allCurrentProjectFiles.slice(0, 4);
+  const displayedFiles = allCurrentWorkspaceFiles.slice(0, 4);
   const shouldCompactImages = hasNonImageFiles(displayedFiles);
 
   return (
     <>
-      <projectFilesModal.Provider>
-        <UserFilesModal
+      <workspaceFilesModal.Provider>
+        <KnowledgeFilesModal
           title="Workspace Files"
           description="Sessions in this workspace can access the files here."
-          recentFiles={[...allCurrentProjectFiles]}
+          recentFiles={[...allCurrentWorkspaceFiles]}
           onView={handleOnView}
           handleUploadChange={handleUploadChange}
-          onDelete={async (file: ProjectFile) => {
-            if (!currentProjectId) return;
-            await unlinkFileFromProject(currentProjectId, file.id);
+          onDelete={async (file: WorkspaceFile) => {
+            if (!currentWorkspaceId) return;
+            await unlinkFileFromWorkspace(currentWorkspaceId, file.id);
           }}
         />
-      </projectFilesModal.Provider>
+      </workspaceFilesModal.Provider>
 
       <div className="flex flex-col w-full max-w-[var(--app-page-main-content-width)] mx-auto p-4 pt-14 pb-6">
-        {/* ── Project Card ── */}
+        {/* ── Workspace Card ── */}
         <div className="bg-background-tint-01 rounded-xl border border-border-01 p-5 flex flex-col gap-0">
-          {/* Row 1: Project identity */}
+          {/* Row 1: Workspace identity */}
           <div className="group flex items-center gap-2.5">
-            <ProjectIcon size={20} />
+            <WorkspaceIcon size={20} />
             {isEditingName ? (
               <ButtonRenaming
-                initialName={projectName}
+                initialName={workspaceName}
                 onRename={async (newName) => {
-                  if (currentProjectId) {
-                    await renameProject(currentProjectId, newName);
+                  if (currentWorkspaceId) {
+                    await renameWorkspace(currentWorkspaceId, newName);
                   }
                 }}
                 onClose={() => setIsEditingName(false)}
@@ -216,7 +216,7 @@ export default function ProjectContextPanel({
             ) : (
               <>
                 <span className="text-[15px] font-medium text-text-04 truncate">
-                  {projectName}
+                  {workspaceName}
                 </span>
                 <IconButton
                   icon={SvgEdit}
@@ -229,7 +229,7 @@ export default function ProjectContextPanel({
             )}
           </div>
 
-          {/* Row 2: Project Guidelines (collapsible) */}
+          {/* Row 2: Workspace Guidelines (collapsible) */}
           <div className="mt-4">
             <button
               type="button"
@@ -245,7 +245,7 @@ export default function ProjectContextPanel({
             {/* Collapsed: show preview */}
             {!guidelinesExpanded && (
               <div className="ml-5 mt-1">
-                {isLoadingProjectDetails && !currentProjectDetails ? (
+                {isLoadingWorkspaceDetails && !currentWorkspaceDetails ? (
                   <div className="h-4 w-3/4 rounded bg-background-tint-02 animate-pulse" />
                 ) : currentInstructions ? (
                   <p className="text-[13px] text-text-02 truncate">
@@ -317,18 +317,18 @@ export default function ProjectContextPanel({
                 )}
                 onFileClick={handleOnView}
                 onPickRecent={async (file) => {
-                  if (file.status === UserFileStatus.UPLOADING) return;
-                  if (file.status === UserFileStatus.DELETING) return;
-                  if (!currentProjectId) return;
-                  if (!linkFileToProject) return;
-                  linkFileToProject(currentProjectId, file);
+                  if (file.status === KnowledgeFileStatus.UPLOADING) return;
+                  if (file.status === KnowledgeFileStatus.DELETING) return;
+                  if (!currentWorkspaceId) return;
+                  if (!linkFileToWorkspace) return;
+                  linkFileToWorkspace(currentWorkspaceId, file);
                 }}
                 onUnpickRecent={async (file) => {
-                  if (!currentProjectId) return;
-                  await unlinkFileFromProject(currentProjectId, file.id);
+                  if (!currentWorkspaceId) return;
+                  await unlinkFileFromWorkspace(currentWorkspaceId, file.id);
                 }}
                 handleUploadChange={handleUploadChange}
-                selectedFileIds={(allCurrentProjectFiles || []).map(
+                selectedFileIds={(allCurrentWorkspaceFiles || []).map(
                   (f) => f.id
                 )}
               />
@@ -340,7 +340,7 @@ export default function ProjectContextPanel({
             {/* Files content (shown when expanded) */}
             {filesExpanded && (
               <div className="ml-5 mt-2 animate-in fade-in slide-in-from-top-1 duration-150">
-                {isLoadingProjectDetails && !currentProjectDetails ? (
+                {isLoadingWorkspaceDetails && !currentWorkspaceDetails ? (
                   <>
                     <div className="sm:hidden">
                       <div className="w-full h-[68px] rounded-xl bg-background-tint-02 animate-pulse" />
@@ -352,13 +352,13 @@ export default function ProjectContextPanel({
                       <FileCardSkeleton />
                     </div>
                   </>
-                ) : allCurrentProjectFiles.length > 0 ? (
+                ) : allCurrentWorkspaceFiles.length > 0 ? (
                   <>
                     {/* Mobile */}
                     <div className="sm:hidden">
                       <button
                         className="w-full rounded-xl px-3 py-3 text-left bg-transparent hover:bg-accent-background-hovered hover:dark:bg-neutral-800/75 transition-colors"
-                        onClick={() => projectFilesModal.toggle(true)}
+                        onClick={() => workspaceFilesModal.toggle(true)}
                       >
                         <div className="flex flex-col overflow-hidden">
                           <div className="flex items-center justify-between gap-2 w-full">
@@ -376,14 +376,14 @@ export default function ProjectContextPanel({
 
                     {/* Desktop */}
                     <div className="hidden sm:flex gap-1 relative items-center">
-                      {allCurrentProjectFiles.slice(0, 4).map((f) => (
+                      {allCurrentWorkspaceFiles.slice(0, 4).map((f) => (
                         <div key={f.id}>
                           <FileCard
                             file={f}
                             removeFile={async (fileId: string) => {
-                              if (!currentProjectId) return;
-                              await unlinkFileFromProject(
-                                currentProjectId,
+                              if (!currentWorkspaceId) return;
+                              await unlinkFileFromWorkspace(
+                                currentWorkspaceId,
                                 fileId
                               );
                             }}
@@ -395,7 +395,7 @@ export default function ProjectContextPanel({
                       {totalFiles > 4 && (
                         <button
                           className="rounded-xl px-3 py-1 text-left transition-colors hover:bg-background-tint-02"
-                          onClick={() => projectFilesModal.toggle(true)}
+                          onClick={() => workspaceFilesModal.toggle(true)}
                         >
                           <div className="flex flex-col overflow-hidden h-12 p-1">
                             <div className="flex items-center justify-between gap-2 w-full">
@@ -414,7 +414,7 @@ export default function ProjectContextPanel({
                         <div className="pointer-events-none absolute inset-0 rounded-lg border-2 border-dashed border-action-link-05" />
                       )}
                     </div>
-                    {projectTokenCount > availableContextTokens && (
+                    {workspaceTokenCount > availableContextTokens && (
                       <Text as="p" text02 secondaryBody className="mt-2">
                         This workspace exceeds the model&apos;s context limits.
                         Sessions will automatically search for relevant files

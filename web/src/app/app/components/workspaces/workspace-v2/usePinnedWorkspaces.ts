@@ -66,7 +66,7 @@ export function usePinnedWorkspaces() {
 
   // Drop pins for workspaces that no longer exist so localStorage can't grow
   // unbounded. No-op (and no re-render) when nothing is stale, so it's safe to
-  // call from an effect on every projects change.
+  // call from an effect on every workspaces change.
   const prune = useCallback(
     (validIds: number[]) => {
       const valid = new Set(validIds);

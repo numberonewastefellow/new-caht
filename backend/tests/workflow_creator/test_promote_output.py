@@ -116,7 +116,7 @@ def create_persona(name: str, prompt: str) -> int | None:
         "llm_relevance_filter": False,
         "replace_base_system_prompt": True,
         "datetime_aware": False,
-        "user_file_ids": [],
+        "knowledge_file_ids": [],
         "hierarchy_node_ids": [],
         "document_ids": [],
     }

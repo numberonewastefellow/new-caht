@@ -92,7 +92,7 @@ export interface FileDescriptor {
   type: ChatFileType;
   name?: string | null;
 
-  user_file_id?: string | null;
+  knowledge_file_id?: string | null;
   // FE only
   isUploading?: boolean;
 }
@@ -124,7 +124,7 @@ export interface ChatSession {
   time_created: string;
   time_updated: string;
   shared_status: ChatSessionSharedStatus;
-  project_id: number | null;
+  workspace_id: number | null;
   current_alternate_model: string;
   current_temperature_override: number | null;
 }
@@ -198,7 +198,7 @@ export function toChatSession(backend: BackendChatSession): ChatSession {
     time_created: backend.time_created,
     time_updated: backend.time_updated,
     shared_status: backend.shared_status,
-    project_id: null,
+    workspace_id: null,
     current_alternate_model: backend.current_alternate_model ?? "",
     current_temperature_override: backend.current_temperature_override,
   };
@@ -239,7 +239,7 @@ export interface MessageResponseIDInfo {
 }
 
 export interface UserKnowledgeFilePacket {
-  user_files: FileDescriptor[];
+  knowledge_files: FileDescriptor[];
 }
 
 export interface DocumentsResponse {

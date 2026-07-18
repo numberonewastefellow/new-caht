@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { ProjectFile } from "@/app/app/projects/projectsService";
-import { UserFileStatus } from "@/app/app/projects/projectsService";
+import type { WorkspaceFile } from "@/app/app/workspaces/workspacesService";
+import { KnowledgeFileStatus } from "@/app/app/workspaces/workspacesService";
 import { cn, isImageFile } from "@/lib/utils";
 import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import { SvgFileText, SvgX } from "@opal/icons";
@@ -49,10 +49,10 @@ function Removable({ onRemove, children }: RemovableProps) {
 }
 
 interface ImageFileCardProps {
-  file: ProjectFile;
+  file: WorkspaceFile;
   imageUrl: string | null;
   removeFile?: (fileId: string) => void;
-  onFileClick?: (file: ProjectFile) => void;
+  onFileClick?: (file: WorkspaceFile) => void;
   isProcessing?: boolean;
   compact?: boolean;
 }
@@ -69,7 +69,7 @@ function ImageFileCard({
   const iconSize = compact ? "h-5 w-5" : "h-8 w-8";
   const [imgError, setImgError] = useState(false);
 
-  const doneUploading = String(file.status) !== UserFileStatus.UPLOADING;
+  const doneUploading = String(file.status) !== KnowledgeFileStatus.UPLOADING;
 
   return (
     <Removable
@@ -112,10 +112,10 @@ function ImageFileCard({
 }
 
 export interface FileCardProps {
-  file: ProjectFile;
+  file: WorkspaceFile;
   removeFile?: (fileId: string) => void;
   hideProcessingState?: boolean;
-  onFileClick?: (file: ProjectFile) => void;
+  onFileClick?: (file: WorkspaceFile) => void;
   compactImages?: boolean;
 }
 export function FileCard({
@@ -146,13 +146,13 @@ export function FileCard({
   }, [isImage, file.file_id]);
 
   const isActuallyProcessing =
-    String(file.status) === UserFileStatus.UPLOADING ||
-    String(file.status) === UserFileStatus.PROCESSING;
+    String(file.status) === KnowledgeFileStatus.UPLOADING ||
+    String(file.status) === KnowledgeFileStatus.PROCESSING;
 
   // When hideProcessingState is true, we treat processing files as completed for display purposes
   const isProcessing = hideProcessingState ? false : isActuallyProcessing;
 
-  const doneUploading = String(file.status) !== UserFileStatus.UPLOADING;
+  const doneUploading = String(file.status) !== KnowledgeFileStatus.UPLOADING;
 
   // For images, always show the larger preview layout (even while processing)
   if (isImage) {
@@ -183,7 +183,7 @@ export function FileCard({
             title={file.name}
             description={
               isProcessing
-                ? file.status === UserFileStatus.UPLOADING
+                ? file.status === KnowledgeFileStatus.UPLOADING
                   ? "Uploading..."
                   : "Processing..."
                 : typeLabel

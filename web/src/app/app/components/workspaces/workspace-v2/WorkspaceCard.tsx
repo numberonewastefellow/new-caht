@@ -3,15 +3,15 @@
 import { memo, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import { errorHandlingFetcher } from "@/lib/fetcher";
-import type { Project, ProjectFile } from "@/app/app/projects/projectsService";
+import type { Workspace, WorkspaceFile } from "@/app/app/workspaces/workspacesService";
 import { cn, noProp } from "@/lib/utils";
 import { swatchForId, workspaceUpdatedAt } from "./workspaceTheme";
-import { formatRelativeTime } from "../project_utils";
+import { formatRelativeTime } from "../workspace_utils";
 import WorkspaceGlyph from "./WorkspaceGlyph";
 import { SvgStar, SvgPin, SvgFileText, SvgBubbleText, SvgUser } from "@opal/icons";
 
 export interface WorkspaceCardProps {
-  project: Project;
+  workspace: Workspace;
   pinned: boolean;
   onOpen: () => void;
   onTogglePin: () => void;
@@ -33,12 +33,12 @@ function Stat({
 }
 
 const WorkspaceCard = memo(function WorkspaceCard({
-  project,
+  workspace,
   pinned,
   onOpen,
   onTogglePin,
 }: WorkspaceCardProps) {
-  const { from, to } = swatchForId(project.id);
+  const { from, to } = swatchForId(workspace.id);
 
   // Only fetch the file count once the card scrolls into view, so a dashboard
   // with many workspaces doesn't fire N requests on load.
@@ -63,13 +63,13 @@ const WorkspaceCard = memo(function WorkspaceCard({
   }, [inView]);
 
   // Lazy, cached file count (not present in the workspace-list payload).
-  const { data: files } = useSWR<ProjectFile[]>(
-    inView ? `/api/workspaces/files/${project.id}` : null,
+  const { data: files } = useSWR<WorkspaceFile[]>(
+    inView ? `/api/workspaces/files/${workspace.id}` : null,
     errorHandlingFetcher,
     { revalidateOnFocus: false, dedupingInterval: 60_000 }
   );
   const fileCount = files?.length;
-  const chatCount = project.chat_sessions?.length ?? 0;
+  const chatCount = workspace.chat_sessions?.length ?? 0;
 
   return (
     <button
@@ -87,7 +87,7 @@ const WorkspaceCard = memo(function WorkspaceCard({
       />
 
       <div className="relative flex items-start justify-between">
-        <WorkspaceGlyph id={project.id} size={40} />
+        <WorkspaceGlyph id={workspace.id} size={40} />
         <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
           <span
             role="button"
@@ -113,7 +113,7 @@ const WorkspaceCard = memo(function WorkspaceCard({
       <div className="relative mt-3">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-semibold text-text-05 truncate">
-            {project.name}
+            {workspace.name}
           </span>
           {pinned && (
             <SvgStar
@@ -126,7 +126,7 @@ const WorkspaceCard = memo(function WorkspaceCard({
           )}
         </div>
         <p className="mt-1 line-clamp-2 text-xs text-text-03">
-          {project.description?.trim() ||
+          {workspace.description?.trim() ||
             "Files, chats, and instructions scoped to this workspace."}
         </p>
       </div>
@@ -138,7 +138,7 @@ const WorkspaceCard = memo(function WorkspaceCard({
           {/* Members: owner only (no backend membership) */}
           <Stat icon={SvgUser} value={1} />
         </div>
-        <span>{formatRelativeTime(workspaceUpdatedAt(project))}</span>
+        <span>{formatRelativeTime(workspaceUpdatedAt(workspace))}</span>
       </div>
     </button>
   );

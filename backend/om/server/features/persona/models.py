@@ -132,7 +132,7 @@ class PersonaUpsertRequest(BaseModel):
     is_default_persona: bool = False
     display_priority: int | None = None
     # Accept string UUIDs from frontend
-    user_file_ids: list[str] | None = None
+    knowledge_file_ids: list[str] | None = None
     # Hierarchy nodes (folders, spaces, channels) attached for scoped search
     hierarchy_node_ids: list[int] = Field(default_factory=list)
     # Individual documents attached for scoped search
@@ -259,7 +259,7 @@ class PersonaSnapshot(BaseModel):
     uploaded_image_id: str | None
     icon_name: str | None
     # Return string UUIDs to frontend for consistency
-    user_file_ids: list[str]
+    knowledge_file_ids: list[str]
     display_priority: int | None
     is_default_persona: bool
     builtin_persona: bool
@@ -297,7 +297,7 @@ class PersonaSnapshot(BaseModel):
             is_visible=persona.is_visible,
             uploaded_image_id=persona.uploaded_image_id,
             icon_name=persona.icon_name,
-            user_file_ids=[str(file.id) for file in persona.user_files],
+            knowledge_file_ids=[str(file.id) for file in persona.knowledge_files],
             display_priority=persona.display_priority,
             is_default_persona=persona.is_default_persona,
             builtin_persona=persona.builtin_persona,
@@ -369,7 +369,7 @@ class FullPersonaSnapshot(PersonaSnapshot):
             is_visible=persona.is_visible,
             uploaded_image_id=persona.uploaded_image_id,
             icon_name=persona.icon_name,
-            user_file_ids=[str(file.id) for file in persona.user_files],
+            knowledge_file_ids=[str(file.id) for file in persona.knowledge_files],
             display_priority=persona.display_priority,
             is_default_persona=persona.is_default_persona,
             builtin_persona=persona.builtin_persona,

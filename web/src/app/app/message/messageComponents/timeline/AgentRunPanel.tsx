@@ -9,7 +9,7 @@ import { WorkflowTraceButton } from "@/app/app/message/messageComponents/timelin
 import { formatDurationSeconds } from "@/lib/time";
 import { FullChatState } from "../interfaces";
 
-// All accent coloring uses theme CSS variables (per the project design-system
+// All accent coloring uses theme CSS variables (per the workspace design-system
 // rules) so the panel follows the active accent theme + light/dark mode.
 const ACCENT = "var(--virtualai-accent, var(--theme-primary-05))";
 const ACCENT_SUBTLE = "var(--virtualai-accent-subtle, var(--theme-primary-04))";

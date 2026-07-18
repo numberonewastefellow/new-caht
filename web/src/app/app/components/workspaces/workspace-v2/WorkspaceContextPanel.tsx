@@ -3,10 +3,10 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { MinimalOnyxDocument } from "@/lib/search/interfaces";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { useWorkspacePanelStore } from "@/app/app/stores/useWorkspacePanelStore";
 import IconButton from "@/refresh-components/buttons/IconButton";
-import ProjectChatSessionList from "../ProjectChatSessionList";
+import WorkspaceChatSessionList from "../WorkspaceChatSessionList";
 import { FilesSection, InstructionsSection } from "./WorkspaceDetailBody";
 import { SvgHistory, SvgFiles, SvgBookOpen, SvgSearch, SvgX } from "@opal/icons";
 
@@ -15,7 +15,7 @@ type PanelTab = "history" | "files" | "instructions";
 /**
  * Right-side workspace context dock shown in the new workspace chat UI.
  * Tabs reuse the exact same data-bound sections as the workspace detail page
- * (ProjectChatSessionList, FilesSection, InstructionsSection) — no new bindings.
+ * (WorkspaceChatSessionList, FilesSection, InstructionsSection) — no new bindings.
  * Visibility is owned by the dedicated `useWorkspacePanelStore`.
  */
 export default function WorkspaceContextPanel({
@@ -23,7 +23,7 @@ export default function WorkspaceContextPanel({
 }: {
   setPresentingDocument?: (document: MinimalOnyxDocument) => void;
 }) {
-  const { allCurrentProjectFiles } = useProjectsContext();
+  const { allCurrentWorkspaceFiles } = useWorkspacesContext();
   const setOpen = useWorkspacePanelStore((s) => s.setOpen);
   const [tab, setTab] = useState<PanelTab>("history");
   const [search, setSearch] = useState("");
@@ -42,7 +42,7 @@ export default function WorkspaceContextPanel({
           <PanelTabBtn
             icon={SvgFiles}
             label="Files"
-            count={allCurrentProjectFiles.length}
+            count={allCurrentWorkspaceFiles.length}
             active={tab === "files"}
             onClick={() => setTab("files")}
           />
@@ -74,7 +74,7 @@ export default function WorkspaceContextPanel({
                 className="flex-1 bg-transparent text-xs text-text-05 placeholder:text-text-02 outline-none"
               />
             </div>
-            <ProjectChatSessionList searchQuery={search} />
+            <WorkspaceChatSessionList searchQuery={search} />
           </div>
         )}
         {tab === "files" && (

@@ -16,19 +16,19 @@ INDEX_PATTERN_TITLE = "chunk_*"
 DASHBOARD_ID = "danswer-files-and-chunks"
 VERSION = "3.6.0"
 
-# Drill-down: render each `user_projects` value (in the "Files by Project" table
+# Drill-down: render each `user_workspaces` value (in the "Files by Workspace" table
 # and the Chunk Text saved search) as a link that reloads THIS dashboard scoped
 # to that project via a KQL query. This is the reliable, scales-to-many-projects
 # alternative to the legacy data-table cell click, which is broken by an OSD
 # 3.5/3.6 filter-button regression.
 FIELD_FORMAT_MAP = {
-    "user_projects": {
+    "user_workspaces": {
         "id": "url",
         "params": {
             "type": "a",
             "urlTemplate": (
                 "/app/dashboards#/view/" + DASHBOARD_ID
-                + "?_g=()&_a=(query:(language:kuery,query:'user_projects:{{value}}'))"
+                + "?_g=()&_a=(query:(language:kuery,query:'user_workspaces:{{value}}'))"
             ),
             "labelTemplate": "{{value}}",
             "openLinkInCurrentTab": True,
@@ -205,11 +205,11 @@ objects.append(
     )
 )
 
-# 5) Files by Project: user_projects -> #files (cardinality) + #chunks (count)
+# 5) Files by Workspace: user_workspaces -> #files (cardinality) + #chunks (count)
 objects.append(
     table_viz(
-        "danswer-files-by-project",
-        "Files by Project (click a project)",
+        "danswer-files-by-workspace",
+        "Files by Workspace (click a workspace)",
         [
             {"id": "1", "enabled": True, "type": "count", "schema": "metric", "params": {}},
             {
@@ -219,7 +219,7 @@ objects.append(
                 "schema": "metric",
                 "params": {"field": "document_id"},
             },
-            terms_bucket("3", "user_projects", "2"),
+            terms_bucket("3", "user_workspaces", "2"),
         ],
     )
 )
@@ -237,7 +237,7 @@ objects.append(
                 "semantic_identifier",
                 "document_id",
                 "chunk_index",
-                "user_projects",
+                "user_workspaces",
                 "source_type",
                 "content",
             ],
@@ -281,7 +281,7 @@ dashboard_refs = [
     {"name": "panel_1", "type": "visualization", "id": "danswer-total-files"},
     {"name": "panel_2", "type": "visualization", "id": "danswer-total-chunks"},
     {"name": "panel_3", "type": "visualization", "id": "danswer-files-table"},
-    {"name": "panel_4", "type": "visualization", "id": "danswer-files-by-project"},
+    {"name": "panel_4", "type": "visualization", "id": "danswer-files-by-workspace"},
     {"name": "panel_5", "type": "search", "id": "danswer-chunk-text"},
 ]
 objects.append(

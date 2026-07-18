@@ -19,7 +19,7 @@ from tests.integration.common_utils.test_models import DATestPersona
 from tests.integration.common_utils.test_models import DATestUser
 
 
-class UserFileTestSetup(NamedTuple):
+class KnowledgeFileTestSetup(NamedTuple):
     admin_user: DATestUser
     user1_file_owner: DATestUser
     user2_non_owner: DATestUser
@@ -29,7 +29,7 @@ class UserFileTestSetup(NamedTuple):
 
 
 @pytest.fixture
-def user_file_setup(reset: None) -> UserFileTestSetup:  # noqa: ARG001
+def user_file_setup(reset: None) -> KnowledgeFileTestSetup:  # noqa: ARG001
     """
     Common setup for user file permission tests.
     Creates users, files, and a public assistant with files.
@@ -58,33 +58,33 @@ def user_file_setup(reset: None) -> UserFileTestSetup:  # noqa: ARG001
     assert not error, f"Failed to upload file: {error}"
     assert len(file_descriptors) == 1, "Expected 1 file to be uploaded"
 
-    # Get the file descriptor and user_file_id
+    # Get the file descriptor and knowledge_file_id
     user1_file_descriptor = file_descriptors[0]
-    user_file_id = user1_file_descriptor.get("user_file_id")
+    knowledge_file_id = user1_file_descriptor.get("knowledge_file_id")
 
-    assert user_file_id is not None, "user_file_id should not be None"
+    assert knowledge_file_id is not None, "knowledge_file_id should not be None"
 
     # Create a public assistant with the user file attached
     public_assistant = PersonaManager.create(
         name="Public Assistant with Files",
         description="A public assistant with user files for testing permissions",
         is_public=True,
-        user_file_ids=[user_file_id],
+        knowledge_file_ids=[knowledge_file_id],
         user_performing_action=admin_user,
     )
 
-    return UserFileTestSetup(
+    return KnowledgeFileTestSetup(
         admin_user=admin_user,
         user1_file_owner=user1,
         user2_non_owner=user2,
         user1_file_descriptor=user1_file_descriptor,
-        user1_file_id=user_file_id,
+        user1_file_id=knowledge_file_id,
         public_assistant=public_assistant,
     )
 
 
 def test_public_assistant_with_user_files(
-    user_file_setup: UserFileTestSetup,
+    user_file_setup: KnowledgeFileTestSetup,
 ) -> None:
     """
     Test that a public assistant with user files attached can be used by users

@@ -184,7 +184,7 @@ class EmbeddingPrecision(str, PyEnum):
     FLOAT = "float"
 
 
-class UserFileStatus(str, PyEnum):
+class KnowledgeFileStatus(str, PyEnum):
     PROCESSING = "PROCESSING"
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"

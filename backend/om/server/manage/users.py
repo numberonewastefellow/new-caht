@@ -47,9 +47,9 @@ from om.configs.constants import PUBLIC_API_TAGS
 from om.db.api_key import is_api_key_email_address
 from om.db.auth import get_live_users_count
 from om.db.engine.sql_engine import get_session
-from om.db.enums import UserFileStatus
+from om.db.enums import KnowledgeFileStatus
 from om.db.models import User
-from om.db.models import UserFile
+from om.db.models import KnowledgeFile
 from om.db.user_preferences import activate_user
 from om.db.user_preferences import deactivate_user
 from om.db.user_preferences import get_all_user_assistant_specific_configs
@@ -76,7 +76,7 @@ from om.db.users import validate_user_role_update
 from om.key_value_store.factory import get_kv_store
 from om.redis.redis_pool import get_raw_redis_client
 from om.server.documents.models import PaginatedReturn
-from om.server.features.projects.models import UserFileSnapshot
+from om.server.features.workspaces.models import KnowledgeFileSnapshot
 from om.server.manage.models import AllUsersResponse
 from om.server.manage.models import AutoScrollRequest
 from om.server.manage.models import ChatBackgroundRequest
@@ -976,15 +976,15 @@ def update_assistant_preferences_for_user_api(
 def get_recent_files(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> list[UserFileSnapshot]:
+) -> list[KnowledgeFileSnapshot]:
     user_id = user.id
-    user_files = (
-        db_session.query(UserFile)
-        .filter(UserFile.user_id == user_id)
-        .filter(UserFile.status != UserFileStatus.FAILED)
-        .filter(UserFile.status != UserFileStatus.DELETING)
-        .order_by(UserFile.last_accessed_at.desc())
+    knowledge_files = (
+        db_session.query(KnowledgeFile)
+        .filter(KnowledgeFile.user_id == user_id)
+        .filter(KnowledgeFile.status != KnowledgeFileStatus.FAILED)
+        .filter(KnowledgeFile.status != KnowledgeFileStatus.DELETING)
+        .order_by(KnowledgeFile.last_accessed_at.desc())
         .all()
     )
 
-    return [UserFileSnapshot.from_model(user_file) for user_file in user_files]
+    return [KnowledgeFileSnapshot.from_model(knowledge_file) for knowledge_file in knowledge_files]

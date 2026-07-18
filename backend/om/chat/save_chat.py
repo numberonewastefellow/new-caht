@@ -242,13 +242,13 @@ def save_chat_turn(
             db_search_doc_id = search_doc_key_to_id[search_doc_key]
         else:
             # Citation doc not found in tool call search_docs
-            # Expected case: Project files (source_type=FILE) are cited but don't come from tool calls
+            # Expected case: Workspace files (source_type=FILE) are cited but don't come from tool calls
             # Unexpected case: Other citation-only docs (indicates a potential issue upstream)
-            is_project_file = search_doc_py.source_type == DocumentSource.FILE
+            is_workspace_file = search_doc_py.source_type == DocumentSource.FILE
 
-            if is_project_file:
+            if is_workspace_file:
                 logger.info(
-                    f"Project file citation {search_doc_py.document_id} not in tool calls, creating it"
+                    f"Workspace file citation {search_doc_py.document_id} not in tool calls, creating it"
                 )
             else:
                 logger.warning(
@@ -267,8 +267,8 @@ def save_chat_turn(
             db_search_doc_id = db_search_doc.id
             search_doc_key_to_id[search_doc_key] = db_search_doc_id
 
-            # Link project files to ChatMessage to enable frontend preview
-            if is_project_file:
+            # Link workspace files to ChatMessage to enable frontend preview
+            if is_workspace_file:
                 all_search_doc_ids_set.add(db_search_doc_id)
 
         # Build mapping from citation number to search doc ID

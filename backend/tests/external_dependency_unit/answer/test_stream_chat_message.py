@@ -571,13 +571,13 @@ def test_parallel_internal_and_web_search_tool_calls(
 
     THINKING_RESPONSE_1 = (
         "I need to build more context around the user's query to answer it. "
-        "I should look at GDP growth projections for 2026. "
-        "I should also look at what the Q2 strategy is and what projects are included. "
+        "I should look at GDP growth workspaceions for 2026. "
+        "I should also look at what the Q2 strategy is and what workspaces are included. "
         "I should perform both web and internal searches in parallel to get information efficiently."
     )
 
     WEB_QUERIES_1 = [
-        "2026 global GDP growth projections",
+        "2026 global GDP growth workspaceions",
         "GDP growth 2026",
         "GDP forecast 2026",
     ]
@@ -587,7 +587,7 @@ def test_parallel_internal_and_web_search_tool_calls(
             MockWebSearchResult(
                 title="World Economic Outlook Update, January 2026",
                 link="https://www.imf.org/weo/issues/2026/01/19/world-economic-outlook-update-january-2026",
-                snippet="Global growth is projected at 3.3 percent for 2026 and 3.2 percent for 2027...",
+                snippet="Global growth is workspaceed at 3.3 percent for 2026 and 3.2 percent for 2027...",
             ),
             MockWebSearchResult(
                 title="IMF sees steady global growth in 2026 as AI boom offsets ...",
@@ -597,7 +597,7 @@ def test_parallel_internal_and_web_search_tool_calls(
             MockWebSearchResult(
                 title="The Global Economy Is Forecast to Post...",
                 link="https://www.goldmansachs.com/insights/articles/123",
-                snippet="Global GDP is projected by Goldman Sachs Research to increase 2.8% in 2026",
+                snippet="Global GDP is workspaceed by Goldman Sachs Research to increase 2.8% in 2026",
             ),
         ],
         WEB_QUERIES_1[1]: [
@@ -607,7 +607,7 @@ def test_parallel_internal_and_web_search_tool_calls(
                 snippet="Gross domestic product increased at an upwardly revised 4.4% annualized rate, the ...",
             ),
             MockWebSearchResult(
-                title="US GDP Growth Is Projected to Outperform Economist ...",
+                title="US GDP Growth Is Workspaceed to Outperform Economist ...",
                 link="https://www.goldmansachs.com/insights/articles/321",
                 snippet="US GDP is forecast to expand 2.5% in 2026 (fourth quarter, yoy), versus",
             ),
@@ -621,10 +621,10 @@ def test_parallel_internal_and_web_search_tool_calls(
             MockWebSearchResult(
                 title="World Economic Outlook Update, January 2026",
                 link="https://www.imf.org/web/issues/2026/01/19/world-economic-outlook-update-january-2026",
-                snippet="Global growth is projected at 3.3 percent for 2026 and 3.2 percent for 2027...",
+                snippet="Global growth is workspaceed at 3.3 percent for 2026 and 3.2 percent for 2027...",
             ),
             MockWebSearchResult(
-                title="US GDP Growth Is Projected to Outperform Economist ...",
+                title="US GDP Growth Is Workspaceed to Outperform Economist ...",
                 link="https://www.goldmansachs.com/insights/articles/321",
                 snippet="US GDP is forecast to expand 2.5% in 2026 (fourth quarter, yoy), versus",
             ),
@@ -636,7 +636,7 @@ def test_parallel_internal_and_web_search_tool_calls(
         ],
     }
 
-    INTERNAL_QUERIES_1 = ["Q2 strategy 2026", "GDP growth 2026 projects", "Q2 projects"]
+    INTERNAL_QUERIES_1 = ["Q2 strategy 2026", "GDP growth 2026 workspaces", "Q2 workspaces"]
 
     INTERNAL_RESULTS_1 = {
         INTERNAL_QUERIES_1[0]: [
@@ -663,7 +663,7 @@ def test_parallel_internal_and_web_search_tool_calls(
             MockInternalSearchResult(
                 document_id="123123",
                 source_type=DocumentSource.LINEAR,
-                semantic_identifier="GDP growth 2026 projects",
+                semantic_identifier="GDP growth 2026 workspaces",
                 chunk_ind=13,
             )
         ],
@@ -671,7 +671,7 @@ def test_parallel_internal_and_web_search_tool_calls(
             MockInternalSearchResult(
                 document_id="98823643243",
                 source_type=DocumentSource.GOOGLE_DRIVE,
-                semantic_identifier="Full list of Q2 projects",
+                semantic_identifier="Full list of Q2 workspaces",
                 chunk_ind=1,
             )
         ],
@@ -687,22 +687,22 @@ def test_parallel_internal_and_web_search_tool_calls(
         MockWebContent(
             title=WEB_RESULTS_1[WEB_QUERIES_1[0]][0].title,
             url=WEB_RESULTS_1[WEB_QUERIES_1[0]][0].link,
-            content="Global growth is projected at 3.3 percent for 2026 and 3.2 percent for 2027...",
+            content="Global growth is workspaceed at 3.3 percent for 2026 and 3.2 percent for 2027...",
         ),
         MockWebContent(
             title=WEB_RESULTS_1[WEB_QUERIES_1[0]][2].title,
             url=WEB_RESULTS_1[WEB_QUERIES_1[0]][2].link,
-            content="Global growth is projected at 3.3 percent for 2026 and 3.2 percent for 2027...",
+            content="Global growth is workspaceed at 3.3 percent for 2026 and 3.2 percent for 2027...",
         ),
         MockWebContent(
             title=WEB_RESULTS_1[WEB_QUERIES_1[2]][0].title,
             url=WEB_RESULTS_1[WEB_QUERIES_1[2]][0].link,
-            content="Global growth is projected at 3.3 percent for 2026 and 3.2 percent for 2027...",
+            content="Global growth is workspaceed at 3.3 percent for 2026 and 3.2 percent for 2027...",
         ),
     ]
 
     THINKING_RESPONSE_2 = (
-        "I now have a clear picture of the 2026 global GDP projections and the Q2 strategy. "
+        "I now have a clear picture of the 2026 global GDP workspaceions and the Q2 strategy. "
         "I would like to now about the outperform expections though..."
     )
 
@@ -720,8 +720,8 @@ def test_parallel_internal_and_web_search_tool_calls(
     )
 
     ANSWER_RESPONSE = (
-        "We will have to change around some of our projects to accomodate the outperform expections. "
-        "We should focus on aggresive expansion projects and prioritize them over cost-cutting initiatives."
+        "We will have to change around some of our workspaces to accomodate the outperform expections. "
+        "We should focus on aggresive expansion workspaces and prioritize them over cost-cutting initiatives."
     )
 
     expected_web_docs = []

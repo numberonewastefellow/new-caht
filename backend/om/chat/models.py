@@ -31,8 +31,8 @@ class CustomToolResponse(BaseModel):
     tool_name: str
 
 
-class ProjectSearchConfig(BaseModel):
-    """Configuration for search tool availability in project context."""
+class WorkspaceSearchConfig(BaseModel):
+    """Configuration for search tool availability in workspace context."""
 
     search_usage: SearchToolUsage
     disable_forced_tool: bool
@@ -132,8 +132,8 @@ class ChatMessageSimple(BaseModel):
     file_id: str | None = None
 
 
-class ProjectFileMetadata(BaseModel):
-    """Metadata for a project file to enable citation support."""
+class WorkspaceFileMetadata(BaseModel):
+    """Metadata for a workspace file to enable citation support."""
 
     file_id: str
     filename: str
@@ -143,8 +143,8 @@ class ProjectFileMetadata(BaseModel):
 class FileToolMetadata(BaseModel):
     """Lightweight metadata for exposing files to the FileReaderTool.
 
-    Used when files cannot be loaded directly into context (project too large
-    or persona-attached user_files without direct-load path). The LLM receives
+    Used when files cannot be loaded directly into context (workspace too large
+    or persona-attached knowledge_files without direct-load path). The LLM receives
     a listing of these so it knows which files it can read via ``read_file``.
     """
 
@@ -167,15 +167,15 @@ class ChatHistoryResult(BaseModel):
     all_injected_file_metadata: dict[str, FileToolMetadata]
 
 
-class ExtractedProjectFiles(BaseModel):
-    project_file_texts: list[str]
-    project_image_files: list[ChatLoadedFile]
-    project_as_filter: bool
+class ExtractedWorkspaceFiles(BaseModel):
+    workspace_file_texts: list[str]
+    workspace_image_files: list[ChatLoadedFile]
+    workspace_as_filter: bool
     total_token_count: int
-    # Metadata for project files to enable citations
-    project_file_metadata: list[ProjectFileMetadata]
-    # None if not a project
-    project_uncapped_token_count: int | None
+    # Metadata for workspace files to enable citations
+    workspace_file_metadata: list[WorkspaceFileMetadata]
+    # None if not a workspace
+    workspace_uncapped_token_count: int | None
     # Lightweight metadata for files exposed via FileReaderTool
     # (populated when files don't fit in context and vector DB is disabled)
     file_metadata_for_tool: list[FileToolMetadata] = []

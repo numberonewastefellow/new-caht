@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import type { Route } from "next";
 import { unstable_noStore as noStore } from "next/cache";
 import { requireAuth } from "@/lib/auth/requireAuth";
-import { ProjectsProvider } from "@/providers/ProjectsContext";
+import { WorkspacesProvider } from "@/providers/WorkspacesContext";
 import AppSidebar from "@/sections/sidebar/AppSidebar";
 
 export interface LayoutProps {
@@ -20,11 +20,11 @@ export default async function Layout({ children }: LayoutProps) {
   }
 
   return (
-    <ProjectsProvider>
+    <WorkspacesProvider>
       <div className="flex flex-row w-full h-full">
         <AppSidebar />
         {children}
       </div>
-    </ProjectsProvider>
+    </WorkspacesProvider>
   );
 }

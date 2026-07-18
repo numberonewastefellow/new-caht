@@ -1234,40 +1234,40 @@ def test_get_next_citation_number_non_sequential(
     assert processor.get_next_citation_number() == 11
 
 
-def test_project_files_then_search_tool_citations(
+def test_workspace_files_then_search_tool_citations(
     mock_search_docs: CitationMapping,
 ) -> None:
     """
-    Test that project file citations don't conflict with search tool citations.
+    Test that workspace file citations don't conflict with search tool citations.
 
     """
     processor = DynamicCitationProcessor()
 
-    # Simulate project files being added (numbered 1, 2, 3)
-    project_file_1 = create_test_search_doc(
-        document_id="project_file_1",
+    # Simulate workspace files being added (numbered 1, 2, 3)
+    workspace_file_1 = create_test_search_doc(
+        document_id="workspace_file_1",
         link=None,
-        semantic_identifier="ProjectFile1.txt",
+        semantic_identifier="WorkspaceFile1.txt",
         source_type=DocumentSource.FILE,
     )
-    project_file_2 = create_test_search_doc(
-        document_id="project_file_2",
+    workspace_file_2 = create_test_search_doc(
+        document_id="workspace_file_2",
         link=None,
-        semantic_identifier="ProjectFile2.txt",
+        semantic_identifier="WorkspaceFile2.txt",
         source_type=DocumentSource.FILE,
     )
-    project_file_3 = create_test_search_doc(
-        document_id="project_file_3",
+    workspace_file_3 = create_test_search_doc(
+        document_id="workspace_file_3",
         link=None,
-        semantic_identifier="ProjectFile3.txt",
+        semantic_identifier="WorkspaceFile3.txt",
         source_type=DocumentSource.FILE,
     )
 
     processor.update_citation_mapping(
-        {1: project_file_1, 2: project_file_2, 3: project_file_3}
+        {1: workspace_file_1, 2: workspace_file_2, 3: workspace_file_3}
     )
 
-    # Verify project files are registered
+    # Verify workspace files are registered
     assert processor.get_next_citation_number() == 4
     assert len(processor.citation_to_doc) == 3
 
@@ -1280,11 +1280,11 @@ def test_project_files_then_search_tool_citations(
         {starting_citation: search_result_1, starting_citation + 1: search_result_2}
     )
 
-    # Verify both project files and search results are registered
+    # Verify both workspace files and search results are registered
     assert len(processor.citation_to_doc) == 5
-    assert processor.citation_to_doc[1].document_id == "project_file_1"
-    assert processor.citation_to_doc[2].document_id == "project_file_2"
-    assert processor.citation_to_doc[3].document_id == "project_file_3"
+    assert processor.citation_to_doc[1].document_id == "workspace_file_1"
+    assert processor.citation_to_doc[2].document_id == "workspace_file_2"
+    assert processor.citation_to_doc[3].document_id == "workspace_file_3"
     assert processor.citation_to_doc[4].document_id == "doc_1"
     assert processor.citation_to_doc[5].document_id == "doc_2"
 
@@ -1292,7 +1292,7 @@ def test_project_files_then_search_tool_citations(
     output, citations = process_tokens(
         processor,
         [
-            "Project [1], [2], [3] and search results [4], [5]",
+            "Workspace [1], [2], [3] and search results [4], [5]",
         ],
     )
 
@@ -1304,36 +1304,36 @@ def test_project_files_then_search_tool_citations(
     assert len(citations) == 5
 
 
-def test_adding_project_files_across_messages(
+def test_adding_workspace_files_across_messages(
     mock_search_docs: CitationMapping,
 ) -> None:
-    """Test that adding more project files in subsequent messages works correctly.
+    """Test that adding more workspace files in subsequent messages works correctly.
 
-    Architecture note: Each message gets a fresh citation processor, so project files
+    Architecture note: Each message gets a fresh citation processor, so workspace files
     always start from citation 1. Each message maintains its own independent citation
     space, and old messages use their saved citation mappings for display.
 
     This test simulates:
-    - Message 1: User has 3 project files + runs search
-    - Message 2: User adds 2 MORE project files (now 5 total) + runs search
+    - Message 1: User has 3 workspace files + runs search
+    - Message 2: User adds 2 MORE workspace files (now 5 total) + runs search
     Both messages should work independently without citation conflicts.
     """
-    # ===== MESSAGE 1: 3 project files + search =====
+    # ===== MESSAGE 1: 3 workspace files + search =====
     message1_processor = DynamicCitationProcessor()
 
-    # Add 3 project files (citations 1, 2, 3)
-    project_files_msg1 = {
+    # Add 3 workspace files (citations 1, 2, 3)
+    workspace_files_msg1 = {
         1: create_test_search_doc(
-            document_id="project_file_1", link=None, source_type=DocumentSource.FILE
+            document_id="workspace_file_1", link=None, source_type=DocumentSource.FILE
         ),
         2: create_test_search_doc(
-            document_id="project_file_2", link=None, source_type=DocumentSource.FILE
+            document_id="workspace_file_2", link=None, source_type=DocumentSource.FILE
         ),
         3: create_test_search_doc(
-            document_id="project_file_3", link=None, source_type=DocumentSource.FILE
+            document_id="workspace_file_3", link=None, source_type=DocumentSource.FILE
         ),
     }
-    message1_processor.update_citation_mapping(project_files_msg1)
+    message1_processor.update_citation_mapping(workspace_files_msg1)
 
     # Run search tool (citations 4, 5)
     search_start_msg1 = message1_processor.get_next_citation_number()
@@ -1347,36 +1347,36 @@ def test_adding_project_files_across_messages(
 
     # Verify Message 1 citations
     assert len(message1_processor.citation_to_doc) == 5
-    assert message1_processor.citation_to_doc[1].document_id == "project_file_1"
+    assert message1_processor.citation_to_doc[1].document_id == "workspace_file_1"
     assert message1_processor.citation_to_doc[4].document_id == "doc_1"
 
-    # ===== MESSAGE 2: 5 project files + search =====
+    # ===== MESSAGE 2: 5 workspace files + search =====
     # Fresh processor for new message (simulates new run_llm_loop() call)
     message2_processor = DynamicCitationProcessor()
 
-    # Add 5 project files (citations 1, 2, 3, 4, 5) - includes 2 NEW files
-    project_files_msg2 = {
+    # Add 5 workspace files (citations 1, 2, 3, 4, 5) - includes 2 NEW files
+    workspace_files_msg2 = {
         1: create_test_search_doc(
-            document_id="project_file_1", link=None, source_type=DocumentSource.FILE
+            document_id="workspace_file_1", link=None, source_type=DocumentSource.FILE
         ),
         2: create_test_search_doc(
-            document_id="project_file_2", link=None, source_type=DocumentSource.FILE
+            document_id="workspace_file_2", link=None, source_type=DocumentSource.FILE
         ),
         3: create_test_search_doc(
-            document_id="project_file_3", link=None, source_type=DocumentSource.FILE
+            document_id="workspace_file_3", link=None, source_type=DocumentSource.FILE
         ),
         4: create_test_search_doc(
-            document_id="project_file_4", link=None, source_type=DocumentSource.FILE
+            document_id="workspace_file_4", link=None, source_type=DocumentSource.FILE
         ),  # NEW
         5: create_test_search_doc(
-            document_id="project_file_5", link=None, source_type=DocumentSource.FILE
+            document_id="workspace_file_5", link=None, source_type=DocumentSource.FILE
         ),  # NEW
     }
-    message2_processor.update_citation_mapping(project_files_msg2)
+    message2_processor.update_citation_mapping(workspace_files_msg2)
 
     # Run search tool (citations 6, 7)
     search_start_msg2 = message2_processor.get_next_citation_number()
-    assert search_start_msg2 == 6  # Starts after 5 project files
+    assert search_start_msg2 == 6  # Starts after 5 workspace files
     message2_processor.update_citation_mapping(
         {
             6: mock_search_docs[3],
@@ -1386,17 +1386,17 @@ def test_adding_project_files_across_messages(
 
     # Verify Message 2 citations
     assert len(message2_processor.citation_to_doc) == 7
-    assert message2_processor.citation_to_doc[1].document_id == "project_file_1"
-    assert message2_processor.citation_to_doc[4].document_id == "project_file_4"  # NEW
-    assert message2_processor.citation_to_doc[5].document_id == "project_file_5"  # NEW
+    assert message2_processor.citation_to_doc[1].document_id == "workspace_file_1"
+    assert message2_processor.citation_to_doc[4].document_id == "workspace_file_4"  # NEW
+    assert message2_processor.citation_to_doc[5].document_id == "workspace_file_5"  # NEW
     assert message2_processor.citation_to_doc[6].document_id == "doc_3"
 
     # Verify both messages maintain independent citation spaces
     # Message 1: Citation 4 = search result (doc_1)
-    # Message 2: Citation 4 = project file (project_file_4)
+    # Message 2: Citation 4 = workspace file (workspace_file_4)
     # This is correct - each message has its own citation space
     assert message1_processor.citation_to_doc[4].document_id == "doc_1"
-    assert message2_processor.citation_to_doc[4].document_id == "project_file_4"
+    assert message2_processor.citation_to_doc[4].document_id == "workspace_file_4"
 
 
 # ============================================================================

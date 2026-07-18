@@ -48,7 +48,7 @@ from om.document_index.opensearch.schema import SOURCE_TYPE_FIELD_NAME
 from om.document_index.opensearch.schema import TENANT_ID_FIELD_NAME
 from om.document_index.opensearch.schema import TITLE_FIELD_NAME
 from om.document_index.opensearch.schema import TITLE_VECTOR_FIELD_NAME
-from om.document_index.opensearch.schema import USER_PROJECTS_FIELD_NAME
+from om.document_index.opensearch.schema import USER_WORKSPACES_FIELD_NAME
 
 # See https://docs.opensearch.org/latest/query-dsl/term/terms/.
 MAX_NUM_TERMS_ALLOWED_IN_TERMS_QUERY = 65_536
@@ -228,7 +228,7 @@ class DocumentQuery:
             source_types=index_filters.source_type or [],
             tags=index_filters.tags or [],
             document_sets=index_filters.document_set or [],
-            project_id_filter=index_filters.project_id_filter,
+            workspace_id_filter=index_filters.workspace_id_filter,
             persona_id_filter=index_filters.persona_id_filter,
             time_cutoff=index_filters.time_cutoff,
             min_chunk_index=min_chunk_index,
@@ -294,7 +294,7 @@ class DocumentQuery:
             source_types=[],
             tags=[],
             document_sets=[],
-            project_id_filter=None,
+            workspace_id_filter=None,
             persona_id_filter=None,
             time_cutoff=None,
             min_chunk_index=None,
@@ -366,7 +366,7 @@ class DocumentQuery:
             source_types=index_filters.source_type or [],
             tags=index_filters.tags or [],
             document_sets=index_filters.document_set or [],
-            project_id_filter=index_filters.project_id_filter,
+            workspace_id_filter=index_filters.workspace_id_filter,
             persona_id_filter=index_filters.persona_id_filter,
             time_cutoff=index_filters.time_cutoff,
             min_chunk_index=None,
@@ -461,7 +461,7 @@ class DocumentQuery:
             source_types=index_filters.source_type or [],
             tags=index_filters.tags or [],
             document_sets=index_filters.document_set or [],
-            project_id_filter=index_filters.project_id_filter,
+            workspace_id_filter=index_filters.workspace_id_filter,
             persona_id_filter=index_filters.persona_id_filter,
             time_cutoff=index_filters.time_cutoff,
             min_chunk_index=None,
@@ -543,7 +543,7 @@ class DocumentQuery:
             source_types=index_filters.source_type or [],
             tags=index_filters.tags or [],
             document_sets=index_filters.document_set or [],
-            project_id_filter=index_filters.project_id_filter,
+            workspace_id_filter=index_filters.workspace_id_filter,
             persona_id_filter=index_filters.persona_id_filter,
             time_cutoff=index_filters.time_cutoff,
             min_chunk_index=None,
@@ -604,7 +604,7 @@ class DocumentQuery:
             source_types=index_filters.source_type or [],
             tags=index_filters.tags or [],
             document_sets=index_filters.document_set or [],
-            project_id_filter=index_filters.project_id_filter,
+            workspace_id_filter=index_filters.workspace_id_filter,
             persona_id_filter=index_filters.persona_id_filter,
             time_cutoff=index_filters.time_cutoff,
             min_chunk_index=None,
@@ -843,7 +843,7 @@ class DocumentQuery:
         source_types: list[DocumentSource],
         tags: list[Tag],
         document_sets: list[str],
-        project_id_filter: int | None,
+        workspace_id_filter: int | None,
         persona_id_filter: int | None,
         time_cutoff: datetime | None,
         min_chunk_index: int | None,
@@ -882,7 +882,7 @@ class DocumentQuery:
                 list corresponding to a tag will be retrieved.
             document_sets: If supplied, only documents with at least one
                 document set ID from this list will be retrieved.
-            project_id_filter: If not None, only documents with this project ID
+            workspace_id_filter: If not None, only documents with this project ID
                 in user projects will be retrieved. Additive — only applied
                 when a knowledge scope already exists.
             persona_id_filter: If not None, only documents whose personas array
@@ -1074,8 +1074,8 @@ class DocumentQuery:
             # individual term clauses.
             return {"terms": {DOCUMENT_SETS_FIELD_NAME: list(document_sets)}}
 
-        def _get_user_project_filter(project_id: int) -> TermQuery[int]:
-            return {"term": {USER_PROJECTS_FIELD_NAME: {"value": project_id}}}
+        def _get_user_workspace_filter(workspace_id: int) -> TermQuery[int]:
+            return {"term": {USER_WORKSPACES_FIELD_NAME: {"value": workspace_id}}}
 
         def _get_persona_filter(persona_id: int) -> TermQuery[int]:
             return {"term": {PERSONAS_FIELD_NAME: {"value": persona_id}}}
@@ -1226,7 +1226,7 @@ class DocumentQuery:
         # persona_id_filter is a primary trigger — a persona with user files IS
         # explicit knowledge, so it can start a knowledge scope on its own.
         #
-        # project_id_filter is additive — it widens the scope to also cover
+        # workspace_id_filter is additive — it widens the scope to also cover
         # overflowing project files but never restricts on its own (a chat
         # inside a project should still search team knowledge).
         has_knowledge_scope = (
@@ -1259,9 +1259,9 @@ class DocumentQuery:
                 knowledge_filter["bool"]["should"].append(
                     _get_persona_filter(persona_id_filter)
                 )
-            if project_id_filter is not None:
+            if workspace_id_filter is not None:
                 knowledge_filter["bool"]["should"].append(
-                    _get_user_project_filter(project_id_filter)
+                    _get_user_workspace_filter(workspace_id_filter)
                 )
             filter_clauses.append(knowledge_filter)
 

@@ -38,7 +38,7 @@ const TOOL_COLORS: Record<string, { bg: string; text: string }> = {
   sidebar_search: { bg: "bg-violet-500", text: "text-white" },
   sidebar_craft: { bg: "bg-amber-500", text: "text-white" },
   sidebar_agents: { bg: "bg-teal-500", text: "text-white" },
-  sidebar_projects: { bg: "bg-emerald-500", text: "text-white" },
+  sidebar_workspaces: { bg: "bg-emerald-500", text: "text-white" },
   sidebar_admin: { bg: "bg-slate-500", text: "text-white" },
 };
 

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import WorkflowCard from "@/app/app/components/workflows-v2/WorkflowCard";
 import WorkflowGlyph from "@/app/app/components/workflows-v2/WorkflowGlyph";
 import { usePinnedWorkflows } from "@/app/app/components/workflows-v2/usePinnedWorkflows";
-import { formatRelativeTime } from "@/app/app/components/projects/project_utils";
+import { formatRelativeTime } from "@/app/app/components/workspaces/workspace_utils";
 import {
   SvgSparkle,
   SvgSearch,

@@ -485,7 +485,7 @@ export enum ValidSources {
   Document360 = "document360",
   File = "file",
   Folder = "folder",
-  UserFile = "user_file",
+  KnowledgeFile = "user_file",
   GoogleSites = "google_sites",
   Loopio = "loopio",
   Dropbox = "dropbox",
@@ -555,7 +555,7 @@ export type ConfigurableSources = Exclude<
   | ValidSources.NotApplicable
   | ValidSources.IngestionApi
   | ValidSources.FederatedSlack // is part of ValiedSources.Slack
-  | ValidSources.UserFile
+  | ValidSources.KnowledgeFile
   | ValidSources.CraftFile // User Library - managed through dedicated UI
 >;
 

@@ -52,7 +52,7 @@ from om.document_index.opensearch.schema import KG_RELATIONSHIP_TYPE_FIELD_NAME
 from om.document_index.opensearch.schema import KG_RELATIONSHIPS_FIELD_NAME
 from om.document_index.opensearch.schema import KG_TERMS_FIELD_NAME
 from om.document_index.opensearch.schema import PERSONAS_FIELD_NAME
-from om.document_index.opensearch.schema import USER_PROJECTS_FIELD_NAME
+from om.document_index.opensearch.schema import USER_WORKSPACES_FIELD_NAME
 from om.document_index.opensearch.search import DocumentQuery
 from om.document_index.opensearch.search import (
     get_min_max_normalization_pipeline_name_and_config,
@@ -255,7 +255,7 @@ def _convert_onyx_chunk_to_opensearch_document(
         # Small optimization, if this list is empty we can supply None to
         # OpenSearch and it will not store any data at all for this field, which
         # is different from supplying an empty list.
-        user_projects=chunk.user_project or None,
+        user_workspaces=chunk.user_workspace or None,
         personas=chunk.personas or None,
         primary_owners=get_experts_stores_representations(
             chunk.source_document.primary_owners
@@ -600,9 +600,9 @@ class OpenSearchDocumentIndex(DocumentIndex):
                 )
             if update_request.hidden is not None:
                 properties_to_update[HIDDEN_FIELD_NAME] = update_request.hidden
-            if update_request.project_ids is not None:
-                properties_to_update[USER_PROJECTS_FIELD_NAME] = list(
-                    update_request.project_ids
+            if update_request.workspace_ids is not None:
+                properties_to_update[USER_WORKSPACES_FIELD_NAME] = list(
+                    update_request.workspace_ids
                 )
             if update_request.persona_ids is not None:
                 properties_to_update[PERSONAS_FIELD_NAME] = list(

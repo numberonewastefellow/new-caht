@@ -145,7 +145,7 @@ class DocumentIndexingBatchAdapter:
                 document_sets=set(
                     doc_id_to_document_set.get(chunk.source_document.id, [])
                 ),
-                user_project=[],
+                user_workspace=[],
                 boost=(
                     context.id_to_boost_map[chunk.source_document.id]
                     if chunk.source_document.id in context.id_to_boost_map
@@ -164,8 +164,8 @@ class DocumentIndexingBatchAdapter:
             chunks=access_aware_chunks,
             doc_id_to_previous_chunk_cnt=doc_id_to_previous_chunk_cnt,
             doc_id_to_new_chunk_cnt=doc_id_to_new_chunk_cnt,
-            user_file_id_to_raw_text={},
-            user_file_id_to_token_count={},
+            knowledge_file_id_to_raw_text={},
+            knowledge_file_id_to_token_count={},
         )
 
     def _get_ancestor_ids_for_documents(

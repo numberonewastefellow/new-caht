@@ -2,11 +2,11 @@
 
 import { ChatSession } from "@/app/app/interfaces";
 import { deleteChatSession } from "@/app/app/services/lib";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import {
   moveChatSession as moveChatSessionService,
-  removeChatSessionFromProject as removeChatSessionFromProjectService,
-} from "@/app/app/projects/projectsService";
+  removeChatSessionFromWorkspace as removeChatSessionFromWorkspaceService,
+} from "@/app/app/workspaces/workspacesService";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import { FiMoreHorizontal } from "react-icons/fi";
 import useChatSessions from "@/hooks/useChatSessions";
@@ -25,13 +25,13 @@ const LS_HIDE_MOVE_CUSTOM_AGENT_MODAL_KEY = "onyx:hideMoveCustomAgentModal";
 
 interface ChatSessionMorePopupProps {
   chatSession: ChatSession;
-  projectId?: number;
+  workspaceId?: number;
   isRenamingChat: boolean;
   setIsRenamingChat: (value: boolean) => void;
   showShareModal?: (chatSession: ChatSession) => void;
   afterDelete?: () => void;
   afterMove?: () => void;
-  afterRemoveFromProject?: () => void;
+  afterRemoveFromWorkspace?: () => void;
   search?: boolean;
   iconSize?: number;
   isVisible?: boolean;
@@ -39,13 +39,13 @@ interface ChatSessionMorePopupProps {
 
 export function ChatSessionMorePopup({
   chatSession,
-  projectId,
+  workspaceId,
   isRenamingChat: _isRenamingChat,
   setIsRenamingChat: _setIsRenamingChat,
   showShareModal,
   afterDelete,
   afterMove,
-  afterRemoveFromProject,
+  afterRemoveFromWorkspace,
   search,
   iconSize = 16,
   isVisible = false,
@@ -53,9 +53,9 @@ export function ChatSessionMorePopup({
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { refreshChatSessions } = useChatSessions();
-  const { fetchProjects, projects } = useProjectsContext();
+  const { fetchWorkspaces, workspaces } = useWorkspacesContext();
 
-  const [pendingMoveProjectId, setPendingMoveProjectId] = useState<
+  const [pendingMoveWorkspaceId, setPendingMoveWorkspaceId] = useState<
     number | null
   >(null);
   const [showMoveCustomAgentModal, setShowMoveCustomAgentModal] =
@@ -67,8 +67,8 @@ export function ChatSessionMorePopup({
   const [showMoveOptions, setShowMoveOptions] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredProjects = projects.filter((project) =>
-    project.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredWorkspaces = workspaces.filter((workspace) =>
+    workspace.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handlePopoverOpenChange = useCallback((open: boolean) => {
@@ -80,56 +80,56 @@ export function ChatSessionMorePopup({
       e.stopPropagation();
       await deleteChatSession(chatSession.id);
       await refreshChatSessions();
-      await fetchProjects();
+      await fetchWorkspaces();
       setIsDeleteModalOpen(false);
       setPopoverOpen(false);
       afterDelete?.();
     },
-    [chatSession, refreshChatSessions, fetchProjects, afterDelete]
+    [chatSession, refreshChatSessions, fetchWorkspaces, afterDelete]
   );
 
   const performMove = useCallback(
-    async (targetProjectId: number) => {
-      await moveChatSessionService(targetProjectId, chatSession.id);
-      await fetchProjects();
+    async (targetWorkspaceId: number) => {
+      await moveChatSessionService(targetWorkspaceId, chatSession.id);
+      await fetchWorkspaces();
       await refreshChatSessions();
       setPopoverOpen(false);
       afterMove?.();
     },
-    [chatSession.id, fetchProjects, refreshChatSessions, afterMove]
+    [chatSession.id, fetchWorkspaces, refreshChatSessions, afterMove]
   );
 
   const handleMoveChatSession = useCallback(
     async (item: { id: number; label: string }) => {
-      const targetProjectId = item.id;
+      const targetWorkspaceId = item.id;
       const hideModal =
         typeof window !== "undefined" &&
         window.localStorage.getItem(LS_HIDE_MOVE_CUSTOM_AGENT_MODAL_KEY) ===
           "true";
 
       if (!isChatUsingDefaultAssistant && !hideModal) {
-        setPendingMoveProjectId(targetProjectId);
+        setPendingMoveWorkspaceId(targetWorkspaceId);
         setShowMoveCustomAgentModal(true);
         return;
       }
 
-      await performMove(targetProjectId);
+      await performMove(targetWorkspaceId);
     },
     [isChatUsingDefaultAssistant, performMove]
   );
 
-  const handleRemoveChatSessionFromProject = useCallback(async () => {
-    await removeChatSessionFromProjectService(chatSession.id);
-    await fetchProjects();
+  const handleRemoveChatSessionFromWorkspace = useCallback(async () => {
+    await removeChatSessionFromWorkspaceService(chatSession.id);
+    await fetchWorkspaces();
     await refreshChatSessions();
-    afterRemoveFromProject?.();
+    afterRemoveFromWorkspace?.();
     setPopoverOpen(false);
   }, [
     chatSession.id,
-    fetchProjects,
+    fetchWorkspaces,
     refreshChatSessions,
-    removeChatSessionFromProjectService,
-    afterRemoveFromProject,
+    removeChatSessionFromWorkspaceService,
+    afterRemoveFromWorkspace,
   ]);
 
   // Build popover items similar to AppSidebar (no rename here)
@@ -152,14 +152,14 @@ export function ChatSessionMorePopup({
         >
           Move to Workspace
         </LineItem>,
-        projectId && (
+        workspaceId && (
           <LineItem
             key="remove"
             icon={SvgFolder}
-            onClick={noProp(() => handleRemoveChatSessionFromProject())}
+            onClick={noProp(() => handleRemoveChatSessionFromWorkspace())}
           >
             {`Remove from ${
-              projects.find((p) => p.id === projectId)?.name ?? "Workspace"
+              workspaces.find((p) => p.id === workspaceId)?.name ?? "Workspace"
             }`}
           </LineItem>
         ),
@@ -180,8 +180,8 @@ export function ChatSessionMorePopup({
         setShowMoveOptions={setShowMoveOptions}
         onSearch={setSearchTerm}
       />,
-      ...filteredProjects
-        .filter((candidate) => candidate.id !== projectId)
+      ...filteredWorkspaces
+        .filter((candidate) => candidate.id !== workspaceId)
         .map((target) => (
           <LineItem
             key={target.id}
@@ -197,14 +197,14 @@ export function ChatSessionMorePopup({
   }, [
     showMoveOptions,
     showShareModal,
-    projects,
-    projectId,
-    filteredProjects,
+    workspaces,
+    workspaceId,
+    filteredWorkspaces,
     chatSession,
     setShowMoveOptions,
     setSearchTerm,
     handleMoveChatSession,
-    handleRemoveChatSessionFromProject,
+    handleRemoveChatSessionFromWorkspace,
   ]);
 
   return (
@@ -260,7 +260,7 @@ export function ChatSessionMorePopup({
         <MoveCustomAgentChatModal
           onCancel={() => {
             setShowMoveCustomAgentModal(false);
-            setPendingMoveProjectId(null);
+            setPendingMoveWorkspaceId(null);
           }}
           onConfirm={async (doNotShowAgain: boolean) => {
             if (doNotShowAgain && typeof window !== "undefined") {
@@ -269,9 +269,9 @@ export function ChatSessionMorePopup({
                 "true"
               );
             }
-            const target = pendingMoveProjectId;
+            const target = pendingMoveWorkspaceId;
             setShowMoveCustomAgentModal(false);
-            setPendingMoveProjectId(null);
+            setPendingMoveWorkspaceId(null);
             if (target != null) {
               await performMove(target);
             }

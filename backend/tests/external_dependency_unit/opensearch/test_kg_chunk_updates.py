@@ -79,7 +79,7 @@ def _make_chunk(
         doc_summary="KG test summary",
         chunk_context="KG test context",
         document_sets=None,
-        user_projects=None,
+        user_workspaces=None,
         primary_owners=None,
         secondary_owners=None,
         tenant_id=tenant_state,

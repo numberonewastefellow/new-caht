@@ -34,10 +34,10 @@ from om.chat.models import ChatFullResponse
 from om.chat.models import ChatLoadedFile
 from om.chat.models import ChatMessageSimple
 from om.chat.models import CreateChatSessionID
-from om.chat.models import ExtractedProjectFiles
+from om.chat.models import ExtractedWorkspaceFiles
 from om.chat.models import FileToolMetadata
-from om.chat.models import ProjectFileMetadata
-from om.chat.models import ProjectSearchConfig
+from om.chat.models import WorkspaceFileMetadata
+from om.chat.models import WorkspaceSearchConfig
 from om.chat.models import StreamingError
 from om.chat.models import ToolCallResponse
 from om.chat.prompt_utils import calculate_reserved_tokens
@@ -61,14 +61,14 @@ from om.db.models import ChatMessage
 from om.db.models import ChatSession
 from om.db.models import Persona
 from om.db.models import User
-from om.db.models import UserFile
-from om.db.projects import get_project_token_count
-from om.db.projects import get_user_files_from_project
+from om.db.models import KnowledgeFile
+from om.db.workspaces import get_workspace_token_count
+from om.db.workspaces import get_knowledge_files_from_workspace
 from om.db.tools import get_tools
 from om.deep_research.dr_loop import run_deep_research_llm_loop
 from om.file_store.models import ChatFileType
 from om.file_store.utils import load_in_memory_chat_files
-from om.file_store.utils import verify_user_files
+from om.file_store.utils import verify_knowledge_files
 from om.llm.factory import get_llm_for_persona
 from om.llm.factory import get_llm_token_counter
 from om.llm.interfaces import LLM
@@ -111,25 +111,25 @@ ERROR_TYPE_CANCELLED = "cancelled"
 class _AvailableFiles(BaseModel):
     """Separated file IDs for the FileReaderTool so it knows which loader to use."""
 
-    # IDs from the ``user_file`` table (project / persona-attached files).
-    user_file_ids: list[UUID] = []
+    # IDs from the ``knowledge_file`` table (workspace / persona-attached files).
+    knowledge_file_ids: list[UUID] = []
     # IDs from the ``file_record`` table (chat-attached files).
     chat_file_ids: list[UUID] = []
 
 
 def _collect_available_file_ids(
     chat_history: list[ChatMessage],
-    project_id: int | None,
+    workspace_id: int | None,
     user_id: UUID | None,
     db_session: Session,
 ) -> _AvailableFiles:
     """Collect all file IDs the FileReaderTool should be allowed to access.
 
     Returns *separate* lists for chat-attached files (``file_record`` IDs) and
-    project/user files (``user_file`` IDs) so the tool can pick the right
+    workspace/user files (``knowledge_file`` IDs) so the tool can pick the right
     loader without a try/except fallback."""
     chat_file_ids: set[UUID] = set()
-    user_file_ids: set[UUID] = set()
+    knowledge_file_ids: set[UUID] = set()
 
     for msg in chat_history:
         if not msg.files:
@@ -140,17 +140,17 @@ def _collect_available_file_ids(
             except (ValueError, KeyError):
                 pass
 
-    if project_id:
-        project_files = get_user_files_from_project(
-            project_id=project_id,
+    if workspace_id:
+        workspace_files = get_knowledge_files_from_workspace(
+            workspace_id=workspace_id,
             user_id=user_id,
             db_session=db_session,
         )
-        for uf in project_files:
-            user_file_ids.add(uf.id)
+        for uf in workspace_files:
+            knowledge_file_ids.add(uf.id)
 
     return _AvailableFiles(
-        user_file_ids=list(user_file_ids),
+        knowledge_file_ids=list(knowledge_file_ids),
         chat_file_ids=list(chat_file_ids),
     )
 
@@ -194,22 +194,22 @@ def _convert_loaded_files_to_chat_files(
     return chat_files
 
 
-def _extract_project_file_texts_and_images(
-    project_id: int | None,
+def _extract_workspace_file_texts_and_images(
+    workspace_id: int | None,
     user_id: UUID | None,
     llm_max_context_window: int,
     reserved_token_count: int,
     db_session: Session,
     # Because the tokenizer is a generic tokenizer, the token count may be incorrect.
     # to account for this, the maximum context that is allowed for this function is
-    # 60% of the LLM's max context window. The other benefit is that for projects with
+    # 60% of the LLM's max context window. The other benefit is that for workspaces with
     # more files, this makes it so that we don't throw away the history too quickly every time.
     max_llm_context_percentage: float = 0.6,
-) -> ExtractedProjectFiles:
-    """Extract text content from project files if they fit within the context window.
+) -> ExtractedWorkspaceFiles:
+    """Extract text content from workspace files if they fit within the context window.
 
     Args:
-        project_id: The project ID to load files from
+        workspace_id: The workspace ID to load files from
         user_id: The user ID for authorization
         llm_max_context_window: Maximum tokens allowed in the LLM context window
         reserved_token_count: Number of tokens to reserve for other content
@@ -217,86 +217,86 @@ def _extract_project_file_texts_and_images(
         max_llm_context_percentage: Maximum percentage of the LLM context window to use.
 
     Returns:
-        ExtractedProjectFiles containing:
-        - List of text content strings from project files (text files only)
-        - List of image files from project (ChatLoadedFile objects)
-        - Project id if the the project should be provided as a filter in search or None if not.
+        ExtractedWorkspaceFiles containing:
+        - List of text content strings from workspace files (text files only)
+        - List of image files from workspace (ChatLoadedFile objects)
+        - Workspace id if the the workspace should be provided as a filter in search or None if not.
         - Total token count of all extracted files
     """
     # TODO I believe this is not handling all file types correctly.
-    project_as_filter = False
-    if not project_id:
-        return ExtractedProjectFiles(
-            project_file_texts=[],
-            project_image_files=[],
-            project_as_filter=False,
+    workspace_as_filter = False
+    if not workspace_id:
+        return ExtractedWorkspaceFiles(
+            workspace_file_texts=[],
+            workspace_image_files=[],
+            workspace_as_filter=False,
             total_token_count=0,
-            project_file_metadata=[],
-            project_uncapped_token_count=None,
+            workspace_file_metadata=[],
+            workspace_uncapped_token_count=None,
         )
 
     max_actual_tokens = (
         llm_max_context_window - reserved_token_count
     ) * max_llm_context_percentage
 
-    # Calculate total token count for all user files in the project
-    project_tokens = get_project_token_count(
-        project_id=project_id,
+    # Calculate total token count for all user files in the workspace
+    workspace_tokens = get_workspace_token_count(
+        workspace_id=workspace_id,
         user_id=user_id,
         db_session=db_session,
     )
 
-    project_file_texts: list[str] = []
-    project_image_files: list[ChatLoadedFile] = []
-    project_file_metadata: list[ProjectFileMetadata] = []
+    workspace_file_texts: list[str] = []
+    workspace_image_files: list[ChatLoadedFile] = []
+    workspace_file_metadata: list[WorkspaceFileMetadata] = []
     total_token_count = 0
-    if project_tokens < max_actual_tokens:
-        # Load project files into memory using cached plaintext when available
-        project_user_files = get_user_files_from_project(
-            project_id=project_id,
+    if workspace_tokens < max_actual_tokens:
+        # Load workspace files into memory using cached plaintext when available
+        workspace_knowledge_files = get_knowledge_files_from_workspace(
+            workspace_id=workspace_id,
             user_id=user_id,
             db_session=db_session,
         )
-        if project_user_files:
-            # Create a mapping from file_id to UserFile for token count lookup
-            user_file_map = {str(file.id): file for file in project_user_files}
+        if workspace_knowledge_files:
+            # Create a mapping from file_id to KnowledgeFile for token count lookup
+            user_file_map = {str(file.id): file for file in workspace_knowledge_files}
 
-            project_file_ids = [file.id for file in project_user_files]
-            in_memory_project_files = load_in_memory_chat_files(
-                user_file_ids=project_file_ids,
+            workspace_file_ids = [file.id for file in workspace_knowledge_files]
+            in_memory_workspace_files = load_in_memory_chat_files(
+                knowledge_file_ids=workspace_file_ids,
                 db_session=db_session,
             )
 
             # Extract text content from loaded files
-            for file in in_memory_project_files:
+            for file in in_memory_workspace_files:
                 if file.file_type.is_text_file():
                     try:
                         text_content = file.content.decode("utf-8", errors="ignore")
                         # Strip null bytes
                         text_content = text_content.replace("\x00", "")
                         if text_content:
-                            project_file_texts.append(text_content)
+                            workspace_file_texts.append(text_content)
                             # Add metadata for citation support
-                            project_file_metadata.append(
-                                ProjectFileMetadata(
+                            workspace_file_metadata.append(
+                                WorkspaceFileMetadata(
                                     file_id=str(file.file_id),
                                     filename=file.filename or f"file_{file.file_id}",
                                     file_content=text_content,
                                 )
                             )
                             # Add token count for text file
-                            user_file = user_file_map.get(str(file.file_id))
-                            if user_file and user_file.token_count:
-                                total_token_count += user_file.token_count
+                            knowledge_file = user_file_map.get(str(file.file_id))
+                            if knowledge_file and knowledge_file.token_count:
+                                total_token_count += knowledge_file.token_count
                     except Exception:
                         # Skip files that can't be decoded
                         pass
                 elif file.file_type == ChatFileType.IMAGE:
                     # Convert InMemoryChatFile to ChatLoadedFile
-                    user_file = user_file_map.get(str(file.file_id))
+                    knowledge_file = user_file_map.get(str(file.file_id))
                     token_count = (
-                        user_file.token_count
-                        if user_file and user_file.token_count
+                        knowledge_file.token_count
+                        if knowledge_file and knowledge_file.token_count
                         else 0
                     )
                     total_token_count += token_count
@@ -308,54 +308,54 @@ def _extract_project_file_texts_and_images(
                         content_text=None,  # Images don't have text content
                         token_count=token_count,
                     )
-                    project_image_files.append(chat_loaded_file)
+                    workspace_image_files.append(chat_loaded_file)
     else:
         if DISABLE_VECTOR_DB:
-            # Without a vector DB we can't use project-as-filter search.
+            # Without a vector DB we can't use workspace-as-filter search.
             # Instead, build lightweight metadata so the LLM can call the
             # FileReaderTool to inspect individual files on demand.
-            file_metadata_for_tool = _build_file_tool_metadata_for_project(
-                project_id=project_id,
+            file_metadata_for_tool = _build_file_tool_metadata_for_workspace(
+                workspace_id=workspace_id,
                 user_id=user_id,
                 db_session=db_session,
             )
-            return ExtractedProjectFiles(
-                project_file_texts=[],
-                project_image_files=[],
-                project_as_filter=False,
+            return ExtractedWorkspaceFiles(
+                workspace_file_texts=[],
+                workspace_image_files=[],
+                workspace_as_filter=False,
                 total_token_count=0,
-                project_file_metadata=[],
-                project_uncapped_token_count=project_tokens,
+                workspace_file_metadata=[],
+                workspace_uncapped_token_count=workspace_tokens,
                 file_metadata_for_tool=file_metadata_for_tool,
             )
-        project_as_filter = True
+        workspace_as_filter = True
 
-    return ExtractedProjectFiles(
-        project_file_texts=project_file_texts,
-        project_image_files=project_image_files,
-        project_as_filter=project_as_filter,
+    return ExtractedWorkspaceFiles(
+        workspace_file_texts=workspace_file_texts,
+        workspace_image_files=workspace_image_files,
+        workspace_as_filter=workspace_as_filter,
         total_token_count=total_token_count,
-        project_file_metadata=project_file_metadata,
-        project_uncapped_token_count=project_tokens,
+        workspace_file_metadata=workspace_file_metadata,
+        workspace_uncapped_token_count=workspace_tokens,
     )
 
 
 APPROX_CHARS_PER_TOKEN = 4
 
 
-def _build_file_tool_metadata_for_project(
-    project_id: int,
+def _build_file_tool_metadata_for_workspace(
+    workspace_id: int,
     user_id: UUID | None,
     db_session: Session,
 ) -> list[FileToolMetadata]:
-    """Build lightweight FileToolMetadata for every file in a project.
+    """Build lightweight FileToolMetadata for every file in a workspace.
 
     Used when files are too large to fit in context and the vector DB is
     disabled, so the LLM needs to know which files it can read via the
     FileReaderTool.
     """
-    project_user_files = get_user_files_from_project(
-        project_id=project_id,
+    workspace_knowledge_files = get_knowledge_files_from_workspace(
+        workspace_id=workspace_id,
         user_id=user_id,
         db_session=db_session,
     )
@@ -365,72 +365,72 @@ def _build_file_tool_metadata_for_project(
             filename=uf.name,
             approx_char_count=(uf.token_count or 0) * APPROX_CHARS_PER_TOKEN,
         )
-        for uf in project_user_files
+        for uf in workspace_knowledge_files
     ]
 
 
-def _build_file_tool_metadata_for_user_files(
-    user_files: list[UserFile],
+def _build_file_tool_metadata_for_knowledge_files(
+    knowledge_files: list[KnowledgeFile],
 ) -> list[FileToolMetadata]:
-    """Build lightweight FileToolMetadata from a list of UserFile records."""
+    """Build lightweight FileToolMetadata from a list of KnowledgeFile records."""
     return [
         FileToolMetadata(
             file_id=str(uf.id),
             filename=uf.name,
             approx_char_count=(uf.token_count or 0) * APPROX_CHARS_PER_TOKEN,
         )
-        for uf in user_files
+        for uf in knowledge_files
     ]
 
 
-def _get_project_search_availability(
-    project_id: int | None,
+def _get_workspace_search_availability(
+    workspace_id: int | None,
     persona_id: int | None,
-    loaded_project_files: bool,
-    project_has_files: bool,
+    loaded_workspace_files: bool,
+    workspace_has_files: bool,
     forced_tool_id: int | None,
     search_tool_id: int | None,
-) -> ProjectSearchConfig:
-    """Determine search tool availability based on project context.
+) -> WorkspaceSearchConfig:
+    """Determine search tool availability based on workspace context.
 
     Search is disabled when ALL of the following are true:
-    - User is in a project
+    - User is in a workspace
     - Using the default persona (not a custom agent)
-    - Project files are already loaded in context
+    - Workspace files are already loaded in context
 
     When search is disabled and the user tried to force the search tool,
     that forcing is also disabled.
 
     Returns AUTO (follow persona config) in all other cases.
     """
-    # Not in a project, this should have no impact on search tool availability
-    if not project_id:
-        return ProjectSearchConfig(
+    # Not in a workspace, this should have no impact on search tool availability
+    if not workspace_id:
+        return WorkspaceSearchConfig(
             search_usage=SearchToolUsage.AUTO, disable_forced_tool=False
         )
 
-    # Custom persona in project - let persona config decide
-    # Even if there are no files in the project, it's still guided by the persona config.
+    # Custom persona in workspace - let persona config decide
+    # Even if there are no files in the workspace, it's still guided by the persona config.
     if persona_id != DEFAULT_PERSONA_ID:
-        return ProjectSearchConfig(
+        return WorkspaceSearchConfig(
             search_usage=SearchToolUsage.AUTO, disable_forced_tool=False
         )
 
-    # If in a project with the default persona and the files have been already loaded into the context or
-    # there are no files in the project, disable search as there is nothing to search for.
-    if loaded_project_files or not project_has_files:
+    # If in a workspace with the default persona and the files have been already loaded into the context or
+    # there are no files in the workspace, disable search as there is nothing to search for.
+    if loaded_workspace_files or not workspace_has_files:
         user_forced_search = (
             forced_tool_id is not None
             and search_tool_id is not None
             and forced_tool_id == search_tool_id
         )
-        return ProjectSearchConfig(
+        return WorkspaceSearchConfig(
             search_usage=SearchToolUsage.DISABLED,
             disable_forced_tool=user_forced_search,
         )
 
-    # Default persona in a project with files, but also the files have not been loaded into the context already.
-    return ProjectSearchConfig(
+    # Default persona in a workspace with files, but also the files have not been loaded into the context already.
+    return WorkspaceSearchConfig(
         search_usage=SearchToolUsage.ENABLED, disable_forced_tool=False
     )
 
@@ -694,7 +694,7 @@ def handle_stream_message_objects(
             properties={
                 "origin": new_msg_req.origin.value,
                 "has_files": len(new_msg_req.file_descriptors) > 0,
-                "has_project": chat_session.project_id is not None,
+                "has_workspace": chat_session.workspace_id is not None,
                 "has_persona": persona is not None and persona.id != DEFAULT_PERSONA_ID,
                 "deep_research": new_msg_req.deep_research,
             },
@@ -717,11 +717,11 @@ def handle_stream_message_objects(
         )
 
         # Verify that the user specified files actually belong to the user
-        verify_user_files(
-            user_files=new_msg_req.file_descriptors,
+        verify_knowledge_files(
+            knowledge_files=new_msg_req.file_descriptors,
             user_id=user_id,
             db_session=db_session,
-            project_id=chat_session.project_id,
+            workspace_id=chat_session.workspace_id,
         )
 
         # re-create linear history of messages
@@ -785,7 +785,7 @@ def handle_stream_message_objects(
         # messages are still accessible via the FileReaderTool.
         available_files = _collect_available_file_ids(
             chat_history=chat_history,
-            project_id=chat_session.project_id,
+            workspace_id=chat_session.workspace_id,
             user_id=user_id,
             db_session=db_session,
         )
@@ -818,7 +818,7 @@ def handle_stream_message_objects(
 
         user_memory_context = get_memories(user, db_session)
 
-        # This is the custom prompt which may come from the Agent or Project. We fetch it earlier because the inner loop
+        # This is the custom prompt which may come from the Agent or Workspace. We fetch it earlier because the inner loop
         # (run_llm_loop and run_deep_research_llm_loop) should not need to be aware of the Chat History in the DB form processed
         # here, however we need this early for token reservation.
         custom_agent_prompt = get_custom_agent_prompt(persona, chat_session)
@@ -844,24 +844,24 @@ def handle_stream_message_objects(
             user_memory_context=prompt_memory_context,
         )
 
-        # Process projects, if all of the files fit in the context, it doesn't need to use RAG
-        extracted_project_files = _extract_project_file_texts_and_images(
-            project_id=chat_session.project_id,
+        # Process workspaces, if all of the files fit in the context, it doesn't need to use RAG
+        extracted_workspace_files = _extract_workspace_file_texts_and_images(
+            workspace_id=chat_session.workspace_id,
             user_id=user_id,
             llm_max_context_window=llm.config.max_input_tokens,
             reserved_token_count=reserved_token_count,
             db_session=db_session,
         )
 
-        # When the vector DB is disabled, persona-attached user_files have no
+        # When the vector DB is disabled, persona-attached knowledge_files have no
         # search pipeline path. Inject them as file_metadata_for_tool so the
         # LLM can read them via the FileReaderTool.
-        if DISABLE_VECTOR_DB and persona.user_files:
-            persona_file_metadata = _build_file_tool_metadata_for_user_files(
-                persona.user_files
+        if DISABLE_VECTOR_DB and persona.knowledge_files:
+            persona_file_metadata = _build_file_tool_metadata_for_knowledge_files(
+                persona.knowledge_files
             )
-            # Merge persona file metadata into the extracted project files
-            extracted_project_files.file_metadata_for_tool.extend(persona_file_metadata)
+            # Merge persona file metadata into the extracted workspace files
+            extracted_workspace_files.file_metadata_for_tool.extend(persona_file_metadata)
 
         # Build a mapping of tool_id to tool_name for history reconstruction
         all_tools = get_tools(db_session)
@@ -872,29 +872,29 @@ def handle_stream_message_objects(
             None,
         )
 
-        # Determine if search should be disabled for this project context
+        # Determine if search should be disabled for this workspace context
         forced_tool_id = new_msg_req.forced_tool_id
-        project_search_config = _get_project_search_availability(
-            project_id=chat_session.project_id,
+        workspace_search_config = _get_workspace_search_availability(
+            workspace_id=chat_session.workspace_id,
             persona_id=persona.id,
-            loaded_project_files=bool(extracted_project_files.project_file_texts),
-            project_has_files=bool(
-                extracted_project_files.project_uncapped_token_count
+            loaded_workspace_files=bool(extracted_workspace_files.workspace_file_texts),
+            workspace_has_files=bool(
+                extracted_workspace_files.workspace_uncapped_token_count
             ),
             forced_tool_id=new_msg_req.forced_tool_id,
             search_tool_id=search_tool_id,
         )
-        if project_search_config.disable_forced_tool:
+        if workspace_search_config.disable_forced_tool:
             forced_tool_id = None
 
         emitter = get_default_emitter()
 
         # Also grant access to persona-attached user files
-        if persona.user_files:
-            existing = set(available_files.user_file_ids)
-            for uf in persona.user_files:
+        if persona.knowledge_files:
+            existing = set(available_files.knowledge_file_ids)
+            for uf in persona.knowledge_files:
                 if uf.id not in existing:
-                    available_files.user_file_ids.append(uf.id)
+                    available_files.knowledge_file_ids.append(uf.id)
 
         # Construct tools based on the persona configurations
         tool_dict = construct_tools(
@@ -905,9 +905,9 @@ def handle_stream_message_objects(
             llm=llm,
             search_tool_config=SearchToolConfig(
                 user_selected_filters=new_msg_req.internal_search_filters,
-                project_id=(
-                    chat_session.project_id
-                    if extracted_project_files.project_as_filter
+                workspace_id=(
+                    chat_session.workspace_id
+                    if extracted_workspace_files.workspace_as_filter
                     else None
                 ),
                 bypass_acl=bypass_acl,
@@ -923,11 +923,11 @@ def handle_stream_message_objects(
                 mcp_headers=mcp_headers,
             ),
             file_reader_tool_config=FileReaderToolConfig(
-                user_file_ids=available_files.user_file_ids,
+                knowledge_file_ids=available_files.knowledge_file_ids,
                 chat_file_ids=available_files.chat_file_ids,
             ),
             allowed_tool_ids=new_msg_req.allowed_tool_ids,
-            search_usage_forcing_setting=project_search_config.search_usage,
+            search_usage_forcing_setting=workspace_search_config.search_usage,
             chat_session_id=str(chat_session.id),
         )
         tools: list[Tool] = []
@@ -968,7 +968,7 @@ def handle_stream_message_objects(
         chat_history_result = convert_chat_history(
             chat_history=chat_history,
             files=files,
-            project_image_files=extracted_project_files.project_image_files,
+            workspace_image_files=extracted_workspace_files.workspace_image_files,
             additional_context=additional_context,
             token_counter=token_counter,
             tool_id_to_name_map=tool_id_to_name_map,
@@ -1081,7 +1081,7 @@ def handle_stream_message_objects(
             )
 
         elif new_msg_req.deep_research:
-            if chat_session.project_id:
+            if chat_session.workspace_id:
                 raise RuntimeError("Deep research is not supported for workspaces")
 
             # Skip clarification if the last assistant message was a clarification
@@ -1115,7 +1115,7 @@ def handle_stream_message_objects(
                 simple_chat_history=simple_chat_history,
                 tools=tools,
                 custom_agent_prompt=custom_agent_prompt,
-                project_files=extracted_project_files,
+                workspace_files=extracted_workspace_files,
                 persona=persona,
                 user_memory_context=user_memory_context,
                 llm=llm,

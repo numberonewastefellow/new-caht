@@ -170,7 +170,7 @@ def test_persona_pagination_admin_endpoint(
     # doesn't.
     assert "users" in first_persona
     assert "groups" in first_persona
-    assert "user_file_ids" in first_persona
+    assert "knowledge_file_ids" in first_persona
 
 
 def test_persona_pagination_with_deleted(

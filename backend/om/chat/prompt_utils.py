@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from om.db.memory import UserMemoryContext
 from om.db.persona import get_default_behavior_persona
-from om.db.user_file import calculate_user_files_token_count
+from om.db.knowledge_file import calculate_knowledge_files_token_count
 from om.file_store.models import FileDescriptor
 from om.prompts.chat_prompts import CITATION_REMINDER
 from om.prompts.chat_prompts import DEFAULT_SYSTEM_PROMPT
@@ -102,20 +102,20 @@ def calculate_reserved_tokens(
     # Calculate total token count for files in the last message
     file_token_count = 0
     if files:
-        # Extract user_file_id from each file descriptor
-        user_file_ids: list[UUID] = []
+        # Extract knowledge_file_id from each file descriptor
+        knowledge_file_ids: list[UUID] = []
         for file in files:
-            uid = file.get("user_file_id")
+            uid = file.get("knowledge_file_id")
             if not uid:
                 continue
             try:
-                user_file_ids.append(UUID(uid))
+                knowledge_file_ids.append(UUID(uid))
             except (TypeError, ValueError, AttributeError):
-                # Skip invalid user_file_id values
+                # Skip invalid knowledge_file_id values
                 continue
-        if user_file_ids:
-            file_token_count = calculate_user_files_token_count(
-                user_file_ids, db_session
+        if knowledge_file_ids:
+            file_token_count = calculate_knowledge_files_token_count(
+                knowledge_file_ids, db_session
             )
 
     reserved_token_count += file_token_count

@@ -66,7 +66,7 @@ export interface MinimalPersonaSnapshot {
 }
 
 export interface Persona extends MinimalPersonaSnapshot {
-  user_file_ids: string[];
+  knowledge_file_ids: string[];
   users: MinimalUserSnapshot[];
   groups: number[];
   num_chunks?: number;

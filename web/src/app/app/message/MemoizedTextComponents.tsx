@@ -12,7 +12,7 @@ import { SourceIcon } from "@/components/SourceIcon";
 import { WebResultIcon } from "@/components/WebResultIcon";
 import { SubQuestionDetail, CitationMap } from "../interfaces";
 import { ValidSources } from "@/lib/types";
-import { ProjectFile } from "../projects/projectsService";
+import { WorkspaceFile } from "../workspaces/workspacesService";
 import { BlinkingDot } from "./BlinkingDot";
 import Text from "@/refresh-components/texts/Text";
 import SourceTag from "@/refresh-components/buttons/source-tag/SourceTag";
@@ -45,7 +45,7 @@ export const MemoizedAnchor = memo(
     subQuestions?: SubQuestionDetail[];
     openQuestion?: (question: SubQuestionDetail) => void;
     docs?: OmDocument[] | null;
-    userFiles?: ProjectFile[] | null;
+    userFiles?: WorkspaceFile[] | null;
     citations?: CitationMap;
     updatePresentingDocument: (doc: MinimalOnyxDocument) => void;
     href?: string;

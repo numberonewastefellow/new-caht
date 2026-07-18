@@ -18,9 +18,9 @@ import Separator from "@/refresh-components/Separator";
 const buildOnyxDocumentFromFile = (
   id: string,
   name?: string | null,
-  appendProjectPrefix?: boolean
+  appendWorkspacePrefix?: boolean
 ): OmDocument => {
-  const document_id = appendProjectPrefix ? `project_file__${id}` : id;
+  const document_id = appendWorkspacePrefix ? `workspace_file__${id}` : id;
   return {
     document_id,
     semantic_identifier: name || id,
@@ -131,7 +131,7 @@ const DocumentsSidebar = memo(
       ? currentMessageTree.get(selectedMessage.parentNodeId)
       : null;
     const humanFileDescriptors = humanMessage?.files.filter(
-      (file) => file.user_file_id !== null
+      (file) => file.knowledge_file_id !== null
     );
     const selectedDocumentIds =
       selectedDocuments?.map((document) => document.document_id) || [];

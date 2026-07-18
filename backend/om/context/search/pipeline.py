@@ -36,8 +36,8 @@ logger = setup_logger()
 def _build_index_filters(
     user_provided_filters: BaseFilters | None,
     user: User,  # Used for ACLs, anonymous users only see public docs
-    project_id: int | None,
-    user_file_ids: list[UUID] | None,
+    workspace_id: int | None,
+    knowledge_file_ids: list[UUID] | None,
     persona_document_sets: list[str] | None,
     persona_time_cutoff: datetime | None,
     db_session: Session,
@@ -92,9 +92,9 @@ def _build_index_filters(
     if not source_filter and detected_source_filter:
         source_filter = detected_source_filter
 
-    # CRITICAL FIX: If user_file_ids are present, we must ensure "user_file"
+    # CRITICAL FIX: If knowledge_file_ids are present, we must ensure "user_file"
     # source type is included in the filter, otherwise user files will be excluded!
-    if user_file_ids and source_filter:
+    if knowledge_file_ids and source_filter:
         from om.configs.constants import DocumentSource
 
         # Add user_file to the source filter if not already present
@@ -107,8 +107,8 @@ def _build_index_filters(
     )
 
     final_filters = IndexFilters(
-        user_file_ids=user_file_ids,
-        project_id=project_id,
+        knowledge_file_ids=knowledge_file_ids,
+        workspace_id=workspace_id,
         source_type=source_filter,
         document_set=persona_document_sets,
         time_cutoff=time_filter,
@@ -254,12 +254,12 @@ def search_pipeline(
     db_session: Session,
     auto_detect_filters: bool = False,
     llm: LLM | None = None,
-    # If a project ID is provided, it will be exclusively scoped to that project
-    project_id: int | None = None,
+    # If a workspace ID is provided, it will be exclusively scoped to that workspace
+    workspace_id: int | None = None,
 ) -> list[InferenceChunk]:
     from om.external_permissions.post_query_censoring import _post_query_chunk_censoring as _impl__post_query_chunk_censoring
     user_uploaded_persona_files: list[UUID] | None = (
-        [user_file.id for user_file in persona.user_files] if persona else None
+        [user_file.id for user_file in persona.knowledge_files] if persona else None
     )
 
     persona_document_sets: list[str] | None = (
@@ -286,8 +286,8 @@ def search_pipeline(
     filters = _build_index_filters(
         user_provided_filters=chunk_search_request.user_selected_filters,
         user=user,
-        project_id=project_id,
-        user_file_ids=user_uploaded_persona_files,
+        workspace_id=workspace_id,
+        knowledge_file_ids=user_uploaded_persona_files,
         persona_document_sets=persona_document_sets,
         persona_time_cutoff=persona_time_cutoff,
         db_session=db_session,

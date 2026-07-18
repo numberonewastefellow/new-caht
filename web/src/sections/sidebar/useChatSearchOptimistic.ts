@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import useSWRInfinite from "swr/infinite";
 import useChatSessions from "@/hooks/useChatSessions";
-import { useProjects } from "@/lib/hooks/useProjects";
+import { useWorkspaces } from "@/lib/hooks/useWorkspaces";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import { ChatSearchResponse } from "@/app/app/interfaces";
 import { UNNAMED_CHAT } from "@/lib/constants";
@@ -71,7 +71,7 @@ export function useChatSearchOptimistic(
 
   // 1. Get already-cached data from existing hooks
   const { chatSessions } = useChatSessions();
-  const { projects } = useProjects();
+  const { workspaces } = useWorkspaces();
 
   // 2. Build combined fallback data (instant display)
   const fallbackSessions = useMemo<FilterableChat[]>(() => {
@@ -86,9 +86,9 @@ export function useChatSearchOptimistic(
       });
     }
 
-    // Add project chats from useProjects
-    for (const project of projects) {
-      for (const chat of project.chat_sessions) {
+    // Add workspace chats from useWorkspaces
+    for (const workspace of workspaces) {
+      for (const chat of workspace.chat_sessions) {
         chatMap.set(chat.id, {
           id: chat.id,
           label: chat.name || UNNAMED_CHAT,
@@ -101,7 +101,7 @@ export function useChatSearchOptimistic(
     return Array.from(chatMap.values()).sort(
       (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
     );
-  }, [chatSessions, projects]);
+  }, [chatSessions, workspaces]);
 
   // Debounce the search query
   useEffect(() => {

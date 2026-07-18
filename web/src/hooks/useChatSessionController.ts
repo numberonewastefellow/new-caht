@@ -26,9 +26,9 @@ import {
   useCurrentMessageHistory,
 } from "@/app/app/stores/useChatSessionStore";
 import { useForcedTools } from "@/lib/hooks/useForcedTools";
-import { ProjectFile } from "@/app/app/projects/projectsService";
-import { getSessionProjectTokenCount } from "@/app/app/projects/projectsService";
-import { getProjectFilesForSession } from "@/app/app/projects/projectsService";
+import { WorkspaceFile } from "@/app/app/workspaces/workspacesService";
+import { getSessionWorkspaceTokenCount } from "@/app/app/workspaces/workspacesService";
+import { getWorkspaceFilesForSession } from "@/app/app/workspaces/workspacesService";
 import { AppInputBarHandle } from "@/sections/input/AppInputBar";
 
 interface UseChatSessionControllerProps {
@@ -41,7 +41,7 @@ interface UseChatSessionControllerProps {
   setSelectedAssistantFromId: (assistantId: number | null) => void;
   setSelectedDocuments: (documents: OmDocument[]) => void;
   setCurrentMessageFiles: (
-    files: ProjectFile[] | ((prev: ProjectFile[]) => ProjectFile[])
+    files: WorkspaceFile[] | ((prev: WorkspaceFile[]) => WorkspaceFile[])
   ) => void;
 
   // Refs
@@ -55,7 +55,7 @@ interface UseChatSessionControllerProps {
   refreshChatSessions: () => void;
   onSubmit: (params: {
     message: string;
-    currentMessageFiles: ProjectFile[];
+    currentMessageFiles: WorkspaceFile[];
     deepResearch: boolean;
     isSeededChat?: boolean;
   }) => Promise<void>;
@@ -79,7 +79,7 @@ export default function useChatSessionController({
 }: UseChatSessionControllerProps) {
   const [currentSessionFileTokenCount, setCurrentSessionFileTokenCount] =
     useState<number>(0);
-  const [projectFiles, setProjectFiles] = useState<ProjectFile[]>([]);
+  const [workspaceFiles, setWorkspaceFiles] = useState<WorkspaceFile[]>([]);
   // Store actions
   const updateSessionAndMessageTree = useChatSessionStore(
     (state) => state.updateSessionAndMessageTree
@@ -221,10 +221,10 @@ export default function useChatSessionController({
 
       setIsFetchingChatMessages(chatSession.chat_session_id, false);
 
-      // Fetch token count for this chat session's project (if any)
+      // Fetch token count for this chat session's workspace (if any)
       try {
         if (chatSession.chat_session_id) {
-          const total = await getSessionProjectTokenCount(
+          const total = await getSessionWorkspaceTokenCount(
             chatSession.chat_session_id
           );
           setCurrentSessionFileTokenCount(total || 0);
@@ -235,18 +235,18 @@ export default function useChatSessionController({
         setCurrentSessionFileTokenCount(0);
       }
 
-      // Fetch project files for this chat session (if any)
+      // Fetch workspace files for this chat session (if any)
       try {
         if (chatSession.chat_session_id) {
-          const files = await getProjectFilesForSession(
+          const files = await getWorkspaceFilesForSession(
             chatSession.chat_session_id
           );
-          setProjectFiles(files || []);
+          setWorkspaceFiles(files || []);
         } else {
-          setProjectFiles([]);
+          setWorkspaceFiles([]);
         }
       } catch (e) {
-        setProjectFiles([]);
+        setWorkspaceFiles([]);
       }
 
       // If this is a seeded chat, then kick off the AI message generation
@@ -355,6 +355,6 @@ export default function useChatSessionController({
   return {
     currentSessionFileTokenCount,
     onMessageSelection,
-    projectFiles,
+    workspaceFiles,
   };
 }

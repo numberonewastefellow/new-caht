@@ -382,7 +382,7 @@ class AgentTool(Tool[None]):
                 custom_agent_prompt=None,
                 simple_chat_history=msg_history,
                 reminder_message=None,
-                project_files=None,
+                workspace_files=None,
                 available_tokens=llm.config.max_input_tokens,
             )
 

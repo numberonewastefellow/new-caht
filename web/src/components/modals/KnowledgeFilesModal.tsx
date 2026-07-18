@@ -2,12 +2,12 @@
 
 import React, { useRef, useState, useEffect, useMemo } from "react";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
-import { ProjectFile } from "@/providers/ProjectsContext";
-import { formatRelativeTime } from "@/app/app/components/projects/project_utils";
+import { WorkspaceFile } from "@/providers/WorkspacesContext";
+import { formatRelativeTime } from "@/app/app/components/workspaces/workspace_utils";
 import Text from "@/refresh-components/texts/Text";
 import type { IconProps } from "@opal/types";
 import { getFileExtension } from "@/lib/utils";
-import { UserFileStatus } from "@/app/app/projects/projectsService";
+import { KnowledgeFileStatus } from "@/app/app/workspaces/workspacesService";
 import Button from "@/refresh-components/buttons/Button";
 import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import AttachmentButton from "@/refresh-components/buttons/AttachmentButton";
@@ -28,25 +28,25 @@ import { Button as OpalButton } from "@opal/components";
 import ScrollIndicatorDiv from "@/refresh-components/ScrollIndicatorDiv";
 
 function getIcon(
-  file: ProjectFile,
+  file: WorkspaceFile,
   isProcessing: boolean
 ): React.FunctionComponent<IconProps> {
   if (isProcessing) return SimpleLoader;
   return getColorfulFileIcon(file.name);
 }
 
-function getDescription(file: ProjectFile): string {
+function getDescription(file: WorkspaceFile): string {
   const s = String(file.status || "");
   const typeLabel = getFileExtension(file.name);
-  if (s === UserFileStatus.PROCESSING) return "Processing...";
-  if (s === UserFileStatus.UPLOADING) return "Uploading...";
-  if (s === UserFileStatus.DELETING) return "Deleting...";
-  if (s === UserFileStatus.COMPLETED) return typeLabel;
+  if (s === KnowledgeFileStatus.PROCESSING) return "Processing...";
+  if (s === KnowledgeFileStatus.UPLOADING) return "Uploading...";
+  if (s === KnowledgeFileStatus.DELETING) return "Deleting...";
+  if (s === KnowledgeFileStatus.COMPLETED) return typeLabel;
   return file.status ?? typeLabel;
 }
 
 interface FileAttachmentProps {
-  file: ProjectFile;
+  file: WorkspaceFile;
   isSelected: boolean;
   onClick?: () => void;
   onView?: () => void;
@@ -61,9 +61,9 @@ function FileAttachment({
   onDelete,
 }: FileAttachmentProps) {
   const isProcessing =
-    String(file.status) === UserFileStatus.PROCESSING ||
-    String(file.status) === UserFileStatus.UPLOADING ||
-    String(file.status) === UserFileStatus.DELETING;
+    String(file.status) === KnowledgeFileStatus.PROCESSING ||
+    String(file.status) === KnowledgeFileStatus.UPLOADING ||
+    String(file.status) === KnowledgeFileStatus.DELETING;
 
   const Icon = getIcon(file, isProcessing);
   const description = getDescription(file);
@@ -88,22 +88,22 @@ function FileAttachment({
   );
 }
 
-export interface UserFilesModalProps {
+export interface KnowledgeFilesModalProps {
   // Modal content
   title: string;
   description: string;
-  recentFiles: ProjectFile[];
+  recentFiles: WorkspaceFile[];
   handleUploadChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   selectedFileIds?: string[];
 
   // FileAttachment related
-  onView?: (file: ProjectFile) => void;
-  onDelete?: (file: ProjectFile) => void;
-  onPickRecent?: (file: ProjectFile) => void;
-  onUnpickRecent?: (file: ProjectFile) => void;
+  onView?: (file: WorkspaceFile) => void;
+  onDelete?: (file: WorkspaceFile) => void;
+  onPickRecent?: (file: WorkspaceFile) => void;
+  onUnpickRecent?: (file: WorkspaceFile) => void;
 }
 
-export default function UserFilesModal({
+export default function KnowledgeFilesModal({
   title,
   description,
   recentFiles,
@@ -114,7 +114,7 @@ export default function UserFilesModal({
   onDelete,
   onPickRecent,
   onUnpickRecent,
-}: UserFilesModalProps) {
+}: KnowledgeFilesModalProps) {
   const { isOpen, toggle } = useModal();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
     () => new Set(selectedFileIds || [])
@@ -144,7 +144,7 @@ export default function UserFilesModal({
   const files = useMemo(
     () =>
       showOnlySelected
-        ? recentFiles.filter((projectFile) => selectedIds.has(projectFile.id))
+        ? recentFiles.filter((workspaceFile) => selectedIds.has(workspaceFile.id))
         : recentFiles,
     [showOnlySelected, recentFiles, selectedIds]
   );
@@ -216,37 +216,37 @@ export default function UserFilesModal({
               </div>
             ) : (
               <ScrollIndicatorDiv className="p-2 gap-2 max-h-[70vh]">
-                {filtered.map((projectFle) => {
-                  const isSelected = selectedIds.has(projectFle.id);
+                {filtered.map((workspaceFle) => {
+                  const isSelected = selectedIds.has(workspaceFle.id);
                   return (
                     <FileAttachment
-                      key={projectFle.id}
-                      file={projectFle}
+                      key={workspaceFle.id}
+                      file={workspaceFle}
                       isSelected={isSelected}
                       onClick={
                         onPickRecent
                           ? () => {
                               if (isSelected) {
-                                onUnpickRecent?.(projectFle);
+                                onUnpickRecent?.(workspaceFle);
                                 setSelectedIds((prev) => {
                                   const next = new Set(prev);
-                                  next.delete(projectFle.id);
+                                  next.delete(workspaceFle.id);
                                   return next;
                                 });
                               } else {
-                                onPickRecent(projectFle);
+                                onPickRecent(workspaceFle);
                                 setSelectedIds((prev) => {
                                   const next = new Set(prev);
-                                  next.add(projectFle.id);
+                                  next.add(workspaceFle.id);
                                   return next;
                                 });
                               }
                             }
                           : undefined
                       }
-                      onView={onView ? () => onView(projectFle) : undefined}
+                      onView={onView ? () => onView(workspaceFle) : undefined}
                       onDelete={
-                        onDelete ? () => onDelete(projectFle) : undefined
+                        onDelete ? () => onDelete(workspaceFle) : undefined
                       }
                     />
                   );

@@ -49,12 +49,12 @@ class FileReaderTool(Tool[FileReaderToolOverrideKwargs]):
         self,
         tool_id: int,
         emitter: Emitter,
-        user_file_ids: list[UUID],
+        knowledge_file_ids: list[UUID],
         chat_file_ids: list[UUID],
     ) -> None:
         super().__init__(emitter=emitter)
         self._id = tool_id
-        self._user_file_ids = set(user_file_ids)
+        self._knowledge_file_ids = set(knowledge_file_ids)
         self._chat_file_ids = set(chat_file_ids)
 
     @property
@@ -129,7 +129,7 @@ class FileReaderTool(Tool[FileReaderToolOverrideKwargs]):
                 llm_facing_message=f"'{raw_file_id}' is not a valid file UUID.",
             )
 
-        if file_id not in self._user_file_ids and file_id not in self._chat_file_ids:
+        if file_id not in self._knowledge_file_ids and file_id not in self._chat_file_ids:
             raise ToolCallException(
                 message=f"File {file_id} not in available files",
                 llm_facing_message=(
@@ -141,7 +141,7 @@ class FileReaderTool(Tool[FileReaderToolOverrideKwargs]):
         return file_id
 
     def _load_file(self, file_id: UUID) -> InMemoryChatFile:
-        if file_id in self._user_file_ids:
+        if file_id in self._knowledge_file_ids:
             with get_session_with_current_tenant() as db_session:
                 return load_user_file(file_id, db_session)
         return load_chat_file_by_id(str(file_id))

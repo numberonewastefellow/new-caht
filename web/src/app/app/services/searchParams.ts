@@ -5,7 +5,7 @@ export const SEARCH_PARAM_NAMES = {
   CHAT_ID: "chatId",
   SEARCH_ID: "searchId",
   PERSONA_ID: "assistantId",
-  PROJECT_ID: "projectId",
+  PROJECT_ID: "workspaceId",
   ALL_MY_DOCUMENTS: "allMyDocuments",
   // overrides
   TEMPERATURE: "temperature",

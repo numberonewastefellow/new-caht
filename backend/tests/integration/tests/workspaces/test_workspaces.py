@@ -3,9 +3,9 @@ from typing import List
 import pytest
 
 from om.db.engine.sql_engine import get_session_with_current_tenant
-from om.db.models import UserFile
-from om.server.features.projects.models import UserProjectSnapshot
-from tests.integration.common_utils.managers.project import ProjectManager
+from om.db.models import KnowledgeFile
+from om.server.features.workspaces.models import WorkspaceSnapshot
+from tests.integration.common_utils.managers.workspace import WorkspaceManager
 from tests.integration.common_utils.reset import reset_all
 from tests.integration.common_utils.test_models import DATestLLMProvider
 from tests.integration.common_utils.test_models import DATestUser
@@ -17,225 +17,225 @@ def reset_for_module() -> None:
     reset_all()
 
 
-def test_projects_flow(
+def test_workspaces_flow(
     reset_for_module: None,  # noqa: ARG001
     basic_user: DATestUser,
     llm_provider: DATestLLMProvider,  # noqa: ARG001
 ) -> None:
-    """End-to-end project flow covering creation, listing, files, instructions, deletion, and edge cases."""
-    # Case 1: Project creation and listing
-    ProjectManager.create(
-        name="Test Project 1",
+    """End-to-end workspace flow covering creation, listing, files, instructions, deletion, and edge cases."""
+    # Case 1: Workspace creation and listing
+    WorkspaceManager.create(
+        name="Test Workspace 1",
         user_performing_action=basic_user,
     )
-    ProjectManager.create(
-        name="Test Project 2",
+    WorkspaceManager.create(
+        name="Test Workspace 2",
         user_performing_action=basic_user,
     )
 
-    projects = ProjectManager.get_all(user_performing_action=basic_user)
-    assert len(projects) >= 2
-    project_names = {p.name for p in projects}
-    assert "Test Project 1" in project_names
-    assert "Test Project 2" in project_names
-    assert all(str(p.user_id) == basic_user.id for p in projects)
+    workspaces = WorkspaceManager.get_all(user_performing_action=basic_user)
+    assert len(workspaces) >= 2
+    workspace_names = {p.name for p in workspaces}
+    assert "Test Workspace 1" in workspace_names
+    assert "Test Workspace 2" in workspace_names
+    assert all(str(p.user_id) == basic_user.id for p in workspaces)
 
     # Case 2: File upload and management
-    file_project = ProjectManager.create(
-        name="File Test Project",
+    file_workspace = WorkspaceManager.create(
+        name="File Test Workspace",
         user_performing_action=basic_user,
     )
     test_files = [
         ("test1.txt", b"This is test file 1 content"),
         ("test2.txt", b"This is test file 2 content"),
     ]
-    upload_result = ProjectManager.upload_files(
-        project_id=file_project.id,
+    upload_result = WorkspaceManager.upload_files(
+        workspace_id=file_workspace.id,
         files=test_files,
         user_performing_action=basic_user,
     )
-    assert len(upload_result.user_files) == 2
+    assert len(upload_result.knowledge_files) == 2
     assert len(upload_result.rejected_files) == 0
-    project_files = ProjectManager.get_project_files(
-        project_id=file_project.id,
+    workspace_files = WorkspaceManager.get_workspace_files(
+        workspace_id=file_workspace.id,
         user_performing_action=basic_user,
     )
-    assert len(project_files) == 2
-    file_names = {f.name for f in project_files}
+    assert len(workspace_files) == 2
+    file_names = {f.name for f in workspace_files}
     assert "test1.txt" in file_names
     assert "test2.txt" in file_names
 
     # Case 3: Instructions set and update
-    instructions_project = ProjectManager.create(
-        name="Instructions Test Project",
+    instructions_workspace = WorkspaceManager.create(
+        name="Instructions Test Workspace",
         user_performing_action=basic_user,
     )
-    instructions = "These are test project instructions"
-    result = ProjectManager.set_instructions(
-        project_id=instructions_project.id,
+    instructions = "These are test workspace instructions"
+    result = WorkspaceManager.set_instructions(
+        workspace_id=instructions_workspace.id,
         instructions=instructions,
         user_performing_action=basic_user,
     )
     assert result == instructions
-    new_instructions = "These are updated test project instructions"
-    result = ProjectManager.set_instructions(
-        project_id=instructions_project.id,
+    new_instructions = "These are updated test workspace instructions"
+    result = WorkspaceManager.set_instructions(
+        workspace_id=instructions_workspace.id,
         instructions=new_instructions,
         user_performing_action=basic_user,
     )
     assert result == new_instructions
 
     # Case 4: Deletion with files (unlink but do not delete files)
-    delete_file_project = ProjectManager.create(
-        name="Deletion Test Project",
+    delete_file_workspace = WorkspaceManager.create(
+        name="Deletion Test Workspace",
         user_performing_action=basic_user,
     )
     del_test_files = [
         ("delete_test1.txt", b"This is test file 1 content"),
         ("delete_test2.txt", b"This is test file 2 content"),
     ]
-    ProjectManager.upload_files(
-        project_id=delete_file_project.id,
+    WorkspaceManager.upload_files(
+        workspace_id=delete_file_workspace.id,
         files=del_test_files,
         user_performing_action=basic_user,
     )
-    del_project_files = ProjectManager.get_project_files(
-        project_id=delete_file_project.id,
+    del_workspace_files = WorkspaceManager.get_workspace_files(
+        workspace_id=delete_file_workspace.id,
         user_performing_action=basic_user,
     )
-    assert len(del_project_files) == 2
-    deletion_success = ProjectManager.delete(
-        project_id=delete_file_project.id,
+    assert len(del_workspace_files) == 2
+    deletion_success = WorkspaceManager.delete(
+        workspace_id=delete_file_workspace.id,
         user_performing_action=basic_user,
     )
     assert deletion_success
-    assert ProjectManager.verify_deleted(
-        project_id=delete_file_project.id,
+    assert WorkspaceManager.verify_deleted(
+        workspace_id=delete_file_workspace.id,
         user_performing_action=basic_user,
     )
-    assert ProjectManager.verify_files_unlinked(
-        project_id=delete_file_project.id,
+    assert WorkspaceManager.verify_files_unlinked(
+        workspace_id=delete_file_workspace.id,
         user_performing_action=basic_user,
     )
     with get_session_with_current_tenant() as db_session:
-        file_ids = [f.id for f in del_project_files]
+        file_ids = [f.id for f in del_workspace_files]
         remaining_files = (
-            db_session.query(UserFile).filter(UserFile.id.in_(file_ids)).all()
+            db_session.query(KnowledgeFile).filter(KnowledgeFile.id.in_(file_ids)).all()
         )
         assert len(remaining_files) == 2
 
     # Case 5: Deletion with chat sessions unlinked
-    chat_project = ProjectManager.create(
-        name="Chat Session Test Project",
+    chat_workspace = WorkspaceManager.create(
+        name="Chat Session Test Workspace",
         user_performing_action=basic_user,
     )
-    deletion_success = ProjectManager.delete(
-        project_id=chat_project.id,
+    deletion_success = WorkspaceManager.delete(
+        workspace_id=chat_workspace.id,
         user_performing_action=basic_user,
     )
     assert deletion_success
-    assert ProjectManager.verify_chat_sessions_unlinked(
-        project_id=chat_project.id,
+    assert WorkspaceManager.verify_chat_sessions_unlinked(
+        workspace_id=chat_workspace.id,
         user_performing_action=basic_user,
     )
 
-    # Case 6: Multiple project operations
-    projects_group: List[UserProjectSnapshot] = []
+    # Case 6: Multiple workspace operations
+    workspaces_group: List[WorkspaceSnapshot] = []
     for i in range(3):
-        proj = ProjectManager.create(
-            name=f"Multi-op Project {i}",
+        proj = WorkspaceManager.create(
+            name=f"Multi-op Workspace {i}",
             user_performing_action=basic_user,
         )
-        projects_group.append(proj)
+        workspaces_group.append(proj)
 
-    for i, proj in enumerate(projects_group):
+    for i, proj in enumerate(workspaces_group):
         tfiles = [
             (f"multi_test{i}_1.txt", b"This is test file 1 content"),
             (f"multi_test{i}_2.txt", b"This is test file 2 content"),
         ]
-        ProjectManager.upload_files(
-            project_id=proj.id,
+        WorkspaceManager.upload_files(
+            workspace_id=proj.id,
             files=tfiles,
             user_performing_action=basic_user,
         )
 
-    for i, proj in enumerate(projects_group):
-        instr = f"Instructions for project {i}"
-        res = ProjectManager.set_instructions(
-            project_id=proj.id,
+    for i, proj in enumerate(workspaces_group):
+        instr = f"Instructions for workspace {i}"
+        res = WorkspaceManager.set_instructions(
+            workspace_id=proj.id,
             instructions=instr,
             user_performing_action=basic_user,
         )
         assert res == instr
 
-    for proj in projects_group:
-        proj_files = ProjectManager.get_project_files(
-            project_id=proj.id,
+    for proj in workspaces_group:
+        proj_files = WorkspaceManager.get_workspace_files(
+            workspace_id=proj.id,
             user_performing_action=basic_user,
         )
         assert len(proj_files) == 2
-        deletion_success = ProjectManager.delete(
-            project_id=proj.id,
+        deletion_success = WorkspaceManager.delete(
+            workspace_id=proj.id,
             user_performing_action=basic_user,
         )
         assert deletion_success
-        assert ProjectManager.verify_deleted(
-            project_id=proj.id,
+        assert WorkspaceManager.verify_deleted(
+            workspace_id=proj.id,
             user_performing_action=basic_user,
         )
-        assert ProjectManager.verify_files_unlinked(
-            project_id=proj.id,
+        assert WorkspaceManager.verify_files_unlinked(
+            workspace_id=proj.id,
             user_performing_action=basic_user,
         )
         with get_session_with_current_tenant() as db_session:
             file_ids = [f.id for f in proj_files]
             remaining_files = (
-                db_session.query(UserFile).filter(UserFile.id.in_(file_ids)).all()
+                db_session.query(KnowledgeFile).filter(KnowledgeFile.id.in_(file_ids)).all()
             )
             assert len(remaining_files) == 2
 
     # Case 7: Edge cases
     with pytest.raises(Exception):
-        ProjectManager.create(
+        WorkspaceManager.create(
             name="",
             user_performing_action=basic_user,
         )
 
     non_existent_id = 99999
-    deletion_success = ProjectManager.delete(
-        project_id=non_existent_id,
+    deletion_success = WorkspaceManager.delete(
+        workspace_id=non_existent_id,
         user_performing_action=basic_user,
     )
     assert not deletion_success
 
     with pytest.raises(Exception):
-        ProjectManager.set_instructions(
-            project_id=non_existent_id,
+        WorkspaceManager.set_instructions(
+            workspace_id=non_existent_id,
             instructions="Test instructions",
             user_performing_action=basic_user,
         )
 
     with pytest.raises(Exception):
-        ProjectManager.upload_files(
-            project_id=non_existent_id,
+        WorkspaceManager.upload_files(
+            workspace_id=non_existent_id,
             files=[("test.txt", b"content")],
             user_performing_action=basic_user,
         )
 
     long_name = "a" * 1000
     with pytest.raises(Exception):
-        ProjectManager.create(
+        WorkspaceManager.create(
             name=long_name,
             user_performing_action=basic_user,
         )
 
-    long_instr_project = ProjectManager.create(
+    long_instr_workspace = WorkspaceManager.create(
         name="Long Instructions Test",
         user_performing_action=basic_user,
     )
     long_instructions = "a" * 10000
-    result = ProjectManager.set_instructions(
-        project_id=long_instr_project.id,
+    result = WorkspaceManager.set_instructions(
+        workspace_id=long_instr_workspace.id,
         instructions=long_instructions,
         user_performing_action=basic_user,
     )

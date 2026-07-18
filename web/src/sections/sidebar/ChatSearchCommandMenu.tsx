@@ -6,9 +6,9 @@ import type { Route } from "next";
 import CommandMenu, {
   useCommandMenuContext,
 } from "@/refresh-components/commandmenu/CommandMenu";
-import { useProjects } from "@/lib/hooks/useProjects";
+import { useWorkspaces } from "@/lib/hooks/useWorkspaces";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
-import CreateProjectModal from "@/components/modals/CreateProjectModal";
+import CreateWorkspaceModal from "@/components/modals/CreateWorkspaceModal";
 import {
   formatDisplayTime,
   highlightMatch,
@@ -55,7 +55,7 @@ interface ChatSearchCommandMenuProps {
   trigger: React.ReactNode;
 }
 
-interface FilterableProject {
+interface FilterableWorkspace {
   id: number;
   label: string;
   description: string | null;
@@ -68,18 +68,18 @@ export default function ChatSearchCommandMenu({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [activeFilter, setActiveFilter] = useState<
-    "all" | "chats" | "projects"
+    "all" | "chats" | "workspaces"
   >("all");
-  const [initialProjectName, setInitialProjectName] = useState<
+  const [initialWorkspaceName, setInitialWorkspaceName] = useState<
     string | undefined
   >();
   const router = useRouter();
 
   // Data hooks
-  const { projects } = useProjects();
+  const { workspaces } = useWorkspaces();
   const combinedSettings = useSettingsContext();
   const currentAgent = useCurrentAgent();
-  const createProjectModal = useCreateModal();
+  const createWorkspaceModal = useCreateModal();
 
   // Constants for preview limits
   const PREVIEW_CHATS_LIMIT = 4;
@@ -89,7 +89,7 @@ export default function ChatSearchCommandMenu({
   const shouldUseOptimisticSearch =
     searchValue.trim().length > 0 || activeFilter === "chats";
 
-  // Use optimistic search hook for chat sessions (includes fallback from useChatSessions + useProjects)
+  // Use optimistic search hook for chat sessions (includes fallback from useChatSessions + useWorkspaces)
   const {
     results: filteredChats,
     isSearching,
@@ -101,26 +101,26 @@ export default function ChatSearchCommandMenu({
     enabled: shouldUseOptimisticSearch,
   });
 
-  // Transform and filter projects (sorted by latest first)
-  const filteredProjects = useMemo<FilterableProject[]>(() => {
-    const projectList = projects
-      .map((project) => ({
-        id: project.id,
-        label: project.name,
-        description: project.description,
-        time: project.created_at,
+  // Transform and filter workspaces (sorted by latest first)
+  const filteredWorkspaces = useMemo<FilterableWorkspace[]>(() => {
+    const workspaceList = workspaces
+      .map((workspace) => ({
+        id: workspace.id,
+        label: workspace.name,
+        description: workspace.description,
+        time: workspace.created_at,
       }))
       .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
 
-    if (!searchValue.trim()) return projectList;
+    if (!searchValue.trim()) return workspaceList;
 
     const term = searchValue.toLowerCase();
-    return projectList.filter(
-      (project) =>
-        project.label.toLowerCase().includes(term) ||
-        project.description?.toLowerCase().includes(term)
+    return workspaceList.filter(
+      (workspace) =>
+        workspace.label.toLowerCase().includes(term) ||
+        workspace.description?.toLowerCase().includes(term)
     );
-  }, [projects, searchValue]);
+  }, [workspaces, searchValue]);
 
   // Compute displayed items based on filter state
   const displayedChats = useMemo(() => {
@@ -130,20 +130,20 @@ export default function ChatSearchCommandMenu({
     return filteredChats;
   }, [filteredChats, activeFilter, searchValue]);
 
-  const displayedProjects = useMemo(() => {
+  const displayedWorkspaces = useMemo(() => {
     if (activeFilter === "all" && !searchValue.trim()) {
-      return filteredProjects.slice(0, PREVIEW_PROJECTS_LIMIT);
+      return filteredWorkspaces.slice(0, PREVIEW_PROJECTS_LIMIT);
     }
-    return filteredProjects;
-  }, [filteredProjects, activeFilter, searchValue]);
+    return filteredWorkspaces;
+  }, [filteredWorkspaces, activeFilter, searchValue]);
 
   // Header filters for showing active filter as a chip
   const headerFilters = useMemo(() => {
     if (activeFilter === "chats") {
       return [{ id: "chats", label: "Sessions" }];
     }
-    if (activeFilter === "projects") {
-      return [{ id: "projects", label: "Workspaces" }];
+    if (activeFilter === "workspaces") {
+      return [{ id: "workspaces", label: "Workspaces" }];
     }
     return [];
   }, [activeFilter]);
@@ -170,21 +170,21 @@ export default function ChatSearchCommandMenu({
     [router]
   );
 
-  const handleProjectSelect = useCallback(
-    (projectId: number) => {
-      router.push(`/chat?projectId=${projectId}` as Route);
+  const handleWorkspaceSelect = useCallback(
+    (workspaceId: number) => {
+      router.push(`/chat?workspaceId=${workspaceId}` as Route);
       setOpen(false);
     },
     [router]
   );
 
-  const handleNewProject = useCallback(
+  const handleNewWorkspace = useCallback(
     (initialName?: string) => {
-      setInitialProjectName(initialName);
+      setInitialWorkspaceName(initialName);
       setOpen(false);
-      createProjectModal.toggle(true);
+      createWorkspaceModal.toggle(true);
     },
-    [createProjectModal]
+    [createWorkspaceModal]
   );
 
   const handleOpenChange = useCallback((newOpen: boolean) => {
@@ -292,33 +292,33 @@ export default function ChatSearchCommandMenu({
                 </>
               )}
 
-            {/* Projects section - show if filter is 'all' or 'projects' */}
-            {(activeFilter === "all" || activeFilter === "projects") && (
+            {/* Workspaces section - show if filter is 'all' or 'workspaces' */}
+            {(activeFilter === "all" || activeFilter === "workspaces") && (
               <>
                 <CommandMenu.Filter
-                  value="projects"
-                  onSelect={() => setActiveFilter("projects")}
+                  value="workspaces"
+                  onSelect={() => setActiveFilter("workspaces")}
                   isApplied={
-                    activeFilter === "projects" ||
-                    filteredProjects.length <= PREVIEW_PROJECTS_LIMIT
+                    activeFilter === "workspaces" ||
+                    filteredWorkspaces.length <= PREVIEW_PROJECTS_LIMIT
                   }
                 >
                   Workspaces
                 </CommandMenu.Filter>
-                {/* New Project action - shown after Projects filter when no search term */}
+                {/* New Workspace action - shown after Workspaces filter when no search term */}
                 {!hasSearchValue && activeFilter === "all" && (
                   <CommandMenu.Action
-                    value="new-project"
+                    value="new-workspace"
                     icon={SvgFolderPlus}
-                    onSelect={() => handleNewProject()}
+                    onSelect={() => handleNewWorkspace()}
                   >
                     New Workspace
                   </CommandMenu.Action>
                 )}
-                {displayedProjects.map((project) => (
+                {displayedWorkspaces.map((workspace) => (
                   <CommandMenu.Item
-                    key={project.id}
-                    value={`project-${project.id}`}
+                    key={workspace.id}
+                    value={`workspace-${workspace.id}`}
                     icon={SvgFolder}
                     rightContent={({ isHighlighted }) =>
                       isHighlighted ? (
@@ -327,25 +327,25 @@ export default function ChatSearchCommandMenu({
                         </Text>
                       ) : (
                         <Text secondaryBody text03>
-                          {formatDisplayTime(project.time)}
+                          {formatDisplayTime(workspace.time)}
                         </Text>
                       )
                     }
-                    onSelect={() => handleProjectSelect(project.id)}
+                    onSelect={() => handleWorkspaceSelect(workspace.id)}
                   >
-                    {highlightMatch(project.label, searchValue)}
+                    {highlightMatch(workspace.label, searchValue)}
                   </CommandMenu.Item>
                 ))}
               </>
             )}
 
-            {/* Create New Project with search term - shown at bottom when searching */}
+            {/* Create New Workspace with search term - shown at bottom when searching */}
             {hasSearchValue &&
-              (activeFilter === "all" || activeFilter === "projects") && (
+              (activeFilter === "all" || activeFilter === "workspaces") && (
                 <CommandMenu.Action
-                  value="create-project-with-name"
+                  value="create-workspace-with-name"
                   icon={SvgFolderPlus}
-                  onSelect={() => handleNewProject(searchValue.trim())}
+                  onSelect={() => handleNewWorkspace(searchValue.trim())}
                 >
                   <>
                     Create New Workspace "
@@ -356,10 +356,10 @@ export default function ChatSearchCommandMenu({
 
             {/* No more results separator - shown when no results for the active filter */}
             {((activeFilter === "chats" && displayedChats.length === 0) ||
-              (activeFilter === "projects" && displayedProjects.length === 0) ||
+              (activeFilter === "workspaces" && displayedWorkspaces.length === 0) ||
               (activeFilter === "all" &&
                 displayedChats.length === 0 &&
-                displayedProjects.length === 0)) && (
+                displayedWorkspaces.length === 0)) && (
               <TextSeparator text="No more results" className="mt-auto mb-2" />
             )}
           </CommandMenu.List>
@@ -368,10 +368,10 @@ export default function ChatSearchCommandMenu({
         </CommandMenu.Content>
       </CommandMenu>
 
-      {/* Project creation modal */}
-      <createProjectModal.Provider>
-        <CreateProjectModal initialProjectName={initialProjectName} />
-      </createProjectModal.Provider>
+      {/* Workspace creation modal */}
+      <createWorkspaceModal.Provider>
+        <CreateWorkspaceModal initialWorkspaceName={initialWorkspaceName} />
+      </createWorkspaceModal.Provider>
     </>
   );
 }

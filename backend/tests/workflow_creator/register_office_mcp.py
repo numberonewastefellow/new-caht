@@ -234,7 +234,7 @@ def attach_tools_to_personas(tool_ids: dict) -> None:
             "label_ids": [l["id"] for l in persona.get("labels", [])],
             "starter_messages": persona.get("starter_messages") or [],
             "users": [], "groups": [], "hierarchy_node_ids": [],
-            "document_ids": [], "user_file_ids": [],
+            "document_ids": [], "knowledge_file_ids": [],
         }
 
         if mcp_tool_ids == tool_ids["ppt"]:

@@ -70,7 +70,7 @@ def create_test_persona(name: str, max_output_tokens: int | None = None) -> dict
         "users": [],
         "groups": [],
         "label_ids": [],
-        "user_file_ids": [],
+        "knowledge_file_ids": [],
         "hierarchy_node_ids": [],
         "document_ids": [],
     }
@@ -119,7 +119,7 @@ def patch_persona_max_tokens(persona_id: int, max_output_tokens: int) -> bool:
         "users": [],
         "groups": persona.get("groups", []),
         "label_ids": [lb["id"] for lb in persona.get("labels", [])],
-        "user_file_ids": persona.get("user_file_ids", []),
+        "knowledge_file_ids": persona.get("knowledge_file_ids", []),
         "hierarchy_node_ids": [n["id"] for n in persona.get("hierarchy_nodes", [])],
         "document_ids": [d["id"] for d in persona.get("attached_documents", [])],
         "max_output_tokens": max_output_tokens,

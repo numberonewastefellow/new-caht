@@ -5,7 +5,7 @@ const handleRequestError = (action: string, response: Response) => {
   throw new Error(`${action} failed (Status: ${response.status})`);
 };
 
-export interface Project {
+export interface Workspace {
   id: number;
   name: string;
   description: string | null;
@@ -16,18 +16,18 @@ export interface Project {
 }
 
 export interface CategorizedFiles {
-  user_files: ProjectFile[];
+  knowledge_files: WorkspaceFile[];
   rejected_files: RejectedFile[];
 }
 
-export interface ProjectFile {
+export interface WorkspaceFile {
   id: string;
   name: string;
-  project_id: number | null;
+  workspace_id: number | null;
   user_id: string | null;
   file_id: string;
   created_at: string;
-  status: UserFileStatus;
+  status: KnowledgeFileStatus;
   file_type: string;
   last_accessed_at: string;
   chat_file_type: ChatFileType;
@@ -41,13 +41,13 @@ export interface RejectedFile {
   reason: string;
 }
 
-export interface UserFileDeleteResult {
+export interface KnowledgeFileDeleteResult {
   has_associations: boolean;
-  project_names: string[];
+  workspace_names: string[];
   assistant_names: string[];
 }
 
-export enum UserFileStatus {
+export enum KnowledgeFileStatus {
   UPLOADING = "UPLOADING", //UI only
   PROCESSING = "PROCESSING",
   COMPLETED = "COMPLETED",
@@ -56,40 +56,40 @@ export enum UserFileStatus {
   DELETING = "DELETING",
 }
 
-export type ProjectDetails = {
-  project: Project;
-  files?: ProjectFile[];
+export type WorkspaceDetails = {
+  workspace: Workspace;
+  files?: WorkspaceFile[];
   persona_id_to_is_default?: Record<number, boolean>;
 };
 
-export async function fetchProjects(): Promise<Project[]> {
+export async function fetchWorkspaces(): Promise<Workspace[]> {
   const response = await fetch("/api/workspaces");
   if (!response.ok) {
-    handleRequestError("Fetch projects", response);
+    handleRequestError("Fetch workspaces", response);
   }
   return response.json();
 }
 
-export async function createProject(name: string): Promise<Project> {
+export async function createWorkspace(name: string): Promise<Workspace> {
   const response = await fetch(
     `/api/workspaces/create?name=${encodeURIComponent(name)}`,
     { method: "POST" }
   );
   if (!response.ok) {
-    handleRequestError("Create project", response);
+    handleRequestError("Create workspace", response);
   }
   return response.json();
 }
 
 export async function uploadFiles(
   files: File[],
-  projectId?: number | null,
+  workspaceId?: number | null,
   tempIdMap?: Map<string, string>
 ): Promise<CategorizedFiles> {
   const formData = new FormData();
   files.forEach((file) => formData.append("files", file));
-  if (projectId !== undefined && projectId !== null) {
-    formData.append("project_id", String(projectId));
+  if (workspaceId !== undefined && workspaceId !== null) {
+    formData.append("workspace_id", String(workspaceId));
   }
   if (tempIdMap !== undefined && tempIdMap !== null) {
     formData.append(
@@ -110,7 +110,7 @@ export async function uploadFiles(
   return response.json();
 }
 
-export async function getRecentFiles(): Promise<ProjectFile[]> {
+export async function getRecentFiles(): Promise<WorkspaceFile[]> {
   const response = await fetch(`/api/user/files/recent`);
   if (!response.ok) {
     handleRequestError("Fetch recent files", response);
@@ -118,120 +118,120 @@ export async function getRecentFiles(): Promise<ProjectFile[]> {
   return response.json();
 }
 
-export async function getFilesInProject(
-  projectId: number
-): Promise<ProjectFile[]> {
-  const response = await fetch(`/api/workspaces/files/${projectId}`);
+export async function getFilesInWorkspace(
+  workspaceId: number
+): Promise<WorkspaceFile[]> {
+  const response = await fetch(`/api/workspaces/files/${workspaceId}`);
   if (!response.ok) {
-    handleRequestError("Fetch project files", response);
+    handleRequestError("Fetch workspace files", response);
   }
   return response.json();
 }
 
-export async function getProject(projectId: number): Promise<Project> {
-  const response = await fetch(`/api/workspaces/${projectId}`);
+export async function getWorkspace(workspaceId: number): Promise<Workspace> {
+  const response = await fetch(`/api/workspaces/${workspaceId}`);
   if (!response.ok) {
-    handleRequestError("Fetch project", response);
+    handleRequestError("Fetch workspace", response);
   }
   return response.json();
 }
 
-export async function renameProject(
-  projectId: number,
+export async function renameWorkspace(
+  workspaceId: number,
   name: string
-): Promise<Project> {
-  const response = await fetch(`/api/workspaces/${projectId}`, {
+): Promise<Workspace> {
+  const response = await fetch(`/api/workspaces/${workspaceId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name }),
   });
   if (!response.ok) {
-    handleRequestError("Rename project", response);
+    handleRequestError("Rename workspace", response);
   }
   return response.json();
 }
 
-export async function deleteProject(projectId: number): Promise<void> {
-  const response = await fetch(`/api/workspaces/${projectId}`, {
+export async function deleteWorkspace(workspaceId: number): Promise<void> {
+  const response = await fetch(`/api/workspaces/${workspaceId}`, {
     method: "DELETE",
   });
   if (!response.ok) {
-    handleRequestError("Delete project", response);
+    handleRequestError("Delete workspace", response);
   }
 }
 
-export async function getProjectInstructions(
-  projectId: number
+export async function getWorkspaceInstructions(
+  workspaceId: number
 ): Promise<string | null> {
-  const response = await fetch(`/api/workspaces/${projectId}/instructions`);
+  const response = await fetch(`/api/workspaces/${workspaceId}/instructions`);
   if (!response.ok) {
-    handleRequestError("Fetch project instructions", response);
+    handleRequestError("Fetch workspace instructions", response);
   }
   const data = (await response.json()) as { instructions: string | null };
   return data.instructions ?? null;
 }
 
-export async function upsertProjectInstructions(
-  projectId: number,
+export async function upsertWorkspaceInstructions(
+  workspaceId: number,
   instructions: string
 ): Promise<string | null> {
-  const response = await fetch(`/api/workspaces/${projectId}/instructions`, {
+  const response = await fetch(`/api/workspaces/${workspaceId}/instructions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ instructions }),
   });
   if (!response.ok) {
-    handleRequestError("Update project instructions", response);
+    handleRequestError("Update workspace instructions", response);
   }
   const data = (await response.json()) as { instructions: string | null };
   return data.instructions ?? null;
 }
 
-export async function getProjectDetails(
-  projectId: number
-): Promise<ProjectDetails> {
-  const response = await fetch(`/api/workspaces/${projectId}/details`);
+export async function getWorkspaceDetails(
+  workspaceId: number
+): Promise<WorkspaceDetails> {
+  const response = await fetch(`/api/workspaces/${workspaceId}/details`);
   if (!response.ok) {
-    handleRequestError("Fetch project details", response);
+    handleRequestError("Fetch workspace details", response);
   }
   return response.json();
 }
 
-export async function unlinkFileFromProject(
-  projectId: number,
+export async function unlinkFileFromWorkspace(
+  workspaceId: number,
   fileId: string
 ): Promise<Response> {
   const response = await fetch(
     `/api/workspaces/${encodeURIComponent(
-      projectId
+      workspaceId
     )}/files/${encodeURIComponent(fileId)}`,
     { method: "DELETE" }
   );
   if (!response.ok) {
-    handleRequestError("Unlink file from project", response);
+    handleRequestError("Unlink file from workspace", response);
   }
   return response;
 }
 
-export async function linkFileToProject(
-  projectId: number,
+export async function linkFileToWorkspace(
+  workspaceId: number,
   fileId: string
 ): Promise<Response> {
   const response = await fetch(
     `/api/workspaces/${encodeURIComponent(
-      projectId
+      workspaceId
     )}/files/${encodeURIComponent(fileId)}`,
     { method: "POST" }
   );
   if (!response.ok) {
-    handleRequestError("Link file to project", response);
+    handleRequestError("Link file to workspace", response);
   }
   return response;
 }
 
-export async function deleteUserFile(
+export async function deleteKnowledgeFile(
   fileId: string
-): Promise<UserFileDeleteResult> {
+): Promise<KnowledgeFileDeleteResult> {
   const response = await fetch(
     `/api/workspaces/file/${encodeURIComponent(fileId)}`,
     {
@@ -241,10 +241,10 @@ export async function deleteUserFile(
   if (!response.ok) {
     handleRequestError("Delete file", response);
   }
-  return (await response.json()) as UserFileDeleteResult;
+  return (await response.json()) as KnowledgeFileDeleteResult;
 }
 
-export async function getUserFile(fileId: string): Promise<ProjectFile> {
+export async function getKnowledgeFile(fileId: string): Promise<WorkspaceFile> {
   const response = await fetch(
     `/api/workspaces/file/${encodeURIComponent(fileId)}`
   );
@@ -254,9 +254,9 @@ export async function getUserFile(fileId: string): Promise<ProjectFile> {
   return response.json();
 }
 
-export async function getUserFileStatuses(
+export async function getKnowledgeFileStatuses(
   fileIds: string[]
-): Promise<ProjectFile[]> {
+): Promise<WorkspaceFile[]> {
   const response = await fetch(`/api/workspaces/file/statuses`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -268,7 +268,7 @@ export async function getUserFileStatuses(
   return response.json();
 }
 
-export async function getSessionProjectTokenCount(
+export async function getSessionWorkspaceTokenCount(
   chatSessionId: string
 ): Promise<number> {
   const response = await fetch(
@@ -283,9 +283,9 @@ export async function getSessionProjectTokenCount(
   return data.total_tokens ?? 0;
 }
 
-export async function getProjectFilesForSession(
+export async function getWorkspaceFilesForSession(
   chatSessionId: string
-): Promise<ProjectFile[]> {
+): Promise<WorkspaceFile[]> {
   const response = await fetch(
     `/api/workspaces/session/${encodeURIComponent(chatSessionId)}/files`
   );
@@ -295,9 +295,9 @@ export async function getProjectFilesForSession(
   return response.json();
 }
 
-export async function getProjectTokenCount(projectId: number): Promise<number> {
+export async function getWorkspaceTokenCount(workspaceId: number): Promise<number> {
   const response = await fetch(
-    `/api/workspaces/${encodeURIComponent(projectId)}/token-count`
+    `/api/workspaces/${encodeURIComponent(workspaceId)}/token-count`
   );
   if (!response.ok) {
     return 0;
@@ -320,11 +320,11 @@ export async function getMaxSelectedDocumentTokens(
 }
 
 export async function moveChatSession(
-  projectId: number,
+  workspaceId: number,
   chatSessionId: string
 ): Promise<boolean> {
   const response = await fetch(
-    `/api/workspaces/${projectId}/move_chat_session`,
+    `/api/workspaces/${workspaceId}/move_chat_session`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -337,7 +337,7 @@ export async function moveChatSession(
   return response.ok;
 }
 
-export async function removeChatSessionFromProject(
+export async function removeChatSessionFromWorkspace(
   chatSessionId: string
 ): Promise<boolean> {
   const response = await fetch(`/api/workspaces/remove_chat_session`, {
@@ -346,7 +346,7 @@ export async function removeChatSessionFromProject(
     body: JSON.stringify({ chat_session_id: chatSessionId }),
   });
   if (!response.ok) {
-    handleRequestError("Remove chat session from project", response);
+    handleRequestError("Remove chat session from workspace", response);
   }
   return response.ok;
 }

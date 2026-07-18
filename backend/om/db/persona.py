@@ -37,7 +37,7 @@ from om.db.models import StarterMessage
 from om.db.models import Tool
 from om.db.models import User
 from om.db.models import User__UserGroup
-from om.db.models import UserFile
+from om.db.models import KnowledgeFile
 from om.db.models import UserGroup
 from om.db.notification import create_notification
 from om.server.features.persona.models import FullPersonaSnapshot
@@ -271,14 +271,14 @@ def create_update_persona(
                 raise ValueError("Only admins can make a default persona")
 
         # Convert incoming string UUIDs to UUID objects for DB operations
-        converted_user_file_ids = None
-        if create_persona_request.user_file_ids is not None:
+        converted_knowledge_file_ids = None
+        if create_persona_request.knowledge_file_ids is not None:
             try:
-                converted_user_file_ids = [
-                    UUID(str_id) for str_id in create_persona_request.user_file_ids
+                converted_knowledge_file_ids = [
+                    UUID(str_id) for str_id in create_persona_request.knowledge_file_ids
                 ]
             except Exception:
-                raise ValueError("Invalid user_file_ids; must be UUID strings")
+                raise ValueError("Invalid knowledge_file_ids; must be UUID strings")
 
         persona = upsert_persona(
             persona_id=persona_id,
@@ -308,7 +308,7 @@ def create_update_persona(
             llm_relevance_filter=create_persona_request.llm_relevance_filter,
             llm_filter_extraction=create_persona_request.llm_filter_extraction,
             is_default_persona=create_persona_request.is_default_persona,
-            user_file_ids=converted_user_file_ids,
+            knowledge_file_ids=converted_knowledge_file_ids,
             commit=False,
             hierarchy_node_ids=create_persona_request.hierarchy_node_ids,
             document_ids=create_persona_request.document_ids,
@@ -458,7 +458,7 @@ def get_persona_snapshots_for_user(
         selectinload(Persona.labels),
         selectinload(Persona.document_sets),
         selectinload(Persona.user),
-        selectinload(Persona.user_files),
+        selectinload(Persona.knowledge_files),
         selectinload(Persona.users),
         selectinload(Persona.groups),
     )
@@ -622,7 +622,7 @@ def get_persona_snapshots_paginated(
         selectinload(Persona.labels),
         selectinload(Persona.document_sets),
         selectinload(Persona.user),
-        selectinload(Persona.user_files),
+        selectinload(Persona.knowledge_files),
         selectinload(Persona.users),
         selectinload(Persona.groups),
     )
@@ -872,7 +872,7 @@ def upsert_persona(
     builtin_persona: bool = False,
     is_default_persona: bool | None = None,
     label_ids: list[int] | None = None,
-    user_file_ids: list[UUID] | None = None,
+    knowledge_file_ids: list[UUID] | None = None,
     hierarchy_node_ids: list[int] | None = None,
     document_ids: list[str] | None = None,
     chunks_above: int = CONTEXT_CHUNKS_ABOVE,
@@ -929,14 +929,14 @@ def upsert_persona(
         if not document_sets and document_set_ids:
             raise ValueError("document_sets not found")
 
-    # Fetch and attach user_files by IDs
-    user_files = None
-    if user_file_ids is not None:
-        user_files = (
-            db_session.query(UserFile).filter(UserFile.id.in_(user_file_ids)).all()
+    # Fetch and attach knowledge_files by IDs
+    knowledge_files = None
+    if knowledge_file_ids is not None:
+        knowledge_files = (
+            db_session.query(KnowledgeFile).filter(KnowledgeFile.id.in_(knowledge_file_ids)).all()
         )
-        if not user_files and user_file_ids:
-            raise ValueError("user_files not found")
+        if not knowledge_files and knowledge_file_ids:
+            raise ValueError("knowledge_files not found")
 
     labels = None
     if label_ids is not None:
@@ -1031,9 +1031,9 @@ def upsert_persona(
         if tools is not None:
             existing_persona.tools = tools or []
 
-        if user_file_ids is not None:
-            existing_persona.user_files.clear()
-            existing_persona.user_files = user_files or []
+        if knowledge_file_ids is not None:
+            existing_persona.knowledge_files.clear()
+            existing_persona.knowledge_files = knowledge_files or []
 
         if hierarchy_node_ids is not None:
             existing_persona.hierarchy_nodes.clear()
@@ -1082,7 +1082,7 @@ def upsert_persona(
             is_default_persona=(
                 is_default_persona if is_default_persona is not None else False
             ),
-            user_files=user_files or [],
+            knowledge_files=knowledge_files or [],
             labels=labels or [],
             hierarchy_nodes=hierarchy_nodes or [],
             attached_documents=attached_documents or [],

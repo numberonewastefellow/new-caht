@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { swatchForId } from "@/app/app/components/projects/workspace-v2/workspaceTheme";
+import { swatchForId } from "@/app/app/components/workspaces/workspace-v2/workspaceTheme";
 
 /**
  * The colored, rounded-square workflow glyph (gradient background + white node

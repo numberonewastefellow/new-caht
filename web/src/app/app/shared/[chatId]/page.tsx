@@ -23,7 +23,7 @@ export function constructMiniFiedPersona(name: string, id: number): Persona {
     is_default_persona: false,
     users: [],
     groups: [],
-    user_file_ids: [],
+    knowledge_file_ids: [],
     system_prompt: null,
     task_prompt: null,
     datetime_aware: true,

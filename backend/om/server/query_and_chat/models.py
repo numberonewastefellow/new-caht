@@ -65,7 +65,7 @@ class ChatSessionCreationRequest(BaseModel):
     # If not specified, use Onyx default persona
     persona_id: int = 0
     description: str | None = None
-    project_id: int | None = None
+    workspace_id: int | None = None
 
 
 class ChatFeedbackRequest(BaseModel):

@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { cn } from "@/lib/utils";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import useChatSessions from "@/hooks/useChatSessions";
 import useAppFocus from "@/hooks/useAppFocus";
 import { useWorkspacePanelStore } from "@/app/app/stores/useWorkspacePanelStore";
@@ -46,28 +46,28 @@ export default function WorkspaceTopBanner({
   onOpenMobileSidebar,
 }: WorkspaceTopBannerProps) {
   const {
-    currentProjectId,
-    currentProjectDetails,
-    projects,
-    allCurrentProjectFiles,
-  } = useProjectsContext();
+    currentWorkspaceId,
+    currentWorkspaceDetails,
+    workspaces,
+    allCurrentWorkspaceFiles,
+  } = useWorkspacesContext();
   const { currentChatSession } = useChatSessions();
   const appFocus = useAppFocus();
   const { open: panelOpen, toggle: togglePanel } = useWorkspacePanelStore();
 
   const chatMode = appFocus.isChat();
 
-  // Use the chat's workspace id even before the URL-sync sets ?projectId=, so
-  // the banner appears immediately; name/glyph fall back to the projects list.
-  const workspaceId = currentChatSession?.project_id ?? currentProjectId;
-  const project =
-    currentProjectDetails?.project ??
-    projects.find((p) => p.id === workspaceId);
-  const workspaceName = project?.name || "Workspace";
-  const fileCount = allCurrentProjectFiles.length;
-  const chatCount = project?.chat_sessions?.length ?? 0;
+  // Use the chat's workspace id even before the URL-sync sets ?workspaceId=, so
+  // the banner appears immediately; name/glyph fall back to the workspaces list.
+  const workspaceId = currentChatSession?.workspace_id ?? currentWorkspaceId;
+  const workspace =
+    currentWorkspaceDetails?.workspace ??
+    workspaces.find((p) => p.id === workspaceId);
+  const workspaceName = workspace?.name || "Workspace";
+  const fileCount = allCurrentWorkspaceFiles.length;
+  const chatCount = workspace?.chat_sessions?.length ?? 0;
   const instructionsActive = Boolean(
-    currentProjectDetails?.project?.instructions?.trim()
+    currentWorkspaceDetails?.workspace?.instructions?.trim()
   );
   const modelName = currentChatSession?.current_alternate_model;
 

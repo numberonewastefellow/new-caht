@@ -9,7 +9,7 @@ import { SEARCH_PARAM_NAMES } from "@/app/app/services/searchParams";
 import { usePathname, useSearchParams } from "next/navigation";
 
 export type AppFocusType =
-  | { type: "agent" | "project" | "chat"; id: string }
+  | { type: "agent" | "workspace" | "chat"; id: string }
   | "new-session"
   | "more-agents"
   | "workspaces-dashboard"
@@ -24,8 +24,8 @@ export class AppFocus {
     return typeof this.value === "object" && this.value.type === "agent";
   }
 
-  isProject(): boolean {
-    return typeof this.value === "object" && this.value.type === "project";
+  isWorkspace(): boolean {
+    return typeof this.value === "object" && this.value.type === "workspace";
   }
 
   isChat(): boolean {
@@ -62,7 +62,7 @@ export class AppFocus {
 
   getType():
     | "agent"
-    | "project"
+    | "workspace"
     | "chat"
     | "shared-chat"
     | "new-session"
@@ -103,15 +103,15 @@ export default function useAppFocus(): AppFocus {
     return new AppFocus("workflows-gallery");
   }
 
-  // Check search params for chat, agent, or project
+  // Check search params for chat, agent, or workspace
   const chatId = searchParams.get(SEARCH_PARAM_NAMES.CHAT_ID);
   if (chatId) return new AppFocus({ type: "chat", id: chatId });
 
   const agentId = searchParams.get(SEARCH_PARAM_NAMES.PERSONA_ID);
   if (agentId) return new AppFocus({ type: "agent", id: agentId });
 
-  const projectId = searchParams.get(SEARCH_PARAM_NAMES.PROJECT_ID);
-  if (projectId) return new AppFocus({ type: "project", id: projectId });
+  const workspaceId = searchParams.get(SEARCH_PARAM_NAMES.PROJECT_ID);
+  if (workspaceId) return new AppFocus({ type: "workspace", id: workspaceId });
 
   // No search params means we're on a new session
   return new AppFocus("new-session");

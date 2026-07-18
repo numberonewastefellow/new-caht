@@ -1,9 +1,9 @@
 import useSWR from "swr";
-import { Project } from "@/app/app/projects/projectsService";
+import { Workspace } from "@/app/app/workspaces/workspacesService";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 
-export function useProjects() {
-  const { data, error, mutate } = useSWR<Project[]>(
+export function useWorkspaces() {
+  const { data, error, mutate } = useSWR<Workspace[]>(
     "/api/workspaces",
     errorHandlingFetcher,
     {
@@ -13,9 +13,9 @@ export function useProjects() {
   );
 
   return {
-    projects: data ?? [],
+    workspaces: data ?? [],
     isLoading: !error && !data,
     error,
-    refreshProjects: mutate,
+    refreshWorkspaces: mutate,
   };
 }

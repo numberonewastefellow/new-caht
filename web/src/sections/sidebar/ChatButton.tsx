@@ -11,11 +11,11 @@ import { cn, noProp } from "@/lib/utils";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import { useAppRouter } from "@/hooks/appNavigation";
 import {
-  Project,
-  removeChatSessionFromProject,
-  createProject as createProjectService,
-} from "@/app/app/projects/projectsService";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+  Workspace,
+  removeChatSessionFromWorkspace,
+  createWorkspace as createWorkspaceService,
+} from "@/app/app/workspaces/workspacesService";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import MoveCustomAgentChatModal from "@/components/modals/MoveCustomAgentChatModal";
 import { UNNAMED_CHAT } from "@/lib/constants";
 import ShareChatSessionModal from "@/sections/modals/ShareChatSessionModal";
@@ -97,12 +97,12 @@ export function PopoverSearchInput({
 
 export interface ChatButtonProps {
   chatSession: ChatSession;
-  project?: Project;
+  workspace?: Workspace;
   draggable?: boolean;
 }
 
 const ChatButton = memo(
-  ({ chatSession, project, draggable = false }: ChatButtonProps) => {
+  ({ chatSession, workspace, draggable = false }: ChatButtonProps) => {
     const route = useAppRouter();
     const activeSidebarTab = useAppFocus();
     const active = useMemo(
@@ -124,21 +124,21 @@ const ChatButton = memo(
     const [popoverItems, setPopoverItems] = useState<React.ReactNode[]>([]);
     const { refreshChatSessions } = useChatSessions();
     const {
-      refreshCurrentProjectDetails,
-      projects,
-      fetchProjects,
-      currentProjectId,
-      createProject,
-    } = useProjectsContext();
+      refreshCurrentWorkspaceDetails,
+      workspaces,
+      fetchWorkspaces,
+      currentWorkspaceId,
+      createWorkspace,
+    } = useWorkspacesContext();
     const { agents } = useAgents();
     const { pinnedAgents, togglePinnedAgent } = usePinnedAgents();
     const [popoverOpen, setPopoverOpen] = useState(false);
-    const [pendingMoveProjectId, setPendingMoveProjectId] = useState<
+    const [pendingMoveWorkspaceId, setPendingMoveWorkspaceId] = useState<
       number | null
     >(null);
     const [showMoveCustomAgentModal, setShowMoveCustomAgentModal] =
       useState(false);
-    const [navigateAfterMoveProjectId, setNavigateAfterMoveProjectId] =
+    const [navigateAfterMoveWorkspaceId, setNavigateAfterMoveWorkspaceId] =
       useState<number | null>(null);
 
     // Drag and drop setup for chat sessions
@@ -149,7 +149,7 @@ const ChatButton = memo(
         data: {
           type: DRAG_TYPES.CHAT,
           chatSession,
-          projectId: project?.id,
+          workspaceId: workspace?.id,
         },
         disabled: !draggable || renaming,
       });
@@ -179,13 +179,13 @@ const ChatButton = memo(
       }
     }, [chatSession.name, mounted]);
 
-    const filteredProjects = useMemo(() => {
-      if (!searchTerm) return projects;
+    const filteredWorkspaces = useMemo(() => {
+      if (!searchTerm) return workspaces;
       const term = searchTerm.toLowerCase();
-      return projects.filter((project) =>
-        project.name.toLowerCase().includes(term)
+      return workspaces.filter((workspace) =>
+        workspace.name.toLowerCase().includes(term)
       );
-    }, [projects, searchTerm]);
+    }, [workspaces, searchTerm]);
 
     useEffect(() => {
       if (!showMoveOptions) {
@@ -211,13 +211,13 @@ const ChatButton = memo(
           >
             Move to Workspace
           </LineItem>,
-          project && (
+          workspace && (
             <LineItem
               key="remove"
               icon={SvgFolder}
-              onClick={noProp(() => handleRemoveFromProject())}
+              onClick={noProp(() => handleRemoveFromWorkspace())}
             >
-              {`Remove from ${project.name}`}
+              {`Remove from ${workspace.name}`}
             </LineItem>
           ),
           null,
@@ -232,8 +232,8 @@ const ChatButton = memo(
         ];
         setPopoverItems(popoverItems);
       } else {
-        const availableProjects = filteredProjects.filter(
-          (candidateProject) => candidateProject.id !== project?.id
+        const availableWorkspaces = filteredWorkspaces.filter(
+          (candidateWorkspace) => candidateWorkspace.id !== workspace?.id
         );
 
         const popoverItems = [
@@ -242,24 +242,24 @@ const ChatButton = memo(
             setShowMoveOptions={setShowMoveOptions}
             onSearch={setSearchTerm}
           />,
-          ...availableProjects.map((targetProject) => (
+          ...availableWorkspaces.map((targetWorkspace) => (
             <LineItem
-              key={targetProject.id}
+              key={targetWorkspace.id}
               icon={SvgFolder}
-              onClick={noProp(() => handleChatMove(targetProject))}
+              onClick={noProp(() => handleChatMove(targetWorkspace))}
             >
-              {targetProject.name}
+              {targetWorkspace.name}
             </LineItem>
           )),
-          // Show "Create New Project" option when no projects match the search
-          ...(availableProjects.length === 0 && searchTerm.trim() !== ""
+          // Show "Create New Workspace" option when no workspaces match the search
+          ...(availableWorkspaces.length === 0 && searchTerm.trim() !== ""
             ? [
                 null,
                 <LineItem
                   key="create-new"
                   icon={SvgFolderPlus}
                   onClick={noProp(() =>
-                    handleCreateProjectAndMove(searchTerm.trim())
+                    handleCreateWorkspaceAndMove(searchTerm.trim())
                   )}
                 >
                   {`Create ${searchTerm.trim()}`}
@@ -271,15 +271,15 @@ const ChatButton = memo(
       }
     }, [
       showMoveOptions,
-      filteredProjects,
+      filteredWorkspaces,
       refreshChatSessions,
-      fetchProjects,
-      currentProjectId,
-      refreshCurrentProjectDetails,
-      project,
+      fetchWorkspaces,
+      currentWorkspaceId,
+      refreshCurrentWorkspaceDetails,
+      workspace,
       chatSession.id,
       searchTerm,
-      createProject,
+      createWorkspace,
     ]);
 
     // Pin the chat's agent when clicking on the conversation
@@ -303,13 +303,13 @@ const ChatButton = memo(
       try {
         await deleteChatSession(chatSession.id);
 
-        if (project) {
-          await fetchProjects();
-          await refreshCurrentProjectDetails();
+        if (workspace) {
+          await fetchWorkspaces();
+          await refreshCurrentWorkspaceDetails();
 
           // Only route if the deleted chat is the currently opened chat session
           if (active) {
-            route({ projectId: project.id });
+            route({ workspaceId: workspace.id });
           }
         }
         await refreshChatSessions();
@@ -319,15 +319,15 @@ const ChatButton = memo(
       }
     }
 
-    async function performMove(targetProjectId: number) {
+    async function performMove(targetWorkspaceId: number) {
       try {
         await handleMoveOperation({
           chatSession,
-          targetProjectId,
+          targetWorkspaceId,
           refreshChatSessions,
-          refreshCurrentProjectDetails,
-          fetchProjects,
-          currentProjectId,
+          refreshCurrentWorkspaceDetails,
+          fetchWorkspaces,
+          currentWorkspaceId,
         });
         setShowMoveOptions(false);
         setSearchTerm("");
@@ -337,59 +337,59 @@ const ChatButton = memo(
       }
     }
 
-    async function handleChatMove(targetProject: Project) {
+    async function handleChatMove(targetWorkspace: Workspace) {
       if (shouldShowMoveModal(chatSession)) {
-        setPendingMoveProjectId(targetProject.id);
+        setPendingMoveWorkspaceId(targetWorkspace.id);
         setShowMoveCustomAgentModal(true);
         return;
       }
-      await performMove(targetProject.id);
+      await performMove(targetWorkspace.id);
     }
 
-    async function handleRemoveFromProject() {
+    async function handleRemoveFromWorkspace() {
       try {
-        await removeChatSessionFromProject(chatSession.id);
-        const projectRefreshPromise = currentProjectId
-          ? refreshCurrentProjectDetails()
-          : fetchProjects();
-        await Promise.all([refreshChatSessions(), projectRefreshPromise]);
+        await removeChatSessionFromWorkspace(chatSession.id);
+        const workspaceRefreshPromise = currentWorkspaceId
+          ? refreshCurrentWorkspaceDetails()
+          : fetchWorkspaces();
+        await Promise.all([refreshChatSessions(), workspaceRefreshPromise]);
         setShowMoveOptions(false);
         setSearchTerm("");
       } catch (error) {
-        console.error("Failed to remove chat from project:", error);
+        console.error("Failed to remove chat from workspace:", error);
       }
     }
 
-    async function handleCreateProjectAndMove(projectName: string) {
+    async function handleCreateWorkspaceAndMove(workspaceName: string) {
       try {
-        // Create the new project using the service directly (without navigation)
-        const newProject = await createProjectService(projectName);
+        // Create the new workspace using the service directly (without navigation)
+        const newWorkspace = await createWorkspaceService(workspaceName);
 
-        // Refresh projects list to include the new project
-        await fetchProjects();
+        // Refresh workspaces list to include the new workspace
+        await fetchWorkspaces();
 
-        // Mark that we want to navigate to this project after moving
-        setNavigateAfterMoveProjectId(newProject.id);
+        // Mark that we want to navigate to this workspace after moving
+        setNavigateAfterMoveWorkspaceId(newWorkspace.id);
 
         // Check if we should show the move modal for custom agents
         if (shouldShowMoveModal(chatSession)) {
-          setPendingMoveProjectId(newProject.id);
+          setPendingMoveWorkspaceId(newWorkspace.id);
           setShowMoveCustomAgentModal(true);
           setShowMoveOptions(false);
           setSearchTerm("");
           return;
         }
 
-        // Move the chat to the newly created project
-        await performMove(newProject.id);
+        // Move the chat to the newly created workspace
+        await performMove(newWorkspace.id);
 
-        // Navigate to the new project to see the chat
-        route({ projectId: newProject.id });
-        setNavigateAfterMoveProjectId(null);
+        // Navigate to the new workspace to see the chat
+        route({ workspaceId: newWorkspace.id });
+        setNavigateAfterMoveWorkspaceId(null);
       } catch (error) {
-        console.error("Failed to create project and move chat:", error);
+        console.error("Failed to create workspace and move chat:", error);
         showErrorNotification("Failed to create workspace. Please try again.");
-        setNavigateAfterMoveProjectId(null);
+        setNavigateAfterMoveWorkspaceId(null);
       }
     }
 
@@ -431,7 +431,7 @@ const ChatButton = memo(
             transient={active}
             rightChildren={rightMenu}
             focused={renaming}
-            nested={!!project}
+            nested={!!workspace}
           >
             {renaming ? (
               <ButtonRenaming
@@ -475,8 +475,8 @@ const ChatButton = memo(
           <MoveCustomAgentChatModal
             onCancel={() => {
               setShowMoveCustomAgentModal(false);
-              setPendingMoveProjectId(null);
-              setNavigateAfterMoveProjectId(null);
+              setPendingMoveWorkspaceId(null);
+              setNavigateAfterMoveWorkspaceId(null);
             }}
             onConfirm={async (doNotShowAgain: boolean) => {
               if (doNotShowAgain && typeof window !== "undefined") {
@@ -485,16 +485,16 @@ const ChatButton = memo(
                   "true"
                 );
               }
-              const target = pendingMoveProjectId;
-              const shouldNavigate = navigateAfterMoveProjectId;
+              const target = pendingMoveWorkspaceId;
+              const shouldNavigate = navigateAfterMoveWorkspaceId;
               setShowMoveCustomAgentModal(false);
-              setPendingMoveProjectId(null);
+              setPendingMoveWorkspaceId(null);
               if (target != null) {
                 await performMove(target);
-                // Navigate if this was triggered by creating a new project
+                // Navigate if this was triggered by creating a new workspace
                 if (shouldNavigate != null) {
-                  route({ projectId: shouldNavigate });
-                  setNavigateAfterMoveProjectId(null);
+                  route({ workspaceId: shouldNavigate });
+                  setNavigateAfterMoveWorkspaceId(null);
                 }
               }
             }}

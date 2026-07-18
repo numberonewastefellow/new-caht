@@ -62,16 +62,16 @@ logger = setup_logger()
 def _validate_user_knowledge_enabled(
     persona_upsert_request: PersonaUpsertRequest, action: str
 ) -> None:
-    """Check if user knowledge is enabled when user files/projects are provided."""
+    """Check if user knowledge is enabled when user files/workspaces are provided."""
     settings = load_settings()
     if not settings.user_knowledge_enabled:
         # Only user files are supported going forward; keep getattr for backward compat
-        if persona_upsert_request.user_file_ids or getattr(
-            persona_upsert_request, "user_project_ids", None
+        if persona_upsert_request.knowledge_file_ids or getattr(
+            persona_upsert_request, "user_workspace_ids", None
         ):
             raise HTTPException(
                 status_code=400,
-                detail=f"User Knowledge is disabled. Cannot {action} assistant with user files or projects.",
+                detail=f"User Knowledge is disabled. Cannot {action} assistant with user files or workspaces.",
             )
 
 
@@ -81,7 +81,7 @@ def _validate_vector_db_knowledge(
     """Reject connector-sourced knowledge types when vector DB is disabled.
 
     document_sets, hierarchy_nodes, and attached_documents all depend on
-    the vector DB for search filtering. user_files are still allowed because
+    the vector DB for search filtering. knowledge_files are still allowed because
     they use the FileReaderTool path instead.
     """
     if not DISABLE_VECTOR_DB:

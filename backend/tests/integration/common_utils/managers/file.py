@@ -51,15 +51,15 @@ class FileManager:
             )
 
         response_json = response.json()
-        # Convert UserFileSnapshot to FileDescriptor format
+        # Convert KnowledgeFileSnapshot to FileDescriptor format
         file_descriptors: List[FileDescriptor] = []
-        for user_file in response_json.get("user_files", []):
+        for knowledge_file in response_json.get("knowledge_files", []):
             file_descriptors.append(
                 {
-                    "id": user_file["file_id"],
-                    "type": user_file["chat_file_type"],
-                    "name": user_file["name"],
-                    "user_file_id": str(user_file["id"]),
+                    "id": knowledge_file["file_id"],
+                    "type": knowledge_file["chat_file_type"],
+                    "name": knowledge_file["name"],
+                    "knowledge_file_id": str(knowledge_file["id"]),
                 }
             )
         return file_descriptors, ""

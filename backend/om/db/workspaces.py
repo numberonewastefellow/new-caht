@@ -15,13 +15,13 @@ from om.configs.constants import FileOrigin
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryQueues
 from om.configs.constants import OmCeleryTask
-from om.db.models import Project__UserFile
+from om.db.models import Workspace__KnowledgeFile
 from om.db.models import User
-from om.db.models import UserFile
-from om.db.models import UserProject
+from om.db.models import KnowledgeFile
+from om.db.models import Workspace
 from om.server.documents.connector import upload_files
-from om.server.features.projects.projects_file_utils import categorize_uploaded_files
-from om.server.features.projects.projects_file_utils import RejectedFile
+from om.server.features.workspaces.workspaces_file_utils import categorize_uploaded_files
+from om.server.features.workspaces.workspaces_file_utils import RejectedFile
 from om.utils.logger import setup_logger
 from shared_configs.contextvars import get_current_tenant_id
 
@@ -29,7 +29,7 @@ logger = setup_logger()
 
 
 class CategorizedFilesResult(BaseModel):
-    user_files: list[UserFile]
+    knowledge_files: list[KnowledgeFile]
     rejected_files: list[RejectedFile]
     id_to_temp_id: dict[str, str]
     # Allow SQLAlchemy ORM models inside this result container
@@ -41,9 +41,9 @@ def build_hashed_file_key(file: UploadFile) -> str:
     return f"{file.size}|{name_prefix}"
 
 
-def create_user_files(
+def create_knowledge_files(
     files: List[UploadFile],
-    project_id: int | None,
+    workspace_id: int | None,
     user: User,
     db_session: Session,
     link_url: str | None = None,
@@ -55,7 +55,7 @@ def create_user_files(
     # NOTE: At the moment, zip metadata is not used for user files.
     # Should revisit to decide whether this should be a feature.
     upload_response = upload_files(categorized_files.acceptable, FileOrigin.USER_FILE)
-    user_files = []
+    knowledge_files = []
     rejected_files = categorized_files.rejected
     id_to_temp_id: dict[str, str] = {}
     # Pair returned storage paths with the same set of acceptable files we uploaded
@@ -68,7 +68,7 @@ def create_user_files(
         )
         if new_temp_id is not None:
             id_to_temp_id[str(new_id)] = new_temp_id
-        new_file = UserFile(
+        new_file = KnowledgeFile(
             id=new_id,
             user_id=user.id,
             file_id=file_path,
@@ -81,44 +81,44 @@ def create_user_files(
             file_type=file.content_type,
             last_accessed_at=datetime.datetime.now(datetime.timezone.utc),
         )
-        # Persist the UserFile first to satisfy FK constraints for association table
+        # Persist the KnowledgeFile first to satisfy FK constraints for association table
         db_session.add(new_file)
         db_session.flush()
-        if project_id:
-            project_to_user_file = Project__UserFile(
-                project_id=project_id,
-                user_file_id=new_file.id,
+        if workspace_id:
+            workspace_to_user_file = Workspace__KnowledgeFile(
+                workspace_id=workspace_id,
+                knowledge_file_id=new_file.id,
             )
-            db_session.add(project_to_user_file)
-        user_files.append(new_file)
+            db_session.add(workspace_to_user_file)
+        knowledge_files.append(new_file)
     db_session.commit()
     return CategorizedFilesResult(
-        user_files=user_files,
+        knowledge_files=knowledge_files,
         rejected_files=rejected_files,
         id_to_temp_id=id_to_temp_id,
     )
 
 
-def upload_files_to_user_files_with_indexing(
+def upload_files_to_knowledge_files_with_indexing(
     files: List[UploadFile],
-    project_id: int | None,
+    workspace_id: int | None,
     user: User,
     temp_id_map: dict[str, str] | None,
     db_session: Session,
 ) -> CategorizedFilesResult:
-    # Validate workspace ownership if a project_id is provided
-    if project_id is not None and user is not None:
-        if not check_project_ownership(project_id, user.id, db_session):
+    # Validate workspace ownership if a workspace_id is provided
+    if workspace_id is not None and user is not None:
+        if not check_workspace_ownership(workspace_id, user.id, db_session):
             raise HTTPException(status_code=404, detail="Workspace not found")
 
-    categorized_files_result = create_user_files(
+    categorized_files_result = create_knowledge_files(
         files,
-        project_id,
+        workspace_id,
         user,
         db_session,
         temp_id_map=temp_id_map,
     )
-    user_files = categorized_files_result.user_files
+    knowledge_files = categorized_files_result.knowledge_files
     rejected_files = categorized_files_result.rejected_files
     id_to_temp_id = categorized_files_result.id_to_temp_id
     # Trigger per-file processing immediately for the current tenant
@@ -127,96 +127,96 @@ def upload_files_to_user_files_with_indexing(
         logger.warning(
             f"File {rejected_file.filename} rejected for {rejected_file.reason}"
         )
-    for user_file in user_files:
+    for knowledge_file in knowledge_files:
         task = client_app.send_task(
             OmCeleryTask.PROCESS_SINGLE_USER_FILE,
-            kwargs={"user_file_id": user_file.id, "tenant_id": tenant_id},
+            kwargs={"knowledge_file_id": knowledge_file.id, "tenant_id": tenant_id},
             queue=OmCeleryQueues.USER_FILE_PROCESSING,
             priority=OmCeleryPriority.HIGH,
         )
         logger.info(
-            f"Triggered indexing for user_file_id={user_file.id} with task_id={task.id}"
+            f"Triggered indexing for knowledge_file_id={knowledge_file.id} with task_id={task.id}"
         )
 
     return CategorizedFilesResult(
-        user_files=user_files,
+        knowledge_files=knowledge_files,
         rejected_files=rejected_files,
         id_to_temp_id=id_to_temp_id,
     )
 
 
-def check_project_ownership(
-    project_id: int, user_id: UUID | None, db_session: Session
+def check_workspace_ownership(
+    workspace_id: int, user_id: UUID | None, db_session: Session
 ) -> bool:
     # In no-auth mode, all workspaces are accessible
     if user_id is None:
         # Verify workspace exists
         return (
-            db_session.query(UserProject).filter(UserProject.id == project_id).first()
+            db_session.query(Workspace).filter(Workspace.id == workspace_id).first()
             is not None
         )
 
     return (
-        db_session.query(UserProject)
-        .filter(UserProject.id == project_id, UserProject.user_id == user_id)
+        db_session.query(Workspace)
+        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
         .first()
         is not None
     )
 
 
-def get_user_files_from_project(
-    project_id: int, user_id: UUID | None, db_session: Session
-) -> list[UserFile]:
+def get_knowledge_files_from_workspace(
+    workspace_id: int, user_id: UUID | None, db_session: Session
+) -> list[KnowledgeFile]:
     # First check if the user owns the workspace
-    if not check_project_ownership(project_id, user_id, db_session):
+    if not check_workspace_ownership(workspace_id, user_id, db_session):
         return []
 
     return (
-        db_session.query(UserFile)
-        .join(Project__UserFile)
-        .filter(Project__UserFile.project_id == project_id)
+        db_session.query(KnowledgeFile)
+        .join(Workspace__KnowledgeFile)
+        .filter(Workspace__KnowledgeFile.workspace_id == workspace_id)
         .all()
     )
 
 
-def get_project_instructions(db_session: Session, project_id: int | None) -> str | None:
+def get_workspace_instructions(db_session: Session, workspace_id: int | None) -> str | None:
     """Return the workspace's instruction text from the workspace, else None.
 
     Safe helper that swallows DB errors and returns None on any failure.
     """
-    if not project_id:
+    if not workspace_id:
         return None
     try:
-        project = (
-            db_session.query(UserProject)
-            .filter(UserProject.id == project_id)
+        workspace = (
+            db_session.query(Workspace)
+            .filter(Workspace.id == workspace_id)
             .one_or_none()
         )
-        if not project or not project.instructions:
+        if not workspace or not workspace.workspace_instructions:
             return None
-        instructions = project.instructions.strip()
+        instructions = workspace.workspace_instructions.strip()
         return instructions or None
     except Exception:
         return None
 
 
-def get_project_token_count(
-    project_id: int | None,
+def get_workspace_token_count(
+    workspace_id: int | None,
     user_id: UUID | None,
     db_session: Session,
 ) -> int:
     """Return sum of token_count for all user files in the given workspace.
 
-    If project_id is None, returns 0.
+    If workspace_id is None, returns 0.
     """
-    if project_id is None:
+    if workspace_id is None:
         return 0
 
     total_tokens = (
-        db_session.query(func.coalesce(func.sum(UserFile.token_count), 0))
+        db_session.query(func.coalesce(func.sum(KnowledgeFile.token_count), 0))
         .filter(
-            UserFile.user_id == user_id,
-            UserFile.projects.any(id=project_id),
+            KnowledgeFile.user_id == user_id,
+            KnowledgeFile.workspaces.any(id=workspace_id),
         )
         .scalar()
         or 0

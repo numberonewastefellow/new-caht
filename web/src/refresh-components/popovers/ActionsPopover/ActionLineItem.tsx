@@ -13,7 +13,7 @@ import { Button } from "@opal/components";
 import { cn, noProp } from "@/lib/utils";
 import type { IconProps } from "@opal/types";
 import { SvgChevronRight, SvgKey, SvgSettings } from "@opal/icons";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import EnabledCount from "@/refresh-components/EnabledCount";
@@ -67,32 +67,32 @@ export default function ActionLineItem({
   sourceCounts,
 }: ActionItemProps) {
   const router = useRouter();
-  const { currentProjectId } = useProjectsContext();
+  const { currentWorkspaceId } = useWorkspacesContext();
 
   const Icon = ColorfulIcon ?? (tool ? getIconForAction(tool) : ProvidedIcon!);
   const toolName = tool?.name || providedLabel || "";
 
   let label = tool ? tool.display_name || tool.name : providedLabel!;
-  if (!!currentProjectId && tool?.in_code_tool_id === SEARCH_TOOL_ID) {
-    label = "Project Search";
+  if (!!currentWorkspaceId && tool?.in_code_tool_id === SEARCH_TOOL_ID) {
+    label = "Workspace Search";
   }
 
   const isSearchToolWithNoConnectors =
-    !currentProjectId &&
+    !currentWorkspaceId &&
     tool?.in_code_tool_id === SEARCH_TOOL_ID &&
     hasNoConnectors;
 
   const isSearchToolWithNoKnowledgeSources =
-    !currentProjectId &&
+    !currentWorkspaceId &&
     tool?.in_code_tool_id === SEARCH_TOOL_ID &&
     hasNoKnowledgeSources;
 
-  const isSearchToolAndNotInProject =
-    tool?.in_code_tool_id === SEARCH_TOOL_ID && !currentProjectId;
+  const isSearchToolAndNotInWorkspace =
+    tool?.in_code_tool_id === SEARCH_TOOL_ID && !currentWorkspaceId;
 
   // Show source count when: internal search is pinned, has some (but not all) sources enabled
   const shouldShowSourceCount =
-    isSearchToolAndNotInProject &&
+    isSearchToolAndNotInWorkspace &&
     !isSearchToolWithNoConnectors &&
     isForced &&
     sourceCounts &&
@@ -121,7 +121,7 @@ export default function ActionLineItem({
             }
             if (disabled) onToggle();
             onForceToggle();
-            if (isSearchToolAndNotInProject && !isForced)
+            if (isSearchToolAndNotInWorkspace && !isForced)
               onSourceManagementOpen?.();
             else onClose?.();
           }}
@@ -198,7 +198,7 @@ export default function ActionLineItem({
                 </span>
               )}
 
-              {isSearchToolAndNotInProject &&
+              {isSearchToolAndNotInWorkspace &&
                 !isSearchToolWithNoKnowledgeSources && (
                   <IconButton
                     icon={

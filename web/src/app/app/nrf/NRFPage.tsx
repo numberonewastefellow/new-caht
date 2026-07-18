@@ -17,7 +17,7 @@ import { SettingsPanel } from "@/app/components/nrf/SettingsPanel";
 import LoginPage from "@/app/auth/login/LoginPage";
 import { sendSetDefaultNewTabMessage } from "@/lib/extension/utils";
 import { useAgents } from "@/hooks/useAgents";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import useDeepResearchToggle from "@/hooks/useDeepResearchToggle";
 import useChatController from "@/hooks/useChatController";
 import useChatSessionController from "@/hooks/useChatSessionController";
@@ -80,13 +80,13 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
   // Get agents for assistant selection
   const { agents: availableAssistants } = useAgents();
 
-  // Projects context for file handling
+  // Workspaces context for file handling
   const {
     currentMessageFiles,
     setCurrentMessageFiles,
     lastFailedFiles,
     clearLastFailedFiles,
-  } = useProjectsContext();
+  } = useWorkspacesContext();
 
   // Show toast if any files failed
   useEffect(() => {

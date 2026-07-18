@@ -20,7 +20,7 @@ import useChatSessions from "./useChatSessions";
  * tools, and display settings. Use this for listing agents in UI components like
  * sidebars, dropdowns, or agent selection interfaces.
  *
- * For full agent details including user_file_ids, groups, and advanced settings,
+ * For full agent details including knowledge_file_ids, groups, and advanced settings,
  * use `useAgent(personaId)` instead.
  *
  * @returns Object containing:
@@ -55,7 +55,7 @@ export function useAgents() {
 /**
  * Fetches a single agent (persona) by ID with full details.
  *
- * Returns complete agent information including user_file_ids, groups, system prompts,
+ * Returns complete agent information including knowledge_file_ids, groups, system prompts,
  * and all configuration settings. Use this when you need detailed agent data for
  * editing, configuration, or displaying full agent details.
  *

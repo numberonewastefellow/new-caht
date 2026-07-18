@@ -942,7 +942,7 @@ from om.db.models import Persona
 from om.db.tools import get_builtin_tool
 from om.file_store.models import ChatFileType
 from om.file_store.models import FileDescriptor
-from om.server.features.projects.api import upload_user_files
+from om.server.features.workspaces.api import upload_user_files
 from om.server.query_and_chat.models import SendMessageRequest
 from om.tools.tool_implementations.python.python_tool import PythonTool
 from tests.external_dependency_unit.answer.stream_test_utils import create_chat_session
@@ -1118,7 +1118,7 @@ def test_code_interpreter_receives_chat_files(
         "id": user_file.file_id,
         "type": ChatFileType.CSV,
         "name": "data.csv",
-        "user_file_id": str(user_file.id),
+        "knowledge_file_id": str(user_file.id),
     }
 
     code = "import pandas as pd\ndf = pd.read_csv('data.csv')\nprint(df)"

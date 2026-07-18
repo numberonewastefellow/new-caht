@@ -167,7 +167,7 @@ class MetadataUpdateRequest(BaseModel):
     boost: float | None = None
     hidden: bool | None = None
     secondary_index_updated: bool | None = None
-    project_ids: set[int] | None = None
+    workspace_ids: set[int] | None = None
     persona_ids: set[int] | None = None
 
 

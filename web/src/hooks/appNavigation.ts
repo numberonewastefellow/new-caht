@@ -8,7 +8,7 @@ import { useCallback } from "react";
 interface UseAppRouterProps {
   chatSessionId?: string;
   agentId?: number;
-  projectId?: number;
+  workspaceId?: number;
   assistantId?: number;
 }
 
@@ -18,7 +18,7 @@ export function useAppRouter() {
     ({
       chatSessionId,
       agentId,
-      projectId,
+      workspaceId,
       assistantId,
     }: UseAppRouterProps = {}) => {
       const finalParams = [];
@@ -27,8 +27,8 @@ export function useAppRouter() {
         finalParams.push(`${SEARCH_PARAM_NAMES.CHAT_ID}=${chatSessionId}`);
       else if (agentId)
         finalParams.push(`${SEARCH_PARAM_NAMES.PERSONA_ID}=${agentId}`);
-      else if (projectId)
-        finalParams.push(`${SEARCH_PARAM_NAMES.PROJECT_ID}=${projectId}`);
+      else if (workspaceId)
+        finalParams.push(`${SEARCH_PARAM_NAMES.PROJECT_ID}=${workspaceId}`);
       else if (assistantId)
         finalParams.push(`${SEARCH_PARAM_NAMES.PERSONA_ID}=${assistantId}`);
 

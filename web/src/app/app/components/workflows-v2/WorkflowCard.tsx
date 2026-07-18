@@ -3,8 +3,8 @@
 import { memo, useMemo } from "react";
 import type { WorkflowSnapshot } from "@/lib/workflows/interfaces";
 import { cn, noProp } from "@/lib/utils";
-import { swatchForId } from "@/app/app/components/projects/workspace-v2/workspaceTheme";
-import { formatRelativeTime } from "@/app/app/components/projects/project_utils";
+import { swatchForId } from "@/app/app/components/workspaces/workspace-v2/workspaceTheme";
+import { formatRelativeTime } from "@/app/app/components/workspaces/workspace_utils";
 import WorkflowGlyph from "./WorkflowGlyph";
 import { SvgStar, SvgPin, SvgUser } from "@opal/icons";
 

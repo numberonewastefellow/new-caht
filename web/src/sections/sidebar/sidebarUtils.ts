@@ -1,6 +1,6 @@
 import { ChatSession } from "@/app/app/interfaces";
 import { LOCAL_STORAGE_KEYS, DEFAULT_PERSONA_ID } from "./constants";
-import { moveChatSession } from "@/app/app/projects/projectsService";
+import { moveChatSession } from "@/app/app/workspaces/workspacesService";
 import { toast } from "@/hooks/useToast";
 
 export const shouldShowMoveModal = (chatSession: ChatSession): boolean => {
@@ -19,27 +19,27 @@ export const showErrorNotification = (message: string) => {
 
 export interface MoveOperationParams {
   chatSession: ChatSession;
-  targetProjectId: number;
+  targetWorkspaceId: number;
   refreshChatSessions: () => Promise<any>;
-  refreshCurrentProjectDetails: () => Promise<any>;
-  fetchProjects: () => Promise<any>;
-  currentProjectId: number | null;
+  refreshCurrentWorkspaceDetails: () => Promise<any>;
+  fetchWorkspaces: () => Promise<any>;
+  currentWorkspaceId: number | null;
 }
 
 export const handleMoveOperation = async ({
   chatSession,
-  targetProjectId,
+  targetWorkspaceId,
   refreshChatSessions,
-  refreshCurrentProjectDetails,
-  fetchProjects,
-  currentProjectId,
+  refreshCurrentWorkspaceDetails,
+  fetchWorkspaces,
+  currentWorkspaceId,
 }: MoveOperationParams) => {
   try {
-    await moveChatSession(targetProjectId, chatSession.id);
-    const projectRefreshPromise = currentProjectId
-      ? refreshCurrentProjectDetails()
-      : fetchProjects();
-    await Promise.all([refreshChatSessions(), projectRefreshPromise]);
+    await moveChatSession(targetWorkspaceId, chatSession.id);
+    const workspaceRefreshPromise = currentWorkspaceId
+      ? refreshCurrentWorkspaceDetails()
+      : fetchWorkspaces();
+    await Promise.all([refreshChatSessions(), workspaceRefreshPromise]);
   } catch (error) {
     console.error("Failed to perform move operation:", error);
     toast.error("Failed to move chat. Please try again.");

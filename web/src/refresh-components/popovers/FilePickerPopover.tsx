@@ -2,15 +2,15 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { cn, noProp } from "@/lib/utils";
-import UserFilesModal from "@/components/modals/UserFilesModal";
+import KnowledgeFilesModal from "@/components/modals/KnowledgeFilesModal";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import {
-  ProjectFile,
-  UserFileStatus,
-} from "@/app/app/projects/projectsService";
+  WorkspaceFile,
+  KnowledgeFileStatus,
+} from "@/app/app/workspaces/workspacesService";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import { toast } from "@/hooks/useToast";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import Text from "@/refresh-components/texts/Text";
 import Modal from "@/refresh-components/Modal";
 import {
@@ -39,28 +39,28 @@ const getFileExtension = (fileName: string): string => {
 /* ─── File Row ─── */
 
 interface FileRowProps {
-  projectFile: ProjectFile;
-  onPick: (file: ProjectFile) => void;
-  onView: (file: ProjectFile) => void;
+  workspaceFile: WorkspaceFile;
+  onPick: (file: WorkspaceFile) => void;
+  onView: (file: WorkspaceFile) => void;
 }
 
-function FileRow({ projectFile, onPick, onView }: FileRowProps) {
+function FileRow({ workspaceFile, onPick, onView }: FileRowProps) {
   const isProcessing = useMemo(
     () =>
-      String(projectFile.status) === UserFileStatus.PROCESSING ||
-      String(projectFile.status) === UserFileStatus.UPLOADING ||
-      String(projectFile.status) === UserFileStatus.DELETING,
-    [projectFile.status]
+      String(workspaceFile.status) === KnowledgeFileStatus.PROCESSING ||
+      String(workspaceFile.status) === KnowledgeFileStatus.UPLOADING ||
+      String(workspaceFile.status) === KnowledgeFileStatus.DELETING,
+    [workspaceFile.status]
   );
 
-  const ColorfulIcon = getColorfulFileIcon(projectFile.name);
-  const ext = getFileExtension(projectFile.name);
+  const ColorfulIcon = getColorfulFileIcon(workspaceFile.name);
+  const ext = getFileExtension(workspaceFile.name);
 
   return (
     <button
       type="button"
       className="flex items-center gap-3 w-full px-3 py-2.5 rounded-08 transition-colors group virtualai-card-hover"
-      onClick={() => onPick(projectFile)}
+      onClick={() => onPick(workspaceFile)}
     >
       {/* File icon */}
       <div className="flex-shrink-0 w-8 h-8 rounded-08 virtualai-accent-icon-badge flex items-center justify-center">
@@ -74,7 +74,7 @@ function FileRow({ projectFile, onPick, onView }: FileRowProps) {
       {/* File name */}
       <div className="flex-1 min-w-0 text-left">
         <Truncated mainUiMuted text04 nowrap>
-          {projectFile.name}
+          {workspaceFile.name}
         </Truncated>
       </div>
 
@@ -88,7 +88,7 @@ function FileRow({ projectFile, onPick, onView }: FileRowProps) {
       {/* View button — appears on hover */}
       <IconButton
         icon={SvgExternalLink}
-        onClick={noProp(() => onView(projectFile))}
+        onClick={noProp(() => onView(workspaceFile))}
         tooltip="Open file"
         disabled={isProcessing}
         internal
@@ -101,9 +101,9 @@ function FileRow({ projectFile, onPick, onView }: FileRowProps) {
 /* ─── Main Component ─── */
 
 export interface FilePickerPopoverProps {
-  onPickRecent?: (file: ProjectFile) => void;
-  onUnpickRecent?: (file: ProjectFile) => void;
-  onFileClick?: (file: ProjectFile) => void;
+  onPickRecent?: (file: WorkspaceFile) => void;
+  onUnpickRecent?: (file: WorkspaceFile) => void;
+  onFileClick?: (file: WorkspaceFile) => void;
   handleUploadChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   trigger?: React.ReactNode | ((open: boolean) => React.ReactNode);
   selectedFileIds?: string[];
@@ -117,14 +117,14 @@ export default function FilePickerPopover({
   trigger,
   selectedFileIds,
 }: FilePickerPopoverProps) {
-  const { allRecentFiles } = useProjectsContext();
+  const { allRecentFiles } = useWorkspacesContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const recentFilesModal = useCreateModal();
   const [open, setOpen] = useState(false);
-  const [recentFilesSnapshot, setRecentFilesSnapshot] = useState<ProjectFile[]>(
+  const [recentFilesSnapshot, setRecentFilesSnapshot] = useState<WorkspaceFile[]>(
     []
   );
-  const { deleteUserFile, setCurrentMessageFiles } = useProjectsContext();
+  const { deleteKnowledgeFile, setCurrentMessageFiles } = useWorkspacesContext();
   const [deletedFileIds, setDeletedFileIds] = useState<string[]>([]);
 
   const triggerUploadPicker = () => fileInputRef.current?.click();
@@ -135,14 +135,14 @@ export default function FilePickerPopover({
     );
   }, [allRecentFiles]);
 
-  const handleDeleteFile = (file: ProjectFile) => {
+  const handleDeleteFile = (file: WorkspaceFile) => {
     const lastStatus = file.status;
     setRecentFilesSnapshot((prev) =>
       prev.map((f) =>
-        f.id === file.id ? { ...f, status: UserFileStatus.DELETING } : f
+        f.id === file.id ? { ...f, status: KnowledgeFileStatus.DELETING } : f
       )
     );
-    deleteUserFile(file.id)
+    deleteKnowledgeFile(file.id)
       .then((result) => {
         if (!result.has_associations) {
           toast.success("File deleted successfully");
@@ -157,13 +157,13 @@ export default function FilePickerPopover({
               f.id === file.id ? { ...f, status: lastStatus } : f
             )
           );
-          let projects = result.project_names.join(", ");
+          let workspaces = result.workspace_names.join(", ");
           let assistants = result.assistant_names.join(", ");
           let message = "Cannot delete file. It is associated with";
-          if (projects) {
-            message += ` projects: ${projects}`;
+          if (workspaces) {
+            message += ` workspaces: ${workspaces}`;
           }
-          if (projects && assistants) {
+          if (workspaces && assistants) {
             message += " and ";
           }
           if (assistants) {
@@ -199,7 +199,7 @@ export default function FilePickerPopover({
 
       {/* Full Recent Files Modal (secondary) */}
       <recentFilesModal.Provider>
-        <UserFilesModal
+        <KnowledgeFilesModal
           title="Recent Files"
           description="Upload files or pick from your recent files."
           recentFiles={recentFilesSnapshot}
@@ -284,7 +284,7 @@ export default function FilePickerPopover({
                   {quickFiles.map((file) => (
                     <FileRow
                       key={file.id}
-                      projectFile={file}
+                      workspaceFile={file}
                       onPick={(f) => {
                         onPickRecent && onPickRecent(f);
                         setOpen(false);

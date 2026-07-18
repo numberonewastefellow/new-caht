@@ -43,7 +43,7 @@ DEFAULTS = {
     "users": [],
     "groups": [],
     "label_ids": [],
-    "user_file_ids": [],
+    "knowledge_file_ids": [],
     "hierarchy_node_ids": [],
     "document_ids": [],
 }

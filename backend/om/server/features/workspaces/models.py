@@ -3,24 +3,24 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from om.db.enums import UserFileStatus
-from om.db.models import UserFile
-from om.db.models import UserProject
-from om.db.projects import CategorizedFilesResult
+from om.db.enums import KnowledgeFileStatus
+from om.db.models import KnowledgeFile
+from om.db.models import Workspace
+from om.db.workspaces import CategorizedFilesResult
 from om.file_store.models import ChatFileType
 from om.server.query_and_chat.chat_utils import mime_type_to_chat_file_type
 from om.server.query_and_chat.models import ChatSessionDetails
 
 
-class UserFileSnapshot(BaseModel):
+class KnowledgeFileSnapshot(BaseModel):
     id: UUID
     temp_id: str | None = None  # Client-side temporary ID for optimistic updates
     name: str
-    project_id: int | None = None
+    workspace_id: int | None = None
     user_id: UUID | None
     file_id: str
     created_at: datetime
-    status: UserFileStatus
+    status: KnowledgeFileStatus
     last_accessed_at: datetime | None
     file_type: str | None
     chat_file_type: ChatFileType
@@ -29,13 +29,13 @@ class UserFileSnapshot(BaseModel):
 
     @classmethod
     def from_model(
-        cls, model: UserFile, temp_id_map: dict[str, str] = {}
-    ) -> "UserFileSnapshot":
+        cls, model: KnowledgeFile, temp_id_map: dict[str, str] = {}
+    ) -> "KnowledgeFileSnapshot":
         return cls(
             id=model.id,
             temp_id=temp_id_map.get(str(model.id)),
             name=model.name,
-            project_id=None,
+            workspace_id=None,
             user_id=model.user_id,
             file_id=model.file_id,
             created_at=model.created_at,
@@ -58,15 +58,15 @@ class RejectedFile(BaseModel):
 
 
 class CategorizedFilesSnapshot(BaseModel):
-    user_files: list[UserFileSnapshot]
+    knowledge_files: list[KnowledgeFileSnapshot]
     rejected_files: list[RejectedFile]
 
     @classmethod
     def from_result(cls, result: CategorizedFilesResult) -> "CategorizedFilesSnapshot":
         return cls(
-            user_files=[
-                UserFileSnapshot.from_model(user_file, temp_id_map=result.id_to_temp_id)
-                for user_file in result.user_files
+            knowledge_files=[
+                KnowledgeFileSnapshot.from_model(knowledge_file, temp_id_map=result.id_to_temp_id)
+                for knowledge_file in result.knowledge_files
             ],
             rejected_files=[
                 RejectedFile(
@@ -78,7 +78,7 @@ class CategorizedFilesSnapshot(BaseModel):
         )
 
 
-class UserProjectSnapshot(BaseModel):
+class WorkspaceSnapshot(BaseModel):
     id: int
     name: str
     description: str | None
@@ -88,14 +88,14 @@ class UserProjectSnapshot(BaseModel):
     chat_sessions: list[ChatSessionDetails]
 
     @classmethod
-    def from_model(cls, model: UserProject) -> "UserProjectSnapshot":
+    def from_model(cls, model: Workspace) -> "WorkspaceSnapshot":
         return cls(
             id=model.id,
             name=model.name,
             description=model.description,
             created_at=model.created_at,
             user_id=model.user_id,
-            instructions=model.instructions,
+            instructions=model.workspace_instructions,
             chat_sessions=[
                 ChatSessionDetails.from_model(chat)
                 for chat in model.chat_sessions

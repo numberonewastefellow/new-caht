@@ -60,7 +60,7 @@ STEP_PERSONA_DEFAULTS = {
     "users": [],
     "groups": [],
     "label_ids": [],
-    "user_file_ids": [],
+    "knowledge_file_ids": [],
     "hierarchy_node_ids": [],
     "document_ids": [],
 }
@@ -213,7 +213,7 @@ def _update_step_persona(persona_id: int, persona_def: dict) -> bool:
         "label_ids": new_label_ids,
         "starter_messages": p.get("starter_messages", []),
         "users": [], "groups": [], "hierarchy_node_ids": [],
-        "document_ids": [], "user_file_ids": [],
+        "document_ids": [], "knowledge_file_ids": [],
     }
 
     resp = api("PATCH", f"persona/{persona_id}", patch_body)

@@ -61,7 +61,7 @@ from om.db.models import User
 from om.db.persona import get_persona_by_id
 from om.db.usage import increment_usage
 from om.db.usage import UsageType
-from om.db.user_file import get_file_id_by_user_file_id
+from om.db.knowledge_file import get_file_id_by_knowledge_file_id
 from om.file_processing.extract_file_text import docx_to_txt_filename
 from om.file_store.file_store import get_default_file_store
 from om.llm.constants import LlmProviderNames
@@ -152,8 +152,8 @@ def _get_available_tokens_for_persona(
 def get_user_chat_sessions(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-    project_id: int | None = None,
-    only_non_project_chats: bool = True,
+    workspace_id: int | None = None,
+    only_non_workspace_chats: bool = True,
     include_failed_chats: bool = False,
 ) -> ChatSessionsResponse:
     user_id = user.id
@@ -163,8 +163,8 @@ def get_user_chat_sessions(
             user_id=user_id,
             deleted=False,
             db_session=db_session,
-            project_id=project_id,
-            only_non_project_chats=only_non_project_chats,
+            workspace_id=workspace_id,
+            only_non_workspace_chats=only_non_workspace_chats,
             include_failed_chats=include_failed_chats,
         )
 
@@ -373,7 +373,7 @@ def create_new_chat_session(
             db_session=db_session,
         )
     except ValueError as e:
-        # Project access denied
+        # Workspace access denied
         raise HTTPException(status_code=403, detail=str(e))
     except Exception as e:
         logger.exception(e)
@@ -789,7 +789,7 @@ def fetch_chat_file(
 ) -> Response:
 
     # For user files, we need to get the file id from the user file id
-    file_id_from_user_file = get_file_id_by_user_file_id(file_id, db_session)
+    file_id_from_user_file = get_file_id_by_knowledge_file_id(file_id, db_session)
     if file_id_from_user_file:
         file_id = file_id_from_user_file
 

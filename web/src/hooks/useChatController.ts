@@ -68,16 +68,16 @@ import {
 import { Packet, MessageStart } from "@/app/app/services/streamingModels";
 import useAgentPreferences from "@/hooks/useAgentPreferences";
 import { useForcedTools } from "@/lib/hooks/useForcedTools";
-import { ProjectFile, useProjectsContext } from "@/providers/ProjectsContext";
+import { WorkspaceFile, useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { useAppParams } from "@/hooks/appNavigation";
-import { projectFilesToFileDescriptors } from "@/app/app/services/fileUtils";
+import { workspaceFilesToFileDescriptors } from "@/app/app/services/fileUtils";
 
 const SYSTEM_MESSAGE_ID = -3;
 
 export interface OnSubmitProps {
   message: string;
   //from chat input bar
-  currentMessageFiles: ProjectFile[];
+  currentMessageFiles: WorkspaceFile[];
   // from the chat bar???
 
   deepResearch: boolean;
@@ -140,8 +140,8 @@ export default function useChatController({
   const { pinnedAgents, togglePinnedAgent } = usePinnedAgents();
   const { assistantPreferences } = useAgentPreferences();
   const { forcedToolIds } = useForcedTools();
-  const { fetchProjects, setCurrentMessageFiles, beginUpload, currentProjectId } =
-    useProjectsContext();
+  const { fetchWorkspaces, setCurrentMessageFiles, beginUpload, currentWorkspaceId } =
+    useWorkspacesContext();
   const posthog = usePostHog();
 
   // Use selectors to access only the specific fields we need
@@ -261,7 +261,7 @@ export default function useChatController({
     // so it will show as "New Chat". This refresh ensures we get the latest server state
     // and will be called again after naming completes.
     refreshChatSessions();
-    fetchProjects();
+    fetchWorkspaces();
   };
 
   const handleNewSessionNaming = async (chatSessionId: string) => {
@@ -280,7 +280,7 @@ export default function useChatController({
         console.error("Failed to name chat session, status:", response.status);
         // Still refresh to show the unnamed chat in sidebar
         refreshChatSessions();
-        fetchProjects();
+        fetchWorkspaces();
         return;
       }
     } catch (error) {
@@ -288,7 +288,7 @@ export default function useChatController({
     } finally {
       // Refresh sidebar to show new name
       await refreshChatSessions();
-      await fetchProjects();
+      await fetchWorkspaces();
     }
   };
 
@@ -369,10 +369,10 @@ export default function useChatController({
       modelOverride,
       regenerationRequest,
     }: OnSubmitProps) => {
-      const projectId = params(SEARCH_PARAM_NAMES.PROJECT_ID);
-      // NOTE: we intentionally KEEP the `projectId` URL param for workspace
+      const workspaceId = params(SEARCH_PARAM_NAMES.PROJECT_ID);
+      // NOTE: we intentionally KEEP the `workspaceId` URL param for workspace
       // chats so the workspace context (files / instructions / banner) stays
-      // loaded. AppPage keeps the param in sync with the chat's project_id.
+      // loaded. AppPage keeps the param in sync with the chat's workspace_id.
 
       updateSubmittedMessage(getCurrentSessionId(), message);
 
@@ -480,7 +480,7 @@ export default function useChatController({
         currChatSessionId = await createChatSession(
           liveAssistant?.id || 0,
           searchParamBasedChatSessionName,
-          projectId ? parseInt(projectId) : null
+          workspaceId ? parseInt(workspaceId) : null
         );
 
         // Optimistically add the new chat session to the sidebar cache
@@ -488,7 +488,7 @@ export default function useChatController({
         addPendingChatSession({
           chatSessionId: currChatSessionId,
           personaId: liveAssistant?.id || 0,
-          projectId: projectId ? parseInt(projectId) : null,
+          workspaceId: workspaceId ? parseInt(workspaceId) : null,
         });
       } else {
         // Use the existing session ID from props or from the store
@@ -567,7 +567,7 @@ export default function useChatController({
       // Skip for regeneration — the regeneration path reuses the existing user node
       // (and its files), so merging here would send duplicates.
       const effectiveFileDescriptors = [
-        ...projectFilesToFileDescriptors(currentMessageFiles),
+        ...workspaceFilesToFileDescriptors(currentMessageFiles),
         ...(!regenerationRequest ? messageToResend?.files ?? [] : []),
       ];
 
@@ -770,14 +770,14 @@ export default function useChatController({
                 .reserved_assistant_message_id;
             }
 
-            if (Object.hasOwn(packet, "user_files")) {
-              const userFiles = (packet as UserKnowledgeFilePacket).user_files;
+            if (Object.hasOwn(packet, "knowledge_files")) {
+              const userFiles = (packet as UserKnowledgeFilePacket).knowledge_files;
               // Ensure files are unique by id
-              const newUserFiles = userFiles.filter(
+              const newKnowledgeFiles = userFiles.filter(
                 (newFile) =>
                   !files.some((existingFile) => existingFile.id === newFile.id)
               );
-              files = files.concat(newUserFiles);
+              files = files.concat(newKnowledgeFiles);
             }
 
             if (Object.hasOwn(packet, "file_ids")) {
@@ -958,7 +958,7 @@ export default function useChatController({
       forcedToolIds,
       // Keep tool preference-derived values fresh
       assistantPreferences,
-      fetchProjects,
+      fetchWorkspaces,
       // For auto-pinning agents
       pinnedAgents,
       togglePinnedAgent,
@@ -997,15 +997,15 @@ export default function useChatController({
       // backend can't resolve, so the workflow receives 0 files.
       const uploadedMessageFiles = await beginUpload(
         Array.from(acceptedFiles),
-        // When inside a project, link the chat-attached file to it (same as the
-        // project panel "Attach"); null in a normal chat keeps it ephemeral.
-        currentProjectId,
+        // When inside a workspace, link the chat-attached file to it (same as the
+        // workspace panel "Attach"); null in a normal chat keeps it ephemeral.
+        currentWorkspaceId,
         () => updateChatStateAction(uploadSessionId, "input"),
         () => updateChatStateAction(uploadSessionId, "input")
       );
       setCurrentMessageFiles((prev) => [...prev, ...uploadedMessageFiles]);
     },
-    [liveAssistant, llmManager, forcedToolIds, currentProjectId]
+    [liveAssistant, llmManager, forcedToolIds, currentWorkspaceId]
   );
 
   useEffect(() => {

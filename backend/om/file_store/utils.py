@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from om.configs.app_configs import WEB_DOMAIN
 from om.configs.constants import FileOrigin
-from om.db.models import UserFile
+from om.db.models import KnowledgeFile
 from om.file_store.file_store import get_default_file_store
 from om.file_store.models import ChatFileType
 from om.file_store.models import FileDescriptor
@@ -23,17 +23,17 @@ from om.utils.timing import log_function_time
 logger = setup_logger()
 
 
-def user_file_id_to_plaintext_file_name(user_file_id: UUID) -> str:
+def knowledge_file_id_to_plaintext_file_name(knowledge_file_id: UUID) -> str:
     """Generate a consistent file name for storing plaintext content of a user file."""
-    return f"plaintext_{user_file_id}"
+    return f"plaintext_{knowledge_file_id}"
 
 
-def store_user_file_plaintext(user_file_id: UUID, plaintext_content: str) -> bool:
+def store_user_file_plaintext(knowledge_file_id: UUID, plaintext_content: str) -> bool:
     """
     Store plaintext content for a user file in the file store.
 
     Args:
-        user_file_id: The ID of the user file
+        knowledge_file_id: The ID of the user file
         plaintext_content: The plaintext content to store
 
     Returns:
@@ -44,21 +44,21 @@ def store_user_file_plaintext(user_file_id: UUID, plaintext_content: str) -> boo
         return False
 
     # Get plaintext file name
-    plaintext_file_name = user_file_id_to_plaintext_file_name(user_file_id)
+    plaintext_file_name = knowledge_file_id_to_plaintext_file_name(knowledge_file_id)
 
     try:
         file_store = get_default_file_store()
         file_content = BytesIO(plaintext_content.encode("utf-8"))
         file_store.save_file(
             content=file_content,
-            display_name=f"Plaintext for user file {user_file_id}",
+            display_name=f"Plaintext for user file {knowledge_file_id}",
             file_origin=FileOrigin.PLAINTEXT_CACHE,
             file_type="text/plain",
             file_id=plaintext_file_name,
         )
         return True
     except Exception as e:
-        logger.warning(f"Failed to store plaintext for user file {user_file_id}: {e}")
+        logger.warning(f"Failed to store plaintext for user file {knowledge_file_id}: {e}")
         return False
 
 
@@ -66,7 +66,7 @@ def load_chat_file_by_id(file_id: str) -> InMemoryChatFile:
     """Load a file directly from the file store using its file_record ID.
 
     This is the fallback path for chat-attached files that don't have a
-    corresponding row in the ``user_file`` table."""
+    corresponding row in the ``knowledge_file`` table."""
     file_store = get_default_file_store()
     file_record = file_store.read_file_record(file_id)
     chat_file_type = mime_type_to_chat_file_type(file_record.file_type)
@@ -83,19 +83,19 @@ def load_chat_file_by_id(file_id: str) -> InMemoryChatFile:
 def load_user_file(file_id: UUID, db_session: Session) -> InMemoryChatFile:
     status = "not_loaded"
 
-    user_file = db_session.query(UserFile).filter(UserFile.id == file_id).first()
-    if not user_file:
+    knowledge_file = db_session.query(KnowledgeFile).filter(KnowledgeFile.id == file_id).first()
+    if not knowledge_file:
         raise ValueError(f"User file with id {file_id} not found")
 
     # Get the file record to determine the appropriate chat file type
     file_store = get_default_file_store()
-    file_record = file_store.read_file_record(user_file.file_id)
+    file_record = file_store.read_file_record(knowledge_file.file_id)
 
     # Determine appropriate chat file type based on the original file's MIME type
     chat_file_type = mime_type_to_chat_file_type(file_record.file_type)
 
     # Try to load plaintext version first
-    plaintext_file_name = user_file_id_to_plaintext_file_name(file_id)
+    plaintext_file_name = knowledge_file_id_to_plaintext_file_name(file_id)
 
     # check for plain text normalized version first, then use original file otherwise
     try:
@@ -112,44 +112,44 @@ def load_user_file(file_id: UUID, db_session: Session) -> InMemoryChatFile:
             plaintext_chat_file_type = ChatFileType.PLAIN_TEXT
 
         chat_file = InMemoryChatFile(
-            file_id=str(user_file.file_id),
+            file_id=str(knowledge_file.file_id),
             content=file_io.read(),
             file_type=plaintext_chat_file_type,
-            filename=user_file.name,
+            filename=knowledge_file.name,
         )
         status = "plaintext"
         return chat_file
     except Exception as e:
-        logger.warning(f"Failed to load plaintext for user file {user_file.id}: {e}")
+        logger.warning(f"Failed to load plaintext for user file {knowledge_file.id}: {e}")
         # Fall back to original file if plaintext not available
-        file_io = file_store.read_file(user_file.file_id, mode="b")
+        file_io = file_store.read_file(knowledge_file.file_id, mode="b")
 
         chat_file = InMemoryChatFile(
-            file_id=str(user_file.file_id),
+            file_id=str(knowledge_file.file_id),
             content=file_io.read(),
             file_type=chat_file_type,
-            filename=user_file.name,
+            filename=knowledge_file.name,
         )
         status = "original"
         return chat_file
     finally:
         logger.debug(
-            f"load_user_file finished: file_id={user_file.file_id} "
+            f"load_user_file finished: file_id={knowledge_file.file_id} "
             f"chat_file_type={chat_file_type} "
             f"status={status}"
         )
 
 
 def load_in_memory_chat_files(
-    user_file_ids: list[UUID],
+    knowledge_file_ids: list[UUID],
     db_session: Session,
 ) -> list[InMemoryChatFile]:
     """
     Loads the actual content of user files specified by individual IDs and those
-    within specified project IDs into memory.
+    within specified workspace IDs into memory.
 
     Args:
-        user_file_ids: A list of specific UserFile IDs to load.
+        knowledge_file_ids: A list of specific KnowledgeFile IDs to load.
         db_session: The SQLAlchemy database session.
 
     Returns:
@@ -161,63 +161,63 @@ def load_in_memory_chat_files(
         list[InMemoryChatFile],
         run_functions_tuples_in_parallel(
             # 1. Load files specified by individual IDs
-            [(load_user_file, (file_id, db_session)) for file_id in user_file_ids]
+            [(load_user_file, (file_id, db_session)) for file_id in knowledge_file_ids]
         ),
     )
 
 
-def get_user_files(
-    user_file_ids: list[UUID],
+def get_knowledge_files(
+    knowledge_file_ids: list[UUID],
     db_session: Session,
-) -> list[UserFile]:
+) -> list[KnowledgeFile]:
     """
-    Fetches UserFile database records based on provided file and project IDs.
+    Fetches KnowledgeFile database records based on provided file and workspace IDs.
 
     Args:
-        user_file_ids: A list of specific UserFile IDs to fetch.
+        knowledge_file_ids: A list of specific KnowledgeFile IDs to fetch.
         db_session: The SQLAlchemy database session.
 
     Returns:
-        A list containing UserFile SQLAlchemy model objects corresponding to the
-        specified file IDs and all files within the specified project IDs.
+        A list containing KnowledgeFile SQLAlchemy model objects corresponding to the
+        specified file IDs and all files within the specified workspace IDs.
         It does NOT return the actual file content.
     """
-    user_files: list[UserFile] = []
+    knowledge_files: list[KnowledgeFile] = []
 
-    # 1. Fetch UserFile records for specific file IDs
-    for user_file_id in user_file_ids:
-        # Query the database for a UserFile with the matching ID
-        user_file = (
-            db_session.query(UserFile).filter(UserFile.id == user_file_id).first()
+    # 1. Fetch KnowledgeFile records for specific file IDs
+    for knowledge_file_id in knowledge_file_ids:
+        # Query the database for a KnowledgeFile with the matching ID
+        knowledge_file = (
+            db_session.query(KnowledgeFile).filter(KnowledgeFile.id == knowledge_file_id).first()
         )
         # If found, add it to the list
-        if user_file is not None:
-            user_files.append(user_file)
+        if knowledge_file is not None:
+            knowledge_files.append(knowledge_file)
 
-    # 3. Return the combined list of UserFile database objects
-    return user_files
+    # 3. Return the combined list of KnowledgeFile database objects
+    return knowledge_files
 
 
-def validate_user_files_ownership(
-    user_file_ids: list[UUID],
+def validate_knowledge_files_ownership(
+    knowledge_file_ids: list[UUID],
     user_id: UUID | None,
     db_session: Session,
-) -> list[UserFile]:
+) -> list[KnowledgeFile]:
     """
-    Fetches all UserFile database records for a given user.
+    Fetches all KnowledgeFile database records for a given user.
     """
-    user_files = get_user_files(user_file_ids, db_session)
-    current_user_files = []
-    for user_file in user_files:
+    knowledge_files = get_knowledge_files(knowledge_file_ids, db_session)
+    current_knowledge_files = []
+    for knowledge_file in knowledge_files:
         # Note: if user_id is None, then all files should be None as well
         # (since auth must be disabled in this case)
-        if user_file.user_id != user_id:
+        if knowledge_file.user_id != user_id:
             raise ValueError(
-                f"User {user_id} does not have access to file {user_file.id}"
+                f"User {user_id} does not have access to file {knowledge_file.id}"
             )
-        current_user_files.append(user_file)
+        current_knowledge_files.append(knowledge_file)
 
-    return current_user_files
+    return current_knowledge_files
 
 
 def save_file_from_url(url: str) -> str:
@@ -288,82 +288,82 @@ def save_files(urls: list[str], base64_files: list[str]) -> list[str]:
 
 
 @log_function_time(print_only=True)
-def verify_user_files(
-    user_files: list[FileDescriptor],
+def verify_knowledge_files(
+    knowledge_files: list[FileDescriptor],
     user_id: UUID | None,
     db_session: Session,
-    project_id: int | None = None,
+    workspace_id: int | None = None,
 ) -> None:
     """
     Verify that all provided file descriptors belong to the specified user.
-    For project files (those without user_file_id), verifies access through project ownership.
+    For workspace files (those without knowledge_file_id), verifies access through workspace ownership.
 
     Args:
-        user_files: List of file descriptors to verify
+        knowledge_files: List of file descriptors to verify
         user_id: The user ID to check ownership against
         db_session: The SQLAlchemy database session
-        project_id: Optional project ID to verify project file access against
+        workspace_id: Optional workspace ID to verify workspace file access against
 
     Raises:
         ValueError: If any file does not belong to the user or is not found
     """
-    from om.db.models import Project__UserFile
-    from om.db.projects import check_project_ownership
+    from om.db.models import Workspace__KnowledgeFile
+    from om.db.workspaces import check_workspace_ownership
 
-    # Extract user_file_ids and project file_ids from the file descriptors
-    user_file_ids = []
-    project_file_ids = []
+    # Extract knowledge_file_ids and workspace file_ids from the file descriptors
+    knowledge_file_ids = []
+    workspace_file_ids = []
 
-    for file_descriptor in user_files:
-        # Check if this file descriptor has a user_file_id
-        if file_descriptor.get("user_file_id"):
+    for file_descriptor in knowledge_files:
+        # Check if this file descriptor has a knowledge_file_id
+        if file_descriptor.get("knowledge_file_id"):
             try:
-                user_file_ids.append(UUID(file_descriptor["user_file_id"]))
+                knowledge_file_ids.append(UUID(file_descriptor["knowledge_file_id"]))
             except (ValueError, TypeError):
                 logger.warning(
-                    f"Invalid user_file_id in file descriptor: {file_descriptor['user_file_id']}"
+                    f"Invalid knowledge_file_id in file descriptor: {file_descriptor['knowledge_file_id']}"
                 )
                 continue
         else:
-            # This is a project file - use the 'id' field which is the file_id
+            # This is a workspace file - use the 'id' field which is the file_id
             if file_descriptor.get("id"):
-                project_file_ids.append(file_descriptor["id"])
+                workspace_file_ids.append(file_descriptor["id"])
 
     # Verify user files (existing logic)
-    if user_file_ids:
-        validate_user_files_ownership(user_file_ids, user_id, db_session)
+    if knowledge_file_ids:
+        validate_knowledge_files_ownership(knowledge_file_ids, user_id, db_session)
 
-    # Verify project files
-    if project_file_ids:
-        if project_id is None:
+    # Verify workspace files
+    if workspace_file_ids:
+        if workspace_id is None:
             raise ValueError(
-                "Project files provided but no project_id specified for verification"
+                "Workspace files provided but no workspace_id specified for verification"
             )
 
-        # Verify user owns the project
-        if not check_project_ownership(project_id, user_id, db_session):
+        # Verify user owns the workspace
+        if not check_workspace_ownership(workspace_id, user_id, db_session):
             raise ValueError(
-                f"User {user_id} does not have access to project {project_id}"
+                f"User {user_id} does not have access to workspace {workspace_id}"
             )
 
-        # Verify all project files belong to the specified project
-        user_files_in_project = (
-            db_session.query(UserFile)
-            .join(Project__UserFile)
+        # Verify all workspace files belong to the specified workspace
+        knowledge_files_in_workspace = (
+            db_session.query(KnowledgeFile)
+            .join(Workspace__KnowledgeFile)
             .filter(
-                Project__UserFile.project_id == project_id,
-                UserFile.file_id.in_(project_file_ids),
+                Workspace__KnowledgeFile.workspace_id == workspace_id,
+                KnowledgeFile.file_id.in_(workspace_file_ids),
             )
             .all()
         )
 
-        # Check if all files were found in the project
-        found_file_ids = {uf.file_id for uf in user_files_in_project}
-        missing_files = set(project_file_ids) - found_file_ids
+        # Check if all files were found in the workspace
+        found_file_ids = {uf.file_id for uf in knowledge_files_in_workspace}
+        missing_files = set(workspace_file_ids) - found_file_ids
 
         if missing_files:
             raise ValueError(
-                f"Files {missing_files} are not associated with project {project_id}"
+                f"Files {missing_files} are not associated with workspace {workspace_id}"
             )
 
 

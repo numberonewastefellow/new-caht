@@ -52,7 +52,7 @@ PUBLIC_PATHS = {
 # Endpoints to skip (file uploads, streaming SSE, etc.)
 SKIP_ENDPOINTS = {
     "send_chat_message",  # SSE streaming
-    "upload_files_for_project",  # file upload
+    "upload_files_for_workspace",  # file upload
     "upload_file_for_connector",  # file upload
     "update_connector_files",  # file upload
     "seed_chat_session_from_slack",  # requires Slack data

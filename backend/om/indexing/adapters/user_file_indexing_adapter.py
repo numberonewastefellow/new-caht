@@ -10,17 +10,17 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.session import TransactionalContext
 
-from om.access.access import get_access_for_user_files
+from om.access.access import get_access_for_knowledge_files
 from om.access.models import DocumentAccess
 from om.configs.constants import DEFAULT_BOOST
 from om.configs.constants import NotificationType
 from om.connectors.models import Document
-from om.db.enums import UserFileStatus
+from om.db.enums import KnowledgeFileStatus
 from om.db.models import Persona
-from om.db.models import UserFile
+from om.db.models import KnowledgeFile
 from om.db.notification import create_notification
-from om.db.user_file import fetch_chunk_counts_for_user_files
-from om.db.user_file import fetch_user_project_ids_for_user_files
+from om.db.knowledge_file import fetch_chunk_counts_for_knowledge_files
+from om.db.knowledge_file import fetch_user_workspace_ids_for_knowledge_files
 from om.file_store.utils import store_user_file_plaintext
 from om.indexing.indexing_pipeline import DocumentBatchPrepareContext
 from om.indexing.models import BuildMetadataAwareChunksResult
@@ -37,27 +37,27 @@ _NUM_LOCK_ATTEMPTS = 3
 retry_delay = 0.5
 
 
-def _acquire_user_file_locks(db_session: Session, user_file_ids: list[str]) -> bool:
+def _acquire_user_file_locks(db_session: Session, knowledge_file_ids: list[str]) -> bool:
     """Acquire locks for the specified user files."""
     # Convert to UUIDs for the DB comparison
-    user_file_uuid_list = [UUID(user_file_id) for user_file_id in user_file_ids]
+    user_file_uuid_list = [UUID(knowledge_file_id) for knowledge_file_id in knowledge_file_ids]
     stmt = (
-        select(UserFile.id)
-        .where(UserFile.id.in_(user_file_uuid_list))
+        select(KnowledgeFile.id)
+        .where(KnowledgeFile.id.in_(user_file_uuid_list))
         .with_for_update(nowait=True)
     )
     # will raise exception if any of the documents are already locked
     documents = db_session.scalars(stmt).all()
 
     # make sure we found every document
-    if len(documents) != len(set(user_file_ids)):
+    if len(documents) != len(set(knowledge_file_ids)):
         logger.warning("Didn't find row for all specified user file IDs. Aborting.")
         return False
 
     return True
 
 
-class UserFileIndexingAdapter:
+class KnowledgeFileIndexingAdapter:
     def __init__(self, tenant_id: str, db_session: Session):
         self.tenant_id = tenant_id
         self.db_session = db_session
@@ -80,7 +80,7 @@ class UserFileIndexingAdapter:
                 with self.db_session.begin() as transaction:
                     lock_acquired = _acquire_user_file_locks(
                         db_session=self.db_session,
-                        user_file_ids=[doc.id for doc in documents],
+                        knowledge_file_ids=[doc.id for doc in documents],
                     )
                     if lock_acquired:
                         yield transaction
@@ -115,31 +115,31 @@ class UserFileIndexingAdapter:
         )
 
         updatable_ids = [doc.id for doc in context.updatable_docs]
-        user_file_id_to_project_ids = fetch_user_project_ids_for_user_files(
-            user_file_ids=updatable_ids,
+        knowledge_file_id_to_workspace_ids = fetch_user_workspace_ids_for_knowledge_files(
+            knowledge_file_ids=updatable_ids,
             db_session=self.db_session,
         )
-        user_file_id_to_access: dict[str, DocumentAccess] = get_access_for_user_files(
-            user_file_ids=updatable_ids,
+        knowledge_file_id_to_access: dict[str, DocumentAccess] = get_access_for_knowledge_files(
+            knowledge_file_ids=updatable_ids,
             db_session=self.db_session,
         )
-        user_file_id_to_previous_chunk_cnt: dict[str, int] = {
-            user_file_id: chunk_count
-            for user_file_id, chunk_count in fetch_chunk_counts_for_user_files(
-                user_file_ids=updatable_ids,
+        knowledge_file_id_to_previous_chunk_cnt: dict[str, int] = {
+            knowledge_file_id: chunk_count
+            for knowledge_file_id, chunk_count in fetch_chunk_counts_for_knowledge_files(
+                knowledge_file_ids=updatable_ids,
                 db_session=self.db_session,
             )
         }
 
-        user_file_id_to_new_chunk_cnt: dict[str, int] = {
-            user_file_id: len(
+        knowledge_file_id_to_new_chunk_cnt: dict[str, int] = {
+            knowledge_file_id: len(
                 [
                     chunk
                     for chunk in chunks_with_embeddings
-                    if chunk.source_document.id == user_file_id
+                    if chunk.source_document.id == knowledge_file_id
                 ]
             )
-            for user_file_id in updatable_ids
+            for knowledge_file_id in updatable_ids
         }
 
         # Initialize tokenizer used for token count calculation
@@ -153,33 +153,33 @@ class UserFileIndexingAdapter:
             logger.error(f"Error getting tokenizer: {e}")
             llm_tokenizer = None
 
-        user_file_id_to_raw_text: dict[str, str] = {}
-        user_file_id_to_token_count: dict[str, int | None] = {}
-        for user_file_id in updatable_ids:
+        knowledge_file_id_to_raw_text: dict[str, str] = {}
+        knowledge_file_id_to_token_count: dict[str, int | None] = {}
+        for knowledge_file_id in updatable_ids:
             user_file_chunks = [
                 chunk
                 for chunk in chunks_with_embeddings
-                if chunk.source_document.id == user_file_id
+                if chunk.source_document.id == knowledge_file_id
             ]
             if user_file_chunks:
                 combined_content = " ".join(
                     [chunk.content for chunk in user_file_chunks]
                 )
-                user_file_id_to_raw_text[str(user_file_id)] = combined_content
+                knowledge_file_id_to_raw_text[str(knowledge_file_id)] = combined_content
                 token_count = (
                     len(llm_tokenizer.encode(combined_content)) if llm_tokenizer else 0
                 )
-                user_file_id_to_token_count[str(user_file_id)] = token_count
+                knowledge_file_id_to_token_count[str(knowledge_file_id)] = token_count
             else:
-                user_file_id_to_raw_text[str(user_file_id)] = ""
-                user_file_id_to_token_count[str(user_file_id)] = None
+                knowledge_file_id_to_raw_text[str(knowledge_file_id)] = ""
+                knowledge_file_id_to_token_count[str(knowledge_file_id)] = None
 
         access_aware_chunks = [
             DocMetadataAwareIndexChunk.from_index_chunk(
                 index_chunk=chunk,
-                access=user_file_id_to_access.get(chunk.source_document.id, no_access),
+                access=knowledge_file_id_to_access.get(chunk.source_document.id, no_access),
                 document_sets=set(),
-                user_project=user_file_id_to_project_ids.get(
+                user_workspace=knowledge_file_id_to_workspace_ids.get(
                     chunk.source_document.id, []
                 ),
                 # we are going to index userfiles only once, so we just set the boost to the default
@@ -192,22 +192,22 @@ class UserFileIndexingAdapter:
 
         return BuildMetadataAwareChunksResult(
             chunks=access_aware_chunks,
-            doc_id_to_previous_chunk_cnt=user_file_id_to_previous_chunk_cnt,
-            doc_id_to_new_chunk_cnt=user_file_id_to_new_chunk_cnt,
-            user_file_id_to_raw_text=user_file_id_to_raw_text,
-            user_file_id_to_token_count=user_file_id_to_token_count,
+            doc_id_to_previous_chunk_cnt=knowledge_file_id_to_previous_chunk_cnt,
+            doc_id_to_new_chunk_cnt=knowledge_file_id_to_new_chunk_cnt,
+            knowledge_file_id_to_raw_text=knowledge_file_id_to_raw_text,
+            knowledge_file_id_to_token_count=knowledge_file_id_to_token_count,
         )
 
     def _notify_assistant_owners_if_files_ready(
-        self, user_files: list[UserFile]
+        self, knowledge_files: list[KnowledgeFile]
     ) -> None:
         """
         Check if all files for associated assistants are processed and notify owners.
         Only sends notification when all files for an assistant are COMPLETED.
         """
-        for user_file in user_files:
-            if user_file.status == UserFileStatus.COMPLETED:
-                for assistant in user_file.assistants:
+        for knowledge_file in knowledge_files:
+            if knowledge_file.status == KnowledgeFileStatus.COMPLETED:
+                for assistant in knowledge_file.assistants:
                     # Skip assistants without owners
                     if assistant.user_id is None:
                         continue
@@ -215,9 +215,9 @@ class UserFileIndexingAdapter:
                     # Check if all OTHER files for this assistant are completed
                     # (we already know current file is completed from the outer check)
                     all_files_completed = all(
-                        f.status == UserFileStatus.COMPLETED
-                        for f in assistant.user_files
-                        if f.id != user_file.id
+                        f.status == KnowledgeFileStatus.COMPLETED
+                        for f in assistant.knowledge_files
+                        if f.id != knowledge_file.id
                     )
 
                     if all_files_completed:
@@ -241,36 +241,36 @@ class UserFileIndexingAdapter:
         filtered_documents: list[Document],  # noqa: ARG002
         result: BuildMetadataAwareChunksResult,
     ) -> None:
-        user_file_ids = [doc.id for doc in context.updatable_docs]
+        knowledge_file_ids = [doc.id for doc in context.updatable_docs]
 
-        user_files = (
-            self.db_session.query(UserFile)
-            .options(selectinload(UserFile.assistants).selectinload(Persona.user_files))
-            .filter(UserFile.id.in_(user_file_ids))
+        knowledge_files = (
+            self.db_session.query(KnowledgeFile)
+            .options(selectinload(KnowledgeFile.assistants).selectinload(Persona.knowledge_files))
+            .filter(KnowledgeFile.id.in_(knowledge_file_ids))
             .all()
         )
-        for user_file in user_files:
+        for knowledge_file in knowledge_files:
             # don't update the status if the user file is being deleted
-            if user_file.status != UserFileStatus.DELETING:
-                user_file.status = UserFileStatus.COMPLETED
-            user_file.last_project_sync_at = datetime.datetime.now(
+            if knowledge_file.status != KnowledgeFileStatus.DELETING:
+                knowledge_file.status = KnowledgeFileStatus.COMPLETED
+            knowledge_file.last_workspace_sync_at = datetime.datetime.now(
                 datetime.timezone.utc
             )
-            user_file.chunk_count = result.doc_id_to_new_chunk_cnt[str(user_file.id)]
-            user_file.token_count = result.user_file_id_to_token_count[
-                str(user_file.id)
+            knowledge_file.chunk_count = result.doc_id_to_new_chunk_cnt[str(knowledge_file.id)]
+            knowledge_file.token_count = result.knowledge_file_id_to_token_count[
+                str(knowledge_file.id)
             ]
 
         # Notify assistant owners if all their files are now processed
-        self._notify_assistant_owners_if_files_ready(user_files)
+        self._notify_assistant_owners_if_files_ready(knowledge_files)
 
         self.db_session.commit()
 
         # Store the plaintext in the file store for faster retrieval
         # NOTE: this creates its own session to avoid committing the overall
         # transaction.
-        for user_file_id, raw_text in result.user_file_id_to_raw_text.items():
+        for knowledge_file_id, raw_text in result.knowledge_file_id_to_raw_text.items():
             store_user_file_plaintext(
-                user_file_id=UUID(user_file_id),
+                knowledge_file_id=UUID(knowledge_file_id),
                 plaintext_content=raw_text,
             )

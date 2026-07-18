@@ -499,7 +499,7 @@ CELERY_WORKER_PRIMARY_POOL_OVERFLOW = int(
 )
 
 # Consolidated background worker (light, docprocessing, docfetching, heavy, monitoring, user_file_processing)
-# separate workers' defaults: light=24, docprocessing=6, docfetching=1, heavy=4, kg=2, monitoring=1, user_file=2
+# separate workers' defaults: light=24, docprocessing=6, docfetching=1, heavy=4, kg=2, monitoring=1, knowledge_file=2
 # Total would be 40, but we use a more conservative default of 20 for the consolidated worker
 CELERY_WORKER_BACKGROUND_CONCURRENCY = int(
     os.environ.get("CELERY_WORKER_BACKGROUND_CONCURRENCY") or 20

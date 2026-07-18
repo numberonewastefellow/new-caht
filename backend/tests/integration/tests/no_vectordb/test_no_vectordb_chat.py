@@ -1,9 +1,9 @@
 """Integration tests for chat in no-vector-DB mode.
 
 Covers:
-- Uploading a file to a project, sending a chat message, and verifying the LLM
-  receives the file content (small project — fits in context window).
-- Creating a persona with user_files and verifying chat works.
+- Uploading a file to a workspace, sending a chat message, and verifying the LLM
+  receives the file content (small workspace — fits in context window).
+- Creating a persona with knowledge_files and verifying chat works.
 - Verifying that persona creation with document_sets / hierarchy_nodes /
   document_ids is rejected with a 400.
 """
@@ -13,12 +13,12 @@ import time
 
 import requests
 
-from om.db.enums import UserFileStatus
+from om.db.enums import KnowledgeFileStatus
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.managers.chat import ChatSessionManager
 from tests.integration.common_utils.managers.file import FileManager
 from tests.integration.common_utils.managers.persona import PersonaManager
-from tests.integration.common_utils.managers.project import ProjectManager
+from tests.integration.common_utils.managers.workspace import WorkspaceManager
 from tests.integration.common_utils.managers.tool import ToolManager
 from tests.integration.common_utils.test_models import DATestLLMProvider
 from tests.integration.common_utils.test_models import DATestUser
@@ -28,61 +28,61 @@ FILE_READER_TOOL_ID = "FileReaderTool"
 
 
 def _wait_for_file_processed(
-    project_id: int,
+    workspace_id: int,
     user: DATestUser,
     timeout: int = 30,
 ) -> None:
-    """Poll until all files in the project reach COMPLETED status."""
+    """Poll until all files in the workspace reach COMPLETED status."""
     deadline = time.time() + timeout
     while time.time() < deadline:
-        files = ProjectManager.get_project_files(project_id, user)
-        if files and all(f.status == UserFileStatus.COMPLETED for f in files):
+        files = WorkspaceManager.get_workspace_files(workspace_id, user)
+        if files and all(f.status == KnowledgeFileStatus.COMPLETED for f in files):
             return
         time.sleep(1)
     raise TimeoutError(
-        f"Files in project {project_id} did not reach COMPLETED within {timeout}s"
+        f"Files in workspace {workspace_id} did not reach COMPLETED within {timeout}s"
     )
 
 
 # ------------------------------------------------------------------
-# Small-project chat — file content loaded directly into context
+# Small-workspace chat — file content loaded directly into context
 # ------------------------------------------------------------------
 
 
-def test_chat_with_small_project_file(
+def test_chat_with_small_workspace_file(
     reset: None,  # noqa: ARG001
     admin_user: DATestUser,
     llm_provider: DATestLLMProvider,  # noqa: ARG001
 ) -> None:
-    """Upload a small text file to a project and send a chat message.
+    """Upload a small text file to a workspace and send a chat message.
 
     The file is small enough to fit in the LLM context window, so the LLM
     should see the file content directly and be able to answer questions
     about it.
     """
-    project = ProjectManager.create(
+    workspace = WorkspaceManager.create(
         name="test-no-vectordb-small", user_performing_action=admin_user
     )
 
     file_content = b"The secret code is PINEAPPLE-42."
-    ProjectManager.upload_files(
-        project_id=project.id,
+    WorkspaceManager.upload_files(
+        workspace_id=workspace.id,
         files=[("secret.txt", file_content)],
         user_performing_action=admin_user,
     )
 
-    _wait_for_file_processed(project.id, admin_user)
+    _wait_for_file_processed(workspace.id, admin_user)
 
-    # Create a chat session associated with the project's default persona
+    # Create a chat session associated with the workspace's default persona
     chat_session = ChatSessionManager.create(
         persona_id=0,
-        description="no-vectordb small project test",
+        description="no-vectordb small workspace test",
         user_performing_action=admin_user,
     )
 
-    # Link the chat session to the project
+    # Link the chat session to the workspace
     resp = requests.post(
-        f"{API_SERVER_URL}/user/projects/{project.id}/move_chat_session",
+        f"{API_SERVER_URL}/user/workspaces/{workspace.id}/move_chat_session",
         json={"chat_session_id": str(chat_session.id)},
         headers=admin_user.headers,
     )
@@ -101,11 +101,11 @@ def test_chat_with_small_project_file(
 
 
 # ------------------------------------------------------------------
-# Persona with user_files — should work in no-vector-DB mode
+# Persona with knowledge_files — should work in no-vector-DB mode
 # ------------------------------------------------------------------
 
 
-def test_persona_with_user_files_chat(
+def test_persona_with_knowledge_files_chat(
     reset: None,  # noqa: ARG001
     admin_user: DATestUser,
     llm_provider: DATestLLMProvider,  # noqa: ARG001
@@ -121,8 +121,8 @@ def test_persona_with_user_files_chat(
     assert not error, f"File upload failed: {error}"
     assert len(file_descriptors) > 0
 
-    user_file_id = file_descriptors[0].get("user_file_id")
-    assert user_file_id, "Expected user_file_id in upload response"
+    knowledge_file_id = file_descriptors[0].get("knowledge_file_id")
+    assert knowledge_file_id, "Expected knowledge_file_id in upload response"
 
     # Wait for the file to be processed
     deadline = time.time() + 30
@@ -153,7 +153,7 @@ def test_persona_with_user_files_chat(
         description="Test persona for no-vectordb mode",
         system_prompt="You are a helpful assistant. Answer questions using the available tools and files.",
         task_prompt="",
-        user_file_ids=[user_file_id],
+        knowledge_file_ids=[knowledge_file_id],
         tool_ids=[file_reader_tool.id],
         user_performing_action=admin_user,
     )

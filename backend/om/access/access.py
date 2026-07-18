@@ -16,7 +16,7 @@ from om.db.document import get_documents_by_ids
 from om.db.external_perm import fetch_external_groups_for_user
 from om.db.external_perm import fetch_public_external_group_ids
 from om.db.models import User
-from om.db.models import UserFile
+from om.db.models import KnowledgeFile
 from om.utils.logger import setup_logger
 
 
@@ -250,23 +250,23 @@ def source_should_fetch_permissions_during_indexing(source: DocumentSource) -> b
     return _source_should_fetch_permissions_during_indexing_func(source)
 
 
-def get_access_for_user_files(
-    user_file_ids: list[str],
+def get_access_for_knowledge_files(
+    knowledge_file_ids: list[str],
     db_session: Session,
 ) -> dict[str, DocumentAccess]:
-    user_files = (
-        db_session.query(UserFile)
-        .options(joinedload(UserFile.user))  # Eager load the user relationship
-        .filter(UserFile.id.in_(user_file_ids))
+    knowledge_files = (
+        db_session.query(KnowledgeFile)
+        .options(joinedload(KnowledgeFile.user))  # Eager load the user relationship
+        .filter(KnowledgeFile.id.in_(knowledge_file_ids))
         .all()
     )
     return {
-        str(user_file.id): DocumentAccess.build(
-            user_emails=[user_file.user.email] if user_file.user else [],
+        str(knowledge_file.id): DocumentAccess.build(
+            user_emails=[knowledge_file.user.email] if knowledge_file.user else [],
             user_groups=[],
-            is_public=True if user_file.user is None else False,
+            is_public=True if knowledge_file.user is None else False,
             external_user_emails=[],
             external_user_group_ids=[],
         )
-        for user_file in user_files
+        for knowledge_file in knowledge_files
     }

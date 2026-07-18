@@ -234,8 +234,8 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
         document_index: DocumentIndex,
         # Respecting user selections
         user_selected_filters: BaseFilters | None,
-        # If the chat is part of a project
-        project_id: int | None,
+        # If the chat is part of a workspace
+        workspace_id: int | None,
         bypass_acl: bool = False,
         # Slack context for federated Slack search (tokens fetched internally)
         slack_context: SlackContext | None = None,
@@ -249,7 +249,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
         self.llm = llm
         self.document_index = document_index
         self.user_selected_filters = user_selected_filters
-        self.project_id = project_id
+        self.workspace_id = workspace_id
         self.bypass_acl = bypass_acl
         self.slack_context = slack_context
         self.enable_slack_search = enable_slack_search
@@ -444,14 +444,14 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
                 chunk_search_request=ChunkSearchRequest(
                     query=query,
                     hybrid_alpha=hybrid_alpha,
-                    # For projects, the search scope is the project and has no other limits
+                    # For workspaces, the search scope is the workspace and has no other limits
                     user_selected_filters=(
-                        self.user_selected_filters if self.project_id is None else None
+                        self.user_selected_filters if self.workspace_id is None else None
                     ),
                     bypass_acl=self.bypass_acl,
                     limit=num_hits,
                 ),
-                project_id=self.project_id,
+                workspace_id=self.workspace_id,
                 document_index=self.document_index,
                 user=self.user,
                 persona=self.persona,
@@ -470,7 +470,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
         - User files (User Knowledge mode)
         """
         from om.configs.app_configs import DISABLE_VECTOR_DB
-        from om.db.connector import check_user_files_exist
+        from om.db.connector import check_knowledge_files_exist
 
         if DISABLE_VECTOR_DB:
             return False
@@ -478,7 +478,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
         return (
             check_connectors_exist(db_session)
             or check_federated_connectors_exist(db_session)
-            or check_user_files_exist(db_session)
+            or check_knowledge_files_exist(db_session)
         )
 
     @property

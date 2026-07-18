@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Button from "@/refresh-components/buttons/Button";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import InputTextArea from "@/refresh-components/inputs/InputTextArea";
 import { useModal } from "@/refresh-components/contexts/ModalContext";
 import { SvgAddLines } from "@opal/icons";
@@ -10,14 +10,14 @@ import Modal from "@/refresh-components/Modal";
 
 export default function AddInstructionModal() {
   const modal = useModal();
-  const { currentProjectDetails, upsertInstructions } = useProjectsContext();
+  const { currentWorkspaceDetails, upsertInstructions } = useWorkspacesContext();
   const [instructionText, setInstructionText] = useState("");
 
   useEffect(() => {
     if (!modal.isOpen) return;
-    const preset = currentProjectDetails?.project?.instructions ?? "";
+    const preset = currentWorkspaceDetails?.workspace?.instructions ?? "";
     setInstructionText(preset);
-  }, [modal.isOpen, currentProjectDetails?.project?.instructions]);
+  }, [modal.isOpen, currentWorkspaceDetails?.workspace?.instructions]);
 
   async function handleSubmit() {
     const value = instructionText.trim();

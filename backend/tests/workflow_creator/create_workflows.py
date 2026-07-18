@@ -77,7 +77,7 @@ def _update_persona_starter_messages(persona_id: int, starter_messages: list[dic
         "label_ids": [l["id"] for l in p.get("labels", [])],
         "starter_messages": starter_messages,
         "users": [], "groups": [], "hierarchy_node_ids": [],
-        "document_ids": [], "user_file_ids": [],
+        "document_ids": [], "knowledge_file_ids": [],
     }
 
     resp = api("PATCH", f"persona/{persona_id}", patch_body)
@@ -173,7 +173,7 @@ def _update_wrapper_persona_starter_messages(
         "groups": [],
         "hierarchy_node_ids": [],
         "document_ids": [],
-        "user_file_ids": [],
+        "knowledge_file_ids": [],
     }
 
     resp = api("PATCH", f"persona/{wrapper['id']}", patch_body)

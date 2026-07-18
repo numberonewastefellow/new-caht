@@ -38,14 +38,14 @@ import { Card } from "@/refresh-components/cards";
 import SwitchField from "@/refresh-components/form/SwitchField";
 import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import { useDocumentSets } from "@/app/admin/documents/sets/hooks";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import { toast } from "@/hooks/useToast";
-import UserFilesModal from "@/components/modals/UserFilesModal";
+import KnowledgeFilesModal from "@/components/modals/KnowledgeFilesModal";
 import {
-  ProjectFile,
-  UserFileStatus,
-} from "@/app/app/projects/projectsService";
+  WorkspaceFile,
+  KnowledgeFileStatus,
+} from "@/app/app/workspaces/workspacesService";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import LineItem from "@/refresh-components/buttons/LineItem";
 import {
@@ -113,7 +113,7 @@ const STEP_FIELDS: string[][] = [
   ["name", "description", "icon_name", "uploaded_image_id", "remove_image", "instructions", "starter_messages"],
   [
     "enable_knowledge", "document_set_ids", "document_ids", "hierarchy_node_ids",
-    "user_file_ids", "selected_sources", "image_generation", "web_search",
+    "knowledge_file_ids", "selected_sources", "image_generation", "web_search",
     "open_url", "code_interpreter", "file_reader",
   ],
   [
@@ -665,7 +665,7 @@ export default function AgentEditorPage({
   );
 
   // Hooks for Knowledge section
-  const { allRecentFiles, beginUpload } = useProjectsContext();
+  const { allRecentFiles, beginUpload } = useWorkspacesContext();
   const { data: documentSets } = useDocumentSets();
   const userFilesModal = useCreateModal();
   const [presentingDocument, setPresentingDocument] = useState<{
@@ -750,7 +750,7 @@ export default function AgentEditorPage({
     // Hierarchy node IDs (folders/spaces/channels) for scoped search
     hierarchy_node_ids:
       existingAgent?.hierarchy_nodes?.map((node) => node.id) ?? [],
-    user_file_ids: existingAgent?.user_file_ids ?? [],
+    knowledge_file_ids: existingAgent?.knowledge_file_ids ?? [],
     // Selected sources for the new knowledge UI - derived from document sets
     selected_sources: [] as ValidSources[],
 
@@ -870,7 +870,7 @@ export default function AgentEditorPage({
     document_set_ids: Yup.array().of(Yup.number()),
     document_ids: Yup.array().of(Yup.string()),
     hierarchy_node_ids: Yup.array().of(Yup.number()),
-    user_file_ids: Yup.array().of(Yup.string()),
+    knowledge_file_ids: Yup.array().of(Yup.string()),
     selected_sources: Yup.array().of(Yup.string()),
     num_chunks: Yup.number()
       .nullable()
@@ -1009,7 +1009,7 @@ export default function AgentEditorPage({
         is_default_persona: false,
         // display_priority: ...,
 
-        user_file_ids: values.enable_knowledge ? values.user_file_ids : [],
+        knowledge_file_ids: values.enable_knowledge ? values.knowledge_file_ids : [],
         hierarchy_node_ids: values.enable_knowledge
           ? values.hierarchy_node_ids
           : [],
@@ -1082,29 +1082,29 @@ export default function AgentEditorPage({
 
   // FilePickerPopover callbacks for Knowledge section
   function handlePickRecentFile(
-    file: ProjectFile,
+    file: WorkspaceFile,
     currentFileIds: string[],
     setFieldValue: (field: string, value: unknown) => void
   ) {
     if (!currentFileIds.includes(file.id)) {
-      setFieldValue("user_file_ids", [...currentFileIds, file.id]);
+      setFieldValue("knowledge_file_ids", [...currentFileIds, file.id]);
     }
   }
 
   function handleUnpickRecentFile(
-    file: ProjectFile,
+    file: WorkspaceFile,
     currentFileIds: string[],
     setFieldValue: (field: string, value: unknown) => void
   ) {
     setFieldValue(
-      "user_file_ids",
+      "knowledge_file_ids",
       currentFileIds.filter((id) => id !== file.id)
     );
   }
 
-  function handleFileClick(file: ProjectFile) {
+  function handleFileClick(file: WorkspaceFile) {
     setPresentingDocument({
-      document_id: `project_file__${file.file_id}`,
+      document_id: `workspace_file__${file.file_id}`,
       semantic_identifier: file.name,
     });
   }
@@ -1122,7 +1122,7 @@ export default function AgentEditorPage({
         Array.from(files),
         null,
         (result) => {
-          const uploadedFiles = result.user_files || [];
+          const uploadedFiles = result.knowledge_files || [];
           if (uploadedFiles.length === 0) return;
           const tempToFinal = new Map(
             uploadedFiles
@@ -1133,13 +1133,13 @@ export default function AgentEditorPage({
             (id: string) => tempToFinal.get(id) ?? id
           );
           selectedIds = replaced;
-          setFieldValue("user_file_ids", replaced);
+          setFieldValue("knowledge_file_ids", replaced);
         }
       );
       if (optimistic) {
         const optimisticIds = optimistic.map((f) => f.id);
         selectedIds = [...selectedIds, ...optimisticIds];
-        setFieldValue("user_file_ids", selectedIds);
+        setFieldValue("knowledge_file_ids", selectedIds);
       }
     } catch (error) {
       console.error("Upload error:", error);
@@ -1175,19 +1175,19 @@ export default function AgentEditorPage({
               allRecentFiles.map((f) => [f.id, f.status])
             );
 
-            const hasUploadingFiles = values.user_file_ids.some(
+            const hasUploadingFiles = values.knowledge_file_ids.some(
               (fileId: string) => {
                 const status = fileStatusMap.get(fileId);
                 if (status === undefined) {
                   return fileId.startsWith("temp_");
                 }
-                return status === UserFileStatus.UPLOADING;
+                return status === KnowledgeFileStatus.UPLOADING;
               }
             );
 
-            const hasProcessingFiles = values.user_file_ids.some(
+            const hasProcessingFiles = values.knowledge_file_ids.some(
               (fileId: string) =>
-                fileStatusMap.get(fileId) === UserFileStatus.PROCESSING
+                fileStatusMap.get(fileId) === KnowledgeFileStatus.PROCESSING
             );
 
             return (
@@ -1195,10 +1195,10 @@ export default function AgentEditorPage({
                 <FormWarningsEffect />
 
                 <userFilesModal.Provider>
-                  <UserFilesModal
+                  <KnowledgeFilesModal
                     title="User Files"
                     description="All files selected for this agent"
-                    recentFiles={values.user_file_ids
+                    recentFiles={values.knowledge_file_ids
                       .map((userFileId: string) => {
                         const rf = allRecentFiles.find(
                           (f) => f.id === userFileId
@@ -1207,35 +1207,35 @@ export default function AgentEditorPage({
                         return {
                           id: userFileId,
                           name: `File ${userFileId.slice(0, 8)}`,
-                          status: UserFileStatus.COMPLETED,
+                          status: KnowledgeFileStatus.COMPLETED,
                           file_id: userFileId,
                           created_at: new Date().toISOString(),
-                          project_id: null,
+                          workspace_id: null,
                           user_id: null,
                           file_type: "",
                           last_accessed_at: new Date().toISOString(),
                           chat_file_type: "file" as const,
-                        } as unknown as ProjectFile;
+                        } as unknown as WorkspaceFile;
                       })
-                      .filter((f): f is ProjectFile => f !== null)}
-                    selectedFileIds={values.user_file_ids}
-                    onPickRecent={(file: ProjectFile) => {
-                      if (!values.user_file_ids.includes(file.id)) {
-                        setFieldValue("user_file_ids", [
-                          ...values.user_file_ids,
+                      .filter((f): f is WorkspaceFile => f !== null)}
+                    selectedFileIds={values.knowledge_file_ids}
+                    onPickRecent={(file: WorkspaceFile) => {
+                      if (!values.knowledge_file_ids.includes(file.id)) {
+                        setFieldValue("knowledge_file_ids", [
+                          ...values.knowledge_file_ids,
                           file.id,
                         ]);
                       }
                     }}
-                    onUnpickRecent={(file: ProjectFile) => {
+                    onUnpickRecent={(file: WorkspaceFile) => {
                       setFieldValue(
-                        "user_file_ids",
-                        values.user_file_ids.filter((id) => id !== file.id)
+                        "knowledge_file_ids",
+                        values.knowledge_file_ids.filter((id) => id !== file.id)
                       );
                     }}
-                    onView={(file: ProjectFile) => {
+                    onView={(file: WorkspaceFile) => {
                       setPresentingDocument({
-                        document_id: `project_file__${file.file_id}`,
+                        document_id: `workspace_file__${file.file_id}`,
                         semantic_identifier: file.name,
                       });
                     }}
@@ -1456,16 +1456,16 @@ export default function AgentEditorPage({
                             onFolderIdsChange={(ids) =>
                               setFieldValue("hierarchy_node_ids", ids)
                             }
-                            selectedFileIds={values.user_file_ids}
+                            selectedFileIds={values.knowledge_file_ids}
                             onFileIdsChange={(ids) =>
-                              setFieldValue("user_file_ids", ids)
+                              setFieldValue("knowledge_file_ids", ids)
                             }
                             allRecentFiles={allRecentFiles}
                             onFileClick={handleFileClick}
                             onUploadChange={(e) =>
                               handleUploadChange(
                                 e,
-                                values.user_file_ids,
+                                values.knowledge_file_ids,
                                 setFieldValue
                               )
                             }

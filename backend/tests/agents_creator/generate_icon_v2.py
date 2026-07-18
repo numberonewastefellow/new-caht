@@ -804,7 +804,7 @@ def update_persona_image(persona_id: int, file_id: str) -> bool:
         "users": persona.get("users", []),
         "groups": persona.get("groups", []),
         "label_ids": [lbl["id"] for lbl in persona.get("labels", [])],
-        "user_file_ids": [],
+        "knowledge_file_ids": [],
         "hierarchy_node_ids": [],
         "document_ids": [],
         "uploaded_image_id": file_id,

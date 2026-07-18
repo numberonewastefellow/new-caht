@@ -7,7 +7,7 @@ import { errorHandlingFetcher } from "@/lib/fetcher";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import useAppFocus from "./useAppFocus";
 import { useAgents } from "./useAgents";
-import { useProjects } from "@/lib/hooks/useProjects";
+import { useWorkspaces } from "@/lib/hooks/useWorkspaces";
 import { DEFAULT_ASSISTANT_ID } from "@/lib/constants";
 
 interface ChatSessionsResponse {
@@ -17,7 +17,7 @@ interface ChatSessionsResponse {
 export interface PendingChatSessionParams {
   chatSessionId: string;
   personaId: number;
-  projectId?: number | null;
+  workspaceId?: number | null;
 }
 
 interface UseChatSessionsOutput {
@@ -153,27 +153,27 @@ export default function useChatSessions(): UseChatSessionsOutput {
 
   const currentChatSessionId = appFocus.isChat() ? appFocus.getId() : null;
 
-  // Workspace (project) chats are excluded from `get-user-chat-sessions`
-  // (only_non_project_chats=True) and the API doesn't carry `project_id`. The
-  // projects list, however, includes each workspace's chat_sessions — so when
+  // Workspace (workspace) chats are excluded from `get-user-chat-sessions`
+  // (only_non_workspace_chats=True) and the API doesn't carry `workspace_id`. The
+  // workspaces list, however, includes each workspace's chat_sessions — so when
   // the current chat isn't in the main list, resolve it from there and stamp
-  // the owning `project_id`. This lets the rest of the app know a chat's
+  // the owning `workspace_id`. This lets the rest of the app know a chat's
   // workspace without any backend change.
-  const { projects } = useProjects();
+  const { workspaces } = useWorkspaces();
   const currentChatSession = useMemo<ChatSession | null>(() => {
     if (!currentChatSessionId) return null;
     const fromList = chatSessions.find(
       (chatSession) => chatSession.id === currentChatSessionId
     );
     if (fromList) return fromList;
-    for (const project of projects) {
-      const chat = project.chat_sessions?.find(
+    for (const workspace of workspaces) {
+      const chat = workspace.chat_sessions?.find(
         (cs) => cs.id === currentChatSessionId
       );
-      if (chat) return { ...chat, project_id: project.id };
+      if (chat) return { ...chat, workspace_id: workspace.id };
     }
     return null;
-  }, [chatSessions, currentChatSessionId, projects]);
+  }, [chatSessions, currentChatSessionId, workspaces]);
 
   const agentForCurrentChatSession =
     useFindAgentForCurrentChatSession(currentChatSession);
@@ -181,9 +181,9 @@ export default function useChatSessions(): UseChatSessionsOutput {
   // Add a pending chat session that will persist across SWR revalidations
   // The session will be automatically removed once it appears in the server response
   const addPendingChatSession = useCallback(
-    ({ chatSessionId, personaId, projectId }: PendingChatSessionParams) => {
-      // Don't add sessions that belong to a project
-      if (projectId != null) {
+    ({ chatSessionId, personaId, workspaceId }: PendingChatSessionParams) => {
+      // Don't add sessions that belong to a workspace
+      if (workspaceId != null) {
         return;
       }
 
@@ -205,7 +205,7 @@ export default function useChatSessions(): UseChatSessionsOutput {
         time_created: now,
         time_updated: now,
         shared_status: ChatSessionSharedStatus.Private,
-        project_id: projectId ?? null,
+        workspace_id: workspaceId ?? null,
         current_alternate_model: "",
         current_temperature_override: null,
       };

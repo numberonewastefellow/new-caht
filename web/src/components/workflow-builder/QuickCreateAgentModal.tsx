@@ -69,7 +69,7 @@ export function QuickCreateAgentModal({
       icon_name: null,
       is_default_persona: false,
       label_ids: null,
-      user_file_ids: [],
+      knowledge_file_ids: [],
     };
 
     try {

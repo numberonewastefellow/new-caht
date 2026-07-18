@@ -47,7 +47,7 @@ SEMANTIC_IDENTIFIER_FIELD_NAME = "semantic_identifier"
 IMAGE_FILE_ID_FIELD_NAME = "image_file_id"
 SOURCE_LINKS_FIELD_NAME = "source_links"
 DOCUMENT_SETS_FIELD_NAME = "document_sets"
-USER_PROJECTS_FIELD_NAME = "user_projects"
+USER_WORKSPACES_FIELD_NAME = "user_workspaces"
 PERSONAS_FIELD_NAME = "personas"
 DOCUMENT_ID_FIELD_NAME = "document_id"
 CHUNK_INDEX_FIELD_NAME = "chunk_index"
@@ -229,7 +229,7 @@ class DocumentChunkWithoutVectors(BaseModel):
     metadata_suffix: str | None = None
 
     document_sets: list[str] | None = None
-    user_projects: list[int] | None = None
+    user_workspaces: list[int] | None = None
     personas: list[int] | None = None
     primary_owners: list[str] | None = None
     secondary_owners: list[str] | None = None
@@ -592,7 +592,7 @@ class DocumentSchema:
                 },
                 # Product-specific fields.
                 DOCUMENT_SETS_FIELD_NAME: {"type": "keyword"},
-                USER_PROJECTS_FIELD_NAME: {"type": "integer"},
+                USER_WORKSPACES_FIELD_NAME: {"type": "integer"},
                 PERSONAS_FIELD_NAME: {"type": "integer"},
                 PRIMARY_OWNERS_FIELD_NAME: {"type": "keyword"},
                 SECONDARY_OWNERS_FIELD_NAME: {"type": "keyword"},

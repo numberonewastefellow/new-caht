@@ -18,20 +18,20 @@ from om.configs.constants import OmCeleryQueues
 from om.configs.constants import OmCeleryTask
 from om.configs.constants import PUBLIC_API_TAGS
 from om.db.engine.sql_engine import get_session
-from om.db.enums import UserFileStatus
+from om.db.enums import KnowledgeFileStatus
 from om.db.models import ChatSession
-from om.db.models import Project__UserFile
+from om.db.models import Workspace__KnowledgeFile
 from om.db.models import User
-from om.db.models import UserFile
-from om.db.models import UserProject
+from om.db.models import KnowledgeFile
+from om.db.models import Workspace
 from om.db.persona import get_personas_by_ids
-from om.db.projects import get_project_token_count
-from om.db.projects import upload_files_to_user_files_with_indexing
-from om.server.features.projects.models import CategorizedFilesSnapshot
-from om.server.features.projects.models import ChatSessionRequest
-from om.server.features.projects.models import TokenCountResponse
-from om.server.features.projects.models import UserFileSnapshot
-from om.server.features.projects.models import UserProjectSnapshot
+from om.db.workspaces import get_workspace_token_count
+from om.db.workspaces import upload_files_to_knowledge_files_with_indexing
+from om.server.features.workspaces.models import CategorizedFilesSnapshot
+from om.server.features.workspaces.models import ChatSessionRequest
+from om.server.features.workspaces.models import TokenCountResponse
+from om.server.features.workspaces.models import KnowledgeFileSnapshot
+from om.server.features.workspaces.models import WorkspaceSnapshot
 from om.utils.logger import setup_logger
 from shared_configs.contextvars import get_current_tenant_id
 
@@ -41,43 +41,43 @@ logger = setup_logger()
 router = APIRouter(prefix="/workspaces")
 
 
-class UserFileDeleteResult(BaseModel):
+class KnowledgeFileDeleteResult(BaseModel):
     has_associations: bool
-    project_names: list[str] = []
+    workspace_names: list[str] = []
     assistant_names: list[str] = []
 
 
 @router.get("", tags=PUBLIC_API_TAGS)
-def get_projects(
+def get_workspaces(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> list[UserProjectSnapshot]:
+) -> list[WorkspaceSnapshot]:
     user_id = user.id
-    projects = (
-        db_session.query(UserProject).filter(UserProject.user_id == user_id).all()
+    workspaces = (
+        db_session.query(Workspace).filter(Workspace.user_id == user_id).all()
     )
-    return [UserProjectSnapshot.from_model(project) for project in projects]
+    return [WorkspaceSnapshot.from_model(workspace) for workspace in workspaces]
 
 
 @router.post("/create", tags=PUBLIC_API_TAGS)
-def create_project(
+def create_workspace(
     name: str,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> UserProjectSnapshot:
+) -> WorkspaceSnapshot:
     if name == "":
         raise HTTPException(status_code=400, detail="Workspace name cannot be empty")
     user_id = user.id
-    project = UserProject(name=name, user_id=user_id)
-    db_session.add(project)
+    workspace = Workspace(name=name, user_id=user_id)
+    db_session.add(workspace)
     db_session.commit()
-    return UserProjectSnapshot.from_model(project)
+    return WorkspaceSnapshot.from_model(workspace)
 
 
 @router.post("/file/upload", tags=PUBLIC_API_TAGS)
-def upload_user_files(
+def upload_knowledge_files(
     files: list[UploadFile] = File(...),
-    project_id: int | None = Form(None),
+    workspace_id: int | None = Form(None),
     temp_id_map: str | None = Form(None),  # JSON string mapping hashed key -> temp_id
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
@@ -96,9 +96,9 @@ def upload_user_files(
                 parsed_temp_id_map = None
 
         # Use our consolidated function that handles indexing properly
-        categorized_files_result = upload_files_to_user_files_with_indexing(
+        categorized_files_result = upload_files_to_knowledge_files_with_indexing(
             files=files,
-            project_id=project_id,
+            workspace_id=workspace_id,
             user=user,
             temp_id_map=parsed_temp_id_map,
             db_session=db_session,
@@ -115,47 +115,47 @@ def upload_user_files(
         )
 
 
-@router.get("/{project_id}", tags=PUBLIC_API_TAGS)
-def get_project(
-    project_id: int,
+@router.get("/{workspace_id}", tags=PUBLIC_API_TAGS)
+def get_workspace(
+    workspace_id: int,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> UserProjectSnapshot:
+) -> WorkspaceSnapshot:
     user_id = user.id
-    project = (
-        db_session.query(UserProject)
-        .filter(UserProject.id == project_id, UserProject.user_id == user_id)
+    workspace = (
+        db_session.query(Workspace)
+        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
         .one_or_none()
     )
-    if project is None:
+    if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
-    return UserProjectSnapshot.from_model(project)
+    return WorkspaceSnapshot.from_model(workspace)
 
 
-@router.get("/files/{project_id}", tags=PUBLIC_API_TAGS)
-def get_files_in_project(
-    project_id: int,
+@router.get("/files/{workspace_id}", tags=PUBLIC_API_TAGS)
+def get_files_in_workspace(
+    workspace_id: int,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> list[UserFileSnapshot]:
+) -> list[KnowledgeFileSnapshot]:
     user_id = user.id
-    user_files = (
-        db_session.query(UserFile)
-        .join(Project__UserFile, UserFile.id == Project__UserFile.user_file_id)
+    knowledge_files = (
+        db_session.query(KnowledgeFile)
+        .join(Workspace__KnowledgeFile, KnowledgeFile.id == Workspace__KnowledgeFile.knowledge_file_id)
         .filter(
-            Project__UserFile.project_id == project_id,
-            UserFile.user_id == user_id,
-            UserFile.status != UserFileStatus.FAILED,
+            Workspace__KnowledgeFile.workspace_id == workspace_id,
+            KnowledgeFile.user_id == user_id,
+            KnowledgeFile.status != KnowledgeFileStatus.FAILED,
         )
-        .order_by(Project__UserFile.created_at.desc())
+        .order_by(Workspace__KnowledgeFile.created_at.desc())
         .all()
     )
-    return [UserFileSnapshot.from_model(user_file) for user_file in user_files]
+    return [KnowledgeFileSnapshot.from_model(knowledge_file) for knowledge_file in knowledge_files]
 
 
-@router.delete("/{project_id}/files/{file_id}", tags=PUBLIC_API_TAGS)
-def unlink_user_file_from_project(
-    project_id: int,
+@router.delete("/{workspace_id}/files/{file_id}", tags=PUBLIC_API_TAGS)
+def unlink_user_file_from_workspace(
+    workspace_id: int,
     file_id: UUID,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
@@ -165,241 +165,241 @@ def unlink_user_file_from_project(
     Does not delete the underlying file; only removes the association.
     """
     user_id = user.id
-    project = (
-        db_session.query(UserProject)
-        .filter(UserProject.id == project_id, UserProject.user_id == user_id)
+    workspace = (
+        db_session.query(Workspace)
+        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
         .one_or_none()
     )
-    if project is None:
+    if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
     user_id = user.id
-    user_file = (
-        db_session.query(UserFile)
-        .filter(UserFile.id == file_id, UserFile.user_id == user_id)
+    knowledge_file = (
+        db_session.query(KnowledgeFile)
+        .filter(KnowledgeFile.id == file_id, KnowledgeFile.user_id == user_id)
         .one_or_none()
     )
-    if user_file is None:
+    if knowledge_file is None:
         raise HTTPException(status_code=404, detail="File not found")
 
     # Remove the association if it exists
-    if user_file in project.user_files:
-        project.user_files.remove(user_file)
-        user_file.needs_project_sync = True
+    if knowledge_file in workspace.knowledge_files:
+        workspace.knowledge_files.remove(knowledge_file)
+        knowledge_file.needs_workspace_sync = True
         db_session.commit()
 
     tenant_id = get_current_tenant_id()
     task = client_app.send_task(
         OmCeleryTask.PROCESS_SINGLE_USER_FILE_PROJECT_SYNC,
-        kwargs={"user_file_id": user_file.id, "tenant_id": tenant_id},
+        kwargs={"knowledge_file_id": knowledge_file.id, "tenant_id": tenant_id},
         queue=OmCeleryQueues.USER_FILE_PROJECT_SYNC,
         priority=OmCeleryPriority.HIGHEST,
     )
     logger.info(
-        f"Triggered workspace sync for user_file_id={user_file.id} with task_id={task.id}"
+        f"Triggered workspace sync for knowledge_file_id={knowledge_file.id} with task_id={task.id}"
     )
 
     return Response(status_code=204)
 
 
 @router.post(
-    "/{project_id}/files/{file_id}",
-    response_model=UserFileSnapshot,
+    "/{workspace_id}/files/{file_id}",
+    response_model=KnowledgeFileSnapshot,
     tags=PUBLIC_API_TAGS,
 )
-def link_user_file_to_project(
-    project_id: int,
+def link_user_file_to_workspace(
+    workspace_id: int,
     file_id: UUID,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> UserFileSnapshot:
+) -> KnowledgeFileSnapshot:
     """Link an existing user file to a specific workspace for the current user.
 
-    Creates the association in the Project__UserFile join table if it does not exist.
+    Creates the association in the Workspace__KnowledgeFile join table if it does not exist.
     Returns the linked user file snapshot.
     """
     user_id = user.id
-    project = (
-        db_session.query(UserProject)
-        .filter(UserProject.id == project_id, UserProject.user_id == user_id)
+    workspace = (
+        db_session.query(Workspace)
+        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
         .one_or_none()
     )
-    if project is None:
+    if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
-    user_file = (
-        db_session.query(UserFile)
-        .filter(UserFile.id == file_id, UserFile.user_id == user_id)
+    knowledge_file = (
+        db_session.query(KnowledgeFile)
+        .filter(KnowledgeFile.id == file_id, KnowledgeFile.user_id == user_id)
         .one_or_none()
     )
-    if user_file is None:
+    if knowledge_file is None:
         raise HTTPException(status_code=404, detail="File not found")
 
-    if user_file not in project.user_files:
-        user_file.needs_project_sync = True
-        project.user_files.append(user_file)
+    if knowledge_file not in workspace.knowledge_files:
+        knowledge_file.needs_workspace_sync = True
+        workspace.knowledge_files.append(knowledge_file)
         db_session.commit()
 
     tenant_id = get_current_tenant_id()
     task = client_app.send_task(
         OmCeleryTask.PROCESS_SINGLE_USER_FILE_PROJECT_SYNC,
-        kwargs={"user_file_id": user_file.id, "tenant_id": tenant_id},
+        kwargs={"knowledge_file_id": knowledge_file.id, "tenant_id": tenant_id},
         queue=OmCeleryQueues.USER_FILE_PROJECT_SYNC,
         priority=OmCeleryPriority.HIGHEST,
     )
     logger.info(
-        f"Triggered workspace sync for user_file_id={user_file.id} with task_id={task.id}"
+        f"Triggered workspace sync for knowledge_file_id={knowledge_file.id} with task_id={task.id}"
     )
 
-    return UserFileSnapshot.from_model(user_file)
+    return KnowledgeFileSnapshot.from_model(knowledge_file)
 
 
-class ProjectInstructionsResponse(BaseModel):
+class WorkspaceInstructionsResponse(BaseModel):
     instructions: str | None
 
 
 @router.get(
-    "/{project_id}/instructions",
-    response_model=ProjectInstructionsResponse,
+    "/{workspace_id}/instructions",
+    response_model=WorkspaceInstructionsResponse,
     tags=PUBLIC_API_TAGS,
 )
-def get_project_instructions(
-    project_id: int,
+def get_workspace_instructions(
+    workspace_id: int,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> ProjectInstructionsResponse:
+) -> WorkspaceInstructionsResponse:
     user_id = user.id
-    project = (
-        db_session.query(UserProject)
-        .filter(UserProject.id == project_id, UserProject.user_id == user_id)
+    workspace = (
+        db_session.query(Workspace)
+        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
         .one_or_none()
     )
 
-    if project is None:
+    if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
-    return ProjectInstructionsResponse(instructions=project.instructions)
+    return WorkspaceInstructionsResponse(instructions=workspace.workspace_instructions)
 
 
-class UpsertProjectInstructionsRequest(BaseModel):
+class UpsertWorkspaceInstructionsRequest(BaseModel):
     instructions: str
 
 
 @router.post(
-    "/{project_id}/instructions",
-    response_model=ProjectInstructionsResponse,
+    "/{workspace_id}/instructions",
+    response_model=WorkspaceInstructionsResponse,
     tags=PUBLIC_API_TAGS,
 )
-def upsert_project_instructions(
-    project_id: int,
-    body: UpsertProjectInstructionsRequest,
+def upsert_workspace_instructions(
+    workspace_id: int,
+    body: UpsertWorkspaceInstructionsRequest,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> ProjectInstructionsResponse:
+) -> WorkspaceInstructionsResponse:
     """Create or update this workspace's instructions stored on the workspace itself."""
     # Ensure the workspace exists and belongs to the user
     user_id = user.id
-    project = (
-        db_session.query(UserProject)
-        .filter(UserProject.id == project_id, UserProject.user_id == user_id)
+    workspace = (
+        db_session.query(Workspace)
+        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
         .one_or_none()
     )
-    if project is None:
+    if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
-    project.instructions = body.instructions
+    workspace.workspace_instructions = body.instructions
 
     db_session.commit()
-    db_session.refresh(project)
-    return ProjectInstructionsResponse(instructions=project.instructions)
+    db_session.refresh(workspace)
+    return WorkspaceInstructionsResponse(instructions=workspace.workspace_instructions)
 
 
-class ProjectPayload(BaseModel):
-    project: UserProjectSnapshot
-    files: list[UserFileSnapshot] | None = None
+class WorkspacePayload(BaseModel):
+    workspace: WorkspaceSnapshot
+    files: list[KnowledgeFileSnapshot] | None = None
     persona_id_to_is_default: dict[int, bool] | None = None
 
 
 @router.get(
-    "/{project_id}/details", response_model=ProjectPayload, tags=PUBLIC_API_TAGS
+    "/{workspace_id}/details", response_model=WorkspacePayload, tags=PUBLIC_API_TAGS
 )
-def get_project_details(
-    project_id: int,
+def get_workspace_details(
+    workspace_id: int,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> ProjectPayload:
-    project = get_project(project_id, user, db_session)
-    files = get_files_in_project(project_id, user, db_session)
+) -> WorkspacePayload:
+    workspace = get_workspace(workspace_id, user, db_session)
+    files = get_files_in_workspace(workspace_id, user, db_session)
     persona_ids = [
         session.persona_id
-        for session in project.chat_sessions
+        for session in workspace.chat_sessions
         if session.persona_id is not None
     ]
     personas = get_personas_by_ids(persona_ids, db_session)
     persona_id_to_is_default = {
         persona.id: persona.is_default_persona for persona in personas
     }
-    return ProjectPayload(
-        project=project,
+    return WorkspacePayload(
+        workspace=workspace,
         files=files,
         persona_id_to_is_default=persona_id_to_is_default,
     )
 
 
-class UpdateProjectRequest(BaseModel):
+class UpdateWorkspaceRequest(BaseModel):
     name: str | None = None
     description: str | None = None
 
 
-@router.patch("/{project_id}", response_model=UserProjectSnapshot, tags=PUBLIC_API_TAGS)
-def update_project(
-    project_id: int,
-    body: UpdateProjectRequest,
+@router.patch("/{workspace_id}", response_model=WorkspaceSnapshot, tags=PUBLIC_API_TAGS)
+def update_workspace(
+    workspace_id: int,
+    body: UpdateWorkspaceRequest,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> UserProjectSnapshot:
+) -> WorkspaceSnapshot:
     user_id = user.id
-    project = (
-        db_session.query(UserProject)
-        .filter(UserProject.id == project_id, UserProject.user_id == user_id)
+    workspace = (
+        db_session.query(Workspace)
+        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
         .one_or_none()
     )
-    if project is None:
+    if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
     if body.name is not None:
-        project.name = body.name
+        workspace.name = body.name
     if body.description is not None:
-        project.description = body.description
+        workspace.description = body.description
 
     db_session.commit()
-    db_session.refresh(project)
-    return UserProjectSnapshot.from_model(project)
+    db_session.refresh(workspace)
+    return WorkspaceSnapshot.from_model(workspace)
 
 
-@router.delete("/{project_id}", tags=PUBLIC_API_TAGS)
-def delete_project(
-    project_id: int,
+@router.delete("/{workspace_id}", tags=PUBLIC_API_TAGS)
+def delete_workspace(
+    workspace_id: int,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> Response:
     user_id = user.id
-    project = (
-        db_session.query(UserProject)
-        .filter(UserProject.id == project_id, UserProject.user_id == user_id)
+    workspace = (
+        db_session.query(Workspace)
+        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
         .one_or_none()
     )
-    if project is None:
+    if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
     # Unlink chat sessions from this workspace
-    for chat in project.chat_sessions:
-        chat.project_id = None
+    for chat in workspace.chat_sessions:
+        chat.workspace_id = None
 
-    # Unlink many-to-many user files association (Project__UserFile)
-    for uf in list(project.user_files):
-        project.user_files.remove(uf)
+    # Unlink many-to-many user files association (Workspace__KnowledgeFile)
+    for uf in list(workspace.knowledge_files):
+        workspace.knowledge_files.remove(uf)
 
-    db_session.delete(project)
+    db_session.delete(workspace)
     db_session.commit()
     return Response(status_code=204)
 
@@ -409,84 +409,84 @@ def delete_user_file(
     file_id: UUID,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> UserFileDeleteResult:
+) -> KnowledgeFileDeleteResult:
     """Delete a user file belonging to the current user.
 
     This will also remove any workspace associations for the file.
     """
     user_id = user.id
-    user_file = (
-        db_session.query(UserFile)
-        .filter(UserFile.id == file_id, UserFile.user_id == user_id)
+    knowledge_file = (
+        db_session.query(KnowledgeFile)
+        .filter(KnowledgeFile.id == file_id, KnowledgeFile.user_id == user_id)
         .one_or_none()
     )
-    if user_file is None:
+    if knowledge_file is None:
         raise HTTPException(status_code=404, detail="File not found")
 
     # Check associations with workspaces and assistants (personas)
-    project_names = [project.name for project in user_file.projects]
-    assistant_names = [assistant.name for assistant in user_file.assistants]
+    workspace_names = [workspace.name for workspace in knowledge_file.workspaces]
+    assistant_names = [assistant.name for assistant in knowledge_file.assistants]
 
-    if len(project_names) > 0 or len(assistant_names) > 0:
-        return UserFileDeleteResult(
+    if len(workspace_names) > 0 or len(assistant_names) > 0:
+        return KnowledgeFileDeleteResult(
             has_associations=True,
-            project_names=project_names,
+            workspace_names=workspace_names,
             assistant_names=assistant_names,
         )
 
     # No associations found; mark as DELETING and enqueue delete task
-    user_file.status = UserFileStatus.DELETING
+    knowledge_file.status = KnowledgeFileStatus.DELETING
     db_session.commit()
 
     tenant_id = get_current_tenant_id()
     task = client_app.send_task(
         OmCeleryTask.DELETE_SINGLE_USER_FILE,
-        kwargs={"user_file_id": str(user_file.id), "tenant_id": tenant_id},
+        kwargs={"knowledge_file_id": str(knowledge_file.id), "tenant_id": tenant_id},
         queue=OmCeleryQueues.USER_FILE_DELETE,
         priority=OmCeleryPriority.HIGH,
     )
     logger.info(
-        f"Triggered delete for user_file_id={user_file.id} with task_id={task.id}"
+        f"Triggered delete for knowledge_file_id={knowledge_file.id} with task_id={task.id}"
     )
-    return UserFileDeleteResult(
-        has_associations=False, project_names=[], assistant_names=[]
+    return KnowledgeFileDeleteResult(
+        has_associations=False, workspace_names=[], assistant_names=[]
     )
 
 
-@router.get("/file/{file_id}", response_model=UserFileSnapshot, tags=PUBLIC_API_TAGS)
+@router.get("/file/{file_id}", response_model=KnowledgeFileSnapshot, tags=PUBLIC_API_TAGS)
 def get_user_file(
     file_id: UUID,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> UserFileSnapshot:
+) -> KnowledgeFileSnapshot:
     """Fetch a single user file by ID for the current user.
 
     Includes files in any status (including FAILED) to allow status polling.
     """
     user_id = user.id
-    user_file = (
-        db_session.query(UserFile)
-        .filter(UserFile.id == file_id, UserFile.user_id == user_id)
-        .filter(UserFile.status != UserFileStatus.DELETING)
+    knowledge_file = (
+        db_session.query(KnowledgeFile)
+        .filter(KnowledgeFile.id == file_id, KnowledgeFile.user_id == user_id)
+        .filter(KnowledgeFile.status != KnowledgeFileStatus.DELETING)
         .one_or_none()
     )
-    if user_file is None:
+    if knowledge_file is None:
         raise HTTPException(status_code=404, detail="File not found")
-    return UserFileSnapshot.from_model(user_file)
+    return KnowledgeFileSnapshot.from_model(knowledge_file)
 
 
-class UserFileIdsRequest(BaseModel):
+class KnowledgeFileIdsRequest(BaseModel):
     file_ids: list[UUID]
 
 
 @router.post(
-    "/file/statuses", response_model=list[UserFileSnapshot], tags=PUBLIC_API_TAGS
+    "/file/statuses", response_model=list[KnowledgeFileSnapshot], tags=PUBLIC_API_TAGS
 )
 def get_user_file_statuses(
-    body: UserFileIdsRequest,
+    body: KnowledgeFileIdsRequest,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> list[UserFileSnapshot]:
+) -> list[KnowledgeFileSnapshot]:
     """Fetch statuses for a set of user file IDs owned by the current user.
 
     Includes files in any status so the client can detect transitions to FAILED.
@@ -495,20 +495,20 @@ def get_user_file_statuses(
         return []
 
     user_id = user.id
-    user_files = (
-        db_session.query(UserFile)
-        .filter(UserFile.user_id == user_id)
-        .filter(UserFile.id.in_(body.file_ids))
-        .filter(UserFile.status != UserFileStatus.DELETING)
+    knowledge_files = (
+        db_session.query(KnowledgeFile)
+        .filter(KnowledgeFile.user_id == user_id)
+        .filter(KnowledgeFile.id.in_(body.file_ids))
+        .filter(KnowledgeFile.status != KnowledgeFileStatus.DELETING)
         .all()
     )
 
-    return [UserFileSnapshot.from_model(user_file) for user_file in user_files]
+    return [KnowledgeFileSnapshot.from_model(knowledge_file) for knowledge_file in knowledge_files]
 
 
-@router.post("/{project_id}/move_chat_session")
+@router.post("/{workspace_id}/move_chat_session")
 def move_chat_session(
-    project_id: int,
+    workspace_id: int,
     body: ChatSessionRequest,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
@@ -521,7 +521,7 @@ def move_chat_session(
     )
     if chat_session is None:
         raise HTTPException(status_code=404, detail="Chat session not found")
-    chat_session.project_id = project_id
+    chat_session.workspace_id = workspace_id
     db_session.commit()
     return Response(status_code=204)
 
@@ -540,13 +540,13 @@ def remove_chat_session(
     )
     if chat_session is None:
         raise HTTPException(status_code=404, detail="Chat session not found")
-    chat_session.project_id = None
+    chat_session.workspace_id = None
     db_session.commit()
     return Response(status_code=204)
 
 
 @router.get("/session/{chat_session_id}/token-count", response_model=TokenCountResponse)
-def get_chat_session_project_token_count(
+def get_chat_session_workspace_token_count(
     chat_session_id: str,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
@@ -564,8 +564,8 @@ def get_chat_session_project_token_count(
     if chat_session is None:
         raise HTTPException(status_code=404, detail="Chat session not found")
 
-    total_tokens = get_project_token_count(
-        project_id=chat_session.project_id,
+    total_tokens = get_workspace_token_count(
+        workspace_id=chat_session.workspace_id,
         user_id=user_id,
         db_session=db_session,
     )
@@ -574,11 +574,11 @@ def get_chat_session_project_token_count(
 
 
 @router.get("/session/{chat_session_id}/files", tags=PUBLIC_API_TAGS)
-def get_chat_session_project_files(
+def get_chat_session_workspace_files(
     chat_session_id: str,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
-) -> list[UserFileSnapshot]:
+) -> list[KnowledgeFileSnapshot]:
     """Return user files for the workspace linked to the given chat session.
 
     If the chat session has no workspace, returns an empty list.
@@ -594,26 +594,26 @@ def get_chat_session_project_files(
     if chat_session is None:
         raise HTTPException(status_code=404, detail="Chat session not found")
 
-    if chat_session.project_id is None:
+    if chat_session.workspace_id is None:
         return []
 
-    user_files = (
-        db_session.query(UserFile)
+    knowledge_files = (
+        db_session.query(KnowledgeFile)
         .filter(
-            UserFile.projects.any(id=chat_session.project_id),
-            UserFile.user_id == user_id,
-            UserFile.status != UserFileStatus.FAILED,
+            KnowledgeFile.workspaces.any(id=chat_session.workspace_id),
+            KnowledgeFile.user_id == user_id,
+            KnowledgeFile.status != KnowledgeFileStatus.FAILED,
         )
-        .order_by(UserFile.created_at.desc())
+        .order_by(KnowledgeFile.created_at.desc())
         .all()
     )
 
-    return [UserFileSnapshot.from_model(user_file) for user_file in user_files]
+    return [KnowledgeFileSnapshot.from_model(knowledge_file) for knowledge_file in knowledge_files]
 
 
-@router.get("/{project_id}/token-count", response_model=TokenCountResponse)
-def get_project_total_token_count(
-    project_id: int,
+@router.get("/{workspace_id}/token-count", response_model=TokenCountResponse)
+def get_workspace_total_token_count(
+    workspace_id: int,
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> TokenCountResponse:
@@ -621,16 +621,16 @@ def get_project_total_token_count(
 
     # Verify the workspace belongs to the current user
     user_id = user.id
-    project = (
-        db_session.query(UserProject)
-        .filter(UserProject.id == project_id, UserProject.user_id == user_id)
+    workspace = (
+        db_session.query(Workspace)
+        .filter(Workspace.id == workspace_id, Workspace.user_id == user_id)
         .one_or_none()
     )
-    if project is None:
+    if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
-    total_tokens = get_project_token_count(
-        project_id=project_id,
+    total_tokens = get_workspace_token_count(
+        workspace_id=workspace_id,
         user_id=user_id,
         db_session=db_session,
     )

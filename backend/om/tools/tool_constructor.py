@@ -56,7 +56,7 @@ logger = setup_logger()
 
 class SearchToolConfig(BaseModel):
     user_selected_filters: BaseFilters | None = None
-    project_id: int | None = None
+    workspace_id: int | None = None
     bypass_acl: bool = False
     additional_context: str | None = None
     slack_context: SlackContext | None = None
@@ -64,8 +64,8 @@ class SearchToolConfig(BaseModel):
 
 
 class FileReaderToolConfig(BaseModel):
-    # IDs from the ``user_file`` table (project / persona-attached files).
-    user_file_ids: list[UUID] = []
+    # IDs from the ``knowledge_file`` table (workspace / persona-attached files).
+    knowledge_file_ids: list[UUID] = []
     # IDs from the ``file_record`` table (chat-attached files).
     chat_file_ids: list[UUID] = []
 
@@ -185,7 +185,7 @@ def construct_tools(
                     llm=llm,
                     document_index=document_index,
                     user_selected_filters=search_tool_config.user_selected_filters,
-                    project_id=search_tool_config.project_id,
+                    workspace_id=search_tool_config.workspace_id,
                     bypass_acl=search_tool_config.bypass_acl,
                     slack_context=search_tool_config.slack_context,
                     enable_slack_search=search_tool_config.enable_slack_search,
@@ -266,7 +266,7 @@ def construct_tools(
                     FileReaderTool(
                         tool_id=db_tool_model.id,
                         emitter=emitter,
-                        user_file_ids=cfg.user_file_ids,
+                        knowledge_file_ids=cfg.knowledge_file_ids,
                         chat_file_ids=cfg.chat_file_ids,
                     )
                 ]
@@ -449,7 +449,7 @@ def construct_tools(
             llm=llm,
             document_index=document_index,
             user_selected_filters=search_tool_config.user_selected_filters,
-            project_id=search_tool_config.project_id,
+            workspace_id=search_tool_config.workspace_id,
             bypass_acl=search_tool_config.bypass_acl,
             slack_context=search_tool_config.slack_context,
             enable_slack_search=search_tool_config.enable_slack_search,

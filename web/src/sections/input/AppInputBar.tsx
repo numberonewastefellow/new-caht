@@ -26,12 +26,12 @@ import { truncateString, cn, isImageFile } from "@/lib/utils";
 import { Disabled } from "@/refresh-components/Disabled";
 import { useUser } from "@/providers/UserProvider";
 import { SettingsContext } from "@/providers/SettingsProvider";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { FileCard } from "@/sections/cards/FileCard";
 import {
-  ProjectFile,
-  UserFileStatus,
-} from "@/app/app/projects/projectsService";
+  WorkspaceFile,
+  KnowledgeFileStatus,
+} from "@/app/app/workspaces/workspacesService";
 import FilePickerPopover from "@/refresh-components/popovers/FilePickerPopover";
 import ActionsPopover from "@/refresh-components/popovers/ActionsPopover";
 import {
@@ -198,7 +198,7 @@ const AppInputBar = React.memo(
       useForcedTools();
     const { assistantPreferences } = useAgentPreferences();
     const { currentMessageFiles, setCurrentMessageFiles } =
-      useProjectsContext();
+      useWorkspacesContext();
 
     const disabledToolIds = useMemo(() => {
       if (!selectedAssistant || !assistantPreferences) return [];
@@ -209,23 +209,23 @@ const AppInputBar = React.memo(
 
     const currentIndexingFiles = useMemo(() => {
       return currentMessageFiles.filter(
-        (file) => file.status === UserFileStatus.PROCESSING
+        (file) => file.status === KnowledgeFileStatus.PROCESSING
       );
     }, [currentMessageFiles]);
 
     const hasUploadingFiles = useMemo(() => {
       return currentMessageFiles.some(
-        (file) => file.status === UserFileStatus.UPLOADING
+        (file) => file.status === KnowledgeFileStatus.UPLOADING
       );
     }, [currentMessageFiles]);
 
-    // Convert ProjectFile to MinimalOnyxDocument format for viewing
+    // Convert WorkspaceFile to MinimalOnyxDocument format for viewing
     const handleFileClick = useCallback(
-      (file: ProjectFile) => {
+      (file: WorkspaceFile) => {
         if (!setPresentingDocument) return;
 
         const documentForViewer: MinimalOnyxDocument = {
-          document_id: `project_file__${file.file_id}`,
+          document_id: `workspace_file__${file.file_id}`,
           semantic_identifier: file.name,
         };
 
@@ -743,7 +743,7 @@ const AppInputBar = React.memo(
                 {/* Attach button */}
                 <FilePickerPopover
                   onFileClick={handleFileClick}
-                  onPickRecent={(file: ProjectFile) => {
+                  onPickRecent={(file: WorkspaceFile) => {
                     // Check if file with same ID already exists
                     if (
                       !currentMessageFiles.some(
@@ -753,7 +753,7 @@ const AppInputBar = React.memo(
                       setCurrentMessageFiles((prev) => [...prev, file]);
                     }
                   }}
-                  onUnpickRecent={(file: ProjectFile) => {
+                  onUnpickRecent={(file: WorkspaceFile) => {
                     setCurrentMessageFiles((prev) =>
                       prev.filter(
                         (existingFile) => existingFile.file_id !== file.file_id

@@ -75,7 +75,7 @@ def create_test_persona(
         "llm_relevance_filter": False,
         "replace_base_system_prompt": False,
         "datetime_aware": True,
-        "user_file_ids": [],
+        "knowledge_file_ids": [],
         "hierarchy_node_ids": [],
         "document_ids": [],
     }

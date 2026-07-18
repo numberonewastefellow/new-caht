@@ -14,37 +14,37 @@ import {
 } from "react";
 import type {
   CategorizedFiles,
-  Project,
-  ProjectFile,
-  UserFileDeleteResult,
-} from "@/app/app/projects/projectsService";
+  Workspace,
+  WorkspaceFile,
+  KnowledgeFileDeleteResult,
+} from "@/app/app/workspaces/workspacesService";
 import {
-  fetchProjects as svcFetchProjects,
-  createProject as svcCreateProject,
+  fetchWorkspaces as svcFetchWorkspaces,
+  createWorkspace as svcCreateWorkspace,
   uploadFiles as svcUploadFiles,
   getRecentFiles as svcGetRecentFiles,
-  getFilesInProject as svcGetFilesInProject,
-  getProject as svcGetProject,
-  getProjectInstructions as svcGetProjectInstructions,
-  upsertProjectInstructions as svcUpsertProjectInstructions,
-  getProjectDetails as svcGetProjectDetails,
-  ProjectDetails,
-  renameProject as svcRenameProject,
-  deleteProject as svcDeleteProject,
-  deleteUserFile as svcDeleteUserFile,
-  getUserFileStatuses as svcGetUserFileStatuses,
-  unlinkFileFromProject as svcUnlinkFileFromProject,
-  linkFileToProject as svcLinkFileToProject,
-  UserFileStatus,
-} from "@/app/app/projects/projectsService";
+  getFilesInWorkspace as svcGetFilesInWorkspace,
+  getWorkspace as svcGetWorkspace,
+  getWorkspaceInstructions as svcGetWorkspaceInstructions,
+  upsertWorkspaceInstructions as svcUpsertWorkspaceInstructions,
+  getWorkspaceDetails as svcGetWorkspaceDetails,
+  WorkspaceDetails,
+  renameWorkspace as svcRenameWorkspace,
+  deleteWorkspace as svcDeleteWorkspace,
+  deleteKnowledgeFile as svcDeleteKnowledgeFile,
+  getKnowledgeFileStatuses as svcGetKnowledgeFileStatuses,
+  unlinkFileFromWorkspace as svcUnlinkFileFromWorkspace,
+  linkFileToWorkspace as svcLinkFileToWorkspace,
+  KnowledgeFileStatus,
+} from "@/app/app/workspaces/workspacesService";
 import { useSearchParams } from "next/navigation";
 import { SEARCH_PARAM_NAMES } from "@/app/app/services/searchParams";
 import { useAppRouter } from "@/hooks/appNavigation";
 import { ChatFileType } from "@/app/app/interfaces";
 import { toast } from "@/hooks/useToast";
-import { useProjects } from "@/lib/hooks/useProjects";
+import { useWorkspaces } from "@/lib/hooks/useWorkspaces";
 
-export type { Project, ProjectFile } from "@/app/app/projects/projectsService";
+export type { Workspace, WorkspaceFile } from "@/app/app/workspaces/workspacesService";
 
 // Helper to generate unique temp IDs
 const generateTempId = () => {
@@ -59,17 +59,17 @@ const generateTempId = () => {
 // Create optimistic file from File object
 const createOptimisticFile = (
   file: File,
-  projectId: number | null = null
-): ProjectFile => {
+  workspaceId: number | null = null
+): WorkspaceFile => {
   const tempId = generateTempId();
   return {
     id: tempId, // Use temp ID as the actual ID initially
     file_id: tempId,
     name: file.name,
-    project_id: projectId,
+    workspace_id: workspaceId,
     user_id: null,
     created_at: new Date().toISOString(),
-    status: UserFileStatus.UPLOADING,
+    status: KnowledgeFileStatus.UPLOADING,
     file_type: file.type,
     last_accessed_at: new Date().toISOString(),
     chat_file_type: ChatFileType.DOCUMENT,
@@ -84,197 +84,197 @@ function buildFileKey(file: File): string {
   return `${file.size}|${namePrefix}`;
 }
 
-interface ProjectsContextType {
-  projects: Project[];
-  recentFiles: ProjectFile[];
-  currentProjectDetails: ProjectDetails | null;
-  currentProjectId: number | null;
-  currentMessageFiles: ProjectFile[];
+interface WorkspacesContextType {
+  workspaces: Workspace[];
+  recentFiles: WorkspaceFile[];
+  currentWorkspaceDetails: WorkspaceDetails | null;
+  currentWorkspaceId: number | null;
+  currentMessageFiles: WorkspaceFile[];
   beginUpload: (
     files: File[],
-    projectId?: number | null,
+    workspaceId?: number | null,
     onSuccess?: (uploaded: CategorizedFiles) => void,
     onFailure?: (failedTempIds: string[]) => void
-  ) => Promise<ProjectFile[]>;
-  allRecentFiles: ProjectFile[];
-  allCurrentProjectFiles: ProjectFile[];
-  isLoadingProjectDetails: boolean;
-  setCurrentMessageFiles: Dispatch<SetStateAction<ProjectFile[]>>;
+  ) => Promise<WorkspaceFile[]>;
+  allRecentFiles: WorkspaceFile[];
+  allCurrentWorkspaceFiles: WorkspaceFile[];
+  isLoadingWorkspaceDetails: boolean;
+  setCurrentMessageFiles: Dispatch<SetStateAction<WorkspaceFile[]>>;
   upsertInstructions: (instructions: string) => Promise<void>;
-  fetchProjects: () => Promise<Project[]>;
-  createProject: (name: string) => Promise<Project>;
-  renameProject: (projectId: number, name: string) => Promise<Project>;
-  deleteProject: (projectId: number) => Promise<void>;
+  fetchWorkspaces: () => Promise<Workspace[]>;
+  createWorkspace: (name: string) => Promise<Workspace>;
+  renameWorkspace: (workspaceId: number, name: string) => Promise<Workspace>;
+  deleteWorkspace: (workspaceId: number) => Promise<void>;
   uploadFiles: (
     files: File[],
-    projectId?: number | null
+    workspaceId?: number | null
   ) => Promise<CategorizedFiles>;
-  getRecentFiles: () => Promise<ProjectFile[]>;
-  getFilesInProject: (projectId: number) => Promise<ProjectFile[]>;
-  refreshCurrentProjectDetails: () => Promise<void>;
+  getRecentFiles: () => Promise<WorkspaceFile[]>;
+  getFilesInWorkspace: (workspaceId: number) => Promise<WorkspaceFile[]>;
+  refreshCurrentWorkspaceDetails: () => Promise<void>;
   refreshRecentFiles: () => Promise<void>;
-  deleteUserFile: (fileId: string) => Promise<UserFileDeleteResult>;
-  unlinkFileFromProject: (projectId: number, fileId: string) => Promise<void>;
-  linkFileToProject?: (projectId: number, file: ProjectFile) => void;
-  lastFailedFiles: ProjectFile[];
+  deleteKnowledgeFile: (fileId: string) => Promise<KnowledgeFileDeleteResult>;
+  unlinkFileFromWorkspace: (workspaceId: number, fileId: string) => Promise<void>;
+  linkFileToWorkspace?: (workspaceId: number, file: WorkspaceFile) => void;
+  lastFailedFiles: WorkspaceFile[];
   clearLastFailedFiles: () => void;
 }
 
-const ProjectsContext = createContext<ProjectsContextType | undefined>(
+const WorkspacesContext = createContext<WorkspacesContextType | undefined>(
   undefined
 );
 
-interface ProjectsProviderProps {
+interface WorkspacesProviderProps {
   children: ReactNode;
 }
 
-export function ProjectsProvider({ children }: ProjectsProviderProps) {
-  // Use SWR hook for projects list - no more SSR initial data
-  const { projects, refreshProjects } = useProjects();
-  const [recentFiles, setRecentFiles] = useState<ProjectFile[]>([]);
-  const [currentProjectDetails, setCurrentProjectDetails] =
-    useState<ProjectDetails | null>(null);
+export function WorkspacesProvider({ children }: WorkspacesProviderProps) {
+  // Use SWR hook for workspaces list - no more SSR initial data
+  const { workspaces, refreshWorkspaces } = useWorkspaces();
+  const [recentFiles, setRecentFiles] = useState<WorkspaceFile[]>([]);
+  const [currentWorkspaceDetails, setCurrentWorkspaceDetails] =
+    useState<WorkspaceDetails | null>(null);
   const searchParams = useSearchParams();
-  const currentProjectIdRaw = searchParams.get(SEARCH_PARAM_NAMES.PROJECT_ID);
-  const currentProjectId = currentProjectIdRaw
-    ? Number.parseInt(currentProjectIdRaw)
+  const currentWorkspaceIdRaw = searchParams.get(SEARCH_PARAM_NAMES.PROJECT_ID);
+  const currentWorkspaceId = currentWorkspaceIdRaw
+    ? Number.parseInt(currentWorkspaceIdRaw)
     : null;
-  const [currentMessageFiles, setCurrentMessageFiles] = useState<ProjectFile[]>(
+  const [currentMessageFiles, setCurrentMessageFiles] = useState<WorkspaceFile[]>(
     []
   );
   const pollIntervalRef = useRef<number | null>(null);
   const isPollingRef = useRef<boolean>(false);
-  const [lastFailedFiles, setLastFailedFiles] = useState<ProjectFile[]>([]);
+  const [lastFailedFiles, setLastFailedFiles] = useState<WorkspaceFile[]>([]);
   const [trackedUploadIds, setTrackedUploadIds] = useState<Set<string>>(
     new Set()
   );
-  const [allRecentFiles, setAllRecentFiles] = useState<ProjectFile[]>([]);
-  const [allCurrentProjectFiles, setAllCurrentProjectFiles] = useState<
-    ProjectFile[]
+  const [allRecentFiles, setAllRecentFiles] = useState<WorkspaceFile[]>([]);
+  const [allCurrentWorkspaceFiles, setAllCurrentWorkspaceFiles] = useState<
+    WorkspaceFile[]
   >([]);
-  const [isLoadingProjectDetails, setIsLoadingProjectDetails] = useState(false);
-  const projectToUploadFilesMapRef = useRef<Map<number, ProjectFile[]>>(
+  const [isLoadingWorkspaceDetails, setIsLoadingWorkspaceDetails] = useState(false);
+  const workspaceToUploadFilesMapRef = useRef<Map<number, WorkspaceFile[]>>(
     new Map()
   );
   const route = useAppRouter();
 
-  // Use SWR's mutate to refresh projects - returns the new data
-  const fetchProjects = useCallback(async (): Promise<Project[]> => {
+  // Use SWR's mutate to refresh workspaces - returns the new data
+  const fetchWorkspaces = useCallback(async (): Promise<Workspace[]> => {
     try {
-      const result = await refreshProjects();
+      const result = await refreshWorkspaces();
       return result ?? [];
     } catch (err) {
       return [];
     }
-  }, [refreshProjects]);
+  }, [refreshWorkspaces]);
 
-  // Load full details for current project
-  const refreshCurrentProjectDetails = useCallback(async () => {
-    if (currentProjectId) {
-      setIsLoadingProjectDetails(true);
+  // Load full details for current workspace
+  const refreshCurrentWorkspaceDetails = useCallback(async () => {
+    if (currentWorkspaceId) {
+      setIsLoadingWorkspaceDetails(true);
       try {
-        const details = await svcGetProjectDetails(currentProjectId);
-        await fetchProjects();
-        setCurrentProjectDetails(details);
-        setAllCurrentProjectFiles(details.files || []);
-        if (projectToUploadFilesMapRef.current.has(currentProjectId)) {
-          setAllCurrentProjectFiles((prev) => [
+        const details = await svcGetWorkspaceDetails(currentWorkspaceId);
+        await fetchWorkspaces();
+        setCurrentWorkspaceDetails(details);
+        setAllCurrentWorkspaceFiles(details.files || []);
+        if (workspaceToUploadFilesMapRef.current.has(currentWorkspaceId)) {
+          setAllCurrentWorkspaceFiles((prev) => [
             ...prev,
-            ...(projectToUploadFilesMapRef.current.get(currentProjectId) || []),
+            ...(workspaceToUploadFilesMapRef.current.get(currentWorkspaceId) || []),
           ]);
         }
       } finally {
-        setIsLoadingProjectDetails(false);
+        setIsLoadingWorkspaceDetails(false);
       }
     }
   }, [
-    fetchProjects,
-    currentProjectId,
-    setCurrentProjectDetails,
-    projectToUploadFilesMapRef,
+    fetchWorkspaces,
+    currentWorkspaceId,
+    setCurrentWorkspaceDetails,
+    workspaceToUploadFilesMapRef,
   ]);
 
   const upsertInstructions = useCallback(
     async (instructions: string) => {
-      if (!currentProjectId) {
+      if (!currentWorkspaceId) {
         throw new Error("No workspace selected");
       }
-      await svcUpsertProjectInstructions(currentProjectId, instructions);
-      await refreshCurrentProjectDetails();
+      await svcUpsertWorkspaceInstructions(currentWorkspaceId, instructions);
+      await refreshCurrentWorkspaceDetails();
     },
-    [currentProjectId, refreshCurrentProjectDetails]
+    [currentWorkspaceId, refreshCurrentWorkspaceDetails]
   );
 
-  const createProject = useCallback(
-    async (name: string): Promise<Project> => {
+  const createWorkspace = useCallback(
+    async (name: string): Promise<Workspace> => {
       try {
-        const project: Project = await svcCreateProject(name);
-        // Navigate to the newly created project's page
-        route({ projectId: project.id });
+        const workspace: Workspace = await svcCreateWorkspace(name);
+        // Navigate to the newly created workspace's page
+        route({ workspaceId: workspace.id });
         // Refresh list to keep order consistent with backend
-        await fetchProjects();
-        return project;
+        await fetchWorkspaces();
+        return workspace;
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Failed to create workspace";
         throw err;
       }
     },
-    [fetchProjects, route]
+    [fetchWorkspaces, route]
   );
 
-  const renameProject = useCallback(
-    async (projectId: number, name: string): Promise<Project> => {
-      // Optimistically update project details UI if this is the current project
-      if (currentProjectId === projectId) {
-        setCurrentProjectDetails((prev) =>
-          prev ? { ...prev, project: { ...prev.project, name } } : prev
+  const renameWorkspace = useCallback(
+    async (workspaceId: number, name: string): Promise<Workspace> => {
+      // Optimistically update workspace details UI if this is the current workspace
+      if (currentWorkspaceId === workspaceId) {
+        setCurrentWorkspaceDetails((prev) =>
+          prev ? { ...prev, workspace: { ...prev.workspace, name } } : prev
         );
       }
 
       try {
-        const updated = await svcRenameProject(projectId, name);
-        // Refresh to get canonical state from server (SWR handles projects list)
-        await fetchProjects();
-        if (currentProjectId === projectId) {
-          await refreshCurrentProjectDetails();
+        const updated = await svcRenameWorkspace(workspaceId, name);
+        // Refresh to get canonical state from server (SWR handles workspaces list)
+        await fetchWorkspaces();
+        if (currentWorkspaceId === workspaceId) {
+          await refreshCurrentWorkspaceDetails();
         }
         return updated;
       } catch (err) {
         // Refresh to restore on failure
-        await fetchProjects();
-        if (currentProjectId === projectId) {
-          await refreshCurrentProjectDetails();
+        await fetchWorkspaces();
+        if (currentWorkspaceId === workspaceId) {
+          await refreshCurrentWorkspaceDetails();
         }
         const message =
           err instanceof Error ? err.message : "Failed to rename workspace";
         throw err;
       }
     },
-    [fetchProjects, currentProjectId, refreshCurrentProjectDetails]
+    [fetchWorkspaces, currentWorkspaceId, refreshCurrentWorkspaceDetails]
   );
 
-  const deleteProject = useCallback(
-    async (projectId: number): Promise<void> => {
+  const deleteWorkspace = useCallback(
+    async (workspaceId: number): Promise<void> => {
       try {
-        await svcDeleteProject(projectId);
-        await fetchProjects();
-        if (currentProjectId === projectId) {
-          setCurrentProjectDetails(null);
-          setAllCurrentProjectFiles([]);
-          projectToUploadFilesMapRef.current.delete(projectId);
+        await svcDeleteWorkspace(workspaceId);
+        await fetchWorkspaces();
+        if (currentWorkspaceId === workspaceId) {
+          setCurrentWorkspaceDetails(null);
+          setAllCurrentWorkspaceFiles([]);
+          workspaceToUploadFilesMapRef.current.delete(workspaceId);
           route();
         }
       } catch (err) {
         throw err;
       }
     },
-    [fetchProjects, currentProjectId, projectToUploadFilesMapRef, route]
+    [fetchWorkspaces, currentWorkspaceId, workspaceToUploadFilesMapRef, route]
   );
 
-  const getRecentFiles = useCallback(async (): Promise<ProjectFile[]> => {
+  const getRecentFiles = useCallback(async (): Promise<WorkspaceFile[]> => {
     try {
-      const data: ProjectFile[] = await svcGetRecentFiles();
+      const data: WorkspaceFile[] = await svcGetRecentFiles();
       return data;
     } catch (err) {
       const message =
@@ -288,7 +288,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
     setRecentFiles(files);
   }, [getRecentFiles]);
 
-  const getTempIdMap = (files: File[], optimisticFiles: ProjectFile[]) => {
+  const getTempIdMap = (files: File[], optimisticFiles: WorkspaceFile[]) => {
     const tempIdMap = new Map<string, string>();
     for (const f of files) {
       const tempId = optimisticFiles.find((o) => o.name === f.name)?.temp_id;
@@ -300,7 +300,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
   };
 
   const removeOptimisticFilesByTempIds = useCallback(
-    (optimisticTempIds: Set<string>, projectId?: number | null) => {
+    (optimisticTempIds: Set<string>, workspaceId?: number | null) => {
       // Remove from recent optimistic list
       setAllRecentFiles((prev) =>
         prev.filter((f) => !f.temp_id || !optimisticTempIds.has(f.temp_id))
@@ -311,43 +311,43 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
         prev.filter((f) => !f.temp_id || !optimisticTempIds.has(f.temp_id))
       );
 
-      // Remove from project optimistic list
-      if (projectId) {
-        setAllCurrentProjectFiles((prev) =>
+      // Remove from workspace optimistic list
+      if (workspaceId) {
+        setAllCurrentWorkspaceFiles((prev) =>
           prev.filter((f) => !f.temp_id || !optimisticTempIds.has(f.temp_id))
         );
 
-        // Clear the tracked optimistic files for this project
-        let projectIdToFiles: ProjectFile[] =
-          projectToUploadFilesMapRef.current.get(projectId) || [];
-        projectIdToFiles = projectIdToFiles.filter(
-          (f: ProjectFile) => !f.temp_id || !optimisticTempIds.has(f.temp_id)
+        // Clear the tracked optimistic files for this workspace
+        let workspaceIdToFiles: WorkspaceFile[] =
+          workspaceToUploadFilesMapRef.current.get(workspaceId) || [];
+        workspaceIdToFiles = workspaceIdToFiles.filter(
+          (f: WorkspaceFile) => !f.temp_id || !optimisticTempIds.has(f.temp_id)
         );
-        projectToUploadFilesMapRef.current.set(projectId, projectIdToFiles);
+        workspaceToUploadFilesMapRef.current.set(workspaceId, workspaceIdToFiles);
       }
     },
-    [projectToUploadFilesMapRef]
+    [workspaceToUploadFilesMapRef]
   );
 
   const beginUpload = useCallback(
     async (
       files: File[],
-      projectId?: number | null,
+      workspaceId?: number | null,
       onSuccess?: (uploaded: CategorizedFiles) => void,
       onFailure?: (failedTempIds: string[]) => void
-    ): Promise<ProjectFile[]> => {
+    ): Promise<WorkspaceFile[]> => {
       const optimisticFiles = files.map((f) =>
-        createOptimisticFile(f, projectId)
+        createOptimisticFile(f, workspaceId)
       );
       const tempIdMap = getTempIdMap(files, optimisticFiles);
       setAllRecentFiles((prev) => [...optimisticFiles, ...prev]);
-      if (projectId) {
-        setAllCurrentProjectFiles((prev) => [...optimisticFiles, ...prev]);
-        projectToUploadFilesMapRef.current.set(projectId, optimisticFiles);
+      if (workspaceId) {
+        setAllCurrentWorkspaceFiles((prev) => [...optimisticFiles, ...prev]);
+        workspaceToUploadFilesMapRef.current.set(workspaceId, optimisticFiles);
       }
-      svcUploadFiles(files, projectId, tempIdMap)
+      svcUploadFiles(files, workspaceId, tempIdMap)
         .then((uploaded) => {
-          const uploadedFiles = uploaded.user_files || [];
+          const uploadedFiles = uploaded.knowledge_files || [];
           const tempIdToUploadedFileMap = new Map(
             uploadedFiles.map((f) => [f.temp_id, f])
           );
@@ -370,8 +370,8 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
               return f;
             })
           );
-          if (projectId) {
-            setAllCurrentProjectFiles((prev) =>
+          if (workspaceId) {
+            setAllCurrentWorkspaceFiles((prev) =>
               prev.map((f) => {
                 if (f.temp_id) {
                   const u = tempIdToUploadedFileMap.get(f.temp_id);
@@ -380,7 +380,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
                 return f;
               })
             );
-            projectToUploadFilesMapRef.current.set(projectId, []);
+            workspaceToUploadFilesMapRef.current.set(workspaceId, []);
           }
           const rejected_files = uploaded.rejected_files || [];
 
@@ -404,7 +404,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
                   .map((f) => f.temp_id as string)
               )
             );
-            removeOptimisticFilesByTempIds(new Set(failedTempIds), projectId);
+            removeOptimisticFilesByTempIds(new Set(failedTempIds), workspaceId);
             if (failedTempIds.length > 0) {
               onFailure?.(failedTempIds);
             }
@@ -426,23 +426,23 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
               .filter((id): id is string => Boolean(id))
           );
 
-          removeOptimisticFilesByTempIds(optimisticTempIds, projectId);
+          removeOptimisticFilesByTempIds(optimisticTempIds, workspaceId);
 
           toast.error("Failed to upload files");
 
           onFailure?.(Array.from(optimisticTempIds));
         })
         .finally(() => {
-          if (projectId && currentProjectId === projectId) {
-            refreshCurrentProjectDetails();
+          if (workspaceId && currentWorkspaceId === workspaceId) {
+            refreshCurrentWorkspaceDetails();
           }
           refreshRecentFiles();
         });
       return optimisticFiles;
     },
     [
-      currentProjectId,
-      refreshCurrentProjectDetails,
+      currentWorkspaceId,
+      refreshCurrentWorkspaceDetails,
       refreshRecentFiles,
       removeOptimisticFilesByTempIds,
     ]
@@ -451,14 +451,14 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
   const uploadFiles = useCallback(
     async (
       files: File[],
-      projectId?: number | null
+      workspaceId?: number | null
     ): Promise<CategorizedFiles> => {
       try {
         const uploaded: CategorizedFiles = await svcUploadFiles(
           files,
-          projectId
+          workspaceId
         );
-        const uploadedFiles = uploaded.user_files || [];
+        const uploadedFiles = uploaded.knowledge_files || [];
         // Track these uploaded file IDs for targeted polling
         if (uploadedFiles.length > 0) {
           setTrackedUploadIds((prev) => {
@@ -469,8 +469,8 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
         }
 
         // Refresh canonical sources instead of manual merges
-        if (projectId && currentProjectId === projectId) {
-          await refreshCurrentProjectDetails();
+        if (workspaceId && currentWorkspaceId === workspaceId) {
+          await refreshCurrentWorkspaceDetails();
         }
         await refreshRecentFiles();
         return uploaded;
@@ -478,17 +478,17 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
         throw err;
       }
     },
-    [currentProjectId, refreshCurrentProjectDetails, refreshRecentFiles]
+    [currentWorkspaceId, refreshCurrentWorkspaceDetails, refreshRecentFiles]
   );
 
-  const getFilesInProject = useCallback(
-    async (projectId: number): Promise<ProjectFile[]> => {
+  const getFilesInWorkspace = useCallback(
+    async (workspaceId: number): Promise<WorkspaceFile[]> => {
       try {
-        const data: ProjectFile[] = await svcGetFilesInProject(projectId);
+        const data: WorkspaceFile[] = await svcGetFilesInWorkspace(workspaceId);
         return data;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : "Failed to fetch project files";
+          err instanceof Error ? err.message : "Failed to fetch workspace files";
         return [];
       }
     },
@@ -496,7 +496,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
   );
 
   useEffect(() => {
-    // Initial load - only fetch recent files since projects come from props
+    // Initial load - only fetch recent files since workspaces come from props
     getRecentFiles().then((recent) => {
       setRecentFiles(recent);
       setAllRecentFiles(recent);
@@ -512,17 +512,17 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
     );
   }, [recentFiles]);
 
-  // Clear project details when switching projects to show skeleton
+  // Clear workspace details when switching workspaces to show skeleton
   useEffect(() => {
-    setCurrentProjectDetails(null);
-    setAllCurrentProjectFiles([]);
-  }, [currentProjectId]);
+    setCurrentWorkspaceDetails(null);
+    setAllCurrentWorkspaceFiles([]);
+  }, [currentWorkspaceId]);
 
   useEffect(() => {
-    if (currentProjectId) {
-      refreshCurrentProjectDetails();
+    if (currentWorkspaceId) {
+      refreshCurrentWorkspaceDetails();
     }
-  }, [currentProjectId, refreshCurrentProjectDetails]);
+  }, [currentWorkspaceId, refreshCurrentWorkspaceDetails]);
 
   // Targeted polling for tracked uploaded files only
   useEffect(() => {
@@ -533,7 +533,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
       if (isPollingRef.current) return;
       isPollingRef.current = true;
       try {
-        const statuses = await svcGetUserFileStatuses(ids);
+        const statuses = await svcGetKnowledgeFileStatuses(ids);
         if (!statuses || statuses.length === 0) return;
 
         // Build maps for quick lookup
@@ -542,8 +542,8 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
         // Update currentMessageFiles inline based on polled statuses
         setCurrentMessageFiles((prev) => {
           let changed = false;
-          const next: ProjectFile[] = [];
-          const newlyFailedLocal: ProjectFile[] = [];
+          const next: WorkspaceFile[] = [];
+          const newlyFailedLocal: WorkspaceFile[] = [];
           for (const f of prev) {
             const latest = statusById.get(f.id);
             if (latest) {
@@ -560,7 +560,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
                 latest.name !== f.name ||
                 latest.file_type !== f.file_type
               ) {
-                next.push({ ...f, ...latest } as ProjectFile);
+                next.push({ ...f, ...latest } as WorkspaceFile);
                 changed = true;
                 continue;
               }
@@ -573,8 +573,8 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
           return changed || next.length !== prev.length ? next : prev;
         });
 
-        // Update currentProjectDetails.files with latest statuses
-        setCurrentProjectDetails((prev) => {
+        // Update currentWorkspaceDetails.files with latest statuses
+        setCurrentWorkspaceDetails((prev) => {
           if (!prev || !prev.files || prev.files.length === 0) return prev;
           let changed = false;
           const nextFiles = prev.files.map((f) => {
@@ -586,13 +586,13 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
                 latest.file_type !== f.file_type
               ) {
                 changed = true;
-                return { ...f, ...latest } as ProjectFile;
+                return { ...f, ...latest } as WorkspaceFile;
               }
             }
             return f;
           });
           return changed
-            ? ({ ...prev, files: nextFiles } as ProjectDetails)
+            ? ({ ...prev, files: nextFiles } as WorkspaceDetails)
             : prev;
         });
 
@@ -620,7 +620,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
 
         // Remove completed/failed from tracking
         const remaining = new Set(trackedUploadIds);
-        const newlyFailed: ProjectFile[] = [];
+        const newlyFailed: WorkspaceFile[] = [];
         for (const f of statuses) {
           const s = String(f.status).toLowerCase();
           if (s === "completed") {
@@ -640,8 +640,8 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
 
         // If all tracked uploads finished (completed or failed), do a single refresh
         if (remaining.size === 0) {
-          if (currentProjectId) {
-            await refreshCurrentProjectDetails();
+          if (currentWorkspaceId) {
+            await refreshCurrentWorkspaceDetails();
           }
           await refreshRecentFiles();
         }
@@ -669,78 +669,78 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
     };
   }, [
     trackedUploadIds,
-    currentProjectId,
-    refreshCurrentProjectDetails,
+    currentWorkspaceId,
+    refreshCurrentWorkspaceDetails,
     refreshRecentFiles,
   ]);
 
-  const value: ProjectsContextType = useMemo(
+  const value: WorkspacesContextType = useMemo(
     () => ({
-      projects,
+      workspaces,
       recentFiles,
-      currentProjectDetails,
-      currentProjectId,
+      currentWorkspaceDetails,
+      currentWorkspaceId,
       currentMessageFiles,
       allRecentFiles,
-      allCurrentProjectFiles,
-      isLoadingProjectDetails,
+      allCurrentWorkspaceFiles,
+      isLoadingWorkspaceDetails,
       beginUpload,
       setCurrentMessageFiles,
       upsertInstructions,
-      fetchProjects,
-      createProject,
-      renameProject,
-      deleteProject,
+      fetchWorkspaces,
+      createWorkspace,
+      renameWorkspace,
+      deleteWorkspace,
       uploadFiles,
       getRecentFiles,
-      getFilesInProject,
-      refreshCurrentProjectDetails,
+      getFilesInWorkspace,
+      refreshCurrentWorkspaceDetails,
       refreshRecentFiles,
       lastFailedFiles,
       clearLastFailedFiles: () => setLastFailedFiles([]),
-      deleteUserFile: async (fileId: string) => {
-        const result = await svcDeleteUserFile(fileId);
+      deleteKnowledgeFile: async (fileId: string) => {
+        const result = await svcDeleteKnowledgeFile(fileId);
         // If no associations, backend enqueues deletion and status moves to DELETING; refresh lists
         if (!result.has_associations) {
-          if (currentProjectId) {
-            await refreshCurrentProjectDetails();
+          if (currentWorkspaceId) {
+            await refreshCurrentWorkspaceDetails();
           }
           await refreshRecentFiles();
         }
         return result;
       },
-      unlinkFileFromProject: async (projectId: number, fileId: string) => {
-        const file = allCurrentProjectFiles.find((f) => f.id === fileId);
+      unlinkFileFromWorkspace: async (workspaceId: number, fileId: string) => {
+        const file = allCurrentWorkspaceFiles.find((f) => f.id === fileId);
         if (!file) return;
-        setAllCurrentProjectFiles((prev) =>
+        setAllCurrentWorkspaceFiles((prev) =>
           prev.filter((f) => f.id !== file.id)
         );
-        svcUnlinkFileFromProject(projectId, file.id).then(async (result) => {
+        svcUnlinkFileFromWorkspace(workspaceId, file.id).then(async (result) => {
           if (result.ok) {
-            if (currentProjectId === projectId) {
-              await refreshCurrentProjectDetails();
+            if (currentWorkspaceId === workspaceId) {
+              await refreshCurrentWorkspaceDetails();
             }
             await refreshRecentFiles();
           } else {
-            if (currentProjectId === projectId) {
-              setAllCurrentProjectFiles((prev) => [file, ...prev]);
+            if (currentWorkspaceId === workspaceId) {
+              setAllCurrentWorkspaceFiles((prev) => [file, ...prev]);
             }
           }
         });
       },
-      linkFileToProject: async (projectId: number, file: ProjectFile) => {
-        const existing = allCurrentProjectFiles.find((f) => f.id === file.id);
+      linkFileToWorkspace: async (workspaceId: number, file: WorkspaceFile) => {
+        const existing = allCurrentWorkspaceFiles.find((f) => f.id === file.id);
         if (existing) return;
-        setAllCurrentProjectFiles((prev) => [file, ...prev]);
-        svcLinkFileToProject(projectId, file.id).then(async (result) => {
+        setAllCurrentWorkspaceFiles((prev) => [file, ...prev]);
+        svcLinkFileToWorkspace(workspaceId, file.id).then(async (result) => {
           if (result.ok) {
-            if (currentProjectId === projectId) {
-              await refreshCurrentProjectDetails();
+            if (currentWorkspaceId === workspaceId) {
+              await refreshCurrentWorkspaceDetails();
             }
             await refreshRecentFiles();
           } else {
-            if (currentProjectId === projectId) {
-              setAllCurrentProjectFiles((prev) =>
+            if (currentWorkspaceId === workspaceId) {
+              setAllCurrentWorkspaceFiles((prev) =>
                 prev.filter((f) => f.id !== file.id)
               );
             }
@@ -749,42 +749,42 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
       },
     }),
     [
-      projects,
+      workspaces,
       recentFiles,
-      currentProjectDetails,
-      currentProjectId,
+      currentWorkspaceDetails,
+      currentWorkspaceId,
       currentMessageFiles,
       allRecentFiles,
-      allCurrentProjectFiles,
-      isLoadingProjectDetails,
+      allCurrentWorkspaceFiles,
+      isLoadingWorkspaceDetails,
       beginUpload,
       setCurrentMessageFiles,
       upsertInstructions,
-      fetchProjects,
-      createProject,
-      renameProject,
-      deleteProject,
+      fetchWorkspaces,
+      createWorkspace,
+      renameWorkspace,
+      deleteWorkspace,
       uploadFiles,
       getRecentFiles,
-      getFilesInProject,
-      refreshCurrentProjectDetails,
+      getFilesInWorkspace,
+      refreshCurrentWorkspaceDetails,
       refreshRecentFiles,
       lastFailedFiles,
     ]
   );
 
   return (
-    <ProjectsContext.Provider value={value}>
+    <WorkspacesContext.Provider value={value}>
       {children}
-    </ProjectsContext.Provider>
+    </WorkspacesContext.Provider>
   );
 }
 
-export function useProjectsContext(): ProjectsContextType {
-  const ctx = useContext(ProjectsContext);
+export function useWorkspacesContext(): WorkspacesContextType {
+  const ctx = useContext(WorkspacesContext);
   if (!ctx) {
     throw new Error(
-      "useProjectsContext must be used within a ProjectsProvider"
+      "useWorkspacesContext must be used within a WorkspacesProvider"
     );
   }
   return ctx;

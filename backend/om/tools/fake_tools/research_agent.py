@@ -120,7 +120,7 @@ def generate_intermediate_report(
             custom_agent_prompt=None,
             simple_chat_history=history,
             reminder_message=reminder_message,
-            project_files=None,
+            workspace_files=None,
             available_tokens=llm.config.max_input_tokens,
         )
 
@@ -335,7 +335,7 @@ def run_research_agent_call(
                     custom_agent_prompt=None,
                     simple_chat_history=msg_history,
                     reminder_message=reminder_message,
-                    project_files=None,
+                    workspace_files=None,
                     available_tokens=llm.config.max_input_tokens,
                 )
 

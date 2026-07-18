@@ -99,7 +99,7 @@ def _create_test_document_chunk(
         doc_summary="Test doc summary",
         chunk_context="Test chunk context",
         document_sets=None,
-        user_projects=None,
+        user_workspaces=None,
         primary_owners=None,
         secondary_owners=None,
         tenant_id=tenant_state,

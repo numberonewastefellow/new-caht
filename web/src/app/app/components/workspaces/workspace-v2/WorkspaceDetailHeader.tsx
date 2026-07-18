@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { cn } from "@/lib/utils";
-import { formatRelativeTime } from "../project_utils";
+import { formatRelativeTime } from "../workspace_utils";
 import { workspaceUpdatedAt, type WorkspaceTab } from "./workspaceTheme";
 import WorkspaceGlyph from "./WorkspaceGlyph";
 import IconButton from "@/refresh-components/buttons/IconButton";
@@ -43,23 +43,23 @@ export default function WorkspaceDetailHeader({
   setTab,
 }: WorkspaceDetailHeaderProps) {
   const {
-    currentProjectId,
-    currentProjectDetails,
-    projects,
-    renameProject,
-    allCurrentProjectFiles,
-  } = useProjectsContext();
+    currentWorkspaceId,
+    currentWorkspaceDetails,
+    workspaces,
+    renameWorkspace,
+    allCurrentWorkspaceFiles,
+  } = useWorkspacesContext();
   const [isEditingName, setIsEditingName] = useState(false);
 
-  if (!currentProjectId) return null;
+  if (!currentWorkspaceId) return null;
 
-  const project =
-    currentProjectDetails?.project ??
-    projects.find((p) => p.id === currentProjectId);
-  const projectName = project?.name || "Loading workspace...";
-  const description = project?.description?.trim();
-  const fileCount = allCurrentProjectFiles.length;
-  const chatCount = project?.chat_sessions?.length ?? 0;
+  const workspace =
+    currentWorkspaceDetails?.workspace ??
+    workspaces.find((p) => p.id === currentWorkspaceId);
+  const workspaceName = workspace?.name || "Loading workspace...";
+  const description = workspace?.description?.trim();
+  const fileCount = allCurrentWorkspaceFiles.length;
+  const chatCount = workspace?.chat_sessions?.length ?? 0;
 
   return (
     <div className="mx-auto w-full max-w-[72rem] px-4 pt-6">
@@ -67,14 +67,14 @@ export default function WorkspaceDetailHeader({
       {/* Title block */}
       <div className="mt-4 rounded-2xl border border-border-01 bg-background-tint-01 p-5">
         <div className="group flex items-start gap-4">
-          <WorkspaceGlyph id={currentProjectId} size={56} radius={16} />
+          <WorkspaceGlyph id={currentWorkspaceId} size={56} radius={16} />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               {isEditingName ? (
                 <ButtonRenaming
-                  initialName={projectName}
+                  initialName={workspaceName}
                   onRename={async (newName) => {
-                    await renameProject(currentProjectId, newName);
+                    await renameWorkspace(currentWorkspaceId, newName);
                   }}
                   onClose={() => setIsEditingName(false)}
                   className="text-xl font-semibold text-text-05"
@@ -82,7 +82,7 @@ export default function WorkspaceDetailHeader({
               ) : (
                 <>
                   <h1 className="text-xl font-semibold text-text-05 truncate">
-                    {projectName}
+                    {workspaceName}
                   </h1>
                   <IconButton
                     icon={SvgEdit}
@@ -111,9 +111,9 @@ export default function WorkspaceDetailHeader({
               <Stat icon={SvgFileText}>{fileCount} files</Stat>
               <Stat icon={SvgBubbleText}>{chatCount} chats</Stat>
               <Stat icon={SvgUser}>1 member</Stat>
-              {project && (
+              {workspace && (
                 <Stat icon={SvgClock}>
-                  Updated {formatRelativeTime(workspaceUpdatedAt(project))}
+                  Updated {formatRelativeTime(workspaceUpdatedAt(workspace))}
                 </Stat>
               )}
             </div>

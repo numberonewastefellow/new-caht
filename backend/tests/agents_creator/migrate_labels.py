@@ -330,7 +330,7 @@ def apply_migration():
             "groups": [],
             "hierarchy_node_ids": [],
             "document_ids": [],
-            "user_file_ids": [],
+            "knowledge_file_ids": [],
         }
         if existing.get("starter_messages"):
             body["starter_messages"] = existing["starter_messages"]

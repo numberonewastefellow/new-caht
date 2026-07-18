@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useProjects } from "@/lib/hooks/useProjects";
+import { useWorkspaces } from "@/lib/hooks/useWorkspaces";
 import { useAppRouter } from "@/hooks/appNavigation";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
-import CreateProjectModal from "@/components/modals/CreateProjectModal";
-import type { Project } from "@/app/app/projects/projectsService";
+import CreateWorkspaceModal from "@/components/modals/CreateWorkspaceModal";
+import type { Workspace } from "@/app/app/workspaces/workspacesService";
 import { cn } from "@/lib/utils";
-import { formatRelativeTime } from "@/app/app/components/projects/project_utils";
-import { workspaceUpdatedAt } from "@/app/app/components/projects/workspace-v2/workspaceTheme";
-import WorkspaceCard from "@/app/app/components/projects/workspace-v2/WorkspaceCard";
-import WorkspaceGlyph from "@/app/app/components/projects/workspace-v2/WorkspaceGlyph";
-import { usePinnedWorkspaces } from "@/app/app/components/projects/workspace-v2/usePinnedWorkspaces";
+import { formatRelativeTime } from "@/app/app/components/workspaces/workspace_utils";
+import { workspaceUpdatedAt } from "@/app/app/components/workspaces/workspace-v2/workspaceTheme";
+import WorkspaceCard from "@/app/app/components/workspaces/workspace-v2/WorkspaceCard";
+import WorkspaceGlyph from "@/app/app/components/workspaces/workspace-v2/WorkspaceGlyph";
+import { usePinnedWorkspaces } from "@/app/app/components/workspaces/workspace-v2/usePinnedWorkspaces";
 import {
   SvgSparkle,
   SvgSearch,
@@ -28,14 +28,14 @@ import {
 
 type WorkspaceFilter = "all" | "pinned" | "recent" | "shared";
 
-function updatedMs(project: Project): number {
-  const ms = new Date(workspaceUpdatedAt(project)).getTime();
+function updatedMs(workspace: Workspace): number {
+  const ms = new Date(workspaceUpdatedAt(workspace)).getTime();
   return Number.isNaN(ms) ? 0 : ms;
 }
 
 export default function WorkspacesDashboardPage() {
   const route = useAppRouter();
-  const { projects, isLoading } = useProjects();
+  const { workspaces, isLoading } = useWorkspaces();
   const { isPinned, togglePin, prune } = usePinnedWorkspaces();
   const createModal = useCreateModal();
 
@@ -45,20 +45,20 @@ export default function WorkspacesDashboardPage() {
 
   // Once workspaces have loaded, drop pins for any that were deleted.
   useEffect(() => {
-    if (!isLoading) prune(projects.map((p) => p.id));
-  }, [isLoading, projects, prune]);
+    if (!isLoading) prune(workspaces.map((p) => p.id));
+  }, [isLoading, workspaces, prune]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const base = q
-      ? projects.filter(
+      ? workspaces.filter(
           (p) =>
             p.name.toLowerCase().includes(q) ||
             (p.description ?? "").toLowerCase().includes(q)
         )
-      : projects;
+      : workspaces;
     return base;
-  }, [projects, query]);
+  }, [workspaces, query]);
 
   const pinned = useMemo(
     () => filtered.filter((p) => isPinned(p.id)),
@@ -73,15 +73,15 @@ export default function WorkspacesDashboardPage() {
     [filtered]
   );
 
-  const openWorkspace = (p: Project) => route({ projectId: p.id });
+  const openWorkspace = (p: Workspace) => route({ workspaceId: p.id });
 
-  function renderGrid(list: Project[], withCreateCard = false) {
+  function renderGrid(list: Workspace[], withCreateCard = false) {
     return (
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {list.map((p) => (
           <WorkspaceCard
             key={p.id}
-            project={p}
+            workspace={p}
             pinned={isPinned(p.id)}
             onOpen={() => openWorkspace(p)}
             onTogglePin={() => togglePin(p.id)}
@@ -112,7 +112,7 @@ export default function WorkspacesDashboardPage() {
     );
   }
 
-  function renderList(list: Project[]) {
+  function renderList(list: Workspace[]) {
     return (
       <div className="mt-3 overflow-hidden rounded-xl border border-border-01 bg-background-tint-01">
         {list.map((p, i) => (
@@ -153,7 +153,7 @@ export default function WorkspacesDashboardPage() {
   return (
     <>
       <createModal.Provider>
-        <CreateProjectModal />
+        <CreateWorkspaceModal />
       </createModal.Provider>
 
       <div className="mx-auto max-w-[1200px] px-8 py-10">
@@ -164,14 +164,14 @@ export default function WorkspacesDashboardPage() {
               className="h-3 w-3 stroke-current"
               style={{ color: "var(--virtualai-accent)" }}
             />
-            Workspaces · {projects.length} total
+            Workspaces · {workspaces.length} total
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-text-05">
             Your AI workspaces
           </h1>
           <p className="mt-2 max-w-xl text-sm text-text-03">
             Each workspace bundles files, chats, instructions, and the models
-            you&apos;ve chosen — everything stays scoped to the project.
+            you&apos;ve chosen — everything stays scoped to the workspace.
           </p>
 
           <div className="mt-6 w-full max-w-2xl">

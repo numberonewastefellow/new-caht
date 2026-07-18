@@ -33,7 +33,7 @@ import { SEARCH_PARAM_NAMES } from "@/app/app/services/searchParams";
 import AppInputBar from "@/sections/input/AppInputBar";
 import { useFilters, useLlmManager } from "@/lib/hooks";
 import { formatMmDdYyyy } from "@/lib/dateUtils";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { FileCard } from "@/sections/cards/FileCard";
 import DocumentSetCard from "@/sections/cards/DocumentSetCard";
 import { getDisplayName } from "@/lib/llm/utils";
@@ -448,10 +448,10 @@ function KnowledgeTab({
   allRecentFiles,
 }: {
   agent: FullPersona;
-  allRecentFiles: ReturnType<typeof useProjectsContext>["allRecentFiles"];
+  allRecentFiles: ReturnType<typeof useWorkspacesContext>["allRecentFiles"];
 }) {
   const hasDocSets = agent.document_sets && agent.document_sets.length > 0;
-  const hasFiles = agent.user_file_ids && agent.user_file_ids.length > 0;
+  const hasFiles = agent.knowledge_file_ids && agent.knowledge_file_ids.length > 0;
   const hasKnowledge = hasDocSets || hasFiles;
 
   if (!hasKnowledge) {
@@ -524,11 +524,11 @@ function KnowledgeTab({
                   "var(--virtualai-accent, var(--theme-primary-05))",
               }}
             >
-              {agent.user_file_ids!.length}
+              {agent.knowledge_file_ids!.length}
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {agent.user_file_ids!.map((fileId) => {
+            {agent.knowledge_file_ids!.map((fileId) => {
               const file = allRecentFiles.find((f) => f.id === fileId);
               if (!file) return null;
               return <FileCard key={fileId} file={file} />;
@@ -549,7 +549,7 @@ export interface AgentViewerModalProps {
 export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
   const agentViewerModal = useModal();
   const router = useRouter();
-  const { allRecentFiles } = useProjectsContext();
+  const { allRecentFiles } = useWorkspacesContext();
   const { llmProviders } = useLLMProviders(agent.id);
   const [activeTab, setActiveTab] = useState<TabId>("overview");
 
@@ -604,7 +604,7 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
     openApiTools.length;
 
   const knowledgeCount =
-    (agent.document_sets?.length ?? 0) + (agent.user_file_ids?.length ?? 0);
+    (agent.document_sets?.length ?? 0) + (agent.knowledge_file_ids?.length ?? 0);
 
   const defaultModel = getDisplayName(agent, llmProviders ?? []);
 

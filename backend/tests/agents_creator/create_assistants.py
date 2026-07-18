@@ -111,7 +111,7 @@ def update_assistant(persona_id: int, existing: dict, new_data: dict) -> dict | 
         "groups": new_data.get("groups", []),
         "hierarchy_node_ids": new_data.get("hierarchy_node_ids", []),
         "document_ids": new_data.get("document_ids", []),
-        "user_file_ids": new_data.get("user_file_ids", []),
+        "knowledge_file_ids": new_data.get("knowledge_file_ids", []),
     }
 
     # Tool IDs: from JSON or from existing tools

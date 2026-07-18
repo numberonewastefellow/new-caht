@@ -230,7 +230,7 @@ def update_persona_starters(persona_id: int, starters: list[dict]) -> bool:
         "groups": [],
         "hierarchy_node_ids": [],
         "document_ids": [],
-        "user_file_ids": [],
+        "knowledge_file_ids": [],
     }
 
     resp = api("PATCH", f"persona/{persona_id}", patch)

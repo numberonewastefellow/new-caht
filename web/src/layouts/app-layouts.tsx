@@ -30,7 +30,7 @@ import { useTheme } from "next-themes";
 import ShareChatSessionModal from "@/sections/modals/ShareChatSessionModal";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import LineItem from "@/refresh-components/buttons/LineItem";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import useChatSessions from "@/hooks/useChatSessions";
 import {
   handleMoveOperation,
@@ -65,7 +65,7 @@ import { useSettingsContext } from "@/providers/SettingsProvider";
 import { AppMode, useAppMode } from "@/providers/AppModeProvider";
 import useAppFocus from "@/hooks/useAppFocus";
 import { useQueryController } from "@/providers/QueryControllerProvider";
-import WorkspaceTopBanner from "@/app/app/components/projects/workspace-v2/WorkspaceTopBanner";
+import WorkspaceTopBanner from "@/app/app/components/workspaces/workspace-v2/WorkspaceTopBanner";
 
 /**
  * App Header Component
@@ -75,7 +75,7 @@ import WorkspaceTopBanner from "@/app/app/components/projects/workspace-v2/Works
  *
  * Features:
  * - Share chat functionality
- * - Move chat to project (with confirmation for custom agents)
+ * - Move chat to workspace (with confirmation for custom agents)
  * - Delete chat with confirmation
  * - Mobile-responsive sidebar toggle
  * - Custom header content from enterprise settings
@@ -90,7 +90,7 @@ function Header() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [showMoveCustomAgentModal, setShowMoveCustomAgentModal] =
     useState(false);
-  const [pendingMoveProjectId, setPendingMoveProjectId] = useState<
+  const [pendingMoveWorkspaceId, setPendingMoveWorkspaceId] = useState<
     number | null
   >(null);
   const [showMoveOptions, setShowMoveOptions] = useState(false);
@@ -99,11 +99,11 @@ function Header() {
   const [popoverItems, setPopoverItems] = useState<React.ReactNode[]>([]);
   const [modePopoverOpen, setModePopoverOpen] = useState(false);
   const {
-    projects,
-    fetchProjects,
-    refreshCurrentProjectDetails,
-    currentProjectId,
-  } = useProjectsContext();
+    workspaces,
+    fetchWorkspaces,
+    refreshCurrentWorkspaceDetails,
+    currentWorkspaceId,
+  } = useWorkspacesContext();
   const { currentChatSession, refreshChatSessions } = useChatSessions();
   const router = useRouter();
   const appFocus = useAppFocus();
@@ -113,9 +113,9 @@ function Header() {
   // breadcrumb / workspace meta / chat title / chips) for workspace detail and
   // workspace chats. Normal chats/agents/settings keep the default header.
   const isWorkspaceContext =
-    appFocus.isProject() ||
+    appFocus.isWorkspace() ||
     (appFocus.isChat() &&
-      (currentChatSession?.project_id != null || currentProjectId != null));
+      (currentChatSession?.workspace_id != null || currentWorkspaceId != null));
 
   const customHeaderContent =
     settings?.enterpriseSettings?.custom_header_content;
@@ -126,37 +126,37 @@ function Header() {
 
   const effectiveMode: AppMode = appFocus.isNewSession() ? appMode : "chat";
 
-  const availableProjects = useMemo(() => {
-    if (!projects) return [];
-    return projects.filter((project) => project.id !== currentProjectId);
-  }, [projects, currentProjectId]);
+  const availableWorkspaces = useMemo(() => {
+    if (!workspaces) return [];
+    return workspaces.filter((workspace) => workspace.id !== currentWorkspaceId);
+  }, [workspaces, currentWorkspaceId]);
 
-  const filteredProjects = useMemo(() => {
-    if (!searchTerm) return availableProjects;
+  const filteredWorkspaces = useMemo(() => {
+    if (!searchTerm) return availableWorkspaces;
     const term = searchTerm.toLowerCase();
-    return availableProjects.filter((project) =>
-      project.name.toLowerCase().includes(term)
+    return availableWorkspaces.filter((workspace) =>
+      workspace.name.toLowerCase().includes(term)
     );
-  }, [availableProjects, searchTerm]);
+  }, [availableWorkspaces, searchTerm]);
 
   const resetMoveState = useCallback(() => {
     setShowMoveOptions(false);
     setSearchTerm("");
-    setPendingMoveProjectId(null);
+    setPendingMoveWorkspaceId(null);
     setShowMoveCustomAgentModal(false);
   }, []);
 
   const performMove = useCallback(
-    async (targetProjectId: number) => {
+    async (targetWorkspaceId: number) => {
       if (!currentChatSession) return;
       try {
         await handleMoveOperation({
           chatSession: currentChatSession,
-          targetProjectId,
+          targetWorkspaceId,
           refreshChatSessions,
-          refreshCurrentProjectDetails,
-          fetchProjects,
-          currentProjectId,
+          refreshCurrentWorkspaceDetails,
+          fetchWorkspaces,
+          currentWorkspaceId,
         });
         resetMoveState();
         setPopoverOpen(false);
@@ -167,22 +167,22 @@ function Header() {
     [
       currentChatSession,
       refreshChatSessions,
-      refreshCurrentProjectDetails,
-      fetchProjects,
-      currentProjectId,
+      refreshCurrentWorkspaceDetails,
+      fetchWorkspaces,
+      currentWorkspaceId,
       resetMoveState,
     ]
   );
 
   const handleMoveClick = useCallback(
-    (projectId: number) => {
+    (workspaceId: number) => {
       if (!currentChatSession) return;
       if (shouldShowMoveModal(currentChatSession)) {
-        setPendingMoveProjectId(projectId);
+        setPendingMoveWorkspaceId(workspaceId);
         setShowMoveCustomAgentModal(true);
         return;
       }
-      void performMove(projectId);
+      void performMove(workspaceId);
     },
     [currentChatSession, performMove]
   );
@@ -194,14 +194,14 @@ function Header() {
       if (!response.ok) {
         throw new Error("Failed to delete chat session");
       }
-      await Promise.all([refreshChatSessions(), fetchProjects()]);
+      await Promise.all([refreshChatSessions(), fetchWorkspaces()]);
       router.replace("/app");
       setDeleteModalOpen(false);
     } catch (error) {
       console.error("Failed to delete chat:", error);
       showErrorNotification("Failed to delete chat. Please try again.");
     }
-  }, [currentChatSession, refreshChatSessions, fetchProjects, router]);
+  }, [currentChatSession, refreshChatSessions, fetchWorkspaces, router]);
 
   const setDeleteConfirmationModalOpen = useCallback((open: boolean) => {
     setDeleteModalOpen(open);
@@ -218,13 +218,13 @@ function Header() {
             setShowMoveOptions={setShowMoveOptions}
             onSearch={setSearchTerm}
           />,
-          ...filteredProjects.map((project) => (
+          ...filteredWorkspaces.map((workspace) => (
             <LineItem
-              key={project.id}
+              key={workspace.id}
               icon={SvgFolderIn}
-              onClick={noProp(() => handleMoveClick(project.id))}
+              onClick={noProp(() => handleMoveClick(workspace.id))}
             >
-              {project.name}
+              {workspace.name}
             </LineItem>
           )),
         ]
@@ -249,7 +249,7 @@ function Header() {
     setPopoverItems(items);
   }, [
     showMoveOptions,
-    filteredProjects,
+    filteredWorkspaces,
     currentChatSession,
     setDeleteConfirmationModalOpen,
     handleMoveClick,
@@ -295,8 +295,8 @@ function Header() {
                 "true"
               );
             }
-            if (pendingMoveProjectId != null) {
-              await performMove(pendingMoveProjectId);
+            if (pendingMoveWorkspaceId != null) {
+              await performMove(pendingMoveWorkspaceId);
             }
           }}
         />

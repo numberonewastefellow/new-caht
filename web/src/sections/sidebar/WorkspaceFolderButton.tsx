@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, memo } from "react";
-import { Project, useProjectsContext } from "@/providers/ProjectsContext";
+import { Workspace, useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { useDroppable } from "@dnd-kit/core";
 import LineItem from "@/refresh-components/buttons/LineItem";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
@@ -23,8 +23,8 @@ import {
   SvgTrash,
 } from "@opal/icons";
 
-/* ── Colorful project icon — colored rounded square with grid inside ── */
-const ColorfulProjectIcon: React.FunctionComponent<IconProps> = () => (
+/* ── Colorful workspace icon — colored rounded square with grid inside ── */
+const ColorfulWorkspaceIcon: React.FunctionComponent<IconProps> = () => (
   <span
     className="inline-flex items-center justify-center rounded-[5px] w-5 h-5 flex-shrink-0 bg-emerald-500"
   >
@@ -43,7 +43,7 @@ const ColorfulProjectIcon: React.FunctionComponent<IconProps> = () => (
   </span>
 );
 
-const ColorfulProjectIconOpen: React.FunctionComponent<IconProps> = () => (
+const ColorfulWorkspaceIconOpen: React.FunctionComponent<IconProps> = () => (
   <span
     className="inline-flex items-center justify-center rounded-[5px] w-5 h-5 flex-shrink-0 bg-emerald-600"
   >
@@ -62,39 +62,39 @@ const ColorfulProjectIconOpen: React.FunctionComponent<IconProps> = () => (
   </span>
 );
 
-export interface ProjectFolderButtonProps {
-  project: Project;
+export interface WorkspaceFolderButtonProps {
+  workspace: Workspace;
 }
 
-const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
+const WorkspaceFolderButton = memo(({ workspace }: WorkspaceFolderButtonProps) => {
   const route = useAppRouter();
   const [open, setOpen] = useState(false);
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
     useState(false);
-  const { renameProject, deleteProject } = useProjectsContext();
+  const { renameWorkspace, deleteWorkspace } = useWorkspacesContext();
   const [isEditing, setIsEditing] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [isHoveringIcon, setIsHoveringIcon] = useState(false);
   const [allowHoverEffect, setAllowHoverEffect] = useState(true);
   const activeSidebar = useAppFocus();
 
-  // Make project droppable
-  const dropId = `project-${project.id}`;
+  // Make workspace droppable
+  const dropId = `workspace-${workspace.id}`;
   const { setNodeRef, isOver } = useDroppable({
     id: dropId,
     data: {
       type: DRAG_TYPES.PROJECT,
-      project,
+      workspace,
     },
   });
 
   function getFolderIcon(): React.FunctionComponent<IconProps> {
     if (open) {
-      return ColorfulProjectIconOpen;
+      return ColorfulWorkspaceIconOpen;
     } else {
       return isHoveringIcon && allowHoverEffect
-        ? ColorfulProjectIconOpen
-        : ColorfulProjectIcon;
+        ? ColorfulWorkspaceIconOpen
+        : ColorfulWorkspaceIcon;
     }
   }
 
@@ -112,16 +112,16 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
   }
 
   function handleTextClick() {
-    route({ projectId: project.id });
+    route({ workspaceId: workspace.id });
   }
 
   async function handleRename(newName: string) {
-    await renameProject(project.id, newName);
+    await renameWorkspace(workspace.id, newName);
   }
 
   const popoverItems = [
     <LineItem
-      key="rename-project"
+      key="rename-workspace"
       icon={SvgEdit}
       onClick={noProp(() => setIsEditing(true))}
     >
@@ -129,7 +129,7 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
     </LineItem>,
     null,
     <LineItem
-      key="delete-project"
+      key="delete-workspace"
       icon={SvgTrash}
       onClick={noProp(() => setDeleteConfirmationModalOpen(true))}
       danger
@@ -157,7 +157,7 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
               danger
               onClick={() => {
                 setDeleteConfirmationModalOpen(false);
-                deleteProject(project.id);
+                deleteWorkspace(workspace.id);
               }}
             >
               Delete
@@ -169,7 +169,7 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
         </ConfirmationModalLayout>
       )}
 
-      {/* Project Folder */}
+      {/* Workspace Folder */}
       <Popover onOpenChange={setPopoverOpen}>
         <Popover.Anchor>
           <SidebarTab
@@ -184,8 +184,8 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
               />
             )}
             transient={
-              activeSidebar.isProject() &&
-              activeSidebar.getId() === String(project.id)
+              activeSidebar.isWorkspace() &&
+              activeSidebar.getId() === String(workspace.id)
             }
             onClick={noProp(handleTextClick)}
             focused={isEditing}
@@ -213,30 +213,30 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
           >
             {isEditing ? (
               <ButtonRenaming
-                initialName={project.name}
+                initialName={workspace.name}
                 onRename={handleRename}
                 onClose={() => setIsEditing(false)}
               />
             ) : (
-              project.name
+              workspace.name
             )}
           </SidebarTab>
         </Popover.Anchor>
       </Popover>
 
-      {/* Project Chat-Sessions */}
+      {/* Workspace Chat-Sessions */}
       {open &&
-        project.chat_sessions.map((chatSession) => (
+        workspace.chat_sessions.map((chatSession) => (
           <ChatButton
             key={chatSession.id}
             chatSession={chatSession}
-            project={project}
+            workspace={workspace}
             draggable
           />
         ))}
     </div>
   );
 });
-ProjectFolderButton.displayName = "ProjectFolderButton";
+WorkspaceFolderButton.displayName = "WorkspaceFolderButton";
 
-export default ProjectFolderButton;
+export default WorkspaceFolderButton;

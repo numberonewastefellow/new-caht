@@ -1,6 +1,6 @@
 export const DRAG_TYPES = {
   CHAT: "chat",
-  PROJECT: "project",
+  PROJECT: "workspace",
   RECENTS: "recents",
 } as const;
 

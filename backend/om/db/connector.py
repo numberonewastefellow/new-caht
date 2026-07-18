@@ -41,17 +41,17 @@ def check_connectors_exist(db_session: Session) -> bool:
     return result.scalar() or False
 
 
-def check_user_files_exist(db_session: Session) -> bool:
+def check_knowledge_files_exist(db_session: Session) -> bool:
     """Check if any user files exist in the system.
 
     This is used to determine if the search tool should be available
     when there are no regular connectors but there are user files
     (User Knowledge mode).
     """
-    from om.db.models import UserFile
-    from om.db.enums import UserFileStatus
+    from om.db.models import KnowledgeFile
+    from om.db.enums import KnowledgeFileStatus
 
-    stmt = select(exists(UserFile).where(UserFile.status == UserFileStatus.COMPLETED))
+    stmt = select(exists(KnowledgeFile).where(KnowledgeFile.status == KnowledgeFileStatus.COMPLETED))
     result = db_session.execute(stmt)
     return result.scalar() or False
 

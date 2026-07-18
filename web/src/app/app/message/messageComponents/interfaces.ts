@@ -2,7 +2,7 @@ import { JSX } from "react";
 import { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
 import { Packet, StopReason } from "../../services/streamingModels";
 import { OmDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
-import { ProjectFile } from "../../projects/projectsService";
+import { WorkspaceFile } from "../../workspaces/workspacesService";
 import { LlmDescriptor } from "@/lib/hooks";
 import { IconType } from "react-icons";
 import { OmIconType } from "@/components/icons/icons";
@@ -28,7 +28,7 @@ export interface FullChatState {
   messageId?: number;
   // Document-related context for citations
   docs?: OmDocument[] | null;
-  userFiles?: ProjectFile[];
+  userFiles?: WorkspaceFile[];
   citations?: CitationMap;
   setPresentingDocument?: (document: MinimalOnyxDocument) => void;
   // Regenerate functionality

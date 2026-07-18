@@ -29,7 +29,7 @@ interface PersonaUpsertRequest {
   is_default_persona: boolean;
   display_priority: number | null;
   label_ids: number[] | null;
-  user_file_ids: string[] | null;
+  knowledge_file_ids: string[] | null;
   replace_base_system_prompt: boolean;
   max_output_tokens?: number | null;
   // Hierarchy nodes (folders, spaces, channels) for scoped search
@@ -61,7 +61,7 @@ export interface PersonaUpsertParameters {
   icon_name: string | null;
   is_default_persona: boolean;
   label_ids: number[] | null;
-  user_file_ids: string[];
+  knowledge_file_ids: string[];
   max_output_tokens?: number | null;
   // Hierarchy nodes (folders, spaces, channels) for scoped search
   hierarchy_node_ids?: number[];
@@ -83,7 +83,7 @@ function buildPersonaUpsertRequest({
   tool_ids,
   remove_image,
   search_start_date,
-  user_file_ids,
+  knowledge_file_ids,
   hierarchy_node_ids,
   document_ids,
   icon_name,
@@ -122,7 +122,7 @@ function buildPersonaUpsertRequest({
     starter_messages: starter_messages ?? null,
     display_priority: null,
     label_ids: label_ids ?? null,
-    user_file_ids: user_file_ids ?? null,
+    knowledge_file_ids: knowledge_file_ids ?? null,
     replace_base_system_prompt,
     max_output_tokens: max_output_tokens ?? null,
     hierarchy_node_ids: hierarchy_node_ids ?? [],

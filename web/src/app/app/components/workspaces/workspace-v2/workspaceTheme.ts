@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { Project } from "@/app/app/projects/projectsService";
+import type { Workspace } from "@/app/app/workspaces/workspacesService";
 
 /**
  * Per-workspace identity colors. These are decorative/categorical swatches
@@ -47,10 +47,10 @@ export function swatchGradientStyle(id: number): CSSProperties {
  * "Updated" timestamp for a workspace: the most recent chat activity, falling
  * back to the workspace's creation time. Returns an ISO string.
  */
-export function workspaceUpdatedAt(project: Project): string {
-  let latestMs = new Date(project.created_at).getTime();
-  let latestIso = project.created_at;
-  for (const cs of project.chat_sessions ?? []) {
+export function workspaceUpdatedAt(workspace: Workspace): string {
+  let latestMs = new Date(workspace.created_at).getTime();
+  let latestIso = workspace.created_at;
+  for (const cs of workspace.chat_sessions ?? []) {
     const ms = new Date(cs.time_updated).getTime();
     if (!Number.isNaN(ms) && ms > latestMs) {
       latestMs = ms;

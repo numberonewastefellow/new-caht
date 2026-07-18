@@ -15,10 +15,10 @@ from om.chat.emitter import Emitter
 from om.chat.llm_step import extract_tool_calls_from_response_text
 from om.chat.llm_step import run_llm_step
 from om.chat.models import ChatMessageSimple
-from om.chat.models import ExtractedProjectFiles
+from om.chat.models import ExtractedWorkspaceFiles
 from om.chat.models import FileToolMetadata
 from om.chat.models import LlmStepResult
-from om.chat.models import ProjectFileMetadata
+from om.chat.models import WorkspaceFileMetadata
 from om.chat.models import ToolCallSimple
 from om.chat.prompt_utils import build_reminder_message
 from om.chat.prompt_utils import build_system_prompt
@@ -200,17 +200,17 @@ def _try_fallback_tool_extraction(
 MAX_LLM_CYCLES = 20
 
 
-def _build_project_file_citation_mapping(
-    project_file_metadata: list[ProjectFileMetadata],
+def _build_workspace_file_citation_mapping(
+    workspace_file_metadata: list[WorkspaceFileMetadata],
     starting_citation_num: int = 1,
 ) -> CitationMapping:
-    """Build citation mapping for project files.
+    """Build citation mapping for workspace files.
 
-    Converts project file metadata into SearchDoc objects that can be cited.
+    Converts workspace file metadata into SearchDoc objects that can be cited.
     Citation numbers start from the provided starting number.
 
     Args:
-        project_file_metadata: List of project file metadata
+        workspace_file_metadata: List of workspace file metadata
         starting_citation_num: Starting citation number (default: 1)
 
     Returns:
@@ -218,8 +218,8 @@ def _build_project_file_citation_mapping(
     """
     citation_mapping: CitationMapping = {}
 
-    for idx, file_meta in enumerate(project_file_metadata, start=starting_citation_num):
-        # Create a SearchDoc for each project file
+    for idx, file_meta in enumerate(workspace_file_metadata, start=starting_citation_num):
+        # Create a SearchDoc for each workspace file
         search_doc = SearchDoc(
             document_id=file_meta.file_id,
             chunk_ind=0,
@@ -238,30 +238,30 @@ def _build_project_file_citation_mapping(
     return citation_mapping
 
 
-def _build_project_message(
-    project_files: ExtractedProjectFiles | None,
+def _build_workspace_message(
+    workspace_files: ExtractedWorkspaceFiles | None,
     token_counter: Callable[[str], int] | None,
 ) -> list[ChatMessageSimple]:
-    """Build messages for project / tool-backed files.
+    """Build messages for workspace / tool-backed files.
 
     Returns up to two messages:
-    1. The full-text project files message (if project_file_texts is populated).
+    1. The full-text workspace files message (if workspace_file_texts is populated).
     2. A lightweight metadata message for files the LLM should access via the
-       FileReaderTool (e.g. oversized chat-attached files or project files that
+       FileReaderTool (e.g. oversized chat-attached files or workspace files that
        don't fit in context).
     """
-    if not project_files:
+    if not workspace_files:
         return []
 
     messages: list[ChatMessageSimple] = []
-    if project_files.project_file_texts:
+    if workspace_files.workspace_file_texts:
         messages.append(
-            _create_project_files_message(project_files, token_counter=None)
+            _create_workspace_files_message(workspace_files, token_counter=None)
         )
-    if project_files.file_metadata_for_tool and token_counter:
+    if workspace_files.file_metadata_for_tool and token_counter:
         messages.append(
             _create_file_tool_metadata_message(
-                project_files.file_metadata_for_tool, token_counter
+                workspace_files.file_metadata_for_tool, token_counter
             )
         )
     return messages
@@ -272,7 +272,7 @@ def construct_message_history(
     custom_agent_prompt: ChatMessageSimple | None,
     simple_chat_history: list[ChatMessageSimple],
     reminder_message: ChatMessageSimple | None,
-    project_files: ExtractedProjectFiles | None,
+    workspace_files: ExtractedWorkspaceFiles | None,
     available_tokens: int,
     last_n_user_messages: int | None = None,
     token_counter: Callable[[str], int] | None = None,
@@ -284,17 +284,17 @@ def construct_message_history(
                 "filtering chat history by last N user messages must be a value greater than 0"
             )
 
-    # Build the project / file-metadata messages up front so we can use their
+    # Build the workspace / file-metadata messages up front so we can use their
     # actual token counts for the budget.
-    project_messages = _build_project_message(project_files, token_counter)
-    project_messages_tokens = sum(m.token_count for m in project_messages)
+    workspace_messages = _build_workspace_message(workspace_files, token_counter)
+    workspace_messages_tokens = sum(m.token_count for m in workspace_messages)
 
     history_token_budget = available_tokens
     history_token_budget -= system_prompt.token_count if system_prompt else 0
     history_token_budget -= (
         custom_agent_prompt.token_count if custom_agent_prompt else 0
     )
-    history_token_budget -= project_messages_tokens
+    history_token_budget -= workspace_messages_tokens
     history_token_budget -= reminder_message.token_count if reminder_message else 0
 
     if history_token_budget < 0:
@@ -308,7 +308,7 @@ def construct_message_history(
         result = [system_prompt] if system_prompt else []
         if custom_agent_prompt:
             result.append(custom_agent_prompt)
-        result.extend(project_messages)
+        result.extend(workspace_messages)
         if reminder_message:
             result.append(reminder_message)
         return result
@@ -441,18 +441,18 @@ def construct_message_history(
                         forgotten_meta, token_counter
                     )
 
-    # Attach project images to the last user message
-    if project_files and project_files.project_image_files:
+    # Attach workspace images to the last user message
+    if workspace_files and workspace_files.workspace_image_files:
         existing_images = last_user_message.image_files or []
         last_user_message = ChatMessageSimple(
             message=last_user_message.message,
             token_count=last_user_message.token_count,
             message_type=last_user_message.message_type,
-            image_files=existing_images + project_files.project_image_files,
+            image_files=existing_images + workspace_files.workspace_image_files,
         )
 
     # Build the final message list according to README ordering:
-    # [system], [history_before_last_user], [custom_agent], [project_files],
+    # [system], [history_before_last_user], [custom_agent], [workspace_files],
     # [forgotten_files], [last_user_message], [messages_after_last_user], [reminder]
     result = [system_prompt] if system_prompt else []
 
@@ -463,14 +463,14 @@ def construct_message_history(
     if custom_agent_prompt:
         result.append(custom_agent_prompt)
 
-    # 3. Add project files / file-metadata messages (inserted before last user message)
-    result.extend(project_messages)
+    # 3. Add workspace files / file-metadata messages (inserted before last user message)
+    result.extend(workspace_messages)
 
     # 4. Add forgotten-files metadata (right before the user's question)
     if forgotten_files_message:
         result.append(forgotten_files_message)
 
-    # 5. Add last user message (with project images attached)
+    # 5. Add last user message (with workspace images attached)
     result.append(last_user_message)
 
     # 6. Add messages after last user message (tool calls, responses, etc.)
@@ -544,11 +544,11 @@ def _create_file_tool_metadata_message(
     )
 
 
-def _create_project_files_message(
-    project_files: ExtractedProjectFiles,
+def _create_workspace_files_message(
+    workspace_files: ExtractedWorkspaceFiles,
     token_counter: Callable[[str], int] | None,  # noqa: ARG001
 ) -> ChatMessageSimple:
-    """Convert project files to a ChatMessageSimple message.
+    """Convert workspace files to a ChatMessageSimple message.
 
     Format follows the README specification for document representation.
     """
@@ -556,7 +556,7 @@ def _create_project_files_message(
 
     # Format as documents JSON as described in README
     documents_list = []
-    for idx, file_text in enumerate(project_files.project_file_texts, start=1):
+    for idx, file_text in enumerate(workspace_files.workspace_file_texts, start=1):
         documents_list.append(
             {
                 "document": idx,
@@ -567,10 +567,10 @@ def _create_project_files_message(
     documents_json = json.dumps({"documents": documents_list}, indent=2)
     message_content = f"Here are some documents provided for context, they may not all be relevant:\n{documents_json}"
 
-    # Use pre-calculated token count from project_files
+    # Use pre-calculated token count from workspace_files
     return ChatMessageSimple(
         message=message_content,
-        token_count=project_files.total_token_count,
+        token_count=workspace_files.total_token_count,
         message_type=MessageType.USER,
     )
 
@@ -581,7 +581,7 @@ def run_llm_loop(
     simple_chat_history: list[ChatMessageSimple],
     tools: list[Tool],
     custom_agent_prompt: str | None,
-    project_files: ExtractedProjectFiles,
+    workspace_files: ExtractedWorkspaceFiles,
     persona: Persona | None,
     user_memory_context: UserMemoryContext | None,
     llm: LLM,
@@ -623,29 +623,29 @@ def run_llm_loop(
             )
         )
 
-        # Add project file citation mappings if project files are present
-        project_citation_mapping: CitationMapping = {}
-        if project_files.project_file_metadata:
-            project_citation_mapping = _build_project_file_citation_mapping(
-                project_files.project_file_metadata
+        # Add workspace file citation mappings if workspace files are present
+        workspace_citation_mapping: CitationMapping = {}
+        if workspace_files.workspace_file_metadata:
+            workspace_citation_mapping = _build_workspace_file_citation_mapping(
+                workspace_files.workspace_file_metadata
             )
-            citation_processor.update_citation_mapping(project_citation_mapping)
+            citation_processor.update_citation_mapping(workspace_citation_mapping)
 
         llm_step_result: LlmStepResult | None = None
 
         # Pass the total budget to construct_message_history, which will handle token allocation
         available_tokens = llm.config.max_input_tokens
         tool_choice: ToolChoiceOptions = ToolChoiceOptions.AUTO
-        # Initialize gathered_documents with project files if present
+        # Initialize gathered_documents with workspace files if present
         gathered_documents: list[SearchDoc] | None = (
-            list(project_citation_mapping.values())
-            if project_citation_mapping
+            list(workspace_citation_mapping.values())
+            if workspace_citation_mapping
             else None
         )
-        # TODO allow citing of images in Projects. Since attached to the last user message, it has no text associated with it.
+        # TODO allow citing of images in Workspaces. Since attached to the last user message, it has no text associated with it.
         # One future workaround is to include the images as separate user messages with citation information and process those.
         always_cite_documents: bool = bool(
-            project_files.project_as_filter or project_files.project_file_texts
+            workspace_files.workspace_as_filter or workspace_files.workspace_file_texts
         )
         should_cite_documents: bool = False
         ran_image_gen: bool = False
@@ -685,7 +685,7 @@ def run_llm_loop(
 
             # Handling the system prompt and custom agent prompt
             # The section below calculates the available tokens for history a bit more accurately
-            # now that project files are loaded in.
+            # now that workspace files are loaded in.
             if persona and persona.replace_base_system_prompt:
                 # Handles the case where user has checked off the "Replace base system prompt" checkbox
                 system_prompt = (
@@ -781,7 +781,7 @@ def run_llm_loop(
                 custom_agent_prompt=custom_agent_prompt_msg,
                 simple_chat_history=simple_chat_history,
                 reminder_message=reminder_msg,
-                project_files=project_files,
+                workspace_files=workspace_files,
                 available_tokens=available_tokens,
                 token_counter=token_counter,
                 all_injected_file_metadata=all_injected_file_metadata,

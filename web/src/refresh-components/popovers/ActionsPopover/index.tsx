@@ -37,7 +37,7 @@ import ActionLineItem from "@/refresh-components/popovers/ActionsPopover/ActionL
 import MCPLineItem, {
   MCPServer,
 } from "@/refresh-components/popovers/ActionsPopover/MCPLineItem";
-import { useProjectsContext } from "@/providers/ProjectsContext";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { SvgActions, SvgCheck, SvgChevronRight, SvgHourglass, SvgKey, SvgPlus } from "@opal/icons";
 import { Button } from "@opal/components";
 import { getIconForAction } from "@/app/app/services/actionUtils";
@@ -277,7 +277,7 @@ export default function ActionsPopover({
 
   const { tools: availableTools } = useAvailableTools();
   const { ccPairs } = useCCPairs();
-  const { currentProjectId, allCurrentProjectFiles } = useProjectsContext();
+  const { currentWorkspaceId, allCurrentWorkspaceFiles } = useWorkspacesContext();
   const availableToolIdSet = new Set(availableTools.map((tool) => tool.id));
 
   // Check if there are any connectors available
@@ -429,10 +429,10 @@ export default function ActionsPopover({
     // Filter out tools that are not chat-selectable (visibility set by backend)
     if (!tool.chat_selectable) return false;
 
-    // Special handling for Project Search
-    // Ensure Project Search is hidden if no files exist
-    if (tool.in_code_tool_id === SEARCH_TOOL_ID && !!currentProjectId) {
-      if (!allCurrentProjectFiles || allCurrentProjectFiles.length === 0) {
+    // Special handling for Workspace Search
+    // Ensure Workspace Search is hidden if no files exist
+    if (tool.in_code_tool_id === SEARCH_TOOL_ID && !!currentWorkspaceId) {
+      if (!allCurrentWorkspaceFiles || allCurrentWorkspaceFiles.length === 0) {
         return false;
       }
       // If files exist, show it (even if backend thinks it's strictly unavailable due to no connectors)

@@ -4,21 +4,21 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
-import { useProjectsContext } from "@/providers/ProjectsContext";
-import { type ProjectFile } from "@/app/app/projects/projectsService";
+import { useWorkspacesContext } from "@/providers/WorkspacesContext";
+import { type WorkspaceFile } from "@/app/app/workspaces/workspacesService";
 import { MinimalOnyxDocument } from "@/lib/search/interfaces";
 import type { IconProps } from "@opal/types";
 import { SEARCH_PARAM_NAMES } from "@/app/app/services/searchParams";
 import { cn, hasNonImageFiles } from "@/lib/utils";
-import { formatRelativeTime } from "../project_utils";
+import { formatRelativeTime } from "../workspace_utils";
 import { type WorkspaceTab } from "./workspaceTheme";
 import { FileCard, FileCardSkeleton } from "@/sections/cards/FileCard";
-import UserFilesModal from "@/components/modals/UserFilesModal";
+import KnowledgeFilesModal from "@/components/modals/KnowledgeFilesModal";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import InputTextArea from "@/refresh-components/inputs/InputTextArea";
 import Button from "@/refresh-components/buttons/Button";
 import Text from "@/refresh-components/texts/Text";
-import ProjectChatSessionList from "../ProjectChatSessionList";
+import WorkspaceChatSessionList from "../WorkspaceChatSessionList";
 import { UNNAMED_CHAT } from "@/lib/constants";
 import {
   SvgBookOpen,
@@ -36,7 +36,7 @@ export interface WorkspaceDetailBodyProps {
   tab: WorkspaceTab;
   setTab: (tab: WorkspaceTab) => void;
   setPresentingDocument?: (document: MinimalOnyxDocument) => void;
-  projectTokenCount?: number;
+  workspaceTokenCount?: number;
   availableContextTokens?: number;
   onNewChat?: () => void;
 }
@@ -63,21 +63,21 @@ function SectionIcon({
 /* ── Instructions ── */
 export function InstructionsSection() {
   const {
-    currentProjectId,
-    currentProjectDetails,
+    currentWorkspaceId,
+    currentWorkspaceDetails,
     upsertInstructions,
-    isLoadingProjectDetails,
-  } = useProjectsContext();
+    isLoadingWorkspaceDetails,
+  } = useWorkspacesContext();
   const currentInstructions =
-    currentProjectDetails?.project?.instructions ?? "";
+    currentWorkspaceDetails?.workspace?.instructions ?? "";
   const [open, setOpen] = useState(true);
   const [text, setText] = useState(currentInstructions);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Keep the editor in sync when the project/instructions load or change.
+  // Keep the editor in sync when the workspace/instructions load or change.
   useEffect(() => {
     setText(currentInstructions);
-  }, [currentInstructions, currentProjectId]);
+  }, [currentInstructions, currentWorkspaceId]);
 
   async function handleSave() {
     setIsSaving(true);
@@ -115,7 +115,7 @@ export function InstructionsSection() {
       </button>
       {open && (
         <div className="border-t border-border-01 px-4 py-3">
-          {isLoadingProjectDetails && !currentProjectDetails ? (
+          {isLoadingWorkspaceDetails && !currentWorkspaceDetails ? (
             <div className="h-24 w-full rounded-08 bg-background-tint-02 animate-pulse" />
           ) : (
             <>
@@ -150,20 +150,20 @@ export function FilesSection({
   setPresentingDocument?: (document: MinimalOnyxDocument) => void;
 }) {
   const {
-    currentProjectId,
-    currentProjectDetails,
-    allCurrentProjectFiles,
-    isLoadingProjectDetails,
+    currentWorkspaceId,
+    currentWorkspaceDetails,
+    allCurrentWorkspaceFiles,
+    isLoadingWorkspaceDetails,
     beginUpload,
-    unlinkFileFromProject,
-  } = useProjectsContext();
+    unlinkFileFromWorkspace,
+  } = useWorkspacesContext();
   const filesModal = useCreateModal();
 
   const handleOnView = useCallback(
-    (file: ProjectFile) => {
+    (file: WorkspaceFile) => {
       if (!setPresentingDocument) return;
       setPresentingDocument({
-        document_id: `project_file__${file.file_id}`,
+        document_id: `workspace_file__${file.file_id}`,
         semantic_identifier: file.name,
       });
     },
@@ -173,9 +173,9 @@ export function FilesSection({
   const handleUploadFiles = useCallback(
     (files: File[]) => {
       if (!files || files.length === 0) return;
-      beginUpload(Array.from(files), currentProjectId);
+      beginUpload(Array.from(files), currentWorkspaceId);
     },
-    [currentProjectId, beginUpload]
+    [currentWorkspaceId, beginUpload]
   );
 
   const handleUploadChange = useCallback(
@@ -196,13 +196,13 @@ export function FilesSection({
     onDrop: (accepted) => handleUploadFiles(accepted),
   });
 
-  const totalFiles = allCurrentProjectFiles.length;
+  const totalFiles = allCurrentWorkspaceFiles.length;
   const displayFiles =
     variant === "preview"
-      ? allCurrentProjectFiles.slice(0, 6)
-      : allCurrentProjectFiles;
+      ? allCurrentWorkspaceFiles.slice(0, 6)
+      : allCurrentWorkspaceFiles;
   const compactImages = hasNonImageFiles(displayFiles);
-  const isLoading = isLoadingProjectDetails && !currentProjectDetails;
+  const isLoading = isLoadingWorkspaceDetails && !currentWorkspaceDetails;
 
   return (
     <section
@@ -266,8 +266,8 @@ export function FilesSection({
                   key={f.id}
                   file={f}
                   removeFile={async (fileId: string) => {
-                    if (!currentProjectId) return;
-                    await unlinkFileFromProject(currentProjectId, fileId);
+                    if (!currentWorkspaceId) return;
+                    await unlinkFileFromWorkspace(currentWorkspaceId, fileId);
                   }}
                   onFileClick={handleOnView}
                   compactImages={compactImages}
@@ -287,15 +287,15 @@ export function FilesSection({
       </div>
 
       <filesModal.Provider>
-        <UserFilesModal
+        <KnowledgeFilesModal
           title="Workspace Files"
           description="Sessions in this workspace can access the files here."
-          recentFiles={[...allCurrentProjectFiles]}
+          recentFiles={[...allCurrentWorkspaceFiles]}
           onView={handleOnView}
           handleUploadChange={handleUploadChange}
-          onDelete={async (file: ProjectFile) => {
-            if (!currentProjectId) return;
-            await unlinkFileFromProject(currentProjectId, file.id);
+          onDelete={async (file: WorkspaceFile) => {
+            if (!currentWorkspaceId) return;
+            await unlinkFileFromWorkspace(currentWorkspaceId, file.id);
           }}
         />
       </filesModal.Provider>
@@ -305,9 +305,9 @@ export function FilesSection({
 
 /* ── Chat history rail ── */
 function ChatHistoryRail({ setTab }: { setTab: (tab: WorkspaceTab) => void }) {
-  const { currentProjectDetails } = useProjectsContext();
+  const { currentWorkspaceDetails } = useWorkspacesContext();
   const chats = useMemo(() => {
-    const sessions = currentProjectDetails?.project?.chat_sessions ?? [];
+    const sessions = currentWorkspaceDetails?.workspace?.chat_sessions ?? [];
     return [...sessions]
       .sort(
         (a, b) =>
@@ -315,7 +315,7 @@ function ChatHistoryRail({ setTab }: { setTab: (tab: WorkspaceTab) => void }) {
           new Date(a.time_updated).getTime()
       )
       .slice(0, 5);
-  }, [currentProjectDetails?.project?.chat_sessions]);
+  }, [currentWorkspaceDetails?.workspace?.chat_sessions]);
 
   return (
     <section className="rounded-2xl border border-border-01 bg-background-tint-01">
@@ -363,18 +363,18 @@ function ChatHistoryRail({ setTab }: { setTab: (tab: WorkspaceTab) => void }) {
 
 /* ── Quick actions ── */
 function QuickActions({ onNewChat }: { onNewChat?: () => void }) {
-  const { currentProjectId } = useProjectsContext();
+  const { currentWorkspaceId } = useWorkspacesContext();
   const router = useRouter();
 
   const goWithPrompt = useCallback(
     (prompt?: string) => {
-      if (currentProjectId == null) return;
+      if (currentWorkspaceId == null) return;
       const params = new URLSearchParams();
-      params.set(SEARCH_PARAM_NAMES.PROJECT_ID, String(currentProjectId));
+      params.set(SEARCH_PARAM_NAMES.PROJECT_ID, String(currentWorkspaceId));
       if (prompt) params.set(SEARCH_PARAM_NAMES.USER_PROMPT, prompt);
       router.push(`/app?${params.toString()}`);
     },
-    [currentProjectId, router]
+    [currentWorkspaceId, router]
   );
 
   return (
@@ -456,14 +456,14 @@ export default function WorkspaceDetailBody({
   tab,
   setTab,
   setPresentingDocument,
-  projectTokenCount = 0,
+  workspaceTokenCount = 0,
   availableContextTokens = 128_000,
   onNewChat,
 }: WorkspaceDetailBodyProps) {
-  const { currentProjectId } = useProjectsContext();
-  if (!currentProjectId) return null;
+  const { currentWorkspaceId } = useWorkspacesContext();
+  if (!currentWorkspaceId) return null;
 
-  const exceedsContextLimit = projectTokenCount > availableContextTokens;
+  const exceedsContextLimit = workspaceTokenCount > availableContextTokens;
 
   return (
     <div className="mx-auto w-full max-w-[72rem] px-4 pt-6 pb-10">
@@ -498,7 +498,7 @@ export default function WorkspaceDetailBody({
 
       {tab === "chats" && (
         <div className="rounded-2xl border border-border-01 bg-background-tint-01 p-2">
-          <ProjectChatSessionList />
+          <WorkspaceChatSessionList />
         </div>
       )}
     </div>

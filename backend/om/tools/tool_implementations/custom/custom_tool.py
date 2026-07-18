@@ -21,7 +21,7 @@ from om.server.query_and_chat.streaming_models import Packet
 from om.tools.interface import Tool
 from om.tools.models import CHAT_SESSION_ID_PLACEHOLDER
 from om.tools.models import CustomToolCallSummary
-from om.tools.models import CustomToolUserFileSnapshot
+from om.tools.models import CustomToolKnowledgeFileSnapshot
 from om.tools.models import DynamicSchemaInfo
 from om.tools.models import MESSAGE_ID_PLACEHOLDER
 from om.tools.models import ToolCallException
@@ -189,14 +189,14 @@ class CustomTool(Tool[None]):
             file_ids = self._save_and_get_file_references(
                 response.content, content_type
             )
-            tool_result = CustomToolUserFileSnapshot(file_ids=file_ids)
+            tool_result = CustomToolKnowledgeFileSnapshot(file_ids=file_ids)
             response_type = "csv"
 
         elif "image/" in content_type:
             file_ids = self._save_and_get_file_references(
                 response.content, content_type
             )
-            tool_result = CustomToolUserFileSnapshot(file_ids=file_ids)
+            tool_result = CustomToolKnowledgeFileSnapshot(file_ids=file_ids)
             response_type = "image"
 
         else:
