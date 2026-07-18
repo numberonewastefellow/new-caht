@@ -1,6 +1,6 @@
 """Every `onyx`-namespace import in Alembic files must resolve.
 
-The 328 `alembic/versions/*.py` migration files, `alembic/env.py`,
+The `alembic/versions/*.py` migration files (now a single squashed baseline), `alembic/env.py`,
 `run_multitenant_migrations.py`, and `alembic_tenants/**` all `from onyx.… import …`.
 They live OUTSIDE the `onyx` package, so `test_package_import_walk` never touches them
 -- yet a missed rename here breaks `alembic upgrade` on container start. This AST-scans

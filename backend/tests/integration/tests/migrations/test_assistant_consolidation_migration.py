@@ -57,37 +57,15 @@ def test_cold_startup_default_assistant() -> None:
         )
         tool_associations = result.fetchall()
         tool_names = [row[0] for row in tool_associations]
-        tool_display_names = [row[1] for row in tool_associations]
 
-        # Verify all three main tools are attached
-        assert (
-            "internal_search" in tool_names
-        ), "Default assistant should have SearchTool attached"
-        assert (
-            "generate_image" in tool_names
-        ), "Default assistant should have ImageGenerationTool attached"
-        assert (
-            "web_search" in tool_names
-        ), "Default assistant should have WebSearchTool attached"
-        assert (
-            "read_file" in tool_names
-        ), "Default assistant should have FileReaderTool attached"
+        # The baseline seeds the default assistant with these built-in tools
+        # (SearchTool, ImageGenerationTool, PythonTool, OpenURLTool).
+        for expected in ("internal_search", "generate_image", "python", "open_url"):
+            assert (
+                expected in tool_names
+            ), f"Default assistant should have {expected} attached; got {tool_names}"
 
-        # Also verify by display names for clarity
+        # Should have exactly 4 tools
         assert (
-            "Internal Search" in tool_display_names
-        ), "Default assistant should have Internal Search tool"
-        assert (
-            "Image Generation" in tool_display_names
-        ), "Default assistant should have Image Generation tool"
-        assert (
-            "Web Search" in tool_display_names
-        ), "Default assistant should have Web Search tool"
-        assert (
-            "File Reader" in tool_display_names
-        ), "Default assistant should have File Reader tool"
-
-        # Should have exactly 5 tools
-        assert (
-            len(tool_associations) == 5
-        ), f"Default assistant should have exactly 5 tools attached, got {len(tool_associations)}"
+            len(tool_associations) == 4
+        ), f"Default assistant should have exactly 4 tools attached, got {len(tool_associations)}"

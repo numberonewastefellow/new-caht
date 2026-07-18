@@ -50,7 +50,7 @@ LICENSE_ENFORCEMENT_ENABLED=false DISABLE_TELEMETRY=true \
    - `test_deploy_module_paths.py` — `docker-compose*.yml` `command`/`entrypoint` module
      paths (`uvicorn onyx.main:app`, `python -m onyx.mcp_server_main`, `celery -A …`) resolve.
    - `test_alembic_imports.py` — every `onyx`-namespace import in `alembic/env.py`,
-     `run_multitenant_migrations.py`, `alembic/versions/*.py` (328), `alembic_tenants/**`
+     `run_multitenant_migrations.py`, `alembic/versions/*.py` (1 baseline), `alembic_tenants/**`
      resolves (these files live outside the package, so the import-walk misses them).
 2. **Golden snapshot** (`test_golden_snapshot.py`): capture a root-normalized inventory
    before, compare after — proves nothing was dropped/renamed wrong, not just that things
