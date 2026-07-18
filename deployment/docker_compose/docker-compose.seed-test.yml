@@ -2,7 +2,7 @@
 # SEED TEST — Fresh DB + API server for testing seed_all.py
 # =============================================================================
 # Spins up a fresh Postgres + API server + nginx on alternate ports, reusing
-# existing Vespa, Redis, model servers, and MinIO from the main stack.
+# existing OpenSearch, Redis, model servers, and MinIO from the main stack.
 #
 # Usage:
 #   docker compose -f docker-compose.yml -f docker-compose.seed-test.yml up -d seed_test_db seed_test_api seed_test_nginx
@@ -47,7 +47,7 @@ services:
     depends_on:
       seed_test_db:
         condition: service_healthy
-      index:
+      opensearch:
         condition: service_started
       cache:
         condition: service_started
@@ -58,7 +58,6 @@ services:
       - AUTH_TYPE=basic
       - FILE_STORE_BACKEND=s3
       - POSTGRES_HOST=seed_test_db
-      - VESPA_HOST=index
       - REDIS_HOST=cache
       - MODEL_SERVER_HOST=inference_model_server
       - S3_ENDPOINT_URL=http://minio:9000

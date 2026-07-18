@@ -16,11 +16,11 @@ from fastapi.staticfiles import StaticFiles
 
 from om.server.documents.models import DocumentSource
 from om.utils.logger import setup_logger
+from tests.integration.common_utils.document_index import DocumentIndexClient
 from tests.integration.common_utils.managers.api_key import APIKeyManager
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.test_models import DATestUser
-from tests.integration.common_utils.vespa import vespa_fixture
 
 logger = setup_logger()
 
@@ -98,7 +98,7 @@ def http_server_context(
         server_thread.join()
 
 
-def test_web_pruning(reset: None, vespa_client: vespa_fixture) -> None:  # noqa: ARG001
+def test_web_pruning(reset: None, document_index_client: DocumentIndexClient) -> None:  # noqa: ARG001
     # Creating an admin user (first user created is automatically an admin)
     admin_user: DATestUser = UserManager.create(name="admin_user")
 
@@ -166,24 +166,26 @@ def test_web_pruning(reset: None, vespa_client: vespa_fixture) -> None:  # noqa:
             assert selected_cc_pair is not None, "cc_pair not found after pruning!"
             assert selected_cc_pair.docs_indexed == 12
 
-            # check vespa
+            # check the document index
             root_id = f"http://{hostname}:{port}/"
             index_id = f"http://{hostname}:{port}/index.html"
             about_id = f"http://{hostname}:{port}/about.html"
             courses_id = f"http://{hostname}:{port}/courses.html"
 
             doc_ids = [root_id, index_id, about_id, courses_id]
-            retrieved_docs_dict = vespa_client.get_documents_by_id(doc_ids)["documents"]
+            retrieved_docs_dict = document_index_client.get_documents_by_id(doc_ids)[
+                "documents"
+            ]
             retrieved_docs = {
                 doc["fields"]["document_id"]: doc["fields"]
                 for doc in retrieved_docs_dict
             }
 
-            # verify root exists in Vespa
+            # verify root exists in the document index
             retrieved_doc = retrieved_docs.get(root_id)
             assert retrieved_doc
 
-            # verify index.html does not exist in Vespa since it is a duplicate of root
+            # verify index.html does not exist in the document index since it is a duplicate of root
             retrieved_doc = retrieved_docs.get(index_id)
             assert not retrieved_doc
 

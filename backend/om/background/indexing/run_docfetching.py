@@ -675,7 +675,7 @@ def connector_document_extraction(
 
                 if processing_mode == ProcessingMode.FILE_SYSTEM:
                     # File system only - write directly to persistent storage,
-                    # skip chunking/embedding/Vespa but still track documents in DB
+                    # skip chunking/embedding/indexing but still track documents in DB
 
                     # IMPORTANT: Write to S3 FIRST, before marking as indexed in DB.
 

@@ -17,6 +17,7 @@ from om.connectors.google_utils.shared_constants import (
 )
 from om.connectors.models import InputType
 from om.db.enums import AccessType
+from tests.integration.common_utils.document_index import DocumentIndexClient
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.connector import ConnectorManager
 from tests.integration.common_utils.managers.credential import CredentialManager
@@ -29,7 +30,6 @@ from tests.integration.common_utils.test_models import DATestCCPair
 from tests.integration.common_utils.test_models import DATestConnector
 from tests.integration.common_utils.test_models import DATestCredential
 from tests.integration.common_utils.test_models import DATestUser
-from tests.integration.common_utils.vespa import vespa_fixture
 from tests.integration.connector_job_tests.google.google_drive_api_utils import (
     GoogleDriveManager,
 )
@@ -109,7 +109,7 @@ def google_drive_test_env_setup() -> Generator[
 @pytest.mark.xfail(reason="Needs to be tested for flakiness")
 def test_google_permission_sync(
     reset: None,  # noqa: ARG001
-    vespa_client: vespa_fixture,  # noqa: ARG001
+    document_index_client: DocumentIndexClient,  # noqa: ARG001
     google_drive_test_env_setup: tuple[
         GoogleDriveService, str, DATestCCPair, DATestUser, DATestUser, DATestUser
     ],
@@ -279,8 +279,8 @@ def test_google_permission_sync(
         number_of_updated_docs=2,
         user_performing_action=admin_user,
         # if we are only updating the group definition for this test we use this varaiable,
-        # since it doesn't result in a vespa sync so we don't want to wait for it
-        should_wait_for_vespa_sync=False,
+        # since it doesn't result in a document index sync so we don't want to wait for it
+        should_wait_for_document_index_sync=False,
     )
 
     # Verify user 1 can access both documents

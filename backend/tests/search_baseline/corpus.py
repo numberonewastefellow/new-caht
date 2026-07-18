@@ -1,10 +1,10 @@
-"""Fixed, version-controlled document corpus for the Vespa search baseline.
+"""Fixed, version-controlled document corpus for the OpenSearch search baseline.
 
 The corpus is deliberately small and themed so that relevance is *checkable by eye*:
 documents about clearly-distinct topics, partitioned into named knowledge bases
 (document sets), varied source types, and varied update dates. This lets us assert
 exact filter behavior (KB / source_type / time_cutoff) and capture a stable ranking
-baseline for the Vespa -> OpenSearch migration.
+baseline for OpenSearch retrieval.
 
 Everything here is deterministic (no randomness, no timestamps computed at import
 time) so the same corpus is produced on every run and on every machine.

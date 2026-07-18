@@ -1,10 +1,9 @@
 """Backend-agnostic retrieval harness for the search baseline.
 
 Runs the *deterministic* production retrieval path (``search_chunks`` ->
-``_embed_and_search`` -> ``document_index.hybrid_retrieval``) against any
-``DocumentIndex`` implementation (Vespa today, OpenSearch for the migration
-compare) and normalizes the results into stable ``BaselineHit`` rows that can be
-snapshotted and diffed.
+``_embed_and_search`` -> ``document_index.hybrid_retrieval``) against the
+``OpenSearchDocumentIndex`` and normalizes the results into stable ``BaselineHit``
+rows that can be snapshotted and diffed.
 
 No LLM is involved, so results are reproducible for a fixed corpus + query +
 ranking profile.
@@ -27,7 +26,6 @@ from om.document_index.interfaces_new import TenantState
 from om.document_index.opensearch.opensearch_document_index import (
     OpenSearchDocumentIndex,
 )
-from om.document_index.vespa.vespa_document_index import VespaDocumentIndex
 from om.indexing.models import IndexingSetting
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import get_current_tenant_id
@@ -60,20 +58,14 @@ class BaselineHit(BaseModel):
 def get_index(engine: str, db_session: Session) -> DocumentIndex:
     """Return a DocumentIndex for the requested engine.
 
-    engine: "default" (env-configured), "vespa", or "opensearch".
+    engine: "default" (env-configured) or "opensearch".
     """
     search_settings = get_current_search_settings(db_session)
     if engine == "default":
-        return get_default_document_index(search_settings, None, db_session)
+        return get_default_document_index(search_settings, None)
     tenant_state = TenantState(
         tenant_id=get_current_tenant_id(), multitenant=MULTI_TENANT
     )
-    if engine == "vespa":
-        return VespaDocumentIndex(
-            index_name=search_settings.index_name,
-            tenant_state=tenant_state,
-            large_chunks_enabled=search_settings.large_chunks_enabled,
-        )
     if engine == "opensearch":
         indexing_setting = IndexingSetting.from_db_model(search_settings)
         return OpenSearchDocumentIndex(
@@ -160,8 +152,8 @@ def ensure_index_ready(engine: str, db_session: Session) -> None:
     """Make the engine's index ready for indexing/retrieval.
 
     For OpenSearch in single-tenant mode the index + search pipeline are NOT
-    auto-created on construction, so we create them here (idempotent). Vespa's
-    index is managed by the app, so this is a no-op for it.
+    auto-created on construction, so we create them here (idempotent). For any
+    other engine value this is a no-op.
     """
     if engine != "opensearch":
         return

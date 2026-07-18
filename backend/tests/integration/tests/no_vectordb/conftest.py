@@ -2,7 +2,7 @@
 
 These tests are intended to run against an Onyx deployment started with
 DISABLE_VECTOR_DB=true.  They are automatically **skipped** when the
-server reports vector_db_enabled=true (i.e. when Vespa is available).
+server reports vector_db_enabled=true (i.e. when the document index is available).
 """
 
 import pytest
@@ -41,7 +41,7 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.fixture()
 def reset() -> None:
-    """Reset Postgres and the file store, but skip Vespa (not running)."""
+    """Reset Postgres and the file store, but skip the document index (not running)."""
     reset_postgres()
     reset_file_store()
 

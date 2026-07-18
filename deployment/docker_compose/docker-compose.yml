@@ -56,8 +56,7 @@ services:
     depends_on:
       relational_db:
         condition: service_started
-      # NOTE: Vespa (index) is intentionally NOT a hard dependency so it can be
-      # turned off via compose profiles for OpenSearch-only mode. The backend
+      # NOTE: OpenSearch is intentionally NOT a hard dependency; the backend
       # retries the search-index connection on startup.
       cache:
         condition: service_started
@@ -79,15 +78,10 @@ services:
       # Arize Phoenix LLM Observability
       - PHOENIX_COLLECTOR_ENDPOINT=${PHOENIX_COLLECTOR_ENDPOINT:-}
       - POSTGRES_HOST=${POSTGRES_HOST:-relational_db}
-      - VESPA_HOST=${VESPA_HOST:-index}
-      # Search engine selection (Vespa is the default). OpenSearch is opt-in:
-      # add "opensearch" to COMPOSE_PROFILES and set ENABLE_OPENSEARCH_INDEXING_FOR_OM=true.
+      # OpenSearch is the only document index.
       - OPENSEARCH_HOST=${OPENSEARCH_HOST:-opensearch}
       - OPENSEARCH_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
       - OPENSEARCH_USE_SSL=${OPENSEARCH_USE_SSL:-true}
-      - ENABLE_OPENSEARCH_INDEXING_FOR_OM=${ENABLE_OPENSEARCH_INDEXING_FOR_OM:-false}
-      - ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM=${ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM:-false}
-      - OM_DISABLE_VESPA=${OM_DISABLE_VESPA:-false}
       - REDIS_HOST=${REDIS_HOST:-cache}
       - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
       - S3_ENDPOINT_URL=${S3_ENDPOINT_URL:-http://minio:9000}
@@ -151,8 +145,7 @@ services:
       - path: .env
         required: false
     depends_on:
-      # Vespa (index) intentionally omitted so it can be disabled via the
-      # "vespa" compose profile for OpenSearch-only mode (backend retries).
+      # OpenSearch is intentionally omitted as a hard dependency (backend retries).
       - relational_db
       - cache
       - inference_model_server
@@ -164,15 +157,10 @@ services:
       # Arize Phoenix LLM Observability
       - PHOENIX_COLLECTOR_ENDPOINT=${PHOENIX_COLLECTOR_ENDPOINT:-}
       - POSTGRES_HOST=${POSTGRES_HOST:-relational_db}
-      - VESPA_HOST=${VESPA_HOST:-index}
-      # Search engine selection (Vespa is the default). OpenSearch is opt-in:
-      # add "opensearch" to COMPOSE_PROFILES and set ENABLE_OPENSEARCH_INDEXING_FOR_OM=true.
+      # OpenSearch is the only document index.
       - OPENSEARCH_HOST=${OPENSEARCH_HOST:-opensearch}
       - OPENSEARCH_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
       - OPENSEARCH_USE_SSL=${OPENSEARCH_USE_SSL:-true}
-      - ENABLE_OPENSEARCH_INDEXING_FOR_OM=${ENABLE_OPENSEARCH_INDEXING_FOR_OM:-false}
-      - ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM=${ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM:-false}
-      - OM_DISABLE_VESPA=${OM_DISABLE_VESPA:-false}
       - REDIS_HOST=${REDIS_HOST:-cache}
       - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
       - INDEXING_MODEL_SERVER_HOST=${INDEXING_MODEL_SERVER_HOST:-indexing_model_server}
@@ -405,42 +393,10 @@ services:
     volumes:
       - db_volume:/var/lib/postgresql/data
 
-  # This container name cannot have an underscore in it due to Vespa expectations of the URL
-  index:
-    image: vespaengine/vespa:8.609.39
-    restart: unless-stopped
-    # Gated behind the "vespa" profile so it can be turned off entirely (e.g.
-    # OpenSearch-only mode). It starts only when "vespa" is in COMPOSE_PROFILES.
-    # The default .env keeps "vespa" active, so normal `dev up` is unaffected.
-    profiles: ["vespa"]
-    env_file:
-      - path: .env
-        required: false
-    environment:
-      - VESPA_SKIP_UPGRADE_CHECK=${VESPA_SKIP_UPGRADE_CHECK:-true}
-    # DEV: To expose ports, either:
-    # 1. Use docker-compose.dev.yml: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --wait
-    # 2. Uncomment the ports below
-    # ports:
-    #   - "19071:19071"
-    #   - "8081:8081"
-    volumes:
-      - vespa_volume:/opt/vespa/var
-    logging:
-      driver: json-file
-      options:
-        max-size: "50m"
-        max-file: "6"
-
-  # Optional second search engine. Vespa (service `index`) stays the default.
-  # This service only starts when "opensearch" is included in COMPOSE_PROFILES
-  # (e.g. in .env: COMPOSE_PROFILES=s3-filestore,opensearch). To actually use it,
-  # also set ENABLE_OPENSEARCH_INDEXING_FOR_OM=true (and optionally
-  # ENABLE_OPENSEARCH_RETRIEVAL_FOR_OM / OM_DISABLE_VESPA).
+  # OpenSearch is the document index (the only search engine).
   opensearch:
     image: opensearchproject/opensearch:${OPENSEARCH_IMAGE_TAG:-3.6.0}
     restart: unless-stopped
-    profiles: ["opensearch"]
     env_file:
       - path: .env
         required: false
@@ -661,8 +617,6 @@ volumes:
   # Necessary for persisting data for use
   db_volume:
     name: onyx-stack_db_volume
-  vespa_volume:
-    name: onyx-stack_vespa_volume
   opensearch_data:
     name: onyx-stack_opensearch_data
   minio_data:

@@ -35,15 +35,15 @@ services:
   #        cpus: ${API_SERVER_CPU_RESERVATION}
   #        memory: ${API_SERVER_MEM_RESERVATION}
   #
-  #   index:
+  #   opensearch:
   #     deploy:
   #       resources:
   #         limits:
-  #           cpus: ${VESPA_CPU_LIMIT}
-  #           memory: ${VESPA_MEM_LIMIT}
+  #           cpus: ${OPENSEARCH_CPU_LIMIT}
+  #           memory: ${OPENSEARCH_MEM_LIMIT}
   #         reservations:
-  #           cpus: ${VESPA_CPU_RESERVATION}
-  #           memory: ${VESPA_MEM_RESERVATION}
+  #           cpus: ${OPENSEARCH_CPU_RESERVATION}
+  #           memory: ${OPENSEARCH_MEM_RESERVATION}
   #
   inference_model_server:
     deploy:

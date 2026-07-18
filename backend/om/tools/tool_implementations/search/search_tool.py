@@ -277,8 +277,8 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
     def _run_slack_search(self, query: str) -> list[InferenceChunk]:
         """Run Slack federated search for a query.
 
-        This runs in parallel with the main Vespa search to avoid
-        query multiplication issues where each Vespa query variation
+        This runs in parallel with the main document-index search to avoid
+        query multiplication issues where each document-index query variation
         would trigger a separate Slack search.
 
         Tokens are fetched internally based on:
@@ -696,8 +696,8 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
                 )
                 search_weights.append(weight)
 
-            # Add Slack federated search (runs once in parallel with all Vespa queries)
-            # This avoids the query multiplication problem where each Vespa query
+            # Add Slack federated search (runs once in parallel with all document-index queries)
+            # This avoids the query multiplication problem where each document-index query
             # would trigger a separate Slack search
             # Run if we have slack_context (bot) or user (might have OAuth token)
             if (
@@ -714,7 +714,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
                 # Use same weight as original query for Slack results
                 search_weights.append(ORIGINAL_QUERY_WEIGHT)
 
-            # Run all searches in parallel (Vespa queries + Slack)
+            # Run all searches in parallel (document-index queries + Slack)
             all_search_results = run_functions_tuples_in_parallel(search_functions)
 
             # Merge results using weighted Reciprocal Rank Fusion

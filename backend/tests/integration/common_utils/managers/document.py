@@ -14,9 +14,9 @@ from tests.integration.common_utils.constants import GENERAL_HEADERS
 from tests.integration.common_utils.constants import NUM_DOCS
 from tests.integration.common_utils.managers.api_key import DATestAPIKey
 from tests.integration.common_utils.managers.cc_pair import DATestCCPair
+from tests.integration.common_utils.document_index import DocumentIndexClient
 from tests.integration.common_utils.test_models import DATestUser
 from tests.integration.common_utils.test_models import SimpleTestDocument
-from tests.integration.common_utils.vespa import vespa_fixture
 
 
 def _verify_document_permissions(
@@ -167,7 +167,7 @@ class DocumentManager:
 
     @staticmethod
     def verify(
-        vespa_client: vespa_fixture,
+        document_index_client: DocumentIndexClient,
         cc_pair: DATestCCPair,
         # If None, will not check doc sets or groups
         # If empty list, will check for empty doc sets or groups
@@ -177,7 +177,9 @@ class DocumentManager:
         verify_deleted: bool = False,
     ) -> None:
         doc_ids = [document.id for document in cc_pair.documents]
-        retrieved_docs_dict = vespa_client.get_documents_by_id(doc_ids)["documents"]
+        retrieved_docs_dict = document_index_client.get_documents_by_id(doc_ids)[
+            "documents"
+        ]
 
         retrieved_docs = {
             doc["fields"]["document_id"]: doc["fields"] for doc in retrieved_docs_dict
@@ -221,7 +223,7 @@ class DocumentManager:
     def fetch_documents_for_cc_pair(
         cc_pair_id: int,
         db_session: Session,
-        vespa_client: vespa_fixture,
+        document_index_client: DocumentIndexClient,
     ) -> list[SimpleTestDocument]:
         stmt = (
             select(DocumentByConnectorCredentialPair)
@@ -241,7 +243,9 @@ class DocumentManager:
             return []
 
         doc_ids = [document.id for document in documents]
-        retrieved_docs_dict = vespa_client.get_documents_by_id(doc_ids)["documents"]
+        retrieved_docs_dict = document_index_client.get_documents_by_id(doc_ids)[
+            "documents"
+        ]
 
         final_docs: list[SimpleTestDocument] = []
         # NOTE: they are really chunks, but we're assuming that for these tests
@@ -249,7 +253,7 @@ class DocumentManager:
         for doc_dict in retrieved_docs_dict:
             doc_id = doc_dict["fields"]["document_id"]
             doc_content = doc_dict["fields"]["content"]
-            # still called `image_file_name` in Vespa for backwards compatibility
+            # exposed under the legacy `image_file_name` key for compatibility
             image_file_id = doc_dict["fields"].get("image_file_name", None)
             final_docs.append(
                 SimpleTestDocument(

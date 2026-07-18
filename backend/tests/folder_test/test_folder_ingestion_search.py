@@ -4,11 +4,11 @@ Integration Test: Folder Connector — Ingestion & Search
 
 End-to-end test that verifies:
 1. Folder connector can be created via API
-2. Indexing ingests documents into Vespa
+2. Indexing ingests documents into the document index
 3. Chat search retrieves relevant chunks from folder documents
 4. LLM answers contain expected information from the test data
 
-Requires a running VirtualAI deployment (API server, Vespa, embedding model).
+Requires a running VirtualAI deployment (API server, document index, embedding model).
 
 Usage:
     python test_folder_ingestion_search.py

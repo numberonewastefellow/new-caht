@@ -69,7 +69,7 @@ def _build_group_member_email_map(
     return group_member_emails
 
 
-def _build_group_member_email_map_from_onyx_users(
+def _build_group_member_email_map_from_om_users(
     confluence_client: OmConfluence,
 ) -> dict[str, set[str]]:
     """Hacky, but it's the only way to do this as long as the
@@ -123,33 +123,33 @@ def _build_group_member_email_map_from_onyx_users(
 def _build_final_group_to_member_email_map(
     confluence_client: OmConfluence,
     cc_pair_id: int,
-    # if set, will infer confluence usernames from onyx users in addition to using the
+    # if set, will infer confluence usernames from om users in addition to using the
     # confluence users API. This is a hacky workaround for the fact that the Confluence
     # users API is broken before Confluence Data Center 10.1.0.
-    use_onyx_users: bool = CONFLUENCE_USE_OM_USERS_FOR_GROUP_SYNC,
+    use_om_users: bool = CONFLUENCE_USE_OM_USERS_FOR_GROUP_SYNC,
 ) -> dict[str, set[str]]:
     group_to_member_email_map = _build_group_member_email_map(
         confluence_client=confluence_client,
         cc_pair_id=cc_pair_id,
     )
-    group_to_member_email_map_from_onyx_users = (
+    group_to_member_email_map_from_om_users = (
         (
-            _build_group_member_email_map_from_onyx_users(
+            _build_group_member_email_map_from_om_users(
                 confluence_client=confluence_client,
             )
         )
-        if use_onyx_users
+        if use_om_users
         else {}
     )
 
     all_group_ids = set(group_to_member_email_map.keys()) | set(
-        group_to_member_email_map_from_onyx_users.keys()
+        group_to_member_email_map_from_om_users.keys()
     )
     final_group_to_member_email_map = {}
     for group_id in all_group_ids:
         group_member_emails = group_to_member_email_map.get(
             group_id, set()
-        ) | group_to_member_email_map_from_onyx_users.get(group_id, set())
+        ) | group_to_member_email_map_from_om_users.get(group_id, set())
         final_group_to_member_email_map[group_id] = group_member_emails
 
     return final_group_to_member_email_map

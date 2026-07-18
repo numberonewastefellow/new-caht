@@ -1,7 +1,7 @@
 # =============================================================================
 # ONYX NO-VECTOR-DB OVERLAY
 # =============================================================================
-# Overlay to run VertualAI without a vector database (Vespa), model servers, or
+# Overlay to run VertualAI without a vector database (OpenSearch), model servers, or
 # code interpreter. In this mode, connectors and RAG search are disabled, but
 # the core chat experience (LLM conversations, tools, user file uploads,
 # Projects, Agent knowledge) still works.
@@ -14,13 +14,13 @@
 #                  -f docker-compose.dev.yml up -d --wait
 #
 # This overlay:
-#   - Moves Vespa (index), both model servers, and code-interpreter to profiles
+#   - Moves OpenSearch, both model servers, and code-interpreter to profiles
 #     so they do not start by default
 #   - Makes the depends_on references to those services optional
 #   - Sets DISABLE_VECTOR_DB=true on backend services
 #
 # To selectively bring services back:
-#   --profile vectordb          Vespa + indexing model server
+#   --profile vectordb          OpenSearch + indexing model server
 #   --profile inference         Inference model server
 #   --profile code-interpreter  Code interpreter
 # =============================================================================
@@ -30,7 +30,7 @@ name: onyx
 services:
   api_server:
     depends_on:
-      index:
+      opensearch:
         condition: service_started
         required: false
       inference_model_server:
@@ -45,7 +45,7 @@ services:
 
   background:
     depends_on:
-      index:
+      opensearch:
         condition: service_started
         required: false
       indexing_model_server:
@@ -58,8 +58,8 @@ services:
       - DISABLE_VECTOR_DB=true
       - FILE_STORE_BACKEND=postgres
 
-  # Move Vespa and indexing model server to a profile so they do not start.
-  index:
+  # Move OpenSearch and indexing model server to a profile so they do not start.
+  opensearch:
     profiles: ["vectordb"]
 
   indexing_model_server:

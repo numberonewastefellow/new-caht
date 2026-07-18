@@ -85,7 +85,7 @@ class IndexingPipelineResult(BaseModel):
     # NOTE: need total_docs, since the pipeline can skip some docs
     # (e.g. not even insert them into Postgres)
     total_docs: int
-    # number of chunks that were inserted into Vespa
+    # number of chunks that were inserted into the document index
     total_chunks: int
 
     failures: list[ConnectorFailure]
@@ -734,10 +734,10 @@ def index_doc_batch(
 
     # Acquires a lock on the documents so that no other process can modify them
     # NOTE: don't need to acquire till here, since this is when the actual race condition
-    # with Vespa can occur.
+    # with the document index can occur.
     with adapter.lock_context(context.updatable_docs):
         # we're concerned about race conditions where multiple simultaneous indexings might result
-        # in one set of metadata overwriting another one in vespa.
+        # in one set of metadata overwriting another one in the document index.
         # we still write data here for the immediate and most likely correct sync, but
         # to resolve this, an update of the last modified field at the end of this loop
         # always triggers a final metadata sync via the celery queue

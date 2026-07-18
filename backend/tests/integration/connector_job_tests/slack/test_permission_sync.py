@@ -7,6 +7,7 @@ from om.connectors.models import InputType
 from om.connectors.slack.models import ChannelType
 from om.db.enums import AccessType
 from om.server.documents.models import DocumentSource
+from tests.integration.common_utils.document_index import DocumentIndexClient
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.connector import ConnectorManager
 from tests.integration.common_utils.managers.credential import CredentialManager
@@ -20,7 +21,6 @@ from tests.integration.common_utils.test_models import DATestCCPair
 from tests.integration.common_utils.test_models import DATestConnector
 from tests.integration.common_utils.test_models import DATestCredential
 from tests.integration.common_utils.test_models import DATestUser
-from tests.integration.common_utils.vespa import vespa_fixture
 from tests.integration.connector_job_tests.slack.slack_api_utils import SlackManager
 
 
@@ -28,7 +28,7 @@ from tests.integration.connector_job_tests.slack.slack_api_utils import SlackMan
 # still exists. May need to xfail again if flaky (DAN-789)
 def test_slack_permission_sync(
     reset: None,  # noqa: ARG001
-    vespa_client: vespa_fixture,  # noqa: ARG001
+    document_index_client: DocumentIndexClient,  # noqa: ARG001
     slack_test_setup: tuple[ChannelType, ChannelType],
 ) -> None:
     public_channel, private_channel = slack_test_setup
@@ -225,7 +225,7 @@ def test_slack_permission_sync(
 # still exists. May need to xfail again if flaky (DAN-789)
 def test_slack_group_permission_sync(
     reset: None,  # noqa: ARG001
-    vespa_client: vespa_fixture,  # noqa: ARG001
+    document_index_client: DocumentIndexClient,  # noqa: ARG001
     slack_test_setup: tuple[ChannelType, ChannelType],
 ) -> None:
     """

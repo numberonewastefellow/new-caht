@@ -12,7 +12,7 @@ services:
       uvicorn om.main:app --host 0.0.0.0 --port 8080"
     depends_on:
       - relational_db
-      - index
+      - opensearch
       - cache
       - minio
     restart: unless-stopped
@@ -23,7 +23,6 @@ services:
     environment:
       - AUTH_TYPE=disabled
       - POSTGRES_HOST=relational_db
-      - VESPA_HOST=index
       - REDIS_HOST=cache
       - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
       - MODEL_SERVER_PORT=${MODEL_SERVER_PORT:-}
@@ -51,7 +50,7 @@ services:
     command: /app/scripts/supervisord_entrypoint.sh
     depends_on:
       - relational_db
-      - index
+      - opensearch
       - cache
     restart: unless-stopped
     env_file:
@@ -60,7 +59,6 @@ services:
       - USE_LIGHTWEIGHT_BACKGROUND_WORKER=${USE_LIGHTWEIGHT_BACKGROUND_WORKER:-true}
       - AUTH_TYPE=disabled
       - POSTGRES_HOST=relational_db
-      - VESPA_HOST=index
       - REDIS_HOST=cache
       - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
       - MODEL_SERVER_PORT=${MODEL_SERVER_PORT:-}
@@ -145,7 +143,6 @@ services:
       - MIN_THREADS_ML_MODELS=${MIN_THREADS_ML_MODELS:-}
       - INDEXING_ONLY=True
       - LOG_LEVEL=${LOG_LEVEL:-debug}
-      - VESPA_SEARCHER_THREADS=${VESPA_SEARCHER_THREADS:-1}
     volumes:
       - inference_model_cache_huggingface:/app/.cache/huggingface/
     logging:
@@ -169,17 +166,42 @@ services:
     volumes:
       - db_volume:/var/lib/postgresql/data
 
-  # This container name cannot have an underscore in it due to Vespa expectations of the URL
-  index:
-    image: vespaengine/vespa:8.609.39
+  # OpenSearch is the document index (the only search engine).
+  opensearch:
+    image: opensearchproject/opensearch:${OPENSEARCH_IMAGE_TAG:-3.6.0}
     restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
     environment:
-      - VESPA_SKIP_UPGRADE_CHECK=true
+      # single-node so OpenSearch doesn't wait to form a cluster
+      - discovery.type=single-node
+      # OpenSearch 2.12+ requires a STRONG initial admin password
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
+      - bootstrap.memory_lock=true
+      # Heap should be ~50% of the container memory limit; Xms must equal Xmx
+      - "OPENSEARCH_JAVA_OPTS=${OPENSEARCH_JAVA_OPTS:--Xms2g -Xmx2g}"
     ports:
-      - "19071:19071"
-      - "8081:8081"
+      - "9200:9200"
     volumes:
-      - vespa_volume:/opt/vespa/var
+      - opensearch_data:/usr/share/opensearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -skf https://localhost:9200 -u admin:${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -253,11 +275,11 @@ volumes:
       type: none
       o: bind
       device: ${DANSWER_POSTGRES_DATA_DIR:-./postgres_data}
-  vespa_volume:
+  opensearch_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${DANSWER_VESPA_DATA_DIR:-./vespa_data}
+      device: ${DANSWER_OPENSEARCH_DATA_DIR:-./opensearch_data}
   log_store: # for logs that we don't want to lose on container restarts
   minio_data:

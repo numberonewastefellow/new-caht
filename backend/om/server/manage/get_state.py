@@ -140,19 +140,19 @@ def get_versions() -> AllVersions:
         stable=ContainerVersions(
             onyx=latest_stable_version,
             relational_db="postgres:15.2-alpine",
-            index="vespaengine/vespa:8.277.17",
+            index="opensearchproject/opensearch:3.6.0",
             nginx="nginx:1.25.5-alpine",
         ),
         dev=ContainerVersions(
             onyx=latest_dev_version,
             relational_db="postgres:15.2-alpine",
-            index="vespaengine/vespa:8.277.17",
+            index="opensearchproject/opensearch:3.6.0",
             nginx="nginx:1.25.5-alpine",
         ),
         migration=ContainerVersions(
             onyx="airgapped-intfloat-nomic-migration",
             relational_db="postgres:15.2-alpine",
-            index="vespaengine/vespa:8.277.17",
+            index="opensearchproject/opensearch:3.6.0",
             nginx="nginx:1.25.5-alpine",
         ),
     )

@@ -695,7 +695,7 @@ class ConnectorCredentialPair(Base):
     )
 
     # Determines how documents are processed after fetching:
-    # REGULAR: Full pipeline (chunk → embed → Vespa)
+    # REGULAR: Full pipeline (chunk → embed → index)
     # FILE_SYSTEM: Write to file system only (for CLI agent sandbox)
     processing_mode: Mapped[ProcessingMode] = mapped_column(
         Enum(ProcessingMode, native_enum=False),
@@ -2228,7 +2228,7 @@ class SyncRecord(Base):
     Represents the status of a "sync" operation (e.g. document set, user group, deletion).
 
     A "sync" operation is an operation which needs to update a set of documents within
-    Vespa, usually to match the state of Postgres.
+    the document index, usually to match the state of Postgres.
     """
 
     __tablename__ = "sync_record"

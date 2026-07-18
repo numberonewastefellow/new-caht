@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 
-from om.access.utils import build_ext_group_name_for_onyx
+from om.access.utils import build_ext_group_name_for_om
 from om.configs.constants import DocumentSource
 from om.db.models import PublicExternalUserGroup
 from om.db.models import User
@@ -113,7 +113,7 @@ def upsert_external_groups(
 
     # Process each external group
     for external_group in external_groups:
-        external_group_id = build_ext_group_name_for_onyx(
+        external_group_id = build_ext_group_name_for_om(
             ext_group_name=external_group.id,
             source=source,
         )

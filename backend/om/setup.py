@@ -114,8 +114,8 @@ def setup_onyx(
             "embedding model warm-up."
         )
     else:
-        # Ensure Vespa is setup correctly, this step is relatively near the end
-        # because Vespa takes a bit of time to start up
+        # Ensure the document index (OpenSearch) is set up correctly, this step is
+        # relatively near the end because it takes a bit of time to start up
         logger.notice("Verifying Document Index(s) is/are available.")
         # This flow is for setting up the document index so we get all indices here.
         document_indices = get_all_document_indices(

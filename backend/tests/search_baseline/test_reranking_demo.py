@@ -2,7 +2,7 @@
 
 Runs the layer-by-layer demonstration (`demonstrate`) for a sports query against the
 two-domain `index_rest` data and asserts the relevant document survives the LLM
-relevance-selection layer. This exercises query expansion + per-query Vespa ranking +
+relevance-selection layer. This exercises query expansion + per-query OpenSearch ranking +
 weighted RRF fusion + LLM section selection + per-section context classification.
 
 Marked `llm` because it makes real LLM calls (non-deterministic); skipped unless a

@@ -87,22 +87,7 @@ services:
     volumes:
       - E:/temp/vert/db:/var/lib/postgresql/data
 
-  index:
-    ports:
-      - "19071:19071"
-      - "8081:8081"
-    healthcheck:
-      # We use 19071 because the application server at 8010 is not ready until
-      # it is activated/configured by the application.
-      test: ["CMD-SHELL", "curl -sf http://localhost:19071/state/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    volumes:
-      - E:/temp/vert/vespa:/opt/vespa/var
-
-  # Store OpenSearch data on the host (like Vespa) instead of a Docker named volume.
+  # Store OpenSearch data on the host instead of a Docker named volume.
   # This bind replaces the base opensearch_data named volume (same target path).
   # NOTE: OpenSearch runs as uid 1000 and is strict about data-dir permissions. If
   # it fails to start with "failed to obtain node locks" / AccessDenied, revert to

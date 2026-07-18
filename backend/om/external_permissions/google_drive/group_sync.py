@@ -121,12 +121,12 @@ def _get_all_folders(
     return all_folders
 
 
-def _drive_folder_to_onyx_group(
+def _drive_folder_to_om_group(
     folder: FolderInfo,
     group_email_to_member_emails_map: dict[str, list[str]],
 ) -> ExternalUserGroup:
     """
-    Converts a folder into an Onyx group.
+    Converts a folder into an Om group.
     """
     anyone_can_access = False
     folder_member_emails: set[str] = set()
@@ -227,7 +227,7 @@ def _get_drive_members(
     return drive_id_to_members_map
 
 
-def _drive_member_map_to_onyx_groups(
+def _drive_member_map_to_om_groups(
     drive_id_to_members_map: dict[str, tuple[set[str], set[str]]],
     group_email_to_member_emails_map: dict[str, list[str]],
 ) -> Generator[ExternalUserGroup, None, None]:
@@ -267,7 +267,7 @@ def _get_all_google_groups(
     return group_emails
 
 
-def _google_group_to_onyx_group(
+def _google_group_to_om_group(
     admin_service: AdminService,
     group_email: str,
 ) -> ExternalUserGroup:
@@ -311,14 +311,14 @@ def _map_group_email_to_member_emails(
     return group_to_member_map
 
 
-def _build_onyx_groups(
+def _build_om_groups(
     drive_id_to_members_map: dict[str, tuple[set[str], set[str]]],
     group_email_to_member_emails_map: dict[str, set[str]],
     folder_info: list[FolderInfo],
 ) -> list[ExternalUserGroup]:
-    onyx_groups: list[ExternalUserGroup] = []
+    om_groups: list[ExternalUserGroup] = []
 
-    # Convert all drive member definitions to onyx groups
+    # Convert all drive member definitions to om groups
     # This is because having drive level access means you have
     # irrevocable access to all the files in the drive.
     for drive_id, (group_emails, user_emails) in drive_id_to_members_map.items():
@@ -331,14 +331,14 @@ def _build_onyx_groups(
                 )
                 continue
             drive_member_emails.update(group_email_to_member_emails_map[group_email])
-        onyx_groups.append(
+        om_groups.append(
             ExternalUserGroup(
                 id=drive_id,
                 user_emails=list(drive_member_emails),
             )
         )
 
-    # Convert all folder permissions to onyx groups
+    # Convert all folder permissions to om groups
     for folder in folder_info:
         anyone_can_access = False
         folder_member_emails: set[str] = set()
@@ -363,7 +363,7 @@ def _build_onyx_groups(
             elif permission.type == PermissionType.ANYONE:
                 anyone_can_access = True
 
-        onyx_groups.append(
+        om_groups.append(
             ExternalUserGroup(
                 id=folder.id,
                 user_emails=list(folder_member_emails),
@@ -371,16 +371,16 @@ def _build_onyx_groups(
             )
         )
 
-    # Convert all group member definitions to onyx groups
+    # Convert all group member definitions to om groups
     for group_email, member_emails in group_email_to_member_emails_map.items():
-        onyx_groups.append(
+        om_groups.append(
             ExternalUserGroup(
                 id=group_email,
                 user_emails=list(member_emails),
             )
         )
 
-    return onyx_groups
+    return om_groups
 
 
 def gdrive_group_sync(
@@ -409,18 +409,18 @@ def gdrive_group_sync(
         admin_service, google_drive_connector.google_domain
     )
 
-    # Each google group is an Onyx group, yield those
+    # Each google group is an Om group, yield those
     group_email_to_member_emails_map: dict[str, list[str]] = {}
     for group_email in all_group_emails:
-        onyx_group = _google_group_to_onyx_group(admin_service, group_email)
-        group_email_to_member_emails_map[group_email] = onyx_group.user_emails
-        yield onyx_group
+        om_group = _google_group_to_om_group(admin_service, group_email)
+        group_email_to_member_emails_map[group_email] = om_group.user_emails
+        yield om_group
 
     # Each drive is a group, yield those
-    for onyx_group in _drive_member_map_to_onyx_groups(
+    for om_group in _drive_member_map_to_om_groups(
         drive_id_to_members_map, group_email_to_member_emails_map
     ):
-        yield onyx_group
+        yield om_group
 
     # Get all folder permissions
     folder_info = _get_all_folders(
@@ -428,4 +428,4 @@ def gdrive_group_sync(
         skip_folders_without_permissions=True,
     )
     for folder in folder_info:
-        yield _drive_folder_to_onyx_group(folder, group_email_to_member_emails_map)
+        yield _drive_folder_to_om_group(folder, group_email_to_member_emails_map)

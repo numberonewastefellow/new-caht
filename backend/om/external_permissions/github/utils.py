@@ -17,7 +17,7 @@ from pydantic import BaseModel
 
 from om.db.external_perm import ExternalUserGroup
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_onyx
+from om.access.utils import build_ext_group_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.github.rate_limit_utils import sleep_after_rate_limit_exception
 from om.utils.logger import setup_logger
@@ -335,11 +335,11 @@ def get_external_access_permission(
         collaborators_group_id = form_collaborators_group_id(repo.id)
         outside_collaborators_group_id = form_outside_collaborators_group_id(repo.id)
         if add_prefix:
-            collaborators_group_id = build_ext_group_name_for_onyx(
+            collaborators_group_id = build_ext_group_name_for_om(
                 source=DocumentSource.GITHUB,
                 ext_group_name=collaborators_group_id,
             )
-            outside_collaborators_group_id = build_ext_group_name_for_onyx(
+            outside_collaborators_group_id = build_ext_group_name_for_om(
                 source=DocumentSource.GITHUB,
                 ext_group_name=outside_collaborators_group_id,
             )
@@ -348,7 +348,7 @@ def get_external_access_permission(
         team_slugs = fetch_repository_team_slugs(repo, github_client)
         if add_prefix:
             team_slugs = [
-                build_ext_group_name_for_onyx(
+                build_ext_group_name_for_om(
                     source=DocumentSource.GITHUB,
                     ext_group_name=slug,
                 )
@@ -369,7 +369,7 @@ def get_external_access_permission(
         )
         org_group_id = form_organization_group_id(repo.organization.id)
         if add_prefix:
-            org_group_id = build_ext_group_name_for_onyx(
+            org_group_id = build_ext_group_name_for_om(
                 source=DocumentSource.GITHUB,
                 ext_group_name=org_group_id,
             )

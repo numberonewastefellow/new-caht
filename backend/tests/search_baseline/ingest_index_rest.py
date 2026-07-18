@@ -9,12 +9,12 @@ tagged with its domain document set, and indexed via the migrated new interface
 (``DocumentIndex.index(chunks, IndexingMetadata)``).
 
 Then it:
-  1. queries Vespa directly to confirm the chunks landed (and their document_sets),
+  1. queries OpenSearch directly to confirm the chunks landed,
   2. runs domain-specific search queries through the same harness used by the
      baseline tests and prints document_id + score so relevance/scoring can be checked,
   3. asserts the right domain doc wins its own query and that the domain filter isolates results.
 
-Run inside the backend container (Postgres + Vespa + model server reachable):
+Run inside the backend container (Postgres + OpenSearch + model server reachable):
 
     INDEX_REST_DIR=/app/index_rest python -m tests.search_baseline.ingest_index_rest
 """
@@ -140,7 +140,7 @@ def _build_doc_chunks(
     return out
 
 
-def ingest(index_dir: str, engine: str = "vespa") -> dict[str, int]:
+def ingest(index_dir: str, engine: str = "opensearch") -> dict[str, int]:
     """Chunk, embed, and index both files into `engine`. Returns {doc_id: num_chunks}."""
     with get_session_with_current_tenant() as db_session:
         search_settings = get_current_search_settings(db_session)
@@ -182,32 +182,8 @@ def ingest(index_dir: str, engine: str = "vespa") -> dict[str, int]:
     return per_doc
 
 
-def verify_in_engine(per_doc: dict[str, int], engine: str) -> None:
-    """Query the engine directly to confirm the chunks are present."""
-    if engine == "vespa":
-        from tests.integration.common_utils.vespa import vespa_fixture
-
-        with get_session_with_current_tenant() as db_session:
-            index_name = get_current_search_settings(db_session).index_name
-        client = vespa_fixture(index_name=index_name)
-        found = client.get_documents_by_id(list(per_doc.keys()))
-        docs = found.get("documents") or found.get("document") or []
-        print(f"\nVespa direct lookup: {len(docs)} chunk records for {len(per_doc)} docs")
-        by_doc: dict[str, dict] = {}
-        for d in docs:
-            fields = d.get("fields", {})
-            did = fields.get("document_id")
-            by_doc.setdefault(did, {"chunks": 0, "document_sets": set()})
-            by_doc[did]["chunks"] += 1
-            ds = fields.get("document_sets")
-            if isinstance(ds, dict):
-                by_doc[did]["document_sets"].update(ds.keys())
-            elif isinstance(ds, list):
-                by_doc[did]["document_sets"].update(ds)
-        for did, info in by_doc.items():
-            print(f"  {did}: {info['chunks']} chunks, document_sets={sorted(info['document_sets'])}")
-        return
-
+def verify_in_engine(per_doc: dict[str, int], engine: str) -> None:  # noqa: ARG001
+    """Query the index directly to confirm the chunks are present."""
     # OpenSearch: confirm the index exists and report id-based chunk counts.
     from om.document_index.opensearch.client import OpenSearchIndexClient
 
@@ -220,7 +196,7 @@ def verify_in_engine(per_doc: dict[str, int], engine: str) -> None:
     )
 
 
-def verify_retrieval(engine: str = "vespa") -> None:
+def verify_retrieval(engine: str = "opensearch") -> None:
     """Run domain-specific queries and print document_id + score, then assert."""
     with get_session_with_current_tenant() as db_session:
         index = get_index(engine, db_session)
@@ -273,7 +249,7 @@ def main() -> None:
     except Exception:
         pass
 
-    engine = os.environ.get("SEARCH_ENGINE", "vespa")
+    engine = os.environ.get("SEARCH_ENGINE", "opensearch")
     index_dir = os.environ.get("INDEX_REST_DIR", "/app/index_rest")
     print(f"Ingesting from: {index_dir}  [engine={engine}]")
     per_doc = ingest(index_dir, engine=engine)

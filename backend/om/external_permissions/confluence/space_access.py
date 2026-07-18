@@ -3,7 +3,7 @@ from om.external_permissions.confluence.constants import ALL_CONF_EMAILS_GROUP_N
 from om.external_permissions.confluence.constants import REQUEST_PAGINATION_LIMIT
 from om.external_permissions.confluence.constants import VIEWSPACE_PERMISSION_TYPE
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_onyx
+from om.access.utils import build_ext_group_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.confluence.onyx_confluence import (
     get_user_email_from_username__server,
@@ -136,7 +136,7 @@ def get_space_permission(
     # Prefix group IDs with source type if requested (for indexing path)
     if add_prefix and space_permissions.external_user_group_ids:
         prefixed_groups = {
-            build_ext_group_name_for_onyx(g, DocumentSource.CONFLUENCE)
+            build_ext_group_name_for_om(g, DocumentSource.CONFLUENCE)
             for g in space_permissions.external_user_group_ids
         }
         return ExternalAccess(

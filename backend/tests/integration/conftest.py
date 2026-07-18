@@ -29,8 +29,8 @@ from tests.integration.common_utils.test_models import DATestAPIKey
 from tests.integration.common_utils.test_models import DATestImageGenerationConfig
 from tests.integration.common_utils.test_models import DATestLLMProvider
 from tests.integration.common_utils.test_models import DATestUser
+from tests.integration.common_utils.document_index import DocumentIndexClient
 from tests.integration.common_utils.test_models import SimpleTestDocument
-from tests.integration.common_utils.vespa import vespa_fixture
 
 BASIC_USER_NAME = "basic_user"
 
@@ -76,10 +76,10 @@ instantiate the session directly within the test.
 
 
 @pytest.fixture
-def vespa_client() -> vespa_fixture:
+def document_index_client() -> DocumentIndexClient:
     with get_session_with_current_tenant() as db_session:
         search_settings = get_current_search_settings(db_session)
-        return vespa_fixture(index_name=search_settings.index_name)
+        return DocumentIndexClient(index_name=search_settings.index_name)
 
 
 @pytest.fixture

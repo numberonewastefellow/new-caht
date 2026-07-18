@@ -2,9 +2,8 @@
 setlocal enabledelayedexpansion
 
 set COMPOSE_CMD=docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml
-:: NOTE: the search engine (vespa=index / opensearch) is NOT listed here. It is
-:: controlled by COMPOSE_PROFILES in .env and started by a full `dev up` (which
-:: respects profiles). Naming it here would force it up regardless of profile.
+:: NOTE: OpenSearch (the document index) is not listed here; a full `dev up`
+:: starts it (it has no compose profile, so it always runs).
 set INFRA=relational_db cache inference_model_server indexing_model_server minio code-interpreter smartsearch phoenix
 set APP=api_server background web_server nginx
 
@@ -27,7 +26,7 @@ if /i "!_arg!"=="model" set SERVICES=!SERVICES! inference_model_server indexing_
 if /i "!_arg!"=="nginx" set SERVICES=!SERVICES! nginx
 if /i "!_arg!"=="db" set SERVICES=!SERVICES! relational_db
 if /i "!_arg!"=="cache" set SERVICES=!SERVICES! cache
-if /i "!_arg!"=="vespa" set SERVICES=!SERVICES! index
+if /i "!_arg!"=="opensearch" set SERVICES=!SERVICES! opensearch
 if /i "!_arg!"=="minio" set SERVICES=!SERVICES! minio
 if /i "!_arg!"=="search" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="smartsearch" set SERVICES=!SERVICES! smartsearch
@@ -255,7 +254,7 @@ if /i "!_arg!"=="model" set SERVICES=!SERVICES! inference_model_server indexing_
 if /i "!_arg!"=="nginx" set SERVICES=!SERVICES! nginx
 if /i "!_arg!"=="db" set SERVICES=!SERVICES! relational_db
 if /i "!_arg!"=="cache" set SERVICES=!SERVICES! cache
-if /i "!_arg!"=="vespa" set SERVICES=!SERVICES! index
+if /i "!_arg!"=="opensearch" set SERVICES=!SERVICES! opensearch
 if /i "!_arg!"=="minio" set SERVICES=!SERVICES! minio
 if /i "!_arg!"=="search" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="smartsearch" set SERVICES=!SERVICES! smartsearch
@@ -430,7 +429,7 @@ echo     model      = inference_model_server + indexing_model_server
 echo     nginx      = nginx
 echo     db         = relational_db
 echo     cache      = cache (redis)
-echo     vespa      = index (vespa)
+echo     opensearch = opensearch (document index)
 echo     minio      = minio
 echo     search     = smartsearch (Perplexica AI web search)
 echo     smartsearch = smartsearch (alias for search)

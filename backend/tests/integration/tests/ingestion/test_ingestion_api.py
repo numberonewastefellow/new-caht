@@ -2,16 +2,16 @@ from om.configs.constants import DocumentSource
 from om.connectors.models import InputType
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.models import Document
+from tests.integration.common_utils.document_index import DocumentIndexClient
 from tests.integration.common_utils.managers.api_key import APIKeyManager
 from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.document import IngestionManager
 from tests.integration.common_utils.managers.user import UserManager
 from tests.integration.common_utils.test_models import DATestUser
-from tests.integration.common_utils.vespa import vespa_fixture
 
 
 def test_ingestion_api_crud(
-    reset: None, vespa_client: vespa_fixture  # noqa: ARG001
+    reset: None, document_index_client: DocumentIndexClient  # noqa: ARG001
 ) -> None:
     """Test create, list, and delete via the ingestion API."""
     admin_user: DATestUser = UserManager.create(email="admin@onyx.app")
@@ -42,8 +42,8 @@ def test_ingestion_api_crud(
         assert doc_db is not None
         assert doc_db.from_ingestion_api is True
 
-    vespa_docs = vespa_client.get_documents_by_id([doc.id])["documents"]
-    assert len(vespa_docs) == 1
+    indexed_docs = document_index_client.get_documents_by_id([doc.id])["documents"]
+    assert len(indexed_docs) == 1
 
     # LIST
     docs_list = IngestionManager.list_all_ingestion_docs(api_key=api_key)
@@ -56,5 +56,5 @@ def test_ingestion_api_crud(
         doc_db = db_session.query(Document).filter(Document.id == doc.id).first()
         assert doc_db is None
 
-    vespa_docs = vespa_client.get_documents_by_id([doc.id])["documents"]
-    assert len(vespa_docs) == 0
+    indexed_docs = document_index_client.get_documents_by_id([doc.id])["documents"]
+    assert len(indexed_docs) == 0

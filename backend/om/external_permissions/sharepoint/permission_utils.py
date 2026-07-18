@@ -13,7 +13,7 @@ from pydantic import BaseModel
 
 from om.db.external_perm import ExternalUserGroup
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_onyx
+from om.access.utils import build_ext_group_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.sharepoint.connector import SHARED_DOCUMENTS_MAP_REVERSE
 from om.connectors.sharepoint.connector import sleep_and_retry
@@ -557,7 +557,7 @@ def get_external_access_from_sharepoint(
 
     for group_name, _ in groups_and_members.groups_to_emails.items():
         if add_prefix:
-            group_name = build_ext_group_name_for_onyx(
+            group_name = build_ext_group_name_for_om(
                 group_name, DocumentSource.SHAREPOINT
             )
         group_ids.add(group_name.lower())

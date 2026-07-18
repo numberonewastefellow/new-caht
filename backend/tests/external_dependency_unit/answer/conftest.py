@@ -87,10 +87,12 @@ def mock_gpu_status() -> Iterator[None]:
 
 
 @pytest.fixture
-def mock_vespa_query() -> Iterator[None]:
-    """Stub Vespa query to a safe empty response to avoid CI flakiness."""
+def mock_document_index_query() -> Iterator[None]:
+    """Stub document-index retrieval to a safe empty response to avoid CI flakiness."""
     with patch(
-        "om.document_index.vespa.vespa_document_index.query_vespa", return_value=[]
+        "om.document_index.opensearch.opensearch_document_index."
+        "OpenSearchDocumentIndex.hybrid_retrieval",
+        return_value=[],
     ):
         yield
 
@@ -121,7 +123,7 @@ def mock_file_store() -> Iterator[None]:
 def mock_external_deps(
     mock_nlp_embeddings_post: None,  # noqa: ARG001
     mock_gpu_status: None,  # noqa: ARG001
-    mock_vespa_query: None,  # noqa: ARG001
+    mock_document_index_query: None,  # noqa: ARG001
     mock_file_store: None,  # noqa: ARG001
 ) -> Iterator[None]:
     """Convenience fixture to enable all common external dependency mocks."""

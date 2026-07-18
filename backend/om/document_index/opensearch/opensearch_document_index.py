@@ -1012,8 +1012,7 @@ class OpenSearchDocumentIndex(DocumentIndex):
     def index_raw_chunks(self, chunks: list[DocumentChunk]) -> None:
         """Indexes raw document chunks into OpenSearch.
 
-        Used in the Vespa migration task. Can be deleted after migrations are
-        complete.
+        Legacy helper from the old migration path; no longer driven by any task.
         """
         logger.debug(
             "[OpenSearchDocumentIndex] Indexing %s raw chunks for index %s.",

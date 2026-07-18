@@ -6,7 +6,7 @@ directly so every intermediate stage is visible/printable. It runs on the two-do
 
 Layers (none is a cross-encoder; the LLM is a batched selector, not a per-chunk scorer):
   0. Query expansion (LLM): semantic rephrase + keyword expansion variants.
-  1. Per-query Vespa ranking: each variant retrieved independently (hybrid_retrieval).
+  1. Per-query OpenSearch ranking: each variant retrieved independently (hybrid_retrieval).
   2. Weighted RRF fusion: merge the per-variant ranked lists (algorithmic, no LLM).
   3. LLM relevance selection: ONE batched call picks the relevant sections.
   4. Per-section context classification: one LLM call per *selected* section.
@@ -54,7 +54,7 @@ def _retrieve(
     hybrid_alpha: float | None,
     limit: int,
 ) -> list[InferenceChunk]:
-    """Layer 1: one query variant -> Vespa hybrid_retrieval -> ranked InferenceChunks."""
+    """Layer 1: one query variant -> OpenSearch hybrid_retrieval -> ranked InferenceChunks."""
     filters = IndexFilters(
         document_set=domains,
         source_type=None,
@@ -92,7 +92,7 @@ def demonstrate(
 ) -> dict:
     """Run all layers for one query, printing each stage. Returns key intermediates."""
     domains = domains or ALL_DOMAINS
-    index = get_index("vespa", db_session)
+    index = get_index("opensearch", db_session)
 
     print("\n" + "=" * 78)
     print(f"USER QUERY: {query!r}   (domains scoped to {domains})")
@@ -126,8 +126,8 @@ def demonstrate(
     for kw in keyword_queries:
         variants.append((kw, LLM_KEYWORD_QUERY_WEIGHT, KEYWORD_QUERY_HYBRID_ALPHA))
 
-    # ---- Layer 1: per-query Vespa ranking --------------------------------- #
-    print("\n[Layer 1] Per-query Vespa ranking (each variant retrieved independently):")
+    # ---- Layer 1: per-query OpenSearch ranking ---------------------------- #
+    print("\n[Layer 1] Per-query OpenSearch ranking (each variant retrieved independently):")
     ranked_lists: list[list[InferenceChunk]] = []
     weights: list[float] = []
     for variant_query, weight, alpha in variants:

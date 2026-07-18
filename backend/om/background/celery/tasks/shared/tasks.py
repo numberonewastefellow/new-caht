@@ -110,7 +110,7 @@ def document_by_cc_pair_cleanup_task(
             count = get_document_connector_count(db_session, document_id)
             if count == 1:
                 # count == 1 means this is the only remaining cc_pair reference to the doc
-                # delete it from vespa and the db
+                # delete it from the document index and the db
                 action = "delete"
 
                 chunk_count = fetch_chunk_count_for_document(document_id, db_session)
@@ -170,7 +170,7 @@ def document_by_cc_pair_cleanup_task(
                     # to see if this raises.
                     retry_document_index.update([update_request])
 
-                # there are still other cc_pair references to the doc, so just resync to Vespa
+                # there are still other cc_pair references to the doc, so just resync to the document index
                 delete_document_by_connector_credential_pair__no_commit(
                     db_session=db_session,
                     document_id=document_id,
@@ -241,7 +241,7 @@ def document_by_cc_pair_cleanup_task(
                 )
                 with get_session_with_current_tenant() as db_session:
                     # delete the cc pair relationship now and let reconciliation clean it up
-                    # in vespa
+                    # in the document index
                     delete_document_by_connector_credential_pair__no_commit(
                         db_session=db_session,
                         document_id=document_id,

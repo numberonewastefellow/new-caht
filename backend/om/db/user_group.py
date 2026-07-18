@@ -649,7 +649,7 @@ def update_user_group(
 ) -> UserGroup:
     """If successful, this can set db_user_group.is_up_to_date = False.
     That will be processed by check_for_vespa_user_groups_sync_task and trigger
-    a long running background sync to Vespa.
+    a long running background sync to the document index.
     """
     stmt = select(UserGroup).where(UserGroup.id == user_group_id)
     db_user_group = db_session.scalar(stmt)
@@ -708,7 +708,7 @@ def update_user_group(
             cc_pair_ids=user_group_update.cc_pair_ids,
         )
 
-    # only needs to sync with Vespa if the cc_pairs have been updated
+    # only needs to sync with the document index if the cc_pairs have been updated
     if cc_pairs_updated:
         db_user_group.is_up_to_date = False
 

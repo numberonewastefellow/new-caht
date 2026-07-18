@@ -47,11 +47,11 @@ The app will be available at http://localhost:3000
 | `nginx` | nginx |
 | `db` | relational_db (PostgreSQL) |
 | `cache` | cache (Redis) |
-| `vespa` | index (Vespa) |
+| `opensearch` | opensearch |
 
 ## Volumes
 
-All data is stored under `E:\temp\vert\` with subdirectories per service (db, vespa, minio_data, etc.).
+All data is stored under `E:\temp\vert\` with subdirectories per service (db, opensearch, minio_data, etc.).
 
 ## Migrating from Named Volumes
 
@@ -61,7 +61,7 @@ If you previously used `docker-compose.dev.yml` with default Docker named volume
 docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 
 docker run --rm -v onyx-stack_db_volume:/source -v E:/temp/vert/db:/dest alpine sh -c "cp -a /source/. /dest/"
-docker run --rm -v onyx-stack_vespa_volume:/source -v E:/temp/vert/vespa:/dest alpine sh -c "cp -a /source/. /dest/"
+docker run --rm -v onyx-stack_opensearch_data:/source -v E:/temp/vert/opensearch:/dest alpine sh -c "cp -a /source/. /dest/"
 docker run --rm -v onyx-stack_minio_data:/source -v E:/temp/vert/minio_data:/dest alpine sh -c "cp -a /source/. /dest/"
 docker run --rm -v onyx-stack_model_cache_huggingface:/source -v E:/temp/vert/model_cache_huggingface:/dest alpine sh -c "cp -a /source/. /dest/"
 docker run --rm -v onyx-stack_indexing_huggingface_model_cache:/source -v E:/temp/vert/indexing_huggingface_model_cache:/dest alpine sh -c "cp -a /source/. /dest/"

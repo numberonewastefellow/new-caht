@@ -16,7 +16,7 @@ DEFAULT_DOCUMENT_ENCODER_MODEL = "nomic-ai/nomic-embed-text-v1"
 DOCUMENT_ENCODER_MODEL = (
     os.environ.get("DOCUMENT_ENCODER_MODEL") or DEFAULT_DOCUMENT_ENCODER_MODEL
 )
-# If the below is changed, Vespa deployment must also be changed
+# If the below is changed, the document index mapping must also be changed
 DOC_EMBEDDING_DIM = int(os.environ.get("DOC_EMBEDDING_DIM") or 768)
 NORMALIZE_EMBEDDINGS = (
     os.environ.get("NORMALIZE_EMBEDDINGS") or "true"

@@ -70,9 +70,8 @@ class KGUChunkUpdateRequest(BaseModel):
     """Knowledge-graph field update for a single document chunk.
 
     Backend-agnostic request model. Lives here (rather than in a specific
-    document-index backend module) so that both the Vespa and OpenSearch KG
-    codepaths can depend on it without importing each other. The Vespa module
-    re-exports it for backwards compatibility.
+    document-index backend module) so that the OpenSearch KG codepath can
+    depend on it without importing across backends.
 
     ``core_entity`` is legacy and currently unused by the update path.
     """

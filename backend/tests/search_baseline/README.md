@@ -1,7 +1,9 @@
-# Search Baseline (Vespa → OpenSearch)
+# Search Baseline (OpenSearch)
 
-Deterministic retrieval baseline for the current **Vespa** search engine, so that after
-migrating to **OpenSearch** we can replay the *same* searches and diff the results.
+Deterministic retrieval baseline for the **OpenSearch** document index (the only search
+backend now that Vespa is removed). It replays a fixed set of searches over a fixed corpus
+and diffs the ranked results against committed golden snapshots, so a ranking regression
+turns a test red.
 
 ## What this tests
 
@@ -22,39 +24,36 @@ Retrieval-layer search via the production path
 | File | Purpose |
 |------|---------|
 | `corpus.py` | Fixed, themed document corpus across KBs / sources / dates. |
-| `seed_search_corpus.py` | Index the corpus with **real** model-server embeddings (Vespa, or both engines). |
-| `harness.py` | Engine-agnostic `run_search()` + `get_index()` → normalized `BaselineHit`s. |
-| `snapshot.py` | Save/load/assert golden snapshots under `baselines/<engine>/`. |
-| `test_vespa_baseline.py` | The baseline test cases. |
+| `seed_search_corpus.py` | Index the corpus with **real** model-server embeddings into OpenSearch. |
+| `harness.py` | `run_search()` + `get_index()` → normalized `BaselineHit`s. |
+| `snapshot.py` | Save/load/assert golden snapshots under `baselines/opensearch/`. |
+| `test_opensearch_baseline.py` | The baseline test cases (ranked-order goldens). |
 | `test_search_tool_layer.py` | RRF / chunk-selection / LLM-selection / cross-encoder-gone tests. |
-| `compare_engines.py` | Vespa-vs-OpenSearch overlap@k + rank-correlation report. |
-| `baselines/` | Golden JSON snapshots (committed). |
+| `ingest_index_rest.py` | Two-domain ingest + retrieval sanity check (dev helper). |
+| `demo_reranking_layers.py` | Layer-by-layer reranking demonstration (dev helper). |
+| `baselines/opensearch/` | Golden JSON snapshots (committed). |
 
 ## Prerequisites
 
-Dev stack running, reachable from where you run pytest: **Postgres**, **Vespa**, **model server**.
-Relevant env (defaults to localhost): `VESPA_HOST`, `POSTGRES_*`, `MODEL_SERVER_HOST`/`MODEL_SERVER_PORT`.
-The suite **skips itself** if Vespa or the model server are unreachable.
+Dev stack running, reachable from where you run pytest: **Postgres**, **OpenSearch**, **model server**.
+The suite **skips itself** if OpenSearch or the model server are unreachable (see the
+`require_opensearch` fixture in `conftest.py`).
 
 ## Usage (from `backend/`)
 
 ```bash
-# 1. Seed the corpus (real embeddings) into Vespa
+# 1. Seed the corpus (real embeddings) into OpenSearch
 python -m tests.search_baseline.seed_search_corpus
 
 # 2. Record golden baselines the first time
-BASELINE_MODE=record pytest tests/search_baseline/test_vespa_baseline.py
+BASELINE_MODE=record pytest tests/search_baseline/test_opensearch_baseline.py
 
 # 3. Assert against goldens (CI / repeat runs)
-pytest tests/search_baseline/test_vespa_baseline.py
+pytest tests/search_baseline/test_opensearch_baseline.py
 
 # 4. Deterministic reordering-layer tests (skip the LLM one by default)
 pytest tests/search_baseline/test_search_tool_layer.py -m "not llm"
-
-# 5. After OpenSearch migration: seed both, then compare
-ENABLE_OPENSEARCH_INDEXING_FOR_OM=true python -m tests.search_baseline.seed_search_corpus
-ENABLE_OPENSEARCH_INDEXING_FOR_OM=true python -m tests.search_baseline.compare_engines
 ```
 
-Seeding is an idempotent upsert by document id, so re-running is safe. The `seeded_corpus`
-fixture seeds once per test session automatically.
+Seeding is an idempotent upsert by document id, so re-running is safe. The
+`seeded_corpus_opensearch` fixture seeds once per test session automatically.

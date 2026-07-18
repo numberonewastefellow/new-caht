@@ -8,7 +8,7 @@ from om.external_permissions.jira.models import Holder
 from om.external_permissions.jira.models import Permission
 from om.external_permissions.jira.models import User
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_onyx
+from om.access.utils import build_ext_group_name_for_om
 from om.configs.constants import DocumentSource
 from om.utils.logger import setup_logger
 
@@ -283,7 +283,7 @@ def get_project_permissions(
     # Prefix group IDs with source type if requested (for indexing path)
     if add_prefix and external_access and external_access.external_user_group_ids:
         prefixed_groups = {
-            build_ext_group_name_for_onyx(g, DocumentSource.JIRA)
+            build_ext_group_name_for_om(g, DocumentSource.JIRA)
             for g in external_access.external_user_group_ids
         }
         return ExternalAccess(

@@ -381,3 +381,49 @@ agents ran sequentially.
 multi-agent wall-clock. **A1** is a robustness fix (visible only when the model forgets `savefig` /
 uses `plt.show()`), and **Track B** produces no change unless the user asks the agent to modify a repo.
 This reinforces the sequencing above: ship A first.
+
+---
+
+## TODO (deferred) — Live agent-prose + reasoning streaming in workflows
+
+**Why:** In multi-agent workflows each sub-agent's answer currently appears as a **block** and its
+reasoning is **hidden** — by design, not a bug. The engine streams sub-agent `message_delta`/
+`reasoning_delta` to the bus, but `_stream_agent_packets` drops them via `_AGENT_SUPPRESS_TYPES`
+(`backend/om/workflows/workflow_engine.py:93-101,325`) and re-emits each agent's whole answer as one
+`WorkflowStepDelta` (`:1117-1121, :2396-2399, :1907`); the frontend `WorkflowStepRenderer` joins
+those into a block. (PythonTool stdout is NOT suppressed → A2 streaming already works live here.)
+Goal: token-by-token prose + live "thinking" in workflows, like normal chat. Independent of A1/A2
+(workflow-engine + workflow-renderer change; Track-C-adjacent).
+
+**Phase 1 — live prose (recommended: translate, don't merely un-suppress):**
+- `workflow_engine.py` `_stream_agent_packets` (~L298-359): instead of dropping sub-agent
+  `message_delta`, translate each chunk into an incremental `WorkflowStepDelta(content=chunk)` tagged
+  with the current step's placement and yield it live. The frontend `WorkflowStepRenderer` already
+  joins `WorkflowStepDelta.content` + passes `isStreaming`
+  (`web/src/app/app/message/messageComponents/timeline/renderers/workflow/WorkflowStepRenderer.tsx:41-72`),
+  so this streams with **little/no frontend change**.
+- **Avoid duplication:** the engine also emits one big `WorkflowStepDelta(content=full_agent_output)`
+  at step end (`:1117-1121, :2396-2399, :1907`). With live chunks, either (a) drop that final content
+  emit, or (b) keep it authoritative and have the renderer REPLACE the accumulated chunks with the
+  final content on `WorkflowStepEnd`. **Recommend (b)** — stream for responsiveness, reconcile to
+  `agent_output` on complete (robust when `agent_output` ≠ raw message text).
+- Keep `agent_output` parsing (`agent_tool.py:561-574`) for orchestration/msg_history **unchanged** —
+  UI-only change; the LLM transcript is unaffected.
+
+**Phase 2 — live reasoning:**
+- Add a workflow reasoning packet (e.g. `WorkflowStepReasoningDelta`) or forward `reasoning_delta`
+  tagged to the step placement; drop `reasoning_*` from the suppress set. Render a **collapsible**
+  "Thinking" sub-block inside `WorkflowStepRenderer` (mirror normal chat's reasoning renderer);
+  collapsed/off by default (many agents = noise).
+
+**Risks/decisions:** streamed-vs-final duplication (pick reconcile strategy b); parallel agents
+(Track C) interleaving — `placement`/`tab_index` already separate groups; token volume/perf — apply
+rAF batching (same as A2 deferred item); msg_history unaffected.
+
+**Files:** `backend/om/workflows/workflow_engine.py` (`_stream_agent_packets`, the 3 block re-emit
+sites, `_AGENT_SUPPRESS_TYPES` L93-101), `backend/om/server/query_and_chat/streaming_models.py`
+(optional `WorkflowStepReasoningDelta`), `web/.../workflow/WorkflowStepRenderer.tsx` (+ `streamingModels.ts`).
+
+**Verify:** run a multi-agent workflow → each agent's prose fills token-by-token; reasoning shows
+live (phase 2); final text matches `agent_output`; no duplication; PythonTool stdout still streams
+(A2 unaffected).

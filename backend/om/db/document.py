@@ -25,7 +25,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import null
 
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_onyx
+from om.access.utils import build_ext_group_name_for_om
 from om.configs.constants import DEFAULT_BOOST
 from om.configs.constants import DocumentSource
 from om.configs.kg_configs import KG_SIMPLE_ANSWER_MAX_DISPLAYED_SOURCES
@@ -1044,7 +1044,7 @@ def prepare_to_modify_documents(
 ) -> Generator[TransactionalContext, None, None]:
     """Try and acquire locks for the documents to prevent other jobs from
     modifying them at the same time (e.g. avoid race conditions). This should be
-    called ahead of any modification to Vespa. Locks should be released by the
+    called ahead of any modification to the document index. Locks should be released by the
     caller as soon as updates are complete by finishing the transaction.
 
     NOTE: only one commit is allowed within the context manager returned by this function.
@@ -1629,7 +1629,7 @@ def upsert_document_external_perms__no_commit(
     ).first()
 
     prefixed_external_groups = [
-        build_ext_group_name_for_onyx(
+        build_ext_group_name_for_om(
             ext_group_name=group_id,
             source=source_type,
         )
@@ -1670,7 +1670,7 @@ def upsert_document_external_perms(
     ).first()
 
     prefixed_external_groups: set[str] = {
-        build_ext_group_name_for_onyx(
+        build_ext_group_name_for_om(
             ext_group_name=group_id,
             source=source_type,
         )

@@ -4,7 +4,6 @@ import time
 from types import SimpleNamespace
 
 import psycopg2
-import requests
 
 from alembic import command
 from alembic.config import Config
@@ -19,17 +18,13 @@ from om.db.engine.sql_engine import SYNC_DB_API
 from om.db.engine.tenant_utils import get_all_tenant_ids
 from om.db.search_settings import get_current_search_settings
 from om.db.swap_index import check_and_perform_index_swap
-from om.document_index.document_index_utils import get_multipass_config
-from om.document_index.interfaces_new import TenantState
-from om.document_index.vespa.vespa_document_index import VespaDocumentIndex
-from om.document_index.vespa_constants import DOCUMENT_ID_ENDPOINT
+from om.document_index.factory import get_all_document_indices
+from om.document_index.opensearch.client import OpenSearchIndexClient
 from om.file_store.file_store import get_default_file_store
 from om.indexing.models import IndexingSetting
 from om.setup import setup_document_indices
 from om.setup import setup_postgres
 from om.utils.logger import setup_logger
-from shared_configs.configs import MULTI_TENANT
-from shared_configs.contextvars import get_current_tenant_id
 from tests.integration.common_utils.timeout import run_with_timeout_multiproc
 
 logger = setup_logger()
@@ -294,54 +289,34 @@ def reset_postgres(
             setup_postgres(db_session)
 
 
-def reset_vespa() -> None:
-    """Wipe all data from the Vespa index."""
+def reset_document_index() -> None:
+    """Wipe all data from the OpenSearch index (delete + recreate empty)."""
 
     with get_session_with_current_tenant() as db_session:
         # swap to the correct default model
         check_and_perform_index_swap(db_session)
 
         search_settings = get_current_search_settings(db_session)
-        multipass_config = get_multipass_config(search_settings)
         index_name = search_settings.index_name
 
+    # Delete the index to wipe all documents and its mapping.
+    client = OpenSearchIndexClient(index_name=index_name)
+    try:
+        client.delete_index()
+    except Exception as e:
+        logger.warning(f"Error deleting OpenSearch index {index_name}: {e}")
+    finally:
+        client.close()
+
+    # Recreate the (empty) index with the current schema.
     success = setup_document_indices(
-        document_indices=[
-            VespaDocumentIndex(
-                index_name=index_name,
-                tenant_state=TenantState(
-                    tenant_id=get_current_tenant_id(), multitenant=MULTI_TENANT
-                ),
-                large_chunks_enabled=multipass_config.enable_large_chunks,
-            )
-        ],
+        document_indices=get_all_document_indices(search_settings, None),
         index_setting=IndexingSetting.from_db_model(search_settings),
     )
     if not success:
-        raise RuntimeError("Could not connect to Vespa within the specified timeout.")
-
-    for _ in range(5):
-        try:
-            continuation = None
-            should_continue = True
-            while should_continue:
-                params = {"selection": "true", "cluster": "danswer_index"}
-                if continuation:
-                    params = {**params, "continuation": continuation}
-                response = requests.delete(
-                    DOCUMENT_ID_ENDPOINT.format(index_name=index_name), params=params
-                )
-                response.raise_for_status()
-
-                response_json = response.json()
-
-                continuation = response_json.get("continuation")
-                should_continue = bool(continuation)
-
-            break
-        except Exception as e:
-            print(f"Error deleting documents: {e}")
-            time.sleep(5)
+        raise RuntimeError(
+            "Could not connect to OpenSearch within the specified timeout."
+        )
 
 
 def reset_postgres_multitenant() -> None:
@@ -351,8 +326,8 @@ def reset_postgres_multitenant() -> None:
     reset_postgres(config_name="schema_private", setup_onyx=False)
 
 
-def reset_vespa_multitenant() -> None:
-    """Wipe all data from the Vespa index for all tenants."""
+def reset_document_index_multitenant() -> None:
+    """Wipe all data from the OpenSearch index for all tenants."""
 
     for tenant_id in get_all_tenant_ids():
         with get_session_with_tenant(tenant_id=tenant_id) as db_session:
@@ -360,50 +335,30 @@ def reset_vespa_multitenant() -> None:
             check_and_perform_index_swap(db_session)
 
             search_settings = get_current_search_settings(db_session)
-            multipass_config = get_multipass_config(search_settings)
             index_name = search_settings.index_name
 
+        # Delete the index to wipe all documents and its mapping.
+        client = OpenSearchIndexClient(index_name=index_name)
+        try:
+            client.delete_index()
+        except Exception as e:
+            logger.warning(
+                f"Error deleting OpenSearch index {index_name} "
+                f"for tenant {tenant_id}: {e}"
+            )
+        finally:
+            client.close()
+
+        # Recreate the (empty) index with the current schema.
         success = setup_document_indices(
-            document_indices=[
-                VespaDocumentIndex(
-                    index_name=index_name,
-                    tenant_state=TenantState(
-                        tenant_id=get_current_tenant_id(), multitenant=MULTI_TENANT
-                    ),
-                    large_chunks_enabled=multipass_config.enable_large_chunks,
-                )
-            ],
+            document_indices=get_all_document_indices(search_settings, None),
             index_setting=IndexingSetting.from_db_model(search_settings),
         )
-
         if not success:
             raise RuntimeError(
-                f"Could not connect to Vespa for tenant {tenant_id} within the specified timeout."
+                f"Could not connect to OpenSearch for tenant {tenant_id} "
+                f"within the specified timeout."
             )
-
-        for _ in range(5):
-            try:
-                continuation = None
-                should_continue = True
-                while should_continue:
-                    params = {"selection": "true", "cluster": "danswer_index"}
-                    if continuation:
-                        params = {**params, "continuation": continuation}
-                    response = requests.delete(
-                        DOCUMENT_ID_ENDPOINT.format(index_name=index_name),
-                        params=params,
-                    )
-                    response.raise_for_status()
-
-                    response_json = response.json()
-
-                    continuation = response_json.get("continuation")
-                    should_continue = bool(continuation)
-
-                break
-            except Exception as e:
-                print(f"Error deleting documents for tenant {tenant_id}: {e}")
-                time.sleep(5)
 
 
 def reset_file_store() -> None:
@@ -420,14 +375,14 @@ def reset_all() -> None:
 
     logger.info("Resetting Postgres...")
     reset_postgres()
-    logger.info("Resetting Vespa...")
-    reset_vespa()
+    logger.info("Resetting document index (OpenSearch)...")
+    reset_document_index()
     logger.info("Resetting FileStore...")
     reset_file_store()
 
 
 def reset_all_multitenant() -> None:
-    """Reset both Postgres and Vespa for all tenants.
+    """Reset both Postgres and the document index for all tenants.
 
     Honors SKIP_RESET env var to allow callers (e.g., CI) to disable
     heavy resets entirely for faster end-to-end runs.
@@ -438,6 +393,6 @@ def reset_all_multitenant() -> None:
 
     logger.info("Resetting Postgres for all tenants...")
     reset_postgres_multitenant()
-    logger.info("Resetting Vespa for all tenants...")
-    reset_vespa_multitenant()
+    logger.info("Resetting document index for all tenants...")
+    reset_document_index_multitenant()
     logger.info("Finished resetting all.")

@@ -216,7 +216,7 @@ def kg_extraction(
         - For each batch of unprocessed documents:
             - Classify each document to select proper ones
             - Get and extract from chunks
-            - Update chunks in Vespa
+            - Update chunks in the document index
             - Update temporary KG extraction tables
             - Update document table to set kg_extracted = True
     """

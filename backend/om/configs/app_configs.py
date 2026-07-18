@@ -50,7 +50,7 @@ GENERATIVE_MODEL_ACCESS_CHECK_FREQ = int(
 # Controls whether users can use User Knowledge (personal documents) in assistants
 DISABLE_USER_KNOWLEDGE = os.environ.get("DISABLE_USER_KNOWLEDGE", "").lower() == "true"
 
-# Disables vector DB (Vespa/OpenSearch) entirely. When True, connectors and RAG search
+# Disables vector DB (OpenSearch) entirely. When True, connectors and RAG search
 # are disabled but core chat, tools, user file uploads, and Projects still work.
 DISABLE_VECTOR_DB = os.environ.get("DISABLE_VECTOR_DB", "").lower() == "true"
 
@@ -802,12 +802,12 @@ AVERAGE_SUMMARY_EMBEDDINGS = (
 MAX_TOKENS_FOR_FULL_INCLUSION = 4096
 
 # The intent was to have this be configurable per query, but I don't think any
-# codepath was actually configuring this, so for the migrated Vespa interface
-# we'll just use the default value, but also have it be configurable by env var.
+# codepath was actually configuring this, so we'll just use the default value,
+# but also have it be configurable by env var.
 RECENCY_BIAS_MULTIPLIER = float(os.environ.get("RECENCY_BIAS_MULTIPLIER") or 1.0)
 
-# Should match the rerank-count value set in
-# backend/om/document_index/vespa/app_config/schemas/danswer_chunk.sd.jinja.
+# Should match the rerank-count value that was historically configured in the
+# Vespa schema, which no longer exists.
 RERANK_COUNT = int(os.environ.get("RERANK_COUNT") or 1000)
 
 

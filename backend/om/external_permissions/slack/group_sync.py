@@ -77,7 +77,7 @@ def slack_group_sync(
 
     user_id_to_email_map = fetch_user_id_to_email_map(slack_client)
 
-    onyx_groups: list[ExternalUserGroup] = []
+    om_groups: list[ExternalUserGroup] = []
     for group_name in _get_slack_group_ids(slack_client):
         group_member_emails = _get_slack_group_members_email(
             slack_client=slack_client,
@@ -86,7 +86,7 @@ def slack_group_sync(
         )
         if not group_member_emails:
             continue
-        onyx_groups.append(
+        om_groups.append(
             ExternalUserGroup(id=group_name, user_emails=group_member_emails)
         )
-    return onyx_groups
+    return om_groups

@@ -55,7 +55,7 @@ Phoenix provides real-time LLM observability: trace every LLM call, tool invocat
 | Span Kind | Captured Data                                                                                                          |
 | --------- | -------------------------------------------------------------------------------------------------------------------------- |
 | **LLM**   | Model name, input/output, token usage (prompt/completion/cache), cost, reasoning, time-to-first-action, model parameters |
-| **Tool**  | Tool name, input/output (e.g. `internal_search` with Vespa results)                                                      |
+| **Tool**  | Tool name, input/output (e.g. `internal_search` with document-index results)                                                      |
 | **Agent** | Agent name, available tools, handoffs, output type                                                                        |
 | **Chain** | Generic spans for pipeline steps                                                                                          |
 

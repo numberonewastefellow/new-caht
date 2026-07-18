@@ -1,12 +1,11 @@
 """Pytest fixtures for the search baseline suite.
 
-These are *integration* tests: they require the dev stack (Postgres + Vespa +
-model server) to be running. Fixtures initialize the SQL engine, verify the
+These are *integration* tests: they require the dev stack (Postgres + OpenSearch
++ model server) to be running. Fixtures initialize the SQL engine, verify the
 required services are reachable (skipping the suite otherwise), and seed the
 fixed corpus once per session.
 """
 
-import time
 from collections.abc import Iterator
 
 import httpx
@@ -16,10 +15,8 @@ from sqlalchemy.orm import Session
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.engine.sql_engine import SqlEngine
 from om.db.search_settings import get_current_search_settings
-from om.document_index.vespa_constants import VESPA_APPLICATION_ENDPOINT
 from shared_configs.configs import MODEL_SERVER_HOST
 from shared_configs.configs import MODEL_SERVER_PORT
-from tests.search_baseline.corpus import CORPUS
 from tests.search_baseline.seed_search_corpus import seed_corpus
 
 
@@ -47,57 +44,14 @@ def _service_up(url: str) -> bool:
         return False
 
 
-@pytest.fixture(scope="session")
-def require_services() -> None:
-    """Skip the whole suite if Vespa or the model server are unreachable."""
-    if not _service_up(f"{VESPA_APPLICATION_ENDPOINT}/ApplicationStatus"):
-        pytest.skip(f"Vespa not reachable at {VESPA_APPLICATION_ENDPOINT}")
-    if not _service_up(f"http://{MODEL_SERVER_HOST}:{MODEL_SERVER_PORT}/health"):
-        pytest.skip(
-            f"Model server not reachable at {MODEL_SERVER_HOST}:{MODEL_SERVER_PORT}"
-        )
-
-
 @pytest.fixture
 def db_session() -> Iterator[Session]:
     with get_session_with_current_tenant() as session:
         yield session
 
 
-def _wait_until_searchable(timeout_s: float = 30.0) -> None:
-    """Poll Vespa until all corpus docs are retrievable by id (persisted)."""
-    from tests.integration.common_utils.vespa import vespa_fixture
-
-    with get_session_with_current_tenant() as session:
-        index_name = get_current_search_settings(session).index_name
-    client = vespa_fixture(index_name=index_name)
-    expected = {d.doc_id for d in CORPUS}
-
-    deadline = time.monotonic() + timeout_s
-    while time.monotonic() < deadline:
-        try:
-            found = client.get_documents_by_id(list(expected))
-            docs = found.get("documents") or found.get("document") or []
-            found_ids = {d.get("fields", {}).get("document_id") for d in docs}
-            if expected.issubset(found_ids):
-                return
-        except Exception:
-            pass
-        time.sleep(1.0)
-    # Don't hard-fail here; let the actual assertions report what's missing.
-
-
-@pytest.fixture(scope="session")
-def seeded_corpus(require_services: None) -> None:
-    """Seed the fixed corpus into Vespa once per test session (idempotent upsert)."""
-    with get_session_with_current_tenant() as session:
-        count = seed_corpus(session, engine="vespa")
-    _wait_until_searchable()
-    print(f"\n[seeded_corpus] indexed {count} corpus documents")
-
-
 # --------------------------------------------------------------------------- #
-# OpenSearch fixtures (parallel to the Vespa ones above)
+# OpenSearch fixtures
 # --------------------------------------------------------------------------- #
 
 

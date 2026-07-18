@@ -27,7 +27,7 @@ def is_record_mode() -> bool:
     return os.environ.get("BASELINE_MODE", "").lower() == "record"
 
 
-def save_baseline(name: str, hits: list[BaselineHit], engine: str = "vespa") -> Path:
+def save_baseline(name: str, hits: list[BaselineHit], engine: str = "opensearch") -> Path:
     path = _baseline_path(name, engine)
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -39,7 +39,7 @@ def save_baseline(name: str, hits: list[BaselineHit], engine: str = "vespa") -> 
     return path
 
 
-def load_baseline(name: str, engine: str = "vespa") -> list[BaselineHit]:
+def load_baseline(name: str, engine: str = "opensearch") -> list[BaselineHit]:
     path = _baseline_path(name, engine)
     if not path.exists():
         raise FileNotFoundError(
@@ -58,7 +58,7 @@ def assert_matches(
     name: str,
     hits: list[BaselineHit],
     *,
-    engine: str = "vespa",
+    engine: str = "opensearch",
     compare_scores: bool = False,
     score_tol: float = 1e-3,
 ) -> None:

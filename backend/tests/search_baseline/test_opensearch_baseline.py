@@ -1,9 +1,9 @@
 """Deterministic OpenSearch retrieval baseline tests.
 
-Mirror of `test_vespa_baseline.py`, but runs against the OpenSearch engine
-(`get_index("opensearch")`) and snapshots under `baselines/opensearch/`. The
-retrieval path is identical (`search_chunks → hybrid_retrieval`); only the
-backend differs — which is exactly what we want to compare for the migration.
+Runs against the OpenSearch engine (`get_index("opensearch")`) and snapshots
+under `baselines/opensearch/`. The retrieval path is the production one
+(`search_chunks → hybrid_retrieval`), so these goldens pin ranking behavior for
+the sole document-index backend.
 
 All queries are scoped to the corpus' document sets for isolation from ambient data.
 

@@ -1,15 +1,14 @@
-"""Seed the fixed baseline corpus into the document index/indices with REAL embeddings.
+"""Seed the fixed baseline corpus into the OpenSearch index with REAL embeddings.
 
-Run from the ``backend/`` directory with the dev stack (Postgres + Vespa + model
-server) running:
+Run from the ``backend/`` directory with the dev stack (Postgres + OpenSearch +
+model server) running:
 
     python -m tests.search_baseline.seed_search_corpus
 
 By default this indexes into every index returned by ``get_all_document_indices``
-(Vespa always; OpenSearch too when ``ENABLE_OPENSEARCH_INDEXING_FOR_OM=true``),
-so the same corpus backs both the Vespa baseline and the later OpenSearch compare.
+(OpenSearch), so the same corpus backs the OpenSearch baseline.
 
-This reuses the production indexing primitives (``VespaIndex.index`` /
+This reuses the production indexing primitives (``DocumentIndex.index`` /
 ``DocMetadataAwareIndexChunk``) exactly like ``scripts/query_time_check/seed_dummy_docs.py``,
 but computes real passage embeddings from the model server so semantic search and
 relevance are meaningful.
@@ -125,10 +124,10 @@ def seed_corpus(
 ) -> int:
     """Index the corpus into the given engine / indices.
 
-    - engine="vespa"|"opensearch": index ONLY into that engine (creates the
-      OpenSearch index/pipeline first). Use this when only one engine is up.
+    - engine="opensearch": index ONLY into OpenSearch (creates the index/pipeline
+      first).
     - engine=None and indices=None: index into all configured indices
-      (`get_all_document_indices`, writes to both when dual-indexing is enabled).
+      (`get_all_document_indices`).
 
     Returns the number of documents indexed (per index).
     """
@@ -183,19 +182,18 @@ def main() -> None:
         count = seed_corpus(db_session)
     print(f"\nSeeded {count} documents into all configured indices.")
 
-    # Verify the docs landed in Vespa.
+    # Verify the OpenSearch index is reachable.
     try:
-        from om.db.engine.sql_engine import get_session_with_current_tenant as _s
-        from tests.integration.common_utils.vespa import vespa_fixture
+        from om.document_index.opensearch.client import OpenSearchIndexClient
 
-        with _s() as db_session:
+        with get_session_with_current_tenant() as db_session:
             search_settings = get_current_search_settings(db_session)
-        client = vespa_fixture(index_name=search_settings.index_name)
-        found = client.get_documents_by_id([doc.doc_id for doc in CORPUS])
-        n = len(found.get("documents", found.get("document", []) or []))
-        print(f"Vespa verification: found {n} chunk records for the corpus.")
+        client = OpenSearchIndexClient(index_name=search_settings.index_name)
+        reachable = client.ping()
+        client.close()
+        print(f"OpenSearch verification: index reachable = {reachable}.")
     except Exception as e:  # pragma: no cover - verification is best-effort
-        print(f"(Vespa verification skipped: {e})")
+        print(f"(OpenSearch verification skipped: {e})")
 
 
 if __name__ == "__main__":

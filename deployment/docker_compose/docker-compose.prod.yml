@@ -13,7 +13,7 @@ services:
       uvicorn om.main:app --host 0.0.0.0 --port 8080"
     depends_on:
       - relational_db
-      - index
+      - opensearch
       - cache
       - minio
       - inference_model_server
@@ -21,7 +21,6 @@ services:
     environment:
       - AUTH_TYPE=${AUTH_TYPE:-oidc}
       - POSTGRES_HOST=relational_db
-      - VESPA_HOST=index
       - REDIS_HOST=cache
       - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
       - USE_IAM_AUTH=${USE_IAM_AUTH}
@@ -64,7 +63,7 @@ services:
       /app/scripts/supervisord_entrypoint.sh"
     depends_on:
       - relational_db
-      - index
+      - opensearch
       - cache
       - inference_model_server
       - indexing_model_server
@@ -73,7 +72,6 @@ services:
       - USE_LIGHTWEIGHT_BACKGROUND_WORKER=${USE_LIGHTWEIGHT_BACKGROUND_WORKER:-true}
       - AUTH_TYPE=${AUTH_TYPE:-oidc}
       - POSTGRES_HOST=relational_db
-      - VESPA_HOST=index
       - REDIS_HOST=cache
       - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
       - INDEXING_MODEL_SERVER_HOST=${INDEXING_MODEL_SERVER_HOST:-indexing_model_server}
@@ -242,7 +240,6 @@ services:
       - INDEXING_ONLY=True
       # Set to debug to get more fine-grained logs
       - LOG_LEVEL=${LOG_LEVEL:-info}
-      - VESPA_SEARCHER_THREADS=${VESPA_SEARCHER_THREADS:-1}
     volumes:
       # Not necessary, this is just to reduce download time during startup
       - indexing_huggingface_model_cache:/app/.cache/huggingface/
@@ -254,17 +251,42 @@ services:
         max-size: "50m"
         max-file: "6"
 
-  # This container name cannot have an underscore in it due to Vespa expectations of the URL
-  index:
-    image: vespaengine/vespa:8.609.39
+  # OpenSearch is the document index (the only search engine).
+  opensearch:
+    image: opensearchproject/opensearch:${OPENSEARCH_IMAGE_TAG:-3.6.0}
     restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
     environment:
-      - VESPA_SKIP_UPGRADE_CHECK=true
+      # single-node so OpenSearch doesn't wait to form a cluster
+      - discovery.type=single-node
+      # OpenSearch 2.12+ requires a STRONG initial admin password
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
+      - bootstrap.memory_lock=true
+      # Heap should be ~50% of the container memory limit; Xms must equal Xmx
+      - "OPENSEARCH_JAVA_OPTS=${OPENSEARCH_JAVA_OPTS:--Xms2g -Xmx2g}"
     ports:
-      - "19071:19071"
-      - "8081:8081"
+      - "9200:9200"
     volumes:
-      - vespa_volume:/opt/vespa/var
+      - opensearch_data:/usr/share/opensearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -skf https://localhost:9200 -u admin:${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -378,7 +400,7 @@ services:
 
 volumes:
   db_volume:
-  vespa_volume:
+  opensearch_data:
   minio_data:
   # Created by the container itself
   model_cache_huggingface:

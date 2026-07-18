@@ -117,7 +117,7 @@ def set_new_search_settings(
     #     search_settings=new_search_settings_request, db_session=db_session
     # )
 
-    # # Ensure Vespa has the new index immediately
+    # # Ensure the document index has the new index immediately
     # get_multipass_config(search_settings)
     # get_multipass_config(new_search_settings)
     # document_index = get_default_document_index(

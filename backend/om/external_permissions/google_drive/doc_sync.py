@@ -13,7 +13,7 @@ from om.access.models import DocExternalAccess
 from om.access.models import ElementExternalAccess
 from om.access.models import ExternalAccess
 from om.access.models import NodeExternalAccess
-from om.access.utils import build_ext_group_name_for_onyx
+from om.access.utils import build_ext_group_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.google_drive.connector import GoogleDriveConnector
 from om.connectors.google_drive.models import GoogleDriveFileType
@@ -125,7 +125,7 @@ def get_external_access_for_raw_gdrive_file(
     for permission in permissions_list:
         # if the permission is inherited, do not add it directly to the file
         # instead, add the folder ID as a group that has access to the file
-        # we will then handle mapping that folder to the list of Onyx users
+        # we will then handle mapping that folder to the list of Om users
         # in the group sync job
         # NOTE: this doesn't handle the case where a folder initially has no
         # permissioning, but then later that folder is shared with a user or group.
@@ -174,7 +174,7 @@ def get_external_access_for_raw_gdrive_file(
     # Prefix group IDs with source type if requested (for indexing path)
     if add_prefix:
         group_ids = {
-            build_ext_group_name_for_onyx(group_id, DocumentSource.GOOGLE_DRIVE)
+            build_ext_group_name_for_om(group_id, DocumentSource.GOOGLE_DRIVE)
             for group_id in group_ids
         }
 
@@ -269,7 +269,7 @@ def get_external_access_for_folder(
     group_ids: set[str] = group_emails
     if add_prefix:
         group_ids = {
-            build_ext_group_name_for_onyx(group_id, DocumentSource.GOOGLE_DRIVE)
+            build_ext_group_name_for_om(group_id, DocumentSource.GOOGLE_DRIVE)
             for group_id in group_emails
         }
 

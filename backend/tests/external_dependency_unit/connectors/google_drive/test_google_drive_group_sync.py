@@ -9,7 +9,7 @@ from om.background.celery.tasks.external_group_syncing.tasks import (
     _perform_external_group_sync,
 )
 from om.db.external_perm import ExternalUserGroup
-from om.access.utils import build_ext_group_name_for_onyx
+from om.access.utils import build_ext_group_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.models import InputType
 from om.db.enums import AccessType
@@ -147,13 +147,13 @@ class TestPerformExternalGroupSync:
             )  # user1+2 in group1, user2+3 in group2, user1 in public_group
 
             # Verify group names are properly prefixed
-            expected_group1_id = build_ext_group_name_for_onyx(
+            expected_group1_id = build_ext_group_name_for_om(
                 "group1", DocumentSource.GOOGLE_DRIVE
             )
-            expected_group2_id = build_ext_group_name_for_onyx(
+            expected_group2_id = build_ext_group_name_for_om(
                 "group2", DocumentSource.GOOGLE_DRIVE
             )
-            expected_public_group_id = build_ext_group_name_for_onyx(
+            expected_public_group_id = build_ext_group_name_for_om(
                 "public_group", DocumentSource.GOOGLE_DRIVE
             )
 
@@ -237,10 +237,10 @@ class TestPerformExternalGroupSync:
             )  # user1+user3 in group1, user1+user2+user3 in group2
 
             # Verify specific user-group mappings
-            expected_group1_id = build_ext_group_name_for_onyx(
+            expected_group1_id = build_ext_group_name_for_om(
                 "group1", DocumentSource.GOOGLE_DRIVE
             )
-            expected_group2_id = build_ext_group_name_for_onyx(
+            expected_group2_id = build_ext_group_name_for_om(
                 "group2", DocumentSource.GOOGLE_DRIVE
             )
 
@@ -333,7 +333,7 @@ class TestPerformExternalGroupSync:
             assert len(updated_public_groups) == 0  # Public group was removed
 
             # Verify only group1 exists
-            expected_group1_id = build_ext_group_name_for_onyx(
+            expected_group1_id = build_ext_group_name_for_om(
                 "group1", DocumentSource.GOOGLE_DRIVE
             )
             group_ids = {ug.external_user_group_id for ug in updated_user_groups}
@@ -481,10 +481,10 @@ class TestPerformExternalGroupSync:
 
             # Verify user groups
             user_groups = _get_user_external_groups(db_session, cc_pair.id)
-            expected_regular_group_id = build_ext_group_name_for_onyx(
+            expected_regular_group_id = build_ext_group_name_for_om(
                 "regular_group", DocumentSource.GOOGLE_DRIVE
             )
-            expected_public_group1_id = build_ext_group_name_for_onyx(
+            expected_public_group1_id = build_ext_group_name_for_om(
                 "public_group1", DocumentSource.GOOGLE_DRIVE
             )
 
@@ -510,7 +510,7 @@ class TestPerformExternalGroupSync:
             assert len(public_groups) == 2  # public_group1 and public_group2
 
             public_group_ids = {pg.external_user_group_id for pg in public_groups}
-            expected_public_group2_id = build_ext_group_name_for_onyx(
+            expected_public_group2_id = build_ext_group_name_for_om(
                 "public_group2", DocumentSource.GOOGLE_DRIVE
             )
             assert expected_public_group1_id in public_group_ids
