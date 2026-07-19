@@ -39,8 +39,8 @@ from om.db.models import ScimGroupMapping
 from om.db.models import ScimToken
 from om.db.models import ScimUserMapping
 from om.db.models import User
-from om.db.models import User__UserGroup
-from om.db.models import UserGroup
+from om.db.models import User__Team
+from om.db.models import Team
 from om.db.models import UserRole
 from om.utils.logger import setup_logger
 
@@ -327,10 +327,10 @@ class ScimDAL(DAL):
     def create_group_mapping(
         self,
         external_id: str,
-        user_group_id: int,
+        team_id: int,
     ) -> ScimGroupMapping:
         """Create a mapping between a SCIM externalId and an Onyx user group."""
-        mapping = ScimGroupMapping(external_id=external_id, user_group_id=user_group_id)
+        mapping = ScimGroupMapping(external_id=external_id, team_id=team_id)
         self._session.add(mapping)
         self._session.flush()
         return mapping
@@ -344,12 +344,12 @@ class ScimDAL(DAL):
         )
 
     def get_group_mapping_by_group_id(
-        self, user_group_id: int
+        self, team_id: int
     ) -> ScimGroupMapping | None:
         """Look up a group mapping by the Onyx user group ID."""
         return self._session.scalar(
             select(ScimGroupMapping).where(
-                ScimGroupMapping.user_group_id == user_group_id
+                ScimGroupMapping.team_id == team_id
             )
         )
 
@@ -396,25 +396,25 @@ class ScimDAL(DAL):
     # Group query operations
     # ------------------------------------------------------------------
 
-    def get_group(self, group_id: int) -> UserGroup | None:
+    def get_group(self, group_id: int) -> Team | None:
         """Fetch a group by ID, returning None if deleted or missing."""
-        group = self._session.get(UserGroup, group_id)
+        group = self._session.get(Team, group_id)
         if group and group.is_up_for_deletion:
             return None
         return group
 
-    def get_group_by_name(self, name: str) -> UserGroup | None:
+    def get_group_by_name(self, name: str) -> Team | None:
         """Fetch a group by exact name."""
-        return self._session.scalar(select(UserGroup).where(UserGroup.name == name))
+        return self._session.scalar(select(Team).where(Team.name == name))
 
-    def add_group(self, group: UserGroup) -> None:
+    def add_group(self, group: Team) -> None:
         """Add a new group to the session and flush to assign an ID."""
         self._session.add(group)
         self._session.flush()
 
     def update_group(
         self,
-        group: UserGroup,
+        group: Team,
         *,
         name: str | None = None,
     ) -> None:
@@ -423,7 +423,7 @@ class ScimDAL(DAL):
             group.name = name
         group.time_last_modified_by_user = func.now()
 
-    def delete_group(self, group: UserGroup) -> None:
+    def delete_group(self, group: Team) -> None:
         """Delete a group from the session."""
         self._session.delete(group)
 
@@ -432,7 +432,7 @@ class ScimDAL(DAL):
         scim_filter: ScimFilter | None,
         start_index: int = 1,
         count: int = 100,
-    ) -> tuple[list[tuple[UserGroup, str | None]], int]:
+    ) -> tuple[list[tuple[Team, str | None]], int]:
         """Query groups with optional SCIM filter and pagination.
 
         Returns:
@@ -441,18 +441,18 @@ class ScimDAL(DAL):
         Raises:
             ValueError: If the filter uses an unsupported attribute.
         """
-        query = select(UserGroup).where(UserGroup.is_up_for_deletion.is_(False))
+        query = select(Team).where(Team.is_up_for_deletion.is_(False))
 
         if scim_filter:
             attr = scim_filter.attribute.lower()
             if attr == "displayname":
-                # assignment: union return type widens but query is still Select[tuple[UserGroup]]
-                query = _apply_scim_string_op(query, UserGroup.name, scim_filter)  # type: ignore[assignment]
+                # assignment: union return type widens but query is still Select[tuple[Team]]
+                query = _apply_scim_string_op(query, Team.name, scim_filter)  # type: ignore[assignment]
             elif attr == "externalid":
                 mapping = self.get_group_mapping_by_external_id(scim_filter.value)
                 if not mapping:
                     return [], 0
-                query = query.where(UserGroup.id == mapping.user_group_id)
+                query = query.where(Team.id == mapping.team_id)
             else:
                 raise ValueError(
                     f"Unsupported filter attribute: {scim_filter.attribute}"
@@ -466,7 +466,7 @@ class ScimDAL(DAL):
         offset = max(start_index - 1, 0)
         groups = list(
             self._session.scalars(
-                query.order_by(UserGroup.id).offset(offset).limit(count)
+                query.order_by(Team.id).offset(offset).limit(count)
             ).all()
         )
 
@@ -476,7 +476,7 @@ class ScimDAL(DAL):
     def get_group_members(self, group_id: int) -> list[tuple[UUID, str | None]]:
         """Get group members as (user_id, email) pairs."""
         rels = self._session.scalars(
-            select(User__UserGroup).where(User__UserGroup.user_group_id == group_id)
+            select(User__Team).where(User__Team.team_id == group_id)
         ).all()
 
         user_ids = [r.user_id for r in rels if r.user_id]
@@ -515,12 +515,12 @@ class ScimDAL(DAL):
         if not user_ids:
             return
         self._session.execute(
-            pg_insert(User__UserGroup)
-            .values([{"user_id": uid, "user_group_id": group_id} for uid in user_ids])
+            pg_insert(User__Team)
+            .values([{"user_id": uid, "team_id": group_id} for uid in user_ids])
             .on_conflict_do_nothing(
                 index_elements=[
-                    User__UserGroup.user_group_id,
-                    User__UserGroup.user_id,
+                    User__Team.team_id,
+                    User__Team.user_id,
                 ]
             )
         )
@@ -528,7 +528,7 @@ class ScimDAL(DAL):
     def replace_group_members(self, group_id: int, user_ids: list[UUID]) -> None:
         """Replace all members of a group."""
         self._session.execute(
-            sa_delete(User__UserGroup).where(User__UserGroup.user_group_id == group_id)
+            sa_delete(User__Team).where(User__Team.team_id == group_id)
         )
         self.upsert_group_members(group_id, user_ids)
 
@@ -537,16 +537,16 @@ class ScimDAL(DAL):
         if not user_ids:
             return
         self._session.execute(
-            sa_delete(User__UserGroup).where(
-                User__UserGroup.user_group_id == group_id,
-                User__UserGroup.user_id.in_(user_ids),
+            sa_delete(User__Team).where(
+                User__Team.team_id == group_id,
+                User__Team.user_id.in_(user_ids),
             )
         )
 
-    def delete_group_with_members(self, group: UserGroup) -> None:
+    def delete_group_with_members(self, group: Team) -> None:
         """Remove all member relationships and delete the group."""
         self._session.execute(
-            sa_delete(User__UserGroup).where(User__UserGroup.user_group_id == group.id)
+            sa_delete(User__Team).where(User__Team.team_id == group.id)
         )
         self._session.delete(group)
 
@@ -561,7 +561,7 @@ class ScimDAL(DAL):
                     mapping.external_id = new_external_id
             else:
                 self.create_group_mapping(
-                    external_id=new_external_id, user_group_id=group_id
+                    external_id=new_external_id, team_id=group_id
                 )
         elif mapping:
             self.delete_group_mapping(mapping.id)
@@ -572,10 +572,10 @@ class ScimDAL(DAL):
             return {}
         mappings = self._session.scalars(
             select(ScimGroupMapping).where(
-                ScimGroupMapping.user_group_id.in_(group_ids)
+                ScimGroupMapping.team_id.in_(group_ids)
             )
         ).all()
-        return {m.user_group_id: m.external_id for m in mappings}
+        return {m.team_id: m.external_id for m in mappings}
 
 
 # ---------------------------------------------------------------------------
@@ -584,10 +584,10 @@ class ScimDAL(DAL):
 
 
 def _apply_scim_string_op(
-    query: Select[tuple[User]] | Select[tuple[UserGroup]],
+    query: Select[tuple[User]] | Select[tuple[Team]],
     column: SQLColumnExpression[str],
     scim_filter: ScimFilter,
-) -> Select[tuple[User]] | Select[tuple[UserGroup]]:
+) -> Select[tuple[User]] | Select[tuple[Team]]:
     """Apply a SCIM string filter operator using SQLAlchemy column operators.
 
     Handles eq (case-insensitive exact), co (contains), and sw (starts with).

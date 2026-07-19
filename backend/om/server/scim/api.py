@@ -49,7 +49,7 @@ from om.server.scim.schema_definitions import USER_SCHEMA_DEF
 from om.db.engine.sql_engine import get_session
 from om.db.models import ScimToken
 from om.db.models import User
-from om.db.models import UserGroup
+from om.db.models import Team
 from om.db.models import UserRole
 
 
@@ -397,11 +397,11 @@ def delete_user(
 
 
 def _group_to_scim(
-    group: UserGroup,
+    group: Team,
     members: list[tuple[UUID, str | None]],
     external_id: str | None = None,
 ) -> ScimGroupResource:
-    """Convert an Onyx UserGroup to a SCIM Group resource."""
+    """Convert an Onyx Team to a SCIM Group resource."""
     scim_members = [
         ScimGroupMember(value=str(uid), display=email) for uid, email in members
     ]
@@ -414,7 +414,7 @@ def _group_to_scim(
     )
 
 
-def _fetch_group_or_404(group_id: str, dal: ScimDAL) -> UserGroup | JSONResponse:
+def _fetch_group_or_404(group_id: str, dal: ScimDAL) -> Team | JSONResponse:
     """Parse *group_id* as int, look up the group, or return a 404 error."""
     try:
         gid = int(group_id)
@@ -541,7 +541,7 @@ def create_group(
     if err:
         return _scim_error_response(400, err)
 
-    db_group = UserGroup(
+    db_group = Team(
         name=group_resource.displayName,
         is_up_to_date=True,
         time_last_modified_by_user=func.now(),
@@ -558,7 +558,7 @@ def create_group(
 
     external_id = group_resource.externalId
     if external_id:
-        dal.create_group_mapping(external_id=external_id, user_group_id=db_group.id)
+        dal.create_group_mapping(external_id=external_id, team_id=db_group.id)
 
     dal.commit()
 

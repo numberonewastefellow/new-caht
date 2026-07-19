@@ -450,7 +450,7 @@ export interface SlackBotTokens {
 }
 
 /* EE Only Types */
-export interface UserGroup {
+export interface Team {
   id: number;
   name: string;
   users: User[];

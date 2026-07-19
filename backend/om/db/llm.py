@@ -12,13 +12,13 @@ from om.db.models import ImageGenerationConfig
 from om.db.models import LLMModelFlow
 from om.db.models import LLMProvider as LLMProviderModel
 from om.db.models import LLMProvider__Agent
-from om.db.models import LLMProvider__UserGroup
+from om.db.models import LLMProvider__Team
 from om.db.models import ModelConfiguration
 from om.db.models import Agent
 from om.db.models import SearchSettings
 from om.db.models import Tool as ToolModel
 from om.db.models import User
-from om.db.models import User__UserGroup
+from om.db.models import User__Team
 from om.llm.utils import model_supports_image_input
 from om.llm.well_known_providers.auto_update_models import LLMRecommendations
 from om.server.manage.embedding.models import CloudEmbeddingProvider
@@ -34,16 +34,16 @@ def update_group_llm_provider_relationships__no_commit(
     db_session: Session,
 ) -> None:
     # Delete existing relationships
-    db_session.query(LLMProvider__UserGroup).filter(
-        LLMProvider__UserGroup.llm_provider_id == llm_provider_id
+    db_session.query(LLMProvider__Team).filter(
+        LLMProvider__Team.llm_provider_id == llm_provider_id
     ).delete(synchronize_session="fetch")
 
     # Add new relationships from given group_ids
     if group_ids:
         new_relationships = [
-            LLMProvider__UserGroup(
+            LLMProvider__Team(
                 llm_provider_id=llm_provider_id,
-                user_group_id=group_id,
+                team_id=group_id,
             )
             for group_id in group_ids
         ]
@@ -72,7 +72,7 @@ def update_llm_provider_agent_relationships__no_commit(
         )
 
 
-def fetch_user_group_ids(db_session: Session, user: User) -> set[int]:
+def fetch_team_ids(db_session: Session, user: User) -> set[int]:
     """Fetch the set of user group IDs for a given user.
 
     Args:
@@ -87,8 +87,8 @@ def fetch_user_group_ids(db_session: Session, user: User) -> set[int]:
 
     return set(
         db_session.scalars(
-            select(User__UserGroup.user_group_id).where(
-                User__UserGroup.user_id == user.id
+            select(User__Team.team_id).where(
+                User__Team.user_id == user.id
             )
         ).all()
     )
@@ -96,7 +96,7 @@ def fetch_user_group_ids(db_session: Session, user: User) -> set[int]:
 
 def can_user_access_llm_provider(
     provider: LLMProviderModel,
-    user_group_ids: set[int],
+    team_ids: set[int],
     agent: Agent | None,
     is_admin: bool = False,
 ) -> bool:
@@ -104,7 +104,7 @@ def can_user_access_llm_provider(
 
     Args:
         provider: The LLM provider to check access for
-        user_group_ids: Set of user group IDs the user belongs to
+        team_ids: Set of user group IDs the user belongs to
         agent: The agent being used (if any)
         is_admin: If True, bypass user group restrictions but still respect agent restrictions
 
@@ -134,13 +134,13 @@ def can_user_access_llm_provider(
     # Both groups AND agents set → AND logic (must satisfy both)
     if has_groups and has_agents:
         # Admins bypass group check but still must satisfy agent restrictions
-        user_in_group = is_admin or bool(user_group_ids & provider_group_ids)
+        user_in_group = is_admin or bool(team_ids & provider_group_ids)
         agent_allowed = agent.id in provider_agent_ids if agent else False
         return user_in_group and agent_allowed
 
     # Only groups set → user must be in one of the groups (admins bypass)
     if has_groups:
-        return is_admin or bool(user_group_ids & provider_group_ids)
+        return is_admin or bool(team_ids & provider_group_ids)
 
     # Only agents set → agent must be in allowed list (applies to admins too)
     if has_agents:
@@ -569,8 +569,8 @@ def remove_llm_provider(db_session: Session, provider_id: int) -> None:
         agent.llm_model_provider_override = None
 
     db_session.execute(
-        delete(LLMProvider__UserGroup).where(
-            LLMProvider__UserGroup.llm_provider_id == provider_id
+        delete(LLMProvider__Team).where(
+            LLMProvider__Team.llm_provider_id == provider_id
         )
     )
     # Remove LLMProvider
@@ -593,8 +593,8 @@ def remove_llm_provider__no_commit(db_session: Session, provider_id: int) -> Non
         agent.llm_model_provider_override = None
 
     db_session.execute(
-        delete(LLMProvider__UserGroup).where(
-            LLMProvider__UserGroup.llm_provider_id == provider_id
+        delete(LLMProvider__Team).where(
+            LLMProvider__Team.llm_provider_id == provider_id
         )
     )
     # Remove LLMProvider

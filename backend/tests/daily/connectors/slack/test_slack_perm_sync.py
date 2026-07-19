@@ -62,7 +62,7 @@ def test_load_from_checkpoint_access__public_channel(
             doc.external_access.external_user_emails == set()
         ), f"Document {doc.id} should have no external user emails when using perm sync"
         assert (
-            doc.external_access.external_user_group_ids == set()
+            doc.external_access.external_team_ids == set()
         ), f"Document {doc.id} should have no external user group ids when using perm sync"
 
 
@@ -101,7 +101,7 @@ def test_load_from_checkpoint_access__private_channel(
             PRIVATE_CHANNEL_USERS
         ), f"Document {doc.id} should have private channel users when using perm sync"
         assert (
-            doc.external_access.external_user_group_ids == set()
+            doc.external_access.external_team_ids == set()
         ), f"Document {doc.id} should have no external user group ids when using perm sync"
 
 
@@ -138,7 +138,7 @@ def test_slim_documents_access__public_channel(
         assert slim_doc.external_access is not None
         assert slim_doc.external_access.is_public is True
         assert slim_doc.external_access.external_user_emails == set()
-        assert slim_doc.external_access.external_user_group_ids == set()
+        assert slim_doc.external_access.external_team_ids == set()
 
 
 @pytest.mark.parametrize(
@@ -176,4 +176,4 @@ def test_slim_documents_access__private_channel(
         assert slim_doc.external_access.external_user_emails == set(
             PRIVATE_CHANNEL_USERS
         )
-        assert slim_doc.external_access.external_user_group_ids == set()
+        assert slim_doc.external_access.external_team_ids == set()

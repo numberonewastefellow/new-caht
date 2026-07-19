@@ -9,8 +9,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from om.access.access import _get_access_for_documents
-from om.db.external_perm import fetch_external_groups_for_user
-from om.access.utils import prefix_external_group
+from om.db.external_perm import fetch_external_teams_for_user
+from om.access.utils import prefix_external_team
 from om.access.utils import prefix_user_email
 from om.configs.constants import PUBLIC_DOC_PAT
 from om.db.models import DocumentByConnectorCredentialPair
@@ -35,10 +35,10 @@ def get_user_acl(user: User, db_session: Session) -> set[str]:
         Set of ACL entries for the user
     """
     db_external_groups = (
-        fetch_external_groups_for_user(db_session, user.id) if user else []
+        fetch_external_teams_for_user(db_session, user.id) if user else []
     )
     prefixed_external_groups = [
-        prefix_external_group(db_external_group.external_user_group_id)
+        prefix_external_team(db_external_group.external_team_id)
         for db_external_group in db_external_groups
     ]
 

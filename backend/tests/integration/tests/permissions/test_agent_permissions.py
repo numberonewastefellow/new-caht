@@ -12,7 +12,7 @@ from requests.exceptions import HTTPError
 from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.managers.user import DATestUser
 from tests.integration.common_utils.managers.user import UserManager
-from tests.integration.common_utils.managers.user_group import UserGroupManager
+from tests.integration.common_utils.managers.team import TeamManager
 
 
 def test_agent_permissions(reset: None) -> None:  # noqa: ARG001
@@ -26,31 +26,31 @@ def test_agent_permissions(reset: None) -> None:  # noqa: ARG001
     basic_user: DATestUser = UserManager.create(name="basic_user")
 
     # Creating user groups
-    user_group_1 = UserGroupManager.create(
-        name="curated_user_group",
+    team_1 = TeamManager.create(
+        name="curated_team",
         user_ids=[curator.id],
         cc_pair_ids=[],
         user_performing_action=admin_user,
     )
-    UserGroupManager.wait_for_sync(
-        user_groups_to_check=[user_group_1], user_performing_action=admin_user
+    TeamManager.wait_for_sync(
+        teams_to_check=[team_1], user_performing_action=admin_user
     )
     # Setting the user as a curator for the user group
-    UserGroupManager.set_curator_status(
-        test_user_group=user_group_1,
+    TeamManager.set_curator_status(
+        test_team=team_1,
         user_to_set_as_curator=curator,
         user_performing_action=admin_user,
     )
 
     # Creating another user group that the user is not a curator of
-    user_group_2 = UserGroupManager.create(
-        name="uncurated_user_group",
+    team_2 = TeamManager.create(
+        name="uncurated_team",
         user_ids=[curator.id],
         cc_pair_ids=[],
         user_performing_action=admin_user,
     )
-    UserGroupManager.wait_for_sync(
-        user_groups_to_check=[user_group_2], user_performing_action=admin_user
+    TeamManager.wait_for_sync(
+        teams_to_check=[team_2], user_performing_action=admin_user
     )
 
     """Test that any user can create a agent"""
@@ -80,21 +80,21 @@ def test_agent_permissions(reset: None) -> None:  # noqa: ARG001
         name="admin_agent_group_1",
         description="A agent for group 1",
         is_public=False,
-        groups=[user_group_1.id],
+        groups=[team_1.id],
         user_performing_action=admin_user,
     )
     admin_agent_group_2 = AgentManager.create(
         name="admin_agent_group_2",
         description="A agent for group 2",
         is_public=False,
-        groups=[user_group_2.id],
+        groups=[team_2.id],
         user_performing_action=admin_user,
     )
     admin_agent_both_groups = AgentManager.create(
         name="admin_agent_both_groups",
         description="A agent for both groups",
         is_public=False,
-        groups=[user_group_1.id, user_group_2.id],
+        groups=[team_1.id, team_2.id],
         user_performing_action=admin_user,
     )
 

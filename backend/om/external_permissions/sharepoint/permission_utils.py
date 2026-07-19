@@ -13,7 +13,7 @@ from pydantic import BaseModel
 
 from om.db.external_perm import ExternalUserGroup
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_om
+from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.sharepoint.connector import SHARED_DOCUMENTS_MAP_REVERSE
 from om.connectors.sharepoint.connector import sleep_and_retry
@@ -501,7 +501,7 @@ def get_external_access_from_sharepoint(
             logger.info(f"Item {drive_item.id} is public")
             return ExternalAccess(
                 external_user_emails=set(),
-                external_user_group_ids=set(),
+                external_team_ids=set(),
                 is_public=True,
             )
 
@@ -551,13 +551,13 @@ def get_external_access_from_sharepoint(
     if groups_and_members.found_public_group:
         return ExternalAccess(
             external_user_emails=set(),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=True,
         )
 
     for group_name, _ in groups_and_members.groups_to_emails.items():
         if add_prefix:
-            group_name = build_ext_group_name_for_om(
+            group_name = build_ext_team_name_for_om(
                 group_name, DocumentSource.SHAREPOINT
             )
         group_ids.add(group_name.lower())
@@ -567,7 +567,7 @@ def get_external_access_from_sharepoint(
 
     return ExternalAccess(
         external_user_emails=user_emails,
-        external_user_group_ids=group_ids,
+        external_team_ids=group_ids,
         is_public=False,
     )
 
@@ -667,19 +667,19 @@ def get_sharepoint_external_groups(
                     mail = mail.replace(MICROSOFT_DOMAIN, "")
                 ad_groups_to_emails[name].add(mail)
 
-    external_user_groups: list[ExternalUserGroup] = []
+    external_teams: list[ExternalUserGroup] = []
     for group_name, emails in groups_and_members.groups_to_emails.items():
-        external_user_group = ExternalUserGroup(
+        external_team = ExternalUserGroup(
             id=group_name,
             user_emails=list(emails),
         )
-        external_user_groups.append(external_user_group)
+        external_teams.append(external_team)
 
     for group_name, emails in ad_groups_to_emails.items():
-        external_user_group = ExternalUserGroup(
+        external_team = ExternalUserGroup(
             id=group_name,
             user_emails=list(emails),
         )
-        external_user_groups.append(external_user_group)
+        external_teams.append(external_team)
 
-    return external_user_groups
+    return external_teams

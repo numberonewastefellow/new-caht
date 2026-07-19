@@ -11,7 +11,7 @@ from om.server.documents.models import DocumentSource
 from tests.integration.common_utils.managers.credential import CredentialManager
 from tests.integration.common_utils.managers.user import DATestUser
 from tests.integration.common_utils.managers.user import UserManager
-from tests.integration.common_utils.managers.user_group import UserGroupManager
+from tests.integration.common_utils.managers.team import TeamManager
 
 
 def test_credential_permissions(reset: None) -> None:  # noqa: ARG001
@@ -22,31 +22,31 @@ def test_credential_permissions(reset: None) -> None:  # noqa: ARG001
     curator: DATestUser = UserManager.create(name="curator")
 
     # Creating a user group
-    user_group_1 = UserGroupManager.create(
-        name="user_group_1",
+    team_1 = TeamManager.create(
+        name="team_1",
         user_ids=[curator.id],
         cc_pair_ids=[],
         user_performing_action=admin_user,
     )
-    UserGroupManager.wait_for_sync(
-        user_groups_to_check=[user_group_1], user_performing_action=admin_user
+    TeamManager.wait_for_sync(
+        teams_to_check=[team_1], user_performing_action=admin_user
     )
     # setting the user as a curator for the user group
-    UserGroupManager.set_curator_status(
-        test_user_group=user_group_1,
+    TeamManager.set_curator_status(
+        test_team=team_1,
         user_to_set_as_curator=curator,
         user_performing_action=admin_user,
     )
 
     # Creating another user group that the user is not a curator of
-    user_group_2 = UserGroupManager.create(
-        name="user_group_2",
+    team_2 = TeamManager.create(
+        name="team_2",
         user_ids=[curator.id],
         cc_pair_ids=[],
         user_performing_action=admin_user,
     )
-    UserGroupManager.wait_for_sync(
-        user_groups_to_check=[user_group_1], user_performing_action=admin_user
+    TeamManager.wait_for_sync(
+        teams_to_check=[team_1], user_performing_action=admin_user
     )
 
     # END OF HAPPY PATH
@@ -58,7 +58,7 @@ def test_credential_permissions(reset: None) -> None:  # noqa: ARG001
         CredentialManager.create(
             name="invalid_credential_1",
             source=DocumentSource.CONFLUENCE,
-            groups=[user_group_1.id],
+            groups=[team_1.id],
             curator_public=True,
             user_performing_action=curator,
         )
@@ -68,7 +68,7 @@ def test_credential_permissions(reset: None) -> None:  # noqa: ARG001
         CredentialManager.create(
             name="invalid_credential_2",
             source=DocumentSource.CONFLUENCE,
-            groups=[user_group_1.id, user_group_2.id],
+            groups=[team_1.id, team_2.id],
             curator_public=False,
             user_performing_action=curator,
         )
@@ -78,7 +78,7 @@ def test_credential_permissions(reset: None) -> None:  # noqa: ARG001
     valid_credential = CredentialManager.create(
         name="valid_credential",
         source=DocumentSource.CONFLUENCE,
-        groups=[user_group_1.id],
+        groups=[team_1.id],
         curator_public=False,
         user_performing_action=curator,
     )

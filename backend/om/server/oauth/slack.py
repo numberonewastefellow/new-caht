@@ -49,7 +49,7 @@ class SlackOAuth:
         "im:history,"
         "users:read,"
         "users:read.email,"
-        "usergroups:read"
+        "teams:read"
     )
 
     REDIRECT_URI = f"{WEB_DOMAIN}/admin/connectors/slack/oauth/callback"

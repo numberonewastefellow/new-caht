@@ -58,7 +58,7 @@ def _get_file_external_access(file_path: str) -> ExternalAccess:
     Windows: Uses win32security to read file DACLs (falls back to basic stat).
     """
     external_user_emails: set[str] = set()
-    external_user_group_ids: set[str] = set()
+    external_team_ids: set[str] = set()
     is_public = False
 
     try:
@@ -77,7 +77,7 @@ def _get_file_external_access(file_path: str) -> ExternalAccess:
 
             try:
                 gr = grp.getgrgid(file_stat.st_gid)
-                external_user_group_ids.add(f"folder__{gr.gr_name}")
+                external_team_ids.add(f"folder__{gr.gr_name}")
             except KeyError:
                 pass
 
@@ -104,7 +104,7 @@ def _get_file_external_access(file_path: str) -> ExternalAccess:
 
     return ExternalAccess(
         external_user_emails=external_user_emails,
-        external_user_group_ids=external_user_group_ids,
+        external_team_ids=external_team_ids,
         is_public=is_public,
     )
 

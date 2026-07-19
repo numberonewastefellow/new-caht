@@ -8,7 +8,7 @@ from om.external_permissions.jira.models import Holder
 from om.external_permissions.jira.models import Permission
 from om.external_permissions.jira.models import User
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_om
+from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
 from om.utils.logger import setup_logger
 
@@ -202,13 +202,13 @@ def _build_external_access_from_holder_map(
     # Public access - anyone can view
     if "anyone" in holder_map:
         return ExternalAccess(
-            external_user_emails=set(), external_user_group_ids=set(), is_public=True
+            external_user_emails=set(), external_team_ids=set(), is_public=True
         )
 
     # applicationRole means all users with a Jira license can access - treat as public
     if "applicationRole" in holder_map:
         return ExternalAccess(
-            external_user_emails=set(), external_user_group_ids=set(), is_public=True
+            external_user_emails=set(), external_team_ids=set(), is_public=True
         )
 
     # Get emails from explicit user holders
@@ -242,11 +242,11 @@ def _build_external_access_from_holder_map(
                 logger.error(f"No parameter/value in group holder: {group_holder}")
 
     external_user_emails = set(user_emails + project_role_user_emails)
-    external_user_group_ids = set(project_role_groups + direct_groups)
+    external_team_ids = set(project_role_groups + direct_groups)
 
     return ExternalAccess(
         external_user_emails=external_user_emails,
-        external_user_group_ids=external_user_group_ids,
+        external_team_ids=external_team_ids,
         is_public=False,
     )
 
@@ -281,14 +281,14 @@ def get_project_permissions(
     )
 
     # Prefix group IDs with source type if requested (for indexing path)
-    if add_prefix and external_access and external_access.external_user_group_ids:
+    if add_prefix and external_access and external_access.external_team_ids:
         prefixed_groups = {
-            build_ext_group_name_for_om(g, DocumentSource.JIRA)
-            for g in external_access.external_user_group_ids
+            build_ext_team_name_for_om(g, DocumentSource.JIRA)
+            for g in external_access.external_team_ids
         }
         return ExternalAccess(
             external_user_emails=external_access.external_user_emails,
-            external_user_group_ids=prefixed_groups,
+            external_team_ids=prefixed_groups,
             is_public=external_access.is_public,
         )
 

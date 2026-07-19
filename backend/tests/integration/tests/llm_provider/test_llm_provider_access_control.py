@@ -6,14 +6,14 @@ from sqlalchemy.orm import Session
 from om.context.search.enums import RecencyBiasSetting
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.llm import can_user_access_llm_provider
-from om.db.llm import fetch_user_group_ids
+from om.db.llm import fetch_team_ids
 from om.db.models import LLMProvider as LLMProviderModel
 from om.db.models import LLMProvider__Agent
-from om.db.models import LLMProvider__UserGroup
+from om.db.models import LLMProvider__Team
 from om.db.models import Agent
 from om.db.models import User
-from om.db.models import User__UserGroup
-from om.db.models import UserGroup
+from om.db.models import User__Team
+from om.db.models import Team
 from om.llm.constants import LlmProviderNames
 from om.llm.factory import get_llm_for_agent
 from tests.integration.common_utils.constants import API_SERVER_URL
@@ -137,15 +137,15 @@ def test_can_user_access_llm_provider_or_logic(
             provider_name=restricted_provider.name,
         )
 
-        access_group = UserGroup(name="access-group")
+        access_group = Team(name="access-group")
         db_session.add(access_group)
         db_session.flush()
 
         # Add both group and agent restrictions to restricted_provider
         db_session.add(
-            LLMProvider__UserGroup(
+            LLMProvider__Team(
                 llm_provider_id=restricted_provider.id,
-                user_group_id=access_group.id,
+                team_id=access_group.id,
             )
         )
         db_session.add(
@@ -156,8 +156,8 @@ def test_can_user_access_llm_provider_or_logic(
         )
         # Only admin_user is in the access_group
         db_session.add(
-            User__UserGroup(
-                user_group_id=access_group.id,
+            User__Team(
+                team_id=access_group.id,
                 user_id=admin_user.id,
             )
         )
@@ -173,8 +173,8 @@ def test_can_user_access_llm_provider_or_logic(
         assert basic_model is not None
 
         # Fetch user group IDs for both users
-        admin_group_ids = fetch_user_group_ids(db_session, admin_model)
-        basic_group_ids = fetch_user_group_ids(db_session, basic_model)
+        admin_group_ids = fetch_team_ids(db_session, admin_model)
+        basic_group_ids = fetch_team_ids(db_session, basic_model)
 
         # Test is_public flag
         assert default_provider.is_public
@@ -262,19 +262,19 @@ def test_get_llm_for_agent_falls_back_when_access_denied(
             provider_name=restricted_provider.name,
         )
 
-        access_group = UserGroup(name="agent-group")
+        access_group = Team(name="agent-group")
         db_session.add(access_group)
         db_session.flush()
 
         db_session.add(
-            LLMProvider__UserGroup(
+            LLMProvider__Team(
                 llm_provider_id=restricted_provider.id,
-                user_group_id=access_group.id,
+                team_id=access_group.id,
             )
         )
         db_session.add(
-            User__UserGroup(
-                user_group_id=access_group.id,
+            User__Team(
+                team_id=access_group.id,
                 user_id=admin_user.id,
             )
         )

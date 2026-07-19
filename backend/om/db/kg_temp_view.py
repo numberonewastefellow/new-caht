@@ -84,16 +84,16 @@
 #         AND ccp.access_type != 'SYNC'
 #         AND (u.email = :user_email or ccp.access_type::text = 'PUBLIC')
 #     ),
-#     user_group_accessible_docs AS (
+#     team_accessible_docs AS (
 #         SELECT d.id as allowed_doc_id
 #         FROM "{tenant_id}".document_by_connector_credential_pair d
 #         JOIN "{tenant_id}".connector_credential_pair ccp ON
 #             d.connector_id = ccp.connector_id AND
 #             d.credential_id = ccp.credential_id
-#         JOIN "{tenant_id}".user_group__connector_credential_pair ugccp ON
+#         JOIN "{tenant_id}".team__connector_credential_pair ugccp ON
 #             ccp.id = ugccp.cc_pair_id
-#         JOIN "{tenant_id}".user__user_group uug ON
-#             uug.user_group_id = ugccp.user_group_id
+#         JOIN "{tenant_id}".user__team uug ON
+#             uug.team_id = ugccp.team_id
 #         JOIN "{tenant_id}".user u ON uug.user_id = u.id
 #         INNER JOIN kg_used_docs kud ON kud.kg_used_doc_id = d.id
 #         WHERE kud.kg_used_doc_id IS NOT NULL
@@ -112,7 +112,7 @@
 #         SELECT d.id as allowed_doc_id
 #         FROM "{tenant_id}".document d
 #         INNER JOIN kg_used_docs kud ON kud.kg_used_doc_id = d.id
-#         JOIN "{tenant_id}".user__external_user_group_id ueg ON ueg.external_user_group_id = ANY(d.external_user_group_ids)
+#         JOIN "{tenant_id}".user__external_team_id ueg ON ueg.external_team_id = ANY(d.external_team_ids)
 #         JOIN "{tenant_id}".user u ON ueg.user_id = u.id
 #         WHERE kud.kg_used_doc_id IS NOT NULL
 #         AND u.email = :user_email
@@ -122,7 +122,7 @@
 #         UNION
 #         SELECT allowed_doc_id FROM user_owned_and_public_docs
 #         UNION
-#         SELECT allowed_doc_id FROM user_group_accessible_docs
+#         SELECT allowed_doc_id FROM team_accessible_docs
 #         UNION
 #         SELECT allowed_doc_id FROM external_user_docs
 #         UNION

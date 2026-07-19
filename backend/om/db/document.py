@@ -25,7 +25,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import null
 
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_om
+from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DEFAULT_BOOST
 from om.configs.constants import DocumentSource
 from om.configs.kg_configs import KG_SIMPLE_ANSWER_MAX_DISPLAYED_SOURCES
@@ -183,7 +183,7 @@ def get_documents_for_connector_credential_pair_limited_columns(
     )
 
     stmt = select(
-        DbDocument.id, DbDocument.doc_metadata, DbDocument.external_user_group_ids
+        DbDocument.id, DbDocument.doc_metadata, DbDocument.external_team_ids
     )
 
     stmt = stmt.where(DbDocument.id.in_(doc_ids_subquery))
@@ -200,7 +200,7 @@ def get_documents_for_connector_credential_pair_limited_columns(
         doc_row = DocumentRow(
             id=row.id,
             doc_metadata=row.doc_metadata,
-            external_user_group_ids=row.external_user_group_ids or [],
+            external_team_ids=row.external_team_ids or [],
         )
         doc_rows.append(doc_row)
     return doc_rows
@@ -689,8 +689,8 @@ def upsert_documents(
                             "external_user_emails": list(
                                 doc.external_access.external_user_emails
                             ),
-                            "external_user_group_ids": list(
-                                doc.external_access.external_user_group_ids
+                            "external_team_ids": list(
+                                doc.external_access.external_team_ids
                             ),
                             "is_public": doc.external_access.is_public,
                         }
@@ -725,9 +725,9 @@ def upsert_documents(
                     insert_stmt.excluded.external_user_emails,
                     DbDocument.external_user_emails,
                 ),
-                "external_user_group_ids": func.coalesce(
-                    insert_stmt.excluded.external_user_group_ids,
-                    DbDocument.external_user_group_ids,
+                "external_team_ids": func.coalesce(
+                    insert_stmt.excluded.external_team_ids,
+                    DbDocument.external_team_ids,
                 ),
                 "is_public": func.coalesce(
                     insert_stmt.excluded.is_public,
@@ -1629,11 +1629,11 @@ def upsert_document_external_perms__no_commit(
     ).first()
 
     prefixed_external_groups = [
-        build_ext_group_name_for_om(
+        build_ext_team_name_for_om(
             ext_group_name=group_id,
             source=source_type,
         )
-        for group_id in external_access.external_user_group_ids
+        for group_id in external_access.external_team_ids
     ]
 
     if not document:
@@ -1643,14 +1643,14 @@ def upsert_document_external_perms__no_commit(
             id=doc_id,
             semantic_id="",
             external_user_emails=external_access.external_user_emails,
-            external_user_group_ids=prefixed_external_groups,
+            external_team_ids=prefixed_external_groups,
             is_public=external_access.is_public,
         )
         db_session.add(document)
         return
 
     document.external_user_emails = list(external_access.external_user_emails)
-    document.external_user_group_ids = prefixed_external_groups
+    document.external_team_ids = prefixed_external_groups
     document.is_public = external_access.is_public
 
 
@@ -1670,11 +1670,11 @@ def upsert_document_external_perms(
     ).first()
 
     prefixed_external_groups: set[str] = {
-        build_ext_group_name_for_om(
+        build_ext_team_name_for_om(
             ext_group_name=group_id,
             source=source_type,
         )
-        for group_id in external_access.external_user_group_ids
+        for group_id in external_access.external_team_ids
     }
 
     if not document:
@@ -1685,7 +1685,7 @@ def upsert_document_external_perms(
             id=doc_id,
             semantic_id="",
             external_user_emails=external_access.external_user_emails,
-            external_user_group_ids=prefixed_external_groups,
+            external_team_ids=prefixed_external_groups,
             is_public=external_access.is_public,
         )
         db_session.add(document)
@@ -1695,11 +1695,11 @@ def upsert_document_external_perms(
     # If the document exists, we need to check if the external access has changed
     if (
         external_access.external_user_emails != set(document.external_user_emails or [])
-        or prefixed_external_groups != set(document.external_user_group_ids or [])
+        or prefixed_external_groups != set(document.external_team_ids or [])
         or external_access.is_public != document.is_public
     ):
         document.external_user_emails = list(external_access.external_user_emails)
-        document.external_user_group_ids = list(prefixed_external_groups)
+        document.external_team_ids = list(prefixed_external_groups)
         document.is_public = external_access.is_public
         document.last_modified = datetime.now(timezone.utc)
         db_session.commit()

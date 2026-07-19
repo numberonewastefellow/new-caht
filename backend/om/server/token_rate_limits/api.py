@@ -4,9 +4,9 @@ from fastapi import APIRouter
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from om.db.token_limit import fetch_all_user_group_token_rate_limits_by_group
-from om.db.token_limit import fetch_user_group_token_rate_limits_for_user
-from om.db.token_limit import insert_user_group_token_rate_limit
+from om.db.token_limit import fetch_all_team_token_rate_limits_by_group
+from om.db.token_limit import fetch_team_token_rate_limits_for_user
+from om.db.token_limit import insert_team_token_rate_limit
 from om.auth.users import current_admin_user
 from om.auth.users import current_curator_or_admin_user
 from om.configs.constants import PUBLIC_API_TAGS
@@ -98,12 +98,12 @@ def get_all_group_token_limit_settings(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> dict[str, list[TokenRateLimitDisplay]]:
-    user_groups_to_token_rate_limits = fetch_all_user_group_token_rate_limits_by_group(
+    teams_to_token_rate_limits = fetch_all_team_token_rate_limits_by_group(
         db_session
     )
 
     token_rate_limits_by_group = defaultdict(list)
-    for token_rate_limit, group_name in user_groups_to_token_rate_limits:
+    for token_rate_limit, group_name in teams_to_token_rate_limits:
         token_rate_limits_by_group[group_name].append(
             TokenRateLimitDisplay.from_db(token_rate_limit)
         )
@@ -119,7 +119,7 @@ def get_group_token_limit_settings(
 ) -> list[TokenRateLimitDisplay]:
     return [
         TokenRateLimitDisplay.from_db(token_rate_limit)
-        for token_rate_limit in fetch_user_group_token_rate_limits_for_user(
+        for token_rate_limit in fetch_team_token_rate_limits_for_user(
             db_session=db_session,
             group_id=group_id,
             user=user,
@@ -135,7 +135,7 @@ def create_group_token_limit_settings(
     db_session: Session = Depends(get_session),
 ) -> TokenRateLimitDisplay:
     rate_limit_display = TokenRateLimitDisplay.from_db(
-        insert_user_group_token_rate_limit(
+        insert_team_token_rate_limit(
             db_session=db_session,
             token_rate_limit_settings=token_limit_settings,
             group_id=group_id,

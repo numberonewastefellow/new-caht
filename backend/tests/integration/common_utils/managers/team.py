@@ -3,22 +3,22 @@ from uuid import uuid4
 
 import requests
 
-from om.server.user_group.models import UserGroup
+from om.server.team.models import Team
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import GENERAL_HEADERS
 from tests.integration.common_utils.constants import MAX_DELAY
 from tests.integration.common_utils.test_models import DATestUser
-from tests.integration.common_utils.test_models import DATestUserGroup
+from tests.integration.common_utils.test_models import DATestTeam
 
 
-class UserGroupManager:
+class TeamManager:
     @staticmethod
     def create(
         name: str | None = None,
         user_ids: list[str] | None = None,
         cc_pair_ids: list[int] | None = None,
         user_performing_action: DATestUser | None = None,
-    ) -> DATestUserGroup:
+    ) -> DATestTeam:
         name = f"{name}-user-group" if name else f"test-user-group-{uuid4()}"
 
         request = {
@@ -36,22 +36,22 @@ class UserGroupManager:
             ),
         )
         response.raise_for_status()
-        test_user_group = DATestUserGroup(
+        test_team = DATestTeam(
             id=response.json()["id"],
             name=response.json()["name"],
             user_ids=[user["id"] for user in response.json()["users"]],
             cc_pair_ids=[cc_pair["id"] for cc_pair in response.json()["cc_pairs"]],
         )
-        return test_user_group
+        return test_team
 
     @staticmethod
     def edit(
-        user_group: DATestUserGroup,
+        team: DATestTeam,
         user_performing_action: DATestUser | None = None,
     ) -> None:
         response = requests.patch(
-            f"{API_SERVER_URL}/nexus/admin/user-group/{user_group.id}",
-            json=user_group.model_dump(),
+            f"{API_SERVER_URL}/nexus/admin/user-group/{team.id}",
+            json=team.model_dump(),
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -62,11 +62,11 @@ class UserGroupManager:
 
     @staticmethod
     def delete(
-        user_group: DATestUserGroup,
+        team: DATestTeam,
         user_performing_action: DATestUser | None = None,
     ) -> None:
         response = requests.delete(
-            f"{API_SERVER_URL}/nexus/admin/user-group/{user_group.id}",
+            f"{API_SERVER_URL}/nexus/admin/user-group/{team.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -77,16 +77,16 @@ class UserGroupManager:
 
     @staticmethod
     def add_users(
-        user_group: DATestUserGroup,
+        team: DATestTeam,
         user_ids: list[str],
         user_performing_action: DATestUser | None = None,
-    ) -> DATestUserGroup:
+    ) -> DATestTeam:
         request = {
             "user_ids": user_ids,
         }
 
         response = requests.post(
-            f"{API_SERVER_URL}/nexus/admin/user-group/{user_group.id}/add-users",
+            f"{API_SERVER_URL}/nexus/admin/user-group/{team.id}/add-users",
             json=request,
             headers=(
                 user_performing_action.headers
@@ -96,16 +96,16 @@ class UserGroupManager:
         )
         response.raise_for_status()
 
-        user_group.user_ids = [user["id"] for user in response.json()["users"]]
-        user_group.cc_pair_ids = [
+        team.user_ids = [user["id"] for user in response.json()["users"]]
+        team.cc_pair_ids = [
             cc_pair["id"] for cc_pair in response.json()["cc_pairs"]
         ]
-        user_group.name = response.json()["name"]
-        return user_group
+        team.name = response.json()["name"]
+        return team
 
     @staticmethod
     def set_curator_status(
-        test_user_group: DATestUserGroup,
+        test_team: DATestTeam,
         user_to_set_as_curator: DATestUser,
         is_curator: bool = True,
         user_performing_action: DATestUser | None = None,
@@ -115,7 +115,7 @@ class UserGroupManager:
             "is_curator": is_curator,
         }
         response = requests.post(
-            f"{API_SERVER_URL}/nexus/admin/user-group/{test_user_group.id}/set-curator",
+            f"{API_SERVER_URL}/nexus/admin/user-group/{test_team.id}/set-curator",
             json=set_curator_request,
             headers=(
                 user_performing_action.headers
@@ -128,7 +128,7 @@ class UserGroupManager:
     @staticmethod
     def get_all(
         user_performing_action: DATestUser | None = None,
-    ) -> list[UserGroup]:
+    ) -> list[Team]:
         response = requests.get(
             f"{API_SERVER_URL}/nexus/admin/user-group",
             headers=(
@@ -138,52 +138,52 @@ class UserGroupManager:
             ),
         )
         response.raise_for_status()
-        return [UserGroup(**ug) for ug in response.json()]
+        return [Team(**ug) for ug in response.json()]
 
     @staticmethod
     def verify(
-        user_group: DATestUserGroup,
+        team: DATestTeam,
         verify_deleted: bool = False,
         user_performing_action: DATestUser | None = None,
     ) -> None:
-        all_user_groups = UserGroupManager.get_all(user_performing_action)
-        for fetched_user_group in all_user_groups:
-            if user_group.id == fetched_user_group.id:
+        all_teams = TeamManager.get_all(user_performing_action)
+        for fetched_team in all_teams:
+            if team.id == fetched_team.id:
                 if verify_deleted:
                     raise ValueError(
-                        f"User group {user_group.id} found but should be deleted"
+                        f"User group {team.id} found but should be deleted"
                     )
-                fetched_cc_ids = {cc_pair.id for cc_pair in fetched_user_group.cc_pairs}
-                fetched_user_ids = {user.id for user in fetched_user_group.users}
-                user_group_cc_ids = set(user_group.cc_pair_ids)
-                user_group_user_ids = set(user_group.user_ids)
+                fetched_cc_ids = {cc_pair.id for cc_pair in fetched_team.cc_pairs}
+                fetched_user_ids = {user.id for user in fetched_team.users}
+                team_cc_ids = set(team.cc_pair_ids)
+                team_user_ids = set(team.user_ids)
                 if (
-                    fetched_cc_ids == user_group_cc_ids
-                    and fetched_user_ids == user_group_user_ids
+                    fetched_cc_ids == team_cc_ids
+                    and fetched_user_ids == team_user_ids
                 ):
                     return
         if not verify_deleted:
-            raise ValueError(f"User group {user_group.id} not found")
+            raise ValueError(f"User group {team.id} not found")
 
     @staticmethod
     def wait_for_sync(
-        user_groups_to_check: list[DATestUserGroup] | None = None,
+        teams_to_check: list[DATestTeam] | None = None,
         user_performing_action: DATestUser | None = None,
     ) -> None:
         start = time.time()
         while True:
-            user_groups = UserGroupManager.get_all(user_performing_action)
-            if user_groups_to_check:
-                check_ids = {user_group.id for user_group in user_groups_to_check}
-                user_group_ids = {user_group.id for user_group in user_groups}
-                if not check_ids.issubset(user_group_ids):
+            teams = TeamManager.get_all(user_performing_action)
+            if teams_to_check:
+                check_ids = {team.id for team in teams_to_check}
+                team_ids = {team.id for team in teams}
+                if not check_ids.issubset(team_ids):
                     raise RuntimeError("User group not found")
-                user_groups = [
-                    user_group
-                    for user_group in user_groups
-                    if user_group.id in check_ids
+                teams = [
+                    team
+                    for team in teams
+                    if team.id in check_ids
                 ]
-            if all(ug.is_up_to_date for ug in user_groups):
+            if all(ug.is_up_to_date for ug in teams):
                 print("User groups synced successfully.")
                 return
 
@@ -197,17 +197,17 @@ class UserGroupManager:
 
     @staticmethod
     def wait_for_deletion_completion(
-        user_groups_to_check: list[DATestUserGroup],
+        teams_to_check: list[DATestTeam],
         user_performing_action: DATestUser | None = None,
     ) -> None:
         start = time.time()
-        user_group_ids_to_check = {user_group.id for user_group in user_groups_to_check}
+        team_ids_to_check = {team.id for team in teams_to_check}
         while True:
-            fetched_user_groups = UserGroupManager.get_all(user_performing_action)
-            fetched_user_group_ids = {
-                user_group.id for user_group in fetched_user_groups
+            fetched_teams = TeamManager.get_all(user_performing_action)
+            fetched_team_ids = {
+                team.id for team in fetched_teams
             }
-            if not user_group_ids_to_check.intersection(fetched_user_group_ids):
+            if not team_ids_to_check.intersection(fetched_team_ids):
                 return
 
             if time.time() - start > MAX_DELAY:

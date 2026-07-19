@@ -53,8 +53,8 @@ LICENSE_ENFORCEMENT_ALLOWED_PREFIXES: frozenset[str] = frozenset(
 # These are blocked even when user has never subscribed (no license).
 EE_ONLY_PATH_PREFIXES: frozenset[str] = frozenset(
     {
-        # User groups and access control
-        "/nexus/admin/user-group",
+        # Teams and access control
+        "/teams",
         # Analytics and reporting
         "/analytics",
         # Query history (admin chat session endpoints)

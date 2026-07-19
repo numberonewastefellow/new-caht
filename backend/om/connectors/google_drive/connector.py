@@ -163,7 +163,7 @@ def _is_shared_drive_root(folder: GoogleDriveFileType) -> bool:
 def _public_access() -> ExternalAccess:
     return ExternalAccess(
         external_user_emails=set(),
-        external_user_group_ids=set(),
+        external_team_ids=set(),
         is_public=True,
     )
 

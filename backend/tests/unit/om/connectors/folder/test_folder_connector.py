@@ -301,7 +301,7 @@ class TestAccessControl:
         access = _get_file_external_access(file_path)
         assert access is not None
         assert isinstance(access.external_user_emails, set)
-        assert isinstance(access.external_user_group_ids, set)
+        assert isinstance(access.external_team_ids, set)
         assert isinstance(access.is_public, bool)
 
     def test_get_file_external_access_nonexistent_file(self, tmp_path: Path) -> None:

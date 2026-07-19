@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import { SettingsContext } from "@/providers/SettingsProvider";
 
-export interface MinimalUserGroupSnapshot {
+export interface MinimalTeamSnapshot {
   id: number;
   name: string;
 }
@@ -13,13 +13,13 @@ export interface MinimalUserGroupSnapshot {
 // TODO (@raunakab):
 // Refactor this hook to live inside of a special `ee` directory.
 
-export default function useShareableGroups() {
+export default function useShareableTeams() {
   const combinedSettings = useContext(SettingsContext);
   const isPaidEnterpriseFeaturesEnabled =
     combinedSettings && combinedSettings.enterpriseSettings !== null;
 
-  const { data, error, mutate, isLoading } = useSWR<MinimalUserGroupSnapshot[]>(
-    isPaidEnterpriseFeaturesEnabled ? "/api/nexus/user-groups/minimal" : null,
+  const { data, error, mutate, isLoading } = useSWR<MinimalTeamSnapshot[]>(
+    isPaidEnterpriseFeaturesEnabled ? "/api/teams/minimal" : null,
     errorHandlingFetcher
   );
 
@@ -28,7 +28,7 @@ export default function useShareableGroups() {
       data: [],
       isLoading: false,
       error: undefined,
-      refreshShareableGroups: () => {},
+      refreshShareableTeams: () => {},
     };
   }
 
@@ -36,6 +36,6 @@ export default function useShareableGroups() {
     data,
     isLoading,
     error,
-    refreshShareableGroups: mutate,
+    refreshShareableTeams: mutate,
   };
 }

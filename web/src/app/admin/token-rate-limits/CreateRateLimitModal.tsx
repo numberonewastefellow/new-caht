@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Modal from "@/refresh-components/Modal";
 import { Form, Formik } from "formik";
 import { SelectorFormField, TextFormField } from "@/components/Field";
-import { UserGroup } from "@/lib/types";
+import { Team } from "@/lib/types";
 import { Scope } from "./types";
 import { toast } from "@/hooks/useToast";
 import { SvgSettings } from "@opal/icons";
@@ -38,9 +38,9 @@ export default function CreateRateLimitModal({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/nexus/admin/user-group");
+        const response = await fetch("/api/teams");
         const data = await response.json();
-        const options = data.map((userGroup: UserGroup) => ({
+        const options = data.map((userGroup: Team) => ({
           name: userGroup.name,
           value: userGroup.id,
         }));

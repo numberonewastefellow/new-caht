@@ -3,7 +3,7 @@
 import {
   DocumentBoostStatus,
   Tag,
-  UserGroup,
+  Team,
   ConnectorStatus,
   CCPairBasicInfo,
   FederatedConnectorDetail,
@@ -868,20 +868,20 @@ export function useAuthType(): AuthType | null {
 EE Only APIs
 */
 
-const USER_GROUP_URL = "/api/nexus/admin/user-group";
+const TEAMS_URL = "/api/teams";
 
-export const useUserGroups = (): {
-  data: UserGroup[] | undefined;
+export const useTeams = (): {
+  data: Team[] | undefined;
   isLoading: boolean;
   error: string;
-  refreshUserGroups: () => void;
+  refreshTeams: () => void;
 } => {
   const combinedSettings = useContext(SettingsContext);
   const isPaidEnterpriseFeaturesEnabled =
     combinedSettings && combinedSettings.enterpriseSettings !== null;
 
-  const swrResponse = useSWR<UserGroup[]>(
-    isPaidEnterpriseFeaturesEnabled ? USER_GROUP_URL : null,
+  const swrResponse = useSWR<Team[]>(
+    isPaidEnterpriseFeaturesEnabled ? TEAMS_URL : null,
     errorHandlingFetcher
   );
 
@@ -892,13 +892,13 @@ export const useUserGroups = (): {
         isLoading: false,
         error: "",
       },
-      refreshUserGroups: () => {},
+      refreshTeams: () => {},
     };
   }
 
   return {
     ...swrResponse,
-    refreshUserGroups: () => mutate(USER_GROUP_URL),
+    refreshTeams: () => mutate(TEAMS_URL),
   };
 };
 

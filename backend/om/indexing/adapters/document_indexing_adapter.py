@@ -96,9 +96,9 @@ class DocumentIndexingBatchAdapter:
 
         no_access = DocumentAccess.build(
             user_emails=[],
-            user_groups=[],
+            teams=[],
             external_user_emails=[],
-            external_user_group_ids=[],
+            external_team_ids=[],
             is_public=False,
         )
 

@@ -2,7 +2,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from om.db.models import UserGroup as UserGroupModel
+from om.db.models import Team as TeamModel
 from om.server.documents.models import ConnectorCredentialPairDescriptor
 from om.server.documents.models import ConnectorSnapshot
 from om.server.documents.models import CredentialSnapshot
@@ -12,7 +12,7 @@ from om.server.manage.models import UserInfo
 from om.server.manage.models import UserPreferences
 
 
-class UserGroup(BaseModel):
+class Team(BaseModel):
     id: int
     name: str
     users: list[UserInfo]
@@ -24,10 +24,10 @@ class UserGroup(BaseModel):
     is_up_for_deletion: bool
 
     @classmethod
-    def from_model(cls, user_group_model: UserGroupModel) -> "UserGroup":
+    def from_model(cls, team_model: TeamModel) -> "Team":
         return cls(
-            id=user_group_model.id,
-            name=user_group_model.name,
+            id=team_model.id,
+            name=team_model.name,
             users=[
                 UserInfo(
                     id=str(user.id),
@@ -41,11 +41,11 @@ class UserGroup(BaseModel):
                         chosen_assistants=user.chosen_assistants,
                     ),
                 )
-                for user in user_group_model.users
+                for user in team_model.users
             ],
             curator_ids=[
                 user.user_id
-                for user in user_group_model.user_group_relationships
+                for user in team_model.team_relationships
                 if user.is_curator and user.user_id is not None
             ],
             cc_pairs=[
@@ -60,46 +60,46 @@ class UserGroup(BaseModel):
                     ),
                     access_type=cc_pair_relationship.cc_pair.access_type,
                 )
-                for cc_pair_relationship in user_group_model.cc_pair_relationships
+                for cc_pair_relationship in team_model.cc_pair_relationships
                 if cc_pair_relationship.is_current
             ],
             document_sets=[
-                DocumentSet.from_model(ds) for ds in user_group_model.document_sets
+                DocumentSet.from_model(ds) for ds in team_model.document_sets
             ],
             agents=[
                 AgentSnapshot.from_model(agent)
-                for agent in user_group_model.agents
+                for agent in team_model.agents
                 if not agent.deleted
             ],
-            is_up_to_date=user_group_model.is_up_to_date,
-            is_up_for_deletion=user_group_model.is_up_for_deletion,
+            is_up_to_date=team_model.is_up_to_date,
+            is_up_for_deletion=team_model.is_up_for_deletion,
         )
 
 
-class MinimalUserGroupSnapshot(BaseModel):
+class MinimalTeamSnapshot(BaseModel):
     id: int
     name: str
 
     @classmethod
-    def from_model(cls, user_group_model: UserGroupModel) -> "MinimalUserGroupSnapshot":
+    def from_model(cls, team_model: TeamModel) -> "MinimalTeamSnapshot":
         return cls(
-            id=user_group_model.id,
-            name=user_group_model.name,
+            id=team_model.id,
+            name=team_model.name,
         )
 
 
-class UserGroupCreate(BaseModel):
+class TeamCreate(BaseModel):
     name: str
     user_ids: list[UUID]
     cc_pair_ids: list[int]
 
 
-class UserGroupUpdate(BaseModel):
+class TeamUpdate(BaseModel):
     user_ids: list[UUID]
     cc_pair_ids: list[int]
 
 
-class AddUsersToUserGroupRequest(BaseModel):
+class AddUsersToTeamRequest(BaseModel):
     user_ids: list[UUID]
 
 

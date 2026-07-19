@@ -364,8 +364,8 @@ def try_generate_document_cc_pair_cleanup_tasks(
 def monitor_connector_deletion_taskset(
     tenant_id: str, key_bytes: bytes, r: Redis  # noqa: ARG001
 ) -> None:
-    from om.db.user_group import (
-        delete_user_group_cc_pair_relationship__no_commit as _impl_delete_user_group_cc_pair_relationship__no_commit,
+    from om.db.team import (
+        delete_team_cc_pair_relationship__no_commit as _impl_delete_team_cc_pair_relationship__no_commit,
     )
     fence_key = key_bytes.decode("utf-8")
     cc_pair_id_str = RedisConnector.get_id_from_fence_key(fence_key)
@@ -464,8 +464,8 @@ def monitor_connector_deletion_taskset(
             )
 
             # user groups
-            cleanup_user_groups = _impl_delete_user_group_cc_pair_relationship__no_commit
-            cleanup_user_groups(
+            cleanup_teams = _impl_delete_team_cc_pair_relationship__no_commit
+            cleanup_teams(
                 cc_pair_id=cc_pair_id,
                 db_session=db_session,
             )

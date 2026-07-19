@@ -465,12 +465,12 @@ def fetch_user_ids_from_groups(
     user_ids: list[str] = []
     failed_to_find: list[str] = []
     try:
-        response = client.usergroups_list()
+        response = client.teams_list()
         if not isinstance(response.data, dict):
             logger.error("Error fetching user groups")
             return user_ids, given_names
 
-        all_group_data = response.data.get("usergroups", [])
+        all_group_data = response.data.get("teams", [])
         name_id_map = {d["name"]: d["id"] for d in all_group_data}
         handle_id_map = {d["handle"]: d["id"] for d in all_group_data}
         for given_name in given_names:
@@ -481,7 +481,7 @@ def fetch_user_ids_from_groups(
                 failed_to_find.append(given_name)
                 continue
             try:
-                response = client.usergroups_users_list(usergroup=group_id)
+                response = client.teams_users_list(team=group_id)
                 if isinstance(response.data, dict):
                     user_ids.extend(response.data.get("users", []))
                 else:
@@ -503,12 +503,12 @@ def fetch_group_ids_from_names(
     failed_to_find: list[str] = []
 
     try:
-        response = client.usergroups_list()
+        response = client.teams_list()
         if not isinstance(response.data, dict):
             logger.error("Error fetching user groups")
             return group_data, given_names
 
-        all_group_data = response.data.get("usergroups", [])
+        all_group_data = response.data.get("teams", [])
 
         name_id_map = {d["name"]: d["id"] for d in all_group_data}
         handle_id_map = {d["handle"]: d["id"] for d in all_group_data}

@@ -27,7 +27,7 @@ def get_channel_access(
     if channel_is_public:
         return ExternalAccess(
             external_user_emails=set(),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=True,
         )
 
@@ -58,6 +58,6 @@ def get_channel_access(
         external_user_emails=member_emails,
         # NOTE: groups are not used, since adding a group to a channel just adds all
         # users that are in the group.
-        external_user_group_ids=set(),
+        external_team_ids=set(),
         is_public=False,
     )

@@ -22,7 +22,7 @@ sys.path.append(parent_dir)
 # Now import VertualAI modules
 from om.db.models import (
     DocumentSet__ConnectorCredentialPair,
-    UserGroup__ConnectorCredentialPair,
+    Team__ConnectorCredentialPair,
 )
 from om.db.connector import fetch_connector_by_id
 from om.db.document import get_documents_for_connector_credential_pair
@@ -119,8 +119,8 @@ def _unsafe_deletion(
     db_session.execute(stmt)
 
     # delete user group associations
-    stmt = delete(UserGroup__ConnectorCredentialPair).where(
-        UserGroup__ConnectorCredentialPair.cc_pair_id == pair_id
+    stmt = delete(Team__ConnectorCredentialPair).where(
+        Team__ConnectorCredentialPair.cc_pair_id == pair_id
     )
     db_session.execute(stmt)
 

@@ -31,14 +31,14 @@ from om.db.models import DocumentSet
 from om.db.models import HierarchyNode
 from om.db.models import Agent
 from om.db.models import Agent__User
-from om.db.models import Agent__UserGroup
+from om.db.models import Agent__Team
 from om.db.models import AgentLabel
 from om.db.models import StarterMessage
 from om.db.models import Tool
 from om.db.models import User
-from om.db.models import User__UserGroup
+from om.db.models import User__Team
 from om.db.models import KnowledgeFile
-from om.db.models import UserGroup
+from om.db.models import Team
 from om.db.notification import create_notification
 from om.server.features.agent.models import FullAgentSnapshot
 from om.server.features.agent.models import MinimalAgentSnapshot
@@ -69,17 +69,17 @@ def _add_user_filters(
         return stmt
 
     stmt = stmt.distinct()
-    Agent__UG = aliased(Agent__UserGroup)
-    User__UG = aliased(User__UserGroup)
+    Agent__UG = aliased(Agent__Team)
+    User__UG = aliased(User__Team)
     """
     Here we select cc_pairs by relation:
-    User -> User__UserGroup -> Agent__UserGroup -> Agent
+    User -> User__Team -> Agent__Team -> Agent
     """
     stmt = (
         stmt.outerjoin(Agent__UG)
         .outerjoin(
-            User__UserGroup,
-            User__UserGroup.user_group_id == Agent__UG.user_group_id,
+            User__Team,
+            User__Team.team_id == Agent__UG.team_id,
         )
         .outerjoin(
             Agent__User,
@@ -88,9 +88,9 @@ def _add_user_filters(
     )
     """
     Filter Agents by:
-    - if the user is in the user_group that owns the Agent
+    - if the user is in the team that owns the Agent
     - if the user is not a global_curator, they must also have a curator relationship
-    to the user_group
+    to the team
     - if editing is being done, we also filter out Agents that are owned by groups
     that the user isn't a curator for
     - if we are not editing, we show all Agents in the groups the user is a curator
@@ -111,17 +111,17 @@ def _add_user_filters(
         where_clause = (Agent.user_id == user.id) | (Agent.user_id.is_(None))
         return stmt.where(where_clause)
 
-    where_clause = User__UserGroup.user_id == user.id
+    where_clause = User__Team.user_id == user.id
     if user.role == UserRole.CURATOR and get_editable:
-        where_clause &= User__UserGroup.is_curator == True  # noqa: E712
+        where_clause &= User__Team.is_curator == True  # noqa: E712
     if get_editable:
-        user_groups = select(User__UG.user_group_id).where(User__UG.user_id == user.id)
+        teams = select(User__UG.team_id).where(User__UG.user_id == user.id)
         if user.role == UserRole.CURATOR:
-            user_groups = user_groups.where(User__UG.is_curator == True)  # noqa: E712
+            teams = teams.where(User__UG.is_curator == True)  # noqa: E712
         where_clause &= (
             ~exists()
             .where(Agent__UG.agent_id == Agent.id)
-            .where(~Agent__UG.user_group_id.in_(user_groups))
+            .where(~Agent__UG.team_id.in_(teams))
             .correlate(Agent)
         )
     else:
@@ -238,14 +238,14 @@ def update_agent_access(
                 )
 
     if group_ids is not None:
-        db_session.query(Agent__UserGroup).filter(
-            Agent__UserGroup.agent_id == agent_id
+        db_session.query(Agent__Team).filter(
+            Agent__Team.agent_id == agent_id
         ).delete(synchronize_session="fetch")
 
         group_ids_set = set(group_ids)
         for group_id in group_ids_set:
             db_session.add(
-                Agent__UserGroup(agent_id=agent_id, user_group_id=group_id)
+                Agent__Team(agent_id=agent_id, team_id=group_id)
             )
 
 
@@ -1180,7 +1180,7 @@ def get_agent_by_id(
         .distinct()
         .outerjoin(Agent.groups)
         .outerjoin(Agent.users)
-        .outerjoin(UserGroup.user_group_relationships)
+        .outerjoin(Team.team_relationships)
         .where(Agent.id == agent_id)
     )
 
@@ -1200,17 +1200,17 @@ def get_agent_by_id(
     or_conditions |= Agent.user_id == None  # noqa: E711
     if not is_for_edit:
         # if the user is in a group related to the agent
-        or_conditions |= User__UserGroup.user_id == user.id
+        or_conditions |= User__Team.user_id == user.id
         # if the user is in the .users of the agent
         or_conditions |= User.id == user.id
         or_conditions |= Agent.is_public == True  # noqa: E712
     elif user.role == UserRole.GLOBAL_CURATOR:
         # global curators can edit agents for the groups they are in
-        or_conditions |= User__UserGroup.user_id == user.id
+        or_conditions |= User__Team.user_id == user.id
     elif user.role == UserRole.CURATOR:
         # curators can edit agents for the groups they are curators of
-        or_conditions |= (User__UserGroup.user_id == user.id) & (
-            User__UserGroup.is_curator == True  # noqa: E712
+        or_conditions |= (User__Team.user_id == user.id) & (
+            User__Team.is_curator == True  # noqa: E712
         )
 
     agent_stmt = agent_stmt.where(or_conditions)

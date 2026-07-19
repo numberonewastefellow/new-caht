@@ -38,7 +38,7 @@ from om.db.models import ConnectorCredentialPair
 from om.db.models import DocumentSet
 from om.db.models import IndexAttempt
 from om.db.models import SyncRecord
-from om.db.models import UserGroup
+from om.db.models import Team
 from om.db.search_settings import get_active_search_settings_list
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import redis_lock_dump
@@ -598,14 +598,14 @@ def _collect_sync_metrics(db_session: Session, redis_std: Redis) -> list[Metric]
         )
         if not _has_metric_been_emitted(redis_std, start_latency_key):
             # Get the entity's last update time based on sync type
-            entity: DocumentSet | UserGroup | None = None
+            entity: DocumentSet | Team | None = None
             if sync_record.sync_type == SyncType.DOCUMENT_SET:
                 entity = db_session.scalar(
                     select(DocumentSet).where(DocumentSet.id == sync_record.entity_id)
                 )
             elif sync_record.sync_type == SyncType.USER_GROUP:
                 entity = db_session.scalar(
-                    select(UserGroup).where(UserGroup.id == sync_record.entity_id)
+                    select(Team).where(Team.id == sync_record.entity_id)
                 )
             else:
                 # Only user groups and document set sync records have

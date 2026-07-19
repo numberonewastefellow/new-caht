@@ -96,7 +96,7 @@ class MockConnector(CheckpointedConnectorWithPermSync[MockConnectorCheckpoint]):
                 # Add mock permissions - make documents accessible to specific users/groups
                 document.external_access = ExternalAccess(
                     external_user_emails=EXTERNAL_USER_EMAILS,
-                    external_user_group_ids=EXTERNAL_USER_GROUP_IDS,
+                    external_team_ids=EXTERNAL_USER_GROUP_IDS,
                     is_public=False,
                 )
             yield document

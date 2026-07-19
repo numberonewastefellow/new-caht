@@ -1,13 +1,13 @@
 import Modal from "@/refresh-components/Modal";
 import { updateUserGroup } from "./lib";
 import { toast } from "@/hooks/useToast";
-import { User, UserGroup } from "@/lib/types";
+import { User, Team } from "@/lib/types";
 import { UserEditor } from "../UserEditor";
 import { useState } from "react";
 import { SvgUserPlus } from "@opal/icons";
 export interface AddMemberFormProps {
   users: User[];
-  userGroup: UserGroup;
+  userGroup: Team;
   onClose: () => void;
 }
 
@@ -47,12 +47,12 @@ export default function AddMemberForm({
                 cc_pair_ids: userGroup.cc_pairs.map((ccPair) => ccPair.id),
               });
               if (response.ok) {
-                toast.success("Successfully added users to group");
+                toast.success("Successfully added users to team");
                 onClose();
               } else {
                 const responseJson = await response.json();
                 const errorMsg = responseJson.detail || responseJson.message;
-                toast.error(`Failed to add users to group - ${errorMsg}`);
+                toast.error(`Failed to add users to team - ${errorMsg}`);
                 onClose();
               }
             }}

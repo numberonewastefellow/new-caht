@@ -515,14 +515,14 @@ def _perform_external_group_sync(
         logger.info(
             f"Syncing external groups for {source_type} for cc_pair: {cc_pair_id}"
         )
-        external_user_group_batch: list[ExternalUserGroup] = []
+        external_team_batch: list[ExternalUserGroup] = []
         seen_users: set[str] = set()  # Track unique users across all groups
         total_groups_processed = 0
         total_group_memberships_synced = 0
         start_time = time.monotonic()
         try:
-            external_user_group_generator = ext_group_sync_func(tenant_id, cc_pair)
-            for external_user_group in external_user_group_generator:
+            external_team_generator = ext_group_sync_func(tenant_id, cc_pair)
+            for external_team in external_team_generator:
                 # Check if the task has exceeded its timeout
                 # NOTE: Celery's soft_time_limit does not work with thread pools,
                 # so we must enforce timeouts internally.
@@ -536,31 +536,31 @@ def _perform_external_group_sync(
                         f"groups_processed={total_groups_processed}"
                     )
 
-                external_user_group_batch.append(external_user_group)
+                external_team_batch.append(external_team)
 
                 # Track progress
                 total_groups_processed += 1
-                total_group_memberships_synced += len(external_user_group.user_emails)
-                seen_users = seen_users.union(external_user_group.user_emails)
+                total_group_memberships_synced += len(external_team.user_emails)
+                seen_users = seen_users.union(external_team.user_emails)
 
-                if len(external_user_group_batch) >= _EXTERNAL_GROUP_BATCH_SIZE:
+                if len(external_team_batch) >= _EXTERNAL_GROUP_BATCH_SIZE:
                     logger.debug(
-                        f"New external user groups: {external_user_group_batch}"
+                        f"New external user groups: {external_team_batch}"
                     )
                     upsert_external_groups(
                         db_session=db_session,
                         cc_pair_id=cc_pair_id,
-                        external_groups=external_user_group_batch,
+                        external_groups=external_team_batch,
                         source=cc_pair.connector.source,
                     )
-                    external_user_group_batch = []
+                    external_team_batch = []
 
-            if external_user_group_batch:
-                logger.debug(f"New external user groups: {external_user_group_batch}")
+            if external_team_batch:
+                logger.debug(f"New external user groups: {external_team_batch}")
                 upsert_external_groups(
                     db_session=db_session,
                     cc_pair_id=cc_pair_id,
-                    external_groups=external_user_group_batch,
+                    external_groups=external_team_batch,
                     source=cc_pair.connector.source,
                 )
         except Exception as e:

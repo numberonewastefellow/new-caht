@@ -23,7 +23,7 @@ from tests.integration.common_utils.managers.document import DocumentManager
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager
 from tests.integration.common_utils.managers.pat import PATManager
 from tests.integration.common_utils.managers.user import UserManager
-from tests.integration.common_utils.managers.user_group import UserGroupManager
+from tests.integration.common_utils.managers.team import TeamManager
 from tests.integration.common_utils.test_models import DATestAPIKey
 from tests.integration.common_utils.test_models import DATestCCPair
 from tests.integration.common_utils.test_models import DATestUser
@@ -196,12 +196,12 @@ def test_mcp_search_respects_acl_filters(
         user_performing_action=admin_user,
     )
 
-    user_group = UserGroupManager.create(
+    team = TeamManager.create(
         user_ids=[privileged_user.id],
         cc_pair_ids=[restricted_cc_pair.id],
         user_performing_action=admin_user,
     )
-    UserGroupManager.wait_for_sync([user_group], user_performing_action=admin_user)
+    TeamManager.wait_for_sync([team], user_performing_action=admin_user)
 
     restricted_doc_content = "MCP restricted knowledge base document"
     _seed_document_and_wait_for_indexing(

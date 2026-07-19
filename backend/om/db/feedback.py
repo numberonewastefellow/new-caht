@@ -23,8 +23,8 @@ from om.db.models import Document as DbDocument
 from om.db.models import DocumentByConnectorCredentialPair
 from om.db.models import DocumentRetrievalFeedback
 from om.db.models import User
-from om.db.models import User__UserGroup
-from om.db.models import UserGroup__ConnectorCredentialPair
+from om.db.models import User__Team
+from om.db.models import Team__ConnectorCredentialPair
 from om.db.models import UserRole
 from om.utils.logger import setup_logger
 
@@ -49,12 +49,12 @@ def _add_user_filters(stmt: Select, user: User, get_editable: bool = True) -> Se
     stmt = stmt.distinct()
     DocByCC = aliased(DocumentByConnectorCredentialPair)
     CCPair = aliased(ConnectorCredentialPair)
-    UG__CCpair = aliased(UserGroup__ConnectorCredentialPair)
-    User__UG = aliased(User__UserGroup)
+    UG__CCpair = aliased(Team__ConnectorCredentialPair)
+    User__UG = aliased(User__Team)
 
     """
     Here we select documents by relation:
-    User -> User__UserGroup -> UserGroup__ConnectorCredentialPair ->
+    User -> User__Team -> Team__ConnectorCredentialPair ->
     ConnectorCredentialPair -> DocumentByConnectorCredentialPair -> Document
     """
     stmt = (
@@ -67,14 +67,14 @@ def _add_user_filters(stmt: Select, user: User, get_editable: bool = True) -> Se
             ),
         )
         .outerjoin(UG__CCpair, UG__CCpair.cc_pair_id == CCPair.id)
-        .outerjoin(User__UG, User__UG.user_group_id == UG__CCpair.user_group_id)
+        .outerjoin(User__UG, User__UG.team_id == UG__CCpair.team_id)
     )
 
     """
     Filter Documents by:
-    - if the user is in the user_group that owns the object
+    - if the user is in the team that owns the object
     - if the user is not a global_curator, they must also have a curator relationship
-    to the user_group
+    to the team
     - if editing is being done, we also filter out objects that are owned by groups
     that the user isn't a curator for
     - if we are not editing, we show all objects in the groups the user is a curator
@@ -90,11 +90,11 @@ def _add_user_filters(stmt: Select, user: User, get_editable: bool = True) -> Se
     if user.role == UserRole.CURATOR and get_editable:
         where_clause &= User__UG.is_curator == True  # noqa: E712
     if get_editable:
-        user_groups = select(User__UG.user_group_id).where(User__UG.user_id == user.id)
+        teams = select(User__UG.team_id).where(User__UG.user_id == user.id)
         where_clause &= (
             ~exists()
             .where(UG__CCpair.cc_pair_id == CCPair.id)
-            .where(~UG__CCpair.user_group_id.in_(user_groups))
+            .where(~UG__CCpair.team_id.in_(teams))
             .correlate(CCPair)
         )
     else:

@@ -5,10 +5,10 @@ import { useState } from "react";
 import { ConnectorTitle } from "@/components/admin/connectors/ConnectorTitle";
 import AddMemberForm from "./AddMemberForm";
 import { updateUserGroup, updateCuratorStatus } from "./lib";
-import { LoadingAnimation } from "@/components/Loading";
+import { Card } from "@/refresh-components/cards";
 import {
   User,
-  UserGroup,
+  Team,
   UserRole,
   USER_ROLE_LABELS,
   ConnectorStatus,
@@ -38,7 +38,7 @@ import GenericConfirmModal from "@/components/modals/GenericConfirmModal";
 interface GroupDisplayProps {
   users: User[];
   ccPairs: ConnectorStatus<any, any>[];
-  userGroup: UserGroup;
+  userGroup: Team;
   refreshUserGroup: () => void;
 }
 
@@ -50,7 +50,7 @@ const UserRoleDropdown = ({
   isAdmin,
 }: {
   user: User;
-  group: UserGroup;
+  group: Team;
   onSuccess: () => void;
   onError: (message: string) => void;
   isAdmin: boolean;
@@ -113,8 +113,8 @@ const UserRoleDropdown = ({
       {/* Confirmation modal - only shown when users try to demote themselves */}
       {showDemoteConfirm && pendingRoleChange && (
         <GenericConfirmModal
-          title="Remove Yourself as a Curator for this Group?"
-          message="Are you sure you want to change your role to Basic? This will remove your ability to curate this group."
+          title="Remove Yourself as a Curator for this Team?"
+          message="Are you sure you want to change your role to Basic? This will remove your ability to curate this team."
           confirmText="Yes, set me to Basic"
           onClose={() => {
             // Cancel the role change if user dismisses modal
@@ -171,27 +171,41 @@ export const GroupDisplay = ({
 
   return (
     <div>
-      <div className="text-sm mb-3 flex">
-        <Text className="mr-1">Status:</Text>{" "}
-        {userGroup.is_up_to_date ? (
-          <div className="text-success font-bold">Up to date</div>
-        ) : (
-          <div className="text-accent font-bold">
-            <LoadingAnimation text="Syncing" />
-          </div>
-        )}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-sm text-text-03">Status</span>
+        <span
+          className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs whitespace-nowrap"
+          style={{
+            backgroundColor: userGroup.is_up_to_date
+              ? "var(--theme-green-01)"
+              : "var(--theme-amber-01)",
+            color: userGroup.is_up_to_date
+              ? "var(--theme-green-05)"
+              : "var(--theme-amber-05)",
+          }}
+        >
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${
+              userGroup.is_up_to_date ? "" : "animate-pulse"
+            }`}
+            style={{
+              backgroundColor: userGroup.is_up_to_date
+                ? "var(--theme-green-05)"
+                : "var(--theme-amber-05)",
+            }}
+          />
+          {userGroup.is_up_to_date ? "Up to date" : "Syncing"}
+        </span>
       </div>
 
       <Separator />
 
-      <div className="flex w-full">
-        <h2 className="text-xl font-bold">Users</h2>
-      </div>
+      <h2 className="font-heading-h3 text-text-05 mb-3">Users</h2>
 
       <div className="mt-2">
         {userGroup.users.length > 0 ? (
-          <>
-            <Table className="overflow-visible">
+          <Card padding={0}>
+            <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Email</TableHead>
@@ -244,7 +258,7 @@ export const GroupDisplay = ({
                                   );
                                   if (response.ok) {
                                     toast.success(
-                                      "Successfully removed user from group"
+                                      "Successfully removed user from team"
                                     );
                                   } else {
                                     const responseJson = await response.json();
@@ -252,7 +266,7 @@ export const GroupDisplay = ({
                                       responseJson.detail ||
                                       responseJson.message;
                                     toast.error(
-                                      `Error removing user from group - ${errorMsg}`
+                                      `Error removing user from team - ${errorMsg}`
                                     );
                                   }
                                   refreshUserGroup();
@@ -267,14 +281,16 @@ export const GroupDisplay = ({
                 })}
               </TableBody>
             </Table>
-          </>
+          </Card>
         ) : (
-          <div className="text-sm">No users in this group...</div>
+          <div className="text-sm text-text-03">
+            No members in this team yet.
+          </div>
         )}
       </div>
 
       <SimpleTooltip
-        tooltip="Cannot update group while sync is occurring"
+        tooltip="Cannot update team while sync is occurring"
         disabled={userGroup.is_up_to_date}
       >
         <Button
@@ -301,11 +317,11 @@ export const GroupDisplay = ({
 
       <Separator />
 
-      <h2 className="text-xl font-bold mt-8">Connectors</h2>
+      <h2 className="font-heading-h3 text-text-05 mt-10 mb-3">Connectors</h2>
       <div className="mt-2">
         {userGroup.cc_pairs.length > 0 ? (
-          <>
-            <Table className="overflow-visible">
+          <Card padding={0}>
+            <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Connector</TableHead>
@@ -346,14 +362,14 @@ export const GroupDisplay = ({
                                 );
                                 if (response.ok) {
                                   toast.success(
-                                    "Successfully removed connector from group"
+                                    "Successfully removed connector from team"
                                   );
                                 } else {
                                   const responseJson = await response.json();
                                   const errorMsg =
                                     responseJson.detail || responseJson.message;
                                   toast.error(
-                                    `Error removing connector from group - ${errorMsg}`
+                                    `Error removing connector from team - ${errorMsg}`
                                   );
                                 }
                                 refreshUserGroup();
@@ -367,14 +383,16 @@ export const GroupDisplay = ({
                 })}
               </TableBody>
             </Table>
-          </>
+          </Card>
         ) : (
-          <div className="text-sm">No connectors in this group...</div>
+          <div className="text-sm text-text-03">
+            No data sources connected yet.
+          </div>
         )}
       </div>
 
       <SimpleTooltip
-        tooltip="Cannot update group while sync is occurring"
+        tooltip="Cannot update team while sync is occurring"
         disabled={userGroup.is_up_to_date}
       >
         <Button
@@ -402,7 +420,7 @@ export const GroupDisplay = ({
 
       <Separator />
 
-      <h2 className="text-xl font-bold mt-8 mb-2">Document Sets</h2>
+      <h2 className="font-heading-h3 text-text-05 mt-10 mb-3">Document Sets</h2>
 
       <div>
         {userGroup.document_sets.length > 0 ? (
@@ -420,14 +438,14 @@ export const GroupDisplay = ({
           </div>
         ) : (
           <>
-            <Text>No document sets in this group...</Text>
+            <Text>No document sets in this team...</Text>
           </>
         )}
       </div>
 
       <Separator />
 
-      <h2 className="text-xl font-bold mt-8 mb-2">Assistants</h2>
+      <h2 className="font-heading-h3 text-text-05 mt-10 mb-3">Assistants</h2>
 
       <div>
         {userGroup.document_sets.length > 0 ? (
@@ -445,14 +463,14 @@ export const GroupDisplay = ({
           </div>
         ) : (
           <>
-            <Text>No Assistants in this group...</Text>
+            <Text>No Assistants in this team...</Text>
           </>
         )}
       </div>
 
       <Separator />
 
-      <h2 className="text-xl font-bold mt-8 mb-2">Token Rate Limits</h2>
+      <h2 className="font-heading-h3 text-text-05 mt-10 mb-3">Token Rate Limits</h2>
 
       <AddTokenRateLimitForm
         isOpen={addRateLimitFormVisible}

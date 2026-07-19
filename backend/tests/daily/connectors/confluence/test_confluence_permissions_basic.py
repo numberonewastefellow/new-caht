@@ -142,7 +142,7 @@ def test_confluence_connector_restriction_handling(
     # if no restriction is applied, the groups should give access, so no need
     # for more emails outside of the owner
     non_restricted_emails = {"chris@onyx.app"}
-    non_restricted_user_groups = {
+    non_restricted_teams = {
         "confluence-admins-danswerai",
         "org-admins",
         "atlassian-addons-admin",
@@ -151,15 +151,15 @@ def test_confluence_connector_restriction_handling(
 
     # if restriction is applied, only should be visible to shared users / groups
     restricted_emails = {"chris@onyx.app", "hagen@danswer.ai", "oauth@onyx.app"}
-    restricted_user_groups = {"confluence-admins-danswerai"}
+    restricted_teams = {"confluence-admins-danswerai"}
 
     extra_restricted_emails = {"chris@onyx.app", "oauth@onyx.app"}
-    extra_restricted_user_groups: set[str] = set()
+    extra_restricted_teams: set[str] = set()
 
     # note that this is only allowed since yuhong@onyx.app is a member of the
     # confluence-admins-danswerai group
     special_restricted_emails = {"chris@onyx.app", "yuhong@onyx.app", "oauth@onyx.app"}
-    special_restricted_user_groups: set[str] = set()
+    special_restricted_teams: set[str] = set()
 
     # Check Root+Page+2 is public
     root_page_2 = next(
@@ -169,8 +169,8 @@ def test_confluence_connector_restriction_handling(
     )
     assert root_page_2.external_access.external_user_emails == non_restricted_emails
     assert (
-        root_page_2.external_access.external_user_group_ids
-        == non_restricted_user_groups
+        root_page_2.external_access.external_team_ids
+        == non_restricted_teams
     )
 
     # Check Overview page is public
@@ -183,8 +183,8 @@ def test_confluence_connector_restriction_handling(
         overview_page.external_access.external_user_emails == non_restricted_emails
     ), "Overview page emails do not match expected values"
     assert (
-        overview_page.external_access.external_user_group_ids
-        == non_restricted_user_groups
+        overview_page.external_access.external_team_ids
+        == non_restricted_teams
     ), "Overview page groups do not match expected values"
 
     # check root page is restricted
@@ -197,7 +197,7 @@ def test_confluence_connector_restriction_handling(
         root_page.external_access.external_user_emails == restricted_emails
     ), "Root page emails do not match expected values"
     assert (
-        root_page.external_access.external_user_group_ids == restricted_user_groups
+        root_page.external_access.external_team_ids == restricted_teams
     ), "Root page groups do not match expected values"
 
     # check child page has restriction propagated
@@ -210,7 +210,7 @@ def test_confluence_connector_restriction_handling(
         child_page.external_access.external_user_emails == restricted_emails
     ), "Child page emails do not match expected values"
     assert (
-        child_page.external_access.external_user_group_ids == restricted_user_groups
+        child_page.external_access.external_team_ids == restricted_teams
     ), "Child page groups do not match expected values"
 
     # check doubly nested child page has restriction propagated
@@ -223,7 +223,7 @@ def test_confluence_connector_restriction_handling(
         child_page_2.external_access.external_user_emails == restricted_emails
     ), "Child page 2 emails do not match expected values"
     assert (
-        child_page_2.external_access.external_user_group_ids == restricted_user_groups
+        child_page_2.external_access.external_team_ids == restricted_teams
     ), "Child page 2 groups do not match expected values"
 
     # check child page w/ specific restrictions have those applied
@@ -236,8 +236,8 @@ def test_confluence_connector_restriction_handling(
         child_page_3.external_access.external_user_emails == extra_restricted_emails
     ), "Child page 3 emails do not match expected values"
     assert (
-        child_page_3.external_access.external_user_group_ids
-        == extra_restricted_user_groups
+        child_page_3.external_access.external_team_ids
+        == extra_restricted_teams
     ), "Child page 3 groups do not match expected values"
 
     # check child page w/ specific restrictions have those applied
@@ -250,6 +250,6 @@ def test_confluence_connector_restriction_handling(
         child_page_4.external_access.external_user_emails == special_restricted_emails
     ), "Child page 4 emails do not match expected values"
     assert (
-        child_page_4.external_access.external_user_group_ids
-        == special_restricted_user_groups
+        child_page_4.external_access.external_team_ids
+        == special_restricted_teams
     ), "Child page 4 groups do not match expected values"

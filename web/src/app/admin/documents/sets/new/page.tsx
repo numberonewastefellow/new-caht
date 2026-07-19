@@ -3,7 +3,7 @@
 import { AdminPageTitle } from "@/components/admin/Title";
 import { SvgFolder } from "@opal/icons";
 import { DocumentSetCreationForm } from "../DocumentSetCreationForm";
-import { useConnectorStatus, useUserGroups } from "@/lib/hooks";
+import { useConnectorStatus, useTeams } from "@/lib/hooks";
 import { ThreeDotsLoader } from "@/components/Loading";
 import BackButton from "@/refresh-components/buttons/BackButton";
 import { ErrorCallout } from "@/components/ErrorCallout";
@@ -21,7 +21,7 @@ function Main() {
   } = useConnectorStatus();
 
   // EE only
-  const { data: userGroups, isLoading: userGroupsIsLoading } = useUserGroups();
+  const { data: userGroups, isLoading: userGroupsIsLoading } = useTeams();
 
   if (isCCPairsLoading || userGroupsIsLoading) {
     return (

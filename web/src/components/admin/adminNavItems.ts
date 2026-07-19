@@ -241,9 +241,9 @@ export function getAdminNavGroups(opts: {
 
   if (isCurator) {
     governanceItems.push({
-      name: "Access Groups",
+      name: "Teams",
       icon: SvgUsers,
-      link: "/admin/groups",
+      link: "/admin/teams",
     });
   }
 
@@ -255,9 +255,14 @@ export function getAdminNavGroups(opts: {
         link: "/admin/users",
       },
       {
-        name: "Access Groups",
+        name: "Teams",
         icon: SvgUsers,
-        link: "/admin/groups",
+        link: "/admin/teams",
+      },
+      {
+        name: "Roles",
+        icon: SvgShield,
+        link: "/admin/roles",
       },
       {
         name: "API Credentials",
@@ -400,7 +405,8 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   "document-processing": "Ingestion Pipeline",
   kg: "Knowledge Graph",
   users: "Team Members",
-  groups: "Access Groups",
+  teams: "Teams",
+  roles: "Roles",
   "api-key": "API Credentials",
   "token-rate-limits": "Usage Limits",
   performance: "Observability",
@@ -464,7 +470,8 @@ const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
   ["/admin/kg", "blue"],
   // Governance (orange)
   ["/admin/users", "orange"],
-  ["/admin/groups", "orange"],
+  ["/admin/teams", "orange"],
+  ["/admin/roles", "orange"],
   ["/admin/api-key", "orange"],
   ["/admin/token-rate-limits", "orange"],
   // Workspace (cyan)

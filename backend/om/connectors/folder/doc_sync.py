@@ -70,7 +70,7 @@ def folder_doc_sync(
                     yield DocExternalAccess(
                         external_access=ExternalAccess(
                             external_user_emails=set(),
-                            external_user_group_ids=set(),
+                            external_team_ids=set(),
                             is_public=False,
                         ),
                         doc_id=doc_id,

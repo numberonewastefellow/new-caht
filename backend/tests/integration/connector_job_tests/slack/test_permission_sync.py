@@ -16,7 +16,7 @@ from tests.integration.common_utils.managers.document_search import (
 )
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager
 from tests.integration.common_utils.managers.user import UserManager
-from tests.integration.common_utils.managers.user_group import UserGroupManager
+from tests.integration.common_utils.managers.team import TeamManager
 from tests.integration.common_utils.test_models import DATestCCPair
 from tests.integration.common_utils.test_models import DATestConnector
 from tests.integration.common_utils.test_models import DATestCredential
@@ -244,14 +244,14 @@ def test_slack_group_permission_sync(
     )
 
     # Create a user group and adding the non-admin user to it
-    user_group = UserGroupManager.create(
+    team = TeamManager.create(
         name="test_group",
         user_ids=[test_user_1.id],
         cc_pair_ids=[],
         user_performing_action=admin_user,
     )
-    UserGroupManager.wait_for_sync(
-        user_groups_to_check=[user_group],
+    TeamManager.wait_for_sync(
+        teams_to_check=[team],
         user_performing_action=admin_user,
     )
 
@@ -287,7 +287,7 @@ def test_slack_group_permission_sync(
             "channels": [private_channel["name"]],
         },
         access_type=AccessType.SYNC,
-        groups=[user_group.id],
+        groups=[team.id],
         user_performing_action=admin_user,
     )
 
@@ -296,7 +296,7 @@ def test_slack_group_permission_sync(
         connector_id=connector.id,
         access_type=AccessType.SYNC,
         user_performing_action=admin_user,
-        groups=[user_group.id],
+        groups=[team.id],
     )
 
     # Add a test message to the private channel

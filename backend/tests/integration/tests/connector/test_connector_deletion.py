@@ -26,17 +26,17 @@ from tests.integration.common_utils.managers.cc_pair import CCPairManager
 from tests.integration.common_utils.managers.document import DocumentManager
 from tests.integration.common_utils.managers.document_set import DocumentSetManager
 from tests.integration.common_utils.managers.user import UserManager
-from tests.integration.common_utils.managers.user_group import UserGroupManager
+from tests.integration.common_utils.managers.team import TeamManager
 from tests.integration.common_utils.test_models import DATestAPIKey
 from tests.integration.common_utils.test_models import DATestUser
-from tests.integration.common_utils.test_models import DATestUserGroup
+from tests.integration.common_utils.test_models import DATestTeam
 
 
 def test_connector_deletion(
     reset: None, document_index_client: DocumentIndexClient  # noqa: ARG001
 ) -> None:
-    user_group_1: DATestUserGroup
-    user_group_2: DATestUserGroup
+    team_1: DATestTeam
+    team_2: DATestTeam
 
     is_ee = True
 
@@ -88,15 +88,15 @@ def test_connector_deletion(
 
     if is_ee:
         # create user groups
-        user_group_1 = UserGroupManager.create(
+        team_1 = TeamManager.create(
             cc_pair_ids=[cc_pair_1.id],
             user_performing_action=admin_user,
         )
-        user_group_2 = UserGroupManager.create(
+        team_2 = TeamManager.create(
             cc_pair_ids=[cc_pair_1.id, cc_pair_2.id],
             user_performing_action=admin_user,
         )
-        UserGroupManager.wait_for_sync(user_performing_action=admin_user)
+        TeamManager.wait_for_sync(user_performing_action=admin_user)
 
     # inject a finished index attempt and index attempt error (exercises foreign key errors)
     with Session(get_sqlalchemy_engine()) as db_session:
@@ -160,7 +160,7 @@ def test_connector_deletion(
     doc_set_2.cc_pair_ids = [cc_pair_2.id]
     cc_pair_1.groups = []
     if is_ee:
-        cc_pair_2.groups = [user_group_2.id]
+        cc_pair_2.groups = [team_2.id]
     else:
         cc_pair_2.groups = []
 
@@ -180,7 +180,7 @@ def test_connector_deletion(
 
     cc_pair_2_group_name_expected = []
     if is_ee:
-        cc_pair_2_group_name_expected = [user_group_2.name]
+        cc_pair_2_group_name_expected = [team_2.name]
 
     DocumentManager.verify(
         document_index_client=document_index_client,
@@ -208,16 +208,16 @@ def test_connector_deletion(
     )
 
     if is_ee:
-        user_group_1.cc_pair_ids = []
-        user_group_2.cc_pair_ids = [cc_pair_2.id]
+        team_1.cc_pair_ids = []
+        team_2.cc_pair_ids = [cc_pair_2.id]
 
         # validate user groups
-        UserGroupManager.verify(
-            user_group=user_group_1,
+        TeamManager.verify(
+            team=team_1,
             user_performing_action=admin_user,
         )
-        UserGroupManager.verify(
-            user_group=user_group_2,
+        TeamManager.verify(
+            team=team_2,
             user_performing_action=admin_user,
         )
 
@@ -228,8 +228,8 @@ def test_connector_deletion_for_overlapping_connectors(
     """Checks to make sure that connectors with overlapping documents work properly. Specifically, that the overlapping
     document (1) still exists and (2) has the right document set / group post-deletion of one of the connectors.
     """
-    user_group_1: DATestUserGroup
-    user_group_2: DATestUserGroup
+    team_1: DATestTeam
+    team_2: DATestTeam
 
     is_ee = True
 
@@ -306,30 +306,30 @@ def test_connector_deletion_for_overlapping_connectors(
 
     if is_ee:
         # create a user group and attach it to connector 1
-        user_group_1 = UserGroupManager.create(
+        team_1 = TeamManager.create(
             name="Test User Group 1",
             cc_pair_ids=[cc_pair_1.id],
             user_performing_action=admin_user,
         )
-        UserGroupManager.wait_for_sync(
-            user_groups_to_check=[user_group_1],
+        TeamManager.wait_for_sync(
+            teams_to_check=[team_1],
             user_performing_action=admin_user,
         )
-        cc_pair_1.groups = [user_group_1.id]
+        cc_pair_1.groups = [team_1.id]
 
         print("User group 1 created and synced")
 
         # create a user group and attach it to connector 2
-        user_group_2 = UserGroupManager.create(
+        team_2 = TeamManager.create(
             name="Test User Group 2",
             cc_pair_ids=[cc_pair_2.id],
             user_performing_action=admin_user,
         )
-        UserGroupManager.wait_for_sync(
-            user_groups_to_check=[user_group_2],
+        TeamManager.wait_for_sync(
+            teams_to_check=[team_2],
             user_performing_action=admin_user,
         )
-        cc_pair_2.groups = [user_group_2.id]
+        cc_pair_2.groups = [team_2.id]
 
         print("User group 2 created and synced")
 
@@ -337,13 +337,13 @@ def test_connector_deletion_for_overlapping_connectors(
         DocumentManager.verify(
             document_index_client=document_index_client,
             cc_pair=cc_pair_1,
-            group_names=[user_group_1.name, user_group_2.name],
+            group_names=[team_1.name, team_2.name],
             doc_creating_user=admin_user,
         )
         DocumentManager.verify(
             document_index_client=document_index_client,
             cc_pair=cc_pair_2,
-            group_names=[user_group_1.name, user_group_2.name],
+            group_names=[team_1.name, team_2.name],
             doc_creating_user=admin_user,
         )
 
@@ -380,7 +380,7 @@ def test_connector_deletion_for_overlapping_connectors(
     # verify the document is only in user group 2
     group_names_expected = []
     if is_ee:
-        group_names_expected = [user_group_2.name]
+        group_names_expected = [team_2.name]
 
     DocumentManager.verify(
         document_index_client=document_index_client,

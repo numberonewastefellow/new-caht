@@ -104,7 +104,7 @@ class DATestCCPair(BaseModel):
     documents: list[SimpleTestDocument] = Field(default_factory=list)
 
 
-class DATestUserGroup(BaseModel):
+class DATestTeam(BaseModel):
     id: int
     name: str
     user_ids: list[str]

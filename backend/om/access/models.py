@@ -1,88 +1,79 @@
+"""Typed representations of "who may access a document".
+
+* :class:`ExternalAccess` — access granted by an *external* source system
+  (emails + external group ids + a public flag), produced by permission-sync.
+* :class:`DocumentAccess` — the full picture for one Om document: internal user
+  emails + internal **teams**, plus the external access, plus public. Its
+  :meth:`DocumentAccess.to_acl` renders the flat, prefixed principal set that is
+  written to the index ``access_control_list`` field.
+
+Team rename (Contract 2): ``user_groups`` -> ``teams`` and
+``external_user_group_ids`` -> ``external_team_ids`` throughout.
+"""
+
+from __future__ import annotations
+
 from dataclasses import dataclass
 
-from om.access.utils import prefix_external_group
+from om.access.utils import prefix_external_team
+from om.access.utils import prefix_team
 from om.access.utils import prefix_user_email
-from om.access.utils import prefix_user_group
 from om.configs.constants import PUBLIC_DOC_PAT
+
+
+def _truncate_set(values: set[str], max_len: int = 100) -> str:
+    rendered = str(values)
+    if len(rendered) > max_len:
+        return f"{rendered[:max_len]}... ({len(values)} items)"
+    return rendered
 
 
 @dataclass(frozen=True)
 class ExternalAccess:
+    """Access a document has in its source system (pre-sync into Om ACLs)."""
 
-    # arbitrary limit to prevent excessively large permissions sets
-    # not internally enforced ... the caller can check this before using the instance
+    # Advisory cap; callers may check ``num_entries`` before persisting.
     MAX_NUM_ENTRIES = 5000
 
-    # Emails of external users with access to the doc externally
     external_user_emails: set[str]
-    # Names or external IDs of groups with access to the doc
-    external_user_group_ids: set[str]
-    # Whether the document is public in the external system or Om
+    external_team_ids: set[str]
     is_public: bool
 
     def __str__(self) -> str:
-        """Prevent extremely long logs"""
-
-        def truncate_set(s: set[str], max_len: int = 100) -> str:
-            s_str = str(s)
-            if len(s_str) > max_len:
-                return f"{s_str[:max_len]}... ({len(s)} items)"
-            return s_str
-
         return (
-            f"ExternalAccess("
-            f"external_user_emails={truncate_set(self.external_user_emails)}, "
-            f"external_user_group_ids={truncate_set(self.external_user_group_ids)}, "
+            "ExternalAccess("
+            f"external_user_emails={_truncate_set(self.external_user_emails)}, "
+            f"external_team_ids={_truncate_set(self.external_team_ids)}, "
             f"is_public={self.is_public})"
         )
 
     @property
     def num_entries(self) -> int:
-        return len(self.external_user_emails) + len(self.external_user_group_ids)
+        return len(self.external_user_emails) + len(self.external_team_ids)
 
     @classmethod
     def public(cls) -> "ExternalAccess":
-        return cls(
-            external_user_emails=set(),
-            external_user_group_ids=set(),
-            is_public=True,
-        )
+        return cls(external_user_emails=set(), external_team_ids=set(), is_public=True)
 
     @classmethod
     def empty(cls) -> "ExternalAccess":
-        """
-        A helper function that returns an *empty* set of external user-emails and group-ids, and sets `is_public` to `False`.
-        This effectively makes the document in question "private" or inaccessible to anyone else.
-
-        This is especially helpful to use when you are performing permission-syncing, and some document's permissions aren't able
-        to be determined (for whatever reason). Setting its `ExternalAccess` to "private" is a feasible fallback.
-        """
-
-        return cls(
-            external_user_emails=set(),
-            external_user_group_ids=set(),
-            is_public=False,
-        )
+        """No principals, not public — i.e. private/inaccessible. A safe
+        fail-closed fallback when a document's permissions can't be resolved."""
+        return cls(external_user_emails=set(), external_team_ids=set(), is_public=False)
 
 
 @dataclass(frozen=True)
 class DocExternalAccess:
-    """
-    This is just a class to wrap the external access and the document ID
-    together. It's used for syncing document permissions to the document index.
-    """
+    """External access paired with the document id it applies to (index sync)."""
 
     external_access: ExternalAccess
-    # The document ID
     doc_id: str
 
     def to_dict(self) -> dict:
         return {
             "external_access": {
                 "external_user_emails": list(self.external_access.external_user_emails),
-                "external_user_group_ids": list(
-                    self.external_access.external_user_group_ids
-                ),
+                "external_team_ids": list(self.external_access.external_team_ids),
                 "is_public": self.external_access.is_public,
             },
             "doc_id": self.doc_id,
@@ -90,41 +81,30 @@ class DocExternalAccess:
 
     @classmethod
     def from_dict(cls, data: dict) -> "DocExternalAccess":
-        external_access = ExternalAccess(
-            external_user_emails=set(
-                data["external_access"].get("external_user_emails", [])
-            ),
-            external_user_group_ids=set(
-                data["external_access"].get("external_user_group_ids", [])
-            ),
-            is_public=data["external_access"]["is_public"],
-        )
+        payload = data["external_access"]
         return cls(
-            external_access=external_access,
+            external_access=ExternalAccess(
+                external_user_emails=set(payload.get("external_user_emails", [])),
+                external_team_ids=set(payload.get("external_team_ids", [])),
+                is_public=payload["is_public"],
+            ),
             doc_id=data["doc_id"],
         )
 
 
 @dataclass(frozen=True)
 class NodeExternalAccess:
-    """
-    Wraps external access with a hierarchy node's raw ID.
-    Used for syncing hierarchy node permissions (e.g., folder permissions).
-    """
+    """External access for a hierarchy node (e.g. a folder / space / drive)."""
 
     external_access: ExternalAccess
-    # The raw node ID from the source system (e.g., Google Drive folder ID)
     raw_node_id: str
-    # The source type (e.g., "google_drive")
     source: str
 
     def to_dict(self) -> dict:
         return {
             "external_access": {
                 "external_user_emails": list(self.external_access.external_user_emails),
-                "external_user_group_ids": list(
-                    self.external_access.external_user_group_ids
-                ),
+                "external_team_ids": list(self.external_access.external_team_ids),
                 "is_public": self.external_access.is_public,
             },
             "raw_node_id": self.raw_node_id,
@@ -133,105 +113,84 @@ class NodeExternalAccess:
 
     @classmethod
     def from_dict(cls, data: dict) -> "NodeExternalAccess":
-        external_access = ExternalAccess(
-            external_user_emails=set(
-                data["external_access"].get("external_user_emails", [])
-            ),
-            external_user_group_ids=set(
-                data["external_access"].get("external_user_group_ids", [])
-            ),
-            is_public=data["external_access"]["is_public"],
-        )
+        payload = data["external_access"]
         return cls(
-            external_access=external_access,
+            external_access=ExternalAccess(
+                external_user_emails=set(payload.get("external_user_emails", [])),
+                external_team_ids=set(payload.get("external_team_ids", [])),
+                is_public=payload["is_public"],
+            ),
             raw_node_id=data["raw_node_id"],
             source=data["source"],
         )
 
 
-# Union type for elements that can have permissions synced
+# Elements whose permissions can be synced to the index.
 ElementExternalAccess = DocExternalAccess | NodeExternalAccess
 
 
-# TODO(andrei): First refactor this into a pydantic model, then get rid of
-# duplicate fields.
 @dataclass(frozen=True, init=False)
 class DocumentAccess(ExternalAccess):
-    # User emails for Om users, None indicates admin
-    user_emails: set[str | None]
+    """Full access description for an Om document.
 
-    # Names of user groups associated with this document
-    user_groups: set[str]
+    Constructed only via :meth:`build`; incoming principals are stored *unprefixed*
+    and prefixed lazily in :meth:`to_acl` so the encoding lives in exactly one place.
+    """
+
+    # ``None`` in ``user_emails`` historically denoted "admin"; it is filtered out.
+    user_emails: set[str | None]
+    # Internal team names granting access to this document.
+    teams: set[str]
 
     external_user_emails: set[str]
-    external_user_group_ids: set[str]
+    external_team_ids: set[str]
     is_public: bool
 
     def __init__(self) -> None:
-        raise TypeError(
-            "Use `DocumentAccess.build(...)` instead of creating an instance directly."
-        )
-
-    def to_acl(self) -> set[str]:
-        """Converts the access state to a set of formatted ACL strings.
-
-        NOTE: When querying for documents, the supplied ACL filter strings must
-        be formatted in the same way as this function.
-        """
-        acl_set: set[str] = set()
-        for user_email in self.user_emails:
-            if user_email:
-                acl_set.add(prefix_user_email(user_email))
-
-        for group_name in self.user_groups:
-            acl_set.add(prefix_user_group(group_name))
-
-        for external_user_email in self.external_user_emails:
-            acl_set.add(prefix_user_email(external_user_email))
-
-        for external_group_id in self.external_user_group_ids:
-            acl_set.add(prefix_external_group(external_group_id))
-
-        if self.is_public:
-            acl_set.add(PUBLIC_DOC_PAT)
-
-        return acl_set
+        raise TypeError("Use DocumentAccess.build(...) instead of constructing directly.")
 
     @classmethod
     def build(
         cls,
         user_emails: list[str | None],
-        user_groups: list[str],
+        teams: list[str],
         external_user_emails: list[str],
-        external_user_group_ids: list[str],
+        external_team_ids: list[str],
         is_public: bool,
     ) -> "DocumentAccess":
-        """Don't prefix incoming data wth acl type, prefix on read from to_acl!"""
-
         obj = object.__new__(cls)
-        object.__setattr__(
-            obj, "user_emails", {user_email for user_email in user_emails if user_email}
-        )
-        object.__setattr__(obj, "user_groups", set(user_groups))
-        object.__setattr__(
-            obj,
-            "external_user_emails",
-            {external_email for external_email in external_user_emails},
-        )
-        object.__setattr__(
-            obj,
-            "external_user_group_ids",
-            {external_group_id for external_group_id in external_user_group_ids},
-        )
+        object.__setattr__(obj, "user_emails", {e for e in user_emails if e})
+        object.__setattr__(obj, "teams", set(teams))
+        object.__setattr__(obj, "external_user_emails", set(external_user_emails))
+        object.__setattr__(obj, "external_team_ids", set(external_team_ids))
         object.__setattr__(obj, "is_public", is_public)
-
         return obj
+
+    def to_acl(self) -> set[str]:
+        """Render the prefixed principal set stored in the index ACL field.
+
+        The query-time filter (``get_acl_for_user``) MUST format its principals
+        the same way, or matching silently fails.
+        """
+        acl: set[str] = set()
+        for email in self.user_emails:
+            if email:
+                acl.add(prefix_user_email(email))
+        for external_email in self.external_user_emails:
+            acl.add(prefix_user_email(external_email))
+        for team_name in self.teams:
+            acl.add(prefix_team(team_name))
+        for external_team_id in self.external_team_ids:
+            acl.add(prefix_external_team(external_team_id))
+        if self.is_public:
+            acl.add(PUBLIC_DOC_PAT)
+        return acl
 
 
 default_public_access = DocumentAccess.build(
-    external_user_emails=[],
-    external_user_group_ids=[],
     user_emails=[],
-    user_groups=[],
+    teams=[],
+    external_user_emails=[],
+    external_team_ids=[],
     is_public=True,
 )

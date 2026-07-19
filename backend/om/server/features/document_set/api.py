@@ -36,11 +36,11 @@ def create_document_set(
     db_session: Session = Depends(get_session),
     tenant_id: str = Depends(get_current_tenant_id),
 ) -> int:
-    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    from om.db.team import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     _impl_validate_object_creation_for_user(
         db_session=db_session,
         user=user,
-        target_group_ids=document_set_creation_request.groups,
+        target_team_ids=document_set_creation_request.groups,
         object_is_public=document_set_creation_request.is_public,
         object_is_new=True,
     )
@@ -70,7 +70,7 @@ def patch_document_set(
     db_session: Session = Depends(get_session),
     tenant_id: str = Depends(get_current_tenant_id),
 ) -> None:
-    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    from om.db.team import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     document_set = get_document_set_by_id(db_session, document_set_update_request.id)
     if document_set is None:
         raise HTTPException(
@@ -81,10 +81,11 @@ def patch_document_set(
     _impl_validate_object_creation_for_user(
         db_session=db_session,
         user=user,
-        target_group_ids=document_set_update_request.groups,
+        target_team_ids=document_set_update_request.groups,
         object_is_public=document_set_update_request.is_public,
-        object_is_owned_by_user=user
-        and (document_set.user_id is None or document_set.user_id == user.id),
+        object_is_owned_by_user=bool(
+            user and (document_set.user_id is None or document_set.user_id == user.id)
+        ),
     )
     try:
         update_document_set(
@@ -110,7 +111,7 @@ def delete_document_set(
     db_session: Session = Depends(get_session),
     tenant_id: str = Depends(get_current_tenant_id),
 ) -> None:
-    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    from om.db.team import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     document_set = get_document_set_by_id(db_session, document_set_id)
     if document_set is None:
         raise HTTPException(
@@ -125,8 +126,9 @@ def delete_document_set(
         db_session=db_session,
         user=user,
         object_is_public=document_set.is_public,
-        object_is_owned_by_user=user
-        and (document_set.user_id is None or document_set.user_id == user.id),
+        object_is_owned_by_user=bool(
+            user and (document_set.user_id is None or document_set.user_id == user.id)
+        ),
     )
 
     try:

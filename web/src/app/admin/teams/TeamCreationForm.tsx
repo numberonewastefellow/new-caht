@@ -1,7 +1,7 @@
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { toast } from "@/hooks/useToast";
-import { ConnectorStatus, User, UserGroup } from "@/lib/types";
+import { ConnectorStatus, User, Team } from "@/lib/types";
 import { TextFormField } from "@/components/Field";
 import { createUserGroup } from "./lib";
 import { UserEditor } from "./UserEditor";
@@ -11,19 +11,19 @@ import Button from "@/refresh-components/buttons/Button";
 import Separator from "@/refresh-components/Separator";
 import Text from "@/refresh-components/texts/Text";
 import { SvgUsers } from "@opal/icons";
-export interface UserGroupCreationFormProps {
+export interface TeamCreationFormProps {
   onClose: () => void;
   users: User[];
   ccPairs: ConnectorStatus<any, any>[];
-  existingUserGroup?: UserGroup;
+  existingUserGroup?: Team;
 }
 
-export default function UserGroupCreationForm({
+export default function TeamCreationForm({
   onClose,
   users,
   ccPairs,
   existingUserGroup,
-}: UserGroupCreationFormProps) {
+}: TeamCreationFormProps) {
   const isUpdate = existingUserGroup !== undefined;
 
   // Filter out ccPairs that aren't access_type "private"
@@ -36,7 +36,7 @@ export default function UserGroupCreationForm({
       <Modal.Content>
         <Modal.Header
           icon={SvgUsers}
-          title={isUpdate ? "Update a User Group" : "Create a new User Group"}
+          title={isUpdate ? "Update a Team" : "Create a new Team"}
           onClose={onClose}
         />
         <Modal.Body>
@@ -49,7 +49,7 @@ export default function UserGroupCreationForm({
               cc_pair_ids: [] as number[],
             }}
             validationSchema={Yup.object().shape({
-              name: Yup.string().required("Please enter a name for the group"),
+              name: Yup.string().required("Please enter a name for the team"),
               user_ids: Yup.array().of(Yup.string().required()),
               cc_pair_ids: Yup.array().of(Yup.number().required()),
             })}
@@ -61,8 +61,8 @@ export default function UserGroupCreationForm({
               if (response.ok) {
                 toast.success(
                   isUpdate
-                    ? "Successfully updated user group!"
-                    : "Successfully created user group!"
+                    ? "Successfully updated team!"
+                    : "Successfully created team!"
                 );
                 onClose();
               } else {
@@ -70,8 +70,8 @@ export default function UserGroupCreationForm({
                 const errorMsg = responseJson.detail || responseJson.message;
                 toast.error(
                   isUpdate
-                    ? `Error updating user group - ${errorMsg}`
-                    : `Error creating user group - ${errorMsg}`
+                    ? `Error updating team - ${errorMsg}`
+                    : `Error creating team - ${errorMsg}`
                 );
               }
             }}
@@ -81,18 +81,18 @@ export default function UserGroupCreationForm({
                 <TextFormField
                   name="name"
                   label="Name:"
-                  placeholder="A name for the User Group"
+                  placeholder="A name for the Team"
                   disabled={isUpdate}
                 />
 
                 <Separator />
 
                 <Text as="p" className="font-medium">
-                  Select which private connectors this group has access to:
+                  Select which private connectors this team has access to:
                 </Text>
                 <Text as="p" text02>
                   All documents indexed by the selected connectors will be
-                  visible to users in this group.
+                  visible to users in this team.
                 </Text>
 
                 <ConnectorEditor
@@ -106,7 +106,7 @@ export default function UserGroupCreationForm({
                 <Separator />
 
                 <Text as="p" className="font-medium">
-                  Select which Users should be a part of this Group.
+                  Select which Users should be a part of this Team.
                 </Text>
                 <Text as="p" text02>
                   All selected users will be able to search through all

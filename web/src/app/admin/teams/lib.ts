@@ -1,7 +1,7 @@
 import { UserGroupCreation } from "./types";
 
 export const createUserGroup = async (userGroup: UserGroupCreation) => {
-  return fetch("/api/nexus/admin/user-group", {
+  return fetch("/api/teams", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -11,7 +11,7 @@ export const createUserGroup = async (userGroup: UserGroupCreation) => {
 };
 
 export const deleteUserGroup = async (userGroupId: number) => {
-  return fetch(`/api/nexus/admin/user-group/${userGroupId}`, {
+  return fetch(`/api/teams/${userGroupId}`, {
     method: "DELETE",
   });
 };

@@ -539,7 +539,7 @@ export class OnyxApiClient {
     groupName: string,
     userIds: string[] = []
   ): Promise<number> {
-    const response = await this.post("/nexus/admin/user-group", {
+    const response = await this.post("/teams", {
       name: groupName,
       user_ids: userIds,
       cc_pair_ids: [],
@@ -560,7 +560,7 @@ export class OnyxApiClient {
    * @param groupId - The user group ID to delete
    */
   async deleteUserGroup(groupId: number): Promise<void> {
-    const response = await this.delete(`/nexus/admin/user-group/${groupId}`);
+    const response = await this.delete(`/teams/${groupId}`);
 
     await this.handleResponseSoft(
       response,
@@ -743,7 +743,7 @@ export class OnyxApiClient {
     isCurator: boolean = true
   ): Promise<void> {
     const response = await this.request.post(
-      `${this.baseUrl}/nexus/admin/user-group/${userGroupId}/set-curator`,
+      `${this.baseUrl}/teams/${userGroupId}/set-curator`,
       {
         data: {
           user_id: userId,

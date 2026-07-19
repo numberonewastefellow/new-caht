@@ -2,46 +2,46 @@
 
 import useSWR from "swr";
 import { errorHandlingFetcher } from "@/lib/fetcher";
-import { UserGroup } from "@/lib/types";
+import { Team } from "@/lib/types";
 import { useContext } from "react";
 import { SettingsContext } from "@/providers/SettingsProvider";
 
 /**
- * Fetches all user groups in the organization.
+ * Fetches all teams in the organization.
  *
- * Returns group information including group members, curators, and associated resources.
- * Use this for displaying group lists in sharing dialogs, admin panels, or permission
+ * Returns team information including team members, curators, and associated resources.
+ * Use this for displaying team lists in sharing dialogs, admin panels, or permission
  * management interfaces.
  *
  * Note: This hook only returns data if enterprise features are enabled. In non-enterprise
  * environments, it returns an empty array.
  *
  * @returns Object containing:
- *   - data: Array of UserGroup objects, or undefined while loading
+ *   - data: Array of Team objects, or undefined while loading
  *   - isLoading: Boolean indicating if data is being fetched
  *   - error: Any error that occurred during fetch
- *   - refreshGroups: Function to manually revalidate the data
+ *   - refreshTeams: Function to manually revalidate the data
  *
  * @example
- * // Fetch groups for sharing dialogs
- * const { data: groupsData, isLoading } = useGroups();
+ * // Fetch teams for sharing dialogs
+ * const { data: teamsData, isLoading } = useTeams();
  * if (isLoading) return <Spinner />;
- * return <GroupList groups={groupsData ?? []} />;
+ * return <TeamList teams={teamsData ?? []} />;
  *
  * @example
- * // Fetch groups with manual refresh
- * const { data: groupsData, refreshGroups } = useGroups();
+ * // Fetch teams with manual refresh
+ * const { data: teamsData, refreshTeams } = useTeams();
  * // Later...
- * await createNewGroup(...);
- * refreshGroups(); // Refresh the group list
+ * await createNewTeam(...);
+ * refreshTeams(); // Refresh the team list
  */
-export default function useGroups() {
+export default function useTeams() {
   const combinedSettings = useContext(SettingsContext);
   const isPaidEnterpriseFeaturesEnabled =
     combinedSettings && combinedSettings.enterpriseSettings !== null;
 
-  const { data, error, mutate, isLoading } = useSWR<UserGroup[]>(
-    isPaidEnterpriseFeaturesEnabled ? "/api/nexus/admin/user-group" : null,
+  const { data, error, mutate, isLoading } = useSWR<Team[]>(
+    isPaidEnterpriseFeaturesEnabled ? "/api/teams" : null,
     errorHandlingFetcher
   );
 
@@ -51,7 +51,7 @@ export default function useGroups() {
       data: [],
       isLoading: false,
       error: undefined,
-      refreshGroups: () => {},
+      refreshTeams: () => {},
     };
   }
 
@@ -59,6 +59,6 @@ export default function useGroups() {
     data,
     isLoading,
     error,
-    refreshGroups: mutate,
+    refreshTeams: mutate,
   };
 }

@@ -327,7 +327,7 @@ class AgentSnapshot(BaseModel):
                 MinimalUserSnapshot(id=user.id, email=user.email)
                 for user in agent.users
             ],
-            groups=[user_group.id for user_group in agent.groups],
+            groups=[team.id for team in agent.groups],
             document_sets=[
                 DocumentSetSummary.from_model(document_set_model)
                 for document_set_model in agent.document_sets
@@ -378,7 +378,7 @@ class FullAgentSnapshot(AgentSnapshot):
                 MinimalUserSnapshot(id=user.id, email=user.email)
                 for user in agent.users
             ],
-            groups=[user_group.id for user_group in agent.groups],
+            groups=[team.id for team in agent.groups],
             tools=[
                 ToolSnapshot.from_model(tool)
                 for tool in agent.tools

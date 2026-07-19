@@ -12,11 +12,11 @@ class ExternalUserGroupSet(BaseModel):
 
     @classmethod
     def from_model(
-        cls, external_user_group: ExternalUserGroup
+        cls, external_team: ExternalUserGroup
     ) -> "ExternalUserGroupSet":
         """Convert from ExternalUserGroup to ExternalUserGroupSet."""
         return cls(
-            id=external_user_group.id,
-            user_emails=set(external_user_group.user_emails),
-            gives_anyone_access=external_user_group.gives_anyone_access,
+            id=external_team.id,
+            user_emails=set(external_team.user_emails),
+            gives_anyone_access=external_team.gives_anyone_access,
         )

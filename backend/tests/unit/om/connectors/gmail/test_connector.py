@@ -180,7 +180,7 @@ def test_gmail_checkpoint_progression() -> None:
             metadata={},
             external_access=ExternalAccess(
                 external_user_emails={user_email},
-                external_user_group_ids=set(),
+                external_team_ids=set(),
                 is_public=False,
             ),
         )

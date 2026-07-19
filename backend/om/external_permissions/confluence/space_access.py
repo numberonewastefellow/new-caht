@@ -1,112 +1,139 @@
-from om.configs.app_configs import CONFLUENCE_ANONYMOUS_ACCESS_IS_PUBLIC
-from om.external_permissions.confluence.constants import ALL_CONF_EMAILS_GROUP_NAME
-from om.external_permissions.confluence.constants import REQUEST_PAGINATION_LIMIT
-from om.external_permissions.confluence.constants import VIEWSPACE_PERMISSION_TYPE
+"""Resolve a Confluence space's view permissions into an :class:`ExternalAccess`.
+
+Confluence exposes space permissions differently on Cloud vs Server/Data-Center,
+so each has its own reader; both collapse to the same shape — the set of allowed
+user emails, the set of allowed group names, and whether the space is anonymously
+public. WS-B clean-room rewrite (public entrypoints preserved).
+"""
+
+from typing import Any
+
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_om
+from om.access.utils import build_ext_team_name_for_om
+from om.configs.app_configs import CONFLUENCE_ANONYMOUS_ACCESS_IS_PUBLIC
 from om.configs.constants import DocumentSource
 from om.connectors.confluence.onyx_confluence import (
     get_user_email_from_username__server,
 )
 from om.connectors.confluence.onyx_confluence import OmConfluence
+from om.external_permissions.confluence.constants import ALL_CONF_EMAILS_GROUP_NAME
+from om.external_permissions.confluence.constants import REQUEST_PAGINATION_LIMIT
+from om.external_permissions.confluence.constants import VIEWSPACE_PERMISSION_TYPE
 from om.utils.logger import setup_logger
 
-
 logger = setup_logger()
+
+
+def _resolve_server_emails(
+    confluence_client: OmConfluence, usernames: set[str]
+) -> set[str]:
+    """Map Server usernames to emails, skipping any that can't be resolved."""
+    emails: set[str] = set()
+    for username in usernames:
+        email = get_user_email_from_username__server(confluence_client, username)
+        if email:
+            emails.add(email)
+        else:
+            logger.warning(f"Email for user {username} not found in Confluence")
+    return emails
 
 
 def _get_server_space_permissions(
     confluence_client: OmConfluence, space_key: str
 ) -> ExternalAccess:
-    space_permissions = confluence_client.get_all_space_permissions_server(
+    raw_categories = confluence_client.get_all_space_permissions_server(
         space_key=space_key
     )
 
-    viewspace_permissions = []
-    for permission_category in space_permissions:
-        if permission_category.get("type") == VIEWSPACE_PERMISSION_TYPE:
-            viewspace_permissions.extend(
-                permission_category.get("spacePermissions", [])
-            )
+    # Only the "view space" grants determine who can read the space.
+    view_grants: list[dict[str, Any]] = []
+    for category in raw_categories:
+        if category.get("type") == VIEWSPACE_PERMISSION_TYPE:
+            view_grants.extend(category.get("spacePermissions", []))
 
+    usernames: set[str] = set()
+    group_names: set[str] = set()
     is_public = False
-    user_names = set()
-    group_names = set()
-    for permission in viewspace_permissions:
-        if user_name := permission.get("userName"):
-            user_names.add(user_name)
-        if group_name := permission.get("groupName"):
+    for grant in view_grants:
+        username = grant.get("userName")
+        group_name = grant.get("groupName")
+        if username:
+            usernames.add(username)
+        if group_name:
             group_names.add(group_name)
-
-        # It seems that if anonymous access is turned on for the site and space,
-        # then the space is publicly accessible.
-        # For confluence server, we make a group that contains all users
-        # that exist in confluence and then just add that group to the space permissions
-        # if anonymous access is turned on for the site and space or we set is_public = True
-        # if they set the env variable CONFLUENCE_ANONYMOUS_ACCESS_IS_PUBLIC to True so
-        # that we can support confluence server deployments that want anonymous access
-        # to be public (we cant test this because its paywalled)
-        if user_name is None and group_name is None:
-            # Defaults to False
+        # A grant naming neither a user nor a group is an anonymous-access grant.
+        # Server can't be probed for this behind a paywall, so it is opt-in:
+        # either treat the space as public, or fold in the "all Confluence users"
+        # pseudo-group so every known user still matches.
+        if username is None and group_name is None:
             if CONFLUENCE_ANONYMOUS_ACCESS_IS_PUBLIC:
                 is_public = True
             else:
                 group_names.add(ALL_CONF_EMAILS_GROUP_NAME)
 
-    user_emails = set()
-    for user_name in user_names:
-        user_email = get_user_email_from_username__server(confluence_client, user_name)
-        if user_email:
-            user_emails.add(user_email)
-        else:
-            logger.warning(f"Email for user {user_name} not found in Confluence")
+    user_emails = _resolve_server_emails(confluence_client, usernames)
 
     if not user_emails and not group_names:
         logger.warning(
             "No user emails or group names found in Confluence space permissions"
-            f"\nSpace key: {space_key}"
-            f"\nSpace permissions: {space_permissions}"
+            f"\nSpace key: {space_key}\nSpace permissions: {raw_categories}"
         )
 
     return ExternalAccess(
         external_user_emails=user_emails,
-        external_user_group_ids=group_names,
+        external_team_ids=group_names,
         is_public=is_public,
     )
+
+
+def _first_result_field(subjects: dict[str, Any], subject_type: str, field: str) -> Any:
+    """Pull ``subjects[subject_type].results[0][field]`` defensively."""
+    results = subjects.get(subject_type, {}).get("results") or [{}]
+    return results[0].get(field)
 
 
 def _get_cloud_space_permissions(
     confluence_client: OmConfluence, space_key: str
 ) -> ExternalAccess:
-    space_permissions_result = confluence_client.get_space(
-        space_key=space_key, expand="permissions"
-    )
-    space_permissions = space_permissions_result.get("permissions", [])
+    space = confluence_client.get_space(space_key=space_key, expand="permissions")
+    grants = space.get("permissions", [])
 
-    user_emails = set()
-    group_names = set()
-    is_externally_public = False
-    for permission in space_permissions:
-        subs = permission.get("subjects")
-        if subs:
-            # If there are subjects, then there are explicit users or groups with access
-            if email := subs.get("user", {}).get("results", [{}])[0].get("email"):
+    user_emails: set[str] = set()
+    group_names: set[str] = set()
+    is_public = False
+    for grant in grants:
+        subjects = grant.get("subjects")
+        if subjects:
+            # Explicit user/group grant.
+            email = _first_result_field(subjects, "user", "email")
+            if email:
                 user_emails.add(email)
-            if group_name := subs.get("group", {}).get("results", [{}])[0].get("name"):
+            group_name = _first_result_field(subjects, "group", "name")
+            if group_name:
                 group_names.add(group_name)
-        else:
-            # If there are no subjects, then the permission is for everyone
-            if permission.get("operation", {}).get(
-                "operation"
-            ) == "read" and permission.get("anonymousAccess", False):
-                # If the permission specifies read access for anonymous users, then
-                # the space is publicly accessible
-                is_externally_public = True
+        elif (
+            grant.get("operation", {}).get("operation") == "read"
+            and grant.get("anonymousAccess", False)
+        ):
+            # A subject-less read grant with anonymous access => publicly readable.
+            is_public = True
 
     return ExternalAccess(
         external_user_emails=user_emails,
-        external_user_group_ids=group_names,
-        is_public=is_externally_public,
+        external_team_ids=group_names,
+        is_public=is_public,
+    )
+
+
+def _prefix_groups(access: ExternalAccess) -> ExternalAccess:
+    """Namespace the raw group names by source (indexing path only)."""
+    return ExternalAccess(
+        external_user_emails=access.external_user_emails,
+        external_team_ids={
+            build_ext_team_name_for_om(group, DocumentSource.CONFLUENCE)
+            for group in access.external_team_ids
+        },
+        is_public=access.is_public,
     )
 
 
@@ -116,36 +143,19 @@ def get_space_permission(
     is_cloud: bool,
     add_prefix: bool = False,
 ) -> ExternalAccess:
-    if is_cloud:
-        space_permissions = _get_cloud_space_permissions(confluence_client, space_key)
-    else:
-        space_permissions = _get_server_space_permissions(confluence_client, space_key)
+    reader = _get_cloud_space_permissions if is_cloud else _get_server_space_permissions
+    access = reader(confluence_client, space_key)
 
-    if (
-        not space_permissions.is_public
-        and not space_permissions.external_user_emails
-        and not space_permissions.external_user_group_ids
-    ):
+    if not access.is_public and not access.external_user_emails and not access.external_team_ids:
         logger.warning(
             f"No permissions found for space '{space_key}'. This is very unlikely "
-            "to be correct and is more likely caused by an access token with "
-            "insufficient permissions. Make sure that the access token has Admin "
-            f"permissions for space '{space_key}'"
+            "to be correct and usually means the access token lacks Admin "
+            f"permissions for space '{space_key}'."
         )
 
-    # Prefix group IDs with source type if requested (for indexing path)
-    if add_prefix and space_permissions.external_user_group_ids:
-        prefixed_groups = {
-            build_ext_group_name_for_om(g, DocumentSource.CONFLUENCE)
-            for g in space_permissions.external_user_group_ids
-        }
-        return ExternalAccess(
-            external_user_emails=space_permissions.external_user_emails,
-            external_user_group_ids=prefixed_groups,
-            is_public=space_permissions.is_public,
-        )
-
-    return space_permissions
+    if add_prefix and access.external_team_ids:
+        return _prefix_groups(access)
+    return access
 
 
 def get_all_space_permissions(
@@ -153,31 +163,23 @@ def get_all_space_permissions(
     is_cloud: bool,
     add_prefix: bool = False,
 ) -> dict[str, ExternalAccess]:
-    """
-    Get access permissions for all spaces in Confluence.
+    """Per-space :class:`ExternalAccess` for every space in the instance.
 
-    add_prefix: When True, prefix group IDs with source type (for indexing path).
-               When False (default), leave unprefixed (for permission sync path).
+    ``add_prefix``: True on the indexing path (namespace group ids per source);
+    False on the permission-sync path (leave raw).
     """
-    logger.debug("Getting space permissions")
-    # Gets all the spaces in the Confluence instance
-    all_space_keys = [
+    space_keys = [
         key
         for space in confluence_client.retrieve_confluence_spaces(
-            limit=REQUEST_PAGINATION_LIMIT,
+            limit=REQUEST_PAGINATION_LIMIT
         )
         if (key := space.get("key"))
     ]
+    logger.debug(f"Resolving permissions for {len(space_keys)} Confluence spaces")
 
-    # Gets the permissions for each space
-    logger.debug(f"Got {len(all_space_keys)} spaces from confluence")
-    space_permissions_by_space_key: dict[str, ExternalAccess] = {}
-    for space_key in all_space_keys:
-        space_permissions = get_space_permission(
+    return {
+        space_key: get_space_permission(
             confluence_client, space_key, is_cloud, add_prefix
         )
-
-        # Stores the permissions for each space
-        space_permissions_by_space_key[space_key] = space_permissions
-
-    return space_permissions_by_space_key
+        for space_key in space_keys
+    }

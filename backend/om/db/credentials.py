@@ -16,10 +16,10 @@ from om.connectors.google_utils.shared_constants import (
 from om.db.enums import ConnectorCredentialPairStatus
 from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
-from om.db.models import Credential__UserGroup
+from om.db.models import Credential__Team
 from om.db.models import DocumentByConnectorCredentialPair
 from om.db.models import User
-from om.db.models import User__UserGroup
+from om.db.models import User__Team
 from om.server.documents.models import CredentialBase
 from om.utils.logger import setup_logger
 
@@ -69,39 +69,39 @@ def _add_user_filters(
     """
     THIS PART IS FOR CURATORS AND GLOBAL CURATORS
     Here we select cc_pairs by relation:
-    User -> User__UserGroup -> Credential__UserGroup -> Credential
+    User -> User__Team -> Credential__Team -> Credential
     """
-    stmt = stmt.outerjoin(Credential__UserGroup).outerjoin(
-        User__UserGroup,
-        User__UserGroup.user_group_id == Credential__UserGroup.user_group_id,
+    stmt = stmt.outerjoin(Credential__Team).outerjoin(
+        User__Team,
+        User__Team.team_id == Credential__Team.team_id,
     )
     """
     Filter Credentials by:
-    - if the user is in the user_group that owns the Credential
+    - if the user is in the team that owns the Credential
     - if the user is a curator, they must also have a curator relationship
-    to the user_group
+    to the team
     - if editing is being done, we also filter out Credentials that are owned by groups
     that the user isn't a curator for
     - if we are not editing, we show all Credentials in the groups the user is a curator
     for (as well as public Credentials)
     - if we are not editing, we return all Credentials directly connected to the user
     """
-    where_clause = User__UserGroup.user_id == user.id
+    where_clause = User__Team.user_id == user.id
     if user.role == UserRole.CURATOR:
-        where_clause &= User__UserGroup.is_curator == True  # noqa: E712
+        where_clause &= User__Team.is_curator == True  # noqa: E712
 
     if get_editable:
-        user_groups = select(User__UserGroup.user_group_id).where(
-            User__UserGroup.user_id == user.id
+        teams = select(User__Team.team_id).where(
+            User__Team.user_id == user.id
         )
         if user.role == UserRole.CURATOR:
-            user_groups = user_groups.where(
-                User__UserGroup.is_curator == True  # noqa: E712
+            teams = teams.where(
+                User__Team.is_curator == True  # noqa: E712
             )
         where_clause &= (
             ~exists()
-            .where(Credential__UserGroup.credential_id == Credential.id)
-            .where(~Credential__UserGroup.user_group_id.in_(user_groups))
+            .where(Credential__Team.credential_id == Credential.id)
+            .where(~Credential__Team.team_id.in_(teams))
             .correlate(Credential)
         )
     else:
@@ -113,20 +113,20 @@ def _add_user_filters(
     return stmt.where(where_clause)
 
 
-def _relate_credential_to_user_groups__no_commit(
+def _relate_credential_to_teams__no_commit(
     db_session: Session,
     credential_id: int,
-    user_group_ids: list[int],
+    team_ids: list[int],
 ) -> None:
-    credential_user_groups = []
-    for group_id in user_group_ids:
-        credential_user_groups.append(
-            Credential__UserGroup(
+    credential_teams = []
+    for group_id in team_ids:
+        credential_teams.append(
+            Credential__Team(
                 credential_id=credential_id,
-                user_group_id=group_id,
+                team_id=group_id,
             )
         )
-    db_session.add_all(credential_user_groups)
+    db_session.add_all(credential_teams)
 
 
 def fetch_credentials_for_user(
@@ -263,10 +263,10 @@ def create_credential(
     )
     db_session.add(credential)
     db_session.flush()  # This ensures the credential gets an ID
-    _relate_credential_to_user_groups__no_commit(
+    _relate_credential_to_teams__no_commit(
         db_session=db_session,
         credential_id=credential.id,
-        user_group_ids=credential_data.groups,
+        team_ids=credential_data.groups,
     )
 
     db_session.commit()
@@ -275,12 +275,12 @@ def create_credential(
     return credential
 
 
-def _cleanup_credential__user_group_relationships__no_commit(
+def _cleanup_credential__team_relationships__no_commit(
     db_session: Session, credential_id: int
 ) -> None:
     """NOTE: does not commit the transaction."""
-    db_session.query(Credential__UserGroup).filter(
-        Credential__UserGroup.credential_id == credential_id
+    db_session.query(Credential__Team).filter(
+        Credential__Team.credential_id == credential_id
     ).delete(synchronize_session=False)
 
 
@@ -409,7 +409,7 @@ def _delete_credential_internal(
     else:
         logger.notice(f"Deleting credential {credential_id}")
 
-    _cleanup_credential__user_group_relationships__no_commit(db_session, credential_id)
+    _cleanup_credential__team_relationships__no_commit(db_session, credential_id)
     db_session.delete(credential)
     db_session.commit()
 

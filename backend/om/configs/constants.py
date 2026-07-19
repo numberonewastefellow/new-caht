@@ -324,7 +324,7 @@ class ChatMessageSimpleType(str, Enum):
 
 class TokenRateLimitScope(str, Enum):
     USER = "user"
-    USER_GROUP = "user_group"
+    USER_GROUP = "team"
     GLOBAL = "global"
 
 

@@ -23,10 +23,10 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.models import ChatMessage
 from om.db.models import ChatSession
 from om.db.models import TokenRateLimit
-from om.db.models import TokenRateLimit__UserGroup
+from om.db.models import TokenRateLimit__Team
 from om.db.models import User
-from om.db.models import User__UserGroup
-from om.db.models import UserGroup
+from om.db.models import User__Team
+from om.db.models import Team
 from om.db.token_limit import fetch_all_global_token_rate_limits
 from om.db.token_limit import fetch_all_user_token_rate_limits
 from om.utils.logger import setup_logger
@@ -117,7 +117,7 @@ User Group rate limits
 
 def _user_is_rate_limited_by_group(user_id: UUID) -> None:
     with get_session_with_current_tenant() as db_session:
-        group_rate_limits = _fetch_all_user_group_rate_limits(user_id, db_session)
+        group_rate_limits = _fetch_all_team_rate_limits(user_id, db_session)
 
         if group_rate_limits:
             # Group cutoff time is the same for all groups.
@@ -127,14 +127,14 @@ def _user_is_rate_limited_by_group(user_id: UUID) -> None:
                 [e for sublist in group_rate_limits.values() for e in sublist]
             )
 
-            user_group_ids = list(group_rate_limits.keys())
-            group_usage = _fetch_user_group_usage(
-                user_group_ids, group_cutoff_time, db_session
+            team_ids = list(group_rate_limits.keys())
+            group_usage = _fetch_team_usage(
+                team_ids, group_cutoff_time, db_session
             )
 
             has_at_least_one_untriggered_limit = False
-            for user_group_id, rate_limits in group_rate_limits.items():
-                usage = group_usage.get(user_group_id, [])
+            for team_id, rate_limits in group_rate_limits.items():
+                usage = group_usage.get(team_id, [])
 
                 if not _is_rate_limited(rate_limits, usage):
                     has_at_least_one_untriggered_limit = True
@@ -147,25 +147,25 @@ def _user_is_rate_limited_by_group(user_id: UUID) -> None:
                 )
 
 
-def _fetch_all_user_group_rate_limits(
+def _fetch_all_team_rate_limits(
     user_id: UUID, db_session: Session
 ) -> Dict[int, List[TokenRateLimit]]:
     group_limits = (
-        select(TokenRateLimit, User__UserGroup.user_group_id)
+        select(TokenRateLimit, User__Team.team_id)
         .join(
-            TokenRateLimit__UserGroup,
-            TokenRateLimit.id == TokenRateLimit__UserGroup.rate_limit_id,
+            TokenRateLimit__Team,
+            TokenRateLimit.id == TokenRateLimit__Team.rate_limit_id,
         )
         .join(
-            UserGroup,
-            UserGroup.id == TokenRateLimit__UserGroup.user_group_id,
+            Team,
+            Team.id == TokenRateLimit__Team.team_id,
         )
         .join(
-            User__UserGroup,
-            User__UserGroup.user_group_id == UserGroup.id,
+            User__Team,
+            User__Team.team_id == Team.id,
         )
         .where(
-            User__UserGroup.user_id == user_id,
+            User__Team.user_id == user_id,
             TokenRateLimit.enabled.is_(True),
         )
     )
@@ -173,35 +173,35 @@ def _fetch_all_user_group_rate_limits(
     raw_rate_limits = db_session.execute(group_limits).all()
 
     group_rate_limits = defaultdict(list)
-    for rate_limit, user_group_id in raw_rate_limits:
-        group_rate_limits[user_group_id].append(rate_limit)
+    for rate_limit, team_id in raw_rate_limits:
+        group_rate_limits[team_id].append(rate_limit)
 
     return group_rate_limits
 
 
-def _fetch_user_group_usage(
-    user_group_ids: list[int], cutoff_time: datetime, db_session: Session
+def _fetch_team_usage(
+    team_ids: list[int], cutoff_time: datetime, db_session: Session
 ) -> dict[int, list[Tuple[datetime, int]]]:
     """
     Fetch user group usage within the cutoff time, grouped by minute
     """
-    user_group_usage = db_session.execute(
+    team_usage = db_session.execute(
         select(
             func.sum(ChatMessage.token_count),
             func.date_trunc("minute", ChatMessage.time_sent),
-            UserGroup.id,
+            Team.id,
         )
         .join(ChatSession, ChatMessage.chat_session_id == ChatSession.id)
-        .join(User__UserGroup, User__UserGroup.user_id == ChatSession.user_id)
-        .join(UserGroup, UserGroup.id == User__UserGroup.user_group_id)
-        .filter(UserGroup.id.in_(user_group_ids), ChatMessage.time_sent >= cutoff_time)
-        .group_by(func.date_trunc("minute", ChatMessage.time_sent), UserGroup.id)
+        .join(User__Team, User__Team.user_id == ChatSession.user_id)
+        .join(Team, Team.id == User__Team.team_id)
+        .filter(Team.id.in_(team_ids), ChatMessage.time_sent >= cutoff_time)
+        .group_by(func.date_trunc("minute", ChatMessage.time_sent), Team.id)
     ).all()
 
     return {
-        user_group_id: [(usage, time_sent) for time_sent, usage, _ in group_usage]
-        for user_group_id, group_usage in groupby(
-            user_group_usage, key=lambda row: row[2]
+        team_id: [(usage, time_sent) for time_sent, usage, _ in group_usage]
+        for team_id, group_usage in groupby(
+            team_usage, key=lambda row: row[2]
         )
     }
 

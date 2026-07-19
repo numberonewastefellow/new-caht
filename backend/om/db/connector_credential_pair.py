@@ -29,8 +29,8 @@ from om.db.models import IndexAttempt
 from om.db.models import IndexingStatus
 from om.db.models import SearchSettings
 from om.db.models import User
-from om.db.models import User__UserGroup
-from om.db.models import UserGroup__ConnectorCredentialPair
+from om.db.models import User__Team
+from om.db.models import Team__ConnectorCredentialPair
 from om.db.models import UserRole
 from om.server.models import StatusResponse
 from om.utils.logger import setup_logger
@@ -57,24 +57,24 @@ def _add_user_filters(
         return stmt.where(where_clause)
 
     stmt = stmt.distinct()
-    UG__CCpair = aliased(UserGroup__ConnectorCredentialPair)
-    User__UG = aliased(User__UserGroup)
+    UG__CCpair = aliased(Team__ConnectorCredentialPair)
+    User__UG = aliased(User__Team)
 
     """
     Here we select cc_pairs by relation:
-    User -> User__UserGroup -> UserGroup__ConnectorCredentialPair ->
+    User -> User__Team -> Team__ConnectorCredentialPair ->
     ConnectorCredentialPair
     """
     stmt = stmt.outerjoin(UG__CCpair).outerjoin(
         User__UG,
-        User__UG.user_group_id == UG__CCpair.user_group_id,
+        User__UG.team_id == UG__CCpair.team_id,
     )
 
     """
     Filter cc_pairs by:
-    - if the user is in the user_group that owns the cc_pair
+    - if the user is in the team that owns the cc_pair
     - if the user is not a global_curator, they must also have a curator relationship
-    to the user_group
+    to the team
     - if editing is being done, we also filter out cc_pairs that are owned by groups
     that the user isn't a curator for
     - if we are not editing, we show all cc_pairs in the groups the user is a curator
@@ -85,15 +85,15 @@ def _add_user_filters(
     if user.role == UserRole.CURATOR and get_editable:
         where_clause &= User__UG.is_curator == True  # noqa: E712
     if get_editable:
-        user_groups = select(User__UG.user_group_id).where(User__UG.user_id == user.id)
+        teams = select(User__UG.team_id).where(User__UG.user_id == user.id)
         if user.role == UserRole.CURATOR:
-            user_groups = user_groups.where(
-                User__UserGroup.is_curator == True  # noqa: E712
+            teams = teams.where(
+                User__Team.is_curator == True  # noqa: E712
             )
         where_clause &= (
             ~exists()
             .where(UG__CCpair.cc_pair_id == ConnectorCredentialPair.id)
-            .where(~UG__CCpair.user_group_id.in_(user_groups))
+            .where(~UG__CCpair.team_id.in_(teams))
             .correlate(ConnectorCredentialPair)
         )
         where_clause |= ConnectorCredentialPair.creator_id == user.id
@@ -214,13 +214,13 @@ def add_deletion_failure_message(
 def get_cc_pair_groups_for_ids(
     db_session: Session,
     cc_pair_ids: list[int],
-) -> list[UserGroup__ConnectorCredentialPair]:
-    stmt = select(UserGroup__ConnectorCredentialPair).distinct()
+) -> list[Team__ConnectorCredentialPair]:
+    stmt = select(Team__ConnectorCredentialPair).distinct()
     stmt = stmt.outerjoin(
         ConnectorCredentialPair,
-        UserGroup__ConnectorCredentialPair.cc_pair_id == ConnectorCredentialPair.id,
+        Team__ConnectorCredentialPair.cc_pair_id == ConnectorCredentialPair.id,
     )
-    stmt = stmt.where(UserGroup__ConnectorCredentialPair.cc_pair_id.in_(cc_pair_ids))
+    stmt = stmt.where(Team__ConnectorCredentialPair.cc_pair_id.in_(cc_pair_ids))
     return list(db_session.scalars(stmt).all())
 
 
@@ -229,7 +229,7 @@ def get_cc_pair_groups_for_ids(
 # after this function to allow lazy loading.
 def get_cc_pair_groups_for_ids_parallel(
     cc_pair_ids: list[int],
-) -> list[UserGroup__ConnectorCredentialPair]:
+) -> list[Team__ConnectorCredentialPair]:
     with get_session_with_current_tenant() as db_session:
         return get_cc_pair_groups_for_ids(db_session, cc_pair_ids)
 
@@ -486,15 +486,15 @@ def associate_default_cc_pair(db_session: Session) -> None:
 def _relate_groups_to_cc_pair__no_commit(
     db_session: Session,
     cc_pair_id: int,
-    user_group_ids: list[int] | None = None,
+    team_ids: list[int] | None = None,
 ) -> None:
-    if not user_group_ids:
+    if not team_ids:
         return
 
-    for group_id in user_group_ids:
+    for group_id in team_ids:
         db_session.add(
-            UserGroup__ConnectorCredentialPair(
-                user_group_id=group_id, cc_pair_id=cc_pair_id
+            Team__ConnectorCredentialPair(
+                team_id=group_id, cc_pair_id=cc_pair_id
             )
         )
 
@@ -583,7 +583,7 @@ def add_credential_to_connector(
     _relate_groups_to_cc_pair__no_commit(
         db_session=db_session,
         cc_pair_id=association.id,
-        user_group_ids=groups,
+        team_ids=groups,
     )
 
     db_session.commit()
@@ -602,7 +602,7 @@ def remove_credential_from_connector(
     db_session: Session,
 ) -> StatusResponse[int]:
     from om.db.external_perm import (
-        delete_user__ext_group_for_cc_pair__no_commit as _impl_delete_user__ext_group_for_cc_pair__no_commit,
+        delete_user__ext_team_for_cc_pair__no_commit as _impl_delete_user__ext_team_for_cc_pair__no_commit,
     )
     connector = fetch_connector_by_id(connector_id, db_session)
     credential = fetch_credential_by_id_for_user(
@@ -630,7 +630,7 @@ def remove_credential_from_connector(
     )
 
     if association is not None:
-        _impl_delete_user__ext_group_for_cc_pair__no_commit(
+        _impl_delete_user__ext_team_for_cc_pair__no_commit(
             db_session=db_session,
             cc_pair_id=association.id,
         )
@@ -742,7 +742,7 @@ def resync_cc_pair(
     db_session.commit()
 
 
-def _delete_connector_credential_pair_user_groups_relationship__no_commit(
+def _delete_connector_credential_pair_teams_relationship__no_commit(
     db_session: Session, connector_id: int, credential_id: int
 ) -> None:
     cc_pair = get_connector_credential_pair(
@@ -756,8 +756,8 @@ def _delete_connector_credential_pair_user_groups_relationship__no_commit(
             f"and credential_id: {credential_id} not found"
         )
 
-    stmt = delete(UserGroup__ConnectorCredentialPair).where(
-        UserGroup__ConnectorCredentialPair.cc_pair_id == cc_pair.id,
+    stmt = delete(Team__ConnectorCredentialPair).where(
+        Team__ConnectorCredentialPair.cc_pair_id == cc_pair.id,
     )
     db_session.execute(stmt)
 

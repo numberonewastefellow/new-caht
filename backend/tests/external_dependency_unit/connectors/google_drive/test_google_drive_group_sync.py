@@ -9,7 +9,7 @@ from om.background.celery.tasks.external_group_syncing.tasks import (
     _perform_external_group_sync,
 )
 from om.db.external_perm import ExternalUserGroup
-from om.access.utils import build_ext_group_name_for_om
+from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.models import InputType
 from om.db.enums import AccessType
@@ -17,8 +17,8 @@ from om.db.enums import ConnectorCredentialPairStatus
 from om.db.models import Connector
 from om.db.models import ConnectorCredentialPair
 from om.db.models import Credential
-from om.db.models import PublicExternalUserGroup
-from om.db.models import User__ExternalUserGroupId
+from om.db.models import PublicExternalTeam
+from om.db.models import User__ExternalTeamId
 from tests.external_dependency_unit.conftest import create_test_user
 from tests.external_dependency_unit.constants import TEST_TENANT_ID
 
@@ -72,26 +72,26 @@ def _create_test_connector_credential_pair(
 
 def _get_user_external_groups(
     db_session: Session, cc_pair_id: int, include_stale: bool = False
-) -> list[User__ExternalUserGroupId]:
+) -> list[User__ExternalTeamId]:
     """Helper to get user external groups from database"""
-    query = select(User__ExternalUserGroupId).where(
-        User__ExternalUserGroupId.cc_pair_id == cc_pair_id
+    query = select(User__ExternalTeamId).where(
+        User__ExternalTeamId.cc_pair_id == cc_pair_id
     )
     if not include_stale:
-        query = query.where(User__ExternalUserGroupId.stale.is_(False))
+        query = query.where(User__ExternalTeamId.stale.is_(False))
 
     return list(db_session.scalars(query).all())
 
 
 def _get_public_external_groups(
     db_session: Session, cc_pair_id: int, include_stale: bool = False
-) -> list[PublicExternalUserGroup]:
+) -> list[PublicExternalTeam]:
     """Helper to get public external groups from database"""
-    query = select(PublicExternalUserGroup).where(
-        PublicExternalUserGroup.cc_pair_id == cc_pair_id
+    query = select(PublicExternalTeam).where(
+        PublicExternalTeam.cc_pair_id == cc_pair_id
     )
     if not include_stale:
-        query = query.where(PublicExternalUserGroup.stale.is_(False))
+        query = query.where(PublicExternalTeam.stale.is_(False))
 
     return list(db_session.scalars(query).all())
 
@@ -141,23 +141,23 @@ class TestPerformExternalGroupSync:
             _perform_external_group_sync(cc_pair.id, TEST_TENANT_ID)
 
             # Verify user groups were created
-            user_groups = _get_user_external_groups(db_session, cc_pair.id)
+            teams = _get_user_external_groups(db_session, cc_pair.id)
             assert (
-                len(user_groups) == 5
+                len(teams) == 5
             )  # user1+2 in group1, user2+3 in group2, user1 in public_group
 
             # Verify group names are properly prefixed
-            expected_group1_id = build_ext_group_name_for_om(
+            expected_group1_id = build_ext_team_name_for_om(
                 "group1", DocumentSource.GOOGLE_DRIVE
             )
-            expected_group2_id = build_ext_group_name_for_om(
+            expected_group2_id = build_ext_team_name_for_om(
                 "group2", DocumentSource.GOOGLE_DRIVE
             )
-            expected_public_group_id = build_ext_group_name_for_om(
+            expected_public_group_id = build_ext_team_name_for_om(
                 "public_group", DocumentSource.GOOGLE_DRIVE
             )
 
-            group_ids = {ug.external_user_group_id for ug in user_groups}
+            group_ids = {ug.external_team_id for ug in teams}
             assert expected_group1_id in group_ids
             assert expected_group2_id in group_ids
             assert expected_public_group_id in group_ids
@@ -165,11 +165,11 @@ class TestPerformExternalGroupSync:
             # Verify public group was created
             public_groups = _get_public_external_groups(db_session, cc_pair.id)
             assert len(public_groups) == 1
-            assert public_groups[0].external_user_group_id == expected_public_group_id
+            assert public_groups[0].external_team_id == expected_public_group_id
             assert public_groups[0].stale is False
 
             # Verify all groups are not stale
-            for ug in user_groups:
+            for ug in teams:
                 assert ug.stale is False
 
     def test_update_existing_groups(self, db_session: Session) -> None:
@@ -206,9 +206,9 @@ class TestPerformExternalGroupSync:
             _perform_external_group_sync(cc_pair.id, TEST_TENANT_ID)
 
             # Verify initial state
-            initial_user_groups = _get_user_external_groups(db_session, cc_pair.id)
+            initial_teams = _get_user_external_groups(db_session, cc_pair.id)
             assert (
-                len(initial_user_groups) == 3
+                len(initial_teams) == 3
             )  # user1+user2 in group1, user2 in group2
 
             # Updated sync with modified groups
@@ -231,28 +231,28 @@ class TestPerformExternalGroupSync:
             _perform_external_group_sync(cc_pair.id, TEST_TENANT_ID)
 
             # Verify updated state
-            updated_user_groups = _get_user_external_groups(db_session, cc_pair.id)
+            updated_teams = _get_user_external_groups(db_session, cc_pair.id)
             assert (
-                len(updated_user_groups) == 5
+                len(updated_teams) == 5
             )  # user1+user3 in group1, user1+user2+user3 in group2
 
             # Verify specific user-group mappings
-            expected_group1_id = build_ext_group_name_for_om(
+            expected_group1_id = build_ext_team_name_for_om(
                 "group1", DocumentSource.GOOGLE_DRIVE
             )
-            expected_group2_id = build_ext_group_name_for_om(
+            expected_group2_id = build_ext_team_name_for_om(
                 "group2", DocumentSource.GOOGLE_DRIVE
             )
 
             group1_users = {
                 ug.user_id
-                for ug in updated_user_groups
-                if ug.external_user_group_id == expected_group1_id
+                for ug in updated_teams
+                if ug.external_team_id == expected_group1_id
             }
             group2_users = {
                 ug.user_id
-                for ug in updated_user_groups
-                if ug.external_user_group_id == expected_group2_id
+                for ug in updated_teams
+                if ug.external_team_id == expected_group2_id
             }
 
             assert user1.id in group1_users and user3.id in group1_users
@@ -264,7 +264,7 @@ class TestPerformExternalGroupSync:
             )
 
             # Verify no stale groups remain
-            for ug in updated_user_groups:
+            for ug in updated_teams:
                 assert ug.stale is False
 
     def test_remove_groups(self, db_session: Session) -> None:
@@ -303,10 +303,10 @@ class TestPerformExternalGroupSync:
             _perform_external_group_sync(cc_pair.id, TEST_TENANT_ID)
 
             # Verify initial state
-            initial_user_groups = _get_user_external_groups(db_session, cc_pair.id)
+            initial_teams = _get_user_external_groups(db_session, cc_pair.id)
             initial_public_groups = _get_public_external_groups(db_session, cc_pair.id)
             assert (
-                len(initial_user_groups) == 4
+                len(initial_teams) == 4
             )  # 2 in group1, 1 in group2, 1 in public_group
             assert len(initial_public_groups) == 1
 
@@ -326,28 +326,28 @@ class TestPerformExternalGroupSync:
             _perform_external_group_sync(cc_pair.id, TEST_TENANT_ID)
 
             # Verify updated state
-            updated_user_groups = _get_user_external_groups(db_session, cc_pair.id)
+            updated_teams = _get_user_external_groups(db_session, cc_pair.id)
             updated_public_groups = _get_public_external_groups(db_session, cc_pair.id)
 
-            assert len(updated_user_groups) == 2  # Only group1 mappings remain
+            assert len(updated_teams) == 2  # Only group1 mappings remain
             assert len(updated_public_groups) == 0  # Public group was removed
 
             # Verify only group1 exists
-            expected_group1_id = build_ext_group_name_for_om(
+            expected_group1_id = build_ext_team_name_for_om(
                 "group1", DocumentSource.GOOGLE_DRIVE
             )
-            group_ids = {ug.external_user_group_id for ug in updated_user_groups}
+            group_ids = {ug.external_team_id for ug in updated_teams}
             assert group_ids == {expected_group1_id}
 
             # Verify stale groups were actually deleted from database
-            all_user_groups_including_stale = _get_user_external_groups(
+            all_teams_including_stale = _get_user_external_groups(
                 db_session, cc_pair.id, include_stale=True
             )
             all_public_groups_including_stale = _get_public_external_groups(
                 db_session, cc_pair.id, include_stale=True
             )
 
-            assert len(all_user_groups_including_stale) == 2  # Only group1 mappings
+            assert len(all_teams_including_stale) == 2  # Only group1 mappings
             assert len(all_public_groups_including_stale) == 0  # Public group deleted
 
     def test_empty_group_sync(self, db_session: Session) -> None:
@@ -378,8 +378,8 @@ class TestPerformExternalGroupSync:
             _perform_external_group_sync(cc_pair.id, TEST_TENANT_ID)
 
             # Verify initial state
-            initial_user_groups = _get_user_external_groups(db_session, cc_pair.id)
-            assert len(initial_user_groups) == 1
+            initial_teams = _get_user_external_groups(db_session, cc_pair.id)
+            assert len(initial_teams) == 1
 
             # Updated sync with no groups
             def empty_group_sync_func(
@@ -396,10 +396,10 @@ class TestPerformExternalGroupSync:
             _perform_external_group_sync(cc_pair.id, TEST_TENANT_ID)
 
             # Verify all groups were removed
-            updated_user_groups = _get_user_external_groups(db_session, cc_pair.id)
+            updated_teams = _get_user_external_groups(db_session, cc_pair.id)
             updated_public_groups = _get_public_external_groups(db_session, cc_pair.id)
 
-            assert len(updated_user_groups) == 0
+            assert len(updated_teams) == 0
             assert len(updated_public_groups) == 0
 
     def test_batch_processing(self, db_session: Session) -> None:
@@ -435,11 +435,11 @@ class TestPerformExternalGroupSync:
             _perform_external_group_sync(cc_pair.id, TEST_TENANT_ID)
 
             # Verify all users were added to the group
-            user_groups = _get_user_external_groups(db_session, cc_pair.id)
-            assert len(user_groups) == 150
+            teams = _get_user_external_groups(db_session, cc_pair.id)
+            assert len(teams) == 150
 
             # Verify all groups are not stale
-            for ug in user_groups:
+            for ug in teams:
                 assert ug.stale is False
 
     def test_mixed_regular_and_public_groups(self, db_session: Session) -> None:
@@ -480,26 +480,26 @@ class TestPerformExternalGroupSync:
             _perform_external_group_sync(cc_pair.id, TEST_TENANT_ID)
 
             # Verify user groups
-            user_groups = _get_user_external_groups(db_session, cc_pair.id)
-            expected_regular_group_id = build_ext_group_name_for_om(
+            teams = _get_user_external_groups(db_session, cc_pair.id)
+            expected_regular_group_id = build_ext_team_name_for_om(
                 "regular_group", DocumentSource.GOOGLE_DRIVE
             )
-            expected_public_group1_id = build_ext_group_name_for_om(
+            expected_public_group1_id = build_ext_team_name_for_om(
                 "public_group1", DocumentSource.GOOGLE_DRIVE
             )
 
             # Should have 2 users in regular_group + 1 user in public_group1 = 3 total
-            assert len(user_groups) == 3
+            assert len(teams) == 3
 
             regular_group_users = [
                 ug
-                for ug in user_groups
-                if ug.external_user_group_id == expected_regular_group_id
+                for ug in teams
+                if ug.external_team_id == expected_regular_group_id
             ]
             public_group1_users = [
                 ug
-                for ug in user_groups
-                if ug.external_user_group_id == expected_public_group1_id
+                for ug in teams
+                if ug.external_team_id == expected_public_group1_id
             ]
 
             assert len(regular_group_users) == 2
@@ -509,8 +509,8 @@ class TestPerformExternalGroupSync:
             public_groups = _get_public_external_groups(db_session, cc_pair.id)
             assert len(public_groups) == 2  # public_group1 and public_group2
 
-            public_group_ids = {pg.external_user_group_id for pg in public_groups}
-            expected_public_group2_id = build_ext_group_name_for_om(
+            public_group_ids = {pg.external_team_id for pg in public_groups}
+            expected_public_group2_id = build_ext_team_name_for_om(
                 "public_group2", DocumentSource.GOOGLE_DRIVE
             )
             assert expected_public_group1_id in public_group_ids

@@ -162,13 +162,13 @@ def test_gdrive_perm_sync_with_real_data(
         "om.external_permissions.google_drive.group_sync.GoogleDriveConnector",
         return_value=_build_connector(google_drive_service_acct_connector_factory),
     ):
-        external_user_group_generator = gdrive_group_sync("test_tenant", mock_cc_pair)
-        external_user_groups = list(external_user_group_generator)
+        external_team_generator = gdrive_group_sync("test_tenant", mock_cc_pair)
+        external_teams = list(external_team_generator)
 
     # map group ids to emails
     group_id_to_email_mapping: dict[str, set[str]] = defaultdict(set)
     groups_with_anyone_access: set[str] = set()
-    for group in external_user_groups:
+    for group in external_teams:
         for email in group.user_emails:
             group_id_to_email_mapping[group.id].add(email)
 
@@ -192,7 +192,7 @@ def test_gdrive_perm_sync_with_real_data(
             doc_access.external_access.external_user_emails
         )
 
-        for group_id in doc_access.external_access.external_user_group_ids:
+        for group_id in doc_access.external_access.external_team_ids:
             doc_to_email_mapping[doc_id].update(group_id_to_email_mapping[group_id])
             doc_to_raw_result_mapping[doc_id].add(group_id)
 
@@ -201,7 +201,7 @@ def test_gdrive_perm_sync_with_real_data(
 
         if any(
             group_id in groups_with_anyone_access
-            for group_id in doc_access.external_access.external_user_group_ids
+            for group_id in doc_access.external_access.external_team_ids
         ):
             public_doc_ids.add(doc_id)
 

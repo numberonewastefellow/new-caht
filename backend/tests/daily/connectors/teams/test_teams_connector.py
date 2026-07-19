@@ -17,7 +17,7 @@ TEAMS_THREAD = [
         thread="This is the first message in Onyx-Testing ...This is a reply!This is a second reply.Third.4th.5",
         external_access=ExternalAccess(
             external_user_emails=set(),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=True,
         ),
     ),
@@ -25,7 +25,7 @@ TEAMS_THREAD = [
         thread="Testing body.",
         external_access=ExternalAccess(
             external_user_emails=set(),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=True,
         ),
     ),
@@ -33,7 +33,7 @@ TEAMS_THREAD = [
         thread="Hello, world! Nice to meet you all.",
         external_access=ExternalAccess(
             external_user_emails=set(),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=True,
         ),
     ),
@@ -42,7 +42,7 @@ TEAMS_THREAD = [
         thread="This is a test post. Raunak should not be able to see this!",
         external_access=ExternalAccess(
             external_user_emails=set(["test@danswerai.onmicrosoft.com"]),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=False,
         ),
     ),
@@ -54,7 +54,7 @@ TEAMS_THREAD = [
             external_user_emails=set(
                 ["test@danswerai.onmicrosoft.com", "raunak@onyx.app"]
             ),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=False,
         ),
     ),
@@ -66,7 +66,7 @@ TEAMS_THREAD = [
             external_user_emails=set(
                 ["test@danswerai.onmicrosoft.com", "raunak@onyx.app"]
             ),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=False,
         ),
     ),
@@ -109,8 +109,8 @@ def _assert_is_valid_external_access(
     external_access: ExternalAccess,
 ) -> None:
     assert (
-        not external_access.external_user_group_ids
-    ), f"{external_access.external_user_group_ids=} should be empty for MS Teams"
+        not external_access.external_team_ids
+    ), f"{external_access.external_team_ids=} should be empty for MS Teams"
 
     if external_access.is_public:
         assert (

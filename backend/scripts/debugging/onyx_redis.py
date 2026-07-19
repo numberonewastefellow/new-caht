@@ -48,7 +48,7 @@ BATCH_DEFAULT = 1000
 class OmRedisCommand(Enum):
     purge_connectorsync_taskset = "purge_connectorsync_taskset"
     purge_documentset_taskset = "purge_documentset_taskset"
-    purge_usergroup_taskset = "purge_usergroup_taskset"
+    purge_team_taskset = "purge_team_taskset"
     purge_locks_blocking_deletion = "purge_locks_blocking_deletion"
     purge_pidbox = "purge_pidbox"
     get_user_token = "get_user_token"
@@ -117,8 +117,8 @@ def onyx_redis(
         return purge_by_match_and_type(
             "*documentset_taskset*", "set", batch, dry_run, r
         )
-    elif command == OmRedisCommand.purge_usergroup_taskset:
-        return purge_by_match_and_type("*usergroup_taskset*", "set", batch, dry_run, r)
+    elif command == OmRedisCommand.purge_team_taskset:
+        return purge_by_match_and_type("*team_taskset*", "set", batch, dry_run, r)
     elif command == OmRedisCommand.purge_locks_blocking_deletion:
         if cc_pair_id is None:
             logger.error("You must specify --cc-pair with purge_deletion_locks")

@@ -113,11 +113,11 @@ def test_mock_connector_initial_permission_sync(
         db_doc = db_docs[0]
 
         assert db_doc.external_user_emails is not None
-        assert db_doc.external_user_group_ids is not None
+        assert db_doc.external_team_ids is not None
 
         # Check the specific permissions that MockConnector sets
         assert set(db_doc.external_user_emails) == EXTERNAL_USER_EMAILS
-        assert set(db_doc.external_user_group_ids) == EXTERNAL_USER_GROUP_IDS
+        assert set(db_doc.external_team_ids) == EXTERNAL_USER_GROUP_IDS
 
         # Verify the document is not public (as set by MockConnector)
         assert db_doc.is_public is False

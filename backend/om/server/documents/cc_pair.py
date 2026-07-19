@@ -544,11 +544,11 @@ def associate_credential_to_connector(
     The intent of this endpoint is to handle connectors that actually need credentials.
     """
 
-    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    from om.db.team import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     _impl_validate_object_creation_for_user(
         db_session=db_session,
         user=user,
-        target_group_ids=metadata.groups,
+        target_team_ids=metadata.groups,
         object_is_public=metadata.access_type == AccessType.PUBLIC,
         object_is_perm_sync=metadata.access_type == AccessType.SYNC,
         object_is_new=True,

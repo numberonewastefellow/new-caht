@@ -19,16 +19,16 @@ from tests.integration.common_utils.managers.document_set import DocumentSetMana
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager
 from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.managers.user import UserManager
-from tests.integration.common_utils.managers.user_group import UserGroupManager
+from tests.integration.common_utils.managers.team import TeamManager
 from tests.integration.common_utils.test_models import DATestCredential
 from tests.integration.common_utils.test_models import DATestDocumentSet
 from tests.integration.common_utils.test_models import DATestLLMProvider
 from tests.integration.common_utils.test_models import DATestAgent
 from tests.integration.common_utils.test_models import DATestUser
-from tests.integration.common_utils.test_models import DATestUserGroup
+from tests.integration.common_utils.test_models import DATestTeam
 
 
-def test_user_group_deletion(
+def test_team_deletion(
     reset: None, document_index_client: DocumentIndexClient  # noqa: ARG001
 ) -> None:
     # Creating an admin user (first user created is automatically an admin)
@@ -41,18 +41,18 @@ def test_user_group_deletion(
     )
 
     # Create user group with a cc_pair and a user
-    user_group: DATestUserGroup = UserGroupManager.create(
+    team: DATestTeam = TeamManager.create(
         user_ids=[admin_user.id],
         cc_pair_ids=[cc_pair.id],
         user_performing_action=admin_user,
     )
-    cc_pair.groups = [user_group.id]
+    cc_pair.groups = [team.id]
 
-    UserGroupManager.wait_for_sync(
-        user_groups_to_check=[user_group], user_performing_action=admin_user
+    TeamManager.wait_for_sync(
+        teams_to_check=[team], user_performing_action=admin_user
     )
-    UserGroupManager.verify(
-        user_group=user_group,
+    TeamManager.verify(
+        team=team,
         user_performing_action=admin_user,
     )
     CCPairManager.verify(
@@ -62,39 +62,39 @@ def test_user_group_deletion(
 
     # Create other objects that are related to the user group
     credential: DATestCredential = CredentialManager.create(
-        groups=[user_group.id],
+        groups=[team.id],
         user_performing_action=admin_user,
     )
     document_set: DATestDocumentSet = DocumentSetManager.create(
         cc_pair_ids=[cc_pair.id],
-        groups=[user_group.id],
+        groups=[team.id],
         user_performing_action=admin_user,
     )
     llm_provider: DATestLLMProvider = LLMProviderManager.create(
-        groups=[user_group.id],
+        groups=[team.id],
         user_performing_action=admin_user,
     )
     agent: DATestAgent = AgentManager.create(
-        groups=[user_group.id],
+        groups=[team.id],
         user_performing_action=admin_user,
     )
 
-    UserGroupManager.wait_for_sync(
-        user_groups_to_check=[user_group], user_performing_action=admin_user
+    TeamManager.wait_for_sync(
+        teams_to_check=[team], user_performing_action=admin_user
     )
-    UserGroupManager.verify(
-        user_group=user_group,
+    TeamManager.verify(
+        team=team,
         user_performing_action=admin_user,
     )
 
     # Delete the user group
-    UserGroupManager.delete(
-        user_group=user_group,
+    TeamManager.delete(
+        team=team,
         user_performing_action=admin_user,
     )
 
-    UserGroupManager.wait_for_deletion_completion(
-        user_groups_to_check=[user_group], user_performing_action=admin_user
+    TeamManager.wait_for_deletion_completion(
+        teams_to_check=[team], user_performing_action=admin_user
     )
 
     # Set our expected local representations to empty

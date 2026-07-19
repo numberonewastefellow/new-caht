@@ -11,7 +11,7 @@ import {
 import {
   ConnectorStatus,
   DocumentSetSummary,
-  UserGroup,
+  Team,
   UserRole,
   FederatedConnectorConfig,
 } from "@/lib/types";
@@ -27,7 +27,7 @@ import { useFederatedConnectors } from "@/lib/hooks";
 
 interface SetCreationPopupProps {
   ccPairs: ConnectorStatus<any, any>[];
-  userGroups: UserGroup[] | undefined;
+  userGroups: Team[] | undefined;
   onClose: () => void;
   existingDocumentSet?: DocumentSetSummary;
 }

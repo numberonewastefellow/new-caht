@@ -1,7 +1,7 @@
 from typing import Any
 
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_om
+from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.confluence.onyx_confluence import (
     get_user_email_from_username__server,
@@ -102,7 +102,7 @@ def get_page_restrictions(
     def _maybe_prefix_groups(group_names: set[str]) -> set[str]:
         if add_prefix:
             return {
-                build_ext_group_name_for_om(g, DocumentSource.CONFLUENCE)
+                build_ext_team_name_for_om(g, DocumentSource.CONFLUENCE)
                 for g in group_names
             }
         return group_names
@@ -113,7 +113,7 @@ def get_page_restrictions(
     if found_any_page_level_restriction:
         return ExternalAccess(
             external_user_emails=found_user_emails,
-            external_user_group_ids=_maybe_prefix_groups(found_group_names),
+            external_team_ids=_maybe_prefix_groups(found_group_names),
             is_public=False,
         )
 
@@ -140,7 +140,7 @@ def get_page_restrictions(
             )
             return ExternalAccess(
                 external_user_emails=ancestor_user_emails,
-                external_user_group_ids=_maybe_prefix_groups(ancestor_group_names),
+                external_team_ids=_maybe_prefix_groups(ancestor_group_names),
                 is_public=False,
             )
 

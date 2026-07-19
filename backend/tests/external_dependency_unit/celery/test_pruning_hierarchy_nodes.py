@@ -63,7 +63,7 @@ def _make_hierarchy_nodes() -> list[PydanticHierarchyNode]:
             node_type=HierarchyNodeType.CHANNEL,
             external_access=ExternalAccess(
                 external_user_emails={"alice@example.com", "bob@example.com"},
-                external_user_group_ids=set(),
+                external_team_ids=set(),
                 is_public=False,
             ),
         ),
@@ -82,7 +82,7 @@ def _make_hierarchy_nodes() -> list[PydanticHierarchyNode]:
             node_type=HierarchyNodeType.CHANNEL,
             external_access=ExternalAccess(
                 external_user_emails=set(),
-                external_user_group_ids={"eng-team"},
+                external_team_ids={"eng-team"},
                 is_public=True,
             ),
         ),
@@ -213,7 +213,7 @@ def test_pruning_upserts_hierarchy_nodes_to_db(db_session: Session) -> None:
     # Channel B has no external_access -> defaults to not public, no emails/groups
     assert channel_b.is_public is False
     assert channel_b.external_user_emails is None
-    assert channel_b.external_user_group_ids is None
+    assert channel_b.external_team_ids is None
 
     channel_c = get_hierarchy_node_by_raw_id(db_session, CHANNEL_C_ID, TEST_SOURCE)
     assert channel_c is not None
@@ -221,8 +221,8 @@ def test_pruning_upserts_hierarchy_nodes_to_db(db_session: Session) -> None:
     assert channel_c.parent_id == source_node.id
     # Channel C is public and has a group
     assert channel_c.is_public is True
-    assert channel_c.external_user_group_ids is not None
-    assert set(channel_c.external_user_group_ids) == {"eng-team"}
+    assert channel_c.external_team_ids is not None
+    assert set(channel_c.external_team_ids) == {"eng-team"}
 
 
 def test_pruning_upserts_hierarchy_nodes_public_connector(
@@ -251,7 +251,7 @@ def test_pruning_upserts_hierarchy_nodes_public_connector(
         assert node.is_public is True
         # Public connector forces emails/groups to None
         assert node.external_user_emails is None
-        assert node.external_user_group_ids is None
+        assert node.external_team_ids is None
 
 
 def test_pruning_hierarchy_node_upsert_idempotency(db_session: Session) -> None:
@@ -323,7 +323,7 @@ def test_pruning_hierarchy_node_upsert_updates_fields(db_session: Session) -> No
         node_type=HierarchyNodeType.CHANNEL,
         external_access=ExternalAccess(
             external_user_emails={"new_user@example.com"},
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=True,
         ),
     )

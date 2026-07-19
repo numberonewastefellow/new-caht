@@ -212,6 +212,6 @@ def fetch_external_access(
 
     return ExternalAccess(
         external_user_emails=emails,
-        external_user_group_ids=set(),
+        external_team_ids=set(),
         is_public=is_public,
     )

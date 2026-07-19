@@ -3,7 +3,7 @@ import { use } from "react";
 
 import { ErrorCallout } from "@/components/ErrorCallout";
 import { refreshDocumentSets, useDocumentSets } from "../hooks";
-import { useConnectorStatus, useUserGroups } from "@/lib/hooks";
+import { useConnectorStatus, useTeams } from "@/lib/hooks";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { AdminPageTitle } from "@/components/admin/Title";
 import { SvgFolder } from "@opal/icons";
@@ -28,7 +28,7 @@ function Main({ documentSetId }: { documentSetId: number }) {
   } = useConnectorStatus();
 
   // EE only
-  const { data: userGroups, isLoading: userGroupsIsLoading } = useUserGroups();
+  const { data: userGroups, isLoading: userGroupsIsLoading } = useTeams();
 
   if (isDocumentSetsLoading || isCCPairsLoading || userGroupsIsLoading) {
     return (

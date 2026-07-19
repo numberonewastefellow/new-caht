@@ -5,7 +5,7 @@ This module provides reusable access filtering logic for documents based on:
 - Connector access type (PUBLIC vs SYNC)
 - Document-level public flag
 - User email matching external_user_emails
-- User group overlap with external_user_group_ids
+- User group overlap with external_team_ids
 
 This is a standalone module to avoid circular imports between document.py and agent.py.
 """
@@ -38,7 +38,7 @@ def apply_document_access_filter(
 
     This joins with DocumentByConnectorCredentialPair and ConnectorCredentialPair to:
     1. Check if the document is from a PUBLIC connector (access_type = PUBLIC)
-    2. Check document-level permissions (is_public, external_user_emails, external_user_group_ids)
+    2. Check document-level permissions (is_public, external_user_emails, external_team_ids)
     3. Exclude documents from cc_pairs that are being deleted
 
     Args:
@@ -79,7 +79,7 @@ def apply_document_access_filter(
         access_filters.append(any_(Document.external_user_emails) == user_email)
     if external_group_ids:
         access_filters.append(
-            Document.external_user_group_ids.overlap(
+            Document.external_team_ids.overlap(
                 cast(postgresql.array(external_group_ids), postgresql.ARRAY(String))
             )
         )
@@ -101,7 +101,7 @@ def get_accessible_documents_by_ids(
     - Documents from PUBLIC connectors
     - Documents marked as public (e.g., "Anyone with link")
     - Documents where user email matches external_user_emails
-    - Documents where user's groups overlap with external_user_group_ids
+    - Documents where user's groups overlap with external_team_ids
 
     Args:
         db_session: Database session

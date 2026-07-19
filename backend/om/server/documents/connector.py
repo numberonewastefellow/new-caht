@@ -996,7 +996,7 @@ def get_connector_status(
     group_cc_pair_relationships_dict: dict[int, list[int]] = {}
     for relationship in group_cc_pair_relationships:
         group_cc_pair_relationships_dict.setdefault(relationship.cc_pair_id, []).append(
-            relationship.user_group_id
+            relationship.team_id
         )
 
     return [
@@ -1436,7 +1436,7 @@ def create_connector_from_model(
     user: User = Depends(current_curator_or_admin_user),
     db_session: Session = Depends(get_session),
 ) -> ObjectCreationIdResponse:
-    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    from om.db.team import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     tenant_id = get_current_tenant_id()
 
     try:
@@ -1445,7 +1445,7 @@ def create_connector_from_model(
         _impl_validate_object_creation_for_user(
             db_session=db_session,
             user=user,
-            target_group_ids=connector_data.groups,
+            target_team_ids=connector_data.groups,
             object_is_public=connector_data.access_type == AccessType.PUBLIC,
             object_is_perm_sync=connector_data.access_type == AccessType.SYNC,
             object_is_new=True,
@@ -1474,13 +1474,13 @@ def create_connector_with_mock_credential(
     user: User = Depends(current_curator_or_admin_user),
     db_session: Session = Depends(get_session),
 ) -> StatusResponse:
-    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    from om.db.team import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     tenant_id = get_current_tenant_id()
 
     _impl_validate_object_creation_for_user(
         db_session=db_session,
         user=user,
-        target_group_ids=connector_data.groups,
+        target_team_ids=connector_data.groups,
         object_is_public=connector_data.access_type == AccessType.PUBLIC,
         object_is_perm_sync=connector_data.access_type == AccessType.SYNC,
     )
@@ -1556,17 +1556,19 @@ def update_connector_from_model(
     user: User = Depends(current_curator_or_admin_user),
     db_session: Session = Depends(get_session),
 ) -> ConnectorSnapshot | StatusResponse[int]:
-    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    from om.db.team import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     cc_pair = fetch_connector_credential_pair_for_connector(db_session, connector_id)
     try:
         _validate_connector_allowed(connector_data.source)
         _impl_validate_object_creation_for_user(
             db_session=db_session,
             user=user,
-            target_group_ids=connector_data.groups,
+            target_team_ids=connector_data.groups,
             object_is_public=connector_data.access_type == AccessType.PUBLIC,
             object_is_perm_sync=connector_data.access_type == AccessType.SYNC,
-            object_is_owned_by_user=cc_pair and user and cc_pair.creator_id == user.id,
+            object_is_owned_by_user=bool(
+                cc_pair and user and cc_pair.creator_id == user.id
+            ),
         )
         connector_base = connector_data.to_connector_base()
     except ValueError as e:

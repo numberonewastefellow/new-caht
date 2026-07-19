@@ -150,20 +150,20 @@ class TestScimDALGroupMappings:
     def test_create_group_mapping(
         self, scim_dal: ScimDAL, mock_db_session: MagicMock
     ) -> None:
-        scim_dal.create_group_mapping(external_id="ext-g1", user_group_id=5)
+        scim_dal.create_group_mapping(external_id="ext-g1", team_id=5)
 
         mock_db_session.add.assert_called_once()
         mock_db_session.flush.assert_called_once()
         added_obj = mock_db_session.add.call_args[0][0]
         assert model_attrs(added_obj) == {
             "external_id": "ext-g1",
-            "user_group_id": 5,
+            "team_id": 5,
         }
 
     def test_delete_group_mapping(
         self, scim_dal: ScimDAL, mock_db_session: MagicMock
     ) -> None:
-        mapping = ScimGroupMapping(id=1, external_id="ext-g1", user_group_id=10)
+        mapping = ScimGroupMapping(id=1, external_id="ext-g1", team_id=10)
         mock_db_session.get.return_value = mapping
 
         scim_dal.delete_group_mapping(1)

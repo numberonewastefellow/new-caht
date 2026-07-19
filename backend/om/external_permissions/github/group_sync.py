@@ -3,7 +3,7 @@ from collections.abc import Generator
 from github import Repository
 
 from om.db.external_perm import ExternalUserGroup
-from om.external_permissions.github.utils import get_external_user_group
+from om.external_permissions.github.utils import get_external_team
 from om.connectors.github.connector import GithubConnector
 from om.db.models import ConnectorCredentialPair
 from om.utils.logger import setup_logger
@@ -42,7 +42,7 @@ def github_group_sync(
 
     for repo in repos:
         try:
-            for external_group in get_external_user_group(
+            for external_group in get_external_team(
                 repo, github_connector.github_client
             ):
                 logger.info(f"External group: {external_group}")

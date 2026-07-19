@@ -26,7 +26,7 @@ from om.db.llm import fetch_existing_llm_provider
 from om.db.llm import fetch_existing_llm_providers
 from om.db.llm import fetch_existing_models
 from om.db.llm import fetch_agent_with_groups
-from om.db.llm import fetch_user_group_ids
+from om.db.llm import fetch_team_ids
 from om.db.llm import remove_llm_provider
 from om.db.llm import sync_model_configurations
 from om.db.llm import update_default_provider
@@ -569,7 +569,7 @@ def list_llm_provider_basics(
     logger.debug("Starting to fetch user-accessible LLM providers")
 
     all_providers = fetch_existing_llm_providers(db_session, [])
-    user_group_ids = fetch_user_group_ids(db_session, user)
+    team_ids = fetch_team_ids(db_session, user)
     is_admin = user.role == UserRole.ADMIN
 
     accessible_providers = []
@@ -582,7 +582,7 @@ def list_llm_provider_basics(
         # - Excludes agent-only restricted providers (requires specific agent)
         # - Excludes non-public providers with no restrictions (admin-only)
         if can_user_access_llm_provider(
-            provider, user_group_ids, agent=None, is_admin=is_admin
+            provider, team_ids, agent=None, is_admin=is_admin
         ):
             accessible_providers.append(LLMProviderDescriptor.from_model(provider))
 
@@ -614,13 +614,13 @@ def get_valid_model_names_for_agent(
     all_providers = fetch_existing_llm_providers(
         db_session, [LLMModelFlowType.CHAT, LLMModelFlowType.VISION]
     )
-    user_group_ids = set() if is_admin else fetch_user_group_ids(db_session, user)
+    team_ids = set() if is_admin else fetch_team_ids(db_session, user)
 
     valid_models = []
     for llm_provider_model in all_providers:
         # Public providers always included, restricted checked via RBAC
         if can_user_access_llm_provider(
-            llm_provider_model, user_group_ids, agent, is_admin=is_admin
+            llm_provider_model, team_ids, agent, is_admin=is_admin
         ):
             # Collect all model names from this provider
             for model_config in llm_provider_model.model_configurations:
@@ -663,14 +663,14 @@ def list_llm_providers_for_agent(
     all_providers = fetch_existing_llm_providers(
         db_session, [LLMModelFlowType.CHAT, LLMModelFlowType.VISION]
     )
-    user_group_ids = set() if is_admin else fetch_user_group_ids(db_session, user)
+    team_ids = set() if is_admin else fetch_team_ids(db_session, user)
 
     llm_provider_list: list[LLMProviderDescriptor] = []
 
     for llm_provider_model in all_providers:
         # Use simplified access check - public providers always included
         if can_user_access_llm_provider(
-            llm_provider_model, user_group_ids, agent, is_admin=is_admin
+            llm_provider_model, team_ids, agent, is_admin=is_admin
         ):
             llm_provider_list.append(
                 LLMProviderDescriptor.from_model(llm_provider_model)

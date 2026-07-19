@@ -13,7 +13,7 @@ from om.access.models import DocExternalAccess
 from om.access.models import ElementExternalAccess
 from om.access.models import ExternalAccess
 from om.access.models import NodeExternalAccess
-from om.access.utils import build_ext_group_name_for_om
+from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.google_drive.connector import GoogleDriveConnector
 from om.connectors.google_drive.models import GoogleDriveFileType
@@ -174,13 +174,13 @@ def get_external_access_for_raw_gdrive_file(
     # Prefix group IDs with source type if requested (for indexing path)
     if add_prefix:
         group_ids = {
-            build_ext_group_name_for_om(group_id, DocumentSource.GOOGLE_DRIVE)
+            build_ext_team_name_for_om(group_id, DocumentSource.GOOGLE_DRIVE)
             for group_id in group_ids
         }
 
     return ExternalAccess(
         external_user_emails=user_emails,
-        external_user_group_ids=group_ids,
+        external_team_ids=group_ids,
         is_public=public,
     )
 
@@ -212,7 +212,7 @@ def get_external_access_for_folder(
         logger.warning("Folder missing ID, returning empty permissions")
         return ExternalAccess(
             external_user_emails=set(),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=False,
         )
 
@@ -222,7 +222,7 @@ def get_external_access_for_folder(
         logger.debug(f"No permissionIds found for folder {folder_id}")
         return ExternalAccess(
             external_user_emails=set(),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=False,
         )
 
@@ -269,13 +269,13 @@ def get_external_access_for_folder(
     group_ids: set[str] = group_emails
     if add_prefix:
         group_ids = {
-            build_ext_group_name_for_om(group_id, DocumentSource.GOOGLE_DRIVE)
+            build_ext_team_name_for_om(group_id, DocumentSource.GOOGLE_DRIVE)
             for group_id in group_emails
         }
 
     return ExternalAccess(
         external_user_emails=user_emails,
-        external_user_group_ids=group_ids,
+        external_team_ids=group_ids,
         is_public=is_public,
     )
 

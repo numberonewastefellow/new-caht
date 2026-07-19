@@ -167,9 +167,9 @@ const collections = (
             name: "User Management",
             items: [
               {
-                name: "Groups",
+                name: "Teams",
                 icon: SvgUsers,
-                link: "/admin/groups",
+                link: "/admin/teams",
               },
             ],
           },
@@ -235,9 +235,9 @@ const collections = (
                 link: "/admin/users",
               },
               {
-                name: "Groups",
+                name: "Teams",
                 icon: SvgUsers,
-                link: "/admin/groups",
+                link: "/admin/teams",
               },
               {
                 name: "API Keys",

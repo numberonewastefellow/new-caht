@@ -64,9 +64,9 @@ def _make_chunk(
         access_control_list=generate_opensearch_filtered_access_control_list(
             DocumentAccess.build(
                 user_emails=[],
-                user_groups=[],
+                teams=[],
                 external_user_emails=[],
-                external_user_group_ids=[],
+                external_team_ids=[],
                 is_public=True,
             )
         ),

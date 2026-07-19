@@ -9,15 +9,15 @@ by replacing the CALL with the target's name. Where a call site was SELF-referen
 the target lived in the same module as the caller -- and the result was assigned to a
 variable of the SAME NAME as the target:
 
-    monitor_usergroup_taskset = fetch_versioned_implementation(
-        "om.background.celery.tasks.document_index.tasks", "monitor_usergroup_taskset"
+    monitor_team_taskset = fetch_versioned_implementation(
+        "om.background.celery.tasks.document_index.tasks", "monitor_team_taskset"
     )
 
-the rewrite produced `monitor_usergroup_taskset = monitor_usergroup_taskset`. That
+the rewrite produced `monitor_team_taskset = monitor_team_taskset`. That
 assignment makes the name LOCAL to the enclosing function, so the read on its
 right-hand side no longer resolves to the module-level function:
 
-    UnboundLocalError: cannot access local variable 'monitor_usergroup_taskset'
+    UnboundLocalError: cannot access local variable 'monitor_team_taskset'
                        where it is not associated with a value
 
 check_for_document_index_sync_task raised this on every beat tick until it was caught in the

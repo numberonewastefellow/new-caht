@@ -3,12 +3,12 @@ import Modal from "@/refresh-components/Modal";
 import { useState } from "react";
 import { updateUserGroup } from "./lib";
 import { toast } from "@/hooks/useToast";
-import { ConnectorStatus, UserGroup } from "@/lib/types";
+import { ConnectorStatus, Team } from "@/lib/types";
 import { ConnectorMultiSelect } from "@/components/ConnectorMultiSelect";
 import { SvgPlus } from "@opal/icons";
 export interface AddConnectorFormProps {
   ccPairs: ConnectorStatus<any, any>[];
-  userGroup: UserGroup;
+  userGroup: Team;
   onClose: () => void;
 }
 
@@ -64,12 +64,12 @@ export default function AddConnectorForm({
                 cc_pair_ids: newCCPairIds,
               });
               if (response.ok) {
-                toast.success("Successfully added connectors to group");
+                toast.success("Successfully added connectors to team");
                 onClose();
               } else {
                 const responseJson = await response.json();
                 const errorMsg = responseJson.detail || responseJson.message;
-                toast.error(`Failed to add connectors to group - ${errorMsg}`);
+                toast.error(`Failed to add connectors to team - ${errorMsg}`);
                 onClose();
               }
             }}

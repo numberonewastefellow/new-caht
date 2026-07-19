@@ -11,7 +11,7 @@ from om.db.llm import fetch_default_vision_model
 from om.db.llm import fetch_existing_llm_provider
 from om.db.llm import fetch_existing_models
 from om.db.llm import fetch_llm_provider_view
-from om.db.llm import fetch_user_group_ids
+from om.db.llm import fetch_team_ids
 from om.db.models import Agent
 from om.db.models import User
 from om.llm.constants import LlmProviderNames
@@ -102,10 +102,10 @@ def get_llm_for_agent(
             raise ValueError("No LLM provider found")
 
         # Fetch user group IDs for access control check
-        user_group_ids = fetch_user_group_ids(db_session, user)
+        team_ids = fetch_team_ids(db_session, user)
 
         if not can_user_access_llm_provider(
-            provider_model, user_group_ids, agent, user.role == UserRole.ADMIN
+            provider_model, team_ids, agent, user.role == UserRole.ADMIN
         ):
             logger.warning(
                 "User %s with agent %s cannot access provider %s. Falling back to default provider.",

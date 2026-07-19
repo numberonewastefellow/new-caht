@@ -17,7 +17,7 @@ from om.server.scim.models import ScimName
 from om.server.scim.models import ScimUserResource
 from om.db.models import ScimToken
 from om.db.models import User
-from om.db.models import UserGroup
+from om.db.models import Team
 from om.db.models import UserRole
 
 
@@ -87,8 +87,8 @@ def make_db_user(**kwargs: Any) -> MagicMock:
 
 
 def make_db_group(**kwargs: Any) -> MagicMock:
-    """Build a mock UserGroup ORM object with configurable attributes."""
-    group = MagicMock(spec=UserGroup)
+    """Build a mock Team ORM object with configurable attributes."""
+    group = MagicMock(spec=Team)
     group.id = kwargs.get("id", 1)
     group.name = kwargs.get("name", "Engineering")
     group.is_up_for_deletion = kwargs.get("is_up_for_deletion", False)

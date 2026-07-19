@@ -1,92 +1,105 @@
-from om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
-from om.external_permissions.sync_params import get_all_censoring_enabled_sources
-from om.external_permissions.sync_params import get_source_perm_sync_config
+"""Post-query censoring — the fail-closed safety net over the sync staleness window.
+
+Some sources (e.g. Salesforce) enforce access by *censoring* retrieved results at
+query time rather than by an indexed ACL. After retrieval, every chunk from such a
+source is re-checked against the authenticated caller and dropped if they may not
+see it. Censoring runs per-source, is authoritative and server-side, and **fails
+closed** — if a source's check errors, all of that source's chunks are discarded
+rather than leaked. The original result ordering is preserved for survivors.
+
+Kept function names (`_post_query_chunk_censoring`) match the search-pipeline
+caller; the implementation is a WS-B clean-room rewrite.
+"""
+
+from collections.abc import Iterable
+
 from om.configs.constants import DocumentSource
 from om.context.search.pipeline import InferenceChunk
-from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.connector_credential_pair import get_all_auto_sync_cc_pairs
 from om.db.models import User
+from om.external_permissions.sync_params import get_all_censoring_enabled_sources
+from om.external_permissions.sync_params import get_source_perm_sync_config
+from om.tenancy.context import get_current_tenant_session
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
 
 
-def _get_all_censoring_enabled_sources() -> set[DocumentSource]:
-    """
-    Returns the set of sources that have censoring enabled.
-    This is based on if the access_type is set to sync and the connector
-    source has a censoring config.
+def _censoring_sources() -> set[DocumentSource]:
+    """Sources whose results must pass a query-time censoring check: those that
+    both declare a censoring config AND have at least one auto-sync cc-pair.
 
-    NOTE: This means if there is a source has a single cc_pair that is sync,
-    all chunks for that source will be censored, even if the connector that
-    indexed that chunk is not sync. This was done to avoid getting the cc_pair
-    for every single chunk.
+    Censoring is decided at *source* granularity (a single sync cc-pair censors
+    every chunk of that source) to avoid a per-chunk cc-pair lookup.
     """
-    all_censoring_enabled_sources = get_all_censoring_enabled_sources()
-    with get_session_with_current_tenant() as db_session:
-        enabled_sync_connectors = get_all_auto_sync_cc_pairs(db_session)
+    censoring_capable = get_all_censoring_enabled_sources()
+    if not censoring_capable:
+        return set()
+    with get_current_tenant_session() as db_session:
         return {
             cc_pair.connector.source
-            for cc_pair in enabled_sync_connectors
-            if cc_pair.connector.source in all_censoring_enabled_sources
+            for cc_pair in get_all_auto_sync_cc_pairs(db_session)
+            if cc_pair.connector.source in censoring_capable
         }
 
 
-# NOTE: This is only called if ee is enabled.
+def _censor_source_chunks(
+    source: DocumentSource,
+    chunks: list[InferenceChunk],
+    user_email: str,
+) -> Iterable[InferenceChunk]:
+    """Run a single source's censoring callback. Fail closed: on any error, yield
+    nothing (drop every chunk of this source) rather than risk a leak."""
+    sync_config = get_source_perm_sync_config(source)
+    if sync_config is None or sync_config.censoring_config is None:
+        raise ValueError(f"No censoring config found for source {source}")
+    try:
+        return sync_config.censoring_config.chunk_censoring_func(chunks, user_email)
+    except Exception:
+        logger.exception(
+            "Censoring failed for source %s — dropping all %d of its chunks",
+            source,
+            len(chunks),
+        )
+        return []
+
+
 def _post_query_chunk_censoring(
     chunks: list[InferenceChunk],
     user: User | None,
 ) -> list[InferenceChunk]:
-    """
-    This function checks all chunks to see if they need to be sent to a censoring
-    function. If they do, it sends them to the censoring function and returns the
-    censored chunks. If they don't, it returns the original chunks.
-    """
+    """Drop retrieved chunks the user may not see for censoring-enforced sources,
+    preserving the input ordering of the survivors."""
     if user is None:
-        # No user means auth is disabled, so there is nothing to censor against.
+        # Auth disabled — nothing to censor against.
         return chunks
 
-    sources_to_censor = _get_all_censoring_enabled_sources()
+    sources_to_censor = _censoring_sources()
+    if not sources_to_censor:
+        return chunks
 
-    # Anonymous users can only access public (non-permission-synced) content
+    # Anonymous callers can only ever see non-censored (public) content.
     if user.is_anonymous:
-        return [chunk for chunk in chunks if chunk.source_type not in sources_to_censor]
+        return [c for c in chunks if c.source_type not in sources_to_censor]
 
-    final_chunk_dict: dict[str, InferenceChunk] = {}
-    chunks_to_process: dict[DocumentSource, list[InferenceChunk]] = {}
+    # Group the chunks that need a per-source check; pass the rest straight
+    # through. Censored survivors are keyed by the object the censoring function
+    # RETURNS (it may redact, not merely filter) so any redaction is preserved.
+    output_by_id: dict[str, InferenceChunk] = {}
+    pending: dict[DocumentSource, list[InferenceChunk]] = {}
     for chunk in chunks:
-        # Separate out chunks that require permission post-processing by source
         if chunk.source_type in sources_to_censor:
-            chunks_to_process.setdefault(chunk.source_type, []).append(chunk)
+            pending.setdefault(chunk.source_type, []).append(chunk)
         else:
-            final_chunk_dict[chunk.unique_id] = chunk
+            output_by_id[chunk.unique_id] = chunk
 
-    # For each source, filter out the chunks using the permission
-    # check function for that source
-    # TODO: Use a threadpool/multiprocessing to process the sources in parallel
-    for source, chunks_for_source in chunks_to_process.items():
-        sync_config = get_source_perm_sync_config(source)
-        if sync_config is None or sync_config.censoring_config is None:
-            raise ValueError(f"No sync config found for {source}")
+    for source, source_chunks in pending.items():
+        for kept in _censor_source_chunks(source, source_chunks, user.email):
+            output_by_id[kept.unique_id] = kept
 
-        censor_chunks_for_source = sync_config.censoring_config.chunk_censoring_func
-        try:
-            censored_chunks = censor_chunks_for_source(chunks_for_source, user.email)
-        except Exception as e:
-            logger.exception(
-                f"Failed to censor chunks for source {source} so throwing out all"
-                f" chunks for this source and continuing: {e}"
-            )
-            continue
-
-        for censored_chunk in censored_chunks:
-            final_chunk_dict[censored_chunk.unique_id] = censored_chunk
-
-    # IMPORTANT: make sure to retain the same ordering as the original `chunks` passed in
-    final_chunk_list: list[InferenceChunk] = []
-    for chunk in chunks:
-        # only if the chunk is in the final censored chunks, add it to the final list
-        # if it is missing, that means it was intentionally left out
-        if chunk.unique_id in final_chunk_dict:
-            final_chunk_list.append(final_chunk_dict[chunk.unique_id])
-
-    return final_chunk_list
+    # Rebuild in the original order, keeping only survivors.
+    return [
+        output_by_id[chunk.unique_id]
+        for chunk in chunks
+        if chunk.unique_id in output_by_id
+    ]

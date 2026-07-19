@@ -356,7 +356,7 @@ def _convert_email_headers_and_body_into_document(
     external_access = (
         ExternalAccess(
             external_user_emails=set(expert_info_map.keys()),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=False,
         )
         if include_perm_sync

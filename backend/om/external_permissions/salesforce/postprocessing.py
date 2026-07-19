@@ -1,6 +1,6 @@
 import time
 
-from om.db.external_perm import fetch_external_groups_for_user_email_and_group_ids
+from om.db.external_perm import fetch_external_teams_for_user_email_and_team_ids
 from om.external_permissions.salesforce.utils import (
     get_any_salesforce_client_for_doc_id,
 )
@@ -218,11 +218,11 @@ def _get_objects_access_for_user_email(
     object_ids: set[str], user_email: str
 ) -> dict[str, bool]:
     with get_session_with_current_tenant() as db_session:
-        external_groups = fetch_external_groups_for_user_email_and_group_ids(
+        external_groups = fetch_external_teams_for_user_email_and_team_ids(
             db_session=db_session,
             user_email=user_email,
             # Maybe make a function that adds a salesforce prefix to the group ids
             group_ids=list(object_ids),
         )
-        external_group_ids = {group.external_user_group_id for group in external_groups}
+        external_group_ids = {group.external_team_id for group in external_groups}
         return {group_id: group_id in external_group_ids for group_id in object_ids}

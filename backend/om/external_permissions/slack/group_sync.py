@@ -23,8 +23,8 @@ def _get_slack_group_ids(
     slack_client: WebClient,
 ) -> list[str]:
     group_ids = []
-    for result in make_paginated_slack_api_call(slack_client.usergroups_list):
-        for group in result.get("usergroups", []):
+    for result in make_paginated_slack_api_call(slack_client.teams_list):
+        for group in result.get("teams", []):
             group_ids.append(group.get("id"))
     return group_ids
 
@@ -36,7 +36,7 @@ def _get_slack_group_members_email(
 ) -> list[str]:
     group_member_emails = []
     for result in make_paginated_slack_api_call(
-        slack_client.usergroups_users_list, usergroup=group_name
+        slack_client.teams_users_list, team=group_name
     ):
         for member_id in result.get("users", []):
             member_email = user_id_to_email_map.get(member_id)

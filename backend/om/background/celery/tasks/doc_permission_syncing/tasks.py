@@ -707,9 +707,9 @@ def element_update_permissions(
                         if external_access.external_user_emails
                         else None
                     ),
-                    external_user_group_ids=(
-                        list(external_access.external_user_group_ids)
-                        if external_access.external_user_group_ids
+                    external_team_ids=(
+                        list(external_access.external_team_ids)
+                        if external_access.external_team_ids
                         else None
                     ),
                 )

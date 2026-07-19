@@ -37,7 +37,7 @@ from om.redis.redis_connector_prune import RedisConnectorPrune
 from om.redis.redis_connector_stop import RedisConnectorStop
 from om.redis.redis_document_set import RedisDocumentSet
 from om.redis.redis_pool import get_redis_client
-from om.redis.redis_usergroup import RedisUserGroup
+from om.redis.redis_team import RedisTeam
 from om.utils.logger import setup_logger
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
@@ -158,7 +158,7 @@ def on_worker_init(sender: Worker, **kwargs: Any) -> None:
     reset_document_sync(r)
 
     RedisDocumentSet.reset_all(r)
-    RedisUserGroup.reset_all(r)
+    RedisTeam.reset_all(r)
     RedisConnectorDelete.reset_all(r)
     RedisConnectorPrune.reset_all(r)
     RedisConnectorStop.reset_all(r)

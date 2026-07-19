@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FormikProps } from "formik";
 import { UserRole } from "@/lib/types";
-import { useUserGroups } from "@/lib/hooks";
+import { useTeams } from "@/lib/hooks";
 import { BooleanFormField } from "@/components/Field";
 import { useUser } from "@/providers/UserProvider";
 import { GroupsMultiSelect } from "./GroupsMultiSelect";
@@ -28,7 +28,7 @@ export const IsPublicGroupSelector = <T extends IsPublicGroupSelectorFormType>({
   enforceGroupSelection?: boolean;
   smallLabels?: boolean;
 }) => {
-  const { data: userGroups, isLoading: userGroupsIsLoading } = useUserGroups();
+  const { data: userGroups, isLoading: userGroupsIsLoading } = useTeams();
   const { isAdmin, user, isCurator } = useUser();
   const [shouldHideContent, setShouldHideContent] = useState(false);
 

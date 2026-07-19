@@ -1,6 +1,6 @@
 """Tests for hierarchy node access filtering.
 
-Validates that the overlap operator on external_user_group_ids works correctly
+Validates that the overlap operator on external_team_ids works correctly
 with PostgreSQL's VARCHAR[] column type. This specifically tests the fix for
 the `character varying[] && text[]` type mismatch error.
 """
@@ -23,7 +23,7 @@ def _make_node(
     *,
     is_public: bool = False,
     external_user_emails: list[str] | None = None,
-    external_user_group_ids: list[str] | None = None,
+    external_team_ids: list[str] | None = None,
 ) -> HierarchyNode:
     return HierarchyNode(
         raw_node_id=raw_node_id,
@@ -32,7 +32,7 @@ def _make_node(
         node_type=HierarchyNodeType.FOLDER,
         is_public=is_public,
         external_user_emails=external_user_emails,
-        external_user_group_ids=external_user_group_ids,
+        external_team_ids=external_team_ids,
     )
 
 
@@ -54,7 +54,7 @@ def seeded_nodes(db_session: Session) -> Generator[list[HierarchyNode], None, No
         _make_node(
             f"group_only_{tag}",
             f"Group-Only Folder {tag}",
-            external_user_group_ids=["group_engineering", "group_design"],
+            external_team_ids=["group_engineering", "group_design"],
         ),
         _make_node(
             f"private_{tag}",

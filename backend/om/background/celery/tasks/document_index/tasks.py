@@ -44,22 +44,22 @@ from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.enums import SyncStatus
 from om.db.enums import SyncType
 from om.db.models import DocumentSet
-from om.db.models import UserGroup
+from om.db.models import Team
 from om.db.search_settings import get_active_search_settings
 from om.db.sync_record import cleanup_sync_records
 from om.db.sync_record import insert_sync_record
 from om.db.sync_record import update_sync_record_status
-from om.db.user_group import delete_user_group
-from om.db.user_group import fetch_user_group
-from om.db.user_group import mark_user_group_as_synced
-from om.db.user_group import prepare_user_group_for_deletion
+from om.db.team import delete_team
+from om.db.team import fetch_team
+from om.db.team import mark_team_as_synced
+from om.db.team import prepare_team_for_deletion
 from om.document_index.factory import get_all_document_indices
 from om.document_index.interfaces_new import MetadataUpdateRequest
 from om.redis.redis_document_set import RedisDocumentSet
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client
 from om.redis.redis_pool import redis_lock_dump
-from om.redis.redis_usergroup import RedisUserGroup
+from om.redis.redis_team import RedisTeam
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
@@ -80,7 +80,7 @@ def check_for_document_index_sync_task(self: Task, *, tenant_id: str) -> bool | 
 
     # Useful for debugging timing issues with reacquisitions.
     # TODO: remove once more generalized logging is in place
-    from om.db.user_group import fetch_user_groups as _impl_fetch_user_groups
+    from om.db.team import fetch_teams as _impl_fetch_teams
     task_logger.info("check_for_document_index_sync_task started")
 
     time_start = time.monotonic()
@@ -127,26 +127,26 @@ def check_for_document_index_sync_task(self: Task, *, tenant_id: str) -> bool | 
         # check if any user groups are not synced
         lock_beat.reacquire()
         try:
-            fetch_user_groups = _impl_fetch_user_groups
+            fetch_teams = _impl_fetch_teams
         except ModuleNotFoundError:
             # Always exceptions on the MIT version, which is expected
             # We shouldn't actually get here if the ee version check works
             pass
         else:
-            usergroup_ids: list[int] = []
+            team_ids: list[int] = []
             with get_session_with_current_tenant() as db_session:
-                user_groups = fetch_user_groups(
+                teams = fetch_teams(
                     db_session=db_session, only_up_to_date=False
                 )
 
-                for usergroup in user_groups:
-                    usergroup_ids.append(usergroup.id)
+                for team in teams:
+                    team_ids.append(team.id)
 
-            for usergroup_id in usergroup_ids:
+            for team_id in team_ids:
                 lock_beat.reacquire()
                 with get_session_with_current_tenant() as db_session:
-                    try_generate_user_group_sync_tasks(
-                        self.app, usergroup_id, db_session, r, lock_beat, tenant_id
+                    try_generate_team_sync_tasks(
+                        self.app, team_id, db_session, r, lock_beat, tenant_id
                     )
 
         # 2/3: VALIDATE: TODO
@@ -170,9 +170,9 @@ def check_for_document_index_sync_task(self: Task, *, tenant_id: str) -> bool | 
             elif key_str.startswith(RedisDocumentSet.FENCE_PREFIX):
                 with get_session_with_current_tenant() as db_session:
                     monitor_document_set_taskset(tenant_id, key_bytes, r, db_session)
-            elif key_str.startswith(RedisUserGroup.FENCE_PREFIX):
+            elif key_str.startswith(RedisTeam.FENCE_PREFIX):
                 with get_session_with_current_tenant() as db_session:
-                    monitor_usergroup_taskset(tenant_id, key_bytes, r, db_session)
+                    monitor_team_taskset(tenant_id, key_bytes, r, db_session)
 
     except SoftTimeLimitExceeded:
         task_logger.info(
@@ -276,38 +276,38 @@ def try_generate_document_set_sync_tasks(
     return tasks_generated
 
 
-def try_generate_user_group_sync_tasks(
+def try_generate_team_sync_tasks(
     celery_app: Celery,
-    usergroup_id: int,
+    team_id: int,
     db_session: Session,
     r: Redis,
     lock_beat: RedisLock,
     tenant_id: str,
 ) -> int | None:
-    from om.db.user_group import fetch_user_group as _impl_fetch_user_group
+    from om.db.team import fetch_team as _impl_fetch_team
     lock_beat.reacquire()
 
-    rug = RedisUserGroup(tenant_id, usergroup_id)
+    rug = RedisTeam(tenant_id, team_id)
     if rug.fenced:
         # don't generate sync tasks if tasks are still pending
         return None
 
     # race condition with the monitor/cleanup function if we use a cached result!
-    fetch_user_group = cast(
-        Callable[[Session, int], UserGroup | None],
-        _impl_fetch_user_group,
+    fetch_team = cast(
+        Callable[[Session, int], Team | None],
+        _impl_fetch_team,
     )
 
-    usergroup = fetch_user_group(db_session, usergroup_id)
-    if not usergroup:
+    team = fetch_team(db_session, team_id)
+    if not team:
         return None
 
-    if usergroup.is_up_to_date:
+    if team.is_up_to_date:
         # there should be no in-progress sync records if this is up to date
         # clean it up just in case things got into a bad state
         cleanup_sync_records(
             db_session=db_session,
-            entity_id=usergroup_id,
+            entity_id=team_id,
             sync_type=SyncType.USER_GROUP,
         )
         return None
@@ -317,7 +317,7 @@ def try_generate_user_group_sync_tasks(
 
     # Add all documents that need to be updated into the queue
     task_logger.info(
-        f"RedisUserGroup.generate_tasks starting. usergroup_id={usergroup.id}"
+        f"RedisTeam.generate_tasks starting. team_id={team.id}"
     )
     result = rug.generate_tasks(
         DOC_INDEX_SYNC_MAX_TASKS, celery_app, db_session, r, lock_beat, tenant_id
@@ -333,8 +333,8 @@ def try_generate_user_group_sync_tasks(
     #     return 0
 
     task_logger.info(
-        f"RedisUserGroup.generate_tasks finished. "
-        f"usergroup={usergroup.id} tasks_generated={tasks_generated}"
+        f"RedisTeam.generate_tasks finished. "
+        f"team={team.id} tasks_generated={tasks_generated}"
     )
 
     # create before setting fence to avoid race condition where the monitoring
@@ -342,7 +342,7 @@ def try_generate_user_group_sync_tasks(
     try:
         insert_sync_record(
             db_session=db_session,
-            entity_id=usergroup_id,
+            entity_id=team_id,
             sync_type=SyncType.USER_GROUP,
         )
     except Exception:
@@ -574,23 +574,23 @@ def document_index_metadata_sync_task(
     return completion_status == OmCeleryTaskCompletionStatus.SUCCEEDED
 
 
-def monitor_usergroup_taskset(
+def monitor_team_taskset(
     tenant_id: str, key_bytes: bytes, r: Redis, db_session: Session
 ) -> None:
     """This function is likely to move in the worker refactor happening next."""
     fence_key = key_bytes.decode("utf-8")
-    usergroup_id_str = RedisUserGroup.get_id_from_fence_key(fence_key)
-    if not usergroup_id_str:
-        task_logger.warning(f"Could not parse usergroup id from {fence_key}")
+    team_id_str = RedisTeam.get_id_from_fence_key(fence_key)
+    if not team_id_str:
+        task_logger.warning(f"Could not parse team id from {fence_key}")
         return
 
     try:
-        usergroup_id = int(usergroup_id_str)
+        team_id = int(team_id_str)
     except ValueError:
-        task_logger.exception(f"usergroup_id ({usergroup_id_str}) is not an integer!")
+        task_logger.exception(f"team_id ({team_id_str}) is not an integer!")
         raise
 
-    rug = RedisUserGroup(tenant_id, usergroup_id)
+    rug = RedisTeam(tenant_id, team_id)
     if not rug.fenced:
         return
 
@@ -600,58 +600,58 @@ def monitor_usergroup_taskset(
 
     count = cast(int, r.scard(rug.taskset_key))
     task_logger.info(
-        f"User group sync progress: usergroup_id={usergroup_id} remaining={count} initial={initial_count}"
+        f"User group sync progress: team_id={team_id} remaining={count} initial={initial_count}"
     )
     if count > 0:
         update_sync_record_status(
             db_session=db_session,
-            entity_id=usergroup_id,
+            entity_id=team_id,
             sync_type=SyncType.USER_GROUP,
             sync_status=SyncStatus.IN_PROGRESS,
             num_docs_synced=count,
         )
         return
 
-    user_group = fetch_user_group(db_session=db_session, user_group_id=usergroup_id)
-    if user_group:
-        usergroup_name = user_group.name
+    team = fetch_team(db_session=db_session, team_id=team_id)
+    if team:
+        team_name = team.name
         try:
-            if user_group.is_up_for_deletion:
+            if team.is_up_for_deletion:
                 # this prepare should have been run when the deletion was scheduled,
                 # but run it again to be sure we're ready to go
-                mark_user_group_as_synced(db_session, user_group)
-                prepare_user_group_for_deletion(db_session, usergroup_id)
-                delete_user_group(db_session=db_session, user_group=user_group)
+                mark_team_as_synced(db_session, team)
+                prepare_team_for_deletion(db_session, team_id)
+                delete_team(db_session=db_session, team=team)
 
                 update_sync_record_status(
                     db_session=db_session,
-                    entity_id=usergroup_id,
+                    entity_id=team_id,
                     sync_type=SyncType.USER_GROUP,
                     sync_status=SyncStatus.SUCCESS,
                     num_docs_synced=initial_count,
                 )
 
                 task_logger.info(
-                    f"Deleted usergroup: name={usergroup_name} id={usergroup_id}"
+                    f"Deleted team: name={team_name} id={team_id}"
                 )
             else:
-                mark_user_group_as_synced(db_session=db_session, user_group=user_group)
+                mark_team_as_synced(db_session=db_session, team=team)
 
                 update_sync_record_status(
                     db_session=db_session,
-                    entity_id=usergroup_id,
+                    entity_id=team_id,
                     sync_type=SyncType.USER_GROUP,
                     sync_status=SyncStatus.SUCCESS,
                     num_docs_synced=initial_count,
                 )
 
                 task_logger.info(
-                    f"Synced usergroup. name={usergroup_name} id={usergroup_id}"
+                    f"Synced team. name={team_name} id={team_id}"
                 )
         except Exception as e:
             update_sync_record_status(
                 db_session=db_session,
-                entity_id=usergroup_id,
+                entity_id=team_id,
                 sync_type=SyncType.USER_GROUP,
                 sync_status=SyncStatus.FAILED,
                 num_docs_synced=initial_count,

@@ -204,7 +204,7 @@ class RedisConnectorPermissionSync:
                 if task_logger:
                     num_users = len(permissions.external_access.external_user_emails)
                     num_groups = len(
-                        permissions.external_access.external_user_group_ids
+                        permissions.external_access.external_team_ids
                     )
                     element_id = (
                         permissions.doc_id

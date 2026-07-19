@@ -3,8 +3,8 @@ import { FieldArray, ArrayHelpers, ErrorMessage, useField } from "formik";
 import Text from "@/refresh-components/texts/Text";
 import Button from "@/refresh-components/buttons/Button";
 import Separator from "@/refresh-components/Separator";
-import { UserGroup, UserRole } from "@/lib/types";
-import { useUserGroups } from "@/lib/hooks";
+import { Team, UserRole } from "@/lib/types";
+import { useTeams } from "@/lib/hooks";
 import {
   AccessType,
   ValidAutoSyncSource,
@@ -32,7 +32,7 @@ export function AccessTypeGroupSelector({
 }: {
   connector: ConfigurableSources;
 }) {
-  const { data: userGroups, isLoading: userGroupsIsLoading } = useUserGroups();
+  const { data: userGroups, isLoading: userGroupsIsLoading } = useTeams();
   const { isAdmin, user, isCurator } = useUser();
   const [shouldHideContent, setShouldHideContent] = useState(false);
   const isAutoSyncSupported = isValidAutoSyncSource(connector);
@@ -121,7 +121,7 @@ export function AccessTypeGroupSelector({
                     <div className="animate-pulse bg-background-200 h-8 w-32 rounded"></div>
                   ) : (
                     userGroups &&
-                    userGroups.map((userGroup: UserGroup) => {
+                    userGroups.map((userGroup: Team) => {
                       const ind = groups.value.indexOf(userGroup.id);
                       let isSelected = ind !== -1;
                       return (

@@ -1,3 +1,17 @@
+"""Persistence for externally-synced group memberships.
+
+Connectors that sync source-system permissions yield :class:`ExternalUserGroup`
+objects (an external IdP/source "group" + its member emails). Those are stored,
+namespaced per source, as **external-team** principals:
+
+* ``user__external_team_id`` — (user, external_team_id, cc_pair) membership rows.
+* ``public_external_team``   — external groups that grant "anyone" access.
+
+At query time :func:`fetch_external_teams_for_user` expands a user into their
+external-team principals, which :func:`om.access.access.get_acl_for_user` renders
+as ``external_team:<id>`` and matches against each document's ACL.
+"""
+
 from collections.abc import Sequence
 from uuid import UUID
 
@@ -7,11 +21,11 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 
-from om.access.utils import build_ext_group_name_for_om
+from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
-from om.db.models import PublicExternalUserGroup
+from om.db.models import PublicExternalTeam
 from om.db.models import User
-from om.db.models import User__ExternalUserGroupId
+from om.db.models import User__ExternalTeamId
 from om.db.users import batch_add_ext_perm_user_if_not_exists
 from om.db.users import get_user_by_email
 from om.utils.logger import setup_logger
@@ -20,61 +34,47 @@ logger = setup_logger()
 
 
 class ExternalUserGroup(BaseModel):
+    """An external source/IdP group ingested by a connector's group-sync."""
+
     id: str
     user_emails: list[str]
-    # `True` for cases like a Folder in Google Drive that give domain-wide
-    # or "Anyone with link" access to all files in the folder.
-    # if this is set, `user_emails` don't really matter.
-    # When this is `True`, this `ExternalUserGroup` object doesn't really represent
-    # an actual "group" in the source.
+    # `True` e.g. for a Google Drive folder giving domain-wide / "anyone with
+    # link" access. When set, `user_emails` is irrelevant and the group is stored
+    # as a public-external-team row rather than a membership set.
     gives_anyone_access: bool = False
 
 
-def delete_user__ext_group_for_user__no_commit(
-    db_session: Session,
-    user_id: UUID,
-) -> None:
+def delete_user__ext_team_for_user__no_commit(db_session: Session, user_id: UUID) -> None:
     db_session.execute(
-        delete(User__ExternalUserGroupId).where(
-            User__ExternalUserGroupId.user_id == user_id
-        )
+        delete(User__ExternalTeamId).where(User__ExternalTeamId.user_id == user_id)
     )
 
 
-def delete_user__ext_group_for_cc_pair__no_commit(
-    db_session: Session,
-    cc_pair_id: int,
+def delete_user__ext_team_for_cc_pair__no_commit(
+    db_session: Session, cc_pair_id: int
 ) -> None:
     db_session.execute(
-        delete(User__ExternalUserGroupId).where(
-            User__ExternalUserGroupId.cc_pair_id == cc_pair_id
-        )
+        delete(User__ExternalTeamId).where(User__ExternalTeamId.cc_pair_id == cc_pair_id)
     )
 
 
-def delete_public_external_group_for_cc_pair__no_commit(
-    db_session: Session,
-    cc_pair_id: int,
+def delete_public_external_team_for_cc_pair__no_commit(
+    db_session: Session, cc_pair_id: int
 ) -> None:
     db_session.execute(
-        delete(PublicExternalUserGroup).where(
-            PublicExternalUserGroup.cc_pair_id == cc_pair_id
-        )
+        delete(PublicExternalTeam).where(PublicExternalTeam.cc_pair_id == cc_pair_id)
     )
 
 
-def mark_old_external_groups_as_stale(
-    db_session: Session,
-    cc_pair_id: int,
-) -> None:
+def mark_old_external_groups_as_stale(db_session: Session, cc_pair_id: int) -> None:
     db_session.execute(
-        update(User__ExternalUserGroupId)
-        .where(User__ExternalUserGroupId.cc_pair_id == cc_pair_id)
+        update(User__ExternalTeamId)
+        .where(User__ExternalTeamId.cc_pair_id == cc_pair_id)
         .values(stale=True)
     )
     db_session.execute(
-        update(PublicExternalUserGroup)
-        .where(PublicExternalUserGroup.cc_pair_id == cc_pair_id)
+        update(PublicExternalTeam)
+        .where(PublicExternalTeam.cc_pair_id == cc_pair_id)
         .values(stale=True)
     )
 
@@ -85,148 +85,116 @@ def upsert_external_groups(
     external_groups: list[ExternalUserGroup],
     source: DocumentSource,
 ) -> None:
+    """Upsert external-team membership (and public-external-team) rows, clearing
+    the ``stale`` flag on rows that are still present so a later
+    :func:`remove_stale_external_groups` sweep only removes departed ones.
     """
-    Performs a true upsert operation for external user groups:
-    - For existing groups (same user_id, external_user_group_id, cc_pair_id), updates the stale flag to False
-    - For new groups, inserts them with stale=False
-    - For public groups, uses upsert logic as well
-    """
-    # If there are no groups to add, return early
     if not external_groups:
         return
 
-    # collect all emails from all groups to batch add all users at once for efficiency
-    all_group_member_emails = set()
+    all_member_emails: set[str] = set()
     for external_group in external_groups:
-        for user_email in external_group.user_emails:
-            all_group_member_emails.add(user_email)
+        all_member_emails.update(external_group.user_emails)
 
-    # batch add users if they don't exist and get their ids
-    all_group_members: list[User] = batch_add_ext_perm_user_if_not_exists(
-        db_session=db_session,
-        # NOTE: this function handles case sensitivity for emails
-        emails=list(all_group_member_emails),
+    members: list[User] = batch_add_ext_perm_user_if_not_exists(
+        db_session=db_session, emails=list(all_member_emails)
     )
+    email_to_id = {user.email.lower(): user.id for user in members}
 
-    # map emails to ids
-    email_id_map = {user.email.lower(): user.id for user in all_group_members}
-
-    # Process each external group
     for external_group in external_groups:
-        external_group_id = build_ext_group_name_for_om(
-            ext_group_name=external_group.id,
-            source=source,
+        external_team_id = build_ext_team_name_for_om(
+            external_group_name=external_group.id, source=source
         )
 
-        # Handle user-group mappings
         for user_email in external_group.user_emails:
-            user_id = email_id_map.get(user_email.lower())
+            user_id = email_to_id.get(user_email.lower())
             if user_id is None:
                 logger.warning(
-                    f"User in group {external_group.id}"
-                    f" with email {user_email} not found"
+                    "User %s in group %s not found", user_email, external_group.id
                 )
                 continue
 
-            # Check if the user-group mapping already exists
-            existing_user_group = db_session.scalar(
-                select(User__ExternalUserGroupId).where(
-                    User__ExternalUserGroupId.user_id == user_id,
-                    User__ExternalUserGroupId.external_user_group_id
-                    == external_group_id,
-                    User__ExternalUserGroupId.cc_pair_id == cc_pair_id,
+            existing = db_session.scalar(
+                select(User__ExternalTeamId).where(
+                    User__ExternalTeamId.user_id == user_id,
+                    User__ExternalTeamId.external_team_id == external_team_id,
+                    User__ExternalTeamId.cc_pair_id == cc_pair_id,
                 )
             )
-
-            if existing_user_group:
-                # Update existing record
-                existing_user_group.stale = False
+            if existing:
+                existing.stale = False
             else:
-                # Insert new record
-                new_user_group = User__ExternalUserGroupId(
-                    user_id=user_id,
-                    external_user_group_id=external_group_id,
-                    cc_pair_id=cc_pair_id,
-                    stale=False,
+                db_session.add(
+                    User__ExternalTeamId(
+                        user_id=user_id,
+                        external_team_id=external_team_id,
+                        cc_pair_id=cc_pair_id,
+                        stale=False,
+                    )
                 )
-                db_session.add(new_user_group)
 
-        # Handle public group if needed
         if external_group.gives_anyone_access:
-            # Check if the public group already exists
-            existing_public_group = db_session.scalar(
-                select(PublicExternalUserGroup).where(
-                    PublicExternalUserGroup.external_user_group_id == external_group_id,
-                    PublicExternalUserGroup.cc_pair_id == cc_pair_id,
+            existing_public = db_session.scalar(
+                select(PublicExternalTeam).where(
+                    PublicExternalTeam.external_team_id == external_team_id,
+                    PublicExternalTeam.cc_pair_id == cc_pair_id,
                 )
             )
-
-            if existing_public_group:
-                # Update existing record
-                existing_public_group.stale = False
+            if existing_public:
+                existing_public.stale = False
             else:
-                # Insert new record
-                new_public_group = PublicExternalUserGroup(
-                    external_user_group_id=external_group_id,
-                    cc_pair_id=cc_pair_id,
-                    stale=False,
+                db_session.add(
+                    PublicExternalTeam(
+                        external_team_id=external_team_id,
+                        cc_pair_id=cc_pair_id,
+                        stale=False,
+                    )
                 )
-                db_session.add(new_public_group)
 
     db_session.commit()
 
 
-def remove_stale_external_groups(
-    db_session: Session,
-    cc_pair_id: int,
-) -> None:
+def remove_stale_external_groups(db_session: Session, cc_pair_id: int) -> None:
     db_session.execute(
-        delete(User__ExternalUserGroupId).where(
-            User__ExternalUserGroupId.cc_pair_id == cc_pair_id,
-            User__ExternalUserGroupId.stale.is_(True),
+        delete(User__ExternalTeamId).where(
+            User__ExternalTeamId.cc_pair_id == cc_pair_id,
+            User__ExternalTeamId.stale.is_(True),
         )
     )
     db_session.execute(
-        delete(PublicExternalUserGroup).where(
-            PublicExternalUserGroup.cc_pair_id == cc_pair_id,
-            PublicExternalUserGroup.stale.is_(True),
+        delete(PublicExternalTeam).where(
+            PublicExternalTeam.cc_pair_id == cc_pair_id,
+            PublicExternalTeam.stale.is_(True),
         )
     )
     db_session.commit()
 
 
-def fetch_external_groups_for_user(
-    db_session: Session,
-    user_id: UUID,
-) -> Sequence[User__ExternalUserGroupId]:
+def fetch_external_teams_for_user(
+    db_session: Session, user_id: UUID
+) -> Sequence[User__ExternalTeamId]:
     return db_session.scalars(
-        select(User__ExternalUserGroupId).where(
-            User__ExternalUserGroupId.user_id == user_id
-        )
+        select(User__ExternalTeamId).where(User__ExternalTeamId.user_id == user_id)
     ).all()
 
 
-def fetch_external_groups_for_user_email_and_group_ids(
+def fetch_external_teams_for_user_email_and_team_ids(
     db_session: Session,
     user_email: str,
-    group_ids: list[str],
-) -> list[User__ExternalUserGroupId]:
+    team_ids: list[str],
+) -> list[User__ExternalTeamId]:
     user = get_user_by_email(db_session=db_session, email=user_email)
     if user is None:
         return []
-    user_id = user.id
-    user_ext_groups = db_session.scalars(
-        select(User__ExternalUserGroupId).where(
-            User__ExternalUserGroupId.user_id == user_id,
-            User__ExternalUserGroupId.external_user_group_id.in_(group_ids),
-        )
-    ).all()
-    return list(user_ext_groups)
-
-
-def fetch_public_external_group_ids(
-    db_session: Session,
-) -> list[str]:
     return list(
-        db_session.scalars(select(PublicExternalUserGroup.external_user_group_id)).all()
+        db_session.scalars(
+            select(User__ExternalTeamId).where(
+                User__ExternalTeamId.user_id == user.id,
+                User__ExternalTeamId.external_team_id.in_(team_ids),
+            )
+        ).all()
     )
+
+
+def fetch_public_external_team_ids(db_session: Session) -> list[str]:
+    return list(db_session.scalars(select(PublicExternalTeam.external_team_id)).all())

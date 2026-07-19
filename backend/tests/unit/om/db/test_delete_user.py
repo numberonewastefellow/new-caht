@@ -9,7 +9,7 @@ from om.db.models import DocumentSet__User
 from om.db.models import Agent
 from om.db.models import Agent__User
 from om.db.models import SamlAccount
-from om.db.models import User__UserGroup
+from om.db.models import User__Team
 from om.db.users import delete_user_from_db
 
 
@@ -31,7 +31,7 @@ def _make_query_chain() -> MagicMock:
 
 
 @patch("om.db.users.remove_user_from_invited_users")
-@patch("om.db.external_perm.delete_user__ext_group_for_user__no_commit")
+@patch("om.db.external_perm.delete_user__ext_team_for_user__no_commit")
 def test_delete_user_nulls_out_document_set_ownership(
     _mock_ee: Any, _mock_remove_invited: Any
 ) -> None:
@@ -65,7 +65,7 @@ def test_delete_user_nulls_out_document_set_ownership(
 
 
 @patch("om.db.users.remove_user_from_invited_users")
-@patch("om.db.external_perm.delete_user__ext_group_for_user__no_commit")
+@patch("om.db.external_perm.delete_user__ext_team_for_user__no_commit")
 def test_delete_user_cleans_up_join_tables(
     _mock_ee: Any, _mock_remove_invited: Any
 ) -> None:
@@ -84,13 +84,13 @@ def test_delete_user_cleans_up_join_tables(
     delete_user_from_db(user, db_session)
 
     # Join tables should be deleted (not updated)
-    for model in [DocumentSet__User, Agent__User, User__UserGroup, SamlAccount]:
+    for model in [DocumentSet__User, Agent__User, User__Team, SamlAccount]:
         chain = query_chains[model]
         chain.filter.return_value.delete.assert_called_once()
 
 
 @patch("om.db.users.remove_user_from_invited_users")
-@patch("om.db.external_perm.delete_user__ext_group_for_user__no_commit")
+@patch("om.db.external_perm.delete_user__ext_team_for_user__no_commit")
 def test_delete_user_commits_and_removes_invited(
     _mock_ee: Any, mock_remove_invited: Any
 ) -> None:
@@ -106,7 +106,7 @@ def test_delete_user_commits_and_removes_invited(
 
 
 @patch("om.db.users.remove_user_from_invited_users")
-@patch("om.db.external_perm.delete_user__ext_group_for_user__no_commit")
+@patch("om.db.external_perm.delete_user__ext_team_for_user__no_commit")
 def test_delete_user_deletes_oauth_accounts(
     _mock_ee: Any, _mock_remove_invited: Any
 ) -> None:

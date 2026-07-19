@@ -10,7 +10,7 @@ import useUsers from "@/hooks/useUsers";
 import BackButton from "@/refresh-components/buttons/BackButton";
 import { AdminPageTitle } from "@/components/admin/Title";
 import { SvgUsers } from "@opal/icons";
-const Page = (props: { params: Promise<{ groupId: string }> }) => {
+const Page = (props: { params: Promise<{ teamId: string }> }) => {
   const params = use(props.params);
   const router = useRouter();
 
@@ -19,7 +19,7 @@ const Page = (props: { params: Promise<{ groupId: string }> }) => {
     isLoading: userGroupIsLoading,
     error: userGroupError,
     refreshUserGroup,
-  } = useSpecificUserGroup(params.groupId);
+  } = useSpecificUserGroup(params.teamId);
   const {
     data: users,
     isLoading: userIsLoading,
@@ -42,7 +42,7 @@ const Page = (props: { params: Promise<{ groupId: string }> }) => {
   }
 
   if (!userGroup || userGroupError) {
-    return <div>Error loading user group</div>;
+    return <div>Error loading team</div>;
   }
   if (!users || usersError) {
     return <div>Error loading users</div>;
@@ -65,7 +65,7 @@ const Page = (props: { params: Promise<{ groupId: string }> }) => {
           refreshUserGroup={refreshUserGroup}
         />
       ) : (
-        <div>Unable to fetch User Group :(</div>
+        <div>Unable to fetch Team :(</div>
       )}
     </>
   );

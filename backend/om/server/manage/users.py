@@ -115,7 +115,7 @@ def set_user_role(
     current_user: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> None:
-    from om.db.user_group import remove_curator_status__no_commit as _impl_remove_curator_status__no_commit
+    from om.db.team import remove_curator_status__no_commit as _impl_remove_curator_status__no_commit
     user_to_update = get_user_by_email(
         email=user_role_update_request.user_email, db_session=db_session
     )

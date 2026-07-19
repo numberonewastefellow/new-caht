@@ -26,7 +26,7 @@ class DocExternalAccessSet(BaseModel):
 
     doc_id: str
     external_user_emails: set[str]
-    external_user_group_ids: set[str]
+    external_team_ids: set[str]
     is_public: bool
 
     @classmethod
@@ -36,7 +36,7 @@ class DocExternalAccessSet(BaseModel):
         return cls(
             doc_id=doc_external_access.doc_id,
             external_user_emails=doc_external_access.external_access.external_user_emails,
-            external_user_group_ids=doc_external_access.external_access.external_user_group_ids,
+            external_team_ids=doc_external_access.external_access.external_team_ids,
             is_public=doc_external_access.external_access.is_public,
         )
 
@@ -114,13 +114,13 @@ def test_jira_doc_sync(
             DocExternalAccessSet(
                 doc_id="https://danswerai.atlassian.net/browse/AS-3",
                 external_user_emails=set(),
-                external_user_group_ids=set(),
+                external_team_ids=set(),
                 is_public=True,
             ),
             DocExternalAccessSet(
                 doc_id="https://danswerai.atlassian.net/browse/AS-4",
                 external_user_emails=set(),
-                external_user_group_ids=set(),
+                external_team_ids=set(),
                 is_public=True,
             ),
         ]
@@ -226,7 +226,7 @@ def test_jira_doc_sync_with_specific_permissions(
             # Should have user emails
             assert doc.external_access.external_user_emails == _EXPECTED_USER_EMAILS
             assert (
-                doc.external_access.external_user_group_ids == _EXPECTED_USER_GROUP_IDS
+                doc.external_access.external_team_ids == _EXPECTED_USER_GROUP_IDS
             )
     finally:
         db_session.rollback()

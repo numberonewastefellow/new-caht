@@ -282,7 +282,7 @@ def thread_to_document(
         metadata={},
         external_access=ExternalAccess(
             external_user_emails={email_used_to_fetch_thread},
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=False,
         ),
     )
@@ -327,7 +327,7 @@ def _slim_thread_from_id(
         id=thread_id,
         external_access=ExternalAccess(
             external_user_emails={user_email},
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=False,
         ),
     )
@@ -462,7 +462,7 @@ class GmailConnector(
                             id=thread["id"],
                             external_access=ExternalAccess(
                                 external_user_emails={user_email},
-                                external_user_group_ids=set(),
+                                external_team_ids=set(),
                                 is_public=False,
                             ),
                         )

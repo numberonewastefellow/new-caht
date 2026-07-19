@@ -152,7 +152,7 @@ def test_confluence_group_sync(
 
     expected_groups = {group.id: group for group in _EXPECTED_CONFLUENCE_GROUPS}
     actual_groups = {
-        group.id: ExternalUserGroupSet.from_model(external_user_group=group)
+        group.id: ExternalUserGroupSet.from_model(external_team=group)
         for group in group_sync_iter
     }
     assert expected_groups == actual_groups

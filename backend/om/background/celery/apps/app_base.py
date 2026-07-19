@@ -40,7 +40,7 @@ from om.redis.redis_connector_ext_group_sync import RedisConnectorExternalGroupS
 from om.redis.redis_connector_prune import RedisConnectorPrune
 from om.redis.redis_document_set import RedisDocumentSet
 from om.redis.redis_pool import get_redis_client
-from om.redis.redis_usergroup import RedisUserGroup
+from om.redis.redis_team import RedisTeam
 from om.tracing.setup import setup_tracing
 from om.utils.logger import ColoredFormatter
 from om.utils.logger import LoggerContextVars
@@ -171,10 +171,10 @@ def on_task_postrun(
             r.srem(rds.taskset_key, task_id)
         return
 
-    if task_id.startswith(RedisUserGroup.PREFIX):
-        usergroup_id = RedisUserGroup.get_id_from_task_id(task_id)
-        if usergroup_id is not None:
-            rug = RedisUserGroup(tenant_id, int(usergroup_id))
+    if task_id.startswith(RedisTeam.PREFIX):
+        team_id = RedisTeam.get_id_from_task_id(task_id)
+        if team_id is not None:
+            rug = RedisTeam(tenant_id, int(team_id))
             r.srem(rug.taskset_key, task_id)
         return
 

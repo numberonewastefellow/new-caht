@@ -83,7 +83,7 @@ from om.server.reporting.usage_export_api import router as usage_export_router
 from om.server.scim.api import scim_router
 from om.server.seeding import seed_db
 from om.server.tenants.api import router as tenants_router
-from om.server.user_group.api import router as user_group_router
+from om.server.team.api import router as team_router
 from om.utils.encryption import test_encryption
 from om.server.documents.cc_pair import router as cc_pair_router
 from om.server.documents.connector import router as connector_router
@@ -478,7 +478,7 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     # are already included above. Including them again would double-register every route.
 
     # RBAC / group access control
-    include_router_with_global_prefix_prepended(application, user_group_router)
+    include_router_with_global_prefix_prepended(application, team_router)
     # Analytics endpoints
     include_router_with_global_prefix_prepended(application, analytics_router)
     include_router_with_global_prefix_prepended(application, query_history_router)

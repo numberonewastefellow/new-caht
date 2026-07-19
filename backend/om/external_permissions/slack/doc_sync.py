@@ -31,7 +31,7 @@ def _fetch_workspace_permissions(
     return ExternalAccess(
         external_user_emails=user_emails,
         # No group<->document mapping for slack
-        external_user_group_ids=set(),
+        external_team_ids=set(),
         # No way to determine if slack is invite only without enterprise license
         is_public=False,
     )
@@ -93,7 +93,7 @@ def _fetch_channel_permissions(
         channel_permissions[channel_id] = ExternalAccess(
             external_user_emails=member_emails,
             # No group<->document mapping for slack
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             # No way to determine if slack is invite only without enterprise license
             is_public=False,
         )

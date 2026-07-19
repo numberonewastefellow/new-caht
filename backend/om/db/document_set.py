@@ -24,10 +24,10 @@ from om.db.models import DocumentByConnectorCredentialPair
 from om.db.models import DocumentSet as DocumentSetDBModel
 from om.db.models import DocumentSet__ConnectorCredentialPair
 from om.db.models import DocumentSet__User
-from om.db.models import DocumentSet__UserGroup
+from om.db.models import DocumentSet__Team
 from om.db.models import FederatedConnector__DocumentSet
 from om.db.models import User
-from om.db.models import User__UserGroup
+from om.db.models import User__Team
 from om.db.models import UserRole
 from om.server.features.document_set.models import DocumentSetCreationRequest
 from om.server.features.document_set.models import DocumentSetUpdateRequest
@@ -41,21 +41,21 @@ def _add_user_filters(stmt: Select, user: User, get_editable: bool = True) -> Se
         return stmt
 
     stmt = stmt.distinct()
-    DocumentSet__UG = aliased(DocumentSet__UserGroup)
-    User__UG = aliased(User__UserGroup)
+    DocumentSet__UG = aliased(DocumentSet__Team)
+    User__UG = aliased(User__Team)
     """
     Here we select cc_pairs by relation:
-    User -> User__UserGroup -> DocumentSet__UserGroup -> DocumentSet
+    User -> User__Team -> DocumentSet__Team -> DocumentSet
     """
     stmt = stmt.outerjoin(DocumentSet__UG).outerjoin(
-        User__UserGroup,
-        User__UserGroup.user_group_id == DocumentSet__UG.user_group_id,
+        User__Team,
+        User__Team.team_id == DocumentSet__UG.team_id,
     )
     """
     Filter DocumentSets by:
-    - if the user is in the user_group that owns the DocumentSet
+    - if the user is in the team that owns the DocumentSet
     - if the user is not a global_curator, they must also have a curator relationship
-    to the user_group
+    to the team
     - if editing is being done, we also filter out DocumentSets that are owned by groups
     that the user isn't a curator for
     - if we are not editing, we show all DocumentSets in the groups the user is a curator
@@ -67,17 +67,17 @@ def _add_user_filters(stmt: Select, user: User, get_editable: bool = True) -> Se
         where_clause = DocumentSetDBModel.is_public == True  # noqa: E712
         return stmt.where(where_clause)
 
-    where_clause = User__UserGroup.user_id == user.id
+    where_clause = User__Team.user_id == user.id
     if user.role == UserRole.CURATOR and get_editable:
-        where_clause &= User__UserGroup.is_curator == True  # noqa: E712
+        where_clause &= User__Team.is_curator == True  # noqa: E712
     if get_editable:
-        user_groups = select(User__UG.user_group_id).where(User__UG.user_id == user.id)
+        teams = select(User__UG.team_id).where(User__UG.user_id == user.id)
         if user.role == UserRole.CURATOR:
-            user_groups = user_groups.where(User__UG.is_curator == True)  # noqa: E712
+            teams = teams.where(User__UG.is_curator == True)  # noqa: E712
         where_clause &= (
             ~exists()
             .where(DocumentSet__UG.document_set_id == DocumentSetDBModel.id)
-            .where(~DocumentSet__UG.user_group_id.in_(user_groups))
+            .where(~DocumentSet__UG.team_id.in_(teams))
             .correlate(DocumentSetDBModel)
         )
         where_clause |= DocumentSetDBModel.user_id == user.id
@@ -117,8 +117,8 @@ def delete_document_set_privacy__no_commit(
         DocumentSet__User.document_set_id == document_set_id
     ).delete(synchronize_session="fetch")
 
-    db_session.query(DocumentSet__UserGroup).filter(
-        DocumentSet__UserGroup.document_set_id == document_set_id
+    db_session.query(DocumentSet__Team).filter(
+        DocumentSet__Team.document_set_id == document_set_id
     ).delete(synchronize_session="fetch")
 
 
@@ -184,8 +184,8 @@ def make_doc_set_private(
     db_session.query(DocumentSet__User).filter(
         DocumentSet__User.document_set_id == document_set_id
     ).delete(synchronize_session="fetch")
-    db_session.query(DocumentSet__UserGroup).filter(
-        DocumentSet__UserGroup.document_set_id == document_set_id
+    db_session.query(DocumentSet__Team).filter(
+        DocumentSet__Team.document_set_id == document_set_id
     ).delete(synchronize_session="fetch")
 
     if user_ids:
@@ -197,8 +197,8 @@ def make_doc_set_private(
     if group_ids:
         for group_id in group_ids:
             db_session.add(
-                DocumentSet__UserGroup(
-                    document_set_id=document_set_id, user_group_id=group_id
+                DocumentSet__Team(
+                    document_set_id=document_set_id, team_id=group_id
                 )
             )
 
@@ -218,7 +218,7 @@ def _check_if_cc_pairs_are_owned_by_groups(
     )
 
     group_cc_pair_relationships_set = {
-        (relationship.cc_pair_id, relationship.user_group_id)
+        (relationship.cc_pair_id, relationship.team_id)
         for relationship in group_cc_pair_relationships
     }
 

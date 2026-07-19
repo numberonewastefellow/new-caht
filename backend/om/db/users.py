@@ -23,7 +23,7 @@ from om.db.models import Agent
 from om.db.models import Agent__User
 from om.db.models import SamlAccount
 from om.db.models import User
-from om.db.models import User__UserGroup
+from om.db.models import User__Team
 
 
 def validate_user_role_update(
@@ -68,7 +68,7 @@ def validate_user_role_update(
         # This shouldn't happen, but just in case
         raise HTTPException(
             status_code=400,
-            detail="Curator role must be set via the User Group Menu",
+            detail="Curator role must be set via the Teams Menu",
         )
 
     if requested_role == UserRole.LIMITED:
@@ -321,12 +321,12 @@ def delete_user_from_db(
     db_session: Session,
 ) -> None:
     from om.db.external_perm import (
-        delete_user__ext_group_for_user__no_commit as _impl_delete_user__ext_group_for_user__no_commit,
+        delete_user__ext_team_for_user__no_commit as _impl_delete_user__ext_team_for_user__no_commit,
     )
     for oauth_account in user_to_delete.oauth_accounts:
         db_session.delete(oauth_account)
 
-    _impl_delete_user__ext_group_for_user__no_commit(
+    _impl_delete_user__ext_team_for_user__no_commit(
         db_session=db_session,
         user_id=user_to_delete.id,
     )
@@ -348,8 +348,8 @@ def delete_user_from_db(
     db_session.query(Agent__User).filter(
         Agent__User.user_id == user_to_delete.id
     ).delete()
-    db_session.query(User__UserGroup).filter(
-        User__UserGroup.user_id == user_to_delete.id
+    db_session.query(User__Team).filter(
+        User__Team.user_id == user_to_delete.id
     ).delete()
     db_session.delete(user_to_delete)
     db_session.commit()

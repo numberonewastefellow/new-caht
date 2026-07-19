@@ -745,7 +745,7 @@ class HierarchyNode(Base):
     Examples: folders, drives, spaces, projects, channels.
 
     Stores hierarchy structure WITH permission information, using the same
-    permission model as Documents (external_user_emails, external_user_group_ids,
+    permission model as Documents (external_user_emails, external_team_ids,
     is_public). This enables user-scoped hierarchy browsing in the UI.
 
     Some hierarchy nodes (e.g., Confluence pages) can also be documents.
@@ -785,7 +785,7 @@ class HierarchyNode(Base):
         postgresql.ARRAY(String), nullable=True
     )
     # External group IDs with access (prefixed by source type)
-    external_user_group_ids: Mapped[list[str] | None] = mapped_column(
+    external_team_ids: Mapped[list[str] | None] = mapped_column(
         postgresql.ARRAY(String), nullable=True
     )
     # Whether this node is publicly accessible (org-wide or world-public)
@@ -897,7 +897,7 @@ class Document(Base):
         postgresql.ARRAY(String), nullable=True
     )
     # These group ids have been prefixed by the source type
-    external_user_group_ids: Mapped[list[str] | None] = mapped_column(
+    external_team_ids: Mapped[list[str] | None] = mapped_column(
         postgresql.ARRAY(String), nullable=True
     )
     is_public: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -2735,9 +2735,9 @@ class LLMProvider(Base):
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     # Auto mode: models, visibility, and defaults are managed by GitHub config
     is_auto_mode: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    groups: Mapped[list["UserGroup"]] = relationship(
-        "UserGroup",
-        secondary="llm_provider__user_group",
+    groups: Mapped[list["Team"]] = relationship(
+        "Team",
+        secondary="llm_provider__team",
         viewonly=True,
     )
     agents: Mapped[list["Agent"]] = relationship(
@@ -2975,9 +2975,9 @@ class DocumentSet(Base):
         viewonly=True,
     )
     # EE only
-    groups: Mapped[list["UserGroup"]] = relationship(
-        "UserGroup",
-        secondary="document_set__user_group",
+    groups: Mapped[list["Team"]] = relationship(
+        "Team",
+        secondary="document_set__team",
         viewonly=True,
     )
     federated_connectors: Mapped[list["FederatedConnector__DocumentSet"]] = (
@@ -3253,9 +3253,9 @@ class Agent(Base):
     )
     # EE only
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    groups: Mapped[list["UserGroup"]] = relationship(
-        "UserGroup",
-        secondary="agent__user_group",
+    groups: Mapped[list["Team"]] = relationship(
+        "Team",
+        secondary="agent__team",
         viewonly=True,
     )
     allowed_by_llm_providers: Mapped[list["LLMProvider"]] = relationship(
@@ -3719,33 +3719,33 @@ class SamlAccount(Base):
     user: Mapped[User] = relationship("User")
 
 
-class User__UserGroup(Base):
-    __tablename__ = "user__user_group"
+class User__Team(Base):
+    __tablename__ = "user__team"
 
     is_curator: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id"), primary_key=True
+    team_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("team.id"), primary_key=True
     )
     user_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), primary_key=True, nullable=True
     )
 
 
-class UserGroup__ConnectorCredentialPair(Base):
-    __tablename__ = "user_group__connector_credential_pair"
+class Team__ConnectorCredentialPair(Base):
+    __tablename__ = "team__connector_credential_pair"
 
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id"), primary_key=True
+    team_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("team.id"), primary_key=True
     )
     cc_pair_id: Mapped[int] = mapped_column(
         ForeignKey("connector_credential_pair.id"), primary_key=True
     )
-    # if `True`, then is part of the current state of the UserGroup
-    # if `False`, then is a part of the prior state of the UserGroup
-    # rows with `is_current=False` should be deleted when the UserGroup
-    # is updated and should not exist for a given UserGroup if
-    # `UserGroup.is_up_to_date == True`
+    # if `True`, then is part of the current state of the Team
+    # if `False`, then is a part of the prior state of the Team
+    # rows with `is_current=False` should be deleted when the Team
+    # is updated and should not exist for a given Team if
+    # `Team.is_up_to_date == True`
     is_current: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
@@ -3757,12 +3757,12 @@ class UserGroup__ConnectorCredentialPair(Base):
     )
 
 
-class Agent__UserGroup(Base):
-    __tablename__ = "agent__user_group"
+class Agent__Team(Base):
+    __tablename__ = "agent__team"
 
     agent_id: Mapped[int] = mapped_column(ForeignKey("agent.id"), primary_key=True)
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id"), primary_key=True
+    team_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("team.id"), primary_key=True
     )
 
 
@@ -3782,92 +3782,93 @@ class LLMProvider__Agent(Base):
     )
 
 
-class LLMProvider__UserGroup(Base):
-    __tablename__ = "llm_provider__user_group"
+class LLMProvider__Team(Base):
+    __tablename__ = "llm_provider__team"
 
     llm_provider_id: Mapped[int] = mapped_column(
         ForeignKey("llm_provider.id"), primary_key=True
     )
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id"), primary_key=True
+    team_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("team.id"), primary_key=True
     )
 
 
-class DocumentSet__UserGroup(Base):
-    __tablename__ = "document_set__user_group"
+class DocumentSet__Team(Base):
+    __tablename__ = "document_set__team"
 
     document_set_id: Mapped[int] = mapped_column(
         ForeignKey("document_set.id"), primary_key=True
     )
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id"), primary_key=True
+    team_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("team.id"), primary_key=True
     )
 
 
-class Credential__UserGroup(Base):
-    __tablename__ = "credential__user_group"
+class Credential__Team(Base):
+    __tablename__ = "credential__team"
 
     credential_id: Mapped[int] = mapped_column(
         ForeignKey("credential.id"), primary_key=True
     )
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id"), primary_key=True
+    team_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("team.id"), primary_key=True
     )
 
 
-class UserGroup(Base):
-    __tablename__ = "user_group"
+class Team(Base):
+    __tablename__ = "team"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    # BIGINT PK (Contract 1) — WS-F/WS-G FK to team.id.
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     name: Mapped[str] = mapped_column(String, unique=True)
-    # whether or not changes to the UserGroup have been propagated to the document index
+    # whether or not changes to the Team have been propagated to the document index
     is_up_to_date: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    # tell the sync job to clean up the group
+    # tell the sync job to clean up the team
     is_up_for_deletion: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False
     )
 
-    # Last time a user updated this user group
+    # Last time a user updated this team
     time_last_modified_by_user: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
     users: Mapped[list[User]] = relationship(
         "User",
-        secondary=User__UserGroup.__table__,
+        secondary=User__Team.__table__,
     )
-    user_group_relationships: Mapped[list[User__UserGroup]] = relationship(
-        "User__UserGroup",
+    team_relationships: Mapped[list[User__Team]] = relationship(
+        "User__Team",
         viewonly=True,
     )
     cc_pairs: Mapped[list[ConnectorCredentialPair]] = relationship(
         "ConnectorCredentialPair",
-        secondary=UserGroup__ConnectorCredentialPair.__table__,
+        secondary=Team__ConnectorCredentialPair.__table__,
         viewonly=True,
     )
-    cc_pair_relationships: Mapped[list[UserGroup__ConnectorCredentialPair]] = (
+    cc_pair_relationships: Mapped[list[Team__ConnectorCredentialPair]] = (
         relationship(
-            "UserGroup__ConnectorCredentialPair",
+            "Team__ConnectorCredentialPair",
             viewonly=True,
         )
     )
     agents: Mapped[list[Agent]] = relationship(
         "Agent",
-        secondary=Agent__UserGroup.__table__,
+        secondary=Agent__Team.__table__,
         viewonly=True,
     )
     document_sets: Mapped[list[DocumentSet]] = relationship(
         "DocumentSet",
-        secondary=DocumentSet__UserGroup.__table__,
+        secondary=DocumentSet__Team.__table__,
         viewonly=True,
     )
     credentials: Mapped[list[Credential]] = relationship(
         "Credential",
-        secondary=Credential__UserGroup.__table__,
+        secondary=Credential__Team.__table__,
     )
     # MCP servers accessible to this user group
     accessible_mcp_servers: Mapped[list["MCPServer"]] = relationship(
-        "MCPServer", secondary="mcp_server__user_group", back_populates="user_groups"
+        "MCPServer", secondary="mcp_server__team", back_populates="teams"
     )
 
 
@@ -3891,14 +3892,14 @@ class TokenRateLimit(Base):
     )
 
 
-class TokenRateLimit__UserGroup(Base):
-    __tablename__ = "token_rate_limit__user_group"
+class TokenRateLimit__Team(Base):
+    __tablename__ = "token_rate_limit__team"
 
     rate_limit_id: Mapped[int] = mapped_column(
         ForeignKey("token_rate_limit.id"), primary_key=True
     )
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id"), primary_key=True
+    team_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("team.id"), primary_key=True
     )
 
 
@@ -3979,17 +3980,17 @@ class BackgroundError(Base):
 """Tables related to Permission Sync"""
 
 
-class User__ExternalUserGroupId(Base):
+class User__ExternalTeamId(Base):
     """Maps user info both internal and external to the name of the external group
     This maps the user to all of their external groups so that the external group name can be
     attached to the ACL list matching during query time. User level permissions can be handled by
     directly adding the Onyx user to the doc ACL list"""
 
-    __tablename__ = "user__external_user_group_id"
+    __tablename__ = "user__external_team_id"
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("user.id"), primary_key=True)
     # These group ids have been prefixed by the source type
-    external_user_group_id: Mapped[str] = mapped_column(String, primary_key=True)
+    external_team_id: Mapped[str] = mapped_column(String, primary_key=True)
     cc_pair_id: Mapped[int] = mapped_column(
         ForeignKey("connector_credential_pair.id"), primary_key=True
     )
@@ -4011,16 +4012,16 @@ class User__ExternalUserGroupId(Base):
     )
 
 
-class PublicExternalUserGroup(Base):
+class PublicExternalTeam(Base):
     """Stores all public external user "groups".
 
     For example, things like Google Drive folders that are marked
     as `Anyone with the link` or `Anyone in the domain`
     """
 
-    __tablename__ = "public_external_user_group"
+    __tablename__ = "public_external_team"
 
-    external_user_group_id: Mapped[str] = mapped_column(String, primary_key=True)
+    external_team_id: Mapped[str] = mapped_column(String, primary_key=True)
     cc_pair_id: Mapped[int] = mapped_column(
         ForeignKey("connector_credential_pair.id", ondelete="CASCADE"), primary_key=True
     )
@@ -4318,9 +4319,9 @@ class MCPServer(Base):
     users: Mapped[list["User"]] = relationship(
         "User", secondary="mcp_server__user", back_populates="accessible_mcp_servers"
     )
-    user_groups: Mapped[list["UserGroup"]] = relationship(
-        "UserGroup",
-        secondary="mcp_server__user_group",
+    teams: Mapped[list["Team"]] = relationship(
+        "Team",
+        secondary="mcp_server__team",
         back_populates="accessible_mcp_servers",
     )
 
@@ -4335,13 +4336,13 @@ class MCPServer__User(Base):
     )
 
 
-class MCPServer__UserGroup(Base):
-    __tablename__ = "mcp_server__user_group"
+class MCPServer__Team(Base):
+    __tablename__ = "mcp_server__team"
     mcp_server_id: Mapped[int] = mapped_column(
         ForeignKey("mcp_server.id"), primary_key=True
     )
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id"), primary_key=True
+    team_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("team.id"), primary_key=True
     )
 
 
@@ -4871,14 +4872,14 @@ class ScimUserMapping(Base):
 
 
 class ScimGroupMapping(Base):
-    """Maps SCIM externalId from the IdP to an Onyx UserGroup."""
+    """Maps SCIM externalId from the IdP to an Onyx Team."""
 
     __tablename__ = "scim_group_mapping"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     external_id: Mapped[str] = mapped_column(String, unique=True, index=True)
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id", ondelete="CASCADE"), unique=True, nullable=False
+    team_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("team.id", ondelete="CASCADE"), unique=True, nullable=False
     )
 
     created_at: Mapped[datetime.datetime] = mapped_column(
@@ -4891,8 +4892,8 @@ class ScimGroupMapping(Base):
         nullable=False,
     )
 
-    user_group: Mapped[UserGroup] = relationship(
-        "UserGroup", foreign_keys=[user_group_id]
+    team: Mapped[Team] = relationship(
+        "Team", foreign_keys=[team_id]
     )
 
 

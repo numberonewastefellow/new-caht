@@ -11,7 +11,7 @@ from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.managers.llm_provider import LLMProviderManager
 from tests.integration.common_utils.managers.agent import AgentManager
 from tests.integration.common_utils.managers.user import UserManager
-from tests.integration.common_utils.managers.user_group import UserGroupManager
+from tests.integration.common_utils.managers.team import TeamManager
 from tests.integration.common_utils.test_models import DATestUser
 
 
@@ -26,13 +26,13 @@ def users_and_groups(
     basic_user = UserManager.create(name="basic_user")
 
     # Create two user groups
-    group1 = UserGroupManager.create(
+    group1 = TeamManager.create(
         user_performing_action=admin_user,
         name="test_group_1",
         user_ids=[basic_user.id],
     )
 
-    group2 = UserGroupManager.create(
+    group2 = TeamManager.create(
         user_performing_action=admin_user,
         name="test_group_2",
         user_ids=[],  # basic_user is NOT in this group

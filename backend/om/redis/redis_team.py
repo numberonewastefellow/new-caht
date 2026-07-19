@@ -17,8 +17,8 @@ from om.configs.constants import OmRedisConstants
 from om.redis.redis_object_helper import RedisObjectHelper
 
 
-class RedisUserGroup(RedisObjectHelper):
-    PREFIX = "usergroup"
+class RedisTeam(RedisObjectHelper):
+    PREFIX = "team"
     FENCE_PREFIX = PREFIX + "_fence"
     FENCE_TTL = 7 * 24 * 60 * 60  # 7 days - defensive TTL to prevent memory leaks
     TASKSET_PREFIX = PREFIX + "_taskset"
@@ -64,17 +64,17 @@ class RedisUserGroup(RedisObjectHelper):
         """Max tasks is ignored for now until we can build the logic to mark the
         user group up to date over multiple batches.
         """
-        from om.db.user_group import construct_document_id_select_by_usergroup as _impl_construct_document_id_select_by_usergroup
+        from om.db.team import construct_document_id_select_by_team as _impl_construct_document_id_select_by_team
         last_lock_time = time.monotonic()
         num_tasks_sent = 0
 
 
         try:
-            construct_document_id_select_by_usergroup = _impl_construct_document_id_select_by_usergroup
+            construct_document_id_select_by_team = _impl_construct_document_id_select_by_team
         except ModuleNotFoundError:
             return 0, 0
 
-        stmt = construct_document_id_select_by_usergroup(int(self._id))
+        stmt = construct_document_id_select_by_team(int(self._id))
         for doc_id in db_session.scalars(stmt).yield_per(DB_YIELD_PER_DEFAULT):
             doc_id = cast(str, doc_id)
             current_time = time.monotonic()
@@ -113,8 +113,8 @@ class RedisUserGroup(RedisObjectHelper):
 
     @staticmethod
     def reset_all(r: redis.Redis) -> None:
-        for key in r.scan_iter(RedisUserGroup.TASKSET_PREFIX + "*"):
+        for key in r.scan_iter(RedisTeam.TASKSET_PREFIX + "*"):
             r.delete(key)
 
-        for key in r.scan_iter(RedisUserGroup.FENCE_PREFIX + "*"):
+        for key in r.scan_iter(RedisTeam.FENCE_PREFIX + "*"):
             r.delete(key)

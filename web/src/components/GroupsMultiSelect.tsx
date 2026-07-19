@@ -1,6 +1,6 @@
 import { FormikProps } from "formik";
 import { Label } from "@/components/Field";
-import { useUserGroups } from "@/lib/hooks";
+import { useTeams } from "@/lib/hooks";
 import { GenericMultiSelect } from "@/components/GenericMultiSelect";
 
 export type GroupsMultiSelectFormType = {
@@ -26,7 +26,7 @@ export function GroupsMultiSelect<T extends GroupsMultiSelectFormType>({
     data: userGroups,
     isLoading: userGroupsIsLoading,
     error,
-  } = useUserGroups();
+  } = useTeams();
 
   // Show loading state while loading groups
   if (userGroupsIsLoading) {

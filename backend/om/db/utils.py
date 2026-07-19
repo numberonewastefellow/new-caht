@@ -34,7 +34,7 @@ def is_retryable_sqlalchemy_error(exc: BaseException) -> bool:
 class DocumentRow(BaseModel):
     id: str
     doc_metadata: dict[str, Any]
-    external_user_group_ids: list[str]
+    external_team_ids: list[str]
 
 
 class SortOrder(str, Enum):

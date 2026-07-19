@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 
 from om.db.scim import ScimDAL
 from om.db.models import ScimToken
-from om.db.models import UserGroup
+from om.db.models import Team
 
 
 @pytest.fixture
@@ -61,14 +61,14 @@ def scim_token_factory(
 
 
 @pytest.fixture
-def user_group_factory(
+def team_factory(
     db_session: Session,
-) -> Generator[Callable[..., UserGroup], None, None]:
-    """Factory that creates UserGroup rows for testing group mappings."""
+) -> Generator[Callable[..., Team], None, None]:
+    """Factory that creates Team rows for testing group mappings."""
     created_ids: list[int] = []
 
-    def _create(name: str | None = None) -> UserGroup:
-        group = UserGroup(name=name or f"test-group-{uuid4().hex[:8]}")
+    def _create(name: str | None = None) -> Team:
+        group = Team(name=name or f"test-group-{uuid4().hex[:8]}")
         db_session.add(group)
         db_session.flush()
         created_ids.append(group.id)
@@ -77,7 +77,7 @@ def user_group_factory(
     yield _create
 
     for group_id in created_ids:
-        obj = db_session.get(UserGroup, group_id)
+        obj = db_session.get(Team, group_id)
         if obj:
             db_session.delete(obj)
     db_session.commit()

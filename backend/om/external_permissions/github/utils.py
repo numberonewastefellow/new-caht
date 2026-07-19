@@ -17,7 +17,7 @@ from pydantic import BaseModel
 
 from om.db.external_perm import ExternalUserGroup
 from om.access.models import ExternalAccess
-from om.access.utils import build_ext_group_name_for_om
+from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.github.rate_limit_utils import sleep_after_rate_limit_exception
 from om.utils.logger import setup_logger
@@ -324,7 +324,7 @@ def get_external_access_permission(
         )
         return ExternalAccess(
             external_user_emails=set(),
-            external_user_group_ids=set(),
+            external_team_ids=set(),
             is_public=True,
         )
     elif repo_visibility == GitHubVisibility.PRIVATE:
@@ -335,11 +335,11 @@ def get_external_access_permission(
         collaborators_group_id = form_collaborators_group_id(repo.id)
         outside_collaborators_group_id = form_outside_collaborators_group_id(repo.id)
         if add_prefix:
-            collaborators_group_id = build_ext_group_name_for_om(
+            collaborators_group_id = build_ext_team_name_for_om(
                 source=DocumentSource.GITHUB,
                 ext_group_name=collaborators_group_id,
             )
-            outside_collaborators_group_id = build_ext_group_name_for_om(
+            outside_collaborators_group_id = build_ext_team_name_for_om(
                 source=DocumentSource.GITHUB,
                 ext_group_name=outside_collaborators_group_id,
             )
@@ -348,7 +348,7 @@ def get_external_access_permission(
         team_slugs = fetch_repository_team_slugs(repo, github_client)
         if add_prefix:
             team_slugs = [
-                build_ext_group_name_for_om(
+                build_ext_team_name_for_om(
                     source=DocumentSource.GITHUB,
                     ext_group_name=slug,
                 )
@@ -359,7 +359,7 @@ def get_external_access_permission(
         logger.info(f"ExternalAccess groups for {repo.full_name}: {group_ids}")
         return ExternalAccess(
             external_user_emails=set(),
-            external_user_group_ids=group_ids,
+            external_team_ids=group_ids,
             is_public=False,
         )
     else:
@@ -369,7 +369,7 @@ def get_external_access_permission(
         )
         org_group_id = form_organization_group_id(repo.organization.id)
         if add_prefix:
-            org_group_id = build_ext_group_name_for_om(
+            org_group_id = build_ext_team_name_for_om(
                 source=DocumentSource.GITHUB,
                 ext_group_name=org_group_id,
             )
@@ -377,12 +377,12 @@ def get_external_access_permission(
         logger.info(f"ExternalAccess groups for {repo.full_name}: {group_ids}")
         return ExternalAccess(
             external_user_emails=set(),
-            external_user_group_ids=group_ids,
+            external_team_ids=group_ids,
             is_public=False,
         )
 
 
-def get_external_user_group(
+def get_external_team(
     repo: Repository, github_client: Github
 ) -> list[ExternalUserGroup]:
     """
@@ -401,7 +401,7 @@ def get_external_user_group(
             _get_collaborators_and_outside_collaborators(github_client, repo)
         )
         teams = _fetch_repository_teams_detailed(repo, github_client)
-        external_user_groups = []
+        external_teams = []
 
         user_emails = set()
         for collab in collaborators:
@@ -415,7 +415,7 @@ def get_external_user_group(
                 id=form_collaborators_group_id(repo.id),
                 user_emails=list(user_emails),
             )
-            external_user_groups.append(collaborators_group)
+            external_teams.append(collaborators_group)
             logger.info(f"Created collaborators group with {len(user_emails)} emails")
 
         # Create group for outside collaborators
@@ -431,7 +431,7 @@ def get_external_user_group(
                 id=form_outside_collaborators_group_id(repo.id),
                 user_emails=list(user_emails),
             )
-            external_user_groups.append(outside_collaborators_group)
+            external_teams.append(outside_collaborators_group)
             logger.info(
                 f"Created outside collaborators group with {len(user_emails)} emails"
             )
@@ -450,15 +450,15 @@ def get_external_user_group(
                     id=team.slug,
                     user_emails=list(user_emails),
                 )
-                external_user_groups.append(team_group)
+                external_teams.append(team_group)
                 logger.info(
                     f"Created team group {team.name} with {len(user_emails)} emails"
                 )
 
         logger.info(
-            f"Created {len(external_user_groups)} ExternalUserGroups for private repository {repo.full_name}"
+            f"Created {len(external_teams)} ExternalUserGroups for private repository {repo.full_name}"
         )
-        return external_user_groups
+        return external_teams
 
     if repo_visibility == GitHubVisibility.INTERNAL:
         logger.info(f"Processing internal repository {repo.full_name}")

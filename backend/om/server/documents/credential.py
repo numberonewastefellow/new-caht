@@ -137,12 +137,12 @@ def create_credential_from_model(
     user: User = Depends(current_curator_or_admin_user),
     db_session: Session = Depends(get_session),
 ) -> ObjectCreationIdResponse:
-    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    from om.db.team import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     if not _ignore_credential_permissions(credential_info.source):
         _impl_validate_object_creation_for_user(
             db_session=db_session,
             user=user,
-            target_group_ids=credential_info.groups,
+            target_team_ids=credential_info.groups,
             object_is_public=credential_info.curator_public,
         )
 
@@ -171,7 +171,7 @@ def create_credential_with_private_key(
     type_definition_key: str = Form(...),
     db_session: Session = Depends(get_session),
 ) -> ObjectCreationIdResponse:
-    from om.db.user_group import validate_object_creation_for_user as _impl_validate_object_creation_for_user
+    from om.db.team import validate_object_creation_for_user as _impl_validate_object_creation_for_user
     try:
         credential_data = json.loads(credential_json)
     except json.JSONDecodeError as e:
@@ -205,7 +205,7 @@ def create_credential_with_private_key(
         _impl_validate_object_creation_for_user(
             db_session=db_session,
             user=user,
-            target_group_ids=groups,
+            target_team_ids=groups,
             object_is_public=curator_public,
         )
 

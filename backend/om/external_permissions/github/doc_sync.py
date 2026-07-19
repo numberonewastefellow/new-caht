@@ -16,7 +16,7 @@ from om.external_permissions.github.utils import GitHubVisibility
 from om.external_permissions.perm_sync_types import FetchAllDocumentsFunction
 from om.external_permissions.perm_sync_types import FetchAllDocumentsIdsFunction
 from om.access.models import DocExternalAccess
-from om.access.utils import build_ext_group_name_for_om
+from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
 from om.connectors.github.connector import DocMetadata
 from om.connectors.github.connector import GithubConnector
@@ -101,7 +101,7 @@ def github_doc_sync(
                 )
                 continue
 
-            current_external_group_ids = repo_doc_list[0].external_user_group_ids or []
+            current_external_group_ids = repo_doc_list[0].external_team_ids or []
             # Check if repository has any permission changes
             has_changes = _check_repository_for_changes(
                 repo=repo,
@@ -193,14 +193,14 @@ def _is_repo_visibility_changed_from_groups(
     logger.info(f"Current repository visibility: {current_repo_visibility.value}")
 
     # Build expected group IDs for current visibility
-    collaborators_group_id = build_ext_group_name_for_om(
+    collaborators_group_id = build_ext_team_name_for_om(
         source=DocumentSource.GITHUB,
         ext_group_name=form_collaborators_group_id(repo.id),
     )
 
     org_group_id = None
     if repo.organization:
-        org_group_id = build_ext_group_name_for_om(
+        org_group_id = build_ext_team_name_for_om(
             source=DocumentSource.GITHUB,
             ext_group_name=form_organization_group_id(repo.organization.id),
         )
@@ -243,11 +243,11 @@ def _teams_updated_from_groups(
     )
 
     # Build group IDs to exclude from team comparison (non-team groups)
-    collaborators_group_id = build_ext_group_name_for_om(
+    collaborators_group_id = build_ext_team_name_for_om(
         source=DocumentSource.GITHUB,
         ext_group_name=form_collaborators_group_id(repo.id),
     )
-    outside_collaborators_group_id = build_ext_group_name_for_om(
+    outside_collaborators_group_id = build_ext_team_name_for_om(
         source=DocumentSource.GITHUB,
         ext_group_name=form_outside_collaborators_group_id(repo.id),
     )
@@ -264,7 +264,7 @@ def _teams_updated_from_groups(
     # but current_teams from API are raw team slugs, so we need to add the prefix
     current_team_ids = set()
     for team_slug in current_teams:
-        team_group_id = build_ext_group_name_for_om(
+        team_group_id = build_ext_team_name_for_om(
             source=DocumentSource.GITHUB,
             ext_group_name=team_slug,
         )
