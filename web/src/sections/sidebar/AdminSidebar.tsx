@@ -249,6 +249,11 @@ const collections = (
                 icon: SvgShield,
                 link: "/admin/token-rate-limits",
               },
+              {
+                name: "SCIM Provisioning",
+                icon: SvgArrowExchange,
+                link: "/admin/scim",
+              },
             ],
           },
           {

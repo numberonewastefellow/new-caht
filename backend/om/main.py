@@ -81,6 +81,7 @@ from om.server.query_and_chat.search_backend import router as search_router
 from om.server.query_history.api import router as query_history_router
 from om.server.reporting.usage_export_api import router as usage_export_router
 from om.server.scim.api import scim_router
+from om.server.scim.admin_api import scim_admin_router
 from om.server.seeding import seed_db
 from om.server.tenants.api import router as tenants_router
 from om.server.user_group.api import router as user_group_router
@@ -508,6 +509,9 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     # SCIM bearer token auth). Not behind APP_API_PREFIX because IdPs expect
     # /scim/v2/... directly.
     application.include_router(scim_router)
+    # SCIM admin API (session/admin-authenticated) — token management + status.
+    # Global-prefixed like the rest of the admin API.
+    include_router_with_global_prefix_prepended(application, scim_admin_router)
 
     if AUTH_TYPE == AuthType.BASIC or AUTH_TYPE == AuthType.CLOUD:
         include_auth_router_with_prefix(

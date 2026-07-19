@@ -13,7 +13,6 @@ from pydantic import BaseModel
 from pydantic import Field
 from sqlalchemy.orm import Session
 
-from om.db.scim import ScimDAL
 from om.server.enterprise_settings.models import AnalyticsScriptUpload
 from om.server.enterprise_settings.models import EnterpriseSettings
 from om.server.enterprise_settings.store import get_logo_filename
@@ -23,10 +22,6 @@ from om.server.enterprise_settings.store import load_settings
 from om.server.enterprise_settings.store import store_analytics_script
 from om.server.enterprise_settings.store import store_settings
 from om.server.enterprise_settings.store import upload_logo
-from om.server.scim.auth import generate_scim_token
-from om.server.scim.models import ScimTokenCreate
-from om.server.scim.models import ScimTokenCreatedResponse
-from om.server.scim.models import ScimTokenResponse
 from om.auth.users import current_admin_user
 from om.auth.users import current_user_with_expired_token
 from om.auth.users import get_user_manager
@@ -205,61 +200,6 @@ def fetch_custom_analytics_script() -> str | None:
     return load_analytics_script()
 
 
-# ---------------------------------------------------------------------------
-# SCIM token management
-# ---------------------------------------------------------------------------
-
-
-def _get_scim_dal(db_session: Session = Depends(get_session)) -> ScimDAL:
-    return ScimDAL(db_session)
-
-
-@admin_router.get("/scim/token")
-def get_active_scim_token(
-    _: User = Depends(current_admin_user),
-    dal: ScimDAL = Depends(_get_scim_dal),
-) -> ScimTokenResponse:
-    """Return the currently active SCIM token's metadata, or 404 if none."""
-    token = dal.get_active_token()
-    if not token:
-        raise HTTPException(status_code=404, detail="No active SCIM token")
-    return ScimTokenResponse(
-        id=token.id,
-        name=token.name,
-        token_display=token.token_display,
-        is_active=token.is_active,
-        created_at=token.created_at,
-        last_used_at=token.last_used_at,
-    )
-
-
-@admin_router.post("/scim/token", status_code=201)
-def create_scim_token(
-    body: ScimTokenCreate,
-    user: User = Depends(current_admin_user),
-    dal: ScimDAL = Depends(_get_scim_dal),
-) -> ScimTokenCreatedResponse:
-    """Create a new SCIM bearer token.
-
-    Only one token is active at a time — creating a new token automatically
-    revokes all previous tokens. The raw token value is returned exactly once
-    in the response; it cannot be retrieved again.
-    """
-    raw_token, hashed_token, token_display = generate_scim_token()
-    token = dal.create_token(
-        name=body.name,
-        hashed_token=hashed_token,
-        token_display=token_display,
-        created_by_id=user.id,
-    )
-    dal.commit()
-
-    return ScimTokenCreatedResponse(
-        id=token.id,
-        name=token.name,
-        token_display=token.token_display,
-        is_active=token.is_active,
-        created_at=token.created_at,
-        last_used_at=token.last_used_at,
-        raw_token=raw_token,
-    )
+# NOTE: SCIM token management previously lived here (Onyx-EE). It has been moved
+# to the dedicated SCIM admin router — see backend/om/server/scim/admin_api.py
+# (WS-G rewrite). This settings module no longer touches SCIM.

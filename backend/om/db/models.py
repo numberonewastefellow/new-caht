@@ -4809,30 +4809,35 @@ class BuildMessage(Base):
     )
 
 
-"""
-SCIM 2.0 Provisioning Models (Enterprise Edition only)
-Used for automated user/group provisioning from identity providers (Okta, Azure AD).
-"""
+# === WS-G: SCIM 2.0 provisioning models ===
+# Clean-room reimplementation of SCIM provisioning state. Three per-tenant tables
+# (Contract 3): a bearer-token table and two external-id ↔ internal-id mapping
+# tables. SCIM Groups map to Teams (Contract 1) via ``scim_team_mapping`` — the
+# team_id FK targets ``team.id`` (BIGINT). See backend/om/server/scim/README.md.
 
 
 class ScimToken(Base):
-    """Bearer tokens for IdP SCIM authentication."""
+    """Hashed bearer token used by an IdP to authenticate to the SCIM API.
+
+    The raw token is shown to the admin exactly once at creation; only its
+    SHA-256 hash is persisted. ``token_display`` keeps a masked, last-4 form for
+    the admin UI. Tokens are revoked by flipping ``is_active`` (soft-disable),
+    which keeps the audit trail intact.
+    """
 
     __tablename__ = "scim_token"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    # Admin-supplied label, e.g. "Okta production".
     name: Mapped[str] = mapped_column(String, nullable=False)
-    hashed_token: Mapped[str] = mapped_column(
-        String(64), unique=True, nullable=False
-    )  # SHA256 = 64 hex chars
-    token_display: Mapped[str] = mapped_column(
-        String, nullable=False
-    )  # Last 4 chars for UI identification
-
-    created_by_id: Mapped[UUID] = mapped_column(
+    # SHA-256 hex digest of the raw token (64 chars); the lookup key.
+    hashed_token: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    # Masked form for display, e.g. "scim_****abcd".
+    token_display: Mapped[str] = mapped_column(String, nullable=False)
+    # Admin user who generated the token.
+    created_by: Mapped[UUID] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), nullable=False
     )
-
     is_active: Mapped[bool] = mapped_column(
         Boolean, server_default=text("true"), nullable=False
     )
@@ -4843,20 +4848,19 @@ class ScimToken(Base):
         DateTime(timezone=True), nullable=True
     )
 
-    created_by: Mapped[User] = relationship("User", foreign_keys=[created_by_id])
+    creator: Mapped["User"] = relationship("User", foreign_keys=[created_by])
 
 
 class ScimUserMapping(Base):
-    """Maps SCIM externalId from the IdP to an Onyx User."""
+    """Links an IdP-issued ``externalId`` to an internal :class:`User`."""
 
     __tablename__ = "scim_user_mapping"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    external_id: Mapped[str] = mapped_column(String, unique=True, index=True)
+    external_id: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), unique=True, nullable=False
     )
-
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -4867,20 +4871,26 @@ class ScimUserMapping(Base):
         nullable=False,
     )
 
-    user: Mapped[User] = relationship("User", foreign_keys=[user_id])
+    user: Mapped["User"] = relationship("User", foreign_keys=[user_id])
 
 
-class ScimGroupMapping(Base):
-    """Maps SCIM externalId from the IdP to an Onyx UserGroup."""
+class ScimTeamMapping(Base):
+    """Links an IdP-issued Group ``externalId`` to an internal Team (Contract 1).
 
-    __tablename__ = "scim_group_mapping"
+    Replaces Onyx-EE's ``scim_group_mapping`` (user_group lineage). ``team_id``
+    targets ``team.id`` (BIGINT PK) landed by WS-B.
+    """
+
+    __tablename__ = "scim_team_mapping"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    external_id: Mapped[str] = mapped_column(String, unique=True, index=True)
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id", ondelete="CASCADE"), unique=True, nullable=False
+    external_id: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    team_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("team.id", ondelete="CASCADE"),
+        unique=True,
+        nullable=False,
     )
-
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -4891,9 +4901,8 @@ class ScimGroupMapping(Base):
         nullable=False,
     )
 
-    user_group: Mapped[UserGroup] = relationship(
-        "UserGroup", foreign_keys=[user_group_id]
-    )
+
+# === end WS-G: SCIM 2.0 provisioning models ===
 
 
 # ========================
