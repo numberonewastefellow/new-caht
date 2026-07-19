@@ -119,7 +119,6 @@ backend = [
     "asana==5.0.8",
     "dropbox==12.0.2",
     "shapely==2.0.6",
-    "stripe==10.12.0",
     "urllib3==2.6.3",
     "mistune==3.2.0",
     "sendgrid==6.12.5",

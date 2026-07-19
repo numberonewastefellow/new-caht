@@ -14,22 +14,20 @@ logger = setup_logger()
 
 def is_user_subscribed(user: User, db_session: Session) -> bool:  # noqa: ARG001
     """
-    Check if a user has an active subscription.
+    Check whether a user should be treated as having full (non-trial) access.
 
-    For cloud (MULTI_TENANT=true):
-        - Checks Stripe billing via control plane
-        - Returns True if tenant is NOT on trial (subscribed = NOT on trial)
-
-    For self-hosted (MULTI_TENANT=false):
-        - Checks license metadata
-        - Returns True if license status is ACTIVE
+    WS-A: billing/subscriptions were removed (no external billing/control plane),
+    so ``is_tenant_on_trial_fn`` now always reports "not on trial". Every
+    authenticated user is therefore treated as subscribed; only an unauthenticated
+    user (``user is None``) is non-subscribed. WS-F owns any future usage/trial
+    redesign that would change this.
 
     Args:
         user: The user object (None for unauthenticated users)
         db_session: Database session
 
     Returns:
-        True if user has active subscription, False otherwise
+        True if the user should get full access, False otherwise
     """
     if DEV_MODE:
         return True
@@ -38,7 +36,8 @@ def is_user_subscribed(user: User, db_session: Session) -> bool:  # noqa: ARG001
         return False
 
     if MULTI_TENANT:
-        # Cloud: check Stripe billing via control plane
+        # WS-A: billing removed — is_tenant_on_trial_fn always reports "not on
+        # trial", so every authenticated MT user is treated as subscribed.
         tenant_id = get_current_tenant_id()
         try:
             on_trial = is_tenant_on_trial_fn(tenant_id)

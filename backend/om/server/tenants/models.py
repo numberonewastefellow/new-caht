@@ -1,55 +1,9 @@
-from datetime import datetime
-from typing import Literal
-
 from pydantic import BaseModel
-
-from om.server.settings.models import ApplicationStatus
-
-
-class CheckoutSessionCreationRequest(BaseModel):
-    quantity: int
 
 
 class CreateTenantRequest(BaseModel):
     tenant_id: str
     initial_admin_email: str
-
-
-class ProductGatingRequest(BaseModel):
-    tenant_id: str
-    application_status: ApplicationStatus
-
-
-class ProductGatingFullSyncRequest(BaseModel):
-    gated_tenant_ids: list[str]
-
-
-class SubscriptionStatusResponse(BaseModel):
-    subscribed: bool
-
-
-class BillingInformation(BaseModel):
-    stripe_subscription_id: str
-    status: str
-    current_period_start: datetime
-    current_period_end: datetime
-    number_of_seats: int
-    cancel_at_period_end: bool
-    canceled_at: datetime | None
-    trial_start: datetime | None
-    trial_end: datetime | None
-    seats: int
-    payment_method_enabled: bool
-
-
-class CreateCheckoutSessionRequest(BaseModel):
-    billing_period: Literal["monthly", "annual"] = "monthly"
-    seats: int | None = None
-    email: str | None = None
-
-
-class CheckoutSessionCreationResponse(BaseModel):
-    id: str
 
 
 class ImagentteRequest(BaseModel):
@@ -69,21 +23,6 @@ class TenantDeletionPayload(BaseModel):
 
 class AnonymousUserPath(BaseModel):
     anonymous_user_path: str | None
-
-
-class ProductGatingResponse(BaseModel):
-    updated: bool
-    error: str | None
-
-
-class SubscriptionSessionResponse(BaseModel):
-    sessionId: str
-
-
-class CreateSubscriptionSessionRequest(BaseModel):
-    """Request to create a subscription checkout session."""
-
-    billing_period: Literal["monthly", "annual"] = "monthly"
 
 
 class TenantByDomainResponse(BaseModel):
@@ -111,7 +50,3 @@ class PendingUserSnapshot(BaseModel):
 
 class ApproveUserRequest(BaseModel):
     email: str
-
-
-class StripePublishableKeyResponse(BaseModel):
-    publishable_key: str

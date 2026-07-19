@@ -35,7 +35,6 @@ from om.auth.users import optional_user
 from om.configs.app_configs import AUTH_BACKEND
 from om.configs.app_configs import AUTH_TYPE
 from om.configs.app_configs import AuthBackend
-from om.configs.app_configs import DEV_MODE
 from om.configs.app_configs import ENABLE_EMAIL_INVITES
 from om.configs.app_configs import NUM_FREE_TRIAL_USER_INVITES
 from om.configs.app_configs import REDIS_AUTH_KEY_PREFIX
@@ -45,7 +44,6 @@ from om.configs.app_configs import VALID_EMAIL_DOMAINS
 from om.configs.constants import FASTAPI_USERS_AUTH_COOKIE_NAME
 from om.configs.constants import PUBLIC_API_TAGS
 from om.db.api_key import is_api_key_email_address
-from om.db.auth import get_live_users_count
 from om.db.engine.sql_engine import get_session
 from om.db.enums import KnowledgeFileStatus
 from om.db.models import User
@@ -366,9 +364,7 @@ def bulk_invite_users(
 ) -> int:
     """emails are string validated. If any email fails validation, no emails are
     invited and an exception is raised."""
-    from om.server.tenants.billing import register_tenant_users as _impl_register_tenant_users
     from om.server.tenants.provisioning import add_users_to_tenant as _impl_add_users_to_tenant
-    from om.server.tenants.user_mapping import remove_users_from_tenant as _impl_remove_users_from_tenant
     tenant_id = get_current_tenant_id()
 
     new_invited_emails = []
@@ -430,23 +426,9 @@ def bulk_invite_users(
         except Exception as e:
             logger.error(f"Error sending email invite to invited users: {e}")
 
-    if not MULTI_TENANT or DEV_MODE:
-        return number_of_invited_users
-
-    # for billing purposes, write to the control plane about the number of new users
-    try:
-        logger.info("Registering tenant users")
-        _impl_register_tenant_users(tenant_id, get_live_users_count(db_session))
-
-        return number_of_invited_users
-    except Exception as e:
-        logger.error(f"Failed to register tenant users: {str(e)}")
-        logger.info(
-            "Reverting changes: removing users from tenant and resetting invited users"
-        )
-        write_invited_users(initial_invited_users)  # Reset to original state
-        _impl_remove_users_from_tenant(new_invited_emails, tenant_id)
-        raise e
+    # WS-A: previously wrote the live seat count to the billing control plane
+    # (register_tenant_users) — removed with billing. No control-plane sync remains.
+    return number_of_invited_users
 
 
 @router.patch("/nexus/admin/remove-invited-user", tags=PUBLIC_API_TAGS)
@@ -455,23 +437,14 @@ def remove_invited_user(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> int:
-    from om.server.tenants.billing import register_tenant_users as _impl_register_tenant_users
     from om.server.tenants.user_mapping import remove_users_from_tenant as _impl_remove_users_from_tenant
     tenant_id = get_current_tenant_id()
     if MULTI_TENANT:
         _impl_remove_users_from_tenant([user_email.user_email], tenant_id)
     number_of_invited_users = remove_user_from_invited_users(user_email.user_email)
 
-    try:
-        if MULTI_TENANT and not DEV_MODE:
-            _impl_register_tenant_users(tenant_id, get_live_users_count(db_session))
-    except Exception:
-        logger.error(
-            "Request to update number of seats taken in control plane failed. "
-            "This may cause synchronization issues/out of date enforcement of seat limits."
-        )
-        raise
-
+    # WS-A: previously synced the seat count to the billing control plane
+    # (register_tenant_users) — removed with billing.
     return number_of_invited_users
 
 
@@ -481,7 +454,6 @@ def deactivate_user_api(
     current_user: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> None:
-    from om.db.license import invalidate_license_cache as _impl_invalidate_license_cache
     if current_user.email == user_email.user_email:
         raise HTTPException(status_code=400, detail="You cannot deactivate yourself")
 
@@ -497,11 +469,6 @@ def deactivate_user_api(
 
     deactivate_user(user_to_deactivate, db_session)
 
-    # Invalidate license cache so used_seats reflects the new count
-    # Only for self-hosted (non-multi-tenant) deployments
-    if not MULTI_TENANT:
-        _impl_invalidate_license_cache()
-
 
 @router.delete("/nexus/admin/delete-user", tags=PUBLIC_API_TAGS)
 async def delete_user(
@@ -509,7 +476,6 @@ async def delete_user(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> None:
-    from om.db.license import invalidate_license_cache as _impl_invalidate_license_cache
     from om.server.tenants.user_mapping import remove_users_from_tenant as _impl_remove_users_from_tenant
     user_to_delete = get_user_by_email(
         email=user_email.user_email, db_session=db_session
@@ -534,11 +500,6 @@ async def delete_user(
         delete_user_from_db(user_to_delete, db_session)
         logger.info(f"Deleted user {user_to_delete.email}")
 
-        # Invalidate license cache so used_seats reflects the new count
-        # Only for self-hosted (non-multi-tenant) deployments
-        if not MULTI_TENANT:
-            _impl_invalidate_license_cache()
-
     except Exception as e:
         db_session.rollback()
         logger.error(f"Error deleting user {user_to_delete.email}: {str(e)}")
@@ -551,7 +512,6 @@ def activate_user_api(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> None:
-    from om.db.license import invalidate_license_cache as _impl_invalidate_license_cache
     user_to_activate = get_user_by_email(
         email=user_email.user_email, db_session=db_session
     )
@@ -562,16 +522,10 @@ def activate_user_api(
         logger.warning("{} is already activated".format(user_to_activate.email))
         return
 
-    # Check seat availability before activating
-    # Only for self-hosted (non-multi-tenant) deployments
+    # No-op since the license seat cap was removed (WS-A); kept for structure.
     enforce_seat_limit(db_session)
 
     activate_user(user_to_activate, db_session)
-
-    # Invalidate license cache so used_seats reflects the new count
-    # Only for self-hosted (non-multi-tenant) deployments
-    if not MULTI_TENANT:
-        _impl_invalidate_license_cache()
 
 
 @router.get("/nexus/admin/valid-domains")

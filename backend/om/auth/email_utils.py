@@ -294,50 +294,6 @@ def send_email_with_smtplib(
         s.send_message(msg)
 
 
-def send_subscription_cancellation_email(user_email: str) -> None:
-    """This is templated but isn't meaningful for whitelabeling."""
-
-    # Example usage of the reusable HTML
-    from om.server.enterprise_settings.store import load_runtime_settings as _impl_load_runtime_settings
-    try:
-        load_runtime_settings_fn = _impl_load_runtime_settings
-        settings = load_runtime_settings_fn()
-        application_name = settings.application_name
-    except ModuleNotFoundError:
-        application_name = OM_DEFAULT_APPLICATION_NAME
-
-    onyx_file = OmRuntime.get_emailable_logo()
-
-    subject = f"Your {application_name} Subscription Has Been Canceled"
-    heading = "Subscription Canceled"
-    message = (
-        "<p>We're sorry to see you go.</p>"
-        "<p>Your subscription has been canceled and will end on your next billing date.</p>"
-        "<p>If you change your mind, you can always come back!</p>"
-    )
-    cta_text = "Renew Subscription"
-    cta_link = "https://www.vertualai.app/pricing"
-    html_content = build_html_email(
-        application_name,
-        heading,
-        message,
-        cta_text,
-        cta_link,
-    )
-    text_content = (
-        "We're sorry to see you go.\n"
-        "Your subscription has been canceled and will end on your next billing date.\n"
-        "If you change your mind, visit https://www.vertualai.app/pricing"
-    )
-    send_email(
-        user_email,
-        subject,
-        html_content,
-        text_content,
-        inline_png=("logo.png", onyx_file.data),
-    )
-
-
 def build_user_email_invite(
     from_email: str, to_email: str, application_name: str, auth_type: AuthType
 ) -> tuple[str, str]:

@@ -295,18 +295,14 @@ def verify_email_domain(email: str) -> None:
 
 
 def enforce_seat_limit(db_session: Session, seats_needed: int = 1) -> None:
-    """Raise HTTPException(402) if adding users would exceed the seat limit.
+    """No-op: seat caps were part of the removed license paywall.
 
-    No-op for multi-tenant or CE deployments.
+    WS-A: the license-key seat limit (``om.db.license.check_seat_availability``)
+    was deleted, so deployments no longer cap the number of seats. Retained as a
+    no-op so existing call sites (user activation/invite, SCIM provisioning) keep
+    working without change.
     """
-    from om.db.license import check_seat_availability as _impl_check_seat_availability
-    if MULTI_TENANT:
-        return
-
-    result = _impl_check_seat_availability(db_session, seats_needed=seats_needed)
-
-    if result is not None and not result.available:
-        raise HTTPException(status_code=402, detail=result.error_message)
+    return None
 
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):

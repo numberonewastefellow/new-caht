@@ -181,59 +181,8 @@ func composeDir() string {
 	return filepath.Join(gitRoot, "deployment", "docker_compose")
 }
 
-// setEnvValue sets a key=value pair in the .env file within the compose
-// directory. If the key already exists its value is updated in place;
-// otherwise the entry is appended. The file is created if it does not exist.
-func setEnvValue(key, value string) {
-	envPath := filepath.Join(composeDir(), ".env")
-
-	data, err := os.ReadFile(envPath)
-	if err != nil && !os.IsNotExist(err) {
-		log.Fatalf("Failed to read %s: %v", envPath, err)
-	}
-
-	entry := fmt.Sprintf("%s=%s", key, value)
-	prefix := key + "="
-
-	if len(data) == 0 {
-		// File missing or empty – create with just this entry.
-		if err := os.WriteFile(envPath, []byte(entry+"\n"), 0644); err != nil {
-			log.Fatalf("Failed to write %s: %v", envPath, err)
-		}
-		return
-	}
-
-	lines := strings.Split(string(data), "\n")
-	found := false
-	for i, line := range lines {
-		if strings.HasPrefix(line, prefix) {
-			lines[i] = entry
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		// Insert before the trailing empty line (if the file ended with \n)
-		// so we don't accumulate blank lines.
-		if lines[len(lines)-1] == "" {
-			lines = append(lines[:len(lines)-1], entry, "")
-		} else {
-			lines = append(lines, entry)
-		}
-	}
-
-	if err := os.WriteFile(envPath, []byte(strings.Join(lines, "\n")), 0644); err != nil {
-		log.Fatalf("Failed to write %s: %v", envPath, err)
-	}
-}
-
 func runCompose(profile string, opts *ComposeOptions) {
 	validateProfile(profile)
-
-	if !opts.Down {
-		setEnvValue("LICENSE_ENFORCEMENT_ENABLED", "false")
-	}
 
 	args := baseArgs(profile)
 

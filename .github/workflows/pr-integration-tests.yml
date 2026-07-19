@@ -330,8 +330,6 @@ jobs:
           # EE-only config
           if [ "$EDITION" = "ee" ]; then
             cat <<EOF >> deployment/docker_compose/.env
-          # TODO(Nik): update test infra to use a test license
-          LICENSE_ENFORCEMENT_ENABLED=false
           CHECK_TTL_MANAGEMENT_TASK_FREQUENCY_IN_HOURS=0.001
           USE_LIGHTWEIGHT_BACKGROUND_WORKER=false
           EOF
@@ -497,7 +495,6 @@ jobs:
         run: |
           cat <<EOF > deployment/docker_compose/.env
           COMPOSE_PROFILES=s3-filestore
-          LICENSE_ENFORCEMENT_ENABLED=false
           AUTH_TYPE=basic
           POSTGRES_POOL_PRE_PING=true
           POSTGRES_USE_NULL_POOL=true
@@ -628,7 +625,6 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           cd deployment/docker_compose
-          LICENSE_ENFORCEMENT_ENABLED=false \
           MULTI_TENANT=true \
           AUTH_TYPE=cloud \
           REQUIRE_EMAIL_VERIFICATION=false \

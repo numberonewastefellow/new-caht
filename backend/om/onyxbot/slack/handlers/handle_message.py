@@ -8,7 +8,6 @@ from om.configs.onyxbot_configs import OM_BOT_REACT_EMOJI
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.models import SlackChannelConfig
 from om.db.users import add_slack_user_if_not_exists
-from om.db.users import get_user_by_email
 from om.onyxbot.slack.blocks import get_feedback_reminder_blocks
 from om.onyxbot.slack.handlers.handle_regular_answer import (
     handle_regular_answer,
@@ -118,7 +117,6 @@ def handle_message(
     Query thrown out by filters due to config does not count as a failure that should be notified
     Onyx failing to answer/retrieve docs does count and should be notified
     """
-    from om.db.license import check_seat_availability as _impl_check_seat_availability
     channel = message_info.channel_to_respond
 
     logger = setup_logger(extra={SLACK_CHANNEL_ID: channel})
@@ -214,31 +212,8 @@ def handle_message(
 
     with get_session_with_current_tenant() as db_session:
         if message_info.email:
-            existing_user = get_user_by_email(message_info.email, db_session)
-            if existing_user is None:
-                # New user — check seat availability before creating
-                check_seat_fn = _impl_check_seat_availability
-                # noop returns None when called; real function returns SeatAvailabilityResult
-                seat_result = check_seat_fn(db_session=db_session)
-                if seat_result is not None and not seat_result.available:
-                    logger.info(
-                        f"Blocked new Slack user {message_info.email}: "
-                        f"{seat_result.error_message}"
-                    )
-                    respond_in_thread_or_channel(
-                        client=client,
-                        channel=channel,
-                        thread_ts=message_info.msg_to_respond,
-                        text=(
-                            "We weren't able to respond because your organization "
-                            "has reached its user seat limit. Since this is your "
-                            "first time interacting with the bot, a new account "
-                            "could not be created for you. Please contact your "
-                            "VertualAI administrator to add more seats."
-                        ),
-                    )
-                    return False
-
+            # WS-A: the license seat cap (check_seat_availability) was removed with
+            # the license paywall — new Slack users are no longer blocked by seats.
             add_slack_user_if_not_exists(db_session, message_info.email)
 
         # first check if we need to respond with a standard answer

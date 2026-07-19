@@ -225,22 +225,6 @@ finally:
     CURRENT_TENANT_ID_CONTEXTVAR.reset(context_token)
 ```
 
-### 3. Enterprise Gating Support
-
-Gated tenants are filtered during cache refresh:
-
-```python
-gated_tenants = fetch_ee_implementation_or_noop(
-    "onyx.server.tenants.product_gating",
-    "get_gated_tenants",
-    set(),
-)()
-
-for tenant_id in get_all_tenant_ids():
-    if tenant_id in gated_tenants:
-        continue  # Skip gated tenants
-```
-
 ---
 
 ## Cache Refresh Strategy

@@ -60,7 +60,6 @@ from om.file_store.file_store import get_default_file_store
 from om.server.api_key.api import router as api_key_router
 from om.server.auth_check import check_ee_router_auth
 from om.server.analytics.api import router as analytics_router
-from om.server.billing.api import router as billing_router
 from om.server.enterprise_settings.api import (
     admin_router as enterprise_settings_admin_router,
 )
@@ -68,11 +67,7 @@ from om.server.enterprise_settings.api import (
     basic_router as enterprise_settings_router,
 )
 from om.server.evals.api import router as evals_router
-from om.server.license.api import router as license_router
 from om.server.manage.standard_answer import router as standard_answer_router
-from om.server.middleware.license_enforcement import (
-    add_license_enforcement_middleware,
-)
 from om.server.middleware.tenant_tracking import (
     add_api_server_tenant_id_middleware,
 )
@@ -493,12 +488,6 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     )
     include_router_with_global_prefix_prepended(application, enterprise_settings_router)
     include_router_with_global_prefix_prepended(application, usage_export_router)
-    # License management
-    include_router_with_global_prefix_prepended(application, license_router)
-
-    # Unified billing API - always registered so frontend doesn't get 404.
-    # Works for both self-hosted and cloud deployments.
-    include_router_with_global_prefix_prepended(application, billing_router)
 
     if MULTI_TENANT:
         # Tenant management
@@ -686,13 +675,10 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     setup_prometheus_metrics(application)
 
     # Merged from the former ee/om/main.py.
+    # NOTE (WS-A): the former non-MULTI_TENANT `else` branch installed the license-
+    # enforcement middleware — removed with the license paywall. WS-M owns this block.
     if MULTI_TENANT:
         add_api_server_tenant_id_middleware(application, logger)
-    else:
-        # License enforcement middleware for self-hosted deployments only.
-        # Checks LICENSE_ENFORCEMENT_ENABLED at runtime (can be toggled without a
-        # restart). MT deployments use control-plane gating via is_tenant_gated().
-        add_license_enforcement_middleware(application, logger)
 
     # Ensure all routes have auth enabled or are explicitly marked as public
     check_ee_router_auth(application)
@@ -711,7 +697,5 @@ if __name__ == "__main__":
     logger.notice(
         f"Starting VertualAi Backend version {__version__} on http://{APP_HOST}:{str(APP_PORT)}/"
     )
-
-    logger.notice("Running Enterprise Edition")
 
     uvicorn.run(app, host=APP_HOST, port=APP_PORT)

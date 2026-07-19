@@ -13,10 +13,7 @@ import {
 import { Metadata } from "next";
 import { buildClientUrl } from "@/lib/utilsSS";
 import localFont from "next/font/local";
-import {
-  EnterpriseSettings,
-  ApplicationStatus,
-} from "./admin/settings/interfaces";
+import { EnterpriseSettings } from "./admin/settings/interfaces";
 import AppProvider from "@/providers/AppProvider";
 import { PHProvider } from "./providers";
 import { getAuthTypeMetadataSS, getCurrentUserSS } from "@/lib/userSS";
@@ -29,7 +26,6 @@ import { VirtualAIThemeProvider } from "@/providers/VirtualAIThemeProvider";
 import { UiConfigProvider } from "@/providers/UiConfigProvider";
 import CloudError from "@/components/errorPages/CloudErrorPage";
 import Error from "@/components/errorPages/ErrorPage";
-import GatedContentWrapper from "@/components/GatedContentWrapper";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { fetchAppSidebarMetadata } from "@/lib/appSidebarSS";
 import StatsOverlayLoader from "@/components/dev/StatsOverlayLoader";
@@ -137,9 +133,6 @@ export default async function RootLayout({
       ? "legacy"
       : "new";
 
-  const productGating =
-    combinedSettings?.settings.application_status ?? ApplicationStatus.ACTIVE;
-
   const getPageContent = async (content: React.ReactNode) => (
     <html
       lang="en"
@@ -211,19 +204,9 @@ export default async function RootLayout({
     );
   }
 
-  // When gated, wrap children in GatedContentWrapper which checks the path
-  // client-side and shows AccessRestrictedPage for non-billing paths.
-  //
-  // Trade-off: Server components still render and attempt API calls before the
-  // client-side check runs. This is safe because the backend license enforcement
-  // middleware returns 402 for all non-allowlisted API calls, preventing data
-  // leakage. The user sees a brief loading state before being redirected.
-  const content =
-    productGating === ApplicationStatus.GATED_ACCESS ? (
-      <GatedContentWrapper>{children}</GatedContentWrapper>
-    ) : (
-      children
-    );
+  // WS-A: the license/billing paywall (GatedContentWrapper + AccessRestrictedPage)
+  // was removed — the app is never gated, so children always render.
+  const content = children;
 
   return getPageContent(
     <AppProvider
