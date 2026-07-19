@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://docs.vertualai.com/overview/core_features/craft"><img alt="Documentation" src="https://img.shields.io/badge/docs-vertualai.com-blue?style=flat-square" /></a>
-  <a href="https://github.com/vertualai/vertualai/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green?style=flat-square" /></a>
+  <a href="https://github.com/vertualai/vertualai/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Proprietary-green?style=flat-square" /></a>
     <a href="https://discord.gg/TDJ59cGV2X" target="_blank" rel="noopener noreferrer">
         <img src="https://img.shields.io/badge/discord-join-blue.svg?logo=discord&logoColor=white" alt="Discord" />
     </a>
@@ -192,4 +192,5 @@ For Craft-specific development:
 
 ## License
 
-MIT — see [LICENSE](../../../../LICENSE)
+OM-AI Proprietary License — see [LICENSE](../../../../LICENSE). Third-party attributions are
+listed in [NOTICE.md](../../../../NOTICE.md).

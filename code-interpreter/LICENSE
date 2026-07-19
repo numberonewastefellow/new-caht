@@ -1,21 +1,34 @@
-MIT License
+Copyright (c) 2023-present OM-AI. All Rights Reserved.
 
-Copyright (c) 2025-present DanswerAI, Inc.
+OM-AI PROPRIETARY LICENSE
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software and its associated source code, documentation, and other materials
+(collectively, the "Software") are the proprietary and confidential property of
+OM-AI ("Licensor"). The Software is licensed, not sold.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. Ownership. All right, title, and interest in and to the Software, including all
+   intellectual property rights therein, are and shall remain the exclusive property
+   of Licensor.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. Restrictions. No license or right is granted to any person or entity to use, copy,
+   modify, merge, publish, distribute, sublicense, sell, host, or create derivative
+   works of the Software, in whole or in part, except under a separate written
+   agreement expressly signed by Licensor. Any use of the Software without such prior
+   written authorization is strictly prohibited.
+
+3. Third-Party Components. The Software incorporates, builds upon, or is distributed
+   together with third-party open-source components, including code derived from the
+   Onyx / Danswer project. Each such third-party component remains subject to the
+   original license granted by its respective owner, and nothing in this license
+   modifies, supersedes, or restricts those third-party licenses. A summary of the
+   incorporated third-party components and their licenses is provided in the NOTICE.md
+   file distributed with the Software. In the event of any conflict between this
+   license and a third-party license as applied to that third-party component, the
+   third-party license governs that component.
+
+4. No Warranty. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+   FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN
+   ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH
+   THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

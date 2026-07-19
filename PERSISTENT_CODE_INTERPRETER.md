@@ -91,9 +91,9 @@ This plan modifies **only the Code Interpreter**, not Craft.
 
 ## Source Code Location
 
-The code-interpreter service source is open source:
+The code-interpreter service source lives in this repo:
 - **Repo**: https://github.com/vertualai/code-interpreter
-- **License**: MIT
+- **License**: OM-AI Proprietary (derived from Onyx / Danswer, MIT — see NOTICE.md)
 - **Current image**: `om/code-interpreter:latest`
 
 We clone it into our project at `code-interpreter/` (outside `backend/`) to have full control:

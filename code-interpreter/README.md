@@ -167,6 +167,10 @@ Configure the service via environment variables:
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+OM-AI Proprietary License - see [LICENSE](LICENSE) file for details.
 
-Copyright (c) 2025-present DanswerAI, Inc.
+Copyright (c) 2023-present OM-AI. All Rights Reserved.
+
+This project is derived from the Onyx / Danswer project (© DanswerAI, Inc., MIT License) and
+incorporates other third-party open-source components. See [NOTICE.md](../NOTICE.md) for
+attributions.

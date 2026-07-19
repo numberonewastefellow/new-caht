@@ -32,10 +32,10 @@ INDEXING_MODEL_SERVER_PORT = int(
     os.environ.get("INDEXING_MODEL_SERVER_PORT") or MODEL_SERVER_PORT
 )
 
-# Onyx custom Deep Learning Models
-CONNECTOR_CLASSIFIER_MODEL_REPO = "Danswer/filter-extraction-model"
+# Om custom Deep Learning Models (re-hosted under our own HF namespace)
+CONNECTOR_CLASSIFIER_MODEL_REPO = "bommina/om-filter-extraction-model"
 CONNECTOR_CLASSIFIER_MODEL_TAG = "1.0.0"
-INTENT_MODEL_VERSION = "onyx-dot-app/hybrid-intent-token-classifier"
+INTENT_MODEL_VERSION = "bommina/om-hybrid-intent-token-classifier"
 # INTENT_MODEL_TAG = "v1.0.3"
 INTENT_MODEL_TAG: str | None = None
 # Bi-Encoder, other details

@@ -17,7 +17,7 @@
         <img src="https://img.shields.io/website?url=https://www.vertualai.app&up_message=visit&up_color=blue" alt="Documentation" />
     </a>
     <a href="https://github.com/vertualai/vertualai/blob/main/LICENSE" target="_blank">
-        <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=blue" alt="License" />
+        <img src="https://img.shields.io/static/v1?label=license&message=Proprietary&color=blue" alt="License" />
     </a>
 </p>
 
@@ -225,11 +225,15 @@ To see ongoing and upcoming projects, check out our [roadmap](https://github.com
 
 
 ## 📚 Licensing
-There are two editions of VertualAI:
+VertualAI is proprietary software released under the OM-AI Proprietary License — see
+[LICENSE](LICENSE) for terms. Use, copying, modification, and distribution are not permitted
+without prior written authorization.
 
-- VertualAI Community Edition (CE) is available freely under the MIT license.
-- VertualAI Enterprise Edition (EE) includes extra features that are primarily useful for larger organizations.
-For feature details, check out [our website](https://www.vertualai.app/pricing?utm_source=vertualai_repo&utm_medium=github&utm_campaign=readme).
+VertualAI is built upon and incorporates third-party open-source components (including code
+derived from the Onyx / Danswer project), each governed by its own upstream license. See
+[NOTICE.md](NOTICE.md) for the attributions and license summary.
+
+For feature and pricing details, check out [our website](https://www.vertualai.app/pricing?utm_source=vertualai_repo&utm_medium=github&utm_campaign=readme).
 
 
 

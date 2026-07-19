@@ -224,7 +224,7 @@ if __name__ == "__main__":
     )
 
     # Not needed if Auth is disabled?
-    # Or for VertualAI MIT Edition API key must be replaced with session cookie
+    # Or for VertualAI the API key must be replaced with session cookie
     parser.add_argument(
         "--api-key",
         type=str,

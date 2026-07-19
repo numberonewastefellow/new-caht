@@ -188,4 +188,5 @@ For distributing outside the App Store, you'll need to:
 
 ## License
 
-MIT
+OM-AI Proprietary License — see [LICENSE](../LICENSE). Third-party attributions are listed in
+[NOTICE.md](../NOTICE.md).

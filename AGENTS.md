@@ -4,7 +4,7 @@ This file provides guidance to AI agents when working with code in this reposito
 
 ## KEY NOTES
 
-- ⚠️ **Before any `onyx` → `om` rename or repo-wide find-and-replace, read [`DO_NOT_RENAME.md`](DO_NOT_RENAME.md).** Some `onyx`/`Danswer` strings are *external contracts* — HuggingFace model repo ids (e.g. `onyx-dot-app/hybrid-intent-token-classifier`), session cookies (`onyx_tid`), the Redis `onyx:` namespace, Docker image tags, Vespa index names. They pass build/mypy but **404 or break at runtime** if renamed. They are frozen until the HF re-hosting TODO in that file is done.
+- ⚠️ **Before any `onyx` → `om` rename or repo-wide find-and-replace, read [`DO_NOT_RENAME.md`](DO_NOT_RENAME.md).** Some `onyx`/`Danswer` strings are *external contracts* — session cookies (`onyx_tid`), the Redis `onyx:` namespace, Docker image tags, Vespa index names. They pass build/mypy but **404 or break at runtime** if renamed. (The HuggingFace model repo ids are now re-hosted under our own `bommina/om-*` namespace — that TODO is done — so those specific ids are ours and safe; see §1/§3 of that file.)
 - If you run into any missing python dependency errors, try running your command with `source .venv/bin/activate` \
   to assume the python venv.
 - To make tests work, check the `.env` file at the root of the project to find an OpenAI key.
@@ -19,7 +19,7 @@ This file provides guidance to AI agents when working with code in this reposito
 
 ## Project Overview
 
-**VertualAI** (formerly Danswer) is an open-source Gen-AI and Enterprise Search platform that connects to company documents, apps, and people. It features a modular architecture with both Community Edition (MIT licensed) and Enterprise Edition offerings.
+**VertualAI** (a substantially extended fork of the open-source Onyx / Danswer project) is a Gen-AI and Enterprise Search platform that connects to company documents, apps, and people. It features a modular architecture and is distributed under the OM-AI Proprietary License (see [LICENSE](LICENSE)); third-party attributions are listed in [NOTICE.md](NOTICE.md).
 
 ### Background Workers (Celery)
 
@@ -183,7 +183,6 @@ backend/
 │   ├── federated_connectors/    # External search connectors
 │   ├── llm/                     # LLM provider integrations
 │   └── server/                  # API endpoints & routers
-├── ee/                          # Enterprise Edition features
 ├── alembic/                     # Database migrations
 └── tests/                       # Test suites
 

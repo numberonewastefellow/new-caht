@@ -15,16 +15,19 @@ own these" section is done.
 
 ---
 
-## 1. HuggingFace model repo IDs — trained models, NO drop-in replacement
+## 1. HuggingFace model repo IDs — trained models, NOW re-hosted under `bommina`
 
 These are downloaded at runtime via `snapshot_download` / `from_pretrained`. The repo id **is
-the download URL**. Rename it and the model 404s. There is no `om/…` equivalent on HF Hub.
+the download URL**. All three trained models were pulled from the original Onyx/Danswer repos and
+re-pushed under our own HF namespace `bommina/om-*` (see §3 — that TODO is **done**). They resolve
+from our account now, so the ids below are ours and no longer frozen. The mirrored connector tag
+`1.0.0` was re-created on the new repo.
 
-| String (do NOT change) | Location | What it is |
+| String (now ours) | Location | What it is |
 |---|---|---|
-| `onyx-dot-app/hybrid-intent-token-classifier` | `backend/shared_configs/configs.py:38` (`INTENT_MODEL_VERSION`) | **ACTIVE** intent / keyword-vs-semantic token classifier |
-| `Danswer/filter-extraction-model` | `backend/shared_configs/configs.py:36` (`CONNECTOR_CLASSIFIER_MODEL_REPO`) | **ACTIVE** connector classifier (old `Danswer/` HF namespace) |
-| `onyx-dot-app/information-content-model` | `backend/model_server/legacy/custom_models.py:36` | information-content SetFit classifier (currently commented-out legacy, but keep the id intact) |
+| `bommina/om-hybrid-intent-token-classifier` | `backend/shared_configs/configs.py:38` (`INTENT_MODEL_VERSION`) | **ACTIVE** intent / keyword-vs-semantic token classifier (re-host of `onyx-dot-app/hybrid-intent-token-classifier`) |
+| `bommina/om-filter-extraction-model` | `backend/shared_configs/configs.py:36` (`CONNECTOR_CLASSIFIER_MODEL_REPO`, tag `1.0.0`) | **ACTIVE** connector classifier (re-host of `Danswer/filter-extraction-model`) |
+| `bommina/om-information-content-model` | `backend/model_server/legacy/custom_models.py:36` | information-content SetFit classifier (currently commented-out legacy; re-host of `onyx-dot-app/information-content-model`) |
 
 ### Third-party public models (also do NOT rename — not ours to rename)
 `nomic-ai/nomic-embed-text-v1`, `thenlper/gte-small`, `intfloat/e5-base-v2`,
@@ -129,33 +132,42 @@ set.
 
 ---
 
-## 3. How to actually OWN the trained models (TODO — the real fix)
+## 3. How we OWN the trained models (DONE — kept as historical record)
 
-Until this is done, the fork depends on Onyx's / Danswer's HuggingFace repos. To become
-self-sufficient (and only THEN able to rename them):
+**Status: complete.** All three trained models were pulled from the original Onyx/Danswer repos
+and re-pushed under our own HF namespace `bommina/om-*`, and the config in §1 now points at them.
+The fork no longer depends on Onyx's/Danswer's HuggingFace repos. The connector's mirrored tag
+`1.0.0` was re-created on the new repo so `CONNECTOR_CLASSIFIER_MODEL_TAG` still resolves.
 
-1. Create a HuggingFace account/org — e.g. `<your-hf-org>`.
-2. Pull each Onyx/Danswer-trained model and re-upload under your org:
-   ```bash
-   # requires: pip install -U "huggingface_hub[cli]"; huggingface-cli login
-   for repo in \
-     "onyx-dot-app/hybrid-intent-token-classifier" \
-     "Danswer/filter-extraction-model" \
-     "onyx-dot-app/information-content-model"; do
-       name="${repo##*/}"
-       huggingface-cli download "$repo" --local-dir "./hf_export/$name"
-       huggingface-cli upload "<your-hf-org>/$name" "./hf_export/$name" .
-   done
-   ```
-3. Re-point the config in `backend/shared_configs/configs.py`:
-   - `CONNECTOR_CLASSIFIER_MODEL_REPO = "<your-hf-org>/filter-extraction-model"`
-   - `INTENT_MODEL_VERSION = "<your-hf-org>/hybrid-intent-token-classifier"`
-   - (and the information-content id if/when that legacy path is re-enabled)
-4. Rebuild the `model_server` image and verify the models load at startup (watch
-   `virtualai-inference_model_server-1` / `-indexing_model_server-1` logs for download +
-   warm-up, no 404).
-5. **Only after** the models resolve from `<your-hf-org>/…` may these ids be renamed. Update the
-   table in §1 when you do.
+The re-host mapping that was applied:
 
-> ⚠️ Do **not** rename these ids in anticipation of the migration. Onyx's/Danswer's repos are the
-> only working source until step 4 passes.
+| Original (source) | Re-hosted (now used) |
+|---|---|
+| `onyx-dot-app/hybrid-intent-token-classifier` | `bommina/om-hybrid-intent-token-classifier` |
+| `Danswer/filter-extraction-model` (tag `1.0.0`) | `bommina/om-filter-extraction-model` (tag `1.0.0`) |
+| `onyx-dot-app/information-content-model` | `bommina/om-information-content-model` |
+
+The recipe used (kept so anyone can re-run / re-mirror if needed):
+
+```bash
+# requires: pip install -U "huggingface_hub[cli]"; huggingface-cli login
+for repo in \
+  "onyx-dot-app/hybrid-intent-token-classifier" \
+  "Danswer/filter-extraction-model" \
+  "onyx-dot-app/information-content-model"; do
+    name="${repo##*/}"
+    huggingface-cli download "$repo" --local-dir "./hf_export/$name"
+    huggingface-cli upload "bommina/om-$name" "./hf_export/$name" .
+done
+# then, for the connector, re-create its tag on the new repo:
+#   HfApi().create_tag("bommina/om-filter-extraction-model", tag="1.0.0")
+```
+
+Config re-pointed in `backend/shared_configs/configs.py` (done):
+- `CONNECTOR_CLASSIFIER_MODEL_REPO = "bommina/om-filter-extraction-model"`
+- `INTENT_MODEL_VERSION = "bommina/om-hybrid-intent-token-classifier"`
+- (and the commented-out information-content id in `backend/model_server/legacy/custom_models.py:36`)
+
+Remaining verification for whoever rebuilds: rebuild the `model_server` image and confirm the
+models load at startup (watch `*_model_server-1` logs for download + warm-up from `bommina/om-*`,
+no 404).

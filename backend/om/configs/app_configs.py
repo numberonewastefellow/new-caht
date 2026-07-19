@@ -231,7 +231,7 @@ TRACK_EXTERNAL_IDP_EXPIRY = (
 #####
 # DB Configs
 #####
-DOCUMENT_INDEX_NAME = "danswer_index"
+DOCUMENT_INDEX_NAME = "om_index"
 
 # OpenSearch Configs
 OPENSEARCH_HOST = os.environ.get("OPENSEARCH_HOST") or "localhost"
@@ -529,8 +529,7 @@ DB_YIELD_PER_DEFAULT = 64
 #####
 POLL_CONNECTOR_OFFSET = 30  # Minutes overlap between poll windows
 
-# View the list here:
-# https://github.com/onyx-dot-app/onyx/blob/main/backend/onyx/connectors/factory.py
+
 # If this is empty, all connectors are enabled, this is an option for security heavy orgs where
 # only very select connectors are enabled and admins cannot add other connector types
 ENABLED_CONNECTOR_TYPES = os.environ.get("ENABLED_CONNECTOR_TYPES") or ""
