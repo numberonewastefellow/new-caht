@@ -7,9 +7,7 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from om.db.standard_answer import (
-    create_initial_default_standard_answer_category,
-)
+from om.standard_answers.service import StandardAnswerService
 from om.server.enterprise_settings.models import AnalyticsScriptUpload
 from om.server.enterprise_settings.models import EnterpriseSettings
 from om.server.enterprise_settings.models import NavigationItem
@@ -253,4 +251,4 @@ def seed_db() -> None:
         _seed_analytics_script(seed_config)
 
         logger.notice("Verifying default standard answer category exists.")
-        create_initial_default_standard_answer_category(db_session)
+        StandardAnswerService(db_session).ensure_default_category()

@@ -103,7 +103,7 @@ def insert_slack_channel_config(
     enable_auto_filters: bool,
     is_default: bool = False,
 ) -> SlackChannelConfig:
-    from om.db.standard_answer import fetch_standard_answer_categories_by_ids as _impl_fetch_standard_answer_categories_by_ids
+    from om.standard_answers.repository import fetch_standard_answer_categories_by_ids as _impl_fetch_standard_answer_categories_by_ids
     versioned_fetch_standard_answer_categories_by_ids = (
         _impl_fetch_standard_answer_categories_by_ids
     )
@@ -160,7 +160,7 @@ def update_slack_channel_config(
     enable_auto_filters: bool,
     disabled: bool,  # noqa: ARG001
 ) -> SlackChannelConfig:
-    from om.db.standard_answer import fetch_standard_answer_categories_by_ids as _impl_fetch_standard_answer_categories_by_ids
+    from om.standard_answers.repository import fetch_standard_answer_categories_by_ids as _impl_fetch_standard_answer_categories_by_ids
     slack_channel_config = db_session.scalar(
         select(SlackChannelConfig).where(
             SlackChannelConfig.id == slack_channel_config_id

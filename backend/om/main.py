@@ -69,7 +69,8 @@ from om.server.enterprise_settings.api import (
 )
 from om.server.evals.api import router as evals_router
 from om.server.license.api import router as license_router
-from om.server.manage.standard_answer import router as standard_answer_router
+from om.standard_answers.api import admin_router as standard_answer_admin_router
+from om.standard_answers.api import query_router as standard_answer_query_router
 from om.server.middleware.license_enforcement import (
     add_license_enforcement_middleware,
 )
@@ -483,7 +484,12 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     include_router_with_global_prefix_prepended(application, analytics_router)
     include_router_with_global_prefix_prepended(application, query_history_router)
     include_router_with_global_prefix_prepended(application, search_router)
-    include_router_with_global_prefix_prepended(application, standard_answer_router)
+    include_router_with_global_prefix_prepended(
+        application, standard_answer_admin_router
+    )
+    include_router_with_global_prefix_prepended(
+        application, standard_answer_query_router
+    )
     include_router_with_global_prefix_prepended(application, ee_oauth_router)
     include_router_with_global_prefix_prepended(application, evals_router)
 
