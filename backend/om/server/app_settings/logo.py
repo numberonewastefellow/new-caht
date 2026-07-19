@@ -1,0 +1,50 @@
+"""Logo / logotype asset storage for application settings (file-store backed).
+
+Kept separate from the settings blob because logos are binary assets stored under
+fixed file-store ids (per tenant) rather than columns on the settings row.
+"""
+
+from fastapi import HTTPException
+from fastapi import Response
+from fastapi import UploadFile
+
+from om.configs.constants import FileOrigin
+from om.file_store.file_store import get_default_file_store
+from om.utils.logger import setup_logger
+
+logger = setup_logger()
+
+_LOGO_FILE_ID = "__app_logo__"
+_LOGOTYPE_FILE_ID = "__app_logotype__"
+_VALID_EXTENSIONS = (".png", ".jpg", ".jpeg")
+
+
+def _file_id(is_logotype: bool) -> str:
+    return _LOGOTYPE_FILE_ID if is_logotype else _LOGO_FILE_ID
+
+
+def save_logo(file: UploadFile, is_logotype: bool) -> None:
+    if not file.filename or not file.filename.lower().endswith(_VALID_EXTENSIONS):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid file type — only .png, .jpg, and .jpeg are allowed.",
+        )
+    get_default_file_store().save_file(
+        content=file.file,
+        display_name=file.filename,
+        file_origin=FileOrigin.OTHER,
+        file_type=file.content_type or "image/png",
+        file_id=_file_id(is_logotype),
+    )
+
+
+def fetch_logo_response(is_logotype: bool) -> Response:
+    try:
+        stored = get_default_file_store().get_file_with_mime_type(
+            _file_id(is_logotype)
+        )
+        if stored is None:
+            raise ValueError("logo asset not found")
+    except Exception:
+        raise HTTPException(status_code=404, detail="No logo file found")
+    return Response(content=stored.data, media_type=stored.mime_type)
