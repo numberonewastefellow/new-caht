@@ -37,6 +37,7 @@ from om.search.orchestration.packets import LLMSelectedDocsPacket
 from om.search.orchestration.packets import QueryExpansionsPacket
 from om.search.orchestration.packets import SearchDocsPacket
 from om.search.orchestration.packets import SearchErrorPacket
+from om.server.rate_limits.dependencies import enforce_rate_limits
 from om.server.utils import get_json_line
 from om.server.utils_vector_db import require_vector_db
 from om.tenancy.context import get_tenant_session_dependency
@@ -62,7 +63,9 @@ def search_flow_classification(
 @router.post(
     "/send-search-message",
     response_model=None,
-    dependencies=[Depends(require_vector_db)],
+    # Rate-limit the token-consuming search path (query expansion runs LLM calls),
+    # mirroring the enforcement on the chat send endpoint. 429 on over-budget.
+    dependencies=[Depends(require_vector_db), Depends(enforce_rate_limits)],
 )
 def send_search_message(
     request: schemas.SendSearchQueryRequest,
