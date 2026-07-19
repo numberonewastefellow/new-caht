@@ -20,6 +20,7 @@ from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTableUUID
 from fastapi_users_db_sqlalchemy.access_token import SQLAlchemyBaseAccessTokenTableUUID
 from fastapi_users_db_sqlalchemy.generics import TIMESTAMPAware
 from sqlalchemy import Boolean
+from sqlalchemy import Date
 from sqlalchemy import DateTime
 from sqlalchemy import desc
 from sqlalchemy import Enum
@@ -5058,3 +5059,144 @@ class WorkflowExecution(Base):
     # Relationships
     workflow: Mapped[AgentWorkflow] = relationship("AgentWorkflow")
     user: Mapped[User | None] = relationship("User", foreign_keys=[user_id])
+
+
+# ============================================================
+# ==== WS-H: analytics / reporting / app-settings models =====
+# Clean-room reimplementation replacing the EE analytics, query-history,
+# usage-reporting and enterprise-settings surface. All three tables live in
+# the per-tenant Postgres schema (no `{"schema": ...}` kwarg) so tenant
+# isolation is enforced at the connection level via schema_translate_map.
+# ============================================================
+
+
+class AnalyticsRollup(Base):
+    """A per-day materialized usage metric, for cheap analytics chart queries.
+
+    Each row is a single ``(window_start, metric)`` pair. Rows are computed on
+    demand from live chat data by ``AnalyticsService.refresh_rollups`` and let
+    the dashboard serve large / historical date ranges without re-aggregating
+    the raw ``chat_message`` tables every request. The live aggregation queries
+    remain the source of truth; this table is an optional cache.
+    """
+
+    __tablename__ = "analytics_rollup"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    # Calendar day (UTC) that this metric summarizes.
+    window_start: Mapped[datetime.date] = mapped_column(Date, nullable=False, index=True)
+    # Metric key, e.g. "queries" / "active_users" / "likes" / "dislikes" /
+    # "avg_latency_ms". Kept as a string (not an enum) so new metrics can be
+    # added without a schema migration.
+    metric: Mapped[str] = mapped_column(String, nullable=False)
+    value: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    computed_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "window_start", "metric", name="uq_analytics_rollup_day_metric"
+        ),
+    )
+
+
+class UsageReportRecord(Base):
+    """Metadata for a generated usage report (CSV bundle stored in the file store).
+
+    Clean-room replacement for the EE ``usage_reports`` table. Tenant-scoped via
+    the per-tenant schema. ``file_id`` is the file-store reference used to stream
+    the artifact back on download.
+    """
+
+    __tablename__ = "usage_report"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    # Human-facing, unique report name (also the download filename).
+    report_name: Mapped[str] = mapped_column(
+        String, nullable=False, unique=True, index=True
+    )
+    # File-store id of the generated artifact.
+    file_id: Mapped[str] = mapped_column(String, nullable=False)
+    requestor_user_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("user.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    # Reporting window; NULL/NULL means "all time".
+    period_from: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    period_to: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+        index=True,
+    )
+
+    requestor: Mapped["User | None"] = relationship(
+        "User", foreign_keys=[requestor_user_id]
+    )
+
+
+class AppSettings(Base):
+    """Application-level settings (branding + feature toggles).
+
+    Backs the web ``enterpriseSettings`` object the frontend reads for gating and
+    whitelabelling. Stored as a typed singleton row (``id == 1``) inside each
+    tenant's schema — replaces the KV-blob-backed EE enterprise settings.
+    """
+
+    __tablename__ = "app_settings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)  # singleton row (always 1)
+
+    # --- Branding / whitelabel ---
+    application_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    use_custom_logo: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
+    use_custom_logotype: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
+    # One of "logo_and_name" / "logo_only" / "name_only".
+    logo_display_style: Mapped[str | None] = mapped_column(String, nullable=True)
+    # List of {link, title, icon?, svg_logo?} navigation items.
+    custom_nav_items: Mapped[list | None] = mapped_column(PGJSONB, nullable=True)
+
+    # --- Chat / UI customization ---
+    two_lines_for_chat_header: Mapped[bool | None] = mapped_column(
+        Boolean, nullable=True
+    )
+    custom_lower_disclaimer_content: Mapped[str | None] = mapped_column(
+        Text, nullable=True
+    )
+    custom_header_content: Mapped[str | None] = mapped_column(Text, nullable=True)
+    custom_popup_header: Mapped[str | None] = mapped_column(Text, nullable=True)
+    custom_popup_content: Mapped[str | None] = mapped_column(Text, nullable=True)
+    enable_consent_screen: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    consent_screen_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
+    show_first_visit_notice: Mapped[bool | None] = mapped_column(
+        Boolean, nullable=True
+    )
+    custom_greeting_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # --- Extensible feature toggles driving frontend gating, e.g.
+    # {"analytics": true, "query_history": true, "reports": true}. ---
+    feature_flags: Mapped[dict | None] = mapped_column(PGJSONB, nullable=True)
+
+    # Optional custom analytics <script> injected by the web app.
+    custom_analytics_script: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )

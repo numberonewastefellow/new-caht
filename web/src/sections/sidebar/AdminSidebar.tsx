@@ -259,6 +259,22 @@ const collections = (
                 icon: SvgActivity,
                 link: "/admin/performance/usage",
               },
+              // WS-H: analytics / query-history / reporting screens
+              {
+                name: "Analytics",
+                icon: SvgBarChart,
+                link: "/admin/performance/analytics",
+              },
+              {
+                name: "Query Logs",
+                icon: SvgServer,
+                link: "/admin/performance/query-log",
+              },
+              {
+                name: "Reports",
+                icon: SvgFileText,
+                link: "/admin/performance/reports",
+              },
               ...(settings?.settings.query_history_type !== "disabled"
                 ? [
                     {
@@ -306,6 +322,12 @@ const collections = (
                 name: "Appearance & Theming",
                 icon: SvgPaintBrush,
                 link: "/admin/theme",
+              },
+              // WS-H: application settings (branding + feature toggles)
+              {
+                name: "App Settings",
+                icon: SvgSettings,
+                link: "/admin/app-settings",
               },
               {
                 name: hasSubscription ? "Plans & Billing" : "Upgrade Plan",
