@@ -669,6 +669,12 @@ def create_new_chat_message(
     if commit:
         db_session.commit()
 
+    # WS-F: record consumed tokens against rate-limit counters (best-effort, near-no-op when no
+    # policy is configured; uses its own session so it never touches this transaction).
+    from om.server.rate_limits.service import record_chat_message_tokens
+
+    record_chat_message_tokens(db_session, chat_session_id, token_count)
+
     return new_chat_message
 
 

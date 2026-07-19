@@ -322,10 +322,19 @@ class ChatMessageSimpleType(str, Enum):
     FILE_TEXT = "file_text"
 
 
-class TokenRateLimitScope(str, Enum):
-    USER = "user"
-    USER_GROUP = "team"
+class RateLimitScope(str, Enum):
+    """WS-F: subject a rate-limit policy applies to. See om.server.rate_limits."""
+
     GLOBAL = "global"
+    TENANT = "tenant"
+    TEAM = "team"
+    USER = "user"
+
+
+class RateLimitAlgorithm(str, Enum):
+    """WS-F: enforcement algorithm for a rate-limit policy."""
+
+    SLIDING_WINDOW = "sliding_window"
 
 
 class FileStoreType(str, Enum):
