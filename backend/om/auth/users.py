@@ -316,8 +316,11 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     user_db: SQLAlchemyUserDatabase[User, uuid.UUID]
 
     async def get_by_email(self, user_email: str) -> User:
-        from om.server.tenants.user_mapping import get_tenant_id_for_email as _impl_get_tenant_id_for_email
-        tenant_id = _impl_get_tenant_id_for_email(user_email)
+        from om.tenancy.provisioning import get_login_tenant_id as _impl_get_login_tenant_id
+        tenant_id = _impl_get_login_tenant_id(user_email)
+        if tenant_id is None:
+            # No tenant routes this email (multi-tenant, unknown user).
+            raise exceptions.UserNotExists()
         async with get_async_session_context_manager(tenant_id) as db_session:
             if MULTI_TENANT:
                 tenant_user_db = SQLAlchemyUserAdminDB[User, uuid.UUID](
@@ -339,7 +342,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         request: Optional[Request] = None,
     ) -> User:
         # Verify captcha if enabled (for cloud signup protection)
-        from om.server.tenants.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
+        from om.tenancy.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
         from om.auth.captcha import CaptchaVerificationError
         from om.auth.captcha import is_captcha_enabled
         from om.auth.captcha import verify_captcha_token
@@ -583,7 +586,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         associate_by_email: bool = False,
         is_verified_by_default: bool = False,
     ) -> User:
-        from om.server.tenants.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
+        from om.tenancy.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
         referral_source = (
             getattr(request.state, "referral_source", None) if request else None
         )
@@ -738,7 +741,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     async def on_after_register(
         self, user: User, request: Optional[Request] = None
     ) -> None:
-        from om.server.tenants.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
+        from om.tenancy.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
         from om.utils.posthog_client import (
             capture_and_sync_with_alternate_posthog as _impl_capture_and_sync_with_alternate_posthog,
         )
@@ -813,7 +816,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     async def on_after_forgot_password(
         self, user: User, token: str, request: Optional[Request] = None  # noqa: ARG002
     ) -> None:
-        from om.server.tenants.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
+        from om.tenancy.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
         if not EMAIL_CONFIGURED:
             logger.error(
                 "Email is not configured. Please configure email in the admin panel"
@@ -843,14 +846,12 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     async def authenticate(
         self, credentials: OAuth2PasswordRequestForm
     ) -> Optional[User]:
-        from om.server.tenants.provisioning import get_tenant_id_for_email as _impl_get_tenant_id_for_email
+        from om.tenancy.provisioning import get_login_tenant_id as _impl_get_login_tenant_id
         email = credentials.username
 
         tenant_id: str | None = None
         try:
-            tenant_id = _impl_get_tenant_id_for_email(
-                email=email,
-            )
+            tenant_id = _impl_get_login_tenant_id(email)
         except Exception as e:
             logger.warning(
                 f"User attempted to login with invalid credentials: {str(e)}"
@@ -972,7 +973,7 @@ class TenantAwareRedisStrategy(RedisStrategy[User, uuid.UUID]):
         self.key_prefix = key_prefix
 
     async def write_token(self, user: User) -> str:
-        from om.server.tenants.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
+        from om.tenancy.provisioning import get_or_provision_tenant as _impl_get_or_provision_tenant
         redis = await get_async_redis_connection()
 
         tenant_id = await _impl_get_or_provision_tenant(email=user.email)
@@ -1772,7 +1773,7 @@ def get_oauth_router(
         user_manager: BaseUserManager[models.UP, models.ID] = Depends(get_user_manager),
         strategy: Strategy[models.UP, models.ID] = Depends(backend.get_strategy),
     ) -> RedirectResponse:
-        from om.server.tenants.user_mapping import get_tenant_id_for_email as _impl_get_tenant_id_for_email
+        from om.tenancy.provisioning import get_login_tenant_id as _impl_get_login_tenant_id
         token, state = access_token_state
         account_id, account_email = await oauth_client.get_id_email(
             token["access_token"]
@@ -1817,10 +1818,8 @@ def get_oauth_router(
 
         next_url = state_data.get("next_url", "/")
         referral_source = state_data.get("referral_source", None)
-        try:
-            tenant_id = _impl_get_tenant_id_for_email(account_email)
-        except exceptions.UserNotExists:
-            tenant_id = None
+        # Never provisions on an OAuth callback; None => unknown email (create flow below).
+        tenant_id = _impl_get_login_tenant_id(account_email)
 
         request.state.referral_source = referral_source
 
