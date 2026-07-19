@@ -14,8 +14,8 @@ This file provides guidance to AI agents when working with code in this reposito
   make sure we see logs coming out from the relevant service.
 - To connect to the Postgres database, use: `docker exec -it onyx-relational_db-1 psql -U postgres -c "<SQL>"`
 - When making calls to the backend, always go through the frontend. E.g. make a call to `http://localhost:3000/api/persona` not `http://localhost:8080/api/persona`
-- Put ALL db operations under the `backend/om/db` / `backend/ee/onyx/db` directories. Don't run queries
-  outside of those directories.
+- Put ALL db operations under the `backend/om/db` directory. Don't run queries
+  outside of that directory.
 
 ## Project Overview
 
@@ -135,7 +135,7 @@ The deployment mode affects:
 **Defining Tasks**:
 
 - Always use `@shared_task` rather than `@celery_app`
-- Put tasks under `background/celery/tasks/` or `ee/background/celery/tasks`
+- Put tasks under `background/celery/tasks/`
 
 **Defining APIs**:
 When creating new FastAPI APIs, do NOT use the `response_model` field. Instead, just type the

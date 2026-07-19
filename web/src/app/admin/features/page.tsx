@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import type { Route } from "next";
 import {
   SvgUsers,
   SvgUser,
@@ -148,11 +149,14 @@ const FEATURE_GROUPS: FeatureGroup[] = [
     items: [
       {
         ws: "WS-A",
-        name: "License-free, billing-free build",
+        name: "Self-hosted build — billing not enabled",
         description:
-          "The Onyx license paywall and Stripe / control-plane billing were removed entirely. No seat checks, no external billing calls — a purely self-hosted deployment.",
+          "The upstream license paywall and Stripe / control-plane billing (checkout, seat counts, " +
+          "subscription tiers, plan-based feature gating) were removed, so this runs purely self-hosted " +
+          "with no seat checks or external billing calls. A billing / subscription feature is not " +
+          "developed — it would need to be built if paid plans are ever required.",
         icon: SvgActivity,
-        tags: ["Self-hosted"],
+        tags: ["Self-hosted", "Billing: not developed"],
       },
     ],
   },
@@ -230,7 +234,7 @@ function FeatureCard({ item }: { item: FeatureItem }) {
 
   if (!item.href) return body;
   return (
-    <Link href={item.href} className="block h-full no-underline">
+    <Link href={item.href as Route} className="block h-full no-underline">
       {body}
     </Link>
   );

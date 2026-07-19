@@ -91,6 +91,17 @@ The Docker-runtime layer was fully renamed in lockstep and is done:
   hardcoded literals in `backend/scripts/debugging/onyx_vespa_schemas.py:63,133` updated to match).
   Greenfield; Vespa-setup-only. The migration `d9ec13955951` keeps the old literal on purpose (it
   strips the legacy suffix from old `model_name` data).
+- **Index ACL prefixes + team fields `group_*`/`external_user_group_*` → `team`-based (WS-B, greenfield).** The
+  document-ACL strings stored in the OpenSearch `access_control_list` field were renamed in lockstep with the
+  `UserGroup`→`Team` rename: `"group:{name}"` → **`"team:{name}"`** and `"external_group:{name}"` →
+  **`"external_team:{name}"`** (`backend/om/access/utils.py` `prefix_team` / `prefix_external_team`; write-side
+  `DocumentAccess.to_acl` and read-side `get_acl_for_user`→`build_access_filters_for_user` must stay in lockstep —
+  a mismatch silently denies every doc). The per-document group columns `document.external_user_group_ids` and
+  `hierarchy_node.external_user_group_ids` → **`external_team_ids`**. The index field NAMES
+  (`access_control_list`, `is_public`) are unchanged — only the encoded prefixes inside change. **Requires a fresh
+  index** (greenfield): existing indexed docs would carry the old `group:`/`external_group:` prefixes and become
+  invisible to the new filter. No reindex path is provided on purpose (fresh DB + fresh index). The `"user_email:"`
+  prefix and the `"PUBLIC"` sentinel (`PUBLIC_DOC_PAT`) are NOT renamed.
 - Still left as-is: the Vespa schema *template* `danswer_chunk.sd.jinja` (template input, not a
   physical index name) — belongs to the future Vespa-removal effort.
 

@@ -132,7 +132,6 @@ COPY --chown=om:om ./alembic_tenants /app/alembic_tenants
 COPY --chown=om:om ./alembic.ini /app/alembic.ini
 COPY supervisord.conf /usr/etc/supervisord.conf
 COPY --chown=om:om ./static /app/static
-COPY --chown=om:om ./keys /app/keys
 
 # Escape hatch scripts
 COPY --chown=om:om ./scripts/debugging /app/scripts/debugging

@@ -1,5 +1,18 @@
 # EE (Enterprise Edition) Removal — Migration Plan
 
+> **STATUS: COMPLETED.** The EE/CE split has been fully removed. This document is the original
+> plan (written in future tense); it is kept for historical reference only.
+>
+> Executed across Stages 2.1–2.7:
+>
+> - Backend: `77ed3c9c2` (2.1), `c26724925` (2.2, `backend/ee` deleted), `233bbde08` (2.3+2.4)
+> - Frontend: `b059315f3` (2.5, `web/src/ee` + `web/src/app/ee` dissolved), `5905fa5f5` (2.6, EE flags removed)
+> - Tests: `d826b0c03` (2.7, backend `tests/unit/ee/onyx` folded into `tests/unit/om`)
+>
+> Note: license/billing enforcement was intentionally retained (it gates an absent LICENSE, which is
+> orthogonal to the EE/CE edition split). `web/tests/e2e` was never part of the EE split and remains
+> the active Playwright suite.
+
 ## Overview
 
 This project currently separates "Enterprise Edition" features behind an `ENABLE_PAID_ENTERPRISE_EDITION_FEATURES` environment variable. EE code lives in separate `ee/` folders and is loaded via dynamic imports at runtime.
