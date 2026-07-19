@@ -37,7 +37,8 @@ def check_build_rate_limits(
     Dependency to check build mode rate limits before processing the request.
 
     Raises HTTPException(429) if rate limit is exceeded.
-    Follows the same pattern as chat's check_token_rate_limits.
+    (Build mode uses its own SessionManager limiter, separate from the chat
+    token rate limiter in om.server.rate_limits.)
     """
     session_manager = SessionManager(db_session)
 

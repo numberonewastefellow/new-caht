@@ -30,8 +30,6 @@ import Button from "@/refresh-components/buttons/Button";
 import { DeleteButton } from "@/components/DeleteButton";
 import { Bubble } from "@/components/Bubble";
 import { BookmarkIcon, RobotIcon } from "@/components/icons/icons";
-import { AddTokenRateLimitForm } from "./AddTokenRateLimitForm";
-import { GenericTokenRateLimitTable } from "@/app/admin/token-rate-limits/TokenRateLimitTables";
 import { useUser } from "@/providers/UserProvider";
 import GenericConfirmModal from "@/components/modals/GenericConfirmModal";
 
@@ -160,7 +158,6 @@ export const GroupDisplay = ({
 }: GroupDisplayProps) => {
   const [addMemberFormVisible, setAddMemberFormVisible] = useState(false);
   const [addConnectorFormVisible, setAddConnectorFormVisible] = useState(false);
-  const [addRateLimitFormVisible, setAddRateLimitFormVisible] = useState(false);
 
   const { isAdmin } = useUser();
 
@@ -449,31 +446,6 @@ export const GroupDisplay = ({
           </>
         )}
       </div>
-
-      <Separator />
-
-      <h2 className="text-xl font-bold mt-8 mb-2">Token Rate Limits</h2>
-
-      <AddTokenRateLimitForm
-        isOpen={addRateLimitFormVisible}
-        setIsOpen={setAddRateLimitFormVisible}
-        userGroupId={userGroup.id}
-      />
-
-      <GenericTokenRateLimitTable
-        fetchUrl={`/api/admin/token-rate-limits/user-group/${userGroup.id}`}
-        hideHeading
-        isAdmin={isAdmin}
-      />
-
-      {isAdmin && (
-        <Button
-          className="mt-3"
-          onClick={() => setAddRateLimitFormVisible(true)}
-        >
-          Create a Token Rate Limit
-        </Button>
-      )}
     </div>
   );
 };

@@ -24,7 +24,6 @@ from om.db.models import DocumentByConnectorCredentialPair
 from om.db.models import DocumentSet__UserGroup
 from om.db.models import LLMProvider__UserGroup
 from om.db.models import Agent__UserGroup
-from om.db.models import TokenRateLimit__UserGroup
 from om.db.models import User
 from om.db.models import User__UserGroup
 from om.db.models import UserGroup
@@ -79,21 +78,6 @@ def _cleanup_agent__user_group_relationships__no_commit(
     db_session.query(Agent__UserGroup).filter(
         Agent__UserGroup.user_group_id == user_group_id
     ).delete(synchronize_session=False)
-
-
-def _cleanup_token_rate_limit__user_group_relationships__no_commit(
-    db_session: Session, user_group_id: int
-) -> None:
-    """NOTE: does not commit the transaction."""
-    token_rate_limit__user_group_relationships = db_session.scalars(
-        select(TokenRateLimit__UserGroup).where(
-            TokenRateLimit__UserGroup.user_group_id == user_group_id
-        )
-    ).all()
-    for (
-        token_rate_limit__user_group_relationship
-    ) in token_rate_limit__user_group_relationships:
-        db_session.delete(token_rate_limit__user_group_relationship)
 
 
 def _cleanup_user_group__cc_pair_relationships__no_commit(
@@ -749,9 +733,6 @@ def prepare_user_group_for_deletion(db_session: Session, user_group_id: int) -> 
         db_session=db_session, user_group_id=user_group_id
     )
     _cleanup_user__user_group_relationships__no_commit(
-        db_session=db_session, user_group_id=user_group_id
-    )
-    _cleanup_token_rate_limit__user_group_relationships__no_commit(
         db_session=db_session, user_group_id=user_group_id
     )
     _cleanup_document_set__user_group_relationships__no_commit(

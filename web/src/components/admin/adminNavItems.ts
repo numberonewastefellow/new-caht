@@ -265,9 +265,9 @@ export function getAdminNavGroups(opts: {
         link: "/admin/api-key",
       },
       {
-        name: "Usage Limits",
+        name: "Rate Limits",
         icon: SvgShield,
-        link: "/admin/token-rate-limits",
+        link: "/admin/rate-limits",
       }
     );
   }
@@ -402,7 +402,7 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   users: "Team Members",
   groups: "Access Groups",
   "api-key": "API Credentials",
-  "token-rate-limits": "Usage Limits",
+  "rate-limits": "Rate Limits",
   performance: "Observability",
   usage: "Analytics",
   "query-history": "Query Logs",
@@ -466,7 +466,7 @@ const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
   ["/admin/users", "orange"],
   ["/admin/groups", "orange"],
   ["/admin/api-key", "orange"],
-  ["/admin/token-rate-limits", "orange"],
+  ["/admin/rate-limits", "orange"],
   // Workspace (cyan)
   ["/admin/services", "cyan"],
   ["/admin/settings", "cyan"],

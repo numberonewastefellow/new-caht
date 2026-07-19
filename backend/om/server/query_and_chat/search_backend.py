@@ -19,6 +19,7 @@ from om.server.query_and_chat.models import SearchHistoryResponse
 from om.server.query_and_chat.models import SearchQueryResponse
 from om.server.query_and_chat.models import SendSearchQueryRequest
 from om.server.query_and_chat.streaming_models import SearchErrorPacket
+from om.server.rate_limits.dependencies import enforce_rate_limits
 from om.auth.users import current_user
 from om.db.engine.sql_engine import get_session
 from om.db.engine.sql_engine import get_session_with_current_tenant
@@ -72,7 +73,8 @@ def search_flow_classification(
 @router.post(
     "/send-search-message",
     response_model=None,
-    dependencies=[Depends(require_vector_db)],
+    # WS-F: enforce token rate limits on search too (no-op when no policy is configured).
+    dependencies=[Depends(require_vector_db), Depends(enforce_rate_limits)],
 )
 def handle_send_search_message(
     request: SendSearchQueryRequest,

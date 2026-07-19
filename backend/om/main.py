@@ -158,9 +158,8 @@ from om.server.query_and_chat.query_backend import basic_router as query_router
 from om.server.saml import router as saml_router
 from om.server.settings.api import admin_router as settings_admin_router
 from om.server.settings.api import basic_router as settings_router
-from om.server.token_rate_limits.api import (
-    router as token_rate_limit_settings_router,
-)
+# WS-F: clean-room rate-limits admin router. Replaces the removed EE token-rate-limit router.
+from om.server.rate_limits.api import router as rate_limit_admin_router
 from om.server.utils import BasicAuthenticationError
 from om.setup import setup_multitenant_onyx
 from om.setup import setup_onyx
@@ -458,9 +457,8 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     include_router_with_global_prefix_prepended(application, embedding_router)
     include_router_with_global_prefix_prepended(application, web_search_router)
     include_router_with_global_prefix_prepended(application, web_search_admin_router)
-    include_router_with_global_prefix_prepended(
-        application, token_rate_limit_settings_router
-    )
+    # WS-F: rate-limits admin API (/admin/rate-limits). Replaces the removed EE token-rate-limit router.
+    include_router_with_global_prefix_prepended(application, rate_limit_admin_router)
     include_router_with_global_prefix_prepended(application, api_key_router)
     include_router_with_global_prefix_prepended(application, standard_oauth_router)
     include_router_with_global_prefix_prepended(application, federated_router)
@@ -472,10 +470,10 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     include_router_with_global_prefix_prepended(application, pat_router)
 
     # --- Merged from the former ee/om/main.py (EE removal, Stage 2.2) ---------------
-    # NOTE: query_router, cc_pair_router and token_rate_limit_settings_router are NOT
-    # re-included here. The EE overrides of those three modules were merged into their
-    # MIT counterparts, so the EE routes now live on the very same router objects that
-    # are already included above. Including them again would double-register every route.
+    # NOTE: query_router and cc_pair_router are NOT re-included here. The EE overrides of those
+    # modules were merged into their MIT counterparts, so the EE routes now live on the very same
+    # router objects that are already included above. Including them again would double-register
+    # every route. (The former token_rate_limit_settings_router was removed entirely by WS-F.)
 
     # RBAC / group access control
     include_router_with_global_prefix_prepended(application, user_group_router)

@@ -299,3 +299,15 @@ def save_chat_turn(
 
     # Finally save the messages, tool calls, and docs
     db_session.commit()
+
+    # WS-F: record the assistant response's tokens against the rate-limit counters. The response
+    # token_count is finalized here by direct ORM mutation (not via create_new_chat_message), so this
+    # is the second recording chokepoint (the user prompt is recorded when create_new_chat_message
+    # persists it). Best-effort, own session, near-no-op when no policy is configured.
+    from om.server.rate_limits.service import record_chat_message_tokens
+
+    record_chat_message_tokens(
+        db_session,
+        assistant_message.chat_session_id,
+        assistant_message.token_count,
+    )

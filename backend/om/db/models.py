@@ -79,7 +79,8 @@ from om.db.enums import (
 )
 from om.configs.constants import NotificationType
 from om.configs.constants import SearchFeedbackType
-from om.configs.constants import TokenRateLimitScope
+from om.configs.constants import RateLimitScope
+from om.configs.constants import RateLimitAlgorithm
 from om.connectors.models import InputType
 from om.db.enums import ChatSessionSharedStatus
 from om.db.enums import ConnectorCredentialPairStatus
@@ -3871,35 +3872,8 @@ class UserGroup(Base):
     )
 
 
-"""Tables related to Token Rate Limiting
-NOTE: `TokenRateLimit` is partially an MIT feature (global rate limit)
-"""
-
-
-class TokenRateLimit(Base):
-    __tablename__ = "token_rate_limit"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    token_budget: Mapped[int] = mapped_column(Integer, nullable=False)
-    period_hours: Mapped[int] = mapped_column(Integer, nullable=False)
-    scope: Mapped[TokenRateLimitScope] = mapped_column(
-        Enum(TokenRateLimitScope, native_enum=False)
-    )
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
-
-
-class TokenRateLimit__UserGroup(Base):
-    __tablename__ = "token_rate_limit__user_group"
-
-    rate_limit_id: Mapped[int] = mapped_column(
-        ForeignKey("token_rate_limit.id"), primary_key=True
-    )
-    user_group_id: Mapped[int] = mapped_column(
-        ForeignKey("user_group.id"), primary_key=True
-    )
+# Token rate limiting (EE `token_rate_limit` + `token_rate_limit__user_group`) was removed by WS-F
+# and replaced by the RateLimitPolicy / RateLimitUsage models below (see the WS-F banner).
 
 
 class StandardAnswerCategory(Base):
@@ -5058,3 +5032,117 @@ class WorkflowExecution(Base):
     # Relationships
     workflow: Mapped[AgentWorkflow] = relationship("AgentWorkflow")
     user: Mapped[User | None] = relationship("User", foreign_keys=[user_id])
+
+
+# === WS-F: rate-limit models ===
+# Clean-room replacement for the EE token_rate_limit + tenant_usage tables. Both tables live
+# inside the per-tenant Postgres schema (Contract 3) — no {"schema": "public"}. Enums are stored
+# as VARCHAR + CHECK via native_enum=False (house pattern, mirrors TokenRateLimit).
+#
+# Integration dependency (Wave 1): RateLimitPolicy.team_id FKs team.id (Contract 1, WS-B). The
+# `team` table is delivered by WS-B in a sibling worktree; the integrator merges WS-B's models
+# block (and its migration) ahead of this one so the FK resolves. No ORM relationship is declared
+# on team_id, so importing this module in isolation does not force FK resolution.
+
+
+class RateLimitPolicy(Base):
+    """A configured budget: `token_budget` tokens per `period_hours` for a given scope/subject.
+
+    One row per (scope, subject). Tenant-wide scopes (GLOBAL/TENANT) carry no subject id; TEAM/USER
+    carry exactly one. Multiple policies may apply to a single request (e.g. a USER, its TEAMs, and a
+    TENANT policy) — all applicable policies are enforced independently.
+    """
+
+    __tablename__ = "rate_limit_policy"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+
+    scope: Mapped[RateLimitScope] = mapped_column(
+        Enum(RateLimitScope, native_enum=False), nullable=False, index=True
+    )
+    # Exactly one of these is set for TEAM/USER scopes; both null for tenant-wide scopes.
+    user_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("user.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    team_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey("team.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+
+    # Budget is expressed in RAW tokens (not thousands) for an unambiguous admin UX.
+    token_budget: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    period_hours: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    algorithm: Mapped[RateLimitAlgorithm] = mapped_column(
+        Enum(RateLimitAlgorithm, native_enum=False),
+        nullable=False,
+        default=RateLimitAlgorithm.SLIDING_WINDOW,
+        server_default=RateLimitAlgorithm.SLIDING_WINDOW.value,
+    )
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        # A subject may have several policies with DIFFERENT windows (e.g. 10k/hour AND 200k/day),
+        # so period_hours is part of the key — it only forbids an exact-duplicate window per subject.
+        # Tenant-wide scopes (both subject columns NULL) are not fully constrained here because
+        # Postgres treats NULLs as distinct; the service layer guards against exact duplicates there.
+        UniqueConstraint(
+            "scope",
+            "user_id",
+            "team_id",
+            "period_hours",
+            name="uq_rate_limit_policy_scope_subject_window",
+        ),
+    )
+
+
+class RateLimitUsage(Base):
+    """Durable hourly roll-up of token consumption + allow/throttle counts per scope/subject.
+
+    Backs the admin history charts and provides a persistence layer independent of the ephemeral
+    Redis counters (used to reconcile Redis on cold start and to survive a Redis flush). One row per
+    (scope, subject_key, bucket_start); counters are incremented via UPSERT so concurrent writers do
+    not race.
+    """
+
+    __tablename__ = "rate_limit_usage"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+
+    scope: Mapped[RateLimitScope] = mapped_column(
+        Enum(RateLimitScope, native_enum=False), nullable=False
+    )
+    # Always populated via om.server.rate_limits.constants.subject_key(): "user:<id>"/"team:<id>"
+    # for subject scopes, or the scope name ("global"/"tenant") for tenant-wide scopes. Kept
+    # NOT NULL so the unique constraint below groups tenant-wide roll-ups (Postgres treats NULLs
+    # as distinct, which would otherwise defeat the UPSERT).
+    subject_key: Mapped[str] = mapped_column(String, nullable=False)
+    bucket_start: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+
+    tokens_used: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
+    allowed_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    throttled_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "scope",
+            "subject_key",
+            "bucket_start",
+            name="uq_rate_limit_usage_scope_subject_bucket",
+        ),
+        Index("ix_rate_limit_usage_scope_bucket", "scope", "bucket_start"),
+    )

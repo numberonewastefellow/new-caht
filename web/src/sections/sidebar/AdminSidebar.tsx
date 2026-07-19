@@ -245,9 +245,9 @@ const collections = (
                 link: "/admin/api-key",
               },
               {
-                name: "Token Rate Limits",
+                name: "Rate Limits",
                 icon: SvgShield,
-                link: "/admin/token-rate-limits",
+                link: "/admin/rate-limits",
               },
             ],
           },
