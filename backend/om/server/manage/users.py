@@ -31,7 +31,9 @@ from om.auth.users import current_admin_user
 from om.auth.users import current_curator_or_admin_user
 from om.auth.users import current_user
 from om.auth.users import enforce_seat_limit
+from om.auth.users import get_user_manager
 from om.auth.users import optional_user
+from om.auth.users import UserManager
 from om.configs.app_configs import AUTH_BACKEND
 from om.configs.app_configs import AUTH_TYPE
 from om.configs.app_configs import AuthBackend
@@ -155,10 +157,12 @@ class TestUpsertRequest(BaseModel):
 async def test_upsert_user(
     request: TestUpsertRequest,
     _: User = Depends(current_admin_user),
+    user_manager: UserManager = Depends(get_user_manager),
 ) -> None | FullUserSnapshot:
-    """Test endpoint for upsert_saml_user. Only used for integration testing."""
-    from om.server.saml import upsert_saml_user as _impl_upsert_saml_user
-    user = await _impl_upsert_saml_user(email=request.email)
+    """Test endpoint for SSO JIT user provisioning. Only used for integration testing."""
+    from om.server.sso.provisioning import provision_sso_user
+
+    user = await provision_sso_user(email=request.email, user_manager=user_manager)
     return FullUserSnapshot.from_user_model(user) if user else None
 
 

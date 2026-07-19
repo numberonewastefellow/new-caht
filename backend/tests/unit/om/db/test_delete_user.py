@@ -8,7 +8,7 @@ from om.db.models import DocumentSet
 from om.db.models import DocumentSet__User
 from om.db.models import Agent
 from om.db.models import Agent__User
-from om.db.models import SamlAccount
+from om.db.models import SsoSamlSession
 from om.db.models import User__UserGroup
 from om.db.users import delete_user_from_db
 
@@ -84,7 +84,7 @@ def test_delete_user_cleans_up_join_tables(
     delete_user_from_db(user, db_session)
 
     # Join tables should be deleted (not updated)
-    for model in [DocumentSet__User, Agent__User, User__UserGroup, SamlAccount]:
+    for model in [DocumentSet__User, Agent__User, User__UserGroup, SsoSamlSession]:
         chain = query_chains[model]
         chain.filter.return_value.delete.assert_called_once()
 

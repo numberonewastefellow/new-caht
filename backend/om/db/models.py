@@ -3702,21 +3702,9 @@ on the shape of data being passed around between the MIT and EE versions of Onyx
 In the MIT version of Onyx, assume these tables are always empty.
 """
 
-
-class SamlAccount(Base):
-    __tablename__ = "saml"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("user.id", ondelete="CASCADE"), unique=True
-    )
-    encrypted_cookie: Mapped[str] = mapped_column(Text, unique=True)
-    expires_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
-    updated_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
-    )
-
-    user: Mapped[User] = relationship("User")
+# NOTE: the former ``SamlAccount`` (table ``saml``) was removed by WS-C — SAML SSO
+# is now a clean-room feature under ``om.server.sso`` with its own tables
+# (``sso_saml_config`` / ``sso_saml_session``, defined at the end of this file).
 
 
 class User__UserGroup(Base):
@@ -5058,3 +5046,109 @@ class WorkflowExecution(Base):
     # Relationships
     workflow: Mapped[AgentWorkflow] = relationship("AgentWorkflow")
     user: Mapped[User | None] = relationship("User", foreign_keys=[user_id])
+
+
+# ============================
+# === WS-C: SAML SSO models ===
+# ============================
+# Clean-room replacement for the legacy EE ``saml`` table (SamlAccount). Owned by
+# WS-C. Both tables live in the per-tenant schema (Contract 3) — never public.
+
+
+class SsoSamlConfig(Base):
+    """Typed, admin-editable SAML SSO configuration (singleton per tenant).
+
+    Standard 5 — a dedicated typed config table (not a KV blob). Holds IdP
+    metadata, SP identifiers, signing/security toggles, and attribute-mapping
+    hints that ``om.server.sso`` uses to build the python3-saml settings at
+    request time.
+    """
+
+    __tablename__ = "sso_saml_config"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    # --- Identity Provider (IdP) ---
+    idp_entity_id: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    idp_sso_url: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    idp_slo_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # IdP signing certificate is public metadata → stored as plain text.
+    idp_x509_cert: Mapped[str] = mapped_column(Text, default="", nullable=False)
+
+    # --- Service Provider (this application) ---
+    sp_entity_id: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    # Public, IdP-facing ACS URL (what the assertion's Destination must match).
+    sp_acs_url: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    sp_slo_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Optional SP signing material (only needed when the SP signs AuthnRequests
+    # or logout messages). The private key is a secret → encrypted at rest.
+    sp_x509_cert: Mapped[str | None] = mapped_column(Text, nullable=True)
+    sp_private_key: Mapped[SensitiveValue[str] | None] = mapped_column(
+        EncryptedString(), nullable=True
+    )
+
+    # --- Security toggles ---
+    want_assertions_signed: Mapped[bool] = mapped_column(
+        Boolean, default=True, nullable=False
+    )
+    want_messages_signed: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False
+    )
+    want_name_id_encrypted: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False
+    )
+    authn_requests_signed: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False
+    )
+
+    # --- Attribute mapping ---
+    # Ordered list of assertion attribute keys to probe for the user's email;
+    # NULL falls back to the built-in default key set in code.
+    email_attribute_keys: Mapped[list[str] | None] = mapped_column(
+        PGJSONB, nullable=True
+    )
+    first_name_attribute_key: Mapped[str | None] = mapped_column(Text, nullable=True)
+    last_name_attribute_key: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+
+class SsoSamlSession(Base):
+    """SAML SSO session ledger: maps an issued session cookie to a user with an
+    expiry.
+
+    Replaces the legacy EE ``saml`` table. Written on a successful ACS login and
+    expired on SP logout, so SAML sessions are auditable and revocable. The FK
+    cascade guarantees rows disappear with the user.
+    """
+
+    __tablename__ = "sso_saml_session"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("user.id", ondelete="CASCADE"),
+        unique=True,
+        nullable=False,
+    )
+    encrypted_cookie: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    expires_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    user: Mapped["User"] = relationship("User")

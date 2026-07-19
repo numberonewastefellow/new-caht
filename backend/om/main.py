@@ -155,7 +155,8 @@ from om.server.query_and_chat.query_backend import (
     admin_router as admin_query_router,
 )
 from om.server.query_and_chat.query_backend import basic_router as query_router
-from om.server.saml import router as saml_router
+from om.server.sso.api import admin_sso_router
+from om.server.sso.api import sso_router
 from om.server.settings.api import admin_router as settings_admin_router
 from om.server.settings.api import basic_router as settings_router
 from om.server.token_rate_limits.api import (
@@ -640,10 +641,12 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
         )
 
     elif AUTH_TYPE == AuthType.SAML:
+        # WS-C: clean-room SAML SSO. Public SP endpoints + admin config CRUD.
         include_auth_router_with_prefix(
             application,
-            saml_router,
+            sso_router,
         )
+        include_router_with_global_prefix_prepended(application, admin_sso_router)
 
     if (
         AUTH_TYPE == AuthType.CLOUD

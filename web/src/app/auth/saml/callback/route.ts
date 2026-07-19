@@ -10,9 +10,10 @@ async function handleSamlCallback(
   request: NextRequest,
   method: "GET" | "POST"
 ) {
-  // Wrapper around the FastAPI endpoint /auth/saml/callback,
-  // which adds back a redirect to the main app.
-  const url = new URL(buildUrl("/auth/saml/callback"));
+  // Wrapper around the FastAPI endpoint /sso/saml/acs (WS-C clean-room SAML),
+  // which adds back a redirect to the main app. This web route path stays
+  // /auth/saml/callback — it is the public, IdP-facing ACS URL.
+  const url = new URL(buildUrl("/sso/saml/acs"));
   url.search = request.nextUrl.search;
 
   const fetchOptions: RequestInit = {
