@@ -77,7 +77,7 @@ from om.server.middleware.tenant_tracking import (
     add_api_server_tenant_id_middleware,
 )
 from om.server.oauth.api import router as ee_oauth_router
-from om.server.query_and_chat.search_backend import router as search_router
+from om.search.api.router import router as search_router
 from om.server.query_history.api import router as query_history_router
 from om.server.reporting.usage_export_api import router as usage_export_router
 from om.server.scim.api import scim_router

@@ -7,21 +7,14 @@ from sqlalchemy.orm import Session
 
 from om.auth.users import current_curator_or_admin_user
 from om.auth.users import current_user
-from om.configs.chat_configs import NUM_RETURNED_HITS
 from om.configs.constants import DocumentSource
-from om.context.search.models import IndexFilters
-from om.context.search.models import SearchDoc
-from om.context.search.preprocessing.access_filters import (
-    build_access_filters_for_user,
-)
 from om.db.engine.sql_engine import get_session
 from om.db.models import User
-from om.db.search_settings import get_current_search_settings
-from om.db.tag import find_tags
-from om.document_index.factory import get_default_document_index
 from om.onyxbot.slack.handlers.handle_standard_answers import (
     oneoff_standard_answers,
 )
+from om.search.admin.service import admin_search as _admin_search_service
+from om.search.admin.service import get_valid_tags as _get_valid_tags_service
 from om.server.manage.models import StandardAnswer
 from om.server.query_and_chat.models import AdminSearchRequest
 from om.server.query_and_chat.models import AdminSearchResponse
@@ -29,7 +22,6 @@ from om.server.query_and_chat.models import SourceTag
 from om.server.query_and_chat.models import TagResponse
 from om.server.utils_vector_db import require_vector_db
 from om.utils.logger import setup_logger
-from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
 
@@ -55,47 +47,14 @@ def admin_search(
     user: User = Depends(current_curator_or_admin_user),
     db_session: Session = Depends(get_session),
 ) -> AdminSearchResponse:
-    tenant_id = get_current_tenant_id()
-
-    query = question.query
-    logger.notice(f"Received admin search query: {query}")
-    user_acl_filters = build_access_filters_for_user(user, db_session)
-
-    final_filters = IndexFilters(
-        source_type=question.filters.source_type,
-        document_set=question.filters.document_set,
-        time_cutoff=question.filters.time_cutoff,
-        tags=question.filters.tags,
-        access_control_list=user_acl_filters,
-        tenant_id=tenant_id,
+    # Clean-room implementation lives in WS-E (om.search.admin.service).
+    documents = _admin_search_service(
+        query=question.query,
+        filters=question.filters,
+        user=user,
+        db_session=db_session,
     )
-    search_settings = get_current_search_settings(db_session)
-    # This flow is for search so we do not get all indices.
-    document_index = get_default_document_index(search_settings, None)
-
-    if not query or query.strip() == "":
-        matching_chunks = document_index.random_retrieval(filters=final_filters)
-    else:
-        # Admin search should expose hidden documents so admins can inspect /
-        # unhide them. This is the new-API equivalent of the legacy
-        # admin_retrieval (pure keyword search).
-        matching_chunks = document_index.keyword_retrieval(
-            query=query,
-            filters=final_filters,
-            num_to_retrieve=NUM_RETURNED_HITS,
-            include_hidden=True,
-        )
-
-    documents = SearchDoc.from_chunks_or_sections(matching_chunks)
-
-    # Deduplicate documents by id
-    deduplicated_documents: list[SearchDoc] = []
-    seen_documents: set[str] = set()
-    for document in documents:
-        if document.document_id not in seen_documents:
-            deduplicated_documents.append(document)
-            seen_documents.add(document.document_id)
-    return AdminSearchResponse(documents=deduplicated_documents)
+    return AdminSearchResponse(documents=documents)
 
 
 @basic_router.get("/valid-tags")
@@ -111,25 +70,12 @@ def get_tags(
     if not allow_prefix:
         raise NotImplementedError("Cannot disable prefix match for now")
 
-    key_prefix = match_pattern
-    value_prefix = match_pattern
-    require_both_to_match = False
-
-    # split on = to allow the user to type in "author=bob"
-    EQUAL_PAT = "="
-    if match_pattern and EQUAL_PAT in match_pattern:
-        split_pattern = match_pattern.split(EQUAL_PAT)
-        key_prefix = split_pattern[0]
-        value_prefix = EQUAL_PAT.join(split_pattern[1:])
-        require_both_to_match = True
-
-    db_tags = find_tags(
-        tag_key_prefix=key_prefix,
-        tag_value_prefix=value_prefix,
+    # Clean-room implementation lives in WS-E (om.search.admin.service).
+    db_tags = _get_valid_tags_service(
+        db_session=db_session,
+        match_pattern=match_pattern,
         sources=sources,
         limit=limit,
-        db_session=db_session,
-        require_both_to_match=require_both_to_match,
     )
     server_tags = [
         SourceTag(

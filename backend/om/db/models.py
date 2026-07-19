@@ -5058,3 +5058,76 @@ class WorkflowExecution(Base):
     # Relationships
     workflow: Mapped[AgentWorkflow] = relationship("AgentWorkflow")
     user: Mapped[User | None] = relationship("User", foreign_keys=[user_id])
+
+
+# === WS-E: Search / query-expansion models ===
+# NOTE for integrator: the `search_query` history table (class SearchQuery above)
+# already exists with WS-E's exact target schema and is REUSED as-is — no new
+# migration needed for it. Only `search_expansion_settings` below is new.
+class SearchExpansionSettings(Base):
+    """Per-tenant configuration for LLM query expansion + reciprocal-rank fusion.
+
+    Singleton: exactly one logical row per tenant schema, enforced by the unique
+    ``singleton`` column. Read/written via ``om.db.search_expansion_settings``
+    and surfaced/edited under the admin Search Settings screen.
+    """
+
+    __tablename__ = "search_expansion_settings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    # Singleton guard: unique -> at most one row per tenant schema.
+    singleton: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True, unique=True
+    )
+
+    # Feature toggles
+    enable_expansion: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True
+    )
+    enable_keyword_expansion: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True
+    )
+    enable_semantic_rephrase: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True
+    )
+    enable_keyword_history_expansion: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True
+    )
+
+    # Bounds
+    # Max variants produced per keyword strategy.
+    max_variants: Mapped[int] = mapped_column(Integer, nullable=False, default=3)
+    # Final number of fused results returned to the caller.
+    num_results: Mapped[int] = mapped_column(Integer, nullable=False, default=25)
+    # Retrieval depth per query variant before fusion.
+    num_retrieved_per_query: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=30
+    )
+
+    # Weighted reciprocal-rank fusion
+    rrf_k: Mapped[int] = mapped_column(Integer, nullable=False, default=60)
+    original_query_weight: Mapped[float] = mapped_column(
+        Float, nullable=False, default=2.0
+    )
+    semantic_variant_weight: Mapped[float] = mapped_column(
+        Float, nullable=False, default=1.0
+    )
+    keyword_variant_weight: Mapped[float] = mapped_column(
+        Float, nullable=False, default=1.0
+    )
+
+    # Optional LLM relevance selection over fused sections
+    enable_llm_section_selection: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
+
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+# === end WS-E models ===
