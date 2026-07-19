@@ -26,7 +26,7 @@ import sqlalchemy as sa
 from alembic import op
 
 revision = "0004_drop_license"
-down_revision = "0003_agent_rename"
+down_revision = "0004_team_rename"
 branch_labels = None
 depends_on = None
 

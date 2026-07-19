@@ -18,7 +18,7 @@ from alembic import op
 
 revision = "ws_e_search_expansion_settings"
 # Placeholder: integrator linearizes onto the current head (0003_agent_rename).
-down_revision = None
+down_revision = "wsd_standard_answer_config"
 branch_labels = None
 depends_on = None
 

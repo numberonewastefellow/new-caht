@@ -21,7 +21,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision = "ws_c_saml_sso"
-down_revision = None  # placeholder — integrator sets to the linearized head
+down_revision = "wsm_user_tenant_mapping"
 branch_labels = None
 depends_on = None
 

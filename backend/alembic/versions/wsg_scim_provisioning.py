@@ -30,7 +30,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = "wsg_scim_provisioning"
-down_revision = None  # PLACEHOLDER — integrator linearizes (see module docstring)
+down_revision = "wsf_drop_legacy_rate_limit"
 branch_labels = None
 depends_on = None
 

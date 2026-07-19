@@ -24,7 +24,7 @@ from alembic import op
 revision = "wsm_user_tenant_mapping"
 # PLACEHOLDER per CONTRACTS.md (shared-file Alembic rule): integrator linearizes off
 # the current head ``0003_agent_rename``.
-down_revision = None
+down_revision = "0004_drop_license"
 branch_labels = None
 depends_on = None
 

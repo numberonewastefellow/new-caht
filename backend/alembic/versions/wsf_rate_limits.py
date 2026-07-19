@@ -21,7 +21,7 @@ from sqlalchemy.dialects import postgresql
 
 revision = "wsf_rate_limits"
 # Placeholder — integrator linearizes off the shared head (after WS-B's team rename).
-down_revision = None
+down_revision = "ws_e_search_expansion_settings"
 branch_labels = None
 depends_on = None
 

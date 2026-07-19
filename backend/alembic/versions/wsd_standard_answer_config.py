@@ -22,7 +22,7 @@ import sqlalchemy as sa
 from alembic import op
 
 revision = "wsd_standard_answer_config"
-down_revision = "0003_agent_rename"
+down_revision = "ws_c_saml_sso"
 branch_labels = None
 depends_on = None
 

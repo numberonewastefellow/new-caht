@@ -28,7 +28,7 @@ from alembic import op
 revision = "0004_ws_h_analytics"
 # Placeholder per CONTRACTS.md shared-file rule — integrator sets this to the
 # current head ("0003_agent_rename") when linearizing the migration chain.
-down_revision = None
+down_revision = "wsg_scim_provisioning"
 branch_labels = None
 depends_on = None
 

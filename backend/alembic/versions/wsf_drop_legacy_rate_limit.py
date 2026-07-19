@@ -23,7 +23,7 @@ from alembic import op
 
 revision = "wsf_drop_legacy_rate_limit"
 # Placeholder — integrator linearizes after wsf_rate_limits (and after verification).
-down_revision = None
+down_revision = "wsf_rate_limits"
 branch_labels = None
 depends_on = None
 
