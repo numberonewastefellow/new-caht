@@ -10,21 +10,21 @@ with explicit session management. It supports two usage modes:
      own session via the tenant-aware session factory.
 
 Subclasses add domain-specific query methods while inheriting session
-management. See ``om.db.scim.ScimDAL`` for a concrete example.
+management.
 
 Example (FastAPI)::
 
-    def get_scim_dal(db_session: Session = Depends(get_session)) -> ScimDAL:
-        return ScimDAL(db_session)
+    def get_widget_dal(db_session: Session = Depends(get_session)) -> WidgetDAL:
+        return WidgetDAL(db_session)
 
-    @router.get("/users")
-    def list_users(dal: ScimDAL = Depends(get_scim_dal)) -> ...:
-        return dal.list_user_mappings(...)
+    @router.get("/widgets")
+    def list_widgets(dal: WidgetDAL = Depends(get_widget_dal)) -> ...:
+        return dal.list_widgets(...)
 
 Example (Celery)::
 
-    with ScimDAL.from_tenant("tenant_abc") as dal:
-        dal.create_user_mapping(...)
+    with WidgetDAL.from_tenant("tenant_abc") as dal:
+        dal.create_widget(...)
         dal.commit()
 """
 

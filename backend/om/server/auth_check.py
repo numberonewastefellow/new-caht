@@ -62,15 +62,18 @@ PUBLIC_ENDPOINT_SPECS = [
     # craft webapp proxy — access enforced per-session via sharing_scope in handler
     ("/build/sessions/{session_id}/webapp", {"GET"}),
     ("/build/sessions/{session_id}/webapp/{path:path}", {"GET"}),
+    # === WS-G: SCIM 2.0 discovery — public per RFC 7644 §4 so IdPs can probe
+    # before a bearer token is configured. Mounted without the global API prefix.
+    ("/scim/v2/ServiceProviderConfig", {"GET"}),
+    ("/scim/v2/ResourceTypes", {"GET"}),
+    ("/scim/v2/ResourceTypes/{resource_id}", {"GET"}),
+    ("/scim/v2/Schemas", {"GET"}),
+    ("/scim/v2/Schemas/{schema_id}", {"GET"}),
+    # === end WS-G
 ]
 
 
 EE_PUBLIC_ENDPOINT_SPECS = PUBLIC_ENDPOINT_SPECS + [
-    # SCIM 2.0 service discovery — unauthenticated so IdPs can probe
-    # before bearer token configuration is complete
-    ("/scim/v2/ServiceProviderConfig", {"GET"}),
-    ("/scim/v2/ResourceTypes", {"GET"}),
-    ("/scim/v2/Schemas", {"GET"}),
     # needs to be accessible prior to user login
     ("/enterprise-settings", {"GET"}),
     ("/enterprise-settings/logo", {"GET"}),

@@ -1,104 +1,158 @@
-"""SCIM bearer token authentication.
+"""SCIM bearer-token generation, hashing and request authentication.
 
-SCIM endpoints are authenticated via bearer tokens that admins create in the
-Onyx UI. This module provides:
+Tokens are opaque, high-entropy secrets. Only their SHA-256 hash is stored; the
+raw token is shown to the admin exactly once. To make the SCIM API self-routing
+in multi-tenant mode (IdP requests carry no session/cookie), the tenant id is
+embedded in the token itself — the same technique the API-key subsystem uses —
+so :func:`verify_scim_token` can resolve the tenant, bind the request to that
+tenant's Postgres schema, and verify the token against the per-tenant
+``scim_token`` table (Contract 3).
 
-  - ``verify_scim_token``: FastAPI dependency that extracts, hashes, and
-    validates the token from the Authorization header.
-  - ``generate_scim_token``: Creates a new cryptographically random token
-    and returns the raw value, its SHA-256 hash, and a display suffix.
+Token format::
 
-Token format: ``onyx_scim_<random>`` where ``<random>`` is 48 bytes of
-URL-safe base64 from ``secrets.token_urlsafe``.
+    single-tenant:  scim_<random>
+    multi-tenant:   scim_<url-encoded-tenant>.<random>
 
-The hash is stored in the ``scim_token`` table; the raw value is shown to
-the admin exactly once at creation time.
+``verify_scim_token`` is the auth dependency guarding every provisioning route;
+``auth_check.check_router_auth`` recognises it as a valid auth dependency.
 """
 
-import hashlib
-import secrets
+from __future__ import annotations
 
-from fastapi import Depends
-from fastapi import HTTPException
+import hashlib
+import hmac
+import secrets
+from collections.abc import Generator
+from dataclasses import dataclass
+from urllib.parse import quote
+from urllib.parse import unquote
+
 from fastapi import Request
 from sqlalchemy.orm import Session
 
-from om.db.scim import ScimDAL
-from om.auth.utils import get_hashed_bearer_token_from_request
-from om.db.engine.sql_engine import get_session
-from om.db.models import ScimToken
-
-SCIM_TOKEN_PREFIX = "onyx_scim_"
-SCIM_TOKEN_LENGTH = 48
-
-
-def _hash_scim_token(token: str) -> str:
-    """SHA-256 hash a SCIM token. No salt needed — tokens are random."""
-    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+from om.db.engine.sql_engine import is_valid_schema_name
+from om.server.scim.constants import SCIM_TOKEN_ENTROPY_BYTES
+from om.server.scim.constants import SCIM_TOKEN_PREFIX
+from om.server.scim.errors import ScimError
+from om.tenancy.context import CURRENT_TENANT_ID_CONTEXTVAR
+from om.tenancy.context import get_tenant_session
+from shared_configs.configs import MULTI_TENANT
+from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
 
 
-def generate_scim_token() -> tuple[str, str, str]:
-    """Generate a new SCIM bearer token.
+@dataclass
+class ScimContext:
+    """Authenticated SCIM request context handed to every provisioning route."""
 
-    Returns:
-        A tuple of ``(raw_token, hashed_token, token_display)`` where
-        ``token_display`` is a masked version showing only the last 4 chars.
+    db: Session
+    tenant_id: str
+    token_id: int
+    # The admin user that created the token — used as the actor in audit logs.
+    actor_user_id: str
+
+
+# --------------------------------------------------------------------------
+# Token generation / hashing / display
+# --------------------------------------------------------------------------
+def generate_scim_token(tenant_id: str | None = None) -> str:
+    """Mint a new raw SCIM token (CSPRNG). Tenant is embedded in MT mode."""
+    random_part = secrets.token_urlsafe(SCIM_TOKEN_ENTROPY_BYTES)
+    if not MULTI_TENANT or not tenant_id:
+        return f"{SCIM_TOKEN_PREFIX}{random_part}"
+    return f"{SCIM_TOKEN_PREFIX}{quote(tenant_id, safe='')}.{random_part}"
+
+
+def hash_scim_token(raw_token: str) -> str:
+    """SHA-256 hex digest of a raw token (the DB lookup key).
+
+    No salt is needed: tokens are randomly generated with high entropy, so
+    collisions are infeasible (same rationale as the API-key subsystem).
     """
-    raw_token = SCIM_TOKEN_PREFIX + secrets.token_urlsafe(SCIM_TOKEN_LENGTH)
-    hashed_token = _hash_scim_token(raw_token)
-    token_display = SCIM_TOKEN_PREFIX + "****" + raw_token[-4:]
-    return raw_token, hashed_token, token_display
+    if not raw_token.startswith(SCIM_TOKEN_PREFIX):
+        raise ScimError.unauthorized()
+    return hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
 
 
-def _get_hashed_scim_token_from_request(request: Request) -> str | None:
-    """Extract and hash a SCIM token from the request Authorization header."""
-    return get_hashed_bearer_token_from_request(
-        request,
-        valid_prefixes=[SCIM_TOKEN_PREFIX],
-        hash_fn=_hash_scim_token,
+def build_scim_token_display(raw_token: str) -> str:
+    """Masked, last-4 form for the admin UI, e.g. ``scim_****ab12``."""
+    return f"{SCIM_TOKEN_PREFIX}****{raw_token[-4:]}"
+
+
+def parse_tenant_from_token(raw_token: str) -> str:
+    """Recover the tenant schema embedded in a token (or the default schema)."""
+    if not MULTI_TENANT:
+        return POSTGRES_DEFAULT_SCHEMA
+    body = raw_token[len(SCIM_TOKEN_PREFIX) :]
+    if "." not in body:
+        # No tenant segment — only valid against the default schema.
+        return POSTGRES_DEFAULT_SCHEMA
+    encoded_tenant, _, _ = body.partition(".")
+    return unquote(encoded_tenant)
+
+
+def tokens_match(presented_hash: str, stored_hash: str) -> bool:
+    """Constant-time hash comparison (defence in depth over the DB lookup)."""
+    return hmac.compare_digest(presented_hash, stored_hash)
+
+
+# --------------------------------------------------------------------------
+# Request authentication
+# --------------------------------------------------------------------------
+def _extract_bearer_token(request: Request) -> str:
+    header = request.headers.get("Authorization") or request.headers.get(
+        "authorization"
     )
+    if not header:
+        raise ScimError.unauthorized("Missing Authorization header.")
+    scheme, _, credential = header.partition(" ")
+    if scheme.lower() != "bearer" or not credential.strip():
+        raise ScimError.unauthorized("Authorization header must be a Bearer token.")
+    return credential.strip()
 
 
-def _get_scim_dal(db_session: Session = Depends(get_session)) -> ScimDAL:
-    return ScimDAL(db_session)
+def verify_scim_token(request: Request) -> Generator[ScimContext, None, None]:
+    """FastAPI dependency: authenticate a SCIM request and bind its tenant.
 
-
-def verify_scim_token(
-    request: Request,
-    dal: ScimDAL = Depends(_get_scim_dal),
-) -> ScimToken:
-    """FastAPI dependency that authenticates SCIM requests.
-
-    Extracts the bearer token from the Authorization header, hashes it,
-    looks it up in the database, and verifies it is active.
-
-    Note:
-        This dependency does NOT update ``last_used_at`` — the endpoint
-        should do that via ``ScimDAL.update_token_last_used()`` so the
-        timestamp write is part of the endpoint's transaction.
-
-    Raises:
-        HTTPException(401): If the token is missing, invalid, or inactive.
+    Yields a :class:`ScimContext` carrying a tenant-scoped DB session. On any
+    failure a :class:`ScimError` (401) is raised, which :class:`ScimRoute`
+    renders as a SCIM error body.
     """
-    hashed = _get_hashed_scim_token_from_request(request)
-    if not hashed:
-        raise HTTPException(
-            status_code=401,
-            detail="Missing or invalid SCIM bearer token",
-        )
+    raw_token = _extract_bearer_token(request)
+    if not raw_token.startswith(SCIM_TOKEN_PREFIX):
+        raise ScimError.unauthorized()
 
-    token = dal.get_token_by_hash(hashed)
+    tenant_id = parse_tenant_from_token(raw_token)
+    if not is_valid_schema_name(tenant_id):
+        raise ScimError.unauthorized()
 
-    if not token:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid SCIM bearer token",
-        )
+    presented_hash = hash_scim_token(raw_token)
 
-    if not token.is_active:
-        raise HTTPException(
-            status_code=401,
-            detail="SCIM token has been revoked",
-        )
+    # Bind the request to the token's tenant schema for its whole lifetime.
+    contextvar_token = CURRENT_TENANT_ID_CONTEXTVAR.set(tenant_id)
+    try:
+        with get_tenant_session(tenant_id=tenant_id) as db:
+            # Local import: repository imports pull in the ORM models.
+            from om.db.scim import ScimRepository
 
-    return token
+            repo = ScimRepository(db)
+            # The tenant schema is already validated (is_valid_schema_name above),
+            # so the lookup cannot raise the session layer's schema HTTPException.
+            token_row = repo.get_active_token_by_hash(presented_hash)
+            if token_row is None or not tokens_match(
+                presented_hash, token_row.hashed_token
+            ):
+                raise ScimError.unauthorized()
+
+            repo.touch_token_last_used(token_row.id)
+            db.commit()
+
+            # NOTE: the broad try only guards pre-yield auth work; exceptions
+            # thrown back in during teardown propagate untouched.
+            yield ScimContext(
+                db=db,
+                tenant_id=tenant_id,
+                token_id=token_row.id,
+                actor_user_id=str(token_row.created_by),
+            )
+    finally:
+        CURRENT_TENANT_ID_CONTEXTVAR.reset(contextvar_token)
