@@ -19,6 +19,7 @@ import CardSection from "@/components/admin/CardSection";
 import { ErrorCallout } from "@/components/ErrorCallout";
 import { useToastFromQuery } from "@/hooks/useToast";
 import { SvgSearch, SvgSettings } from "@opal/icons";
+import QueryExpansionSettings from "./QueryExpansionSettings";
 
 export interface EmbeddingDetails {
   api_key: string;
@@ -214,6 +215,9 @@ function Main() {
               </div>
             )}
           </CardSection>
+
+          {/* Query Expansion & Fusion (WS-E) */}
+          <QueryExpansionSettings />
 
           {/* Action */}
           <div>
