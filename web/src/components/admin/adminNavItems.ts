@@ -270,6 +270,11 @@ export function getAdminNavGroups(opts: {
         name: "Usage Limits",
         icon: SvgShield,
         link: "/admin/token-rate-limits",
+      },
+      {
+        name: "Single Sign-On",
+        icon: SvgKey,
+        link: "/admin/auth/sso",
       }
     );
 
@@ -409,6 +414,8 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   "api-key": "API Credentials",
   "token-rate-limits": "Usage Limits",
   tenants: "Tenants",
+  auth: "Authentication",
+  sso: "Single Sign-On",
   performance: "Observability",
   usage: "Analytics",
   "query-history": "Query Logs",
@@ -474,6 +481,7 @@ const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
   ["/admin/api-key", "orange"],
   ["/admin/token-rate-limits", "orange"],
   ["/admin/tenants", "orange"],
+  ["/admin/auth/sso", "orange"],
   // Workspace (cyan)
   ["/admin/services", "cyan"],
   ["/admin/settings", "cyan"],

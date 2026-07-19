@@ -83,7 +83,7 @@ const getGoogleOAuthUrlSS = async (nextUrl: string | null): Promise<string> => {
 };
 
 const getSAMLAuthUrlSS = async (nextUrl: string | null): Promise<string> => {
-  const url = UrlBuilder.fromInternalUrl("/auth/saml/authorize");
+  const url = UrlBuilder.fromInternalUrl("/sso/saml/authorize");
   if (nextUrl) {
     url.addParam("next", nextUrl);
   }
@@ -129,7 +129,7 @@ const logoutStandardSS = async (headers: Headers): Promise<Response> => {
 };
 
 const logoutSAMLSS = async (headers: Headers): Promise<Response> => {
-  return await fetch(buildUrl("/auth/saml/logout"), {
+  return await fetch(buildUrl("/sso/saml/logout"), {
     method: "POST",
     headers: headers,
   });

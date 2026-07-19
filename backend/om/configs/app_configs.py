@@ -192,9 +192,6 @@ if _OIDC_SCOPE_OVERRIDE:
     except Exception:
         pass
 
-# Applicable for SAML Auth
-SAML_CONF_DIR = os.environ.get("SAML_CONF_DIR") or "/app/om/configs/saml_config"
-
 # JWT Public Key URL for JWT token verification
 JWT_PUBLIC_KEY_URL: str | None = os.getenv("JWT_PUBLIC_KEY_URL", None)
 

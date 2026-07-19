@@ -50,11 +50,12 @@ PUBLIC_ENDPOINT_SPECS = [
     # oidc
     ("/auth/oidc/authorize", {"GET"}),
     ("/auth/oidc/callback", {"GET"}),
-    # saml
-    ("/auth/saml/authorize", {"GET"}),
-    ("/auth/saml/callback", {"POST"}),
-    ("/auth/saml/callback", {"GET"}),
-    ("/auth/saml/logout", {"POST"}),
+    # saml sso (WS-C)
+    ("/sso/saml/authorize", {"GET"}),
+    ("/sso/saml/acs", {"POST"}),
+    ("/sso/saml/acs", {"GET"}),
+    ("/sso/saml/logout", {"POST"}),
+    ("/sso/saml/metadata", {"GET"}),
     # anonymous user on cloud
     ("/tenants/anonymous-user", {"POST"}),
     ("/metrics", {"GET"}),  # added by prometheus_fastapi_instrumentator

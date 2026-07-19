@@ -1397,7 +1397,7 @@ async def _get_or_create_user_from_jwt(
     return user
 
 
-async def _check_for_saml_and_jwt(
+async def _check_for_jwt_bearer_auth(
     request: Request,
     user: User | None,
     async_db_session: AsyncSession,
@@ -1422,8 +1422,8 @@ async def optional_user(
     user: User | None = Depends(optional_fastapi_current_user),
 ) -> User | None:
 
-    if user := await _check_for_saml_and_jwt(request, user, async_db_session):
-        # If user is already set, _check_for_saml_and_jwt returns the same user object
+    if user := await _check_for_jwt_bearer_auth(request, user, async_db_session):
+        # If user is already set, _check_for_jwt_bearer_auth returns the same user object
         return user
 
     try:
