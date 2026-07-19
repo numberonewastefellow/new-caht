@@ -29,9 +29,15 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Child (association) first, then the parent — the association FKs token_rate_limit.id.
-    op.drop_table("token_rate_limit__user_group")
-    op.drop_table("token_rate_limit")
+    # WS-B's user_group->team rename sweep (LIKE '%user_group%') also renames the
+    # association table token_rate_limit__user_group -> token_rate_limit__team, which
+    # runs BEFORE this revision in the linearized chain. So the association may exist
+    # under EITHER name depending on DB state. Drop whichever survives, then the parent.
+    # IF EXISTS + CASCADE => idempotent on a fresh DB, an existing 0003 DB, and any
+    # partially-migrated DB. Child (association) first, then the parent it FKs.
+    op.execute("DROP TABLE IF EXISTS token_rate_limit__team CASCADE")
+    op.execute("DROP TABLE IF EXISTS token_rate_limit__user_group CASCADE")
+    op.execute("DROP TABLE IF EXISTS token_rate_limit CASCADE")
 
 
 def downgrade() -> None:

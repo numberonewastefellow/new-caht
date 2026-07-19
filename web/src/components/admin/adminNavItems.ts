@@ -303,6 +303,11 @@ export function getAdminNavGroups(opts: {
   if (!isCurator) {
     const workspaceItems: AdminNavItem[] = [
       {
+        name: "New Features",
+        icon: SvgOnyxOctagon,
+        link: "/admin/features",
+      },
+      {
         name: "General",
         icon: SvgSettings,
         link: "/admin/settings",
@@ -416,6 +421,7 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   tenants: "Tenants",
   auth: "Authentication",
   sso: "Single Sign-On",
+  features: "New Features",
   performance: "Observability",
   usage: "Analytics",
   "query-history": "Query Logs",
@@ -483,6 +489,7 @@ const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
   ["/admin/tenants", "orange"],
   ["/admin/auth/sso", "orange"],
   // Workspace (cyan)
+  ["/admin/features", "cyan"],
   ["/admin/services", "cyan"],
   ["/admin/settings", "cyan"],
   ["/admin/theme", "cyan"],
