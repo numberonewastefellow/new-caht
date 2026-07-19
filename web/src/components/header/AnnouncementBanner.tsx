@@ -3,7 +3,6 @@ import { useState, useEffect, useContext } from "react";
 import { CustomTooltip } from "../tooltip/CustomTooltip";
 import { SettingsContext } from "@/providers/SettingsProvider";
 import Link from "next/link";
-import type { Route } from "next";
 import Cookies from "js-cookie";
 import { SvgX } from "@opal/icons";
 const DISMISSED_NOTIFICATION_COOKIE_PREFIX = "dismissed_notification_";
@@ -72,17 +71,6 @@ export function AnnouncementBanner() {
                   your search settings.{" "}
                   <Link
                     href={"/admin/configuration/search"}
-                    className="ml-2 underline cursor-pointer"
-                  >
-                    Update here
-                  </Link>
-                </p>
-              ) : notification.notif_type == "two_day_trial_ending" ? (
-                <p className="text-center">
-                  Your trial is ending soon - submit your billing information to
-                  continue using VertualAI.{" "}
-                  <Link
-                    href={"/admin/billing" as Route}
                     className="ml-2 underline cursor-pointer"
                   >
                     Update here

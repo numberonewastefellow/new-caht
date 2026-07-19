@@ -31,7 +31,6 @@ class DiscordCacheManager:
 
     async def refresh_all(self) -> None:
         """Full cache refresh from all tenants."""
-        from om.server.tenants.product_gating import get_gated_tenants as _impl_get_gated_tenants
         async with self._lock:
             logger.info("Starting Discord cache refresh")
 
@@ -39,13 +38,10 @@ class DiscordCacheManager:
             new_api_keys: dict[str, str] = {}
 
             try:
-                gated = _impl_get_gated_tenants()
-
+                # WS-A: product gating (get_gated_tenants) was removed with billing —
+                # no tenant is gated, so every tenant is refreshed.
                 tenant_ids = await asyncio.to_thread(get_all_tenant_ids)
                 for tenant_id in tenant_ids:
-                    if tenant_id in gated:
-                        continue
-
                     context_token = CURRENT_TENANT_ID_CONTEXTVAR.set(tenant_id)
                     try:
                         guild_ids, api_key = await self._load_tenant_data(tenant_id)

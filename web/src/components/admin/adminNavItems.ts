@@ -19,7 +19,6 @@ import {
   SvgBarChart,
   SvgSettings,
   SvgPaintBrush,
-  SvgWallet,
   SvgArrowExchange,
   SvgActions,
   SvgDiscordMono,
@@ -64,7 +63,6 @@ export function getAdminNavGroups(opts: {
   settings: CombinedSettings | null;
   kgExposed: boolean;
   customAnalyticsEnabled: boolean;
-  hasSubscription: boolean;
 }): AdminNavGroup[] {
   const {
     isCurator,
@@ -72,7 +70,6 @@ export function getAdminNavGroups(opts: {
     settings,
     kgExposed,
     customAnalyticsEnabled,
-    hasSubscription,
   } = opts;
 
   const vectorDbEnabled = settings?.settings.vector_db_enabled !== false;
@@ -313,14 +310,6 @@ export function getAdminNavGroups(opts: {
       link: "/admin/theme",
     });
 
-    if (hasSubscription) {
-      workspaceItems.push({
-        name: "Plan & Billing",
-        icon: SvgWallet,
-        link: "/admin/billing",
-      });
-    }
-
     if (settings?.settings.opensearch_indexing_enabled) {
       workspaceItems.push({
         name: "Index Migration",
@@ -426,7 +415,6 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   "custom-analytics": "Custom Reports",
   settings: "General",
   theme: "Branding",
-  billing: "Plan & Billing",
   "document-index-migration": "Index Migration",
   embeddings: "Embeddings",
   connectors: "Connectors",
@@ -490,7 +478,6 @@ const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
   ["/admin/services", "cyan"],
   ["/admin/settings", "cyan"],
   ["/admin/theme", "cyan"],
-  ["/admin/billing", "cyan"],
   ["/admin/document-index-migration", "cyan"],
   ["/admin/performance", "cyan"],
 ];

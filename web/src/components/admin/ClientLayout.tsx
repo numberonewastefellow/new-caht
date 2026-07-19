@@ -7,13 +7,6 @@ import { useUser } from "@/providers/UserProvider";
 import { UserRole } from "@/lib/types";
 import { useIsKGExposed } from "@/app/admin/kg/utils";
 import { useCustomAnalyticsEnabled } from "@/lib/hooks/useCustomAnalyticsEnabled";
-import {
-  useBillingInformation,
-  useLicense,
-  hasActiveSubscription,
-} from "@/lib/billing";
-import { ApplicationStatus } from "@/app/admin/settings/interfaces";
-import Button from "@/refresh-components/buttons/Button";
 import AdminTopBar from "./AdminTopBar";
 import AdminCommandPalette from "./AdminCommandPalette";
 import { getAdminNavGroups } from "./adminNavItems";
@@ -33,16 +26,9 @@ export function ClientLayout({
   const { user } = useUser();
   const { kgExposed } = useIsKGExposed();
   const { customAnalyticsEnabled } = useCustomAnalyticsEnabled();
-  const { data: billingData } = useBillingInformation();
-  const { data: licenseData } = useLicense();
 
   const isCurator =
     user?.role === UserRole.CURATOR || user?.role === UserRole.GLOBAL_CURATOR;
-
-  const hasSubscription = Boolean(
-    (billingData && hasActiveSubscription(billingData)) ||
-      licenseData?.has_license
-  );
 
   const groups = getAdminNavGroups({
     isCurator,
@@ -50,7 +36,6 @@ export function ClientLayout({
     settings,
     kgExposed,
     customAnalyticsEnabled,
-    hasSubscription,
   });
 
   // Pages with custom sidebar still get the top bar, but their content area is unstyled
@@ -61,20 +46,6 @@ export function ClientLayout({
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden bg-background-tint-00">
-      {/* Payment reminder banner */}
-      {settings.settings.application_status ===
-        ApplicationStatus.PAYMENT_REMINDER && (
-        <div className="fixed top-16 left-1/2 transform -translate-x-1/2 bg-theme-amber-02 text-text-05 p-4 rounded-12 shadow-lg z-50 max-w-md text-center border border-theme-amber-05">
-          <strong className="font-bold">Warning:</strong> Your trial ends in
-          less than 5 days and no payment method has been added.
-          <div className="mt-2">
-            <Button className="w-full" href="/admin/billing">
-              Update Billing Information
-            </Button>
-          </div>
-        </div>
-      )}
-
       {/* Top navigation bar */}
       <AdminTopBar
         groups={groups}

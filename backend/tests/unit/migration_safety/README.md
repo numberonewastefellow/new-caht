@@ -31,7 +31,7 @@ skips:
 
 ```bash
 # Fast tier (no infra) — run inside the backend image / full venv:
-LICENSE_ENFORCEMENT_ENABLED=false DISABLE_TELEMETRY=true \
+DISABLE_TELEMETRY=true \
   py.test -xv backend/tests/unit/migration_safety
 ```
 

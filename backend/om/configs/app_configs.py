@@ -1117,17 +1117,6 @@ DISCORD_BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
 DISCORD_BOT_INVOKE_CHAR = os.environ.get("DISCORD_BOT_INVOKE_CHAR", "!")
 
 
-## Stripe Configuration
-# URL to fetch the Stripe publishable key from a public S3 bucket.
-# Publishable keys are safe to expose publicly - they can only initialize
-# Stripe.js and tokenize payment info, not make charges or access data.
-STRIPE_PUBLISHABLE_KEY_URL = (
-    "https://onyx-stripe-public.s3.amazonaws.com/publishable-key.txt"
-)
-# Override for local testing with Stripe test keys (pk_test_*)
-STRIPE_PUBLISHABLE_KEY_OVERRIDE = os.environ.get("STRIPE_PUBLISHABLE_KEY")
-
-
 #####
 # Merged from the former ee/om/configs/app_configs.py (EE removal, Stage 2.2).
 # JWT_PUBLIC_KEY_URL was defined identically in both files and is kept above, once.
@@ -1228,8 +1217,6 @@ CHECK_TTL_MANAGEMENT_TASK_FREQUENCY_IN_HOURS = float(
     os.environ.get("CHECK_TTL_MANAGEMENT_TASK_FREQUENCY_IN_HOURS") or 1
 )  # float for easier testing
 
-STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
-
 # Super Users
 SUPER_USERS = json.loads(os.environ.get("SUPER_USERS", "[]"))
 SUPER_CLOUD_API_KEY = os.environ.get("SUPER_CLOUD_API_KEY", "api_key")
@@ -1245,13 +1232,6 @@ POSTHOG_DEBUG_LOGS_ENABLED = (
 MARKETING_POSTHOG_API_KEY = os.environ.get("MARKETING_POSTHOG_API_KEY")
 
 HUBSPOT_TRACKING_URL = os.environ.get("HUBSPOT_TRACKING_URL")
-
-GATED_TENANTS_KEY = "gated_tenants"
-
-# License enforcement - when True, blocks API access for gated/expired licenses
-LICENSE_ENFORCEMENT_ENABLED = (
-    os.environ.get("LICENSE_ENFORCEMENT_ENABLED", "false").lower() == "true"
-)
 
 # Cloud data plane URL - self-hosted instances call this to reach cloud proxy endpoints
 # Used when MULTI_TENANT=false (self-hosted mode)

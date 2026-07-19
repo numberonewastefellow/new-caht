@@ -40,10 +40,6 @@ class TestCacheInitialization:
                 "om.onyxbot.discord.cache.get_all_tenant_ids",
                 return_value=["tenant1"],
             ),
-            patch(
-                "om.server.tenants.product_gating.get_gated_tenants",
-                return_value=set(),
-            ),
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
                 "om.onyxbot.discord.cache.get_guild_configs",
@@ -79,10 +75,6 @@ class TestCacheInitialization:
             patch(
                 "om.onyxbot.discord.cache.get_all_tenant_ids",
                 return_value=["tenant1"],
-            ),
-            patch(
-                "om.server.tenants.product_gating.get_gated_tenants",
-                return_value=set(),
             ),
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
@@ -251,10 +243,6 @@ class TestThreadSafety:
                 "om.onyxbot.discord.cache.get_all_tenant_ids",
                 return_value=["tenant1"],
             ),
-            patch(
-                "om.server.tenants.product_gating.get_gated_tenants",
-                return_value=set(),
-            ),
             patch.object(cache, "_load_tenant_data", side_effect=slow_refresh),
         ):
             # Run multiple concurrent refreshes
@@ -304,10 +292,6 @@ class TestAPIKeyProvisioning:
                 "om.onyxbot.discord.cache.get_all_tenant_ids",
                 return_value=["tenant1"],
             ),
-            patch(
-                "om.server.tenants.product_gating.get_gated_tenants",
-                return_value=set(),
-            ),
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
                 "om.onyxbot.discord.cache.get_guild_configs",
@@ -342,10 +326,6 @@ class TestAPIKeyProvisioning:
                 "om.onyxbot.discord.cache.get_all_tenant_ids",
                 return_value=["tenant1"],
             ),
-            patch(
-                "om.server.tenants.product_gating.get_gated_tenants",
-                return_value=set(),
-            ),
             patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
             patch(
                 "om.onyxbot.discord.cache.get_guild_configs",
@@ -365,124 +345,6 @@ class TestAPIKeyProvisioning:
         mock_create.assert_not_called()
         # Cached key should be preserved after refresh
         assert cache.get_api_key("tenant1") == "cached_key"
-
-
-class TestGatedTenantHandling:
-    """Tests for gated tenant filtering."""
-
-    @pytest.mark.asyncio
-    async def test_refresh_skips_gated_tenants(self) -> None:
-        """Gated tenant's guilds are not loaded."""
-        cache = DiscordCacheManager()
-
-        # tenant2 is gated
-        gated_tenants = {"tenant2"}
-
-        mock_config_t1 = MagicMock()
-        mock_config_t1.guild_id = 111111
-        mock_config_t1.enabled = True
-
-        mock_config_t2 = MagicMock()
-        mock_config_t2.guild_id = 222222
-        mock_config_t2.enabled = True
-
-        def mock_get_configs(db: MagicMock) -> list[MagicMock]:  # noqa: ARG001
-            # Track which tenant this was called for
-            return [mock_config_t1]  # Always return same for simplicity
-
-        with (
-            patch(
-                "om.onyxbot.discord.cache.get_all_tenant_ids",
-                return_value=["tenant1", "tenant2"],
-            ),
-            patch(
-                "om.server.tenants.product_gating.get_gated_tenants",
-                return_value=gated_tenants,
-            ),
-            patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
-            patch(
-                "om.onyxbot.discord.cache.get_guild_configs",
-                side_effect=mock_get_configs,
-            ),
-            patch(
-                "om.onyxbot.discord.cache.get_or_create_discord_service_api_key",
-                return_value="api_key",
-            ),
-        ):
-            mock_db = MagicMock()
-            mock_session.return_value.__enter__ = MagicMock(return_value=mock_db)
-            mock_session.return_value.__exit__ = MagicMock()
-
-            await cache.refresh_all()
-
-        # Only tenant1 should be loaded (tenant2 is gated)
-        assert "tenant1" in cache._api_keys and 111111 in cache._guild_tenants
-        # tenant2's guilds should NOT be in cache
-        assert "tenant2" not in cache._api_keys and 222222 not in cache._guild_tenants
-
-    @pytest.mark.asyncio
-    async def test_refresh_all_consults_gated_tenants_once(self) -> None:
-        """Refresh all tenants looks up the gated tenant set exactly once."""
-        cache = DiscordCacheManager()
-
-        with (
-            patch(
-                "om.onyxbot.discord.cache.get_all_tenant_ids",
-                return_value=["tenant1"],
-            ),
-            patch(
-                "om.server.tenants.product_gating.get_gated_tenants",
-                return_value=set(),
-            ) as mock_get_gated,
-            patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
-            patch(
-                "om.onyxbot.discord.cache.get_guild_configs",
-                return_value=[],
-            ),
-        ):
-            mock_db = MagicMock()
-            mock_session.return_value.__enter__ = MagicMock(return_value=mock_db)
-            mock_session.return_value.__exit__ = MagicMock()
-
-            await cache.refresh_all()
-
-        mock_get_gated.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_ungated_tenant_included(self) -> None:
-        """Regular (ungated) tenant has guilds loaded normally."""
-        cache = DiscordCacheManager()
-
-        mock_config = MagicMock()
-        mock_config.guild_id = 111111
-        mock_config.enabled = True
-
-        with (
-            patch(
-                "om.onyxbot.discord.cache.get_all_tenant_ids",
-                return_value=["tenant1"],
-            ),
-            patch(
-                "om.server.tenants.product_gating.get_gated_tenants",
-                return_value=set(),  # No gated tenants
-            ),
-            patch("om.onyxbot.discord.cache.get_session_with_tenant") as mock_session,
-            patch(
-                "om.onyxbot.discord.cache.get_guild_configs",
-                return_value=[mock_config],
-            ),
-            patch(
-                "om.onyxbot.discord.cache.get_or_create_discord_service_api_key",
-                return_value="api_key",
-            ),
-        ):
-            mock_db = MagicMock()
-            mock_session.return_value.__enter__ = MagicMock(return_value=mock_db)
-            mock_session.return_value.__exit__ = MagicMock()
-
-            await cache.refresh_all()
-
-        assert cache.get_tenant(111111) == "tenant1"
 
 
 class TestCacheErrorHandling:
@@ -506,10 +368,6 @@ class TestCacheErrorHandling:
             patch(
                 "om.onyxbot.discord.cache.get_all_tenant_ids",
                 return_value=["tenant1", "tenant2"],
-            ),
-            patch(
-                "om.server.tenants.product_gating.get_gated_tenants",
-                return_value=set(),
             ),
             patch.object(cache, "_load_tenant_data", side_effect=mock_load),
         ):

@@ -299,8 +299,6 @@ jobs:
         run: |
           cat <<EOF > deployment/docker_compose/.env
           COMPOSE_PROFILES=s3-filestore
-          # TODO(Nik): update test infra to use a test license
-          LICENSE_ENFORCEMENT_ENABLED=false
           AUTH_TYPE=basic
           INTEGRATION_TESTS_MODE=true
           GEN_AI_API_KEY=${OPENAI_API_KEY_VALUE}

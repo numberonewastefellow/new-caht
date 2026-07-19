@@ -122,14 +122,12 @@ def _user_to_scim(user: User, external_id: str | None = None) -> ScimUserResourc
 
 
 def _check_seat_availability(dal: ScimDAL) -> str | None:
-    """Return an error message if seat limit is reached, else None."""
-    from om.db.license import check_seat_availability as _impl_check_seat_availability
-    check_fn = _impl_check_seat_availability
-    if check_fn is None:
-        return None
-    result = check_fn(dal.session, seats_needed=1)
-    if not result.available:
-        return result.error_message or "Seat limit reached"
+    """No-op: seat caps were part of the removed license paywall.
+
+    WS-A: the license seat limit (``om.db.license.check_seat_availability``) was
+    deleted, so SCIM provisioning no longer caps seats. Always returns None
+    (never blocks); retained so call sites stay valid.
+    """
     return None
 
 

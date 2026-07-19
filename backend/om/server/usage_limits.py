@@ -14,11 +14,7 @@ from om.db.usage import UsageLimitExceededError
 from om.db.usage import UsageType
 from om.server.tenant_usage_limits import TenantUsageLimitKeys
 from om.server.tenant_usage_limits import TenantUsageLimitOverrides
-from om.server.tenants.billing import fetch_billing_information
-from om.server.tenants.models import BillingInformation
-from om.server.tenants.models import SubscriptionStatusResponse
 from om.utils.logger import setup_logger
-from shared_configs.configs import MULTI_TENANT
 from shared_configs.configs import USAGE_LIMIT_API_CALLS_PAID
 from shared_configs.configs import USAGE_LIMIT_API_CALLS_TRIAL
 from shared_configs.configs import USAGE_LIMIT_CHUNKS_INDEXED_PAID
@@ -57,29 +53,12 @@ def is_tenant_on_trial(tenant_id: str) -> bool:
     """
     Determine if a tenant is currently on a trial subscription.
 
-    In multi-tenant mode, we fetch billing information from the control plane
-    to determine if the tenant has an active trial.
+    WS-A note: billing/subscriptions were removed (no external billing/control
+    plane). Without billing there is no trial concept, so no tenant is ever on a
+    trial and full (non-trial) usage limits apply. WS-F owns the usage-limits
+    redesign and may replace this behavior.
     """
-    if not MULTI_TENANT:
-        return False
-
-    try:
-        billing_info = fetch_billing_information(tenant_id)
-
-        # If not subscribed at all, check if we have trial information
-        if isinstance(billing_info, SubscriptionStatusResponse):
-            # No subscription means they're likely on trial (new tenant)
-            return True
-
-        if isinstance(billing_info, BillingInformation):
-            return billing_info.status == "trialing"
-
-        return False
-
-    except Exception as e:
-        logger.warning(f"Failed to fetch billing info for trial check: {e}")
-        # Default to trial limits on error (more restrictive = safer)
-        return True
+    return False
 
 
 def is_tenant_on_trial_fn(tenant_id: str) -> bool:

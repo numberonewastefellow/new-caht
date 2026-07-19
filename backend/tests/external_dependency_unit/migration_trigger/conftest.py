@@ -9,5 +9,4 @@ from __future__ import annotations
 
 import os
 
-os.environ.setdefault("LICENSE_ENFORCEMENT_ENABLED", "false")
 os.environ.setdefault("DISABLE_TELEMETRY", "true")
