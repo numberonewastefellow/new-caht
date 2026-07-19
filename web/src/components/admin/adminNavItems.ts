@@ -270,6 +270,16 @@ export function getAdminNavGroups(opts: {
         link: "/admin/token-rate-limits",
       }
     );
+
+    // WS-M: tenant administration only functions in multi-tenant (cloud) mode — the
+    // backend routes 400 otherwise — so only surface it there.
+    if (enableCloud) {
+      governanceItems.push({
+        name: "Tenants",
+        icon: SvgServer,
+        link: "/admin/tenants",
+      });
+    }
   }
 
   if (governanceItems.length > 0) {
@@ -403,6 +413,7 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   groups: "Access Groups",
   "api-key": "API Credentials",
   "token-rate-limits": "Usage Limits",
+  tenants: "Tenants",
   performance: "Observability",
   usage: "Analytics",
   "query-history": "Query Logs",
@@ -467,6 +478,7 @@ const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
   ["/admin/groups", "orange"],
   ["/admin/api-key", "orange"],
   ["/admin/token-rate-limits", "orange"],
+  ["/admin/tenants", "orange"],
   // Workspace (cyan)
   ["/admin/services", "cyan"],
   ["/admin/settings", "cyan"],

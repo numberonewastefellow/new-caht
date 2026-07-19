@@ -73,9 +73,7 @@ from om.server.manage.standard_answer import router as standard_answer_router
 from om.server.middleware.license_enforcement import (
     add_license_enforcement_middleware,
 )
-from om.server.middleware.tenant_tracking import (
-    add_api_server_tenant_id_middleware,
-)
+from om.tenancy.middleware import add_tenant_tracking_middleware
 from om.server.oauth.api import router as ee_oauth_router
 from om.server.query_and_chat.search_backend import router as search_router
 from om.server.query_history.api import router as query_history_router
@@ -83,6 +81,7 @@ from om.server.reporting.usage_export_api import router as usage_export_router
 from om.server.scim.api import scim_router
 from om.server.seeding import seed_db
 from om.server.tenants.api import router as tenants_router
+from om.server.tenancy.api import router as tenant_admin_router
 from om.server.user_group.api import router as user_group_router
 from om.utils.encryption import test_encryption
 from om.server.documents.cc_pair import router as cc_pair_router
@@ -504,6 +503,11 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
         # Tenant management
         include_router_with_global_prefix_prepended(application, tenants_router)
 
+    # WS-M: self-hosted, billing-free tenant administration (superuser-gated; the routes
+    # self-guard against non-multi-tenant mode). Registered unconditionally so the admin
+    # UI always has an endpoint to call.
+    include_router_with_global_prefix_prepended(application, tenant_admin_router)
+
     # SCIM 2.0 - protocol endpoints (unauthenticated by session auth; they use their own
     # SCIM bearer token auth). Not behind APP_API_PREFIX because IdPs expect
     # /scim/v2/... directly.
@@ -685,9 +689,10 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     # instrumentator adds middleware via app.add_middleware().
     setup_prometheus_metrics(application)
 
-    # Merged from the former ee/om/main.py.
+    # WS-M owns this block: tenant-tracking middleware binds the per-request tenant
+    # contextvar so every tenant-scoped DB session (Contract 3) stays inside its schema.
     if MULTI_TENANT:
-        add_api_server_tenant_id_middleware(application, logger)
+        add_tenant_tracking_middleware(application, logger)
     else:
         # License enforcement middleware for self-hosted deployments only.
         # Checks LICENSE_ENFORCEMENT_ENABLED at runtime (can be toggled without a
