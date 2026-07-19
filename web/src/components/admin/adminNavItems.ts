@@ -157,9 +157,9 @@ export function getAdminNavGroups(opts: {
   );
 
   agentItems.push({
-    name: "Curated Responses",
+    name: "Standard Answers",
     icon: ClipboardIcon,
-    link: "/admin/standard-answer",
+    link: "/admin/standard-answers",
   });
 
   groups.push({
@@ -399,7 +399,7 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   workflows: "Workflows",
   mcp: "MCP Tools",
   "open-api": "API Tools",
-  "standard-answer": "Curated Responses",
+  "standard-answers": "Standard Answers",
   configuration: "AI Models",
   "default-assistant": "Default Agent",
   llm: "Language Models",
@@ -470,7 +470,7 @@ const PATH_GROUP_COLORS: [string, NavGroupColor][] = [
   ["/admin/discord-bot", "purple"],
   ["/admin/actions", "purple"],
   ["/admin/workflows", "purple"],
-  ["/admin/standard-answer", "purple"],
+  ["/admin/standard-answers", "purple"],
   // AI Models (blue)
   ["/admin/configuration", "blue"],
   ["/admin/kg", "blue"],

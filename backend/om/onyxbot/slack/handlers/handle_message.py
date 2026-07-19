@@ -12,9 +12,7 @@ from om.onyxbot.slack.blocks import get_feedback_reminder_blocks
 from om.onyxbot.slack.handlers.handle_regular_answer import (
     handle_regular_answer,
 )
-from om.onyxbot.slack.handlers.handle_standard_answers import (
-    handle_standard_answers,
-)
+from om.standard_answers.slack_handler import handle_standard_answers
 from om.onyxbot.slack.models import SlackMessageInfo
 from om.onyxbot.slack.utils import fetch_slack_user_ids_from_emails
 from om.onyxbot.slack.utils import fetch_user_ids_from_groups

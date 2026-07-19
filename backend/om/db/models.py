@@ -585,7 +585,16 @@ class Agent__Tool(Base):
     )
 
 
+# === WS-D: standard answers — association tables (clean-room) ===
+# Join tables live here (early in the module) because they are referenced by
+# `secondary=...` on entities defined far apart: ChatMessage, SlackChannelConfig,
+# StandardAnswer, and StandardAnswerCategory. See the WS-D entity + config block
+# further down for the mapped classes and README for the matching model.
+
+
 class StandardAnswer__StandardAnswerCategory(Base):
+    """Answer ↔ category tagging (many-to-many)."""
+
     __tablename__ = "standard_answer__standard_answer_category"
 
     standard_answer_id: Mapped[int] = mapped_column(
@@ -597,6 +606,8 @@ class StandardAnswer__StandardAnswerCategory(Base):
 
 
 class SlackChannelConfig__StandardAnswerCategory(Base):
+    """Slack-channel-config ↔ category — scopes which answers a channel considers."""
+
     __tablename__ = "slack_channel_config__standard_answer_category"
 
     slack_channel_config_id: Mapped[int] = mapped_column(
@@ -608,6 +619,9 @@ class SlackChannelConfig__StandardAnswerCategory(Base):
 
 
 class ChatMessage__StandardAnswer(Base):
+    """Chat-message ↔ answer — records which answers were posted in a thread
+    (drives thread de-duplication). Cascades when the message is deleted."""
+
     __tablename__ = "chat_message__standard_answer"
 
     chat_message_id: Mapped[int] = mapped_column(
@@ -3891,11 +3905,19 @@ class TokenRateLimit__Team(Base):
     )
 
 
+# === WS-D: standard answers — entities + per-tenant config (clean-room) ===
+# Keyword/regex canned answers tagged with categories; a Slack channel matches
+# only answers in the categories assigned to it. All tables are per-tenant.
+
+
 class StandardAnswerCategory(Base):
+    """A tag grouping standard answers; assigned to Slack channels to scope matching."""
+
     __tablename__ = "standard_answer_category"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String, unique=True)
+
     standard_answers: Mapped[list["StandardAnswer"]] = relationship(
         "StandardAnswer",
         secondary=StandardAnswer__StandardAnswerCategory.__table__,
@@ -3909,12 +3931,21 @@ class StandardAnswerCategory(Base):
 
 
 class StandardAnswer(Base):
+    """A canned answer plus its trigger.
+
+    ``keyword`` is either a regex (``match_regex``) or a set of tokens matched with
+    all/any semantics (``match_any_keywords``). Deactivation is a soft delete
+    (``active=False``); the partial-unique index keeps at most one *active* answer
+    per keyword while allowing historical inactive rows to share it.
+    """
+
     __tablename__ = "standard_answer"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     keyword: Mapped[str] = mapped_column(String)
     answer: Mapped[str] = mapped_column(String)
     active: Mapped[bool] = mapped_column(Boolean)
+    # Trigger mode: regex vs. token match, and (token mode) any- vs all-keyword.
     match_regex: Mapped[bool] = mapped_column(Boolean)
     match_any_keywords: Mapped[bool] = mapped_column(Boolean)
 
@@ -3933,10 +3964,41 @@ class StandardAnswer(Base):
         secondary=StandardAnswer__StandardAnswerCategory.__table__,
         back_populates="standard_answers",
     )
+    # Threads this answer has already been posted into (thread de-duplication).
     chat_messages: Mapped[list[ChatMessage]] = relationship(
         "ChatMessage",
         secondary=ChatMessage__StandardAnswer.__table__,
         back_populates="standard_answers",
+    )
+
+
+class StandardAnswerConfig(Base):
+    """Per-tenant feature configuration for standard answers (singleton row, id=1).
+
+    Dedicated typed config table (Engineering Standard 5) rather than a KV blob, so
+    the toggle and matching bounds are strongly typed and queryable. Read/written via
+    ``om.standard_answers.config``.
+    """
+
+    __tablename__ = "standard_answer_config"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    # Master switch for Slack standard-answer matching in this tenant.
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    # Cap on how many distinct answers are posted per inbound message.
+    max_matches_per_message: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=3
+    )
+    # Upper bound on message characters fed to the matcher (defence-in-depth ReDoS
+    # guard; mirrors safe_regex.MAX_MATCH_INPUT_CHARS).
+    match_input_char_limit: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=8000
+    )
+    time_created: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    time_updated: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
 
