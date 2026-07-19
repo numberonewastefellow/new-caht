@@ -86,7 +86,6 @@ from om.server.query_and_chat.streaming_models import AgentResponseStart
 from om.server.query_and_chat.streaming_models import CitationInfo
 from om.server.query_and_chat.streaming_models import Packet
 from om.server.query_and_chat.streaming_models import StreamingType
-from om.server.usage_limits import check_llm_cost_limit_for_provider
 from om.tools.constants import SEARCH_TOOL_ID
 from om.tools.interface import Tool
 from om.tools.models import ChatFile
@@ -720,14 +719,6 @@ def stream_chat_message(
             additional_headers=litellm_additional_headers,
         )
         token_counter = get_llm_token_counter(llm)
-
-        # Check LLM cost limits before using the LLM (only for VertualAi-managed keys)
-
-        check_llm_cost_limit_for_provider(
-            db_session=db_session,
-            tenant_id=tenant_id,
-            llm_provider_api_key=llm.config.api_key,
-        )
 
         # Verify that the user specified files actually belong to the user
         verify_knowledge_files(

@@ -10,7 +10,7 @@ from uuid import UUID
 
 from redis import Redis
 
-from om.server.tenants.user_mapping import get_tenant_id_for_email
+from om.tenancy.provisioning import get_login_tenant_id
 from om.auth.invited_users import get_invited_users
 from om.auth.invited_users import write_invited_users
 from om.configs.app_configs import REDIS_AUTH_KEY_PREFIX
@@ -62,7 +62,9 @@ class OmRedisCommand(Enum):
 
 def get_user_id(user_email: str) -> tuple[UUID, str]:
     tenant_id = (
-        get_tenant_id_for_email(user_email) if MULTI_TENANT else POSTGRES_DEFAULT_SCHEMA
+        (get_login_tenant_id(user_email) or POSTGRES_DEFAULT_SCHEMA)
+        if MULTI_TENANT
+        else POSTGRES_DEFAULT_SCHEMA
     )
 
     with get_session_with_tenant(tenant_id=tenant_id) as session:

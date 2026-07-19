@@ -97,7 +97,6 @@ celery_app.autodiscover_tasks(
     app_base.filter_task_modules(
         [
             "om.background.celery.tasks.monitoring",
-            "om.background.celery.tasks.tenant_provisioning",
         ]
     )
 )

@@ -8,14 +8,10 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from om.standard_answers.service import StandardAnswerService
-from om.server.enterprise_settings.models import AnalyticsScriptUpload
-from om.server.enterprise_settings.models import EnterpriseSettings
-from om.server.enterprise_settings.models import NavigationItem
-from om.server.enterprise_settings.store import store_analytics_script
-from om.server.enterprise_settings.store import (
-    store_settings as store_ee_settings,
-)
-from om.server.enterprise_settings.store import upload_logo
+from om.server.app_settings.logo import save_logo_from_path
+from om.server.app_settings.models import AppSettingsSchema
+from om.server.app_settings.models import NavigationItem
+from om.server.app_settings.service import AppSettingsService
 from om.context.search.enums import RecencyBiasSetting
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.llm import update_default_provider
@@ -57,7 +53,7 @@ class SeedConfiguration(BaseModel):
     seeded_logo_path: str | None = None
     agents: list[AgentUpsertRequest] | None = None
     settings: Settings | None = None
-    enterprise_settings: EnterpriseSettings | None = None
+    enterprise_settings: AppSettingsSchema | None = None
 
     # allows for specifying custom navigation items that have your own custom SVG logos
     nav_item_overrides: list[NavigationItemSeed] | None = None
@@ -169,18 +165,19 @@ def _seed_settings(settings: Settings) -> None:
         logger.error(f"Failed to seed Settings: {str(e)}")
 
 
-def _seed_enterprise_settings(seed_config: SeedConfiguration) -> None:
+def _seed_enterprise_settings(
+    db_session: Session, seed_config: SeedConfiguration
+) -> None:
     if (
         seed_config.enterprise_settings is not None
         or seed_config.nav_item_overrides is not None
     ):
-        final_enterprise_settings = (
+        final_settings = (
             deepcopy(seed_config.enterprise_settings)
             if seed_config.enterprise_settings
-            else EnterpriseSettings()
+            else AppSettingsSchema()
         )
 
-        final_nav_items = final_enterprise_settings.custom_nav_items
         if seed_config.nav_item_overrides is not None:
             final_nav_items = []
             for item in seed_config.nav_item_overrides:
@@ -195,35 +192,35 @@ def _seed_enterprise_settings(seed_config: SeedConfiguration) -> None:
                     )
                 )
 
-        final_enterprise_settings.custom_nav_items = final_nav_items
+            # model_copy(update=...) marks custom_nav_items as explicitly set so
+            # AppSettingsService.save (which uses exclude_unset) persists it.
+            final_settings = final_settings.model_copy(
+                update={"custom_nav_items": final_nav_items}
+            )
 
-        logger.notice("Seeding enterprise settings")
-        store_ee_settings(final_enterprise_settings)
+        logger.notice("Seeding application settings")
+        AppSettingsService(db_session).save(final_settings)
 
 
 def _seed_logo(logo_path: str | None) -> None:
     if logo_path:
         logger.notice("Uploading logo")
-        upload_logo(file=logo_path)
+        save_logo_from_path(logo_path)
 
 
-def _seed_analytics_script(seed_config: SeedConfiguration) -> None:
-    custom_analytics_secret_key = os.environ.get("CUSTOM_ANALYTICS_SECRET_KEY")
-    if seed_config.analytics_script_path and custom_analytics_secret_key:
+def _seed_analytics_script(
+    db_session: Session, seed_config: SeedConfiguration
+) -> None:
+    if seed_config.analytics_script_path:
         logger.notice("Seeding analytics script")
         try:
             with open(seed_config.analytics_script_path, "r") as file:
                 script_content = file.read()
-            analytics_script = AnalyticsScriptUpload(
-                script=script_content, secret_key=custom_analytics_secret_key
-            )
-            store_analytics_script(analytics_script)
+            AppSettingsService(db_session).set_custom_analytics_script(script_content)
         except FileNotFoundError:
             logger.error(
                 f"Analytics script file not found: {seed_config.analytics_script_path}"
             )
-        except ValueError as e:
-            logger.error(f"Failed to seed analytics script: {str(e)}")
 
 
 def get_seed_config() -> SeedConfiguration | None:
@@ -247,8 +244,8 @@ def seed_db() -> None:
             _seed_custom_tools(db_session, seed_config.custom_tools)
 
         _seed_logo(seed_config.seeded_logo_path)
-        _seed_enterprise_settings(seed_config)
-        _seed_analytics_script(seed_config)
+        _seed_enterprise_settings(db_session, seed_config)
+        _seed_analytics_script(db_session, seed_config)
 
         logger.notice("Verifying default standard answer category exists.")
         StandardAnswerService(db_session).ensure_default_category()

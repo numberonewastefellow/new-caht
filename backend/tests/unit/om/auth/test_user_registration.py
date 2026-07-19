@@ -73,7 +73,7 @@ class TestDisposableEmailValidation:
     @pytest.mark.asyncio
     @patch("om.auth.users.is_disposable_email")
     @patch(
-        "om.server.tenants.provisioning.get_or_provision_tenant",
+        "om.tenancy.provisioning.get_or_provision_tenant",
         new_callable=AsyncMock,
     )
     @patch("om.auth.users.get_async_session_context_manager")
@@ -104,7 +104,7 @@ class TestDisposableEmailValidation:
     @patch("om.auth.users.is_disposable_email")
     @patch("om.auth.users.verify_email_domain")
     @patch(
-        "om.server.tenants.provisioning.get_or_provision_tenant",
+        "om.tenancy.provisioning.get_or_provision_tenant",
         new_callable=AsyncMock,
     )
     @patch("om.auth.users.get_async_session_context_manager")
@@ -154,7 +154,7 @@ class TestMultiTenantInviteLogic:
     @patch("om.auth.users.is_disposable_email", return_value=False)
     @patch("om.auth.users.verify_email_domain")
     @patch(
-        "om.server.tenants.provisioning.get_or_provision_tenant",
+        "om.tenancy.provisioning.get_or_provision_tenant",
         new_callable=AsyncMock,
     )
     @patch("om.auth.users.get_async_session_context_manager")
@@ -205,7 +205,7 @@ class TestMultiTenantInviteLogic:
     @patch("om.auth.users.is_disposable_email", return_value=False)
     @patch("om.auth.users.verify_email_domain")
     @patch(
-        "om.server.tenants.provisioning.get_or_provision_tenant",
+        "om.tenancy.provisioning.get_or_provision_tenant",
         new_callable=AsyncMock,
     )
     @patch("om.auth.users.get_async_session_context_manager")
@@ -259,7 +259,7 @@ class TestSingleTenantInviteLogic:
     @patch("om.auth.users.is_disposable_email", return_value=False)
     @patch("om.auth.users.verify_email_domain")
     @patch(
-        "om.server.tenants.provisioning.get_or_provision_tenant",
+        "om.tenancy.provisioning.get_or_provision_tenant",
         new_callable=AsyncMock,
     )
     @patch("om.auth.users.get_async_session_context_manager")
@@ -430,7 +430,7 @@ class TestCaseInsensitiveEmailMatching:
     @patch("om.auth.users.is_disposable_email", return_value=False)
     @patch("om.auth.users.verify_email_domain")
     @patch(
-        "om.server.tenants.provisioning.get_or_provision_tenant",
+        "om.tenancy.provisioning.get_or_provision_tenant",
         new_callable=AsyncMock,
     )
     @patch("om.auth.users.get_async_session_context_manager")
@@ -490,7 +490,7 @@ class TestCaseInsensitiveEmailMatching:
     @patch("om.auth.users.is_disposable_email")
     @patch("om.auth.users.verify_email_domain")
     @patch(
-        "om.server.tenants.provisioning.get_or_provision_tenant",
+        "om.tenancy.provisioning.get_or_provision_tenant",
         new_callable=AsyncMock,
     )
     @patch("om.auth.users.get_async_session_context_manager")

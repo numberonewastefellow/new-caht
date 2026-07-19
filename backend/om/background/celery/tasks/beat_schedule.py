@@ -174,20 +174,6 @@ beat_task_templates.extend(
                 "expires": BEAT_EXPIRES_DEFAULT,
             },
         },
-        # Merged from the former ee/om/.../beat_schedule.py override. Appending to
-        # beat_task_templates covers BOTH consumers at once: get_cloud_tasks_to_schedule
-        # reads the templates directly, and tasks_to_schedule (self-hosted) extends them
-        # below -- which is exactly the split the EE override maintained by hand via
-        # ee_beat_task_templates + ee_tasks_to_schedule (identical entries in both).
-        {
-            "name": "autogenerate-usage-report",
-            "task": OmCeleryTask.GENERATE_USAGE_REPORT_TASK,
-            "schedule": timedelta(days=30),
-            "options": {
-                "priority": OmCeleryPriority.MEDIUM,
-                "expires": BEAT_EXPIRES_DEFAULT,
-            },
-        },
         {
             "name": "check-ttl-management",
             "task": OmCeleryTask.CHECK_TTL_MANAGEMENT_TASK,
@@ -195,16 +181,6 @@ beat_task_templates.extend(
             "options": {
                 "priority": OmCeleryPriority.MEDIUM,
                 "expires": BEAT_EXPIRES_DEFAULT,
-            },
-        },
-        {
-            "name": "export-query-history-cleanup-task",
-            "task": OmCeleryTask.EXPORT_QUERY_HISTORY_CLEANUP_TASK,
-            "schedule": timedelta(hours=1),
-            "options": {
-                "priority": OmCeleryPriority.MEDIUM,
-                "expires": BEAT_EXPIRES_DEFAULT,
-                "queue": OmCeleryQueues.CSV_GENERATION,
             },
         },
     ]
@@ -305,16 +281,6 @@ beat_cloud_tasks: list[dict] = [
         "name": f"{OM_CLOUD_CELERY_TASK_PREFIX}_monitor-celery-queues",
         "task": OmCeleryTask.CLOUD_MONITOR_CELERY_QUEUES,
         "schedule": timedelta(seconds=30),
-        "options": {
-            "queue": OmCeleryQueues.MONITORING,
-            "priority": OmCeleryPriority.HIGH,
-            "expires": BEAT_EXPIRES_DEFAULT,
-        },
-    },
-    {
-        "name": f"{OM_CLOUD_CELERY_TASK_PREFIX}_check-available-tenants",
-        "task": OmCeleryTask.CLOUD_CHECK_AVAILABLE_TENANTS,
-        "schedule": timedelta(minutes=10),
         "options": {
             "queue": OmCeleryQueues.MONITORING,
             "priority": OmCeleryPriority.HIGH,

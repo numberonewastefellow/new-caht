@@ -18,7 +18,6 @@ from om.db.agent import mark_agent_as_deleted
 from om.db.agent import upsert_agent
 from om.db.tools import get_builtin_tool
 from om.tools.tool_implementations.search.search_tool import SearchTool
-from om.utils.errors import EERequiredError
 
 
 def _build_agent_name(channel_name: str | None) -> str:
@@ -115,14 +114,9 @@ def insert_slack_channel_config(
     )
 
     if len(existing_standard_answer_categories) != len(standard_answer_category_ids):
-        if len(existing_standard_answer_categories) == 0:
-            raise EERequiredError(
-                "Standard answers are a paid Enterprise Edition feature - enable EE or remove standard answer categories"
-            )
-        else:
-            raise ValueError(
-                f"Some or all categories with ids {standard_answer_category_ids} do not exist"
-            )
+        raise ValueError(
+            f"Some or all categories with ids {standard_answer_category_ids} do not exist"
+        )
 
     if is_default:
         existing_default = db_session.scalar(

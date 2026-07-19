@@ -330,7 +330,6 @@ celery_app.autodiscover_tasks(
             "om.background.celery.tasks.external_group_syncing",
             "om.background.celery.tasks.cloud",
             "om.background.celery.tasks.ttl_management",
-            "om.background.celery.tasks.usage_reporting",
         ]
     )
 )

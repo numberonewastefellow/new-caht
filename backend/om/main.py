@@ -59,12 +59,11 @@ from om.db.engine.sql_engine import SqlEngine
 from om.file_store.file_store import get_default_file_store
 from om.server.api_key.api import router as api_key_router
 from om.server.auth_check import check_ee_router_auth
-from om.server.analytics.api import router as analytics_router
+from om.server.analytics.admin_api import router as analytics_admin_router
+from om.server.app_settings.api import admin_router as app_settings_admin_router
+from om.server.app_settings.api import basic_router as app_settings_router
 from om.server.enterprise_settings.api import (
-    admin_router as enterprise_settings_admin_router,
-)
-from om.server.enterprise_settings.api import (
-    basic_router as enterprise_settings_router,
+    basic_router as oauth_refresh_token_router,
 )
 from om.server.evals.api import router as evals_router
 from om.standard_answers.api import admin_router as standard_answer_admin_router
@@ -72,12 +71,11 @@ from om.standard_answers.api import query_router as standard_answer_query_router
 from om.tenancy.middleware import add_tenant_tracking_middleware
 from om.server.oauth.api import router as ee_oauth_router
 from om.search.api.router import router as search_router
-from om.server.query_history.api import router as query_history_router
-from om.server.reporting.usage_export_api import router as usage_export_router
+from om.server.query_history.admin_api import router as query_history_admin_router
+from om.server.reporting.api import router as usage_reports_router
 from om.server.scim.api import scim_router
 from om.server.scim.admin_api import scim_admin_router
 from om.server.seeding import seed_db
-from om.server.tenants.api import router as tenants_router
 from om.server.team.api import router as team_router
 from om.server.tenancy.api import router as tenant_admin_router
 from om.utils.encryption import test_encryption
@@ -475,8 +473,8 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     # RBAC / group access control
     include_router_with_global_prefix_prepended(application, team_router)
     # Analytics endpoints
-    include_router_with_global_prefix_prepended(application, analytics_router)
-    include_router_with_global_prefix_prepended(application, query_history_router)
+    include_router_with_global_prefix_prepended(application, analytics_admin_router)
+    include_router_with_global_prefix_prepended(application, query_history_admin_router)
     include_router_with_global_prefix_prepended(application, search_router)
     include_router_with_global_prefix_prepended(
         application, standard_answer_admin_router
@@ -488,15 +486,13 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     include_router_with_global_prefix_prepended(application, evals_router)
 
     # Global settings
+    include_router_with_global_prefix_prepended(application, app_settings_admin_router)
+    include_router_with_global_prefix_prepended(application, app_settings_router)
+    include_router_with_global_prefix_prepended(application, usage_reports_router)
+    # Custom-OAuth token refresh (the only surviving enterprise_settings endpoint)
     include_router_with_global_prefix_prepended(
-        application, enterprise_settings_admin_router
+        application, oauth_refresh_token_router
     )
-    include_router_with_global_prefix_prepended(application, enterprise_settings_router)
-    include_router_with_global_prefix_prepended(application, usage_export_router)
-
-    if MULTI_TENANT:
-        # Tenant management
-        include_router_with_global_prefix_prepended(application, tenants_router)
 
     # WS-M: self-hosted, billing-free tenant administration (superuser-gated; the routes
     # self-guard against non-multi-tenant mode). Registered unconditionally so the admin

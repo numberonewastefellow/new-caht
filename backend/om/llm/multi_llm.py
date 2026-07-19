@@ -13,7 +13,6 @@ from om.configs.chat_configs import LLM_SOCKET_READ_TIMEOUT
 from om.configs.model_configs import GEN_AI_TEMPERATURE
 from om.configs.model_configs import LITELLM_EXTRA_BODY
 from om.llm.constants import LlmProviderNames
-from om.llm.cost import calculate_llm_cost_cents
 from om.llm.interfaces import LanguageModelInput
 from om.llm.interfaces import LLM
 from om.llm.interfaces import LLMConfig
@@ -22,7 +21,6 @@ from om.llm.interfaces import ReasoningEffort
 from om.llm.interfaces import ToolChoiceOptions
 from om.llm.model_response import ModelResponse
 from om.llm.model_response import ModelResponseStream
-from om.llm.model_response import Usage
 from om.llm.models import ANTHROPIC_REASONING_EFFORT_BUDGET
 from om.llm.models import OPENAI_REASONING_EFFORT
 from om.llm.request_context import get_llm_mock_response
@@ -202,48 +200,6 @@ class LitellmLLM(LLM):
                 masked_config[k] = mask_string(v) if v else v
             dump["custom_config"] = masked_config
         return dump
-
-    def _track_llm_cost(self, usage: Usage) -> None:
-        """
-        Track LLM usage cost for VertualAi-managed API keys.
-
-        This is called after every LLM call completes (streaming or non-streaming).
-        Cost is only tracked if:
-        1. Usage limits are enabled for this deployment
-        2. The API key is one of VertualAi's managed default keys
-        """
-
-        from om.server.usage_limits import is_usage_limits_enabled
-
-        if not is_usage_limits_enabled():
-            return
-
-        from om.server.usage_limits import is_onyx_managed_api_key
-
-        if not is_onyx_managed_api_key(self._api_key):
-            return
-        # Import here to avoid circular imports
-        from om.db.engine.sql_engine import get_session_with_current_tenant
-        from om.db.usage import increment_usage
-        from om.db.usage import UsageType
-
-        # Calculate cost in cents
-        cost_cents = calculate_llm_cost_cents(
-            model_name=self._model_version,
-            prompt_tokens=usage.prompt_tokens,
-            completion_tokens=usage.completion_tokens,
-        )
-
-        if cost_cents <= 0:
-            return
-
-        try:
-            with get_session_with_current_tenant() as db_session:
-                increment_usage(db_session, UsageType.LLM_COST, cost_cents)
-                db_session.commit()
-        except Exception as e:
-            # Log but don't fail the LLM call if tracking fails
-            logger.warning(f"Failed to track LLM cost: {e}")
 
     def _completion(
         self,
@@ -533,10 +489,6 @@ class LitellmLLM(LLM):
 
             model_response = from_litellm_model_response(response)
 
-            # Track LLM cost for VertualAi-managed API keys
-            if model_response.usage:
-                self._track_llm_cost(model_response.usage)
-
             return model_response
         finally:
             if client is not None:
@@ -611,10 +563,6 @@ class LitellmLLM(LLM):
 
             for chunk in response:
                 model_response = from_litellm_model_response_stream(chunk)
-
-                # Track LLM cost when usage info is available (typically in the last chunk)
-                if model_response.usage:
-                    self._track_llm_cost(model_response.usage)
 
                 yield model_response
         finally:

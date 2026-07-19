@@ -38,6 +38,24 @@ from shared_configs.configs import MULTI_TENANT
 
 logger = setup_logger()
 
+
+def _get_application_name() -> str:
+    """Resolve the branded application name from application settings.
+
+    Falls back to the default name if settings can't be read (e.g. no tenant
+    context / DB unavailable) so email sending never fails on branding lookup.
+    """
+    try:
+        from om.db.engine.sql_engine import get_session_with_current_tenant
+        from om.server.app_settings.service import AppSettingsService
+
+        with get_session_with_current_tenant() as db_session:
+            application_name = AppSettingsService(db_session).load().application_name
+        return application_name or OM_DEFAULT_APPLICATION_NAME
+    except Exception:
+        return OM_DEFAULT_APPLICATION_NAME
+
+
 HTML_EMAIL_TEMPLATE = """\
 <!DOCTYPE html>
 <html lang="en">
@@ -351,13 +369,7 @@ def build_user_email_invite(
 def send_user_email_invite(
     user_email: str, current_user: User, auth_type: AuthType
 ) -> None:
-    from om.server.enterprise_settings.store import load_runtime_settings as _impl_load_runtime_settings
-    try:
-        load_runtime_settings_fn = _impl_load_runtime_settings
-        settings = load_runtime_settings_fn()
-        application_name = settings.application_name
-    except ModuleNotFoundError:
-        application_name = OM_DEFAULT_APPLICATION_NAME
+    application_name = _get_application_name()
 
     onyx_file = OmRuntime.get_emailable_logo()
 
@@ -383,13 +395,7 @@ def send_forgot_password_email(
     mail_from: str = EMAIL_FROM,
 ) -> None:
     # Builds a forgot password email with or without fancy HTML
-    from om.server.enterprise_settings.store import load_runtime_settings as _impl_load_runtime_settings
-    try:
-        load_runtime_settings_fn = _impl_load_runtime_settings
-        settings = load_runtime_settings_fn()
-        application_name = settings.application_name
-    except ModuleNotFoundError:
-        application_name = OM_DEFAULT_APPLICATION_NAME
+    application_name = _get_application_name()
 
     onyx_file = OmRuntime.get_emailable_logo()
 
@@ -427,13 +433,7 @@ def send_user_verification_email(
     mail_from: str = EMAIL_FROM,
 ) -> None:
     # Builds a verification email
-    from om.server.enterprise_settings.store import load_runtime_settings as _impl_load_runtime_settings
-    try:
-        load_runtime_settings_fn = _impl_load_runtime_settings
-        settings = load_runtime_settings_fn()
-        application_name = settings.application_name
-    except ModuleNotFoundError:
-        application_name = OM_DEFAULT_APPLICATION_NAME
+    application_name = _get_application_name()
 
     onyx_file = OmRuntime.get_emailable_logo()
 

@@ -431,8 +431,6 @@ class OmRedisLocks:
     )
 
     MONITOR_BACKGROUND_PROCESSES_LOCK = "da_lock:monitor_background_processes"
-    CHECK_AVAILABLE_TENANTS_LOCK = "da_lock:check_available_tenants"
-    CLOUD_PRE_PROVISION_TENANT_LOCK = "da_lock:pre_provision_tenant"
 
     CONNECTOR_DOC_PERMISSIONS_SYNC_LOCK_PREFIX = (
         "da_lock:connector_doc_permissions_sync"
@@ -514,9 +512,6 @@ class OmCeleryTask:
     CLOUD_MONITOR_ALEMBIC = f"{OM_CLOUD_CELERY_TASK_PREFIX}_monitor_alembic"
     CLOUD_MONITOR_CELERY_QUEUES = (
         f"{OM_CLOUD_CELERY_TASK_PREFIX}_monitor_celery_queues"
-    )
-    CLOUD_CHECK_AVAILABLE_TENANTS = (
-        f"{OM_CLOUD_CELERY_TASK_PREFIX}_check_available_tenants"
     )
     CLOUD_MONITOR_CELERY_PIDBOX = (
         f"{OM_CLOUD_CELERY_TASK_PREFIX}_monitor_celery_pidbox"

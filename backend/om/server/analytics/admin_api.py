@@ -10,17 +10,21 @@ import datetime
 
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
 from fastapi import Query
 from sqlalchemy.orm import Session
 
 from om.auth.users import current_admin_user
+from om.auth.users import current_user
 from om.db.engine.sql_engine import get_session
 from om.db.models import User
 from om.server.analytics.models import AgentUsagePoint
+from om.server.analytics.models import AssistantStatsResponse
 from om.server.analytics.models import DailyUsagePoint
 from om.server.analytics.models import RollupPoint
 from om.server.analytics.models import UsageSummary
 from om.server.analytics.service import AnalyticsService
+from om.server.analytics.service import user_can_view_assistant_stats
 from om.server.analytics.structured_logging import log_structured_event
 
 router = APIRouter(prefix="/analytics")
@@ -72,6 +76,28 @@ def get_top_agents(
     """Top agents by assistant-message volume (bar chart)."""
     start, end = _resolve_range(start, end)
     return AnalyticsService(db_session).get_top_agents(start, end, limit=limit)
+
+
+@router.get("/assistant/{assistant_id}/stats")
+def get_assistant_stats(
+    assistant_id: int,
+    start: datetime.datetime | None = None,
+    end: datetime.datetime | None = None,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> AssistantStatsResponse:
+    """Per-assistant daily message/unique-user stats.
+
+    Not admin-only: any user may view stats for an assistant they own; admins may
+    view any. Others get a 403.
+    """
+    if not user_can_view_assistant_stats(db_session, user, assistant_id):
+        raise HTTPException(
+            status_code=403,
+            detail="Not allowed to access this assistant's stats.",
+        )
+    start, end = _resolve_range(start, end)
+    return AnalyticsService(db_session).get_assistant_stats(assistant_id, start, end)
 
 
 @router.get("/admin/rollups")

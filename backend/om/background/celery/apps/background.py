@@ -124,7 +124,6 @@ celery_app.autodiscover_tasks(
             "om.server.features.build.sandbox.tasks",
             "om.background.celery.tasks.external_group_syncing",
             "om.background.celery.tasks.cleanup",
-            "om.background.celery.tasks.tenant_provisioning",
             "om.background.celery.tasks.query_history",
         ]
     )

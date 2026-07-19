@@ -108,7 +108,6 @@ from om.utils.telemetry import RecordType
 from shared_configs.configs import INDEXING_MODEL_SERVER_HOST
 from shared_configs.configs import INDEXING_MODEL_SERVER_PORT
 from shared_configs.configs import MULTI_TENANT
-from shared_configs.configs import USAGE_LIMITS_ENABLED
 from shared_configs.contextvars import CURRENT_TENANT_ID_CONTEXTVAR
 from shared_configs.contextvars import INDEX_ATTEMPT_INFO_CONTEXTVAR
 
@@ -1283,26 +1282,6 @@ def docprocessing_task(
         INDEX_ATTEMPT_INFO_CONTEXTVAR.reset(token)
 
 
-def _check_chunk_usage_limit(tenant_id: str) -> None:
-    """Check if chunk indexing usage limit has been exceeded.
-
-    Raises UsageLimitExceededError if the limit is exceeded.
-    """
-    if not USAGE_LIMITS_ENABLED:
-        return
-
-    from om.db.usage import UsageType
-    from om.server.usage_limits import check_usage_and_raise
-
-    with get_session_with_current_tenant() as db_session:
-        check_usage_and_raise(
-            db_session=db_session,
-            usage_type=UsageType.CHUNKS_INDEXED,
-            tenant_id=tenant_id,
-            pending_amount=0,  # Just check current usage
-        )
-
-
 def _docprocessing_task(
     index_attempt_id: int,
     cc_pair_id: int,
@@ -1313,25 +1292,6 @@ def _docprocessing_task(
 
     if tenant_id:
         CURRENT_TENANT_ID_CONTEXTVAR.set(tenant_id)
-
-    # Check if chunk indexing usage limit has been exceeded before processing
-    if USAGE_LIMITS_ENABLED:
-        try:
-            _check_chunk_usage_limit(tenant_id)
-        except HTTPException as e:
-            # Log the error and fail the indexing attempt
-            task_logger.error(
-                f"Chunk indexing usage limit exceeded for tenant {tenant_id}: {e}"
-            )
-            with get_session_with_current_tenant() as db_session:
-                from om.db.index_attempt import mark_attempt_failed
-
-                mark_attempt_failed(
-                    index_attempt_id=index_attempt_id,
-                    db_session=db_session,
-                    failure_reason=str(e),
-                )
-            raise
 
     task_logger.info(
         f"Processing document batch: "
@@ -1467,23 +1427,6 @@ def _docprocessing_task(
                 request_id=index_attempt_metadata.request_id,
                 adapter=adapter,
             )
-
-        # Track chunk indexing usage for cloud usage limits
-        if USAGE_LIMITS_ENABLED and index_pipeline_result.total_chunks > 0:
-            try:
-                from om.db.usage import increment_usage
-                from om.db.usage import UsageType
-
-                with get_session_with_current_tenant() as usage_db_session:
-                    increment_usage(
-                        db_session=usage_db_session,
-                        usage_type=UsageType.CHUNKS_INDEXED,
-                        amount=index_pipeline_result.total_chunks,
-                    )
-                    usage_db_session.commit()
-            except Exception as e:
-                # Log but don't fail indexing if usage tracking fails
-                task_logger.warning(f"Failed to track chunk indexing usage: {e}")
 
         # Update batch completion and document counts atomically using database coordination
 

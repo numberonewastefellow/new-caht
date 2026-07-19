@@ -930,10 +930,6 @@ AUTO_LLM_UPDATE_INTERVAL_SECONDS = int(
 )
 
 #####
-# Enterprise Edition Configs
-#####
-# NOTE: this should only be enabled if you have purchased an enterprise license.
-#####
 # Image Generation Configuration (DEPRECATED)
 # These environment variables will be deprecated soon.
 # To configure image generation, please visit the Image Generation page in the Admin Panel.

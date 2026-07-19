@@ -38,7 +38,6 @@ from om.configs.app_configs import AUTH_BACKEND
 from om.configs.app_configs import AUTH_TYPE
 from om.configs.app_configs import AuthBackend
 from om.configs.app_configs import ENABLE_EMAIL_INVITES
-from om.configs.app_configs import NUM_FREE_TRIAL_USER_INVITES
 from om.configs.app_configs import REDIS_AUTH_KEY_PREFIX
 from om.configs.app_configs import SESSION_EXPIRE_TIME_SECONDS
 from om.configs.app_configs import USER_AUTH_SECRET
@@ -97,7 +96,6 @@ from om.server.manage.models import UserSpecificAssistantPreferences
 from om.server.models import FullUserSnapshot
 from om.server.models import InvitedUserSnapshot
 from om.server.models import MinimalUserSnapshot
-from om.server.usage_limits import is_tenant_on_trial_fn
 from om.server.utils import BasicAuthenticationError
 from om.utils.logger import setup_logger
 from shared_configs.configs import MULTI_TENANT
@@ -368,7 +366,7 @@ def bulk_invite_users(
 ) -> int:
     """emails are string validated. If any email fails validation, no emails are
     invited and an exception is raised."""
-    from om.server.tenants.provisioning import add_users_to_tenant as _impl_add_users_to_tenant
+    from om.tenancy.invitations import invite_emails_to_tenant as _impl_add_users_to_tenant
     tenant_id = get_current_tenant_id()
 
     new_invited_emails = []
@@ -394,21 +392,6 @@ def bulk_invite_users(
         for e in new_invited_emails
         if e not in existing_users and e not in already_invited
     ]
-
-    # Limit bulk invites for trial tenants to prevent email spam
-    # Only count new invites, not re-invites of existing users
-    if MULTI_TENANT and is_tenant_on_trial_fn(tenant_id):
-        current_invited = len(already_invited)
-        if current_invited + len(emails_needing_seats) > NUM_FREE_TRIAL_USER_INVITES:
-            raise HTTPException(
-                status_code=403,
-                detail="You have hit your invite limit. "
-                "Please upgrade for unlimited invites.",
-            )
-
-    # Check seat availability for new users
-    if emails_needing_seats:
-        enforce_seat_limit(db_session, seats_needed=len(emails_needing_seats))
 
     if MULTI_TENANT:
         try:
@@ -441,7 +424,7 @@ def remove_invited_user(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> int:
-    from om.server.tenants.user_mapping import remove_users_from_tenant as _impl_remove_users_from_tenant
+    from om.tenancy.invitations import remove_emails_from_tenant as _impl_remove_users_from_tenant
     tenant_id = get_current_tenant_id()
     if MULTI_TENANT:
         _impl_remove_users_from_tenant([user_email.user_email], tenant_id)
@@ -480,7 +463,7 @@ async def delete_user(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> None:
-    from om.server.tenants.user_mapping import remove_users_from_tenant as _impl_remove_users_from_tenant
+    from om.tenancy.invitations import remove_emails_from_tenant as _impl_remove_users_from_tenant
     user_to_delete = get_user_by_email(
         email=user_email.user_email, db_session=db_session
     )
@@ -662,9 +645,9 @@ def verify_user_logged_in(
     db_session: Session = Depends(get_session),
 ) -> UserInfo:
     from om.configs.app_configs import SUPER_USERS as _impl_SUPER_USERS
-    from om.server.tenants.user_mapping import get_tenant_count as _impl_get_tenant_count
-    from om.server.tenants.user_mapping import get_tenant_id_for_email as _impl_get_tenant_id_for_email
-    from om.server.tenants.user_mapping import get_tenant_invitation as _impl_get_tenant_invitation
+    from om.tenancy.invitations import active_user_count_for_tenant as _impl_get_tenant_count
+    from om.tenancy.invitations import get_tenant_invitation as _impl_get_tenant_invitation
+    from om.tenancy.provisioning import get_login_tenant_id as _impl_get_login_tenant_id
     tenant_id = get_current_tenant_id()
 
     # User can be None if not authenticated.
@@ -683,7 +666,9 @@ def verify_user_logged_in(
 
     token_created_at = _get_token_created_at(user, request, db_session)
 
-    team_name = _impl_get_tenant_id_for_email(user.email)
+    # Resolve the tenant this email logs into (never provisions); fall back to the
+    # request's current tenant so a logged-in user always has a team_name.
+    team_name = _impl_get_login_tenant_id(user.email) or tenant_id
 
     new_tenant: TenantSnapshot | None = None
     tenant_invitation: TenantSnapshot | None = None

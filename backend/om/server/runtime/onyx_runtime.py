@@ -51,10 +51,11 @@ class OmRuntime:
 
     @staticmethod
     def get_logo() -> FileWithMimeType:
-        from om.server.enterprise_settings.store import get_logo_filename as _impl_get_logo_filename
+        from om.server.app_settings.logo import get_logo_file_id
+
         STATIC_FILENAME = "static/images/logo.png"
 
-        db_filename: str | None = _impl_get_logo_filename
+        db_filename: str | None = get_logo_file_id()
 
         return OmRuntime._get_with_static_fallback(db_filename, STATIC_FILENAME)
 
@@ -83,10 +84,11 @@ class OmRuntime:
 
     @staticmethod
     def get_logotype() -> FileWithMimeType:
-        from om.server.enterprise_settings.store import get_logotype_filename as _impl_get_logotype_filename
+        from om.server.app_settings.logo import get_logotype_file_id
+
         STATIC_FILENAME = "static/images/logotype.png"
 
-        db_filename: str | None = _impl_get_logotype_filename
+        db_filename: str | None = get_logotype_file_id()
 
         return OmRuntime._get_with_static_fallback(db_filename, STATIC_FILENAME)
 

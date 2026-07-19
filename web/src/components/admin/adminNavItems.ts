@@ -16,7 +16,6 @@ import {
   SvgShield,
   SvgActivity,
   SvgServer,
-  SvgBarChart,
   SvgSettings,
   SvgPaintBrush,
   SvgArrowExchange,
@@ -64,13 +63,7 @@ export function getAdminNavGroups(opts: {
   kgExposed: boolean;
   customAnalyticsEnabled: boolean;
 }): AdminNavGroup[] {
-  const {
-    isCurator,
-    enableCloud,
-    settings,
-    kgExposed,
-    customAnalyticsEnabled,
-  } = opts;
+  const { isCurator, enableCloud, settings, kgExposed } = opts;
 
   const vectorDbEnabled = settings?.settings.vector_db_enabled !== false;
 
@@ -342,26 +335,18 @@ export function getAdminNavGroups(opts: {
       }
     );
 
-    // Performance / Observability items
+    // Performance / Observability items (WS-H analytics rewrite)
     workspaceItems.push({
       name: "Analytics",
       icon: SvgActivity,
-      link: "/admin/performance/usage",
+      link: "/admin/performance/analytics",
     });
 
     if (settings?.settings.query_history_type !== "disabled") {
       workspaceItems.push({
         name: "Query Logs",
         icon: SvgServer,
-        link: "/admin/performance/query-history",
-      });
-    }
-
-    if (!enableCloud && customAnalyticsEnabled) {
-      workspaceItems.push({
-        name: "Custom Reports",
-        icon: SvgBarChart,
-        link: "/admin/performance/custom-analytics",
+        link: "/admin/performance/query-log",
       });
     }
 
@@ -423,9 +408,9 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   sso: "Single Sign-On",
   features: "New Features",
   performance: "Observability",
-  usage: "Analytics",
-  "query-history": "Query Logs",
-  "custom-analytics": "Custom Reports",
+  analytics: "Analytics",
+  "query-log": "Query Logs",
+  reports: "Reports",
   settings: "General",
   theme: "Branding",
   "document-index-migration": "Index Migration",
@@ -514,7 +499,7 @@ export const BREADCRUMB_REDIRECT_MAP: Record<string, string> = {
   "/admin/configuration": "/admin/configuration/default-assistant",
   "/admin/documents": "/admin/documents/sets",
   "/admin/actions": "/admin/actions/mcp",
-  "/admin/performance": "/admin/performance/usage",
+  "/admin/performance": "/admin/performance/analytics",
 };
 
 export function isDynamicSegment(segment: string): boolean {

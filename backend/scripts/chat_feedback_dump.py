@@ -7,10 +7,22 @@ from typing import Any
 from uuid import UUID
 
 import requests
+from pydantic import BaseModel
 
-from om.server.query_history.api import ChatSessionSnapshot
 from om.server.manage.models import AllUsersResponse
 from om.server.query_and_chat.models import ChatSessionsResponse
+
+
+# Minimal, self-contained response models for the admin chat-session-history
+# endpoint (previously imported from the now-removed EE query-history module).
+class MessageSnapshot(BaseModel):
+    message: str
+    feedback_type: str | None = None
+    feedback_text: str | None = None
+
+
+class ChatSessionSnapshot(BaseModel):
+    messages: list[MessageSnapshot] = []
 
 # Configure the logger
 logging.basicConfig(

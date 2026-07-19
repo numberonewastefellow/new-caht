@@ -1,3 +1,13 @@
+"""Custom-OAuth token refresh endpoint.
+
+The enterprise-settings *settings* surface (branding / logo / custom analytics
+script) has been replaced by ``om.server.app_settings`` (WS-H), which serves the
+same ``/enterprise-settings`` paths consumed by the web app. SCIM token
+management moved to ``om.server.scim.admin_api`` (WS-G). The only endpoint that
+remains here is the custom-OAuth ``refresh-token`` flow, which is neither a
+settings nor a SCIM concern.
+"""
+
 from datetime import datetime
 from datetime import timezone
 from typing import Any
@@ -6,36 +16,16 @@ import httpx
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
-from fastapi import Response
 from fastapi import status
-from fastapi import UploadFile
 from pydantic import BaseModel
 from pydantic import Field
-from sqlalchemy.orm import Session
 
-from om.server.enterprise_settings.models import AnalyticsScriptUpload
-from om.server.enterprise_settings.models import EnterpriseSettings
-from om.server.enterprise_settings.store import get_logo_filename
-from om.server.enterprise_settings.store import get_logotype_filename
-from om.server.enterprise_settings.store import load_analytics_script
-from om.server.enterprise_settings.store import load_settings
-from om.server.enterprise_settings.store import store_analytics_script
-from om.server.enterprise_settings.store import store_settings
-from om.server.enterprise_settings.store import upload_logo
-from om.auth.users import current_admin_user
 from om.auth.users import current_user_with_expired_token
 from om.auth.users import get_user_manager
 from om.auth.users import UserManager
-from om.db.engine.sql_engine import get_session
 from om.db.models import User
-from om.file_store.file_store import get_default_file_store
-from om.server.utils import BasicAuthenticationError
 from om.utils.logger import setup_logger
-from shared_configs.configs import MULTI_TENANT
-from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
-from shared_configs.contextvars import get_current_tenant_id
 
-admin_router = APIRouter(prefix="/admin/enterprise-settings")
 basic_router = APIRouter(prefix="/enterprise-settings")
 
 logger = setup_logger()
@@ -111,95 +101,3 @@ async def refresh_access_token(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred",
         )
-
-
-@admin_router.put("")
-def admin_ee_put_settings(
-    settings: EnterpriseSettings, _: User = Depends(current_admin_user)
-) -> None:
-    store_settings(settings)
-
-
-@basic_router.get("")
-def ee_fetch_settings() -> EnterpriseSettings:
-    if MULTI_TENANT:
-        tenant_id = get_current_tenant_id()
-        if not tenant_id or tenant_id == POSTGRES_DEFAULT_SCHEMA:
-            raise BasicAuthenticationError(detail="User must authenticate")
-
-    return load_settings()
-
-
-@admin_router.put("/logo")
-def put_logo(
-    file: UploadFile,
-    is_logotype: bool = False,
-    _: User = Depends(current_admin_user),
-) -> None:
-    upload_logo(file=file, is_logotype=is_logotype)
-
-
-def fetch_logo_helper(db_session: Session) -> Response:  # noqa: ARG001
-    try:
-        file_store = get_default_file_store()
-        onyx_file = file_store.get_file_with_mime_type(get_logo_filename())
-        if not onyx_file:
-            raise ValueError("get_onyx_file returned None!")
-    except Exception:
-        logger.exception("Faield to fetch logo file")
-        raise HTTPException(
-            status_code=404,
-            detail="No logo file found",
-        )
-    else:
-        return Response(content=onyx_file.data, media_type=onyx_file.mime_type)
-
-
-def fetch_logotype_helper(db_session: Session) -> Response:  # noqa: ARG001
-    try:
-        file_store = get_default_file_store()
-        onyx_file = file_store.get_file_with_mime_type(get_logotype_filename())
-        if not onyx_file:
-            raise ValueError("get_onyx_file returned None!")
-    except Exception:
-        raise HTTPException(
-            status_code=404,
-            detail="No logotype file found",
-        )
-    else:
-        return Response(content=onyx_file.data, media_type=onyx_file.mime_type)
-
-
-@basic_router.get("/logotype")
-def fetch_logotype(db_session: Session = Depends(get_session)) -> Response:
-    return fetch_logotype_helper(db_session)
-
-
-@basic_router.get("/logo")
-def fetch_logo(
-    is_logotype: bool = False, db_session: Session = Depends(get_session)
-) -> Response:
-    if is_logotype:
-        return fetch_logotype_helper(db_session)
-
-    return fetch_logo_helper(db_session)
-
-
-@admin_router.put("/custom-analytics-script")
-def upload_custom_analytics_script(
-    script_upload: AnalyticsScriptUpload, _: User = Depends(current_admin_user)
-) -> None:
-    try:
-        store_analytics_script(script_upload)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@basic_router.get("/custom-analytics-script")
-def fetch_custom_analytics_script() -> str | None:
-    return load_analytics_script()
-
-
-# NOTE: SCIM token management previously lived here (Onyx-EE). It has been moved
-# to the dedicated SCIM admin router — see backend/om/server/scim/admin_api.py
-# (WS-G rewrite). This settings module no longer touches SCIM.

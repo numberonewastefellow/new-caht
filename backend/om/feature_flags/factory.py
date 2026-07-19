@@ -22,8 +22,8 @@ def get_default_feature_flag_provider() -> FeatureFlagProvider:
     """
     Get the default feature flag provider implementation.
 
-    Returns the PostHog-based provider in Enterprise Edition when available,
-    otherwise returns a no-op provider that always returns False.
+    Returns the PostHog-based provider when configured, otherwise a no-op
+    provider that always returns False.
 
     This function is designed for dependency injection - callers should
     use this factory rather than directly instantiating providers.

@@ -20,16 +20,32 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
+from om.auth.schemas import UserRole
 from om.configs.constants import MessageType
 from om.db.models import Agent
 from om.db.models import AnalyticsRollup
 from om.db.models import ChatMessage
 from om.db.models import ChatMessageFeedback
 from om.db.models import ChatSession
+from om.db.models import User
 from om.server.analytics.models import AgentUsagePoint
+from om.server.analytics.models import AssistantDailyUsagePoint
+from om.server.analytics.models import AssistantStatsResponse
 from om.server.analytics.models import DailyUsagePoint
 from om.server.analytics.models import RollupPoint
 from om.server.analytics.models import UsageSummary
+
+
+def user_can_view_assistant_stats(
+    db_session: Session, user: User, assistant_id: int
+) -> bool:
+    """Admins may view any assistant's stats; other users only assistants they own."""
+    if user.role == UserRole.ADMIN:
+        return True
+    owned = db_session.execute(
+        select(Agent.id).where(Agent.id == assistant_id, Agent.user_id == user.id)
+    ).scalar_one_or_none()
+    return owned is not None
 
 
 class RollupMetric:
@@ -146,6 +162,63 @@ class AnalyticsService:
             AgentUsagePoint(agent_name=name, total_messages=int(count or 0))
             for name, count in self._db.execute(stmt).all()
         ]
+
+    def get_assistant_stats(
+        self,
+        assistant_id: int,
+        start: datetime.datetime,
+        end: datetime.datetime,
+    ) -> AssistantStatsResponse:
+        """Per-day message volume + unique users for a single assistant/agent.
+
+        Counts assistant-role messages in chat sessions bound to ``assistant_id``.
+        Window totals are computed independently (window-wide distinct users are
+        not the sum of per-day distinct users).
+        """
+        day = cast(ChatMessage.time_sent, Date)
+
+        daily_stmt = (
+            select(
+                day.label("day"),
+                func.count(func.distinct(ChatMessage.id)),
+                func.count(func.distinct(ChatSession.user_id)),
+            )
+            .select_from(ChatMessage)
+            .join(ChatSession, ChatSession.id == ChatMessage.chat_session_id)
+            .where(ChatSession.agent_id == assistant_id)
+            .where(ChatMessage.message_type == MessageType.ASSISTANT)
+            .where(ChatMessage.time_sent >= start)
+            .where(ChatMessage.time_sent <= end)
+            .group_by(day)
+            .order_by(day)
+        )
+        daily_stats = [
+            AssistantDailyUsagePoint(
+                date=d,
+                total_messages=int(messages or 0),
+                total_unique_users=int(users or 0),
+            )
+            for d, messages, users in self._db.execute(daily_stmt).all()
+        ]
+
+        total_messages, total_unique_users = self._db.execute(
+            select(
+                func.count(func.distinct(ChatMessage.id)),
+                func.count(func.distinct(ChatSession.user_id)),
+            )
+            .select_from(ChatMessage)
+            .join(ChatSession, ChatSession.id == ChatMessage.chat_session_id)
+            .where(ChatSession.agent_id == assistant_id)
+            .where(ChatMessage.message_type == MessageType.ASSISTANT)
+            .where(ChatMessage.time_sent >= start)
+            .where(ChatMessage.time_sent <= end)
+        ).one()
+
+        return AssistantStatsResponse(
+            daily_stats=daily_stats,
+            total_messages=int(total_messages or 0),
+            total_unique_users=int(total_unique_users or 0),
+        )
 
     # ------------------------------------------------------------------ #
     # Rollup cache

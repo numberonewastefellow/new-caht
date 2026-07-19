@@ -118,8 +118,9 @@ def check_router_auth(
 
     from om.auth.users import current_cloud_superuser as _impl_current_cloud_superuser
     from om.server.scim.auth import verify_scim_token as _impl_verify_scim_token
-    from om.server.tenants.access import control_plane_dep as _impl_control_plane_dep
-    control_plane_dep = _impl_control_plane_dep
+    # NOTE: the EE control-plane / data-plane dependency (`control_plane_dep`) was removed
+    # with the cloud tenants subsystem — this is a self-hosted deployment with no external
+    # control plane, and no route depends on it anymore.
     current_cloud_superuser = _impl_current_cloud_superuser
     verify_scim_token = _impl_verify_scim_token
 
@@ -143,7 +144,6 @@ def check_router_auth(
                     or depends_fn == current_curator_or_admin_user
                     or depends_fn == current_user_with_expired_token
                     or depends_fn == current_chat_accessible_user
-                    or depends_fn == control_plane_dep
                     or depends_fn == current_cloud_superuser
                     or depends_fn == verify_scim_token
                 ):

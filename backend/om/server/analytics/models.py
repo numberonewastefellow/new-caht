@@ -40,3 +40,19 @@ class RollupPoint(BaseModel):
     window_start: datetime.date
     metric: str
     value: float
+
+
+class AssistantDailyUsagePoint(BaseModel):
+    """One day of usage for a single assistant/agent (chart datum)."""
+
+    date: datetime.date
+    total_messages: int
+    total_unique_users: int
+
+
+class AssistantStatsResponse(BaseModel):
+    """Per-assistant usage stats over a window: daily series + window totals."""
+
+    daily_stats: list[AssistantDailyUsagePoint]
+    total_messages: int
+    total_unique_users: int

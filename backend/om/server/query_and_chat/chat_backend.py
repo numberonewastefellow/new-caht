@@ -59,8 +59,6 @@ from om.db.models import ChatSessionSharedStatus
 from om.db.models import Agent
 from om.db.models import User
 from om.db.agent import get_agent_by_id
-from om.db.usage import increment_usage
-from om.db.usage import UsageType
 from om.db.knowledge_file import get_file_id_by_knowledge_file_id
 from om.file_processing.extract_file_text import docx_to_txt_filename
 from om.file_store.file_store import get_default_file_store
@@ -70,7 +68,6 @@ from om.llm.factory import get_llm_for_agent
 from om.llm.factory import get_llm_token_counter
 from om.redis.redis_pool import get_redis_client
 from om.secondary_llm_flows.chat_session_naming import generate_chat_session_name
-from om.server.api_key_usage import check_api_key_usage
 from om.server.query_and_chat.models import ChatFeedbackRequest
 from om.server.query_and_chat.models import ChatMessageIdentifier
 from om.server.query_and_chat.models import ChatRenameRequest
@@ -94,9 +91,6 @@ from om.server.query_and_chat.session_loading import (
 )
 from om.server.query_and_chat.streaming_models import Packet
 from om.server.rate_limits.dependencies import enforce_rate_limits
-from om.server.usage_limits import check_llm_cost_limit_for_provider
-from om.server.usage_limits import check_usage_and_raise
-from om.server.usage_limits import is_usage_limits_enabled
 from om.server.utils import get_json_line
 from om.tracing.framework.create import ensure_trace
 from om.utils.headers import get_custom_tool_additional_request_headers
@@ -412,12 +406,6 @@ def rename_chat_session(
         )
     )
 
-    check_llm_cost_limit_for_provider(
-        db_session=db_session,
-        tenant_id=get_current_tenant_id(),
-        llm_provider_api_key=llm.config.api_key,
-    )
-
     full_history = create_chat_history_chain(
         chat_session_id=chat_session_id, db_session=db_session
     )
@@ -530,7 +518,6 @@ def handle_send_chat_message(
     request: Request,
     user: User = Depends(current_chat_accessible_user),
     _rate_limit_check: None = Depends(enforce_rate_limits),
-    _api_key_usage_check: None = Depends(check_api_key_usage),
 ) -> StreamingResponse | ChatFullResponse:
     """
     This endpoint is used to send a new chat message.
@@ -563,21 +550,6 @@ def handle_send_chat_message(
     # Non-streaming path: consume all packets and return complete response
     if not chat_message_req.stream:
         with get_session_with_current_tenant() as db_session:
-            # Check and track non-streaming API usage limits
-            if is_usage_limits_enabled():
-                check_usage_and_raise(
-                    db_session=db_session,
-                    usage_type=UsageType.NON_STREAMING_API_CALLS,
-                    tenant_id=tenant_id,
-                    pending_amount=1,
-                )
-                increment_usage(
-                    db_session=db_session,
-                    usage_type=UsageType.NON_STREAMING_API_CALLS,
-                    amount=1,
-                )
-                db_session.commit()
-
             state_container = ChatStateContainer()
             packets = stream_chat_message(
                 new_msg_req=chat_message_req,
