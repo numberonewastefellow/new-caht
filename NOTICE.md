@@ -12,27 +12,18 @@ project's `LICENSE`/`NOTICE` files, and under `web/node_modules/` for JavaScript
 
 ---
 
-## 1. Origins and foundations
+## 1. Vendored, derived, and foundational components
 
-OM-AI was initially bootstrapped from a fork of the Onyx project (formerly Danswer). It has
-since been extensively re-engineered and customized — it has **diverged substantially** from
-that project, is **no longer compatible** with the upstream fork, and its current architecture
-and feature set are built upon and depend heavily on the third-party components listed below,
-most notably **Perplexica**, **OpenSearch**, **Arize Phoenix**, and others.
-
-For attribution and license compliance, we acknowledge the original starting point:
-
-- Onyx / Danswer — © DanswerAI, Inc. — MIT License — <https://github.com/onyx-dot-app/onyx>
-
-Where portions of the original Onyx / Danswer code remain, the MIT license of that project
-continues to apply to those portions.
-
----
-
-## 2. Vendored and derived subprojects
+OM-AI was initially bootstrapped from a fork of the Onyx project (formerly Danswer) and has since
+been extensively re-engineered and customized — it has **diverged substantially**, is **no longer
+compatible** with the upstream project, and its current architecture and feature set are built upon
+and depend heavily on the components listed below, most notably **Perplexica**, **OpenSearch**, and
+**Arize Phoenix**. Where portions of the original MIT-licensed Onyx / Danswer code remain in-tree,
+the MIT license of that project continues to apply to those portions.
 
 | Component | Author / Origin | License | Location |
 |-----------|-----------------|---------|----------|
+| Onyx / Danswer (base fork) | DanswerAI, Inc. — <https://github.com/onyx-dot-app/onyx> | MIT | in-tree throughout (`backend/om/`, `web/src/`) |
 | Perplexica | ItzCrazyKns — <https://github.com/ItzCrazyKns/Perplexica> | MIT | `Perplexica/` |
 | Phoenix | Arize AI — <https://github.com/Arize-ai/phoenix> | Elastic License 2.0 (client sub-packages: Apache-2.0) | `phoenix/` |
 | Office-PowerPoint-MCP-Server | GongRzhe — <https://github.com/GongRzhe/Office-PowerPoint-MCP-Server> | MIT | `office-mcp-server/` (derived) |
@@ -44,7 +35,7 @@ continues to apply to those portions.
 
 ---
 
-## 3. Major Python dependencies
+## 2. Major Python dependencies
 
 These are governed by their respective upstream licenses (MIT / BSD / Apache-2.0 / MPL /
 LGPL as noted). This list highlights notable named components and is not exhaustive.
@@ -72,7 +63,7 @@ LGPL as noted). This list highlights notable named components and is not exhaust
 
 ---
 
-## 4. Major JavaScript / TypeScript dependencies
+## 3. Major JavaScript / TypeScript dependencies
 
 Governed by their respective upstream licenses (MIT / BSD / ISC / Apache-2.0). Notable
 named components; not exhaustive.
@@ -84,7 +75,7 @@ named components; not exhaustive.
 - **Interaction / graph:** @dnd-kit/*, @xyflow/react, motion, recharts, cmdk, vaul
 - **Content / markdown:** react-markdown, remark-gfm, remark-math, rehype-katex,
   rehype-highlight, rehype-sanitize, rehype-stringify, KaTeX, highlight.js, lowlight
-- **Integrations:** @sentry/nextjs, @stripe/stripe-js + stripe, posthog-js, pptxgenjs
+- **Integrations:** @sentry/nextjs, posthog-js, pptxgenjs
 - **Utilities:** date-fns, lodash, clsx, class-variance-authority, uuid, semver, sharp,
   js-cookie, cookies-next, react-select, react-datepicker, react-day-picker,
   react-dropzone, next-themes
