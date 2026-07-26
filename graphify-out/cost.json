@@ -11,8 +11,15 @@
       "input_tokens": 0,
       "output_tokens": 0,
       "files": 823
+    },
+    {
+      "date": "2026-07-25T21:27:42.688875+00:00",
+      "input_tokens": 6640000,
+      "output_tokens": 0,
+      "files": 8338,
+      "note": "full rebuild @2ca01e56; docs-only semantic (images skipped); input_tokens is APPROX combined in+out from 56 subagents + retries (per-chunk split not captured)"
     }
   ],
-  "total_input_tokens": 38473,
+  "total_input_tokens": 6678473,
   "total_output_tokens": 0
 }

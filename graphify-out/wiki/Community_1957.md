@@ -1,0 +1,26 @@
+# Community 1957
+
+> 2 nodes · cohesion 1.00
+
+## Key Concepts
+
+- **.test_message_list_preserves_extra_fields()** (2 connections) — `phoenix/packages/phoenix-evals/tests/phoenix/evals/llm/test_prompts.py`
+- **Test that extra fields in messages are NOT preserved (Message TypedDict has only** (1 connections) — `phoenix/packages/phoenix-evals/tests/phoenix/evals/llm/test_prompts.py`
+
+## Relationships
+
+- [[Community 868]] (1 shared connections)
+
+## Source Files
+
+- `phoenix/packages/phoenix-evals/tests/phoenix/evals/llm/test_prompts.py`
+
+## Audit Trail
+
+- EXTRACTED: 3 (100%)
+- INFERRED: 0 (0%)
+- AMBIGUOUS: 0 (0%)
+
+---
+
+*Part of the graphify knowledge wiki. See [[index]] to navigate.*
