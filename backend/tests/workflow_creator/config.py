@@ -45,6 +45,13 @@ WORKFLOW_DEFAULTS = {
     "is_public": True,
 }
 
+# ── LLM for workflow agents (instance-specific) ─────────────────────────────
+# Workflow step-agents and orchestrators run on this capable model instead of the
+# global default LLM (which stays gpt-4o-mini for normal chat). Change per env.
+# The model must be VISIBLE on the provider or the backend coerces the override.
+WORKFLOW_STEP_LLM_PROVIDER = "gpt"
+WORKFLOW_STEP_LLM_MODEL = "gpt-4.1"
+
 # ── Default agent payload for auto-created step agents ──────────────────
 STEP_AGENT_DEFAULTS = {
     "num_chunks": 10.0,
@@ -63,6 +70,9 @@ STEP_AGENT_DEFAULTS = {
     "knowledge_file_ids": [],
     "hierarchy_node_ids": [],
     "document_ids": [],
+    # Pin workflow step-agents to the capable model (see constants above).
+    "llm_model_provider_override": WORKFLOW_STEP_LLM_PROVIDER,
+    "llm_model_version_override": WORKFLOW_STEP_LLM_MODEL,
 }
 
 

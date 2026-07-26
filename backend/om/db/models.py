@@ -77,6 +77,8 @@ from om.db.enums import (
     DefaultAppMode,
     SwitchoverType,
     SharingScope,
+    TeamRole,
+    MembershipSource,
 )
 from om.configs.constants import NotificationType
 from om.configs.constants import SearchFeedbackType
@@ -3721,12 +3723,28 @@ class User__Team(Base):
 
     is_curator: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
+    # Role within the team (OWNER/ADMIN/MEMBER). Stored as VARCHAR; kept in sync
+    # with ``is_curator`` by the om.db.team helpers (OWNER/ADMIN => is_curator).
+    role: Mapped[str] = mapped_column(
+        String, nullable=False, default=TeamRole.MEMBER.value
+    )
+    # When the user joined the team.
+    joined_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True, server_default=func.now()
+    )
+    # How the membership was created (SSO vs MANUAL).
+    source: Mapped[str] = mapped_column(
+        String, nullable=False, default=MembershipSource.MANUAL.value
+    )
+
     team_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("team.id"), primary_key=True
     )
     user_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), primary_key=True, nullable=True
     )
+
+    user: Mapped["User"] = relationship("User", viewonly=True)
 
 
 class Team__ConnectorCredentialPair(Base):
@@ -3818,6 +3836,24 @@ class Team(Base):
     # BIGINT PK (Contract 1) — WS-F/WS-G FK to team.id.
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     name: Mapped[str] = mapped_column(String, unique=True)
+    # Free-text description shown in the Teams UI.
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Whether the team is discoverable/joinable by anyone in the tenant.
+    is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # Free-form labels for filtering/organisation in the UI.
+    tags: Mapped[list[str] | None] = mapped_column(postgresql.JSONB(), nullable=True)
+    # The user who created (owns) the team. SET NULL if the user is deleted.
+    owner_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
+    # Default role assigned to newly-added members.
+    default_member_role: Mapped[str] = mapped_column(
+        String, nullable=False, default=TeamRole.MEMBER.value
+    )
+    # Whether guest (non-member) access to team resources is permitted.
+    allow_guest_access: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
     # whether or not changes to the Team have been propagated to the document index
     is_up_to_date: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     # tell the sync job to clean up the team
@@ -3830,6 +3866,9 @@ class Team(Base):
         DateTime(timezone=True), server_default=func.now()
     )
 
+    owner: Mapped["User | None"] = relationship(
+        "User", foreign_keys=[owner_id], viewonly=True
+    )
     users: Mapped[list[User]] = relationship(
         "User",
         secondary=User__Team.__table__,

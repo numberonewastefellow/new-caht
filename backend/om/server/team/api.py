@@ -21,6 +21,7 @@ from om.db.team import fetch_teams
 from om.db.team import fetch_teams_for_user
 from om.db.team import insert_team
 from om.db.team import prepare_team_for_deletion
+from om.db.team import set_member_role
 from om.db.team import update_team
 from om.db.team import update_user_curator_relationship
 from om.db.models import User
@@ -28,6 +29,7 @@ from om.db.models import UserRole
 from om.server.team.models import AddUsersToTeamRequest
 from om.server.team.models import MinimalTeamSnapshot
 from om.server.team.models import SetCuratorRequest
+from om.server.team.models import SetRoleRequest
 from om.server.team.models import Team
 from om.server.team.models import TeamCreate
 from om.server.team.models import TeamUpdate
@@ -57,7 +59,7 @@ def list_teams(
             user_id=user.id,
             only_curator_teams=user.role == UserRole.CURATOR,
         )
-    return [Team.from_model(team) for team in teams]
+    return [Team.from_model(team, db_session) for team in teams]
 
 
 @router.get("/minimal")
@@ -86,13 +88,16 @@ def create_team(
             user_ids=team.user_ids,
             cc_pair_ids=team.cc_pair_ids,
             actor_user_id=str(user.id),
+            description=team.description,
+            is_public=team.is_public,
+            tags=team.tags,
         )
     except IntegrityError:
         raise HTTPException(
             status_code=400,
             detail=f"A team named '{team.name}' already exists. Choose a different name.",
         )
-    return Team.from_model(db_team)
+    return Team.from_model(db_team, db_session)
 
 
 @router.patch("/{team_id}")
@@ -103,15 +108,18 @@ def patch_team(
     db_session: Session = Depends(get_tenant_session_dependency),
 ) -> Team:
     _enforce(permission_service.decide_edit_team(user, team_id, db_session))
+    # Only pass fields the client actually supplied so unset fields are left
+    # unchanged (an explicit null still clears description/tags).
+    changes = team_update.model_dump(exclude_unset=True)
     try:
         return Team.from_model(
             update_team(
                 db_session=db_session,
                 team_id=team_id,
-                user_ids=team_update.user_ids,
-                cc_pair_ids=team_update.cc_pair_ids,
                 actor_user_id=str(user.id),
-            )
+                **changes,
+            ),
+            db_session,
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -132,7 +140,13 @@ def add_users(
                 team_id=team_id,
                 user_ids=add_users_request.user_ids,
                 actor_user_id=str(user.id),
-            )
+                role=(
+                    add_users_request.role.value
+                    if add_users_request.role is not None
+                    else None
+                ),
+            ),
+            db_session,
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -156,6 +170,27 @@ def set_user_curator(
         )
     except ValueError as e:
         logger.error("Error setting team curator: %s", e)
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/{team_id}/set-role")
+def set_user_role(
+    team_id: int,
+    set_role_request: SetRoleRequest,
+    user: User = Depends(current_curator_or_admin_user),
+    db_session: Session = Depends(get_tenant_session_dependency),
+) -> None:
+    _enforce(permission_service.decide_manage_curators(user, team_id, db_session))
+    try:
+        set_member_role(
+            db_session=db_session,
+            team_id=team_id,
+            user_id=set_role_request.user_id,
+            role=set_role_request.role.value,
+            actor_user_id=str(user.id),
+        )
+    except ValueError as e:
+        logger.error("Error setting team member role: %s", e)
         raise HTTPException(status_code=400, detail=str(e))
 
 

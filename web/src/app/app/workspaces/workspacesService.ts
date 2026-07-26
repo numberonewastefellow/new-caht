@@ -84,18 +84,17 @@ export async function createWorkspace(name: string): Promise<Workspace> {
 export async function uploadFiles(
   files: File[],
   workspaceId?: number | null,
-  tempIdMap?: Map<string, string>
+  // Ordered list of temp_ids aligned 1:1 with `files`. Sent per-file (by
+  // position) so duplicate filenames each keep their own temp_id.
+  tempIds?: string[]
 ): Promise<CategorizedFiles> {
   const formData = new FormData();
   files.forEach((file) => formData.append("files", file));
   if (workspaceId !== undefined && workspaceId !== null) {
     formData.append("workspace_id", String(workspaceId));
   }
-  if (tempIdMap !== undefined && tempIdMap !== null) {
-    formData.append(
-      "temp_id_map",
-      JSON.stringify(Object.fromEntries(tempIdMap))
-    );
+  if (tempIds !== undefined && tempIds !== null) {
+    formData.append("temp_ids", JSON.stringify(tempIds));
   }
 
   const response = await fetch("/api/workspaces/file/upload", {

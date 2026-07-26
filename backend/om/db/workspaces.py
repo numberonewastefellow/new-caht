@@ -48,6 +48,7 @@ def create_knowledge_files(
     db_session: Session,
     link_url: str | None = None,
     temp_id_map: dict[str, str] | None = None,
+    temp_ids: list[str] | None = None,
 ) -> CategorizedFilesResult:
 
     # Categorize the files
@@ -58,14 +59,26 @@ def create_knowledge_files(
     knowledge_files = []
     rejected_files = categorized_files.rejected
     id_to_temp_id: dict[str, str] = {}
+    # Correlate each uploaded file with its client-side temp_id. Prefer the ordered
+    # `temp_ids` list (keyed by object identity of the original UploadFiles), which
+    # is unambiguous even when two files share a name+size; fall back to the legacy
+    # size|name map only for older clients that don't send `temp_ids`.
+    file_to_temp: dict[int, str] = {}
+    if temp_ids is not None:
+        for idx, original_file in enumerate(files):
+            if idx < len(temp_ids):
+                file_to_temp[id(original_file)] = temp_ids[idx]
     # Pair returned storage paths with the same set of acceptable files we uploaded
     for file_path, file in zip(
         upload_response.file_paths, categorized_files.acceptable
     ):
         new_id = uuid.uuid4()
-        new_temp_id = (
-            temp_id_map.get(build_hashed_file_key(file)) if temp_id_map else None
-        )
+        if temp_ids is not None:
+            new_temp_id = file_to_temp.get(id(file))
+        else:
+            new_temp_id = (
+                temp_id_map.get(build_hashed_file_key(file)) if temp_id_map else None
+            )
         if new_temp_id is not None:
             id_to_temp_id[str(new_id)] = new_temp_id
         new_file = KnowledgeFile(
@@ -105,6 +118,7 @@ def upload_files_to_knowledge_files_with_indexing(
     user: User,
     temp_id_map: dict[str, str] | None,
     db_session: Session,
+    temp_ids: list[str] | None = None,
 ) -> CategorizedFilesResult:
     # Validate workspace ownership if a workspace_id is provided
     if workspace_id is not None and user is not None:
@@ -117,6 +131,7 @@ def upload_files_to_knowledge_files_with_indexing(
         user,
         db_session,
         temp_id_map=temp_id_map,
+        temp_ids=temp_ids,
     )
     knowledge_files = categorized_files_result.knowledge_files
     rejected_files = categorized_files_result.rejected_files

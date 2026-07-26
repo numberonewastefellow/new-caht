@@ -81,11 +81,25 @@ def create_workspace(
 def upload_knowledge_files(
     files: list[UploadFile] = File(...),
     workspace_id: int | None = Form(None),
-    temp_id_map: str | None = Form(None),  # JSON string mapping hashed key -> temp_id
+    # Preferred: JSON array of temp_ids aligned 1:1 with `files` order. Robust to
+    # duplicate filenames (each file gets its own temp_id by position).
+    temp_ids: str | None = Form(None),
+    # Legacy fallback: JSON dict {"<size>|<name>" -> temp_id}. Collides on
+    # duplicate identical filenames; kept only for older clients.
+    temp_id_map: str | None = Form(None),
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> CategorizedFilesSnapshot:
     try:
+        parsed_temp_ids: list[str] | None = None
+        if temp_ids:
+            try:
+                parsed = json.loads(temp_ids)
+                if isinstance(parsed, list):
+                    parsed_temp_ids = [str(v) for v in parsed]
+            except json.JSONDecodeError:
+                parsed_temp_ids = None
+
         parsed_temp_id_map: dict[str, str] | None = None
         if temp_id_map:
             try:
@@ -104,6 +118,7 @@ def upload_knowledge_files(
             workspace_id=workspace_id,
             user=user,
             temp_id_map=parsed_temp_id_map,
+            temp_ids=parsed_temp_ids,
             db_session=db_session,
         )
 

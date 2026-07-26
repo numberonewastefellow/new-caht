@@ -80,11 +80,6 @@ const createOptimisticFile = (
   };
 };
 
-function buildFileKey(file: File): string {
-  const namePrefix = (file.name ?? "").slice(0, 50);
-  return `${file.size}|${namePrefix}`;
-}
-
 interface WorkspacesContextType {
   workspaces: Workspace[];
   recentFiles: WorkspaceFile[];
@@ -303,17 +298,6 @@ export function WorkspacesProvider({ children }: WorkspacesProviderProps) {
     setRecentFiles(files);
   }, [getRecentFiles]);
 
-  const getTempIdMap = (files: File[], optimisticFiles: WorkspaceFile[]) => {
-    const tempIdMap = new Map<string, string>();
-    for (const f of files) {
-      const tempId = optimisticFiles.find((o) => o.name === f.name)?.temp_id;
-      if (tempId) {
-        tempIdMap.set(buildFileKey(f), tempId);
-      }
-    }
-    return tempIdMap;
-  };
-
   const removeOptimisticFilesByTempIds = useCallback(
     (optimisticTempIds: Set<string>, workspaceId?: number | null) => {
       // Remove from recent optimistic list
@@ -354,13 +338,16 @@ export function WorkspacesProvider({ children }: WorkspacesProviderProps) {
       const optimisticFiles = files.map((f) =>
         createOptimisticFile(f, workspaceId)
       );
-      const tempIdMap = getTempIdMap(files, optimisticFiles);
+      // Ordered temp_ids aligned 1:1 with `files` (same index). Each file keeps
+      // its own unique temp_id even when two files share a name+size, so
+      // duplicates within one batch no longer collide/strand on the client.
+      const tempIds = optimisticFiles.map((f) => f.temp_id as string);
       setAllRecentFiles((prev) => [...optimisticFiles, ...prev]);
       if (workspaceId) {
         setAllCurrentWorkspaceFiles((prev) => [...optimisticFiles, ...prev]);
         workspaceToUploadFilesMapRef.current.set(workspaceId, optimisticFiles);
       }
-      svcUploadFiles(files, workspaceId, tempIdMap)
+      svcUploadFiles(files, workspaceId, tempIds)
         .then((uploaded) => {
           const uploadedFiles = uploaded.knowledge_files || [];
           const tempIdToUploadedFileMap = new Map(

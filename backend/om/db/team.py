@@ -28,11 +28,15 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 
+from typing import Any
+
 from om.access.rbac.audit import audit_event
 from om.access.rbac.repository import TeamRepository
 from om.auth.schemas import UserRole
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
+from om.db.enums import MembershipSource
+from om.db.enums import TeamRole
 from om.db.models import ConnectorCredentialPair
 from om.db.models import Document
 from om.db.models import DocumentByConnectorCredentialPair
@@ -42,6 +46,10 @@ from om.db.models import User
 from om.db.models import User__Team
 
 _repo = TeamRepository()
+
+# Sentinel distinguishing "argument not supplied" from an explicit ``None`` in
+# partial-update helpers (so a caller can, e.g., clear ``description`` to NULL).
+_UNSET: Any = object()
 
 
 # --------------------------------------------------------------------------- #
@@ -214,30 +222,66 @@ def _check_modifiable(team: Team) -> None:
 
 
 def _add_memberships(
-    db_session: Session, team_id: int, user_ids: list[UUID]
+    db_session: Session,
+    team_id: int,
+    user_ids: list[UUID],
+    role: str = TeamRole.MEMBER.value,
+    source: MembershipSource | None = None,
 ) -> None:
-    if user_ids:
-        # Validate the users exist before inserting; otherwise the FK
-        # (user__team_user_id_fkey) raises an IntegrityError that surfaces as an
-        # opaque HTTP 500. A ValueError here is turned into a clean 400 by the
-        # /teams endpoints.
-        found = set(
-            db_session.scalars(select(User.id).where(User.id.in_(user_ids)))
-        )
-        missing = [str(uid) for uid in user_ids if uid not in found]
-        if missing:
-            raise ValueError(f"Unknown user id(s): {', '.join(missing)}")
+    """Add memberships for ``user_ids`` (skipping ones that already exist).
+
+    Each new row records ``joined_at`` (now), the given ``role`` (with
+    ``is_curator`` derived from it so RBAC stays consistent), and a ``source``.
+    When ``source`` is omitted it is derived per-user: SSO if the user has an
+    external identity (OAuth/OIDC) linked, otherwise MANUAL.
+    """
+    if not user_ids:
+        return
+
+    # Load the User rows once: validates existence AND lets us derive `source`
+    # from linked OAuth/OIDC accounts without an N+1. A missing user would
+    # otherwise raise an opaque FK IntegrityError (HTTP 500); a ValueError here
+    # is turned into a clean 400 by the /teams endpoints.
+    # .unique() is required because User.oauth_accounts is a joined eager-load
+    # collection, so selecting the User entity yields duplicate parent rows.
+    users_by_id = {
+        u.id: u
+        for u in db_session.scalars(
+            select(User).where(User.id.in_(user_ids))
+        ).unique()
+    }
+    missing = [str(uid) for uid in user_ids if uid not in users_by_id]
+    if missing:
+        raise ValueError(f"Unknown user id(s): {', '.join(missing)}")
+
     existing = {
         uid
         for uid in db_session.scalars(
             select(User__Team.user_id).where(User__Team.team_id == team_id)
         )
     }
-    db_session.add_all(
-        User__Team(team_id=team_id, user_id=uid)
-        for uid in user_ids
-        if uid not in existing
-    )
+
+    is_curator = TeamRole(role).is_curator()
+    new_rows: list[User__Team] = []
+    for uid in user_ids:
+        if uid in existing:
+            continue
+        row_source = source or (
+            MembershipSource.SSO
+            if users_by_id[uid].oauth_accounts
+            else MembershipSource.MANUAL
+        )
+        new_rows.append(
+            User__Team(
+                team_id=team_id,
+                user_id=uid,
+                role=role,
+                is_curator=is_curator,
+                source=row_source.value,
+                joined_at=func.now(),
+            )
+        )
+    db_session.add_all(new_rows)
 
 
 def _add_cc_pair_grants(
@@ -264,19 +308,36 @@ def insert_team(
     user_ids: list[UUID],
     cc_pair_ids: list[int],
     actor_user_id: str | None = None,
+    description: str | None = None,
+    is_public: bool = False,
+    tags: list[str] | None = None,
 ) -> Team:
     with audit_event(
         event="team.created", entity="team", action="create", actor_user_id=actor_user_id
     ) as ev:
+        creator_id = UUID(actor_user_id) if actor_user_id else None
         team = Team(
             name=name,
+            description=description,
+            is_public=is_public,
+            tags=tags,
+            owner_id=creator_id,
             is_up_to_date=False,
             is_up_for_deletion=False,
             time_last_modified_by_user=func.now(),
         )
         db_session.add(team)
         db_session.flush()  # assign id
-        _add_memberships(db_session, team.id, user_ids)
+        # The creator is always an OWNER of the team they create.
+        if creator_id is not None:
+            _add_memberships(
+                db_session, team.id, [creator_id], role=TeamRole.OWNER.value
+            )
+        # Everyone else joins at the team's default role.
+        other_ids = [uid for uid in user_ids if uid != creator_id]
+        _add_memberships(
+            db_session, team.id, other_ids, role=team.default_member_role
+        )
         _add_cc_pair_grants(db_session, team.id, cc_pair_ids)
         db_session.commit()
         ev["entity_id"] = team.id
@@ -288,6 +349,7 @@ def add_users_to_team(
     team_id: int,
     user_ids: list[UUID],
     actor_user_id: str | None = None,
+    role: str | None = None,
 ) -> Team:
     team = fetch_team(db_session, team_id)
     if team is None:
@@ -300,7 +362,12 @@ def add_users_to_team(
         actor_user_id=actor_user_id,
     ):
         _check_modifiable(team)
-        _add_memberships(db_session, team_id, user_ids)
+        _add_memberships(
+            db_session,
+            team_id,
+            user_ids,
+            role=role or team.default_member_role,
+        )
         team.is_up_to_date = False
         team.time_last_modified_by_user = func.now()
         db_session.commit()
@@ -310,13 +377,27 @@ def add_users_to_team(
 def update_team(
     db_session: Session,
     team_id: int,
-    user_ids: list[UUID],
-    cc_pair_ids: list[int],
+    user_ids: list[UUID] | Any = _UNSET,
+    cc_pair_ids: list[int] | Any = _UNSET,
     actor_user_id: str | None = None,
+    *,
+    description: str | None | Any = _UNSET,
+    is_public: bool | Any = _UNSET,
+    tags: list[str] | None | Any = _UNSET,
+    default_member_role: str | Any = _UNSET,
+    allow_guest_access: bool | Any = _UNSET,
 ) -> Team:
-    """Replace a team's membership and connector grants. Removed grant edges are
-    marked non-current (not deleted) so the sync task can clear them from the
-    index first; the team is flagged not-up-to-date to trigger that sync."""
+    """Partial-update a team.
+
+    Only the arguments actually supplied are applied (``_UNSET`` = leave as-is,
+    so an explicit ``None`` can still clear ``description``/``tags``). When
+    ``user_ids``/``cc_pair_ids`` are given they REPLACE the current membership /
+    connector grants: removed grant edges are marked non-current (not deleted) so
+    the sync task can clear them from the index first, and the team is flagged
+    not-up-to-date to trigger that sync. Settings-only changes that affect the
+    document ACL (``is_public``) also trigger a resync; purely cosmetic settings
+    (description/tags/default role/guest access) do not.
+    """
     team = fetch_team(db_session, team_id)
     if team is None:
         raise HTTPException(status_code=404, detail="Team not found")
@@ -328,21 +409,86 @@ def update_team(
         actor_user_id=actor_user_id,
     ):
         _check_modifiable(team)
-        # membership: drop those no longer present, add the new ones
-        target_users = set(user_ids)
-        drop_conditions = [User__Team.team_id == team_id]
-        if target_users:
-            # keep the target members; an empty target removes everyone
-            drop_conditions.append(User__Team.user_id.notin_(target_users))
-        db_session.execute(delete(User__Team).where(*drop_conditions))
-        _add_memberships(db_session, team_id, user_ids)
+
+        index_affecting = False
+
+        # scalar settings first so a membership change below picks up any new
+        # default_member_role in the same request
+        if description is not _UNSET:
+            team.description = description
+        if tags is not _UNSET:
+            team.tags = tags
+        if default_member_role is not _UNSET:
+            team.default_member_role = TeamRole(default_member_role).value
+        if allow_guest_access is not _UNSET:
+            team.allow_guest_access = allow_guest_access
+        if is_public is not _UNSET:
+            if team.is_public != is_public:
+                index_affecting = True
+            team.is_public = is_public
+
+        # membership: drop those no longer present, add the new ones (never drop
+        # the owner's membership)
+        if user_ids is not _UNSET:
+            target_users = set(user_ids)
+            if team.owner_id is not None:
+                target_users.add(team.owner_id)
+            drop_conditions = [User__Team.team_id == team_id]
+            if target_users:
+                # keep the target members; an empty target removes everyone
+                drop_conditions.append(User__Team.user_id.notin_(target_users))
+            db_session.execute(delete(User__Team).where(*drop_conditions))
+            _add_memberships(
+                db_session,
+                team_id,
+                list(target_users),
+                role=team.default_member_role,
+            )
+            index_affecting = True
+
         # grants: mark all current outdated, then (re)add the target set
-        _mark_cc_pair_grants_outdated(db_session, team_id)
-        _add_cc_pair_grants(db_session, team_id, cc_pair_ids)
-        team.is_up_to_date = False
+        if cc_pair_ids is not _UNSET:
+            _mark_cc_pair_grants_outdated(db_session, team_id)
+            _add_cc_pair_grants(db_session, team_id, cc_pair_ids)
+            index_affecting = True
+
+        if index_affecting:
+            team.is_up_to_date = False
         team.time_last_modified_by_user = func.now()
         db_session.commit()
     return team
+
+
+def set_member_role(
+    db_session: Session,
+    team_id: int,
+    user_id: UUID,
+    role: str | TeamRole,
+    actor_user_id: str | None = None,
+) -> None:
+    """Set a member's team role, keeping ``is_curator`` in sync (OWNER/ADMIN =>
+    curator, MEMBER => not) so RBAC decisions stay consistent. Raises
+    ``ValueError`` if the user is not a member of the team.
+
+    This is the general form of :func:`update_user_curator_relationship`.
+    """
+    role_enum = TeamRole(role)
+    with audit_event(
+        event="team.role_changed",
+        entity="team_membership",
+        action="update",
+        entity_id=team_id,
+        actor_user_id=actor_user_id,
+    ):
+        result = db_session.execute(
+            update(User__Team)
+            .where(User__Team.team_id == team_id, User__Team.user_id == user_id)
+            .values(role=role_enum.value, is_curator=role_enum.is_curator())
+        )
+        if result.rowcount == 0:
+            raise ValueError("User is not a member of this team")
+        _recompute_curator_role(db_session, user_id)
+        db_session.commit()
 
 
 def update_user_curator_relationship(
@@ -352,6 +498,9 @@ def update_user_curator_relationship(
     is_curator: bool,
     actor_user_id: str | None = None,
 ) -> None:
+    """Grant/revoke team-scoped curator status, keeping ``role`` in sync: granting
+    curator promotes a MEMBER to ADMIN; revoking demotes an ADMIN to MEMBER. An
+    OWNER is never altered (owners are always curators)."""
     with audit_event(
         event="team.grant_changed",
         entity="team_membership",
@@ -359,11 +508,18 @@ def update_user_curator_relationship(
         entity_id=team_id,
         actor_user_id=actor_user_id,
     ):
-        db_session.execute(
-            update(User__Team)
-            .where(User__Team.team_id == team_id, User__Team.user_id == user_id)
-            .values(is_curator=is_curator)
+        membership = db_session.scalar(
+            select(User__Team).where(
+                User__Team.team_id == team_id, User__Team.user_id == user_id
+            )
         )
+        if membership is None:
+            raise ValueError("User is not a member of this team")
+        membership.is_curator = is_curator
+        if is_curator and membership.role == TeamRole.MEMBER.value:
+            membership.role = TeamRole.ADMIN.value
+        elif not is_curator and membership.role == TeamRole.ADMIN.value:
+            membership.role = TeamRole.MEMBER.value
         _recompute_curator_role(db_session, user_id)
         db_session.commit()
 
@@ -372,7 +528,12 @@ def _recompute_curator_role(db_session: Session, user_id: UUID) -> None:
     """Keep the coarse ``UserRole`` consistent with team-scoped curator flags: a
     user who curates any team is (at least) a CURATOR; one who curates none is
     demoted from CURATOR back to BASIC (never touches ADMIN/GLOBAL_CURATOR)."""
-    user = db_session.scalar(select(User).where(User.id == user_id))
+    # .unique() required: User.oauth_accounts is a joined eager-load collection.
+    user = (
+        db_session.scalars(select(User).where(User.id == user_id))
+        .unique()
+        .one_or_none()
+    )
     if user is None:
         return
     curates_any = (
@@ -411,9 +572,13 @@ def mark_team_as_synced(db_session: Session, team: Team) -> None:
 
 def remove_curator_status__no_commit(db_session: Session, user: User) -> None:
     """Strip the team-scoped curator flag from all of a user's memberships and
-    reconcile their coarse role. Used when a user is demoted/deactivated."""
+    reconcile their coarse role. Used when a user is demoted/deactivated. The
+    per-team ``role`` is dropped to MEMBER to preserve the role<->is_curator
+    invariant (a non-curator is never OWNER/ADMIN)."""
     db_session.execute(
-        update(User__Team).where(User__Team.user_id == user.id).values(is_curator=False)
+        update(User__Team)
+        .where(User__Team.user_id == user.id)
+        .values(is_curator=False, role=TeamRole.MEMBER.value)
     )
     _recompute_curator_role(db_session, user.id)
 

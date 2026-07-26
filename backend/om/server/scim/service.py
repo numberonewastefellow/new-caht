@@ -33,6 +33,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from om.auth.schemas import UserRole
+from om.db.enums import MembershipSource
 from om.db.models import User
 from om.db.scim import ScimRepository
 from om.server.scim import constants
@@ -777,8 +778,15 @@ class ScimGroupService:
             if uid in seen:
                 continue
             seen.add(uid)
+            # SCIM group provisioning is an external-IdP (SSO) path, so tag the
+            # membership source accordingly; role/joined_at fall to their
+            # column defaults (MEMBER / now()).
             self.db.execute(
-                sa_insert(membership).values(team_id=team_id, user_id=uid)
+                sa_insert(membership).values(
+                    team_id=team_id,
+                    user_id=uid,
+                    source=MembershipSource.SSO.value,
+                )
             )
 
     def _sync_external_id(self, team_id: int, external_id: str | None) -> None:

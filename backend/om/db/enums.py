@@ -307,3 +307,32 @@ class WorkflowExecutionStatus(str, PyEnum):
             WorkflowExecutionStatus.FAILED,
             WorkflowExecutionStatus.TIMEOUT,
         }
+
+
+class TeamRole(str, PyEnum):
+    """Role of a user within a Team (stored as VARCHAR on ``user__team.role``).
+
+    Hierarchy: OWNER > ADMIN > MEMBER. OWNER and ADMIN are "curators" — they may
+    manage the team's members/grants — so ``User__Team.is_curator`` is kept in
+    sync with the role (see :func:`TeamRole.is_curator`). The existing RBAC layer
+    (``om.access.rbac``) keys off ``is_curator``, so the two must never diverge.
+    """
+
+    OWNER = "OWNER"
+    ADMIN = "ADMIN"
+    MEMBER = "MEMBER"
+
+    def is_curator(self) -> bool:
+        """OWNER/ADMIN are curators; MEMBER is not."""
+        return self in (TeamRole.OWNER, TeamRole.ADMIN)
+
+
+class MembershipSource(str, PyEnum):
+    """How a team membership was created (stored on ``user__team.source``).
+
+    ``SSO`` = the member authenticates via an external identity provider
+    (SAML/OIDC/OAuth); ``MANUAL`` = added by an admin/curator through the app.
+    """
+
+    SSO = "SSO"
+    MANUAL = "MANUAL"

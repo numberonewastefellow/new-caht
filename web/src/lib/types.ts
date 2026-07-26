@@ -449,10 +449,45 @@ export interface SlackBotTokens {
   user_token?: string;
 }
 
-/* EE Only Types */
+export type TeamMemberRole = "OWNER" | "ADMIN" | "MEMBER";
+export type TeamMemberSource = "SSO" | "MANUAL";
+
+export interface TeamOwner {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: TeamMemberRole;
+  joined_at: string | null;
+  source: TeamMemberSource;
+  // Optional job title (rendered as "email · title" when present).
+  title?: string | null;
+}
+
 export interface Team {
   id: number;
   name: string;
+
+  // --- Enriched Teams-redesign fields (Contract 1). ---
+  // These are optional so the UI degrades gracefully against a backend that
+  // has not yet been upgraded to emit the enriched GET /api/teams response.
+  description?: string | null;
+  is_public?: boolean;
+  tags?: string[];
+  owner?: TeamOwner | null;
+  member_count?: number;
+  kb_count?: number;
+  members?: TeamMember[];
+  default_member_role?: TeamMemberRole;
+  allow_guest_access?: boolean;
+
+  // --- Existing fields (still returned today; consumed by the legacy
+  // /admin/teams/[teamId] page + the Resources tab). ---
   users: User[];
   curator_ids: string[];
   cc_pairs: CCPairDescriptor<any, any>[];
