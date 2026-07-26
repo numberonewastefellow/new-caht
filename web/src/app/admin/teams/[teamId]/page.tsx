@@ -2,7 +2,7 @@
 import { use } from "react";
 
 import { GroupDisplay } from "./GroupDisplay";
-import { useSpecificUserGroup } from "./hook";
+import { useSpecificTeam } from "./hook";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { useConnectorStatus } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
@@ -15,11 +15,11 @@ const Page = (props: { params: Promise<{ teamId: string }> }) => {
   const router = useRouter();
 
   const {
-    userGroup,
-    isLoading: userGroupIsLoading,
-    error: userGroupError,
-    refreshUserGroup,
-  } = useSpecificUserGroup(params.teamId);
+    team,
+    isLoading: teamIsLoading,
+    error: teamError,
+    refreshTeam,
+  } = useSpecificTeam(params.teamId);
   const {
     data: users,
     isLoading: userIsLoading,
@@ -31,7 +31,7 @@ const Page = (props: { params: Promise<{ teamId: string }> }) => {
     error: ccPairsError,
   } = useConnectorStatus();
 
-  if (userGroupIsLoading || userIsLoading || isCCPairsLoading) {
+  if (teamIsLoading || userIsLoading || isCCPairsLoading) {
     return (
       <div className="h-full">
         <div className="my-auto">
@@ -41,7 +41,7 @@ const Page = (props: { params: Promise<{ teamId: string }> }) => {
     );
   }
 
-  if (!userGroup || userGroupError) {
+  if (!team || teamError) {
     return <div>Error loading team</div>;
   }
   if (!users || usersError) {
@@ -55,14 +55,14 @@ const Page = (props: { params: Promise<{ teamId: string }> }) => {
     <>
       <BackButton />
 
-      <AdminPageTitle title={userGroup.name || "Unknown"} icon={SvgUsers} />
+      <AdminPageTitle title={team.name || "Unknown"} icon={SvgUsers} />
 
-      {userGroup ? (
+      {team ? (
         <GroupDisplay
           users={users.accepted}
           ccPairs={ccPairs}
-          userGroup={userGroup}
-          refreshUserGroup={refreshUserGroup}
+          team={team}
+          refreshTeam={refreshTeam}
         />
       ) : (
         <div>Unable to fetch Team :(</div>

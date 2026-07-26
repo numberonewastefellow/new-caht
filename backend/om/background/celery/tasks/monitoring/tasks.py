@@ -603,7 +603,7 @@ def _collect_sync_metrics(db_session: Session, redis_std: Redis) -> list[Metric]
                 entity = db_session.scalar(
                     select(DocumentSet).where(DocumentSet.id == sync_record.entity_id)
                 )
-            elif sync_record.sync_type == SyncType.USER_GROUP:
+            elif sync_record.sync_type == SyncType.TEAM:
                 entity = db_session.scalar(
                     select(Team).where(Team.id == sync_record.entity_id)
                 )

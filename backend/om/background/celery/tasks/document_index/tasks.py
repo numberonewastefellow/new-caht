@@ -308,7 +308,7 @@ def try_generate_team_sync_tasks(
         cleanup_sync_records(
             db_session=db_session,
             entity_id=team_id,
-            sync_type=SyncType.USER_GROUP,
+            sync_type=SyncType.TEAM,
         )
         return None
 
@@ -343,7 +343,7 @@ def try_generate_team_sync_tasks(
         insert_sync_record(
             db_session=db_session,
             entity_id=team_id,
-            sync_type=SyncType.USER_GROUP,
+            sync_type=SyncType.TEAM,
         )
     except Exception:
         task_logger.exception("insert_sync_record exceptioned.")
@@ -606,7 +606,7 @@ def monitor_team_taskset(
         update_sync_record_status(
             db_session=db_session,
             entity_id=team_id,
-            sync_type=SyncType.USER_GROUP,
+            sync_type=SyncType.TEAM,
             sync_status=SyncStatus.IN_PROGRESS,
             num_docs_synced=count,
         )
@@ -626,7 +626,7 @@ def monitor_team_taskset(
                 update_sync_record_status(
                     db_session=db_session,
                     entity_id=team_id,
-                    sync_type=SyncType.USER_GROUP,
+                    sync_type=SyncType.TEAM,
                     sync_status=SyncStatus.SUCCESS,
                     num_docs_synced=initial_count,
                 )
@@ -640,7 +640,7 @@ def monitor_team_taskset(
                 update_sync_record_status(
                     db_session=db_session,
                     entity_id=team_id,
-                    sync_type=SyncType.USER_GROUP,
+                    sync_type=SyncType.TEAM,
                     sync_status=SyncStatus.SUCCESS,
                     num_docs_synced=initial_count,
                 )
@@ -652,7 +652,7 @@ def monitor_team_taskset(
             update_sync_record_status(
                 db_session=db_session,
                 entity_id=team_id,
-                sync_type=SyncType.USER_GROUP,
+                sync_type=SyncType.TEAM,
                 sync_status=SyncStatus.FAILED,
                 num_docs_synced=initial_count,
             )

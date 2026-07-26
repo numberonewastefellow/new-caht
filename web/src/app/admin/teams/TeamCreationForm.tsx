@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { toast } from "@/hooks/useToast";
 import { ConnectorStatus, User, Team } from "@/lib/types";
 import { TextFormField } from "@/components/Field";
-import { createUserGroup } from "./lib";
+import { createTeam } from "./lib";
 import { UserEditor } from "./UserEditor";
 import { ConnectorEditor } from "./ConnectorEditor";
 import Modal from "@/refresh-components/Modal";
@@ -15,16 +15,16 @@ export interface TeamCreationFormProps {
   onClose: () => void;
   users: User[];
   ccPairs: ConnectorStatus<any, any>[];
-  existingUserGroup?: Team;
+  existingTeam?: Team;
 }
 
 export default function TeamCreationForm({
   onClose,
   users,
   ccPairs,
-  existingUserGroup,
+  existingTeam,
 }: TeamCreationFormProps) {
-  const isUpdate = existingUserGroup !== undefined;
+  const isUpdate = existingTeam !== undefined;
 
   // Filter out ccPairs that aren't access_type "private"
   const privateCcPairs = ccPairs.filter(
@@ -44,7 +44,7 @@ export default function TeamCreationForm({
 
           <Formik
             initialValues={{
-              name: existingUserGroup ? existingUserGroup.name : "",
+              name: existingTeam ? existingTeam.name : "",
               user_ids: [] as string[],
               cc_pair_ids: [] as number[],
             }}
@@ -56,7 +56,7 @@ export default function TeamCreationForm({
             onSubmit={async (values, formikHelpers) => {
               formikHelpers.setSubmitting(true);
               let response;
-              response = await createUserGroup(values);
+              response = await createTeam(values);
               formikHelpers.setSubmitting(false);
               if (response.ok) {
                 toast.success(

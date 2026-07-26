@@ -1,16 +1,13 @@
-import { UserGroupUpdate, SetCuratorRequest } from "../types";
+import { TeamUpdate, SetCuratorRequest } from "../types";
 
-export const updateUserGroup = async (
-  groupId: number,
-  userGroup: UserGroupUpdate
-) => {
-  const url = `/api/teams/${groupId}`;
+export const updateTeam = async (teamId: number, team: TeamUpdate) => {
+  const url = `/api/teams/${teamId}`;
   return await fetch(url, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(userGroup),
+    body: JSON.stringify(team),
   });
 };
 

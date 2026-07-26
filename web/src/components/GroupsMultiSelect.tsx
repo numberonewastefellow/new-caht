@@ -23,13 +23,13 @@ export function GroupsMultiSelect<T extends GroupsMultiSelectFormType>({
   disabledMessage,
 }: GroupsMultiSelectProps<T>) {
   const {
-    data: userGroups,
-    isLoading: userGroupsIsLoading,
+    data: teams,
+    isLoading: teamsIsLoading,
     error,
   } = useTeams();
 
   // Show loading state while loading groups
-  if (userGroupsIsLoading) {
+  if (teamsIsLoading) {
     return (
       <div className="mb-4">
         <Label>{label}</Label>
@@ -44,7 +44,7 @@ export function GroupsMultiSelect<T extends GroupsMultiSelectFormType>({
       fieldName="groups"
       label={label}
       subtext={subtext}
-      items={userGroups}
+      items={teams}
       isLoading={false}
       error={error}
       emptyMessage="No user groups available. Please create a user group first."

@@ -1,20 +1,20 @@
 import Button from "@/refresh-components/buttons/Button";
 import Modal from "@/refresh-components/Modal";
 import { useState } from "react";
-import { updateUserGroup } from "./lib";
+import { updateTeam } from "./lib";
 import { toast } from "@/hooks/useToast";
 import { ConnectorStatus, Team } from "@/lib/types";
 import { ConnectorMultiSelect } from "@/components/ConnectorMultiSelect";
 import { SvgPlus } from "@opal/icons";
 export interface AddConnectorFormProps {
   ccPairs: ConnectorStatus<any, any>[];
-  userGroup: Team;
+  team: Team;
   onClose: () => void;
 }
 
 export default function AddConnectorForm({
   ccPairs,
-  userGroup,
+  team,
   onClose,
 }: AddConnectorFormProps) {
   const [selectedCCPairIds, setSelectedCCPairIds] = useState<number[]>([]);
@@ -23,8 +23,8 @@ export default function AddConnectorForm({
   const availableCCPairs = ccPairs
     .filter(
       (ccPair) =>
-        !userGroup.cc_pairs
-          .map((userGroupCCPair) => userGroupCCPair.id)
+        !team.cc_pairs
+          .map((teamCCPair) => teamCCPair.id)
           .includes(ccPair.cc_pair_id)
     )
     .filter((ccPair) => ccPair.access_type === "private");
@@ -53,14 +53,14 @@ export default function AddConnectorForm({
               const newCCPairIds = [
                 ...Array.from(
                   new Set(
-                    userGroup.cc_pairs
+                    team.cc_pairs
                       .map((ccPair) => ccPair.id)
                       .concat(selectedCCPairIds)
                   )
                 ),
               ];
-              const response = await updateUserGroup(userGroup.id, {
-                user_ids: userGroup.users.map((user) => user.id),
+              const response = await updateTeam(team.id, {
+                user_ids: team.users.map((user) => user.id),
                 cc_pair_ids: newCCPairIds,
               });
               if (response.ok) {

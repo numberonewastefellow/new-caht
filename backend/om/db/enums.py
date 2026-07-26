@@ -66,7 +66,7 @@ class ProcessingMode(str, PyEnum):
 
 class SyncType(str, PyEnum):
     DOCUMENT_SET = "document_set"
-    USER_GROUP = "team"
+    TEAM = "team"
     CONNECTOR_DELETION = "connector_deletion"
     PRUNING = "pruning"  # not really a sync, but close enough
     EXTERNAL_PERMISSIONS = "external_permissions"

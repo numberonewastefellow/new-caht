@@ -28,9 +28,9 @@ function Main({ documentSetId }: { documentSetId: number }) {
   } = useConnectorStatus();
 
   // EE only
-  const { data: userGroups, isLoading: userGroupsIsLoading } = useTeams();
+  const { data: teams, isLoading: teamsIsLoading } = useTeams();
 
-  if (isDocumentSetsLoading || isCCPairsLoading || userGroupsIsLoading) {
+  if (isDocumentSetsLoading || isCCPairsLoading || teamsIsLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <ThreeDotsLoader />
@@ -79,7 +79,7 @@ function Main({ documentSetId }: { documentSetId: number }) {
       <CardSection>
         <DocumentSetCreationForm
           ccPairs={ccPairs}
-          userGroups={userGroups}
+          teams={teams}
           onClose={() => {
             refreshDocumentSets();
             router.push("/admin/documents/sets");

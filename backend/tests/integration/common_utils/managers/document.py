@@ -44,11 +44,11 @@ def _verify_document_permissions(
             )
 
     if group_names is not None:
-        expected_group_keys = {f"group:{group_name}" for group_name in group_names}
-        found_group_keys = {key for key in acl_keys if key.startswith("group:")}
+        expected_group_keys = {f"team:{group_name}" for group_name in group_names}
+        found_group_keys = {key for key in acl_keys if key.startswith("team:")}
         if found_group_keys != expected_group_keys:
             raise ValueError(
-                f"Document {retrieved_doc['document_id']} has incorrect group ACL keys. "
+                f"Document {retrieved_doc['document_id']} has incorrect team ACL keys. "
                 f"Expected: {expected_group_keys}  Found: {found_group_keys}\n"
                 f"All ACL keys: {acl_keys}"
             )

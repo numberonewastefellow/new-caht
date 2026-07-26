@@ -32,7 +32,7 @@ export function AccessTypeGroupSelector({
 }: {
   connector: ConfigurableSources;
 }) {
-  const { data: userGroups, isLoading: userGroupsIsLoading } = useTeams();
+  const { data: teams, isLoading: teamsIsLoading } = useTeams();
   const { isAdmin, user, isCurator } = useUser();
   const [shouldHideContent, setShouldHideContent] = useState(false);
   const isAutoSyncSupported = isValidAutoSyncSource(connector);
@@ -42,7 +42,7 @@ export function AccessTypeGroupSelector({
   const [groups, groups_meta, groups_helpers] = useField<number[]>("groups");
 
   useEffect(() => {
-    if (user && userGroups) {
+    if (user && teams) {
       const isUserAdmin = user.role === UserRole.ADMIN;
 
       // Only set default access type if it's not already set, to avoid overriding user selections
@@ -52,11 +52,11 @@ export function AccessTypeGroupSelector({
 
       if (
         access_type.value === "private" &&
-        userGroups.length === 1 &&
-        userGroups[0] !== undefined &&
+        teams.length === 1 &&
+        teams[0] !== undefined &&
         !isUserAdmin
       ) {
-        groups_helpers.setValue([userGroups[0].id]);
+        groups_helpers.setValue([teams[0].id]);
         setShouldHideContent(true);
       } else if (access_type.value !== "private") {
         // If the access type is public or sync, empty the groups selection
@@ -68,23 +68,23 @@ export function AccessTypeGroupSelector({
     }
   }, [
     user,
-    userGroups,
+    teams,
     access_type.value,
     access_type_helpers,
     groups_helpers,
     isAutoSyncSupported,
   ]);
 
-  if (userGroupsIsLoading) {
+  if (teamsIsLoading) {
     return <div>Loading...</div>;
   }
 
   if (shouldHideContent) {
     return (
       <>
-        {userGroups && userGroups[0] !== undefined && (
+        {teams && teams[0] !== undefined && (
           <div className="mb-1 font-medium text-base">
-            This Connector will be assigned to group <b>{userGroups[0].name}</b>
+            This Connector will be assigned to group <b>{teams[0].name}</b>
             .
           </div>
         )}
@@ -95,15 +95,15 @@ export function AccessTypeGroupSelector({
   return (
     <div>
       {(access_type.value === "private" || isCurator) &&
-        userGroups &&
-        userGroups?.length > 0 && (
+        teams &&
+        teams?.length > 0 && (
           <>
             <Separator />
             <div className="flex flex-col gap-3 pt-4">
               <Text as="p" mainUiAction text05>
                 Assign group access for this Connector
               </Text>
-              {userGroupsIsLoading ? (
+              {teamsIsLoading ? (
                 <div className="animate-pulse bg-background-200 h-8 w-32 rounded" />
               ) : (
                 <Text as="p" mainUiMuted text03>
@@ -117,16 +117,16 @@ export function AccessTypeGroupSelector({
               name="groups"
               render={(arrayHelpers: ArrayHelpers) => (
                 <div className="flex flex-wrap gap-2 py-4">
-                  {userGroupsIsLoading ? (
+                  {teamsIsLoading ? (
                     <div className="animate-pulse bg-background-200 h-8 w-32 rounded"></div>
                   ) : (
-                    userGroups &&
-                    userGroups.map((userGroup: Team) => {
-                      const ind = groups.value.indexOf(userGroup.id);
+                    teams &&
+                    teams.map((team: Team) => {
+                      const ind = groups.value.indexOf(team.id);
                       let isSelected = ind !== -1;
                       return (
                         <Button
-                          key={userGroup.id}
+                          key={team.id}
                           primary
                           action={isSelected}
                           leftIcon={SvgUsers}
@@ -134,11 +134,11 @@ export function AccessTypeGroupSelector({
                             if (isSelected) {
                               arrayHelpers.remove(ind);
                             } else {
-                              arrayHelpers.push(userGroup.id);
+                              arrayHelpers.push(team.id);
                             }
                           }}
                         >
-                          {userGroup.name}
+                          {team.name}
                         </Button>
                       );
                     })

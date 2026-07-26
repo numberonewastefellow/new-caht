@@ -58,20 +58,20 @@ class DocumentIndexClient:
             chunks = self._index.get_document_chunks_without_vectors(document_id)
             for chunk in chunks:
                 acl = {key: 1 for key in chunk.access_control_list}
-                if chunk.public:
+                if chunk.is_public:
                     acl["PUBLIC"] = 1
                 documents.append(
                     {
                         "fields": {
                             "document_id": chunk.document_id,
-                            "content": chunk.content,
+                            "content": chunk.chunk_text,
                             "access_control_list": acl,
                             "document_sets": {
                                 doc_set: 1 for doc_set in (chunk.document_sets or [])
                             },
                             # Vespa exposed this as ``image_file_name``; keep the
                             # key so callers reading it are unaffected.
-                            "image_file_name": chunk.image_file_id,
+                            "image_file_name": chunk.image_id,
                         }
                     }
                 )

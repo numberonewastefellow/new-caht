@@ -5,7 +5,6 @@ from uuid import uuid4
 
 import requests
 
-import generated.onyx_openapi_client.onyx_openapi_client as api  # type: ignore[import-untyped,unused-ignore]
 from om.connectors.models import InputType
 from om.db.enums import AccessType
 from om.db.enums import ConnectorCredentialPairStatus
@@ -15,7 +14,6 @@ from om.server.documents.models import ConnectorIndexingStatusLite
 from om.server.documents.models import ConnectorStatus
 from om.server.documents.models import DocumentSource
 from om.server.documents.models import DocumentSyncStatus
-from tests.integration.common_utils.config import api_config
 from tests.integration.common_utils.constants import API_SERVER_URL
 from tests.integration.common_utils.constants import GENERAL_HEADERS
 from tests.integration.common_utils.constants import MAX_DELAY
@@ -35,27 +33,30 @@ def _cc_pair_creator(
 ) -> DATestCCPair:
     name = f"{name}-cc-pair" if name else f"test-cc-pair-{uuid4()}"
 
-    with api.ApiClient(api_config) as api_client:
-        api_instance = api.DefaultApi(api_client)
-        connector_credential_pair_metadata = api.ConnectorCredentialPairMetadata(
-            name=name, access_type=access_type, groups=groups or []
-        )
-        headers = (
-            user_performing_action.headers
-            if user_performing_action
-            else GENERAL_HEADERS
-        )
-        api_response: api.StatusResponseInt = (
-            api_instance.associate_credential_to_connector(
-                connector_id,
-                credential_id,
-                connector_credential_pair_metadata,
-                _headers=headers,
-            )
-        )
+    # Direct REST call standing in for the openapi client's
+    # ``associate_credential_to_connector`` (the generated client is not built on
+    # the host). Mirrors PUT /nexus/connector/{cid}/credential/{crid}; the new
+    # cc_pair id is returned in the ``data`` field of the StatusResponse.
+    headers = (
+        user_performing_action.headers if user_performing_action else GENERAL_HEADERS
+    )
+    response = requests.put(
+        url=f"{API_SERVER_URL}/nexus/connector/{connector_id}/credential/{credential_id}",
+        json={
+            "name": name,
+            "access_type": (
+                access_type.value
+                if isinstance(access_type, AccessType)
+                else access_type
+            ),
+            "groups": groups or [],
+        },
+        headers=headers,
+    )
+    response.raise_for_status()
 
     return DATestCCPair(
-        id=int(api_response.data),
+        id=int(response.json()["data"]),
         name=name,
         connector_id=connector_id,
         credential_id=credential_id,

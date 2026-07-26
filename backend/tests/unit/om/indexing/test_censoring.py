@@ -102,7 +102,7 @@ class TestPostQueryChunkCensoring:
         )
 
     @patch(
-        "om.external_permissions.post_query_censoring._get_all_censoring_enabled_sources"
+        "om.external_permissions.post_query_censoring.get_all_censoring_enabled_sources"
     )
     def test_post_query_chunk_censoring_no_user(
         self, mock_get_sources: MagicMock
@@ -113,7 +113,7 @@ class TestPostQueryChunkCensoring:
         assert result == chunks
 
     @patch(
-        "om.external_permissions.post_query_censoring._get_all_censoring_enabled_sources"
+        "om.external_permissions.post_query_censoring.get_all_censoring_enabled_sources"
     )
     @patch("om.external_permissions.post_query_censoring.get_source_perm_sync_config")
     def test_post_query_chunk_censoring_salesforce_censored(
@@ -134,7 +134,7 @@ class TestPostQueryChunkCensoring:
         mock_censor_func_impl.assert_called_once()
 
     @patch(
-        "om.external_permissions.post_query_censoring._get_all_censoring_enabled_sources"
+        "om.external_permissions.post_query_censoring.get_all_censoring_enabled_sources"
     )
     @patch("om.external_permissions.post_query_censoring.get_source_perm_sync_config")
     def test_post_query_chunk_censoring_salesforce_error(
@@ -151,7 +151,7 @@ class TestPostQueryChunkCensoring:
         mock_censor_func_impl.assert_called_once()
 
     @patch(
-        "om.external_permissions.post_query_censoring._get_all_censoring_enabled_sources"
+        "om.external_permissions.post_query_censoring.get_all_censoring_enabled_sources"
     )
     @patch("om.external_permissions.post_query_censoring.get_source_perm_sync_config")
     def test_post_query_chunk_censoring_no_censoring(
@@ -167,7 +167,7 @@ class TestPostQueryChunkCensoring:
         mock_censor_func_impl.assert_not_called()
 
     @patch(
-        "om.external_permissions.post_query_censoring._get_all_censoring_enabled_sources"
+        "om.external_permissions.post_query_censoring.get_all_censoring_enabled_sources"
     )
     @patch("om.external_permissions.post_query_censoring.get_source_perm_sync_config")
     def test_post_query_chunk_censoring_order_maintained(

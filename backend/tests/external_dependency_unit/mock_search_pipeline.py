@@ -121,8 +121,8 @@ def use_mock_search_pipeline(
         # For now, federated connectors are not mocked as available
         return False
 
-    def mock_check_user_files_exist(db_session: Session) -> bool:  # noqa: ARG001
-        # For now, user files are not mocked as available
+    def mock_check_knowledge_files_exist(db_session: Session) -> bool:  # noqa: ARG001
+        # For now, knowledge files are not mocked as available
         return False
 
     def mock_fetch_unique_document_sources(
@@ -176,8 +176,8 @@ def use_mock_search_pipeline(
             new=mock_check_federated_connectors_exist,
         ),
         patch(
-            "om.db.connector.check_user_files_exist",
-            new=mock_check_user_files_exist,
+            "om.db.connector.check_knowledge_files_exist",
+            new=mock_check_knowledge_files_exist,
         ),
         patch(
             "om.db.connector.fetch_unique_document_sources",

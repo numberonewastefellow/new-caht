@@ -120,7 +120,7 @@ const Page = () => {
       <AdminPageTitle
         title="Teams"
         icon={SvgUsers}
-        description="Group members and control the resources they can access"
+        description="Organize members into teams and control the resources each team can access."
       />
 
       <Main />

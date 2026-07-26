@@ -65,10 +65,14 @@ def test_doc_set_permissions_setup(reset: None) -> None:  # noqa: ARG001
 
     """Tests for things Curators/Admins should not be able to do"""
 
-    # Test that curator cannot create a document set for the group they don't curate
+    # Test that curator cannot create a document set for the group they don't curate.
+    # NOTE: must be non-public; curators ARE permitted to create public objects
+    # (see validate_object_creation_for_user), which would bypass the team-scope
+    # check this case is meant to exercise.
     with pytest.raises(HTTPError):
         DocumentSetManager.create(
             name="Invalid Document Set 1",
+            is_public=False,
             groups=[team_2.id],
             cc_pair_ids=[public_cc_pair.id],
             user_performing_action=curator,

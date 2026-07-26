@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from om.configs.constants import DocumentSource
 from om.connectors.mock_connector.connector import EXTERNAL_USER_EMAILS
-from om.connectors.mock_connector.connector import EXTERNAL_USER_GROUP_IDS
+from om.connectors.mock_connector.connector import EXTERNAL_TEAM_IDS
 from om.connectors.mock_connector.connector import MockConnectorCheckpoint
 from om.connectors.models import InputType
 from om.db.document import get_documents_by_ids
@@ -117,7 +117,7 @@ def test_mock_connector_initial_permission_sync(
 
         # Check the specific permissions that MockConnector sets
         assert set(db_doc.external_user_emails) == EXTERNAL_USER_EMAILS
-        assert set(db_doc.external_team_ids) == EXTERNAL_USER_GROUP_IDS
+        assert set(db_doc.external_team_ids) == EXTERNAL_TEAM_IDS
 
         # Verify the document is not public (as set by MockConnector)
         assert db_doc.is_public is False

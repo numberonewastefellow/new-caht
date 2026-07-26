@@ -1,4 +1,4 @@
-export interface UserGroupUpdate {
+export interface TeamUpdate {
   user_ids: string[];
   cc_pair_ids: number[];
 }
@@ -8,7 +8,7 @@ export interface SetCuratorRequest {
   is_curator: boolean;
 }
 
-export interface UserGroupCreation {
+export interface TeamCreate {
   name: string;
   user_ids: string[];
   cc_pair_ids: number[];

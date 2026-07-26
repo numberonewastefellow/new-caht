@@ -7,6 +7,9 @@ import psycopg2
 
 from alembic import command
 from alembic.config import Config
+from sqlalchemy import create_engine
+from sqlalchemy import pool
+from shared_configs.configs import MULTI_TENANT
 from om.configs.app_configs import POSTGRES_HOST
 from om.configs.app_configs import POSTGRES_PASSWORD
 from om.configs.app_configs import POSTGRES_PORT
@@ -52,15 +55,34 @@ def _run_migrations(
     # Set the SQLAlchemy URL in the Alembic configuration
     alembic_cfg.set_main_option("sqlalchemy.url", database_url)
 
-    # Run the migration
-    if direction == "upgrade":
-        command.upgrade(alembic_cfg, revision)
-    elif direction == "downgrade":
-        command.downgrade(alembic_cfg, revision)
-    else:
-        raise ValueError(
-            f"Invalid direction: {direction}. Must be 'upgrade' or 'downgrade'."
-        )
+    # Host-safe reset: in single-tenant mode, drive the migration over a SYNC
+    # (psycopg2) engine supplied via env.py's ``config.attributes["connection"]``
+    # hook (its pytest-alembic path). The stock async (asyncpg) engine rejects the
+    # baseline migration's multi-statement SQL dump ("cannot insert multiple
+    # commands into a prepared statement") when run from the host. Passing a sync
+    # engine makes DDL run over the simple-query protocol. In-container behavior
+    # is identical (same DB, same head); only the driver path changes.
+    # Multi-tenant resets keep the async path (env.py iterates tenant schemas
+    # there), so the sync-connection hook is intentionally skipped when
+    # MULTI_TENANT is set.
+    sync_engine = None
+    if not MULTI_TENANT and SYNC_DB_API in database_url:
+        sync_engine = create_engine(database_url, poolclass=pool.NullPool)
+        alembic_cfg.attributes["connection"] = sync_engine
+
+    try:
+        # Run the migration
+        if direction == "upgrade":
+            command.upgrade(alembic_cfg, revision)
+        elif direction == "downgrade":
+            command.downgrade(alembic_cfg, revision)
+        else:
+            raise ValueError(
+                f"Invalid direction: {direction}. Must be 'upgrade' or 'downgrade'."
+            )
+    finally:
+        if sync_engine is not None:
+            sync_engine.dispose()
 
     logging.getLogger("alembic").setLevel(logging.INFO)
 

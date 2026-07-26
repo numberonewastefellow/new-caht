@@ -1,5 +1,5 @@
 import Modal from "@/refresh-components/Modal";
-import { updateUserGroup } from "./lib";
+import { updateTeam } from "./lib";
 import { toast } from "@/hooks/useToast";
 import { User, Team } from "@/lib/types";
 import { UserEditor } from "../UserEditor";
@@ -7,13 +7,13 @@ import { useState } from "react";
 import { SvgUserPlus } from "@opal/icons";
 export interface AddMemberFormProps {
   users: User[];
-  userGroup: Team;
+  team: Team;
   onClose: () => void;
 }
 
 export default function AddMemberForm({
   users,
-  userGroup,
+  team,
   onClose,
 }: AddMemberFormProps) {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
@@ -31,20 +31,20 @@ export default function AddMemberForm({
             selectedUserIds={selectedUserIds}
             setSelectedUserIds={setSelectedUserIds}
             allUsers={users}
-            existingUsers={userGroup.users}
+            existingUsers={team.users}
             onSubmit={async (selectedUsers) => {
               const newUserIds = [
                 ...Array.from(
                   new Set(
-                    userGroup.users
+                    team.users
                       .map((user) => user.id)
                       .concat(selectedUsers.map((user) => user.id))
                   )
                 ),
               ];
-              const response = await updateUserGroup(userGroup.id, {
+              const response = await updateTeam(team.id, {
                 user_ids: newUserIds,
-                cc_pair_ids: userGroup.cc_pairs.map((ccPair) => ccPair.id),
+                cc_pair_ids: team.cc_pairs.map((ccPair) => ccPair.id),
               });
               if (response.ok) {
                 toast.success("Successfully added users to team");

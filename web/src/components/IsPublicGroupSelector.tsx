@@ -28,22 +28,22 @@ export const IsPublicGroupSelector = <T extends IsPublicGroupSelectorFormType>({
   enforceGroupSelection?: boolean;
   smallLabels?: boolean;
 }) => {
-  const { data: userGroups, isLoading: userGroupsIsLoading } = useTeams();
+  const { data: teams, isLoading: teamsIsLoading } = useTeams();
   const { isAdmin, user, isCurator } = useUser();
   const [shouldHideContent, setShouldHideContent] = useState(false);
 
   useEffect(() => {
-    if (user && userGroups) {
+    if (user && teams) {
       const isUserAdmin = user.role === UserRole.ADMIN;
-      if (!isUserAdmin && userGroups.length > 0) {
+      if (!isUserAdmin && teams.length > 0) {
         formikProps.setFieldValue("is_public", false);
       }
       if (
-        userGroups.length === 1 &&
-        userGroups[0] !== undefined &&
+        teams.length === 1 &&
+        teams[0] !== undefined &&
         !isUserAdmin
       ) {
-        formikProps.setFieldValue("groups", [userGroups[0].id]);
+        formikProps.setFieldValue("groups", [teams[0].id]);
         setShouldHideContent(true);
       } else if (formikProps.values.is_public) {
         formikProps.setFieldValue("groups", []);
@@ -52,27 +52,27 @@ export const IsPublicGroupSelector = <T extends IsPublicGroupSelectorFormType>({
         setShouldHideContent(false);
       }
     }
-  }, [user, userGroups]);
+  }, [user, teams]);
 
-  if (userGroupsIsLoading) {
+  if (teamsIsLoading) {
     return <div>Loading...</div>;
   }
 
-  let firstUserGroupName = "Unknown";
-  if (userGroups) {
-    const userGroup = userGroups[0];
-    if (userGroup) {
-      firstUserGroupName = userGroup.name;
+  let firstTeamName = "Unknown";
+  if (teams) {
+    const team = teams[0];
+    if (team) {
+      firstTeamName = team.name;
     }
   }
 
   if (shouldHideContent && enforceGroupSelection) {
     return (
       <>
-        {userGroups && (
+        {teams && (
           <div className="mb-1 font-medium text-base">
             This {objectName} will be assigned to group{" "}
-            <b>{firstUserGroupName}</b>.
+            <b>{firstTeamName}</b>.
           </div>
         )}
       </>

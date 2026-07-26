@@ -18,7 +18,7 @@ logger = setup_logger()
 
 
 EXTERNAL_USER_EMAILS = {"test@example.com", "admin@example.com"}
-EXTERNAL_USER_GROUP_IDS = {"mock-group-1", "mock-group-2"}
+EXTERNAL_TEAM_IDS = {"mock-group-1", "mock-group-2"}
 
 
 class MockConnectorCheckpoint(ConnectorCheckpoint):
@@ -96,7 +96,7 @@ class MockConnector(CheckpointedConnectorWithPermSync[MockConnectorCheckpoint]):
                 # Add mock permissions - make documents accessible to specific users/groups
                 document.external_access = ExternalAccess(
                     external_user_emails=EXTERNAL_USER_EMAILS,
-                    external_team_ids=EXTERNAL_USER_GROUP_IDS,
+                    external_team_ids=EXTERNAL_TEAM_IDS,
                     is_public=False,
                 )
             yield document

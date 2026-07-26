@@ -33,7 +33,5 @@ export const historyUrl = (
   return `${API}/history?${params.toString()}`;
 };
 
-// Team options for the TEAM-scope picker.
-// Integrator note (Contract 1): the Team admin API base is `/teams`; this base branch still exposes
-// the group endpoint. Retarget to `/api/teams` when WS-B is merged.
-export const TEAMS_URL = "/api/nexus/admin/user-group";
+// Team options for the TEAM-scope picker. Returns Team objects ({ id, name, ... }).
+export const TEAMS_URL = "/api/teams";

@@ -20,7 +20,7 @@ import { SvgUser } from "@opal/icons";
 import { Section } from "@/layouts/general-layouts";
 import Text from "@/refresh-components/texts/Text";
 import useShareableUsers from "@/hooks/useShareableUsers";
-import useShareableTeams from "@/hooks/useShareableGroups";
+import useShareableTeams from "@/hooks/useShareableTeams";
 import { useModal } from "@/refresh-components/contexts/ModalContext";
 import { useUser } from "@/providers/UserProvider";
 import { Formik, useFormikContext } from "formik";
@@ -52,13 +52,13 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
   const { values, setFieldValue, handleSubmit, dirty } =
     useFormikContext<ShareAgentFormValues>();
   const { data: usersData } = useShareableUsers({ includeApiKeys: true });
-  const { data: groupsData } = useShareableTeams();
+  const { data: teamsData } = useShareableTeams();
   const { user: currentUser } = useUser();
   const { agent: fullAgent } = useAgent(agentId ?? null);
   const shareAgentModal = useModal();
 
   const acceptedUsers = usersData ?? [];
-  const groups = groupsData ?? [];
+  const groups = teamsData ?? [];
 
   // Create options for InputComboBox from all accepted users and groups
   const comboBoxOptions = useMemo(() => {

@@ -4,7 +4,7 @@ import { toast } from "@/hooks/useToast";
 import { useState } from "react";
 import { ConnectorTitle } from "@/components/admin/connectors/ConnectorTitle";
 import AddMemberForm from "./AddMemberForm";
-import { updateUserGroup, updateCuratorStatus } from "./lib";
+import { updateTeam, updateCuratorStatus } from "./lib";
 import { Card } from "@/refresh-components/cards";
 import {
   User,
@@ -36,8 +36,8 @@ import GenericConfirmModal from "@/components/modals/GenericConfirmModal";
 interface GroupDisplayProps {
   users: User[];
   ccPairs: ConnectorStatus<any, any>[];
-  userGroup: Team;
-  refreshUserGroup: () => void;
+  team: Team;
+  refreshTeam: () => void;
 }
 
 const UserRoleDropdown = ({
@@ -153,8 +153,8 @@ const UserRoleDropdown = ({
 export const GroupDisplay = ({
   users,
   ccPairs,
-  userGroup,
-  refreshUserGroup,
+  team,
+  refreshTeam,
 }: GroupDisplayProps) => {
   const [addMemberFormVisible, setAddMemberFormVisible] = useState(false);
   const [addConnectorFormVisible, setAddConnectorFormVisible] = useState(false);
@@ -173,25 +173,25 @@ export const GroupDisplay = ({
         <span
           className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs whitespace-nowrap"
           style={{
-            backgroundColor: userGroup.is_up_to_date
+            backgroundColor: team.is_up_to_date
               ? "var(--theme-green-01)"
               : "var(--theme-amber-01)",
-            color: userGroup.is_up_to_date
+            color: team.is_up_to_date
               ? "var(--theme-green-05)"
               : "var(--theme-amber-05)",
           }}
         >
           <span
             className={`w-1.5 h-1.5 rounded-full ${
-              userGroup.is_up_to_date ? "" : "animate-pulse"
+              team.is_up_to_date ? "" : "animate-pulse"
             }`}
             style={{
-              backgroundColor: userGroup.is_up_to_date
+              backgroundColor: team.is_up_to_date
                 ? "var(--theme-green-05)"
                 : "var(--theme-amber-05)",
             }}
           />
-          {userGroup.is_up_to_date ? "Up to date" : "Syncing"}
+          {team.is_up_to_date ? "Up to date" : "Syncing"}
         </span>
       </div>
 
@@ -200,7 +200,7 @@ export const GroupDisplay = ({
       <h2 className="font-heading-h3 text-text-05 mb-3">Users</h2>
 
       <div className="mt-2">
-        {userGroup.users.length > 0 ? (
+        {team.users.length > 0 ? (
           <Card padding={0}>
             <Table>
               <TableHeader>
@@ -213,7 +213,7 @@ export const GroupDisplay = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {userGroup.users.map((groupMember) => {
+                {team.users.map((groupMember) => {
                   return (
                     <TableRow key={groupMember.id}>
                       <TableCell className="whitespace-normal break-all">
@@ -222,7 +222,7 @@ export const GroupDisplay = ({
                       <TableCell>
                         <UserRoleDropdown
                           user={groupMember}
-                          group={userGroup}
+                          group={team}
                           onSuccess={onRoleChangeSuccess}
                           onError={onRoleChangeError}
                           isAdmin={isAdmin}
@@ -232,23 +232,23 @@ export const GroupDisplay = ({
                         <div className="flex w-full">
                           <div className="ml-auto m-2">
                             {(isAdmin ||
-                              !userGroup.curator_ids.includes(
+                              !team.curator_ids.includes(
                                 groupMember.id
                               )) && (
                               <DeleteButton
                                 onClick={async () => {
-                                  const response = await updateUserGroup(
-                                    userGroup.id,
+                                  const response = await updateTeam(
+                                    team.id,
                                     {
-                                      user_ids: userGroup.users
+                                      user_ids: team.users
                                         .filter(
-                                          (userGroupUser) =>
-                                            userGroupUser.id !== groupMember.id
+                                          (teamUser) =>
+                                            teamUser.id !== groupMember.id
                                         )
                                         .map(
-                                          (userGroupUser) => userGroupUser.id
+                                          (teamUser) => teamUser.id
                                         ),
-                                      cc_pair_ids: userGroup.cc_pairs.map(
+                                      cc_pair_ids: team.cc_pairs.map(
                                         (ccPair) => ccPair.id
                                       ),
                                     }
@@ -266,7 +266,7 @@ export const GroupDisplay = ({
                                       `Error removing user from team - ${errorMsg}`
                                     );
                                   }
-                                  refreshUserGroup();
+                                  refreshTeam();
                                 }}
                               />
                             )}
@@ -288,12 +288,12 @@ export const GroupDisplay = ({
 
       <SimpleTooltip
         tooltip="Cannot update team while sync is occurring"
-        disabled={userGroup.is_up_to_date}
+        disabled={team.is_up_to_date}
       >
         <Button
-          disabled={!userGroup.is_up_to_date}
+          disabled={!team.is_up_to_date}
           onClick={() => {
-            if (userGroup.is_up_to_date) {
+            if (team.is_up_to_date) {
               setAddMemberFormVisible(true);
             }
           }}
@@ -304,10 +304,10 @@ export const GroupDisplay = ({
       {addMemberFormVisible && (
         <AddMemberForm
           users={users}
-          userGroup={userGroup}
+          team={team}
           onClose={() => {
             setAddMemberFormVisible(false);
-            refreshUserGroup();
+            refreshTeam();
           }}
         />
       )}
@@ -316,7 +316,7 @@ export const GroupDisplay = ({
 
       <h2 className="font-heading-h3 text-text-05 mt-10 mb-3">Connectors</h2>
       <div className="mt-2">
-        {userGroup.cc_pairs.length > 0 ? (
+        {team.cc_pairs.length > 0 ? (
           <Card padding={0}>
             <Table>
               <TableHeader>
@@ -328,7 +328,7 @@ export const GroupDisplay = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {userGroup.cc_pairs.map((ccPair) => {
+                {team.cc_pairs.map((ccPair) => {
                   return (
                     <TableRow key={ccPair.id}>
                       <TableCell className="whitespace-normal break-all">
@@ -343,16 +343,16 @@ export const GroupDisplay = ({
                           <div className="ml-auto m-2">
                             <DeleteButton
                               onClick={async () => {
-                                const response = await updateUserGroup(
-                                  userGroup.id,
+                                const response = await updateTeam(
+                                  team.id,
                                   {
-                                    user_ids: userGroup.users.map(
-                                      (userGroupUser) => userGroupUser.id
+                                    user_ids: team.users.map(
+                                      (teamUser) => teamUser.id
                                     ),
-                                    cc_pair_ids: userGroup.cc_pairs
+                                    cc_pair_ids: team.cc_pairs
                                       .filter(
-                                        (userGroupCCPair) =>
-                                          userGroupCCPair.id != ccPair.id
+                                        (teamCCPair) =>
+                                          teamCCPair.id != ccPair.id
                                       )
                                       .map((ccPair) => ccPair.id),
                                   }
@@ -369,7 +369,7 @@ export const GroupDisplay = ({
                                     `Error removing connector from team - ${errorMsg}`
                                   );
                                 }
-                                refreshUserGroup();
+                                refreshTeam();
                               }}
                             />
                           </div>
@@ -390,12 +390,12 @@ export const GroupDisplay = ({
 
       <SimpleTooltip
         tooltip="Cannot update team while sync is occurring"
-        disabled={userGroup.is_up_to_date}
+        disabled={team.is_up_to_date}
       >
         <Button
-          disabled={!userGroup.is_up_to_date}
+          disabled={!team.is_up_to_date}
           onClick={() => {
-            if (userGroup.is_up_to_date) {
+            if (team.is_up_to_date) {
               setAddConnectorFormVisible(true);
             }
           }}
@@ -407,10 +407,10 @@ export const GroupDisplay = ({
       {addConnectorFormVisible && (
         <AddConnectorForm
           ccPairs={ccPairs}
-          userGroup={userGroup}
+          team={team}
           onClose={() => {
             setAddConnectorFormVisible(false);
-            refreshUserGroup();
+            refreshTeam();
           }}
         />
       )}
@@ -420,9 +420,9 @@ export const GroupDisplay = ({
       <h2 className="font-heading-h3 text-text-05 mt-10 mb-3">Document Sets</h2>
 
       <div>
-        {userGroup.document_sets.length > 0 ? (
+        {team.document_sets.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {userGroup.document_sets.map((documentSet) => {
+            {team.document_sets.map((documentSet) => {
               return (
                 <Bubble isSelected key={documentSet.id}>
                   <div className="flex">
@@ -445,9 +445,9 @@ export const GroupDisplay = ({
       <h2 className="font-heading-h3 text-text-05 mt-10 mb-3">Assistants</h2>
 
       <div>
-        {userGroup.document_sets.length > 0 ? (
+        {team.document_sets.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {userGroup.agents.map((agent) => {
+            {team.agents.map((agent) => {
               return (
                 <Bubble isSelected key={agent.id}>
                   <div className="flex">

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/hooks/useToast";
 import { ConnectorTitle } from "@/components/admin/connectors/ConnectorTitle";
-import { deleteUserGroup } from "./lib";
+import { deleteTeam } from "./lib";
 import { User, Team } from "@/lib/types";
 import { DeleteButton } from "@/components/DeleteButton";
 import Button from "@/refresh-components/buttons/Button";
@@ -158,7 +158,7 @@ export const TeamsTable = ({ teams, refresh }: TeamsTableProps) => {
                 <DeleteButton
                   onClick={async (event) => {
                     event.stopPropagation();
-                    const response = await deleteUserGroup(team.id);
+                    const response = await deleteTeam(team.id);
                     if (response.ok) {
                       toast.success(`Team "${team.name}" deleted`);
                     } else {

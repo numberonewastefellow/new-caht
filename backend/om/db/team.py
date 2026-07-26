@@ -216,6 +216,17 @@ def _check_modifiable(team: Team) -> None:
 def _add_memberships(
     db_session: Session, team_id: int, user_ids: list[UUID]
 ) -> None:
+    if user_ids:
+        # Validate the users exist before inserting; otherwise the FK
+        # (user__team_user_id_fkey) raises an IntegrityError that surfaces as an
+        # opaque HTTP 500. A ValueError here is turned into a clean 400 by the
+        # /teams endpoints.
+        found = set(
+            db_session.scalars(select(User.id).where(User.id.in_(user_ids)))
+        )
+        missing = [str(uid) for uid in user_ids if uid not in found]
+        if missing:
+            raise ValueError(f"Unknown user id(s): {', '.join(missing)}")
     existing = {
         uid
         for uid in db_session.scalars(

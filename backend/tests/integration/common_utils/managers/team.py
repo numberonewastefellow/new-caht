@@ -19,7 +19,7 @@ class TeamManager:
         cc_pair_ids: list[int] | None = None,
         user_performing_action: DATestUser | None = None,
     ) -> DATestTeam:
-        name = f"{name}-user-group" if name else f"test-user-group-{uuid4()}"
+        name = f"{name}-team" if name else f"test-team-{uuid4()}"
 
         request = {
             "name": name,
@@ -27,7 +27,7 @@ class TeamManager:
             "cc_pair_ids": cc_pair_ids or [],
         }
         response = requests.post(
-            f"{API_SERVER_URL}/nexus/admin/user-group",
+            f"{API_SERVER_URL}/teams",
             json=request,
             headers=(
                 user_performing_action.headers
@@ -50,7 +50,7 @@ class TeamManager:
         user_performing_action: DATestUser | None = None,
     ) -> None:
         response = requests.patch(
-            f"{API_SERVER_URL}/nexus/admin/user-group/{team.id}",
+            f"{API_SERVER_URL}/teams/{team.id}",
             json=team.model_dump(),
             headers=(
                 user_performing_action.headers
@@ -66,7 +66,7 @@ class TeamManager:
         user_performing_action: DATestUser | None = None,
     ) -> None:
         response = requests.delete(
-            f"{API_SERVER_URL}/nexus/admin/user-group/{team.id}",
+            f"{API_SERVER_URL}/teams/{team.id}",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -86,7 +86,7 @@ class TeamManager:
         }
 
         response = requests.post(
-            f"{API_SERVER_URL}/nexus/admin/user-group/{team.id}/add-users",
+            f"{API_SERVER_URL}/teams/{team.id}/add-users",
             json=request,
             headers=(
                 user_performing_action.headers
@@ -115,7 +115,7 @@ class TeamManager:
             "is_curator": is_curator,
         }
         response = requests.post(
-            f"{API_SERVER_URL}/nexus/admin/user-group/{test_team.id}/set-curator",
+            f"{API_SERVER_URL}/teams/{test_team.id}/set-curator",
             json=set_curator_request,
             headers=(
                 user_performing_action.headers
@@ -130,7 +130,7 @@ class TeamManager:
         user_performing_action: DATestUser | None = None,
     ) -> list[Team]:
         response = requests.get(
-            f"{API_SERVER_URL}/nexus/admin/user-group",
+            f"{API_SERVER_URL}/teams",
             headers=(
                 user_performing_action.headers
                 if user_performing_action
@@ -151,7 +151,7 @@ class TeamManager:
             if team.id == fetched_team.id:
                 if verify_deleted:
                     raise ValueError(
-                        f"User group {team.id} found but should be deleted"
+                        f"Team {team.id} found but should be deleted"
                     )
                 fetched_cc_ids = {cc_pair.id for cc_pair in fetched_team.cc_pairs}
                 fetched_user_ids = {user.id for user in fetched_team.users}
@@ -163,7 +163,7 @@ class TeamManager:
                 ):
                     return
         if not verify_deleted:
-            raise ValueError(f"User group {team.id} not found")
+            raise ValueError(f"Team {team.id} not found")
 
     @staticmethod
     def wait_for_sync(
@@ -177,22 +177,22 @@ class TeamManager:
                 check_ids = {team.id for team in teams_to_check}
                 team_ids = {team.id for team in teams}
                 if not check_ids.issubset(team_ids):
-                    raise RuntimeError("User group not found")
+                    raise RuntimeError("Teamnot found")
                 teams = [
                     team
                     for team in teams
                     if team.id in check_ids
                 ]
             if all(ug.is_up_to_date for ug in teams):
-                print("User groups synced successfully.")
+                print("Teams synced successfully.")
                 return
 
             if time.time() - start > MAX_DELAY:
                 raise TimeoutError(
-                    f"User groups were not synced within the {MAX_DELAY} seconds"
+                    f"Teams were not synced within the {MAX_DELAY} seconds"
                 )
             else:
-                print("User groups were not synced yet, waiting...")
+                print("Teams were not synced yet, waiting...")
             time.sleep(2)
 
     @staticmethod
@@ -212,8 +212,8 @@ class TeamManager:
 
             if time.time() - start > MAX_DELAY:
                 raise TimeoutError(
-                    f"User groups deletion was not completed within the {MAX_DELAY} seconds"
+                    f"Teams deletion was not completed within the {MAX_DELAY} seconds"
                 )
             else:
-                print("Some user groups are still being deleted, waiting...")
+                print("Some teams are still being deleted, waiting...")
             time.sleep(2)

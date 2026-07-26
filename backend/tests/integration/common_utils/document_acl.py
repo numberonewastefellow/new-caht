@@ -8,7 +8,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from om.access.access import _get_access_for_documents
+from om.access.access import get_access_for_documents
 from om.db.external_perm import fetch_external_teams_for_user
 from om.access.utils import prefix_external_team
 from om.access.utils import prefix_user_email
@@ -25,7 +25,14 @@ logger = setup_logger()
 
 def get_user_acl(user: User, db_session: Session) -> set[str]:
     """
-    Get the ACL entries for a user, including their external groups, email, and public doc pattern.
+    Get the ACL entries for a user: internal team memberships, external groups,
+    the user's email, and the public doc pattern.
+
+    Delegates to the canonical :func:`om.access.access.get_acl_for_user` so this
+    deterministic check stays byte-for-byte identical to the read-side filter the
+    live search endpoint builds. (Previously this reimplemented the ACL and
+    omitted *internal* team memberships, which made team-scoped docs invisible to
+    their own members in the DB-side check.)
 
     Args:
         user: The user object
@@ -34,17 +41,9 @@ def get_user_acl(user: User, db_session: Session) -> set[str]:
     Returns:
         Set of ACL entries for the user
     """
-    db_external_groups = (
-        fetch_external_teams_for_user(db_session, user.id) if user else []
-    )
-    prefixed_external_groups = [
-        prefix_external_team(db_external_group.external_team_id)
-        for db_external_group in db_external_groups
-    ]
+    from om.access.access import get_acl_for_user
 
-    user_acl = set(prefixed_external_groups)
-    user_acl.update({prefix_user_email(user.email), PUBLIC_DOC_PAT})
-    return user_acl
+    return get_acl_for_user(user, db_session)
 
 
 def get_user_document_access_via_acl(
@@ -74,7 +73,7 @@ def get_user_document_access_via_acl(
     logger.info(f"User {user.email} ACL entries: {user_acl}")
 
     # Get document access information
-    doc_access_map = _get_access_for_documents(document_ids, db_session)
+    doc_access_map = get_access_for_documents(document_ids, db_session)
     logger.info(f"Found access info for {len(doc_access_map)} documents")
 
     accessible_docs = []
@@ -132,7 +131,7 @@ def get_documents_by_permission_type(
     Returns:
         List of document IDs that are public
     """
-    doc_access_map = _get_access_for_documents(document_ids, db_session)
+    doc_access_map = get_access_for_documents(document_ids, db_session)
 
     public_docs = []
 

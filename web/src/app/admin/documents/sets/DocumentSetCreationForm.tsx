@@ -27,14 +27,14 @@ import { useFederatedConnectors } from "@/lib/hooks";
 
 interface SetCreationPopupProps {
   ccPairs: ConnectorStatus<any, any>[];
-  userGroups: Team[] | undefined;
+  teams: Team[] | undefined;
   onClose: () => void;
   existingDocumentSet?: DocumentSetSummary;
 }
 
 export const DocumentSetCreationForm = ({
   ccPairs,
-  userGroups,
+  teams,
   onClose,
   existingDocumentSet,
 }: SetCreationPopupProps) => {
@@ -194,7 +194,7 @@ export const DocumentSetCreationForm = ({
                     <ConnectorMultiSelect
                       name="cc_pair_ids"
                       label={`Connectors available to ${
-                        userGroups && userGroups.length > 1
+                        teams && teams.length > 1
                           ? "the selected group"
                           : "the group you curate"
                       }`}
@@ -209,7 +209,7 @@ export const DocumentSetCreationForm = ({
                     <NonSelectableConnectors
                       connectors={nonVisibleCcPairs}
                       title={`Connectors not available to the ${
-                        userGroups && userGroups.length > 1
+                        teams && teams.length > 1
                           ? `group${
                               props.values.groups.length > 1 ? "s" : ""
                             } you have selected`
