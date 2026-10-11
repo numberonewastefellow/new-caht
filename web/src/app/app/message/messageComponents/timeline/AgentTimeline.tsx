@@ -231,6 +231,7 @@ export const AgentTimeline = React.memo(function AgentTimeline({
   // Memoized metrics derived from turn groups
   const {
     totalSteps,
+    totalAgents,
     isSingleStep,
     lastTurnGroup,
     lastStep,
@@ -270,6 +271,12 @@ export const AgentTimeline = React.memo(function AgentTimeline({
       ),
     [turnGroups]
   );
+
+  // Count shown in the "N agents" labels. Timeline steps include one group per
+  // tool call, so totalSteps would over-report the agent count on a workflow
+  // run (e.g. "8 agents" for a 3-agent workflow that made 5 tool calls).
+  // Non-workflow timelines keep the previous behaviour.
+  const displayAgentCount = isWorkflowTimeline ? totalAgents : totalSteps;
 
   const { isExpanded, handleToggle, parallelActiveTab, setParallelActiveTab } =
     useTimelineExpansion(
@@ -425,12 +432,12 @@ export const AgentTimeline = React.memo(function AgentTimeline({
   // done/total for the panel progress bar. A step is "done" once it is no longer
   // the actively-streaming step; when the run stops, everything is done.
   const panelDoneCount = useMemo(() => {
-    if (stopPacketSeen) return totalSteps;
+    if (stopPacketSeen) return displayAgentCount;
     const activeCount = lastTurnGroup?.isParallel
       ? lastTurnGroup.steps.length
       : 1;
-    return Math.max(0, totalSteps - activeCount);
-  }, [stopPacketSeen, totalSteps, lastTurnGroup]);
+    return Math.max(0, displayAgentCount - activeCount);
+  }, [stopPacketSeen, displayAgentCount, lastTurnGroup]);
 
   const panelTitle = useMemo(() => {
     if (!stopPacketSeen) return "Agents thinking";
@@ -586,7 +593,7 @@ export const AgentTimeline = React.memo(function AgentTimeline({
             <WorkflowTriggerChip
               title={panelTitle}
               isLive={isLive}
-              totalSteps={totalSteps}
+              totalSteps={displayAgentCount}
               panelOpen={isThisPanelOpen}
               onToggle={handleChipToggle}
               messageId={messageId}
@@ -601,7 +608,7 @@ export const AgentTimeline = React.memo(function AgentTimeline({
               isLive={isLive}
               title={panelTitle}
               doneCount={panelDoneCount}
-              totalCount={totalSteps}
+              totalCount={displayAgentCount}
               elapsedSeconds={panelElapsedSeconds}
               messageId={messageId}
               onClose={() => closePanel({ userInitiated: true })}
