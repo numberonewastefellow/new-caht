@@ -238,7 +238,7 @@ export default function ChatSearchCommandMenu({
                 onSelect={handleNewSession}
                 defaultHighlight={!hasSearchValue}
               >
-                New Session
+                New Chat
               </CommandMenu.Action>
             )}
 

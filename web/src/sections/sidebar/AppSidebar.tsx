@@ -484,7 +484,7 @@ const MemoizedAppSidebarInner = memo(
               reset();
             }}
           >
-            New Session
+            New Chat
           </SidebarTab>
         </div>
       );
