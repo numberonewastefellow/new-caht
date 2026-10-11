@@ -73,3 +73,8 @@ graphify-out/graph.html
 graphify-out/graph.json
 # dated per-run snapshot folders, e.g. graphify-out/2026-06-23/
 graphify-out/20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
+
+# secrets — local dev API keys used by the test tooling. These hold live
+# admin-scoped keys; never commit them (one was pushed to a public repo on
+# 2026-10-11 and had to be rotated).
+backend/tests/agents_creator/apikey.txt
