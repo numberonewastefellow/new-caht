@@ -1,0 +1,115 @@
+{{- if and .Values.pulse.enabled (gt (int .Values.pulse.worker.replicaCount) 0) }}
+# Pulse worker — Celery worker consuming the `pulse` queue (scheduled workflow runs).
+# Runs can take up to ~30 min, so the grace period lets in-flight runs finish on
+# scale-down / rollout (Celery warm shutdown on SIGTERM).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "onyx.fullname" . }}-pulse-worker
+  labels:
+    {{- include "onyx.labels" . | nindent 4 }}
+    {{- with .Values.pulse.worker.deploymentLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if not .Values.pulse.worker.autoscaling.enabled }}
+  replicas: {{ .Values.pulse.worker.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "onyx.selectorLabels" . | nindent 6 }}
+      {{- if .Values.pulse.worker.deploymentLabels }}
+      {{- toYaml .Values.pulse.worker.deploymentLabels | nindent 6 }}
+      {{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- with .Values.pulse.worker.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "onyx.labels" . | nindent 8 }}
+        {{- with .Values.pulse.worker.deploymentLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.pulse.worker.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "onyx.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml (.Values.pulse.podSecurityContext | default .Values.celery_shared.podSecurityContext) | nindent 8 }}
+      terminationGracePeriodSeconds: {{ .Values.pulse.worker.terminationGracePeriodSeconds | default 1900 }}
+      {{- with .Values.pulse.worker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pulse.worker.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pulse.worker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: pulse-worker
+          securityContext:
+            {{- toYaml (.Values.pulse.securityContext | default .Values.celery_shared.securityContext) | nindent 12 }}
+          image: "{{ .Values.pulse.image.repository }}:{{ .Values.pulse.image.tag | default .Values.global.version }}"
+          imagePullPolicy: {{ .Values.global.pullPolicy }}
+          # entrypoint `worker` runs:
+          #   celery -A om.background.celery.versioned_apps.pulse_worker worker -Q pulse
+          #     --pool=threads --concurrency=$PULSE_WORKER_CONCURRENCY
+          #     --prefetch-multiplier=1 --hostname=pulse@%h
+          command: ["/app/scripts/pulse_entrypoint.sh"]
+          args: ["worker"]
+          resources:
+            {{- toYaml .Values.pulse.worker.resources | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.config.envConfigMapName }}
+          env:
+            {{- include "onyx.envSecrets" . | nindent 12 }}
+            - name: PULSE_ROLE
+              value: "worker"
+            - name: PULSE_WORKER_CONCURRENCY
+              value: {{ .Values.pulse.worker.concurrency | default 4 | toString | quote }}
+            - name: PULSE_LOG_LEVEL
+              value: {{ .Values.pulse.worker.logLevel | default "INFO" | quote }}
+            {{- range $name, $value := .Values.pulse.env }}
+            - name: {{ $name | quote }}
+              value: {{ $value | toString | quote }}
+            {{- end }}
+            {{- range $name, $value := .Values.pulse.worker.env }}
+            - name: {{ $name | quote }}
+              value: {{ $value | toString | quote }}
+            {{- end }}
+          {{- with .Values.pulse.worker.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          # The entrypoint's `healthcheck` passes once Celery has written its
+          # worker_ready marker (/tmp/*_k8s_pulse_readiness.txt).
+          startupProbe:
+            {{- toYaml .Values.pulse.worker.startupProbe | nindent 12 }}
+            exec:
+              command: ["/app/scripts/pulse_entrypoint.sh", "healthcheck"]
+          readinessProbe:
+            {{- toYaml .Values.pulse.worker.readinessProbe | nindent 12 }}
+            exec:
+              command: ["/app/scripts/pulse_entrypoint.sh", "healthcheck"]
+          livenessProbe:
+            {{- toYaml .Values.pulse.worker.livenessProbe | nindent 12 }}
+            exec:
+              command: ["/app/scripts/pulse_entrypoint.sh", "healthcheck"]
+      {{- with .Values.pulse.worker.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

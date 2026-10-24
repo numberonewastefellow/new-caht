@@ -224,6 +224,117 @@ services:
     #   # Maps to the CA_CERT_PATH environment variable in the Dockerfile
     #   - ${CA_CERT_PATH:-./custom-ca.crt}:/etc/ssl/certs/custom-ca.crt:ro
 
+  # ---------------------------------------------------------------------------
+  # Pulse — scheduled workflow engine (like Cortex for inference, Pulse is the
+  # brand for scheduling). Image = backend image + Pulse layer (Dockerfile.pulse).
+  #   pulse_scheduler: HA ticker; 2 replicas by default — row locks + an advisory
+  #                    lock make extra replicas safe (no double-fire, no SPOF).
+  #   pulse_worker:    executes runs from the `pulse` queue; scale with
+  #                    `docker compose up -d --scale pulse_worker=N`.
+  # Docs: docs/scheduled-workflows/OPERATIONS.md
+  # ---------------------------------------------------------------------------
+  pulse_scheduler:
+    image: ${OM_PULSE_IMAGE:-om/pulse:${IMAGE_TAG:-latest}}
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile.pulse
+      args:
+        - OM_BACKEND_IMAGE=${OM_BACKEND_IMAGE:-om/om-backend:${IMAGE_TAG:-latest}}
+    command: ["scheduler"]
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      - relational_db
+      - cache
+      # api_server applies the DB migrations Pulse needs on startup
+      - api_server
+    restart: unless-stopped
+    deploy:
+      replicas: ${PULSE_SCHEDULER_REPLICAS:-2}
+    environment:
+      - PULSE_ROLE=scheduler
+      - PULSE_TICK_SECONDS=${PULSE_TICK_SECONDS:-5}
+      - PULSE_TENANT_MAX_CONCURRENT_RUNS=${PULSE_TENANT_MAX_CONCURRENT_RUNS:-8}
+      - PULSE_MISFIRE_GRACE_SECONDS=${PULSE_MISFIRE_GRACE_SECONDS:-300}
+      - PULSE_MAX_CONSECUTIVE_FAILURES=${PULSE_MAX_CONSECUTIVE_FAILURES:-5}
+      - PULSE_RUN_HISTORY_DAYS=${PULSE_RUN_HISTORY_DAYS:-90}
+      - POSTGRES_HOST=${POSTGRES_HOST:-relational_db}
+      - REDIS_HOST=${REDIS_HOST:-cache}
+      - FILE_STORE_BACKEND=${FILE_STORE_BACKEND:-s3}
+      - S3_ENDPOINT_URL=${S3_ENDPOINT_URL:-http://minio:9000}
+      - S3_AWS_ACCESS_KEY_ID=${S3_AWS_ACCESS_KEY_ID:-minioadmin}
+      - S3_AWS_SECRET_ACCESS_KEY=${S3_AWS_SECRET_ACCESS_KEY:-minioadmin}
+    volumes:
+      - pulse_logs:/var/log/om
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  pulse_worker:
+    image: ${OM_PULSE_IMAGE:-om/pulse:${IMAGE_TAG:-latest}}
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile.pulse
+      args:
+        - OM_BACKEND_IMAGE=${OM_BACKEND_IMAGE:-om/om-backend:${IMAGE_TAG:-latest}}
+    command: ["worker"]
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      - relational_db
+      - cache
+      - api_server
+    restart: unless-stopped
+    # Warm shutdown lets in-flight runs finish: must exceed the longest workflow
+    # timeout (default 1800s) + PULSE_DEADLINE_MARGIN_SECONDS.
+    stop_grace_period: 1900s
+    environment:
+      - PULSE_ROLE=worker
+      - PULSE_WORKER_CONCURRENCY=${PULSE_WORKER_CONCURRENCY:-4}
+      - PULSE_MAX_CONSECUTIVE_FAILURES=${PULSE_MAX_CONSECUTIVE_FAILURES:-5}
+      - PULSE_MISFIRE_GRACE_SECONDS=${PULSE_MISFIRE_GRACE_SECONDS:-300}
+      - FILE_STORE_BACKEND=${FILE_STORE_BACKEND:-s3}
+      - PHOENIX_COLLECTOR_ENDPOINT=${PHOENIX_COLLECTOR_ENDPOINT:-}
+      - POSTGRES_HOST=${POSTGRES_HOST:-relational_db}
+      - OPENSEARCH_HOST=${OPENSEARCH_HOST:-opensearch}
+      - OPENSEARCH_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-StrongPassword123!}
+      - OPENSEARCH_USE_SSL=${OPENSEARCH_USE_SSL:-true}
+      - REDIS_HOST=${REDIS_HOST:-cache}
+      - EMBEDDING_SERVER_URL=${EMBEDDING_SERVER_URL:-http://cortex_embed:8000/v1/embeddings}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-nomic-ai/nomic-embed-text-v1}
+      - EMBEDDING_API_KEY=${EMBEDDING_API_KEY:-}
+      - EMBEDDING_BATCH_SIZE=${EMBEDDING_BATCH_SIZE:-64}
+      - RERANK_ENABLED=${RERANK_ENABLED:-false}
+      - RERANK_SERVER_URL=${RERANK_SERVER_URL:-http://cortex_rerank:8000/v1/rerank}
+      - RERANK_MODEL=${RERANK_MODEL:-BAAI/bge-reranker-v2-m3}
+      - RERANK_API_KEY=${RERANK_API_KEY:-}
+      - RERANK_TOP_N=${RERANK_TOP_N:-20}
+      - RERANK_PROTECT_TOP_K=${RERANK_PROTECT_TOP_K:-2}
+      - S3_ENDPOINT_URL=${S3_ENDPOINT_URL:-http://minio:9000}
+      - S3_AWS_ACCESS_KEY_ID=${S3_AWS_ACCESS_KEY_ID:-minioadmin}
+      - S3_AWS_SECRET_ACCESS_KEY=${S3_AWS_SECRET_ACCESS_KEY:-minioadmin}
+      # Workflows that use the Python tool need the code interpreter
+      - CODE_INTERPRETER_BASE_URL=${CODE_INTERPRETER_BASE_URL:-http://code-interpreter:8000}
+      - PERSISTENT_DOCUMENT_STORAGE_PATH=${PERSISTENT_DOCUMENT_STORAGE_PATH:-/app/file-system}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - pulse_logs:/var/log/om
+      - file-system:/app/file-system
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+    # PRODUCTION: same optional custom-CA mount as `background`
+    # volumes:
+    #   # Maps to the CA_CERT_PATH environment variable in the Dockerfile
+    #   - ${CA_CERT_PATH:-./custom-ca.crt}:/etc/ssl/certs/custom-ca.crt:ro
+
   web_server:
     image: ${OM_WEB_SERVER_IMAGE:-om/om-web-server:${IMAGE_TAG:-latest}}
     build:
@@ -673,6 +784,8 @@ volumes:
     name: onyx-stack_api_server_logs
   background_logs:
     name: onyx-stack_background_logs
+  pulse_logs:
+    name: virtualai_pulse_logs
   # mcp_server_logs:
   # Shared volume for persistent document storage (Craft file-system mode)
   file-system:

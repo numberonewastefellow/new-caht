@@ -1,0 +1,41 @@
+{{- if and .Values.pulse.enabled (.Values.pulse.worker.autoscaling.enabled) (eq (include "onyx.autoscaling.engine" .) "keda") }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "onyx.fullname" . }}-pulse-worker
+  labels:
+    {{- include "onyx.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "onyx.fullname" . }}-pulse-worker
+  minReplicaCount: {{ .Values.pulse.worker.autoscaling.minReplicas | default 1 }}
+  maxReplicaCount: {{ .Values.pulse.worker.autoscaling.maxReplicas | default 10 }}
+  pollingInterval: {{ .Values.pulse.worker.autoscaling.pollingInterval | default 30 }}
+  cooldownPeriod: {{ .Values.pulse.worker.autoscaling.cooldownPeriod | default 300 }}
+  {{- if hasKey .Values.pulse.worker.autoscaling "idleReplicaCount" }}
+  idleReplicaCount: {{ .Values.pulse.worker.autoscaling.idleReplicaCount }}
+  {{- end }}
+  {{- if .Values.pulse.worker.autoscaling.customTriggers }}
+  fallback:
+    failureThreshold: {{ .Values.pulse.worker.autoscaling.failureThreshold | default 3 }}
+    replicas: {{ .Values.pulse.worker.autoscaling.fallbackReplicas | default 1 }}
+  {{- end }}
+  triggers:
+    {{- if .Values.pulse.worker.autoscaling.targetCPUUtilizationPercentage }}
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "{{ .Values.pulse.worker.autoscaling.targetCPUUtilizationPercentage }}"
+    {{- end }}
+    {{- if .Values.pulse.worker.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: memory
+      metricType: Utilization
+      metadata:
+        value: "{{ .Values.pulse.worker.autoscaling.targetMemoryUtilizationPercentage }}"
+    {{- end }}
+    {{- if .Values.pulse.worker.autoscaling.customTriggers }}
+    {{- toYaml .Values.pulse.worker.autoscaling.customTriggers | nindent 4 }}
+    {{- end }}
+{{- end }}

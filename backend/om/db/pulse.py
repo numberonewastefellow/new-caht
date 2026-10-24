@@ -547,6 +547,28 @@ def interrupt_runs_for_host(db_session: Session, hostname: str) -> list[int]:
     return ids
 
 
+def latest_assistant_message(
+    db_session: Session, chat_session_id: UUID
+) -> ChatMessage | None:
+    return db_session.execute(
+        select(ChatMessage)
+        .where(ChatMessage.chat_session_id == chat_session_id)
+        .where(ChatMessage.message_type == MessageType.ASSISTANT)
+        .order_by(ChatMessage.id.desc())
+        .limit(1)
+    ).scalar_one_or_none()
+
+
+def fill_empty_assistant_message(
+    db_session: Session, chat_session_id: UUID, text: str
+) -> None:
+    """Give a run that died mid-flight a visible explanation in its chat."""
+    message = latest_assistant_message(db_session, chat_session_id)
+    if message is not None and not (message.message or "").strip():
+        message.message = text
+        db_session.commit()
+
+
 # ========================
 # Retention
 # ========================

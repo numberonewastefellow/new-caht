@@ -1,0 +1,37 @@
+# Pulse — scheduled workflow engine (VirtualAI).
+#
+# A thin layer on top of the backend image: Pulse executes workflows through the
+# backend's own chat/workflow engine, so it shares all of its code and packages.
+# One image, two roles (see scripts/pulse_entrypoint.sh):
+#   scheduler  — HA ticker loop (`python -m om.pulse.scheduler`), run 2+ replicas
+#   worker     — Celery worker for the `pulse` queue, scale horizontally
+#
+# Build after the backend image:
+#   docker build -f Dockerfile -t om/om-backend:latest .
+#   docker build -f Dockerfile.pulse -t om/pulse:latest .
+# (docker compose builds both; `OM_BACKEND_IMAGE` selects the base.)
+
+ARG OM_BACKEND_IMAGE=om/om-backend:latest
+FROM ${OM_BACKEND_IMAGE}
+
+LABEL org.opencontainers.image.title="VirtualAI Pulse" \
+      org.opencontainers.image.description="Scheduled workflow engine: HA scheduler + run workers"
+
+# Pulse packages (croniter). Already present in current backend images (the backend
+# Dockerfile installs requirements/pulse.txt for the api_server); installing again is
+# a no-op there and makes Pulse work on older backend base images.
+# Add Pulse-only runtime packages to requirements/pulse.txt.
+COPY ./requirements/pulse.txt /tmp/pulse-requirements.txt
+RUN pip install --no-cache-dir -r /tmp/pulse-requirements.txt && rm /tmp/pulse-requirements.txt
+
+COPY ./scripts/pulse_entrypoint.sh /app/scripts/pulse_entrypoint.sh
+# Strip Windows CRLF line endings (same as the backend Dockerfile)
+RUN sed -i 's/\r$//' /app/scripts/pulse_entrypoint.sh && chmod +x /app/scripts/pulse_entrypoint.sh
+
+ENV PULSE_ROLE=worker
+WORKDIR /app
+
+HEALTHCHECK --interval=30s --timeout=15s --start-period=90s --retries=3 \
+    CMD ["/app/scripts/pulse_entrypoint.sh", "healthcheck"]
+
+ENTRYPOINT ["/app/scripts/pulse_entrypoint.sh"]

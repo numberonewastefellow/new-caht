@@ -1,0 +1,32 @@
+{{- if and .Values.pulse.enabled (.Values.pulse.worker.autoscaling.enabled) (ne (include "onyx.autoscaling.engine" .) "keda") }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "onyx.fullname" . }}-pulse-worker
+  labels:
+    {{- include "onyx.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "onyx.fullname" . }}-pulse-worker
+  minReplicas: {{ .Values.pulse.worker.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.pulse.worker.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.pulse.worker.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.pulse.worker.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.pulse.worker.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.pulse.worker.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

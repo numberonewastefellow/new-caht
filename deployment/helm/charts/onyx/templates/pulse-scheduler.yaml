@@ -1,0 +1,103 @@
+{{- if and .Values.pulse.enabled (gt (int .Values.pulse.scheduler.replicaCount) 0) }}
+# Pulse scheduler — HA ticker loop (`python -m om.pulse.scheduler`).
+# Safe to run 2+ replicas: due schedules are claimed with Postgres row locks and
+# housekeeping is guarded by an advisory lock.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "onyx.fullname" . }}-pulse-scheduler
+  labels:
+    {{- include "onyx.labels" . | nindent 4 }}
+    {{- with .Values.pulse.scheduler.deploymentLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.pulse.scheduler.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "onyx.selectorLabels" . | nindent 6 }}
+      {{- if .Values.pulse.scheduler.deploymentLabels }}
+      {{- toYaml .Values.pulse.scheduler.deploymentLabels | nindent 6 }}
+      {{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- with .Values.pulse.scheduler.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "onyx.labels" . | nindent 8 }}
+        {{- with .Values.pulse.scheduler.deploymentLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.pulse.scheduler.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "onyx.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml (.Values.pulse.podSecurityContext | default .Values.celery_shared.podSecurityContext) | nindent 8 }}
+      {{- with .Values.pulse.scheduler.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
+      {{- with .Values.pulse.scheduler.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pulse.scheduler.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pulse.scheduler.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: pulse-scheduler
+          securityContext:
+            {{- toYaml (.Values.pulse.securityContext | default .Values.celery_shared.securityContext) | nindent 12 }}
+          image: "{{ .Values.pulse.image.repository }}:{{ .Values.pulse.image.tag | default .Values.global.version }}"
+          imagePullPolicy: {{ .Values.global.pullPolicy }}
+          command: ["/app/scripts/pulse_entrypoint.sh"]
+          args: ["scheduler"]
+          resources:
+            {{- toYaml .Values.pulse.scheduler.resources | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.config.envConfigMapName }}
+          env:
+            {{- include "onyx.envSecrets" . | nindent 12 }}
+            - name: PULSE_ROLE
+              value: "scheduler"
+            {{- range $name, $value := .Values.pulse.env }}
+            - name: {{ $name | quote }}
+              value: {{ $value | toString | quote }}
+            {{- end }}
+            {{- range $name, $value := .Values.pulse.scheduler.env }}
+            - name: {{ $name | quote }}
+              value: {{ $value | toString | quote }}
+            {{- end }}
+          {{- with .Values.pulse.scheduler.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          # The scheduler touches its heartbeat file every tick; the entrypoint's
+          # `healthcheck` fails once it is older than 2 minutes.
+          startupProbe:
+            {{- toYaml .Values.pulse.scheduler.startupProbe | nindent 12 }}
+            exec:
+              command: ["/app/scripts/pulse_entrypoint.sh", "healthcheck"]
+          livenessProbe:
+            {{- toYaml .Values.pulse.scheduler.livenessProbe | nindent 12 }}
+            exec:
+              command: ["/app/scripts/pulse_entrypoint.sh", "healthcheck"]
+      {{- with .Values.pulse.scheduler.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
