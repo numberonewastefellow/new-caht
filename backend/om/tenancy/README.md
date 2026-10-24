@@ -104,7 +104,7 @@ Only for genuinely cross-tenant data (e.g. email→tenant routing). Set
 1. `create_tenant_schema` — the isolated schema (strict-id validated).
 2. `run_migrations_for_schema` — the full Alembic chain (baseline also seeds built-in
    tools / default assistant / search settings).
-3. `setup_onyx` — per-tenant runtime setup (document index).
+3. `setup_om` — per-tenant runtime setup (document index).
 4. `TenantMappingRepository.assign` — record the email→tenant route (public).
 
 Failure at any step drops the half-built schema (`drop_tenant_schema`) so a retry starts

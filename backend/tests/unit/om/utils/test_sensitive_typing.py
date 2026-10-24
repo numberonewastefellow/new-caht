@@ -1,7 +1,7 @@
 """
 Tests demonstrating static type checking for SensitiveValue.
 
-Run with: mypy tests/unit/onyx/utils/test_sensitive_typing.py --ignore-missing-imports
+Run with: mypy tests/unit/om/utils/test_sensitive_typing.py --ignore-missing-imports
 
 These tests show what mypy will catch when SensitiveValue is misused.
 """

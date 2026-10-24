@@ -60,7 +60,7 @@ from om.redis.redis_hierarchy import ensure_source_node_exists
 from om.redis.redis_hierarchy import HierarchyNodeCacheEntry
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client
-from om.server.runtime.onyx_runtime import OmRuntime
+from om.server.runtime.om_runtime import OmRuntime
 from om.server.utils import make_short_id
 from om.utils.logger import format_error_for_logging
 from om.utils.logger import LoggerContextVars

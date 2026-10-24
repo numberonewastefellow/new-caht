@@ -23,11 +23,11 @@ from retry import retry
 
 # add onyx/backend to path (since this isn't done automatically when running as a script)
 current_dir = Path(__file__).parent
-onyx_dir = current_dir.parent.parent.parent.parent
-sys.path.append(str(onyx_dir / "backend"))
+om_dir = current_dir.parent.parent.parent.parent
+sys.path.append(str(om_dir / "backend"))
 
 # load env before app_config loads (since env doesn't get loaded when running as a script)
-env_path = onyx_dir / ".vscode" / ".env"
+env_path = om_dir / ".vscode" / ".env"
 if not env_path.exists():
     raise RuntimeError(
         "Could not find .env file. Please create one in the root .vscode directory."

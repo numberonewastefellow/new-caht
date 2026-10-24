@@ -522,7 +522,7 @@ class TestRailConnector(LoadConnector, PollConnector):
         if doc_batch:
             yield doc_batch
 
-    # ---- Onyx interfaces ----
+    # ---- VertualAI interfaces ----
     def load_from_state(self) -> GenerateDocumentsOutput:
         return self._generate_documents(start=None, end=None)
 

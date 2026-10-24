@@ -49,7 +49,7 @@ SECTION_SEPARATOR = "\n\n"
 INDEX_SEPARATOR = "==="
 
 # For File Connector Metadata override file
-OM_METADATA_FILENAME = ".onyx_metadata.json"
+OM_METADATA_FILENAME = ".om_metadata.json"
 
 # Messages
 DISABLED_GEN_AI_MSG = (
@@ -312,7 +312,7 @@ class MessageType(str, Enum):
     USER = "user"  # HumanMessage
     ASSISTANT = "assistant"  # AIMessage - Can include tool_calls field for parallel tool calling
     TOOL_CALL_RESPONSE = "tool_call_response"
-    USER_REMINDER = "user_reminder"  # Custom Onyx message type which is translated into a USER message when passed to the LLM
+    USER_REMINDER = "user_reminder"  # Custom VertualAI message type which is translated into a USER message when passed to the LLM
 
 
 class ChatMessageSimpleType(str, Enum):
@@ -371,7 +371,7 @@ class MilestoneRecordType(str, Enum):
     USER_MESSAGE_SENT = "user_message_sent"
     MULTIPLE_ASSISTANTS = "multiple_assistants"
     CREATED_ASSISTANT = "created_assistant"
-    CREATED_ONYX_BOT = "created_onyx_bot"
+    CREATED_OM_BOT = "created_onyx_bot"
     REQUESTED_CONNECTOR = "requested_connector"
 
 

@@ -3,7 +3,7 @@ from typing import Any
 from typing import cast
 
 from om.access.models import ExternalAccess
-from om.connectors.confluence.onyx_confluence import OmConfluence
+from om.connectors.confluence.om_confluence import OmConfluence
 
 
 def get_page_restrictions(
@@ -20,7 +20,7 @@ def get_page_restrictions(
     left unprefixed here because upsert_document_external_perms handles prefixing.
 
     Args:
-        confluence_client: OnyxConfluence client instance
+        confluence_client: OmConfluence client instance
         page_id: The ID of the page
         page_restrictions: Dictionary containing page restriction data
         ancestors: List of ancestor pages with their restriction data
@@ -58,7 +58,7 @@ def get_all_space_permissions(
     left unprefixed here because upsert_document_external_perms handles prefixing.
 
     Args:
-        confluence_client: OnyxConfluence client instance
+        confluence_client: OmConfluence client instance
         is_cloud: Whether this is a Confluence Cloud instance
 
     Returns:

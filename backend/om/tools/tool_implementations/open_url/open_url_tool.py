@@ -377,7 +377,7 @@ class OpenURLTool(Tool[OpenURLToolOverrideKwargs]):
             user: User context for ACL filtering, anonymous users only see public docs.
             content_provider: Optional content provider. If not provided,
                 will use the default provider from the database or fall back
-                to the built-in Onyx web crawler.
+                to the built-in VertualAI web crawler.
         """
         super().__init__(emitter=emitter)
         self._id = tool_id

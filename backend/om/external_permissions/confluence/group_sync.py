@@ -4,10 +4,10 @@ from om.db.external_perm import ExternalUserGroup
 from om.external_permissions.confluence.constants import ALL_CONF_EMAILS_GROUP_NAME
 from om.background.error_logging import emit_background_error
 from om.configs.app_configs import CONFLUENCE_USE_OM_USERS_FOR_GROUP_SYNC
-from om.connectors.confluence.onyx_confluence import (
+from om.connectors.confluence.om_confluence import (
     get_user_email_from_username__server,
 )
-from om.connectors.confluence.onyx_confluence import OmConfluence
+from om.connectors.confluence.om_confluence import OmConfluence
 from om.connectors.credentials_provider import OmDBCredentialsProvider
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.models import ConnectorCredentialPair

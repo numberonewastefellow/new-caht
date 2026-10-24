@@ -99,9 +99,9 @@ from om.redis.redis_pool import get_redis_replica_client
 from om.redis.redis_pool import redis_lock_dump
 from om.redis.redis_pool import SCAN_ITER_COUNT_DEFAULT
 from om.redis.redis_utils import is_fence
-from om.server.runtime.onyx_runtime import OmRuntime
+from om.server.runtime.om_runtime import OmRuntime
 from om.utils.logger import setup_logger
-from om.utils.middleware import make_randomized_onyx_request_id
+from om.utils.middleware import make_randomized_om_request_id
 from om.utils.telemetry import mt_cloud_telemetry
 from om.utils.telemetry import optional_telemetry
 from om.utils.telemetry import RecordType
@@ -714,7 +714,7 @@ def check_for_indexing(self: Task, *, tenant_id: str) -> int | None:
 
     This task is the entrypoint for the full "indexing pipeline", which is composed
     of two tasks: "docfetching" and "docprocessing". More details in
-    the docfetching task (OnyxCeleryTask.CONNECTOR_DOC_FETCHING_TASK).
+    the docfetching task (OmCeleryTask.CONNECTOR_DOC_FETCHING_TASK).
 
     For cc pairs that should be indexed (see should_index()), this task
     calls try_creating_docfetching_task, which creates a docfetching task.
@@ -1389,7 +1389,7 @@ def _docprocessing_task(
                 attempt_id=index_attempt_id,
                 connector_id=index_attempt.connector_credential_pair.connector.id,
                 credential_id=index_attempt.connector_credential_pair.credential.id,
-                request_id=make_randomized_onyx_request_id("DIP"),
+                request_id=make_randomized_om_request_id("DIP"),
                 structured_id=f"{tenant_id}:{cc_pair_id}:{index_attempt_id}:{batch_num}",
                 batch_num=batch_num,
             )

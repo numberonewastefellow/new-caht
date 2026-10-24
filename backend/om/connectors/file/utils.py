@@ -7,7 +7,7 @@ from typing import IO
 from om.configs.constants import DocumentSource
 from om.configs.constants import FileOrigin
 from om.connectors.cross_connector_utils.miscellaneous_utils import (
-    process_onyx_metadata,
+    process_om_metadata,
 )
 from om.connectors.models import Document
 from om.connectors.models import ImageSection
@@ -102,17 +102,17 @@ def _process_file(
         return []
 
     # If a zip is uploaded with a metadata file, we can process it here
-    onyx_metadata, custom_tags = process_onyx_metadata(metadata)
-    file_display_name = onyx_metadata.file_display_name or os.path.basename(file_name)
-    time_updated = onyx_metadata.doc_updated_at or datetime.now(timezone.utc)
-    primary_owners = onyx_metadata.primary_owners
-    secondary_owners = onyx_metadata.secondary_owners
-    link = onyx_metadata.link
+    om_metadata, custom_tags = process_om_metadata(metadata)
+    file_display_name = om_metadata.file_display_name or os.path.basename(file_name)
+    time_updated = om_metadata.doc_updated_at or datetime.now(timezone.utc)
+    primary_owners = om_metadata.primary_owners
+    secondary_owners = om_metadata.secondary_owners
+    link = om_metadata.link
 
     # These metadata items are not settable by the user
-    source_type = onyx_metadata.source_type or default_source
+    source_type = om_metadata.source_type or default_source
 
-    doc_id = onyx_metadata.document_id or f"{doc_id_prefix}{file_id}"
+    doc_id = om_metadata.document_id or f"{doc_id_prefix}{file_id}"
     title = metadata.get("title") or file_display_name
 
     # 1) If the file itself is an image, handle that scenario quickly
@@ -166,7 +166,7 @@ def _process_file(
         logger.debug(
             f"Found file-specific metadata for {file_name}: {extraction_result.metadata}"
         )
-        onyx_metadata, more_custom_tags = process_onyx_metadata(
+        om_metadata, more_custom_tags = process_om_metadata(
             extraction_result.metadata
         )
 
@@ -174,13 +174,13 @@ def _process_file(
         custom_tags.update(more_custom_tags)
 
         # File-specific metadata overrides metadata processed so far
-        source_type = onyx_metadata.source_type or source_type
-        primary_owners = onyx_metadata.primary_owners or primary_owners
-        secondary_owners = onyx_metadata.secondary_owners or secondary_owners
-        time_updated = onyx_metadata.doc_updated_at or time_updated
-        file_display_name = onyx_metadata.file_display_name or file_display_name
-        title = onyx_metadata.title or onyx_metadata.file_display_name or title
-        link = onyx_metadata.link or link
+        source_type = om_metadata.source_type or source_type
+        primary_owners = om_metadata.primary_owners or primary_owners
+        secondary_owners = om_metadata.secondary_owners or secondary_owners
+        time_updated = om_metadata.doc_updated_at or time_updated
+        file_display_name = om_metadata.file_display_name or file_display_name
+        title = om_metadata.title or om_metadata.file_display_name or title
+        link = om_metadata.link or link
 
     # Build sections: first the text as a single Section
     sections: list[TextSection | ImageSection] = []

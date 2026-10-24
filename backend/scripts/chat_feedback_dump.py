@@ -139,9 +139,9 @@ logger = getLogger(__name__)
 #     flow_type: SessionType
 
 
-def create_new_chat_session(onyx_url: str, api_key: str | None) -> int:
+def create_new_chat_session(om_url: str, api_key: str | None) -> int:
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else None
-    session_endpoint = onyx_url + "/api/converse/create-chat-session"
+    session_endpoint = om_url + "/api/converse/create-chat-session"
 
     response = requests.get(session_endpoint, headers=headers)
     response.raise_for_status()
@@ -150,8 +150,8 @@ def create_new_chat_session(onyx_url: str, api_key: str | None) -> int:
     return new_session_id
 
 
-def manage_users(onyx_url: str, headers: dict[str, str] | None) -> AllUsersResponse:
-    endpoint = onyx_url + "/manage/users"
+def manage_users(om_url: str, headers: dict[str, str] | None) -> AllUsersResponse:
+    endpoint = om_url + "/manage/users"
 
     response = requests.get(
         endpoint,
@@ -164,9 +164,9 @@ def manage_users(onyx_url: str, headers: dict[str, str] | None) -> AllUsersRespo
 
 
 def get_chat_sessions(
-    onyx_url: str, headers: dict[str, str] | None, user_id: UUID
+    om_url: str, headers: dict[str, str] | None, user_id: UUID
 ) -> ChatSessionsResponse:
-    endpoint = onyx_url + "/admin/chat-sessions"
+    endpoint = om_url + "/admin/chat-sessions"
 
     params: dict[str, Any] = {"user_id": user_id}
     response = requests.get(
@@ -181,9 +181,9 @@ def get_chat_sessions(
 
 
 def get_session_history(
-    onyx_url: str, headers: dict[str, str] | None, session_id: UUID
+    om_url: str, headers: dict[str, str] | None, session_id: UUID
 ) -> ChatSessionSnapshot:
-    endpoint = onyx_url + f"/admin/chat-session-history/{session_id}"
+    endpoint = om_url + f"/admin/chat-session-history/{session_id}"
 
     response = requests.get(
         endpoint,
@@ -195,10 +195,10 @@ def get_session_history(
     return sessions
 
 
-def process_all_chat_feedback(onyx_url: str, api_key: str | None) -> None:
+def process_all_chat_feedback(om_url: str, api_key: str | None) -> None:
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else None
 
-    all_users = manage_users(onyx_url, headers)
+    all_users = manage_users(om_url, headers)
     if not all_users:
         raise RuntimeError("manage_users returned None")
 
@@ -207,12 +207,12 @@ def process_all_chat_feedback(onyx_url: str, api_key: str | None) -> None:
     user_ids: list[UUID] = [user.id for user in all_users.accepted]
 
     for user_id in user_ids:
-        r_sessions = get_chat_sessions(onyx_url, headers, user_id)
+        r_sessions = get_chat_sessions(om_url, headers, user_id)
         logger.info(f"user={user_id} num_sessions={len(r_sessions.sessions)}")
         for session in r_sessions.sessions:
             s: ChatSessionSnapshot
             try:
-                s = get_session_history(onyx_url, headers, session.id)
+                s = get_session_history(om_url, headers, session.id)
             except requests.exceptions.HTTPError:
                 logger.exception("get_session_history failed.")
 
@@ -244,4 +244,4 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    process_all_chat_feedback(onyx_url=args.url, api_key=args.api_key)
+    process_all_chat_feedback(om_url=args.url, api_key=args.api_key)

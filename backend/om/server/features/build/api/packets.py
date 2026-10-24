@@ -1,8 +1,8 @@
 """Build Mode packet types for streaming agent responses.
 
-This module defines CUSTOM Onyx packet types that extend ACP (Agent Client Protocol).
+This module defines CUSTOM VertualAI packet types that extend ACP (Agent Client Protocol).
 ACP events are passed through directly from the agent - this module only contains
-Onyx-specific extensions like artifacts and file operations.
+VertualAI-specific extensions like artifacts and file operations.
 
 All packets use SSE (Server-Sent Events) format with `event: message` and include
 a `type` field to distinguish packet types.
@@ -17,8 +17,8 @@ ACP events (passed through directly from acp.schema):
 - prompt_response: Agent finished processing
 - error: An error occurred
 
-Custom Onyx packets (defined here):
-- error: Onyx-specific errors (e.g., session not found)
+Custom VertualAI packets (defined here):
+- error: VertualAI-specific errors (e.g., session not found)
 
 Based on:
 - Agent Client Protocol (ACP): https://agentclientprotocol.com
@@ -39,7 +39,7 @@ from pydantic import Field
 
 
 class BasePacket(BaseModel):
-    """Base packet with common fields for all custom Onyx packet types."""
+    """Base packet with common fields for all custom VertualAI packet types."""
 
     type: str
     timestamp: str = Field(
@@ -48,7 +48,7 @@ class BasePacket(BaseModel):
 
 
 # =============================================================================
-# Custom Onyx Packets
+# Custom VertualAI Packets
 # =============================================================================
 
 
@@ -62,7 +62,7 @@ class ErrorPacket(BasePacket):
 
 
 # =============================================================================
-# Union Type for Custom Onyx Packets
+# Union Type for Custom VertualAI Packets
 # =============================================================================
 
 BuildPacket = ErrorPacket

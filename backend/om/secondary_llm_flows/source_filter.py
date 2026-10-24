@@ -20,5 +20,5 @@ def strings_to_document_sources(source_strs: list[str]) -> list[DocumentSource]:
 def extract_source_filter(
     query: str, llm: LLM, db_session: Session
 ) -> list[DocumentSource] | None:
-    # Can reference onyx/prompts/filter_extration.py for previous implementation prompts
+    # Can reference om/prompts/filter_extration.py for previous implementation prompts
     raise NotImplementedError("This function should not be getting called right now")

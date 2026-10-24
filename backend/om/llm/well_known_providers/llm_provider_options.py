@@ -292,7 +292,7 @@ def get_provider_display_name(provider_name: str) -> str:
     """
     # Display names for VertualAi-supported LLM providers (used in admin UI provider selection).
     # These override PROVIDER_DISPLAY_NAMES for VertualAi-specific branding.
-    _ONYX_PROVIDER_DISPLAY_NAMES: dict[str, str] = {
+    _OM_PROVIDER_DISPLAY_NAMES: dict[str, str] = {
         OPENAI_PROVIDER_NAME: "ChatGPT (OpenAI)",
         OLLAMA_PROVIDER_NAME: "Ollama",
         ANTHROPIC_PROVIDER_NAME: "Claude (Anthropic)",
@@ -302,8 +302,8 @@ def get_provider_display_name(provider_name: str) -> str:
         OPENROUTER_PROVIDER_NAME: "OpenRouter",
     }
 
-    if provider_name in _ONYX_PROVIDER_DISPLAY_NAMES:
-        return _ONYX_PROVIDER_DISPLAY_NAMES[provider_name]
+    if provider_name in _OM_PROVIDER_DISPLAY_NAMES:
+        return _OM_PROVIDER_DISPLAY_NAMES[provider_name]
     return PROVIDER_DISPLAY_NAMES.get(
         provider_name.lower(), provider_name.replace("_", " ").title()
     )

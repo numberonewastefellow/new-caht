@@ -234,7 +234,7 @@ removes the EE-origin code below. Grouped by coupling so each group is deleted a
 **D. Enterprise settings (requires a small consumer migration first):**
 - migrate the three branding consumers off `om/server/enterprise_settings/store.py` to
   `AppSettingsService`: `om/auth/email_utils.py` (`load_runtime_settings`),
-  `om/server/runtime/onyx_runtime.py` (logo filenames → `app_settings/logo.py`),
+  `om/server/runtime/om_runtime.py` (logo filenames → `app_settings/logo.py`),
   `om/server/seeding.py` (`store_analytics_script` / `upload_logo` / settings seeding).
 - then delete `om/server/enterprise_settings/store.py` + `models.py`, and trim
   `om/server/enterprise_settings/api.py` to **keep only** the SCIM-token endpoints (WS-G) and

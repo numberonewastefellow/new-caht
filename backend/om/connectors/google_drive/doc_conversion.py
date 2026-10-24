@@ -212,7 +212,7 @@ class PermissionSyncContext(BaseModel):
     google_domain: str
 
 
-def onyx_document_id_from_drive_file(file: GoogleDriveFileType) -> str:
+def om_document_id_from_drive_file(file: GoogleDriveFileType) -> str:
     link = file.get(WEB_VIEW_LINK_KEY)
     if not link:
         file_id = file.get("id")
@@ -656,7 +656,7 @@ def _convert_drive_item_to_document(
             logger.warning(f"No content extracted from {file.get('name')}. Skipping.")
             return None
 
-        doc_id = onyx_document_id_from_drive_file(file)
+        doc_id = om_document_id_from_drive_file(file)
         external_access = (
             _get_external_access_for_raw_gdrive_file(
                 file=file,
@@ -713,7 +713,7 @@ def _convert_drive_item_to_document(
     except Exception as e:
         doc_id = "unknown"
         try:
-            doc_id = onyx_document_id_from_drive_file(file)
+            doc_id = om_document_id_from_drive_file(file)
         except Exception as e2:
             logger.warning(f"Error getting document id from file: {e2}")
 
@@ -774,6 +774,6 @@ def build_slim_document(
         else None
     )
     return SlimDocument(
-        id=onyx_document_id_from_drive_file(file),
+        id=om_document_id_from_drive_file(file),
         external_access=external_access,
     )

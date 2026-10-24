@@ -3,10 +3,10 @@ from typing import Any
 from om.access.models import ExternalAccess
 from om.access.utils import build_ext_team_name_for_om
 from om.configs.constants import DocumentSource
-from om.connectors.confluence.onyx_confluence import (
+from om.connectors.confluence.om_confluence import (
     get_user_email_from_username__server,
 )
-from om.connectors.confluence.onyx_confluence import OmConfluence
+from om.connectors.confluence.om_confluence import OmConfluence
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

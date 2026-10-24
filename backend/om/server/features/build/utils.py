@@ -71,12 +71,12 @@ CODE_MIME_TYPES: set[str] = {
     "application/octet-stream",  # Generic (for code files with unknown type)
 }
 
-# Combine base Onyx extensions with code file extensions
+# Combine base VertualAI extensions with code file extensions
 ALLOWED_EXTENSIONS: set[str] = (
     OmFileExtensions.ALL_ALLOWED_EXTENSIONS | CODE_FILE_EXTENSIONS
 )
 
-# Combine base Onyx MIME types with code MIME types
+# Combine base VertualAI MIME types with code MIME types
 ALLOWED_MIME_TYPES: set[str] = OmMimeTypes.ALLOWED_MIME_TYPES | CODE_MIME_TYPES
 
 # Blocked extensions (executable/dangerous files)
@@ -264,7 +264,7 @@ def validate_file(
 # Build Mode Feature Announcements
 # =============================================================================
 
-# PostHog feature flag key for enabling Onyx Craft (cloud rollout control)
+# PostHog feature flag key for enabling VertualAI Craft (cloud rollout control)
 # Flag logic: True = enabled, False/null/not found = disabled
 OM_CRAFT_ENABLED_FLAG = "onyx-craft-enabled"
 
@@ -276,14 +276,14 @@ CRAFT_HAS_USAGE_LIMITS = "craft-has-usage-limits"
 BUILD_MODE_FEATURE_ID = "build_mode"
 
 
-def is_onyx_craft_enabled(user: User) -> bool:
+def is_om_craft_enabled(user: User) -> bool:
     """
-    Check if Onyx Craft (Build Mode) is enabled for the user.
+    Check if VertualAI Craft (Build Mode) is enabled for the user.
 
     Flag logic for "onyx-craft-enabled":
-    - Flag = True → enabled (Onyx Craft is available)
-    - Flag = False → disabled (Onyx Craft is not available)
-    - Flag = null/not found → disabled (Onyx Craft is not available)
+    - Flag = True → enabled (VertualAI Craft is available)
+    - Flag = False → disabled (VertualAI Craft is not available)
+    - Flag = null/not found → disabled (VertualAI Craft is not available)
 
     Only explicit True enables the feature.
     """
@@ -314,8 +314,8 @@ def ensure_build_mode_intro_notification(user: User, db_session: Session) -> Non
     Called from /api/notifications endpoint. Uses notification deduplication
     to ensure each user only gets one notification.
     """
-    # PostHog feature flag check - only show notification if Onyx Craft is enabled
-    if not is_onyx_craft_enabled(user):
+    # PostHog feature flag check - only show notification if VertualAI Craft is enabled
+    if not is_om_craft_enabled(user):
         return
 
     # Create notification (will be skipped if already exists due to deduplication)

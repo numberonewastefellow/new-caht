@@ -38,7 +38,7 @@ from tests.unit.migration_safety.conftest import ROOT_PACKAGE
 # an import: a filesystem path assembled from string parts. Two such bugs have already
 # slipped through -- `os.path.join(os.getcwd(), "onyx", "document_index", ...)` and the
 # `--template` / `--cloud-services-template` argparse defaults in
-# scripts/debugging/onyx_vespa_schemas.py. No import walk can see either: the module
+# scripts/debugging/om_vespa_schemas.py. No import walk can see either: the module
 # imports fine and only blows up with FileNotFoundError when that code path runs.
 _SUFFIXES = (".conf", ".toml", ".ini", ".sh", ".yml", ".yaml", ".template", ".py")
 _NAME_PREFIXES = ("Dockerfile",)

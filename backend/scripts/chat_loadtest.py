@@ -1,6 +1,6 @@
 """Basic Usage:
 
-python scripts/chat_loadtest.py --api-key <api-key> --url <onyx-url>/api
+python scripts/chat_loadtest.py --api-key <api-key> --url <om-url>/api
 
 to run from the container itself, copy this file in and run:
 

@@ -1066,7 +1066,7 @@ class TestFallbackToolExtraction:
             answer=(
                 '<function_calls><invoke name="internal_search">'
                 '<parameter name="queries" string="false">'
-                '["Onyx documentation", "Onyx docs", "Onyx platform"]'
+                '["VertualAI documentation", "VertualAI docs", "VertualAI platform"]'
                 "</parameter></invoke></function_calls>"
             ),
             tool_calls=None,
@@ -1085,7 +1085,7 @@ class TestFallbackToolExtraction:
         assert len(result.tool_calls) == 1
         assert result.tool_calls[0].tool_name == "internal_search"
         assert result.tool_calls[0].tool_args == {
-            "queries": ["Onyx documentation", "Onyx docs", "Onyx platform"]
+            "queries": ["VertualAI documentation", "VertualAI docs", "VertualAI platform"]
         }
         assert result.tool_calls[0].placement == Placement(turn_index=7)
 
@@ -1097,7 +1097,7 @@ class TestFallbackToolExtraction:
             raw_answer=(
                 '<function_calls><invoke name="internal_search">'
                 '<parameter name="queries" string="false">'
-                '["Onyx documentation", "Onyx docs", "Onyx internal docs"]'
+                '["VertualAI documentation", "VertualAI docs", "VertualAI internal docs"]'
                 "</parameter></invoke></function_calls>"
             ),
             tool_calls=None,
@@ -1116,7 +1116,7 @@ class TestFallbackToolExtraction:
         assert len(result.tool_calls) == 1
         assert result.tool_calls[0].tool_name == "internal_search"
         assert result.tool_calls[0].tool_args == {
-            "queries": ["Onyx documentation", "Onyx docs", "Onyx internal docs"]
+            "queries": ["VertualAI documentation", "VertualAI docs", "VertualAI internal docs"]
         }
         assert result.tool_calls[0].placement == Placement(turn_index=9)
 
@@ -1127,7 +1127,7 @@ class TestFallbackToolExtraction:
             raw_answer=(
                 '<function_calls><invoke name="internal_search">'
                 '<parameter name="queries" string="false">'
-                '["Onyx documentation", "Onyx docs"]'
+                '["VertualAI documentation", "VertualAI docs"]'
                 "</parameter></invoke></function_calls>"
             ),
             tool_calls=None,
@@ -1146,7 +1146,7 @@ class TestFallbackToolExtraction:
         assert len(result.tool_calls) == 1
         assert result.tool_calls[0].tool_name == "internal_search"
         assert result.tool_calls[0].tool_args == {
-            "queries": ["Onyx documentation", "Onyx docs"]
+            "queries": ["VertualAI documentation", "VertualAI docs"]
         }
         assert result.tool_calls[0].placement == Placement(turn_index=10)
 

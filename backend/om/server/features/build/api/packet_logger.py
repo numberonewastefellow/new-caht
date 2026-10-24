@@ -6,7 +6,7 @@ Provides detailed tracing for the entire agent loop and communication flow.
 Log output locations (in priority order):
 1. /var/log/om/packets.log (for Docker - mounted to host via docker-compose volumes)
 2. backend/log/packets.log (for local dev without Docker)
-3. backend/onyx/server/features/build/packets.log (fallback)
+3. backend/om/server/features/build/packets.log (fallback)
 
 Enable logging by setting LOG_LEVEL=DEBUG or BUILD_PACKET_LOGGING=true.
 
@@ -91,7 +91,7 @@ class PacketLogger:
         Priority:
         1. /var/log/om/packets.log - Docker environment (mounted to host)
         2. backend/log/packets.log - Local dev (same dir as other logs)
-        3. backend/onyx/server/features/build/packets.log - Fallback
+        3. backend/om/server/features/build/packets.log - Fallback
         """
         # Option 1: Docker environment - use /var/log/om which is mounted
         docker_log_dir = Path("/var/log/om")

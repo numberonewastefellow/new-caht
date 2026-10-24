@@ -19,7 +19,7 @@ Then it verifies, three independent ways:
 
 Notes on the harness / environment:
   * ``CCPairManager`` is deliberately NOT imported: its module imports the
-    (un-generated) ``generated.onyx_openapi_client``. We associate connector+
+    (un-generated) ``generated.om_openapi_client``. We associate connector+
     credential ourselves with a direct ``requests.PUT`` to the REST endpoint the
     openapi client wraps (``PUT /nexus/connector/{cid}/credential/{crid}``).
   * There is NO admin search bypass in this build: search visibility is purely

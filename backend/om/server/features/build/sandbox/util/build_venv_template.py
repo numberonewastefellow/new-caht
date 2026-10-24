@@ -66,7 +66,7 @@ def build_python_venv_template(target_path: Path, requirements_path: Path) -> No
 def main() -> None:
     """Build Python venv template.
 
-    Web template is already provided at backend/onyx/server/features/build/sandbox/templates/web
+    Web template is already provided at backend/om/server/features/build/sandbox/templates/web
     """
     parser = argparse.ArgumentParser(
         description="Build Python venv template for sandbox (web template already provided)"

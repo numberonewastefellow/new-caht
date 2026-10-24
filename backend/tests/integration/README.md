@@ -21,7 +21,7 @@ The task automatically generates the Python client needed for integration tests.
 
 If the client generation fails, try running this command manually:
 ```sh
-openapi-generator generate -i backend/generated/openapi.json -g python -o backend/generated/onyx_openapi_client --package-name onyx_openapi_client --skip-validate-spec --openapi-normalizer "SIMPLIFY_ONEOF_ANYOF=true,SET_OAS3_NULLABLE=true"
+openapi-generator generate -i backend/generated/openapi.json -g python -o backend/generated/om_openapi_client --package-name onyx_openapi_client --skip-validate-spec --openapi-normalizer "SIMPLIFY_ONEOF_ANYOF=true,SET_OAS3_NULLABLE=true"
 ```
 
 1. Launch onyx (using Docker or running with a debugger), ensuring the API server is running on port 8080.

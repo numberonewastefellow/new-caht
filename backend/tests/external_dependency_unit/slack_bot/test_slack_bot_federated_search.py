@@ -30,8 +30,8 @@ from om.db.models import Agent__Tool
 from om.db.models import SlackBot
 from om.db.models import SlackChannelConfig
 from om.db.models import User
-from om.onyxbot.slack.listener import process_message
-from om.onyxbot.slack.models import ChannelType
+from om.ombot.slack.listener import process_message
+from om.ombot.slack.models import ChannelType
 from om.db.tools import get_builtin_tool
 from om.tools.built_in_tools import SearchTool
 from tests.external_dependency_unit.conftest import create_test_user
@@ -294,7 +294,7 @@ class TestSlackBotFederatedSearch:
         patches = [
             patch("slack_sdk.WebClient.search_messages"),
             patch("om.context.search.federated.slack_search.query_slack"),
-            patch("om.onyxbot.slack.listener.get_channel_type_from_id"),
+            patch("om.ombot.slack.listener.get_channel_type_from_id"),
             patch("om.context.search.utils.get_query_embeddings"),
         ]
 

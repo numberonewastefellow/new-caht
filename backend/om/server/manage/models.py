@@ -21,7 +21,7 @@ from om.db.models import SlackBot as SlackAppModel
 from om.db.models import SlackChannelConfig as SlackChannelConfigModel
 from om.db.models import StandardAnswerCategory as StandardAnswerCategoryModel
 from om.db.models import User
-from om.onyxbot.slack.config import VALID_SLACK_FILTERS
+from om.ombot.slack.config import VALID_SLACK_FILTERS
 from om.server.features.agent.models import FullAgentSnapshot
 from om.server.features.agent.models import AgentSnapshot
 from om.server.models import FullUserSnapshot
@@ -434,7 +434,7 @@ class StandardAnswerCategory(BaseModel):
 
 
 class ContainerVersions(BaseModel):
-    onyx: str
+    om: str
     relational_db: str
     index: str
     nginx: str

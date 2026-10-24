@@ -90,7 +90,7 @@ class LongTermLogger:
             )
             thread.start()
         except Exception:
-            # Should never interfere with normal functions of Onyx
+            # Should never interfere with normal functions of VertualAI
             pass
 
     def fetch_category(

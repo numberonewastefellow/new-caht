@@ -157,7 +157,7 @@ class BasicExpertInfo(BaseModel):
 
 
 class DocumentBase(BaseModel):
-    """Used for Onyx ingestion api, the ID is inferred before use if not provided"""
+    """Used for VertualAI ingestion api, the ID is inferred before use if not provided"""
 
     id: str | None = None
     sections: list[TextSection | ImageSection]
@@ -310,7 +310,7 @@ def convert_metadata_list_of_strings_to_dict(
 
 
 class Document(DocumentBase):
-    """Used for Onyx ingestion api, the ID is required"""
+    """Used for VertualAI ingestion api, the ID is required"""
 
     id: str
     source: DocumentSource

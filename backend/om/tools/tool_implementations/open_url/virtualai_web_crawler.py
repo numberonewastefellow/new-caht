@@ -116,7 +116,7 @@ class VirtualAIWebCrawler(WebContentProvider):
     """
     Robust built-in web crawler for the chat web-search tool.
 
-    Improvements over OnyxWebCrawler:
+    Improvements over OmWebCrawler:
     - Realistic Chrome browser headers (not bot user-agent)
     - Retry with exponential backoff (up to 2 retries)
     - Parallel URL fetching (ThreadPoolExecutor, max 5 workers)

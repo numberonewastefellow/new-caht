@@ -8,11 +8,11 @@ than a missed rename.
 
 This shipped twice already:
 
-  * Stage 1 renamed the class `OnyxConfluence` -> `OmConfluence`, but
-    `@patch("om.connectors.confluence.onyx_confluence.OnyxConfluence.retrieve_...")`
+  * Stage 1 renamed the class `OmConfluence` -> `OmConfluence`, but
+    `@patch("om.connectors.confluence.om_confluence.OmConfluence.retrieve_...")`
     is a STRING, so the rename never touched it. Five such patch targets were left
-    pointing at classes that no longer exist (OnyxConfluence, OnyxAPIClient,
-    OnyxDiscordClient, OnyxDBCredentialsProvider, OnyxSalesforceSQLite).
+    pointing at classes that no longer exist (OmConfluence, OmAPIClient,
+    OmDiscordClient, OmDBCredentialsProvider, OmSalesforceSQLite).
   * EE removal deleted `fetch_ee_implementation_or_noop`, and ~30 patch targets kept
     naming it.
 

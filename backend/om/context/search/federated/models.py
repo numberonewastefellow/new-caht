@@ -3,7 +3,7 @@ from typing import TypedDict
 
 from pydantic import BaseModel
 
-from om.onyxbot.slack.models import ChannelType
+from om.ombot.slack.models import ChannelType
 
 
 class ChannelMetadata(TypedDict):

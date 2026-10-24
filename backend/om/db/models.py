@@ -862,7 +862,7 @@ class Document(Base):
     # NOTE: if more sensitive data is added here for display, make sure to add user/group permission
 
     # this should correspond to the ID of the document
-    # (as is passed around in Onyx)
+    # (as is passed around in VertualAI)
     id: Mapped[str] = mapped_column(NullFilteredString, primary_key=True)
     from_ingestion_api: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=True
@@ -899,7 +899,7 @@ class Document(Base):
         DateTime(timezone=True), nullable=True, index=True
     )
     # The following are not attached to User because the account/email may not be known
-    # within Onyx
+    # within VertualAI
     # Something like the document creator
     primary_owners: Mapped[list[str] | None] = mapped_column(
         postgresql.ARRAY(String), nullable=True
@@ -1596,7 +1596,7 @@ class ChunkStats(Base):
     # NOTE: if more sensitive data is added here for display, make sure to add user/group permission
 
     # this should correspond to the ID of the document
-    # (as is passed around in Onyx)x
+    # (as is passed around in VertualAI)x
     id: Mapped[str] = mapped_column(
         NullFilteredString,
         primary_key=True,
@@ -4041,7 +4041,7 @@ class User__ExternalTeamId(Base):
     """Maps user info both internal and external to the name of the external group
     This maps the user to all of their external groups so that the external group name can be
     attached to the ACL list matching during query time. User level permissions can be handled by
-    directly adding the Onyx user to the doc ACL list"""
+    directly adding the VertualAI user to the doc ACL list"""
 
     __tablename__ = "user__external_team_id"
 
@@ -4826,7 +4826,7 @@ class ScimUserMapping(Base):
 class ScimTeamMapping(Base):
     """Links an IdP-issued Group ``externalId`` to an internal Team (Contract 1).
 
-    Replaces Onyx-EE's ``scim_group_mapping`` (user_group lineage). ``team_id``
+    Replaces upstream EE's ``scim_group_mapping`` (user_group lineage). ``team_id``
     targets ``team.id`` (BIGINT PK) landed by WS-B.
     """
 

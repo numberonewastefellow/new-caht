@@ -80,7 +80,7 @@ def _process_egnyte_file(
     if extension in OmFileExtensions.PLAIN_TEXT_EXTENSIONS:
         encoding = detect_encoding(file_content)
         file_content_raw, file_metadata = read_text_file(
-            file_content, encoding=encoding, ignore_onyx_metadata=False
+            file_content, encoding=encoding, ignore_om_metadata=False
         )
     else:
         file_content_raw = extract_file_text(

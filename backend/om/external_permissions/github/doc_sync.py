@@ -195,14 +195,14 @@ def _is_repo_visibility_changed_from_groups(
     # Build expected group IDs for current visibility
     collaborators_group_id = build_ext_team_name_for_om(
         source=DocumentSource.GITHUB,
-        ext_group_name=form_collaborators_group_id(repo.id),
+        external_group_name=form_collaborators_group_id(repo.id),
     )
 
     org_group_id = None
     if repo.organization:
         org_group_id = build_ext_team_name_for_om(
             source=DocumentSource.GITHUB,
-            ext_group_name=form_organization_group_id(repo.organization.id),
+            external_group_name=form_organization_group_id(repo.organization.id),
         )
 
     # Determine existing visibility from group IDs
@@ -245,11 +245,11 @@ def _teams_updated_from_groups(
     # Build group IDs to exclude from team comparison (non-team groups)
     collaborators_group_id = build_ext_team_name_for_om(
         source=DocumentSource.GITHUB,
-        ext_group_name=form_collaborators_group_id(repo.id),
+        external_group_name=form_collaborators_group_id(repo.id),
     )
     outside_collaborators_group_id = build_ext_team_name_for_om(
         source=DocumentSource.GITHUB,
-        ext_group_name=form_outside_collaborators_group_id(repo.id),
+        external_group_name=form_outside_collaborators_group_id(repo.id),
     )
     non_team_group_ids = {collaborators_group_id, outside_collaborators_group_id}
 
@@ -266,7 +266,7 @@ def _teams_updated_from_groups(
     for team_slug in current_teams:
         team_group_id = build_ext_team_name_for_om(
             source=DocumentSource.GITHUB,
-            ext_group_name=team_slug,
+            external_group_name=team_slug,
         )
         current_team_ids.add(team_group_id)
 

@@ -337,11 +337,11 @@ def get_external_access_permission(
         if add_prefix:
             collaborators_group_id = build_ext_team_name_for_om(
                 source=DocumentSource.GITHUB,
-                ext_group_name=collaborators_group_id,
+                external_group_name=collaborators_group_id,
             )
             outside_collaborators_group_id = build_ext_team_name_for_om(
                 source=DocumentSource.GITHUB,
-                ext_group_name=outside_collaborators_group_id,
+                external_group_name=outside_collaborators_group_id,
             )
         group_ids = {collaborators_group_id, outside_collaborators_group_id}
 
@@ -350,7 +350,7 @@ def get_external_access_permission(
             team_slugs = [
                 build_ext_team_name_for_om(
                     source=DocumentSource.GITHUB,
-                    ext_group_name=slug,
+                    external_group_name=slug,
                 )
                 for slug in team_slugs
             ]
@@ -371,7 +371,7 @@ def get_external_access_permission(
         if add_prefix:
             org_group_id = build_ext_team_name_for_om(
                 source=DocumentSource.GITHUB,
-                ext_group_name=org_group_id,
+                external_group_name=org_group_id,
             )
         group_ids = {org_group_id}
         logger.info(f"ExternalAccess groups for {repo.full_name}: {group_ids}")

@@ -269,7 +269,7 @@ def drop_multitenant_postgres_task(dbname: str) -> None:
 def reset_postgres(
     database: str = "postgres",
     config_name: str = "alembic",
-    setup_onyx: bool = True,
+    setup_om: bool = True,
 ) -> None:
     """Reset the Postgres database."""
     # this seems to hang due to locking issues, so run with a timeout with a few retries
@@ -305,7 +305,7 @@ def reset_postgres(
 
     logger.info("Upgrading Postgres...")
     upgrade_postgres(database=database, config_name=config_name, revision="head")
-    if setup_onyx:
+    if setup_om:
         logger.info("Setting up Postgres...")
         with get_session_with_current_tenant() as db_session:
             setup_postgres(db_session)
@@ -345,7 +345,7 @@ def reset_postgres_multitenant() -> None:
     """Reset the Postgres database for all tenants in a multitenant setup."""
 
     drop_multitenant_postgres()
-    reset_postgres(config_name="schema_private", setup_onyx=False)
+    reset_postgres(config_name="schema_private", setup_om=False)
 
 
 def reset_document_index_multitenant() -> None:

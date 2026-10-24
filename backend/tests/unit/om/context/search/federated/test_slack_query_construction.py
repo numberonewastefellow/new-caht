@@ -4,7 +4,7 @@ from om.context.search.federated.slack_search_utils import (
     build_channel_query_filter,
 )
 from om.context.search.federated.slack_search_utils import matches_exclude_pattern
-from om.onyxbot.slack.models import ChannelType
+from om.ombot.slack.models import ChannelType
 
 
 class TestChannelPatternMatching:

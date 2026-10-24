@@ -21,7 +21,7 @@ from om.db.slack_channel_config import fetch_slack_channel_configs
 from om.db.slack_channel_config import insert_slack_channel_config
 from om.db.slack_channel_config import remove_slack_channel_config
 from om.db.slack_channel_config import update_slack_channel_config
-from om.onyxbot.slack.config import validate_channel_name
+from om.ombot.slack.config import validate_channel_name
 from om.server.manage.models import SlackBot
 from om.server.manage.models import SlackBotCreationRequest
 from om.server.manage.models import SlackChannelConfig
@@ -277,7 +277,7 @@ def create_bot(
     mt_cloud_telemetry(
         tenant_id=tenant_id,
         distinct_id=tenant_id,
-        event=MilestoneRecordType.CREATED_ONYX_BOT,
+        event=MilestoneRecordType.CREATED_OM_BOT,
     )
 
     return SlackBot.from_model(slack_bot_model)

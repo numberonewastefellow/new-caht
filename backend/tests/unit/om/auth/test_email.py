@@ -5,7 +5,7 @@ from om.auth.email_utils import send_email
 from om.configs.constants import AuthType
 from om.configs.constants import OM_DEFAULT_APPLICATION_NAME
 from om.db.engine.sql_engine import SqlEngine
-from om.server.runtime.onyx_runtime import OmRuntime
+from om.server.runtime.om_runtime import OmRuntime
 
 
 @pytest.mark.skip(
@@ -16,7 +16,7 @@ def test_send_user_email_invite() -> None:
 
     application_name = OM_DEFAULT_APPLICATION_NAME
 
-    onyx_file = OmRuntime.get_emailable_logo()
+    om_file = OmRuntime.get_emailable_logo()
 
     subject = f"Invitation to Join {application_name} Organization"
 
@@ -32,5 +32,5 @@ def test_send_user_email_invite() -> None:
         html_content,
         text_content,
         mail_from=FROM_EMAIL,
-        inline_png=("logo.png", onyx_file.data),
+        inline_png=("logo.png", om_file.data),
     )

@@ -185,7 +185,7 @@ def list_repositories(
 
 
 def map_pr_to_document(pr: dict[str, Any], workspace: str, repo_slug: str) -> Document:
-    """Map a Bitbucket pull request JSON to Onyx Document."""
+    """Map a Bitbucket pull request JSON to VertualAI Document."""
     pr_id = pr["id"]
     title = pr.get("title") or f"PR {pr_id}"
     description = pr.get("description") or ""

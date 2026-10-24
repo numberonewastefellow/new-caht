@@ -18,7 +18,7 @@ INDEXING_REQUEST_ID_CONTEXTVAR: contextvars.ContextVar[str | None] = (
 
 # set by every route in the API server
 OM_REQUEST_ID_CONTEXTVAR: contextvars.ContextVar[str | None] = contextvars.ContextVar(
-    "onyx_request_id", default=None
+    "om_request_id", default=None
 )
 
 # Used to store cc pair id and index attempt id in multithreaded environments

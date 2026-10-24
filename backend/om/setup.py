@@ -112,11 +112,11 @@ def ensure_openai_compatible_embedding(db_session: Session) -> None:
     )
 
 
-def setup_onyx(
+def setup_om(
     db_session: Session, tenant_id: str, cohere_enabled: bool = False  # noqa: ARG001
 ) -> None:
     """
-    Setup Onyx for a particular tenant. In the Single Tenant case, it will set it up for the default schema
+    Setup VertualAI for a particular tenant. In the Single Tenant case, it will set it up for the default schema
     on server startup. In the MT case, it will be called when the tenant is created.
 
     The Tenant Service calls the tenants/create endpoint which runs this.
@@ -343,7 +343,7 @@ def update_default_multipass_indexing(db_session: Session) -> None:
         )
 
 
-def setup_multitenant_onyx() -> None:
+def setup_multitenant_om() -> None:
     if DISABLE_VECTOR_DB:
         logger.notice(
             "DISABLE_VECTOR_DB is set — skipping multitenant document index setup."

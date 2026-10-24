@@ -19,7 +19,7 @@ from slack_sdk import WebClient
 from sqlalchemy.orm import Session
 
 from om.configs.constants import MessageType
-from om.configs.onyxbot_configs import OM_BOT_REACT_EMOJI
+from om.configs.ombot_configs import OM_BOT_REACT_EMOJI
 from om.db.chat import create_chat_session
 from om.db.chat import create_new_chat_message
 from om.db.chat import get_chat_messages_by_sessions
@@ -27,9 +27,9 @@ from om.db.chat import get_chat_sessions_by_slack_thread_id
 from om.db.chat import get_or_create_root_message
 from om.db.models import SlackChannelConfig
 from om.db.models import StandardAnswer
-from om.onyxbot.slack.models import SlackMessageInfo
-from om.onyxbot.slack.utils import respond_in_thread_or_channel
-from om.onyxbot.slack.utils import update_emote_react
+from om.ombot.slack.models import SlackMessageInfo
+from om.ombot.slack.utils import respond_in_thread_or_channel
+from om.ombot.slack.utils import update_emote_react
 from om.standard_answers.blocks import build_answer_blocks
 from om.standard_answers.config import load_config
 from om.standard_answers.schemas import StandardAnswer as StandardAnswerDTO

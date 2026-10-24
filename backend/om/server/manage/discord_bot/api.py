@@ -43,7 +43,7 @@ def _check_bot_config_api_access() -> None:
     """Raise 403 if bot config cannot be managed via API.
 
     Bot config endpoints are disabled:
-    - On Cloud (managed by Onyx)
+    - On Cloud (managed by VertualAI)
     - When DISCORD_BOT_TOKEN env var is set (managed via env)
     """
     if AUTH_TYPE == AuthType.CLOUD:

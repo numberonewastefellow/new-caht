@@ -19,7 +19,7 @@ from om.db.models import FederatedConnector__DocumentSet
 from om.db.slack_bot import fetch_slack_bots
 from om.federated_connectors.factory import get_federated_connector
 from om.federated_connectors.interfaces import FederatedConnector
-from om.onyxbot.slack.models import SlackContext
+from om.ombot.slack.models import SlackContext
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

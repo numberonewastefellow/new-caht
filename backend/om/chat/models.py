@@ -73,7 +73,7 @@ class ChatBasicResponse(BaseModel):
 
 class ChatFullResponse(BaseModel):
     """Complete non-streaming response with all available data.
-    NOTE: This model is used for the core flow of the Onyx application, any changes to it should be reviewed and approved by an
+    NOTE: This model is used for the core flow of the VertualAI application, any changes to it should be reviewed and approved by an
     experienced team member. It is very important to 1. avoid bloat and 2. that this remains backwards compatible across versions.
     """
 

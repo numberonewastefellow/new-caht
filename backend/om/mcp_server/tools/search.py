@@ -22,7 +22,7 @@ async def search_indexed_documents(
     limit: int = 10,
 ) -> dict[str, Any]:
     """
-    Search the user's knowledge base indexed in Onyx.
+    Search the user's knowledge base indexed in VertualAI.
     Use this tool for information that is not public knowledge and specific to the user,
     their team, their work, or their organization/company.
 
@@ -86,7 +86,7 @@ async def search_indexed_documents(
             "query": query,
             "message": (
                 "No document sources are indexed yet. Add connectors or upload data "
-                "through Onyx before calling onyx_search_documents."
+                "through VertualAI before calling onyx_search_documents."
             ),
         }
 

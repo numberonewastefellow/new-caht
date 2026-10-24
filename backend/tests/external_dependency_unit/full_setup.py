@@ -29,7 +29,7 @@ def ensure_full_deployment_setup(
 
     - Initializes DB engine and sets tenant context
     - Skips model warm-ups during setup
-    - Runs setup_onyx (Postgres defaults, OpenSearch indices)
+    - Runs setup_om (Postgres defaults, OpenSearch indices)
     - Initializes file store (best-effort)
     - Ensures OpenSearch indices exist
     """

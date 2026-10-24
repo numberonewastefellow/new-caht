@@ -15,14 +15,14 @@
             "args": [
               "celery",
               "-A",
-              "onyx.background.celery.versioned_apps.beat",
+              "om.background.celery.versioned_apps.beat",
               "beat",
               "--loglevel=INFO"
             ]
         },
         {
             "type": "shell",
-            "label": "Generate Onyx OpenAPI Python client",
+            "label": "Generate VertualAI OpenAPI Python client",
             "cwd": "${workspaceFolder}/backend",
             "envFile": "${workspaceFolder}/.env",
             "options": {
@@ -38,9 +38,9 @@
                 "-g",
                 "python",
                 "-o",
-                "generated/onyx_openapi_client",
+                "generated/om_openapi_client",
                 "--package-name",
-                "onyx_openapi_client",
+                "om_openapi_client",
             ]
         },
         {
@@ -60,7 +60,7 @@
                 "-g",
                 "typescript-fetch",
                 "-o",
-                "${workspaceFolder}/web/src/lib/generated/onyx_api",
+                "${workspaceFolder}/web/src/lib/generated/om_api",
                 "--additional-properties=disallowAdditionalPropertiesIfNotPresent=false,legacyDiscriminatorBehavior=false,supportsES6=true",
             ]
         },
@@ -78,7 +78,7 @@
                 "openapi-typescript",
                 "../backend/generated/openapi.json",
                 "--output",
-                "./src/lib/generated/onyx-schema.ts",
+                "./src/lib/generated/om-schema.ts",
             ]
         },
         {

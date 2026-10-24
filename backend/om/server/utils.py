@@ -33,7 +33,7 @@ def get_json_line(
 
     Args:
         json_dict: The dictionary to be converted to JSON.
-        encoder: JSON encoder class to use, defaults to OnyxJSONEncoder.
+        encoder: JSON encoder class to use, defaults to OmJSONEncoder.
 
     Returns:
         A JSON string representation of the input dictionary with a newline character.

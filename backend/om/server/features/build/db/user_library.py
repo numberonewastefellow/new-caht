@@ -90,7 +90,7 @@ def get_or_create_craft_connector(db_session: Session, user: User) -> tuple[int,
         Tuple of (connector_id, credential_id)
 
     Note: We need to create a credential even though CRAFT_FILE doesn't require
-    authentication. This is because Onyx's connector-credential pair system
+    authentication. This is because VertualAI's connector-credential pair system
     requires a credential for all connectors. The credential is empty ({}).
 
     This function handles recovery from partial creation failures by detecting

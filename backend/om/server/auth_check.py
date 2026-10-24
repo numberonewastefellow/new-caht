@@ -26,9 +26,9 @@ PUBLIC_ENDPOINT_SPECS = [
     # just returns auth type, needs to be accessible before the user is logged
     # in to determine what flow to give the user
     ("/auth/type", {"GET"}),
-    # just gets the version of Onyx (e.g. 0.3.11)
+    # just gets the version of VertualAI (e.g. 0.3.11)
     ("/version", {"GET"}),
-    # Gets stable and beta versions for Onyx docker images
+    # Gets stable and beta versions for VertualAI docker images
     ("/versions", {"GET"}),
     # stuff related to basic auth
     ("/auth/refresh", {"POST"}),

@@ -137,7 +137,7 @@ def decrypt_bytes_to_string(intput_bytes: bytes) -> str:
 
 
 def test_encryption() -> None:
-    test_string = "Onyx is the BEST!"
+    test_string = "VertualAI is the BEST!"
     encrypted_bytes = encrypt_string_to_bytes(test_string)
     decrypted_string = decrypt_bytes_to_string(encrypted_bytes)
     if test_string != decrypted_string:

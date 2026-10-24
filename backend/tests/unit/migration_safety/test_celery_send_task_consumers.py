@@ -1,6 +1,6 @@
 """Every `send_task(<name>)` producer must have a registered consumer.
 
-Tasks are dispatched by NAME string (almost always an `OnyxCeleryTask.*` constant).
+Tasks are dispatched by NAME string (almost always an `OmCeleryTask.*` constant).
 If a task's module isn't discovered after the rename, the producer still "sends" but
 nothing consumes it -- a failure that only shows at dispatch time. This test
 AST-scans all producers, resolves each name, and asserts a consumer exists.
@@ -19,7 +19,7 @@ from tests.unit.migration_safety.conftest import qualified
 def _collect_send_task_names() -> tuple[set[str], int]:
     """Return (resolved task-name strings, count of dynamic/unresolved args)."""
     constants = importlib.import_module(qualified("configs.constants"))
-    onyx_celery_task = constants.OmCeleryTask
+    om_celery_task = constants.OmCeleryTask
 
     resolved: set[str] = set()
     dynamic = 0
@@ -37,13 +37,13 @@ def _collect_send_task_names() -> tuple[set[str], int]:
             if not node.args:
                 continue
             arg = node.args[0]
-            # OnyxCeleryTask.SOME_CONST
+            # OmCeleryTask.SOME_CONST
             if (
                 isinstance(arg, ast.Attribute)
                 and isinstance(arg.value, ast.Name)
                 and arg.value.id == "OmCeleryTask"
             ):
-                value = getattr(onyx_celery_task, arg.attr, None)
+                value = getattr(om_celery_task, arg.attr, None)
                 if isinstance(value, str):
                     resolved.add(value)
                 else:

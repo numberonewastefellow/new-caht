@@ -85,7 +85,7 @@ def build_rx1_message() -> str:
         "Phase: II (randomized, open-label, 120 patients)\n"
         "Mechanism: Dual checkpoint blockade targeting PD-L1 and TIGIT\n"
         "Route: IV infusion Q3W\n"
-        "Sponsor: Onyx Therapeutics\n\n"
+        "Sponsor: VertualAI Therapeutics\n\n"
         "Key findings so far:\n"
         "- Overall Response Rate (ORR): 38% (treatment) vs 18% (control), p=0.012\n"
         "- Median PFS: 7.2 months vs 4.1 months (HR 0.58)\n"

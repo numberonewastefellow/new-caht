@@ -12,10 +12,10 @@ from om.access.models import ExternalAccess
 from om.access.utils import build_ext_team_name_for_om
 from om.configs.app_configs import CONFLUENCE_ANONYMOUS_ACCESS_IS_PUBLIC
 from om.configs.constants import DocumentSource
-from om.connectors.confluence.onyx_confluence import (
+from om.connectors.confluence.om_confluence import (
     get_user_email_from_username__server,
 )
-from om.connectors.confluence.onyx_confluence import OmConfluence
+from om.connectors.confluence.om_confluence import OmConfluence
 from om.external_permissions.confluence.constants import ALL_CONF_EMAILS_GROUP_NAME
 from om.external_permissions.confluence.constants import REQUEST_PAGINATION_LIMIT
 from om.external_permissions.confluence.constants import VIEWSPACE_PERMISSION_TYPE

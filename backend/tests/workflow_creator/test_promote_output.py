@@ -46,7 +46,7 @@ Tested packet sequence (sequential, BEFORE fix):
      [11] turn=3  stop
 
 Related files:
-      Backend:   backend/onyx/workflows/workflow_engine.py (sequential engine)
+      Backend:   backend/om/workflows/workflow_engine.py (sequential engine)
       Frontend:  web/src/app/app/services/packetUtils.ts (isActualToolCallPacket)
       Frontend:  web/src/app/app/message/.../hooks/packetProcessor.ts (handleToolAfterMessagePacket)
 

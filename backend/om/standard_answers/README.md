@@ -2,9 +2,9 @@
 
 Clean-room reimplementation of the Slack-bot **standard answers** feature: keyword/
 regex canned answers tagged with categories, plus a stateless query endpoint and an
-admin UI. Replaces the Onyx-EE originals (`onyxbot/slack/handlers/handle_standard_answers.py`,
+admin UI. Replaces the upstream EE originals (`ombot/slack/handlers/handle_standard_answers.py`,
 `db/standard_answer.py`, `server/manage/standard_answer.py`, and the `/query/standard-answer`
-endpoint on `query_backend.py`). Written from the WS-D behavior spec — no Onyx EE source
+endpoint on `query_backend.py`). Written from the WS-D behavior spec — no upstream EE source
 was opened; module layout, names, and control flow are our own.
 
 ## What it does

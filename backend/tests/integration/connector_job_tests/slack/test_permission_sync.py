@@ -136,48 +136,48 @@ def test_slack_permission_sync(
 
     # Search as admin with access to both channels
     print("\nSearching as admin user")
-    onyx_doc_message_strings = DocumentSearchManager.search_documents(
+    om_doc_message_strings = DocumentSearchManager.search_documents(
         query="favorite number",
         user_performing_action=admin_user,
     )
     print(
         "\n documents retrieved by admin user: ",
-        onyx_doc_message_strings,
+        om_doc_message_strings,
     )
 
     # Ensure admin user can see messages from both channels
-    assert public_message in onyx_doc_message_strings
-    assert private_message in onyx_doc_message_strings
+    assert public_message in om_doc_message_strings
+    assert private_message in om_doc_message_strings
 
     # Search as test_user_2 with access to only the public channel
     print("\n Searching as test_user_2")
-    onyx_doc_message_strings = DocumentSearchManager.search_documents(
+    om_doc_message_strings = DocumentSearchManager.search_documents(
         query="favorite number",
         user_performing_action=test_user_2,
     )
     print(
         "\n documents retrieved by test_user_2: ",
-        onyx_doc_message_strings,
+        om_doc_message_strings,
     )
 
     # Ensure test_user_2 can only see messages from the public channel
-    assert public_message in onyx_doc_message_strings
-    assert private_message not in onyx_doc_message_strings
+    assert public_message in om_doc_message_strings
+    assert private_message not in om_doc_message_strings
 
     # Search as test_user_1 with access to both channels
     print("\n Searching as test_user_1")
-    onyx_doc_message_strings = DocumentSearchManager.search_documents(
+    om_doc_message_strings = DocumentSearchManager.search_documents(
         query="favorite number",
         user_performing_action=test_user_1,
     )
     print(
         "\n documents retrieved by test_user_1 before being removed from private channel: ",
-        onyx_doc_message_strings,
+        om_doc_message_strings,
     )
 
     # Ensure test_user_1 can see messages from both channels
-    assert public_message in onyx_doc_message_strings
-    assert private_message in onyx_doc_message_strings
+    assert public_message in om_doc_message_strings
+    assert private_message in om_doc_message_strings
 
     # ----------------------MAKE THE CHANGES--------------------------
     print("\n Removing test_user_1 from the private channel")
@@ -207,18 +207,18 @@ def test_slack_permission_sync(
     # Ensure test_user_1 can no longer see messages from the private channel
     # Search as test_user_1 with access to only the public channel
 
-    onyx_doc_message_strings = DocumentSearchManager.search_documents(
+    om_doc_message_strings = DocumentSearchManager.search_documents(
         query="favorite number",
         user_performing_action=test_user_1,
     )
     print(
         "\n documents retrieved by test_user_1 after being removed from private channel: ",
-        onyx_doc_message_strings,
+        om_doc_message_strings,
     )
 
     # Ensure test_user_1 can only see messages from the public channel
-    assert public_message in onyx_doc_message_strings
-    assert private_message not in onyx_doc_message_strings
+    assert public_message in om_doc_message_strings
+    assert private_message not in om_doc_message_strings
 
 
 # NOTE(rkuo): it isn't yet clear if the reason these were previously xfail'd

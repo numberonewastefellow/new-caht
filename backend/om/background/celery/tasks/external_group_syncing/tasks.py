@@ -68,7 +68,7 @@ from om.redis.redis_connector_ext_group_sync import (
 )
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client
-from om.server.runtime.onyx_runtime import OmRuntime
+from om.server.runtime.om_runtime import OmRuntime
 from om.server.utils import make_short_id
 from om.utils.logger import format_error_for_logging
 from om.utils.logger import setup_logger

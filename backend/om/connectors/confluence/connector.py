@@ -18,8 +18,8 @@ from om.configs.app_configs import INDEX_BATCH_SIZE
 from om.configs.constants import DocumentSource
 from om.connectors.confluence.access import get_all_space_permissions
 from om.connectors.confluence.access import get_page_restrictions
-from om.connectors.confluence.onyx_confluence import extract_text_from_confluence_html
-from om.connectors.confluence.onyx_confluence import OmConfluence
+from om.connectors.confluence.om_confluence import extract_text_from_confluence_html
+from om.connectors.confluence.om_confluence import OmConfluence
 from om.connectors.confluence.utils import build_confluence_document_id
 from om.connectors.confluence.utils import convert_attachment_to_content
 from om.connectors.confluence.utils import datetime_from_string

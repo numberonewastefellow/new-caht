@@ -84,7 +84,7 @@ class UserSettings(Settings):
     notifications: list[Notification]
     needs_reindexing: bool
     tenant_id: str = POSTGRES_DEFAULT_SCHEMA
-    # Feature flag for Onyx Craft (Build Mode) - used for server-side redirects
+    # Feature flag for VertualAI Craft (Build Mode) - used for server-side redirects
     onyx_craft_enabled: bool = False
     # True when a vector database (OpenSearch) is available.
     # False when DISABLE_VECTOR_DB is set — connectors, RAG search, and

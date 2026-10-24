@@ -719,8 +719,8 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                     # Default to binary if we can't determine the type
                     mime_type = mime_type or "application/octet-stream"
 
-                    # Save to Onyx file store
-                    onyx_file_id = file_store.save_file(
+                    # Save to VertualAI file store
+                    om_file_id = file_store.save_file(
                         content=BytesIO(file_content),
                         display_name=filename,
                         file_origin=FileOrigin.CHAT_UPLOAD,
@@ -730,10 +730,10 @@ class PythonTool(Tool[PythonToolOverrideKwargs]):
                     generated_files.append(
                         PythonExecutionFile(
                             filename=filename,
-                            file_link=build_full_frontend_file_url(onyx_file_id),
+                            file_link=build_full_frontend_file_url(om_file_id),
                         )
                     )
-                    generated_file_ids.append(onyx_file_id)
+                    generated_file_ids.append(om_file_id)
 
                     # Mark for cleanup
                     file_ids_to_cleanup.append(workspace_file.file_id)

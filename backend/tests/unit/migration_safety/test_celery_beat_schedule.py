@@ -1,6 +1,6 @@
 """Every scheduled beat task must resolve to a registered task.
 
-`beat_schedule.py` entries reference tasks by NAME string (via `OnyxCeleryTask.*`
+`beat_schedule.py` entries reference tasks by NAME string (via `OmCeleryTask.*`
 constants). The rename doesn't change these bare names, but it CAN break the
 autodiscovery of the task's module -- in which case a scheduled task would have no
 registered consumer and beat would dispatch into the void. This test builds the

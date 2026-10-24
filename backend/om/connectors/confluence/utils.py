@@ -31,7 +31,7 @@ from om.file_processing.image_utils import store_image_and_create_section
 from om.utils.logger import setup_logger
 
 if TYPE_CHECKING:
-    from om.connectors.confluence.onyx_confluence import OmConfluence
+    from om.connectors.confluence.om_confluence import OmConfluence
 
 
 logger = setup_logger()

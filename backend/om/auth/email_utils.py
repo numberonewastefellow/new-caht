@@ -31,7 +31,7 @@ from om.configs.constants import AuthType
 from om.configs.constants import OM_DEFAULT_APPLICATION_NAME
 from om.configs.constants import OM_DISCORD_URL
 from om.db.models import User
-from om.server.runtime.onyx_runtime import OmRuntime
+from om.server.runtime.om_runtime import OmRuntime
 from om.utils.logger import setup_logger
 from om.utils.url import add_url_params
 from shared_configs.configs import MULTI_TENANT
@@ -371,7 +371,7 @@ def send_user_email_invite(
 ) -> None:
     application_name = _get_application_name()
 
-    onyx_file = OmRuntime.get_emailable_logo()
+    om_file = OmRuntime.get_emailable_logo()
 
     subject = f"Invitation to Join {application_name} Organization"
 
@@ -384,7 +384,7 @@ def send_user_email_invite(
         subject,
         html_content,
         text_content,
-        inline_png=("logo.png", onyx_file.data),
+        inline_png=("logo.png", om_file.data),
     )
 
 
@@ -397,7 +397,7 @@ def send_forgot_password_email(
     # Builds a forgot password email with or without fancy HTML
     application_name = _get_application_name()
 
-    onyx_file = OmRuntime.get_emailable_logo()
+    om_file = OmRuntime.get_emailable_logo()
 
     subject = f"Reset Your {application_name} Password"
     heading = "Reset Your Password"
@@ -422,7 +422,7 @@ def send_forgot_password_email(
         html_content,
         text_content,
         mail_from,
-        inline_png=("logo.png", onyx_file.data),
+        inline_png=("logo.png", om_file.data),
     )
 
 
@@ -435,7 +435,7 @@ def send_user_verification_email(
     # Builds a verification email
     application_name = _get_application_name()
 
-    onyx_file = OmRuntime.get_emailable_logo()
+    om_file = OmRuntime.get_emailable_logo()
 
     subject = f"{application_name} Email Verification"
     link = f"{WEB_DOMAIN}/auth/verify-email?token={token}"
@@ -456,5 +456,5 @@ def send_user_verification_email(
         html_content,
         text_content,
         mail_from,
-        inline_png=("logo.png", onyx_file.data),
+        inline_png=("logo.png", om_file.data),
     )

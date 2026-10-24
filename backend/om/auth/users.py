@@ -1615,7 +1615,7 @@ def generate_csrf_token() -> str:
 
 
 # refer to https://github.com/fastapi-users/fastapi-users/blob/42ddc241b965475390e2bce887b084152ae1a2cd/fastapi_users/fastapi_users.py#L91
-def create_onyx_oauth_router(
+def create_om_oauth_router(
     oauth_client: BaseOAuth2,
     backend: AuthenticationBackend,
     state_secret: SecretType,

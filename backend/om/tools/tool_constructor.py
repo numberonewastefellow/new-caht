@@ -23,7 +23,7 @@ from om.document_index.factory import get_default_document_index
 from om.image_gen.interfaces import ImageGenerationProviderCredentials
 from om.llm.interfaces import LLM
 from om.llm.interfaces import LLMConfig
-from om.onyxbot.slack.models import SlackContext
+from om.ombot.slack.models import SlackContext
 from om.tools.built_in_tools import get_built_in_tool_by_id
 from om.tools.interface import Tool
 from om.tools.models import DynamicSchemaInfo

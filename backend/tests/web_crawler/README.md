@@ -9,12 +9,12 @@ Use it to resume work if context is lost.
 Chat question → web_search tool (finds URLs) → open_url tool → WebContentProvider.contents(urls) → LLM
                                                                     ↑
                                                         VirtualAIWebCrawler (NEW)
-                                                        replaces OnyxWebCrawler
+                                                        replaces OmWebCrawler
 ```
 
 ## What Changed
 
-**Old:** `OnyxWebCrawler` — simple HTTP with bot user-agent, no retry, no JS fallback, sequential.
+**Old:** `OmWebCrawler` — simple HTTP with bot user-agent, no retry, no JS fallback, sequential.
 **New:** `VirtualAIWebCrawler` — realistic Chrome headers, retry, parallel fetch, Playwright fallback, trafilatura.
 
 ## Files Modified
@@ -22,9 +22,9 @@ Chat question → web_search tool (finds URLs) → open_url tool → WebContentP
 | File | Change |
 |------|--------|
 | `backend/om/tools/tool_implementations/open_url/virtualai_web_crawler.py` | **NEW** — robust crawler class |
-| `backend/om/tools/tool_implementations/open_url/onyx_web_crawler.py` | **UNCHANGED** — kept as-is for backward compat |
-| `backend/om/tools/tool_implementations/web_search/providers.py` | Updated imports: `OnyxWebCrawler` → `VirtualAIWebCrawler` |
-| `backend/om/server/features/web_search/api.py` | Updated imports: `OnyxWebCrawler` → `VirtualAIWebCrawler` |
+| `backend/om/tools/tool_implementations/open_url/om_web_crawler.py` | **UNCHANGED** — kept as-is for backward compat |
+| `backend/om/tools/tool_implementations/web_search/providers.py` | Updated imports: `OmWebCrawler` → `VirtualAIWebCrawler` |
+| `backend/om/server/features/web_search/api.py` | Updated imports: `OmWebCrawler` → `VirtualAIWebCrawler` |
 | `backend/om/file_processing/html_utils.py` | Added `extract_published_date()` helper |
 | `backend/shared_configs/enums.py` | `WebContentProviderType` unchanged — still uses `ONYX_WEB_CRAWLER` enum value |
 
@@ -32,7 +32,7 @@ Chat question → web_search tool (finds URLs) → open_url tool → WebContentP
 
 ```python
 class VirtualAIWebCrawler(WebContentProvider):
-    """Drop-in replacement for OnyxWebCrawler with robust fetching."""
+    """Drop-in replacement for OmWebCrawler with robust fetching."""
 
     def contents(self, urls: Sequence[str]) -> list[WebContent]:
         # Phase 1: Parallel HTTP fetch with realistic Chrome headers
@@ -53,12 +53,12 @@ class VirtualAIWebCrawler(WebContentProvider):
 
 | What | From |
 |------|------|
-| `DEFAULT_HEADERS`, `DEFAULT_USER_AGENT` | `onyx.connectors.web.connector` |
-| `start_playwright()`, `BOT_DETECTION_GRACE_PERIOD_MS` | `onyx.connectors.web.connector` |
-| `web_html_cleanup()`, `parse_html_with_trafilatura()` | `onyx.file_processing.html_utils` |
-| `ssrf_safe_get()`, `SSRFException` | `onyx.utils.url` |
-| `decode_html_bytes()`, `extract_pdf_text()`, `is_pdf_resource()` | `onyx.utils.web_content` |
-| `WebContent`, `WebContentProvider` | `onyx.tools.tool_implementations.open_url.models` |
+| `DEFAULT_HEADERS`, `DEFAULT_USER_AGENT` | `om.connectors.web.connector` |
+| `start_playwright()`, `BOT_DETECTION_GRACE_PERIOD_MS` | `om.connectors.web.connector` |
+| `web_html_cleanup()`, `parse_html_with_trafilatura()` | `om.file_processing.html_utils` |
+| `ssrf_safe_get()`, `SSRFException` | `om.utils.url` |
+| `decode_html_bytes()`, `extract_pdf_text()`, `is_pdf_resource()` | `om.utils.web_content` |
+| `WebContent`, `WebContentProvider` | `om.tools.tool_implementations.open_url.models` |
 
 ### Reference Points in providers.py
 
@@ -70,10 +70,10 @@ Three places instantiate the crawler (all updated to VirtualAIWebCrawler):
 
 ### Reference Points in api.py
 
-Imports from onyx_web_crawler.py:
+Imports from om_web_crawler.py:
 - `DEFAULT_MAX_HTML_SIZE_BYTES` (line 23)
 - `DEFAULT_MAX_PDF_SIZE_BYTES` (line 26)
-- `OnyxWebCrawler` (line 29) → changed to VirtualAIWebCrawler
+- `OmWebCrawler` (line 29) → changed to VirtualAIWebCrawler
 
 ## E2E Test Script
 

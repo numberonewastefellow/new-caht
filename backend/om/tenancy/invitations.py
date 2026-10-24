@@ -5,7 +5,7 @@ multi-tenant mode: inviting emails onto a tenant, removing them, and the read-on
 counts/invitation lookups shown in ``/me``. They operate purely on the global
 ``user_tenant_mapping`` table (public schema) plus the per-tenant ``User`` table — there
 is **no** billing, seat-cap, or control-plane coupling (all removed with the EE cloud
-flow). This is the self-hosted, clean-room replacement for the old Onyx-EE cloud
+flow). This is the self-hosted, clean-room replacement for the old upstream EE cloud
 tenants invitation / user-mapping helpers (that subsystem has been deleted).
 """
 

@@ -55,7 +55,7 @@ cd backend
 docker build -f Dockerfile.sandbox-templates -t vertualai/backend:latest .
 
 # Build sandbox container (lightweight runner)
-cd onyx/server/features/build/sandbox/kubernetes/docker
+cd om/server/features/build/sandbox/kubernetes/docker
 docker build -t vertualai/sandbox:latest .
 
 # Deploy with docker-compose or kubectl - sandboxes work immediately!
@@ -93,7 +93,7 @@ If you don't have a venv template, create it:
 ```bash
 # Use the utility script
 cd backend
-python -m onyx.server.features.build.sandbox.util.build_venv_template
+python -m om.server.features.build.sandbox.util.build_venv_template
 
 # Or manually
 python3 -m venv /templates/venv

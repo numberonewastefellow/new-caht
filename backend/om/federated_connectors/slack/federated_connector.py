@@ -19,7 +19,7 @@ from om.federated_connectors.models import EntityField
 from om.federated_connectors.models import OAuthResult
 from om.federated_connectors.slack.models import SlackCredentials
 from om.federated_connectors.slack.models import SlackEntities
-from om.onyxbot.slack.models import SlackContext
+from om.ombot.slack.models import SlackContext
 from om.utils.logger import setup_logger
 
 logger = setup_logger()

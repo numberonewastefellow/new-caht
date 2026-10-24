@@ -8,7 +8,7 @@ from om.context.search.models import InferenceChunk
 from om.federated_connectors.models import CredentialField
 from om.federated_connectors.models import EntityField
 from om.federated_connectors.models import OAuthResult
-from om.onyxbot.slack.models import SlackContext
+from om.ombot.slack.models import SlackContext
 
 
 class FederatedConnector(ABC):

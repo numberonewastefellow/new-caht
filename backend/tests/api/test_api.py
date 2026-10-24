@@ -116,7 +116,7 @@ def test_versions_endpoint(client: TestClient) -> None:
 
     # Verify stable configuration
     stable = data["stable"]
-    assert "onyx" in stable
+    assert "om" in stable
     assert "relational_db" in stable
     assert "index" in stable
     assert "nginx" in stable
@@ -124,36 +124,36 @@ def test_versions_endpoint(client: TestClient) -> None:
     # Verify stable version follows correct pattern (v1.2.3)
     # If this fails, revise latest Github release for typo or incorrect version name
     assert STABLE_VERSION_PATTERN.match(
-        stable["onyx"]
+        stable["om"]
     ), f"Stable version {stable['onyx']} doesn't match pattern v(number).(number).(number)"
 
     # Verify dev configuration
     dev = data["dev"]
-    assert "onyx" in dev
+    assert "om" in dev
     assert "relational_db" in dev
     assert "index" in dev
     assert "nginx" in dev
 
     # Verify dev version follows correct pattern (v1.2.3-beta.4)
     assert DEV_VERSION_PATTERN.match(
-        dev["onyx"]
+        dev["om"]
     ), f"Dev version {dev['onyx']} doesn't match pattern v(number).(number).(number)-beta.(number)"
 
     # Verify migration configuration
     migration = data["migration"]
-    assert "onyx" in migration
+    assert "om" in migration
     assert "relational_db" in migration
     assert "index" in migration
     assert "nginx" in migration
 
     # Verify migration has expected values
-    assert migration["onyx"] == "airgapped-intfloat-nomic-migration"
+    assert migration["om"] == "airgapped-intfloat-nomic-migration"
     assert migration["relational_db"] == "postgres:15.2-alpine"
     assert migration["index"] == "opensearchproject/opensearch:3.6.0"
     assert migration["nginx"] == "nginx:1.25.5-alpine"
 
     # Verify versions are different between stable and dev
-    assert stable["onyx"] != dev["onyx"], "Stable and dev versions should be different"
+    assert stable["om"] != dev["om"], "Stable and dev versions should be different"
 
     # Additional validation: ensure all required fields are strings
     for config_name, config in [

@@ -214,7 +214,7 @@ def celery_is_worker_primary(worker: Any) -> bool:
 def make_probe_path(probe: str, hostname: str) -> Path:
     """templates the path for a k8s probe file.
 
-    e.g. /tmp/onyx_k8s_indexing_readiness.txt
+    e.g. /tmp/om_k8s_indexing_readiness.txt
     """
     hostname_parts = hostname.split("@")
     if len(hostname_parts) != 2:

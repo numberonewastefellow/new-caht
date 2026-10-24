@@ -21,8 +21,8 @@ from om.db.models import StandardAnswer__StandardAnswerCategory
 from om.db.models import StandardAnswerCategory
 from om.db.models import StandardAnswer as StandardAnswerModel
 from om.db.models import StandardAnswerConfig
-from om.onyxbot.slack.models import SlackMessageInfo
-from om.onyxbot.slack.models import ThreadMessage
+from om.ombot.slack.models import SlackMessageInfo
+from om.ombot.slack.models import ThreadMessage
 from om.standard_answers.service import StandardAnswerService
 
 

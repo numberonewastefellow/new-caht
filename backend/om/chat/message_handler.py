@@ -76,7 +76,7 @@ from om.llm.interfaces import LLMUserIdentity
 from om.llm.request_context import reset_llm_mock_response
 from om.llm.request_context import set_llm_mock_response
 from om.llm.utils import litellm_exception_to_error_msg
-from om.onyxbot.slack.models import SlackContext
+from om.ombot.slack.models import SlackContext
 from om.redis.redis_pool import get_redis_client
 from om.server.query_and_chat.models import AUTO_PLACE_AFTER_LATEST_MESSAGE
 from om.server.query_and_chat.models import MessageResponseIDInfo

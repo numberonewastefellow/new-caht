@@ -1,4 +1,4 @@
-# How Search Works — Onyx/Danswer (Vespa) — Detailed Reference
+# How Search Works — VertualAI/Danswer (Vespa) — Detailed Reference
 
 A single, example-driven explanation of the whole search flow: **keyword (BM25)**,
 **semantic (vector/similarity)**, **hybrid**, the **Vespa ranking profiles**, the engine

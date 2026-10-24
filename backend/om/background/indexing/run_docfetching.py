@@ -68,7 +68,7 @@ from om.server.features.build.indexing.persistent_document_writer import (
     get_persistent_document_writer,
 )
 from om.utils.logger import setup_logger
-from om.utils.middleware import make_randomized_onyx_request_id
+from om.utils.middleware import make_randomized_om_request_id
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import INDEX_ATTEMPT_INFO_CONTEXTVAR
 
@@ -701,7 +701,7 @@ def connector_document_extraction(
                             attempt_id=index_attempt_id,
                             connector_id=db_connector.id,
                             credential_id=db_credential.id,
-                            request_id=make_randomized_onyx_request_id("FSI"),
+                            request_id=make_randomized_om_request_id("FSI"),
                             structured_id=f"{tenant_id}:{cc_pair_id}:{index_attempt_id}:{batch_num}",
                             batch_num=batch_num,
                         )

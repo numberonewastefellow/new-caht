@@ -233,7 +233,7 @@ class TestExtractToolCallsFromResponseText:
         response_text = """
 <function_calls>
 <invoke name="internal_search">
-<parameter name="queries" string="false">["Onyx documentation", "Onyx docs", "Onyx platform"]</parameter>
+<parameter name="queries" string="false">["VertualAI documentation", "VertualAI docs", "VertualAI platform"]</parameter>
 </invoke>
 </function_calls>
 """
@@ -245,14 +245,14 @@ class TestExtractToolCallsFromResponseText:
         assert len(tool_calls) == 1
         assert tool_calls[0].tool_name == "internal_search"
         assert tool_calls[0].tool_args == {
-            "queries": ["Onyx documentation", "Onyx docs", "Onyx platform"]
+            "queries": ["VertualAI documentation", "VertualAI docs", "VertualAI platform"]
         }
 
     def test_ignores_unknown_tool_in_xml_style_invoke(self) -> None:
         response_text = """
 <function_calls>
 <invoke name="unknown_tool">
-<parameter name="queries" string="false">["Onyx docs"]</parameter>
+<parameter name="queries" string="false">["VertualAI docs"]</parameter>
 </invoke>
 </function_calls>
 """
@@ -342,7 +342,7 @@ class TestXmlToolCallContentFilter:
         output = f.process(
             "prefix "
             '<function_calls><invoke name="internal_search">'
-            '<parameter name="queries" string="false">["Onyx docs"]</parameter>'
+            '<parameter name="queries" string="false">["VertualAI docs"]</parameter>'
             "</invoke></function_calls> suffix"
         )
         output += f.flush()
@@ -354,7 +354,7 @@ class TestXmlToolCallContentFilter:
             "Start ",
             "<function_",
             'calls><invoke name="internal_search">',
-            '<parameter name="queries" string="false">["Onyx docs"]',
+            '<parameter name="queries" string="false">["VertualAI docs"]',
             "</parameter></invoke></function_calls>",
             " End",
         ]

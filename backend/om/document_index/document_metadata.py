@@ -25,7 +25,7 @@ class DocumentMetadata:
     semantic_identifier: str
     first_link: str
     doc_updated_at: datetime | None = None
-    # Emails, not necessarily attached to users. Users may not be in Onyx.
+    # Emails, not necessarily attached to users. Users may not be in VertualAI.
     primary_owners: list[str] | None = None
     secondary_owners: list[str] | None = None
     from_ingestion_api: bool = False

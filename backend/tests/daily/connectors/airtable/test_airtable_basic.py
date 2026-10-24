@@ -331,7 +331,7 @@ def test_airtable_connector_index_all(
 ) -> None:
     """Test index_all mode discovers all bases/tables and returns documents.
 
-    The test token has access to one base ("Onyx") with three tables:
+    The test token has access to one base ("VertualAI") with three tables:
       - Tickets: 3 records, 2 with content (1 empty record is skipped)
       - Support Categories: 4 records, all with Category Name field
       - Table 3: 3 records, 1 with content (2 empty records are skipped)
@@ -369,31 +369,31 @@ def test_airtable_connector_index_all(
     # In index_all mode, semantic identifiers include "Base Name > Table Name: Primary Field"
     assert (
         docs_by_id["airtable__rec8BnxDLyWeegOuO"].semantic_identifier
-        == "Onyx > Tickets: Slow Internet"
+        == "VertualAI > Tickets: Slow Internet"
     )
     assert (
         docs_by_id["airtable__rec5SgUDcHXcBc8kS"].semantic_identifier
-        == "Onyx > Support Categories: Software Development"
+        == "VertualAI > Support Categories: Software Development"
     )
     assert (
         docs_by_id["airtable__recNalBz02QU1LhbM"].semantic_identifier
-        == "Onyx > Table 3: A"
+        == "VertualAI > Table 3: A"
     )
 
     # Verify hierarchy metadata on a Tickets doc
     tickets_doc = docs_by_id["airtable__rec8BnxDLyWeegOuO"]
     assert tickets_doc.doc_metadata is not None
     hierarchy = tickets_doc.doc_metadata["hierarchy"]
-    assert hierarchy["source_path"] == ["Onyx", "Tickets"]
+    assert hierarchy["source_path"] == ["VertualAI", "Tickets"]
     assert hierarchy["base_id"] == airtable_config.base_id
-    assert hierarchy["base_name"] == "Onyx"
+    assert hierarchy["base_name"] == "VertualAI"
     assert hierarchy["table_name"] == "Tickets"
 
     # Verify hierarchy on a Support Categories doc
     cat_doc = docs_by_id["airtable__rec5SgUDcHXcBc8kS"]
     assert cat_doc.doc_metadata is not None
     assert cat_doc.doc_metadata["hierarchy"]["source_path"] == [
-        "Onyx",
+        "VertualAI",
         "Support Categories",
     ]
 

@@ -51,7 +51,7 @@ def celery_purge_queue(queue: str, tenant_id: str) -> None:  # noqa: ARG001
 
     # processed = 0
     # deleted = 0
-    # for i in range(len(OnyxCeleryPriority)):
+    # for i in range(len(OmCeleryPriority)):
     #     queue_name = queue
     #     if i > 0:
     #         queue_name += CELERY_SEPARATOR

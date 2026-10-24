@@ -28,7 +28,7 @@ from om.connectors.models import TextSection
 from om.connectors.salesforce.doc_conversion import convert_sf_object_to_doc
 from om.connectors.salesforce.doc_conversion import convert_sf_query_result_to_doc
 from om.connectors.salesforce.doc_conversion import ID_PREFIX
-from om.connectors.salesforce.onyx_salesforce import OmSalesforce
+from om.connectors.salesforce.om_salesforce import OmSalesforce
 from om.connectors.salesforce.salesforce_calls import fetch_all_csvs_in_parallel
 from om.connectors.salesforce.sqlite_functions import OmSalesforceSQLite
 from om.connectors.salesforce.utils import ACCOUNT_OBJECT_TYPE
@@ -394,7 +394,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
 
     # @staticmethod
     # def _get_child_types(
-    #     parent_types: list[str], sf_client: OnyxSalesforce
+    #     parent_types: list[str], sf_client: OmSalesforce
     # ) -> set[str]:
     #     all_types: set[str] = set(parent_types)
 
@@ -933,7 +933,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
 
         logger.info(f"Parent object types: num={len(parent_types)} list={parent_types}")
         for parent_type in parent_types:
-            # parent_onyx_sf_type = OnyxSalesforceType(parent_type, sf_client)
+            # parent_om_sf_type = OmSalesforceType(parent_type, sf_client)
 
             custom_fields: list[str] | None = []
             associations_config: dict[str, list[str]] | None = None
@@ -996,7 +996,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
             for child_type, child_relationship in child_types_working.items():
                 child_type = cast(str, child_type)
 
-                # onyx_sf_type = OnyxSalesforceType(child_type, sf_client)
+                # om_sf_type = OmSalesforceType(child_type, sf_client)
 
                 # map parent name to child name
                 parent_to_child_types[parent_type].add(child_type)
@@ -1066,7 +1066,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
         # 1.1 - Detect all fields in child types which reference a parent type.
         # build dicts to detect relationships between parent and child
         for child_type in child_types.union(essential_types):
-            # onyx_sf_type = OnyxSalesforceType(child_type, sf_client)
+            # om_sf_type = OmSalesforceType(child_type, sf_client)
             parent_reference_fields = sf_client.get_parent_reference_fields(
                 child_type, parent_types
             )
@@ -1079,7 +1079,7 @@ class SalesforceConnector(LoadConnector, PollConnector, SlimConnectorWithPermSyn
         # NOTE(rkuo):
         all_types_to_filter: dict[str, bool] = {}
         for sf_type in all_types:
-            # onyx_sf_type = OnyxSalesforceType(sf_type, sf_client)
+            # om_sf_type = OmSalesforceType(sf_type, sf_client)
 
             # NOTE(rkuo): I'm not convinced it makes sense to restrict filtering at all
             # all_types_to_filter[sf_type] = sf_db.object_type_count(sf_type) > 0

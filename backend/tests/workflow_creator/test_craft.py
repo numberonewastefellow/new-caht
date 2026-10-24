@@ -293,7 +293,7 @@ def test_message_stream(session_id: str | None = None) -> tuple[bool, str | None
             elif ptype in ("agent_plan_update", "current_mode_update"):
                 _safe_print(f"\n  [{ptype}]")
 
-            # Synthetic Onyx packets (saved to DB)
+            # Synthetic VertualAI packets (saved to DB)
             elif ptype in ("agent_message", "agent_thought"):
                 content = packet.get("content", {})
                 text = content.get("text", "") if isinstance(content, dict) else str(content)

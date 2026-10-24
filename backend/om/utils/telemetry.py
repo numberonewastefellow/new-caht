@@ -136,7 +136,7 @@ def optional_telemetry(
         )
         thread.start()
     except Exception:
-        # Should never interfere with normal functions of Onyx
+        # Should never interfere with normal functions of VertualAI
         pass
 
 
@@ -171,6 +171,6 @@ def mt_cloud_telemetry(
     all_properties["tenant_id"] = tenant_id
 
     # MIT version should not need to include any Posthog code
-    # This is only for Onyx MT Cloud, this code should also never be hit, no reason for any orgs to
-    # be running the Multi Tenant version of Onyx.
+    # This is only for VertualAI MT Cloud, this code should also never be hit, no reason for any orgs to
+    # be running the Multi Tenant version of VertualAI.
     event_telemetry(distinct_id, event, all_properties)

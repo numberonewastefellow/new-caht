@@ -398,7 +398,7 @@ def sync_sandbox_files(
 
 # NOTE: in the future, may need to add this. For now, will do manual cleanup.
 # @shared_task(
-#     name=OnyxCeleryTask.CLEANUP_OLD_SNAPSHOTS,
+#     name=OmCeleryTask.CLEANUP_OLD_SNAPSHOTS,
 #     soft_time_limit=300,
 #     bind=True,
 #     ignore_result=True,
@@ -425,7 +425,7 @@ def sync_sandbox_files(
 
 #     redis_client = get_redis_client(tenant_id=tenant_id)
 #     lock: RedisLock = redis_client.lock(
-#         OnyxRedisLocks.CLEANUP_OLD_SNAPSHOTS_BEAT_LOCK,
+#         OmRedisLocks.CLEANUP_OLD_SNAPSHOTS_BEAT_LOCK,
 #         timeout=CELERY_GENERIC_BEAT_LOCK_TIMEOUT,
 #     )
 

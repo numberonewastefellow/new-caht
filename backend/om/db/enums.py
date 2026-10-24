@@ -210,7 +210,7 @@ class SwitchoverType(str, PyEnum):
     INSTANT = "instant"
 
 
-# Onyx Build Mode Enums
+# VertualAI Build Mode Enums
 class BuildSessionStatus(str, PyEnum):
     ACTIVE = "active"
     IDLE = "idle"

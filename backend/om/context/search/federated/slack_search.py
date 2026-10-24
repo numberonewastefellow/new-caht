@@ -41,8 +41,8 @@ from om.indexing.chunker import Chunker
 from om.indexing.embedder import DefaultIndexingEmbedder
 from om.indexing.models import DocAwareChunk
 from om.llm.factory import get_default_llm
-from om.onyxbot.slack.models import ChannelType
-from om.onyxbot.slack.models import SlackContext
+from om.ombot.slack.models import ChannelType
+from om.ombot.slack.models import SlackContext
 from om.redis.redis_pool import get_redis_client
 from om.server.federated.models import FederatedConnectorDetail
 from om.utils.logger import setup_logger

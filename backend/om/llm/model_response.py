@@ -180,7 +180,7 @@ def from_litellm_model_response_stream(
     response: "LiteLLMModelResponseStream",
 ) -> ModelResponseStream:
     """
-    Convert a LiteLLM ModelResponseStream into the simplified Onyx representation.
+    Convert a LiteLLM ModelResponseStream into the simplified VertualAI representation.
     """
     response_data = response.model_dump()
     response_id, created, choice_data = _validate_and_extract_base_fields(
@@ -213,7 +213,7 @@ def from_litellm_model_response(
     response: "LiteLLMModelResponse",
 ) -> ModelResponse:
     """
-    Convert a LiteLLM ModelResponse into the simplified Onyx representation.
+    Convert a LiteLLM ModelResponse into the simplified VertualAI representation.
     """
     response_data = response.model_dump()
     response_id, created, choice_data = _validate_and_extract_base_fields(

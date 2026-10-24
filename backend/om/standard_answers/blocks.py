@@ -17,7 +17,7 @@ from slack_sdk.models.blocks import SectionBlock
 from slack_sdk.models.blocks.basic_components import MarkdownTextObject
 
 from om.db.models import StandardAnswer
-from om.onyxbot.slack.constants import GENERATE_ANSWER_BUTTON_ACTION_ID
+from om.ombot.slack.constants import GENERATE_ANSWER_BUTTON_ACTION_ID
 
 GENERATE_FULL_ANSWER_TEXT = "Generate Full Answer"
 

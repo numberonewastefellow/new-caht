@@ -25,7 +25,7 @@ posthog = Posthog(
     on_error=posthog_on_error,
 )
 
-# For cross referencing between cloud and www Onyx sites
+# For cross referencing between cloud and www VertualAI sites
 # NOTE: These clients are separate because they are separate posthog projects.
 # We should eventually unify them into a single posthog project,
 # which would no longer require this workaround

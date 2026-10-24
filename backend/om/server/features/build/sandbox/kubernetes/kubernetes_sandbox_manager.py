@@ -354,7 +354,7 @@ class KubernetesSandboxManager(SandboxManager):
         self._file_sync_service_account = SANDBOX_FILE_SYNC_SERVICE_ACCOUNT
 
         # Load AGENTS.md template path
-        build_dir = Path(__file__).parent.parent.parent  # /onyx/server/features/build/
+        build_dir = Path(__file__).parent.parent.parent  # /om/server/features/build/
         self._agent_instructions_template_path = build_dir / "AGENTS.template.md"
         self._skills_path = Path(__file__).parent / "docker" / "skills"
 

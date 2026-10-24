@@ -89,7 +89,7 @@ def create_mcp_fastapi_app() -> FastAPI:
             return JSONResponse({"status": "healthy", "service": "mcp_server"})
         return await call_next(request)
 
-    # Authentication is handled by FastMCP's OnyxTokenVerifier (see auth.py)
+    # Authentication is handled by FastMCP's OmTokenVerifier (see auth.py)
 
     if MCP_SERVER_CORS_ORIGINS:
         logger.info(f"CORS origins: {MCP_SERVER_CORS_ORIGINS}")

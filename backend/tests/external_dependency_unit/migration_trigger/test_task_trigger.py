@@ -75,11 +75,11 @@ def _task_names() -> object:
 def test_representative_task_bindings_resolve() -> None:
     apps = _finalized_apps()
     registry = _union_registry(apps)
-    onyx_celery_task = _task_names()
+    om_celery_task = _task_names()
 
     failures: list[str] = []
     for const_name in _REPRESENTATIVE_TASKS:
-        task_name = getattr(onyx_celery_task, const_name, None)
+        task_name = getattr(om_celery_task, const_name, None)
         if not isinstance(task_name, str):
             failures.append(f"{const_name}: not a str constant")
             continue
@@ -106,9 +106,9 @@ def test_eager_trigger_of_lightweight_task() -> None:
     """Actually run a task in eager mode to prove name->function dispatch works."""
     apps = _finalized_apps()
     registry = _union_registry(apps)
-    onyx_celery_task = _task_names()
+    om_celery_task = _task_names()
 
-    task_name = getattr(onyx_celery_task, "CELERY_BEAT_HEARTBEAT", None)
+    task_name = getattr(om_celery_task, "CELERY_BEAT_HEARTBEAT", None)
     assert isinstance(task_name, str)
     task = registry.get(task_name)
     if task is None:

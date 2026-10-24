@@ -3,13 +3,13 @@
 
 Usage:
   # From backend directory:
-  PYTHONPATH=. python onyx/server/features/build/sandbox/local/test_agent_client.py
+  PYTHONPATH=. python om/server/features/build/sandbox/local/test_agent_client.py
 
   # Or with specific message:
-  PYTHONPATH=. python onyx/server/features/build/sandbox/local/test_agent_client.py "What files are in this directory?"
+  PYTHONPATH=. python om/server/features/build/sandbox/local/test_agent_client.py "What files are in this directory?"
 
   # With specific working directory:
-  PYTHONPATH=. python onyx/server/features/build/sandbox/local/test_agent_client.py --dir /path/to/project "List files"
+  PYTHONPATH=. python om/server/features/build/sandbox/local/test_agent_client.py --dir /path/to/project "List files"
 """
 
 import argparse

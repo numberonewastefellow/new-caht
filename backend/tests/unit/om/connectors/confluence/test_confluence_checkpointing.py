@@ -13,7 +13,7 @@ from requests.exceptions import HTTPError
 from om.configs.constants import DocumentSource
 from om.connectors.confluence.connector import ConfluenceCheckpoint
 from om.connectors.confluence.connector import ConfluenceConnector
-from om.connectors.confluence.onyx_confluence import OmConfluence
+from om.connectors.confluence.om_confluence import OmConfluence
 from om.connectors.exceptions import CredentialExpiredError
 from om.connectors.exceptions import InsufficientPermissionsError
 from om.connectors.exceptions import UnexpectedValidationError
@@ -385,7 +385,7 @@ def test_validate_connector_settings_errors(
     error = HTTPError(response=MagicMock(status_code=status_code))
 
     with patch(
-        "om.connectors.confluence.onyx_confluence.OmConfluence.retrieve_confluence_spaces"
+        "om.connectors.confluence.om_confluence.OmConfluence.retrieve_confluence_spaces"
     ) as mock_retrieve:
         mock_retrieve.side_effect = error
 

@@ -379,7 +379,7 @@ class DirectoryManager:
         """Create opencode.json configuration file for the agent.
 
         Configures the opencode CLI agent with the LLM provider settings
-        from Onyx's configured LLM provider.
+        from VertualAI's configured LLM provider.
 
         Args:
             sandbox_path: Path to the sandbox directory

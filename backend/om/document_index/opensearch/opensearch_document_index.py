@@ -114,7 +114,7 @@ def set_cluster_state(client: OpenSearchClient) -> None:
             "Failed to put cluster settings. If the settings have never been set before, "
             "this may cause unexpected index creation when indexing documents into an "
             "index that does not exist, or may cause expected logs to not appear. If this "
-            "is not the first time running Onyx against this instance of OpenSearch, these "
+            "is not the first time running VertualAI against this instance of OpenSearch, these "
             "settings have likely already been set. Not taking any further action..."
         )
     min_max_normalization_pipeline_name, min_max_normalization_pipeline_config = (
@@ -151,7 +151,7 @@ def _convert_retrieved_opensearch_chunk_to_inference_chunk_uncleaned(
     ``semantic_identifier``, ``hidden``, ``boost``, ``updated_at`` ...).
     So here the *right-hand* ``opensearch_chunk.<attr>`` are OpenSearch names and
     the *left-hand* kwargs are internal names.
-    ⚠️ The sibling WRITE boundary ``_convert_onyx_chunk_to_opensearch_document``
+    ⚠️ The sibling WRITE boundary ``_convert_om_chunk_to_opensearch_document``
     goes the OPPOSITE way and its ``index_chunk`` param is the INTERNAL model —
     do not confuse the two ``chunk`` roles.
 
@@ -168,7 +168,7 @@ def _convert_retrieved_opensearch_chunk_to_inference_chunk_uncleaned(
             other thing").
 
     Returns:
-        An Onyx inference chunk representation.
+        An VertualAI inference chunk representation.
     """
     return InferenceChunkUncleaned(
         chunk_id=opensearch_chunk.chunk_index,
@@ -214,7 +214,7 @@ def _convert_retrieved_opensearch_chunk_to_inference_chunk_uncleaned(
     )
 
 
-def _convert_onyx_chunk_to_opensearch_document(
+def _convert_om_chunk_to_opensearch_document(
     index_chunk: DocMetadataAwareIndexChunk,
 ) -> DocumentChunk:
     """
@@ -480,10 +480,10 @@ class OpenSearchDocumentIndex(DocumentIndex):
             # can result in a state where chunks are deleted and not all the
             # new chunks have been indexed.
             chunk_batch: list[DocumentChunk] = [
-                _convert_onyx_chunk_to_opensearch_document(chunk)
+                _convert_om_chunk_to_opensearch_document(chunk)
                 for chunk in doc_chunks
             ]
-            onyx_document: Document = doc_chunks[0].source_document
+            om_document: Document = doc_chunks[0].source_document
             # First delete the doc's chunks from the index. This is so that
             # there are no dangling chunks in the index, in the event that the
             # new document's content contains fewer chunks than the previous
@@ -492,18 +492,18 @@ class OpenSearchDocumentIndex(DocumentIndex):
             # if the chunk count has actually decreased. This assumes that
             # overlapping chunks are perfectly overwritten. If we can't
             # guarantee that then we need the code as-is.
-            if onyx_document.id not in deleted_doc_ids:
+            if om_document.id not in deleted_doc_ids:
                 num_chunks_deleted = self.delete(
-                    onyx_document.id, onyx_document.chunk_count
+                    om_document.id, om_document.chunk_count
                 )
-                deleted_doc_ids.add(onyx_document.id)
+                deleted_doc_ids.add(om_document.id)
                 # If we see that chunks were deleted we assume the doc already
                 # existed. We record the result before bulk_index_documents
                 # runs. If indexing raises, this entire result list is discarded
                 # by the caller's retry logic, so early recording is safe.
                 document_indexing_results.append(
                     DocumentInsertionRecord(
-                        document_id=onyx_document.id,
+                        document_id=om_document.id,
                         already_existed=num_chunks_deleted > 0,
                     )
                 )
@@ -568,7 +568,7 @@ class OpenSearchDocumentIndex(DocumentIndex):
 
         Args:
             document_id: The unique identifier for the document as represented
-                in Onyx, not necessarily in the document index.
+                in VertualAI, not necessarily in the document index.
             chunk_count: The number of chunks in OpenSearch for the document.
                 Defaults to None.
 

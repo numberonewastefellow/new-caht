@@ -3,8 +3,8 @@ set -e
 
 cleanup() {
   echo "Error occurred. Cleaning up..."
-  docker stop onyx_postgres onyx_vespa onyx_redis onyx_minio 2>/dev/null || true
-  docker rm onyx_postgres onyx_vespa onyx_redis onyx_minio 2>/dev/null || true
+  docker stop onyx_postgres onyx_vespa om_redis onyx_minio 2>/dev/null || true
+  docker rm onyx_postgres onyx_vespa om_redis onyx_minio 2>/dev/null || true
 }
 
 # Trap errors and output a message, then cleanup
@@ -20,8 +20,8 @@ MINIO_VOLUME=${4:-""}  # Default is empty if not provided
 
 # Stop and remove the existing containers
 echo "Stopping and removing existing containers..."
-docker stop onyx_postgres onyx_vespa onyx_redis onyx_minio 2>/dev/null || true
-docker rm onyx_postgres onyx_vespa onyx_redis onyx_minio 2>/dev/null || true
+docker stop onyx_postgres onyx_vespa om_redis onyx_minio 2>/dev/null || true
+docker rm onyx_postgres onyx_vespa om_redis onyx_minio 2>/dev/null || true
 
 # Start the PostgreSQL container with optional volume
 echo "Starting PostgreSQL container..."
@@ -42,9 +42,9 @@ fi
 # Start the Redis container with optional volume
 echo "Starting Redis container..."
 if [[ -n "$REDIS_VOLUME" ]]; then
-    docker run --detach --name onyx_redis --publish 6379:6379 -v $REDIS_VOLUME:/data redis
+    docker run --detach --name om_redis --publish 6379:6379 -v $REDIS_VOLUME:/data redis
 else
-    docker run --detach --name onyx_redis --publish 6379:6379 redis
+    docker run --detach --name om_redis --publish 6379:6379 redis
 fi
 
 # Start the MinIO container with optional volume

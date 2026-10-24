@@ -96,7 +96,7 @@ def get_chat_sessions_by_user(
     user_id: UUID | None,
     deleted: bool | None,
     db_session: Session,
-    include_onyxbot_flows: bool = False,
+    include_ombot_flows: bool = False,
     limit: int = 50,
     workspace_id: int | None = None,
     only_non_workspace_chats: bool = False,
@@ -104,7 +104,7 @@ def get_chat_sessions_by_user(
 ) -> list[ChatSession]:
     stmt = select(ChatSession).where(ChatSession.user_id == user_id)
 
-    if not include_onyxbot_flows:
+    if not include_ombot_flows:
         stmt = stmt.where(ChatSession.onyxbot_flow.is_(False))
 
     stmt = stmt.order_by(desc(ChatSession.time_updated))

@@ -424,7 +424,7 @@ def save_zip_metadata_to_file_store(
     zf: zipfile.ZipFile, file_store: FileStore
 ) -> str | None:
     """
-    Extract .onyx_metadata.json from zip and save to file store.
+    Extract .om_metadata.json from zip and save to file store.
     Returns the file_id or None if no metadata file exists.
     """
     try:

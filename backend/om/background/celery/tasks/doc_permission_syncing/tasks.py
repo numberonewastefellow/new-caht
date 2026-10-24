@@ -79,7 +79,7 @@ from om.redis.redis_connector_doc_perm_sync import RedisConnectorPermissionSyncP
 from om.redis.redis_pool import get_redis_client
 from om.redis.redis_pool import get_redis_replica_client
 from om.redis.redis_pool import redis_lock_dump
-from om.server.runtime.onyx_runtime import OmRuntime
+from om.server.runtime.om_runtime import OmRuntime
 from om.server.utils import make_short_id
 from om.utils.logger import doc_permission_sync_ctx
 from om.utils.logger import format_error_for_logging

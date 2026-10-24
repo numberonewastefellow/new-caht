@@ -59,8 +59,8 @@ from om.connectors.slack.access import get_channel_access
 from om.connectors.slack.models import ChannelType
 from om.connectors.slack.models import MessageType
 from om.connectors.slack.models import ThreadType
-from om.connectors.slack.onyx_retry_handler import OmRedisSlackRetryHandler
-from om.connectors.slack.onyx_slack_web_client import OmSlackWebClient
+from om.connectors.slack.om_retry_handler import OmRedisSlackRetryHandler
+from om.connectors.slack.om_slack_web_client import OmSlackWebClient
 from om.connectors.slack.utils import (
     expert_info_from_slack_id,
 )
@@ -750,7 +750,7 @@ class SlackConnector(
         delay_key = SlackConnector.make_delay_key(prefix)
 
         # NOTE: slack has a built in RateLimitErrorRetryHandler, but it isn't designed
-        # for concurrent workers. We've extended it with OnyxRedisSlackRetryHandler.
+        # for concurrent workers. We've extended it with OmRedisSlackRetryHandler.
         connection_error_retry_handler = ConnectionErrorRetryHandler(
             max_retry_count=max_retry_count,
             interval_calculator=FixedValueRetryIntervalCalculator(),
@@ -762,14 +762,14 @@ class SlackConnector(
             ],
         )
 
-        onyx_rate_limit_error_retry_handler = OmRedisSlackRetryHandler(
+        om_rate_limit_error_retry_handler = OmRedisSlackRetryHandler(
             max_retry_count=max_retry_count,
             delay_key=delay_key,
             r=r,
         )
         custom_retry_handlers: list[RetryHandler] = [
             connection_error_retry_handler,
-            onyx_rate_limit_error_retry_handler,
+            om_rate_limit_error_retry_handler,
         ]
 
         client = OmSlackWebClient(

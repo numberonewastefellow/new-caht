@@ -1,7 +1,7 @@
 """
 Test suite for MCP Pass-Through OAuth (PT_OAUTH) integration.
 
-Tests the pass-through OAuth flow where Onyx forwards the user's login OAuth token
+Tests the pass-through OAuth flow where VertualAI forwards the user's login OAuth token
 to an MCP server for authentication.
 
 This test:
@@ -83,7 +83,7 @@ class TestMCPPassThroughOAuth:
         """
         Test that PT_OAUTH correctly passes the user's login OAuth token to MCPTool.
 
-        This simulates a user who logged into Onyx with Google OAuth and is using
+        This simulates a user who logged into VertualAI with Google OAuth and is using
         an MCP server that requires their Google token for authentication.
         """
         # Create user with login OAuth token (simulating Google OAuth login)

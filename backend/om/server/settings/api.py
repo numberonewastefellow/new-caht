@@ -18,7 +18,7 @@ from om.db.notification import get_notifications
 from om.db.notification import update_notification_last_shown
 from om.key_value_store.factory import get_kv_store
 from om.key_value_store.interface import KvKeyNotFoundError
-from om.server.features.build.utils import is_onyx_craft_enabled
+from om.server.features.build.utils import is_om_craft_enabled
 from om.server.settings.models import Notification
 from om.server.settings.models import Settings
 from om.server.settings.models import UserSettings
@@ -55,14 +55,14 @@ def fetch_settings(
     except KvKeyNotFoundError:
         needs_reindexing = False
 
-    # Check if Onyx Craft is enabled for this user (used for server-side redirects)
-    onyx_craft_enabled_for_user = is_onyx_craft_enabled(user) if user else False
+    # Check if VertualAI Craft is enabled for this user (used for server-side redirects)
+    om_craft_enabled_for_user = is_om_craft_enabled(user) if user else False
 
     return UserSettings(
         **general_settings.model_dump(),
         notifications=settings_notifications,
         needs_reindexing=needs_reindexing,
-        onyx_craft_enabled=onyx_craft_enabled_for_user,
+        onyx_craft_enabled=om_craft_enabled_for_user,
         vector_db_enabled=not DISABLE_VECTOR_DB,
     )
 

@@ -1,4 +1,4 @@
-"""Resources that expose metadata for the Onyx MCP server."""
+"""Resources that expose metadata for the VertualAI MCP server."""
 
 from __future__ import annotations
 

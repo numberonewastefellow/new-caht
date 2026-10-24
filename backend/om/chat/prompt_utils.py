@@ -14,7 +14,7 @@ from om.prompts.chat_prompts import FILE_REMINDER
 from om.prompts.chat_prompts import LAST_CYCLE_CITATION_REMINDER
 from om.prompts.chat_prompts import REQUIRE_CITATION_GUIDANCE
 from om.prompts.prompt_utils import get_company_context
-from om.prompts.prompt_utils import handle_onyx_date_awareness
+from om.prompts.prompt_utils import handle_om_date_awareness
 from om.prompts.prompt_utils import replace_citation_guidance_tag
 from om.prompts.prompt_utils import replace_reminder_tag
 from om.prompts.tool_prompts import GENERATE_IMAGE_GUIDANCE
@@ -204,7 +204,7 @@ def build_system_prompt(
     """Should only be called with the default behavior system prompt.
     If the user has replaced the default behavior prompt with their custom agent prompt, do not call this function.
     """
-    system_prompt = handle_onyx_date_awareness(base_system_prompt, datetime_aware)
+    system_prompt = handle_om_date_awareness(base_system_prompt, datetime_aware)
 
     # Replace citation guidance placeholder if present
     system_prompt, should_append_citation_guidance = replace_citation_guidance_tag(

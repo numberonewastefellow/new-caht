@@ -606,7 +606,7 @@ def get_access_info_for_documents(
     of the associated cc pairs are intending to make the document globally public.
     Returns the list where each element contains:
     - Document ID (which is also the ID of the DocumentByConnectorCredentialPair)
-    - List of emails of Onyx users with direct access to the doc (includes a "None" element if
+    - List of emails of VertualAI users with direct access to the doc (includes a "None" element if
       the connector was set up by an admin when auth was off
     - bool for whether the document is public (the document later can also be marked public by
       automatic permission sync step)
@@ -1630,7 +1630,7 @@ def upsert_document_external_perms__no_commit(
 
     prefixed_external_groups = [
         build_ext_team_name_for_om(
-            ext_group_name=group_id,
+            external_group_name=group_id,
             source=source_type,
         )
         for group_id in external_access.external_team_ids
@@ -1671,7 +1671,7 @@ def upsert_document_external_perms(
 
     prefixed_external_groups: set[str] = {
         build_ext_team_name_for_om(
-            ext_group_name=group_id,
+            external_group_name=group_id,
             source=source_type,
         )
         for group_id in external_access.external_team_ids

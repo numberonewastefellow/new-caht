@@ -16,7 +16,7 @@ class UserRole(str, Enum):
     - Global Curator can perform admin actions
         for all groups they are a member of
     - Limited can access a limited set of basic api endpoints
-    - Slack are users that have used onyx via slack but dont have a web login
+    - Slack are users that have used VertualAI via slack but dont have a web login
     - External permissioned users that have been picked up during the external permissions sync process but don't have a web login
     """
 

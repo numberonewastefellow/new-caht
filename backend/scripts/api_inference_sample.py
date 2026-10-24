@@ -7,9 +7,9 @@ import os
 import requests
 
 
-def create_new_chat_session(onyx_url: str, api_key: str | None) -> int:
+def create_new_chat_session(om_url: str, api_key: str | None) -> int:
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else None
-    session_endpoint = onyx_url + "/api/converse/create-chat-session"
+    session_endpoint = om_url + "/api/converse/create-chat-session"
 
     response = requests.post(
         session_endpoint,
@@ -22,10 +22,10 @@ def create_new_chat_session(onyx_url: str, api_key: str | None) -> int:
     return new_session_id
 
 
-def process_question(onyx_url: str, question: str, api_key: str | None) -> None:
-    message_endpoint = onyx_url + "/api/converse/send-chat-message"
+def process_question(om_url: str, question: str, api_key: str | None) -> None:
+    message_endpoint = om_url + "/api/converse/send-chat-message"
 
-    chat_session_id = create_new_chat_session(onyx_url, api_key)
+    chat_session_id = create_new_chat_session(om_url, api_key)
 
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else None
 
@@ -65,7 +65,7 @@ def process_question(onyx_url: str, question: str, api_key: str | None) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sample API Usage")
     parser.add_argument(
-        "--onyx-url",
+        "--om-url",
         type=str,
         default="http://localhost:80",
         help="VertualAI URL, should point to VertualAI nginx.",
@@ -83,5 +83,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     process_question(
-        onyx_url=args.onyx_url, question=args.test_question, api_key=api_key
+        om_url=args.om_url, question=args.test_question, api_key=api_key
     )

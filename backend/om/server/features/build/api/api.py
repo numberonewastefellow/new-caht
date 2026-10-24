@@ -35,18 +35,18 @@ from om.server.features.build.api.user_library import router as user_library_rou
 from om.server.features.build.db.sandbox import get_sandbox_by_user_id
 from om.server.features.build.sandbox import get_sandbox_manager
 from om.server.features.build.session.manager import SessionManager
-from om.server.features.build.utils import is_onyx_craft_enabled
+from om.server.features.build.utils import is_om_craft_enabled
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
 
 
-def require_onyx_craft_enabled(user: User = Depends(current_user)) -> User:
+def require_om_craft_enabled(user: User = Depends(current_user)) -> User:
     """
-    Dependency that checks if Onyx Craft is enabled for the user.
-    Raises HTTP 403 if Onyx Craft is disabled via feature flag.
+    Dependency that checks if VertualAI Craft is enabled for the user.
+    Raises HTTP 403 if VertualAI Craft is disabled via feature flag.
     """
-    if not is_onyx_craft_enabled(user):
+    if not is_om_craft_enabled(user):
         raise HTTPException(
             status_code=403,
             detail="VertualAI Craft is not available",
@@ -54,7 +54,7 @@ def require_onyx_craft_enabled(user: User = Depends(current_user)) -> User:
     return user
 
 
-router = APIRouter(prefix="/build", dependencies=[Depends(require_onyx_craft_enabled)])
+router = APIRouter(prefix="/build", dependencies=[Depends(require_om_craft_enabled)])
 
 # Include sub-routers for sessions, messages, and user library
 router.include_router(sessions_router, tags=["build"])
@@ -223,7 +223,7 @@ def get_build_connectors(
 
 # Headers to skip when proxying.
 # Hop-by-hop headers must not be forwarded, and set-cookie is stripped to
-# prevent LLM-generated apps from setting cookies on the parent Onyx domain.
+# prevent LLM-generated apps from setting cookies on the parent VertualAI domain.
 EXCLUDED_HEADERS = {
     "content-encoding",
     "content-length",

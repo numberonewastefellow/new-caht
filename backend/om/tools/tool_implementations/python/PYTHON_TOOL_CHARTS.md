@@ -16,7 +16,7 @@ The PythonTool (Code Interpreter) executes Python code in a Docker sandbox. When
 Code (plt.savefig('chart.png'))
   -> Docker sandbox generates PNG
   -> python_tool.py downloads from sandbox
-  -> Saves to FileStore (onyx_file_id = file_store.save_file(...))
+  -> Saves to FileStore (om_file_id = file_store.save_file(...))
   -> Emits PythonToolDelta(file_ids=[...], files=[{file_id, filename}])
   -> Frontend PythonToolRenderer.tsx renders InMessageImage for image files
   -> On history reload, session_loading.py reconstructs packets from ToolCall DB record

@@ -16,7 +16,7 @@ from om.llm.interfaces import LLM
 from om.llm.models import UserMessage
 from om.llm.utils import llm_response_to_string
 from om.natural_language_processing.english_stopwords import ENGLISH_STOPWORDS_SET
-from om.onyxbot.slack.models import ChannelType
+from om.ombot.slack.models import ChannelType
 from om.prompts.federated_search import SLACK_DATE_EXTRACTION_PROMPT
 from om.prompts.federated_search import SLACK_QUERY_EXPANSION_PROMPT
 from om.tracing.llm_utils import llm_generation_span

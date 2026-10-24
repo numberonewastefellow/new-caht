@@ -1,4 +1,4 @@
-"""Utility helpers for the Onyx MCP server."""
+"""Utility helpers for the VertualAI MCP server."""
 
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ def require_access_token() -> AccessToken:
     access_token = get_access_token()
     if not access_token:
         raise ValueError(
-            "MCP Server requires an Onyx access token to authenticate your request"
+            "MCP Server requires an VertualAI access token to authenticate your request"
         )
     return access_token
 

@@ -30,7 +30,7 @@ from om.auth.schemas import UserCreate
 from om.auth.schemas import UserRead
 from om.auth.schemas import UserUpdate
 from om.auth.users import auth_backend
-from om.auth.users import create_onyx_oauth_router
+from om.auth.users import create_om_oauth_router
 from om.auth.users import fastapi_users
 from om.configs.app_configs import APP_API_PREFIX
 from om.configs.app_configs import APP_HOST
@@ -142,7 +142,7 @@ from om.server.middleware.latency_logging import add_latency_logging_middleware
 from om.server.middleware.rate_limiting import close_auth_limiter
 from om.server.middleware.rate_limiting import get_auth_rate_limiters
 from om.server.middleware.rate_limiting import setup_auth_limiter
-from om.server.onyx_api.ingestion import router as onyx_api_router
+from om.server.om_api.ingestion import router as om_api_router
 from om.server.pat.api import router as pat_router
 from om.server.query_and_chat.chat_backend import router as chat_router
 from om.server.query_and_chat.query_backend import (
@@ -156,13 +156,13 @@ from om.server.settings.api import basic_router as settings_router
 # WS-F: clean-room rate-limits admin router. Replaces the removed EE token-rate-limit router.
 from om.server.rate_limits.api import router as rate_limit_admin_router
 from om.server.utils import BasicAuthenticationError
-from om.setup import setup_multitenant_onyx
-from om.setup import setup_onyx
+from om.setup import setup_multitenant_om
+from om.setup import setup_om
 from om.tracing.setup import setup_tracing
 from om.utils.logger import setup_logger
 from om.utils.logger import setup_uvicorn_logger
 from om.utils.middleware import add_endpoint_context_middleware
-from om.utils.middleware import add_onyx_request_id_middleware
+from om.utils.middleware import add_om_request_id_middleware
 from om.utils.telemetry import get_or_generate_uuid
 from om.utils.telemetry import optional_telemetry
 from om.utils.telemetry import RecordType
@@ -320,12 +320,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
 
         # If we are multi-tenant, we need to only set up initial public tables
         with get_session_with_current_tenant() as db_session:
-            setup_onyx(db_session, POSTGRES_DEFAULT_SCHEMA)
+            setup_om(db_session, POSTGRES_DEFAULT_SCHEMA)
             # set up the file store (e.g. create bucket if needed). On multi-tenant,
             # this is done via IaC
             get_default_file_store().initialize()
     else:
-        setup_multitenant_onyx()
+        setup_multitenant_om()
 
     if not MULTI_TENANT:
         # don't emit a metric for every pod rollover/restart
@@ -439,7 +439,7 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     include_router_with_global_prefix_prepended(application, admin_oauth_config_router)
     include_router_with_global_prefix_prepended(application, user_oauth_token_router)
     include_router_with_global_prefix_prepended(application, state_router)
-    include_router_with_global_prefix_prepended(application, onyx_api_router)
+    include_router_with_global_prefix_prepended(application, om_api_router)
     include_router_with_global_prefix_prepended(application, settings_router)
     include_router_with_global_prefix_prepended(application, settings_admin_router)
     include_router_with_global_prefix_prepended(application, llm_admin_router)
@@ -550,7 +550,7 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
         )
         include_auth_router_with_prefix(
             application,
-            create_onyx_oauth_router(
+            create_om_oauth_router(
                 cloud_oauth_client,
                 auth_backend,
                 USER_AUTH_SECRET,
@@ -581,7 +581,7 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
         )
         include_auth_router_with_prefix(
             application,
-            create_onyx_oauth_router(
+            create_om_oauth_router(
                 oauth_client,
                 auth_backend,
                 USER_AUTH_SECRET,
@@ -613,7 +613,7 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
 
         include_auth_router_with_prefix(
             application,
-            create_onyx_oauth_router(
+            create_om_oauth_router(
                 OpenID(
                     OAUTH_CLIENT_ID,
                     OAUTH_CLIENT_SECRET,
@@ -674,7 +674,7 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     if LOG_ENDPOINT_LATENCY:
         add_latency_logging_middleware(application, logger)
 
-    add_onyx_request_id_middleware(application, "API", logger)
+    add_om_request_id_middleware(application, "API", logger)
 
     # Set endpoint context for per-endpoint DB pool attribution metrics.
     # Must be registered after all routes are added.

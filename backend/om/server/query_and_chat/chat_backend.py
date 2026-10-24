@@ -568,7 +568,7 @@ def handle_send_chat_message(
             # Note: LLM cost tracking is now handled in multi_llm.py
             return result
 
-    # Streaming path, normal Onyx UI behavior
+    # Streaming path, normal VertualAI UI behavior
     def stream_generator() -> Generator[str, None, None]:
         state_container = ChatStateContainer()
         try:
@@ -824,7 +824,7 @@ async def search_chats(
         page=page,
         page_size=page_size,
         include_deleted=False,
-        include_onyxbot_flows=False,
+        include_ombot_flows=False,
     )
 
     # Group chat sessions by time period
@@ -999,7 +999,7 @@ def execute_code_in_chat(
             mime_type, _ = mimetypes.guess_type(filename)
             mime_type = mime_type or "application/octet-stream"
 
-            onyx_file_id = file_store.save_file(
+            om_file_id = file_store.save_file(
                 content=BytesIO(file_content),
                 display_name=filename,
                 file_origin=FileOrigin.CHAT_UPLOAD,
@@ -1014,7 +1014,7 @@ def execute_code_in_chat(
 
             file_descriptors.append(
                 FileDescriptor(
-                    id=onyx_file_id,
+                    id=om_file_id,
                     type=chat_file_type,
                     name=filename,
                 )

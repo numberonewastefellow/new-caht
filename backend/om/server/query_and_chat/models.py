@@ -51,7 +51,7 @@ class TagResponse(BaseModel):
 
 
 class UpdateChatSessionThreadRequest(BaseModel):
-    # If not specified, use Onyx default agent
+    # If not specified, use VertualAI default agent
     chat_session_id: UUID
     new_alternate_model: str
 
@@ -62,7 +62,7 @@ class UpdateChatSessionTemperatureRequest(BaseModel):
 
 
 class ChatSessionCreationRequest(BaseModel):
-    # If not specified, use Onyx default agent
+    # If not specified, use VertualAI default agent
     agent_id: int = 0
     description: str | None = None
     workspace_id: int | None = None
@@ -81,7 +81,7 @@ class ChatFeedbackRequest(BaseModel):
         return self
 
 
-# NOTE: This model is used for the core flow of the Onyx application, any changes to it should be reviewed and approved by an
+# NOTE: This model is used for the core flow of the VertualAI application, any changes to it should be reviewed and approved by an
 # experienced team member. It is very important to 1. avoid bloat and 2. that this remains backwards compatible across versions.
 class SendMessageRequest(BaseModel):
     message: str
@@ -286,7 +286,7 @@ class SearchFlowClassificationResponse(BaseModel):
     is_search_flow: bool
 
 
-# NOTE: This model is used for the core flow of the Onyx application, any changes to it should be reviewed and approved by an
+# NOTE: This model is used for the core flow of the VertualAI application, any changes to it should be reviewed and approved by an
 # experienced team member. It is very important to 1. avoid bloat and 2. that this remains backwards compatible across versions.
 class SendSearchQueryRequest(BaseModel):
     search_query: str

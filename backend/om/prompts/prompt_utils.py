@@ -108,7 +108,7 @@ def replace_reminder_tag(prompt_str: str) -> str:
     return prompt_str
 
 
-def handle_onyx_date_awareness(
+def handle_om_date_awareness(
     prompt_str: str,
     # We always replace the pattern {{CURRENT_DATETIME}} if it shows up
     # but if it doesn't show up and the prompt is datetime aware, add it to the prompt at the end.

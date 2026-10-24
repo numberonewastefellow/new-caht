@@ -57,7 +57,7 @@ def get_version() -> VersionResponse:
 @router.get("/versions", tags=PUBLIC_API_TAGS)
 def get_versions() -> AllVersions:
     """
-    Fetches the latest stable and beta versions of Onyx Docker images.
+    Fetches the latest stable and beta versions of VertualAI Docker images.
     Since DockerHub does not explicitly flag stable and beta images,
     this endpoint can be used to programmatically check for new images.
     """
@@ -137,19 +137,19 @@ def get_versions() -> AllVersions:
 
     return AllVersions(
         stable=ContainerVersions(
-            onyx=latest_stable_version,
+            om=latest_stable_version,
             relational_db="postgres:15.2-alpine",
             index="opensearchproject/opensearch:3.6.0",
             nginx="nginx:1.25.5-alpine",
         ),
         dev=ContainerVersions(
-            onyx=latest_dev_version,
+            om=latest_dev_version,
             relational_db="postgres:15.2-alpine",
             index="opensearchproject/opensearch:3.6.0",
             nginx="nginx:1.25.5-alpine",
         ),
         migration=ContainerVersions(
-            onyx="airgapped-intfloat-nomic-migration",
+            om="airgapped-intfloat-nomic-migration",
             relational_db="postgres:15.2-alpine",
             index="opensearchproject/opensearch:3.6.0",
             nginx="nginx:1.25.5-alpine",

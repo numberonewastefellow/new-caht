@@ -8,7 +8,7 @@ from om.connectors.models import BasicExpertInfo
 from om.connectors.models import Document
 from om.connectors.models import ImageSection
 from om.connectors.models import TextSection
-from om.connectors.salesforce.onyx_salesforce import OmSalesforce
+from om.connectors.salesforce.om_salesforce import OmSalesforce
 from om.connectors.salesforce.sqlite_functions import OmSalesforceSQLite
 from om.connectors.salesforce.utils import ID_FIELD
 from om.connectors.salesforce.utils import MODIFIED_FIELD
@@ -208,7 +208,7 @@ def convert_sf_object_to_doc(
     """Would be nice if this function was documented"""
     object_dict = sf_object.data
     salesforce_id = object_dict[ID_FIELD]
-    onyx_salesforce_id = f"{ID_PREFIX}{salesforce_id}"
+    om_salesforce_id = f"{ID_PREFIX}{salesforce_id}"
     base_url = f"https://{sf_instance}"
     extracted_doc_updated_at = time_str_to_utc(object_dict[MODIFIED_FIELD])
     extracted_semantic_identifier = object_dict.get(NAME_FIELD) or object_dict.get(
@@ -232,7 +232,7 @@ def convert_sf_object_to_doc(
         primary_owner_list = [primary_owner]
 
     doc = Document(
-        id=onyx_salesforce_id,
+        id=om_salesforce_id,
         sections=cast(list[TextSection | ImageSection], sections),
         source=DocumentSource.SALESFORCE,
         semantic_identifier=extracted_semantic_identifier,

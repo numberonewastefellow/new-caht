@@ -144,11 +144,11 @@ def _parse_document_source(connector_type: Any) -> DocumentSource | None:
         return None
 
 
-def process_onyx_metadata(
+def process_om_metadata(
     metadata: dict[str, Any],
 ) -> tuple[OmMetadata, dict[str, Any]]:
     """
-    Users may set Onyx metadata and custom tags in text files. https://docs.onyx.app/admins/connectors/official/file
+    Users may set VertualAI metadata and custom tags in text files. https://docs.onyx.app/admins/connectors/official/file
     Any unrecognized fields are treated as custom tags.
     """
     p_owner_names = metadata.get("primary_owners")

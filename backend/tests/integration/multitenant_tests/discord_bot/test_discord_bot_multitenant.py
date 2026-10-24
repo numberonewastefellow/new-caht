@@ -15,7 +15,7 @@ from om.db.discord_bot import get_guild_config_by_registration_key
 from om.db.discord_bot import register_guild
 from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.models import UserRole
-from om.onyxbot.discord.cache import DiscordCacheManager
+from om.ombot.discord.cache import DiscordCacheManager
 from om.server.manage.discord_bot.utils import generate_discord_registration_key
 from om.server.manage.discord_bot.utils import parse_discord_registration_key
 from om.server.manage.discord_bot.utils import REGISTRATION_KEY_PREFIX
@@ -42,11 +42,11 @@ class TestBotConfigIsolationCloudMode:
 
     def test_bot_token_from_env_only_in_cloud(self) -> None:
         """Bot token comes from env var in cloud mode, ignores DB."""
-        from om.onyxbot.discord.utils import get_bot_token
+        from om.ombot.discord.utils import get_bot_token
 
         with (
-            patch("om.onyxbot.discord.utils.DISCORD_BOT_TOKEN", "env_token"),
-            patch("om.onyxbot.discord.utils.AUTH_TYPE", AuthType.CLOUD),
+            patch("om.ombot.discord.utils.DISCORD_BOT_TOKEN", "env_token"),
+            patch("om.ombot.discord.utils.AUTH_TYPE", AuthType.CLOUD),
         ):
             result = get_bot_token()
 

@@ -1,6 +1,6 @@
 """Billing-free, on-demand tenant provisioning (clean-room).
 
-This replaces the Onyx-EE cloud provisioning flow. Everything that reached an external
+This replaces the upstream EE cloud provisioning flow. Everything that reached an external
 control plane has been removed — there is **no** Stripe, HubSpot, data-plane token
 exchange, control-plane notification, or ``available_tenant`` pre-provision pool. A tenant
 is created **synchronously, on demand**, entirely against the local Postgres instance.
@@ -10,7 +10,7 @@ A tenant lifecycle here is just three local steps (plus its inverse):
 1. ``create_tenant_schema`` — a dedicated Postgres schema (the isolation boundary).
 2. ``run_migrations_for_schema`` — the full Alembic chain inside that schema (the baseline
    also seeds the built-in tools / default assistant / search settings).
-3. ``setup_onyx`` — per-tenant runtime setup (document index, etc.).
+3. ``setup_om`` — per-tenant runtime setup (document index, etc.).
 4. ``TenantMappingRepository.assign`` — record the email→tenant login route (public schema).
 
 The public entry point used by the auth layer is :func:`get_or_provision_tenant`; the
@@ -56,10 +56,10 @@ def _seed_default_setup(tenant_id: str) -> None:
     settings; this wires up the tenant's document index and any swap bookkeeping. Imported
     lazily so importing this module never drags in the heavy setup dependency graph.
     """
-    from om.setup import setup_onyx
+    from om.setup import setup_om
 
     with get_tenant_session(tenant_id=tenant_id) as db_session:
-        setup_onyx(db_session, tenant_id)
+        setup_om(db_session, tenant_id)
 
 
 def provision_tenant(*, admin_email: str, actor_user_id: str | None = None) -> str:

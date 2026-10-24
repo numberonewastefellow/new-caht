@@ -100,7 +100,7 @@ def test_stream_chat_message_objects_without_web_search(
     )
     # Create the chat message request with a query that attempts to force web search
     chat_request = SendMessageRequest(
-        message="run a web search for 'Onyx'",
+        message="run a web search for 'VertualAI'",
         chat_session_id=chat_session.id,
     )
     # Call stream_chat_message

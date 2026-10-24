@@ -70,7 +70,7 @@ from om.db.slack_bot import fetch_slack_bots
 from om.document_index.interfaces_new import DocumentIndex
 from om.llm.factory import get_llm_token_counter
 from om.llm.interfaces import LLM
-from om.onyxbot.slack.models import SlackContext
+from om.ombot.slack.models import SlackContext
 from om.secondary_llm_flows.document_filter import select_chunks_for_relevance
 from om.secondary_llm_flows.document_filter import select_sections_for_expansion
 from om.secondary_llm_flows.query_expansion import keyword_query_expansion

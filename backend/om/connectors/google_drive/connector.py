@@ -34,7 +34,7 @@ from om.connectors.google_drive.doc_conversion import build_slim_document
 from om.connectors.google_drive.doc_conversion import (
     convert_drive_item_to_document,
 )
-from om.connectors.google_drive.doc_conversion import onyx_document_id_from_drive_file
+from om.connectors.google_drive.doc_conversion import om_document_id_from_drive_file
 from om.connectors.google_drive.doc_conversion import PermissionSyncContext
 from om.connectors.google_drive.file_retrieval import crawl_folders_for_files
 from om.connectors.google_drive.file_retrieval import DriveFileFieldType
@@ -341,7 +341,7 @@ class GoogleDriveConnector(
         """Normalize a Google Drive URL to match the canonical Document.id format.
 
         Reuses the connector's existing document ID creation logic from
-        onyx_document_id_from_drive_file.
+        om_document_id_from_drive_file.
         """
         parsed = urlparse(url)
         netloc = parsed.netloc.lower()
@@ -380,7 +380,7 @@ class GoogleDriveConnector(
 
         # Create minimal file object for connector function
         file_obj = {"webViewLink": url, "id": file_id}
-        normalized = onyx_document_id_from_drive_file(file_obj).rstrip("/")
+        normalized = om_document_id_from_drive_file(file_obj).rstrip("/")
         return NormalizationResult(normalized_url=normalized, use_default=False)
 
     # TODO: ensure returned new_creds_dict is actually persisted when this is called?
@@ -1365,7 +1365,7 @@ class GoogleDriveConnector(
                 continue
 
             try:
-                document_id = onyx_document_id_from_drive_file(drive_file)
+                document_id = om_document_id_from_drive_file(drive_file)
             except KeyError as exc:
                 logger.warning(
                     "Drive file missing id/webViewLink (stage=%s user=%s). Skipping.",

@@ -20,7 +20,7 @@ from om.connectors.models import ImageSection
 from om.connectors.models import TextSection
 from om.connectors.salesforce.doc_conversion import _extract_section
 from om.connectors.salesforce.doc_conversion import ID_PREFIX
-from om.connectors.salesforce.onyx_salesforce import OmSalesforce
+from om.connectors.salesforce.om_salesforce import OmSalesforce
 from om.connectors.salesforce.salesforce_calls import _bulk_retrieve_from_salesforce
 from om.connectors.salesforce.salesforce_calls import _make_time_filter_for_sf_type
 from om.connectors.salesforce.salesforce_calls import _make_time_filtered_query
@@ -31,7 +31,7 @@ from om.connectors.salesforce.utils import MODIFIED_FIELD
 from om.connectors.salesforce.utils import USER_OBJECT_TYPE
 from om.utils.logger import setup_logger
 
-# from om.connectors.salesforce.onyx_salesforce_type import OnyxSalesforceType
+# from om.connectors.salesforce.onyx_salesforce_type import OmSalesforceType
 # from om.connectors.salesforce.salesforce_calls import get_children_of_sf_type
 
 logger = setup_logger()
@@ -827,7 +827,7 @@ def test_salesforce_bulk_retrieve() -> None:
         domain=None,
     )
 
-    # onyx_sf_type = OnyxSalesforceType("Contact", sf_client)
+    # om_sf_type = OmSalesforceType("Contact", sf_client)
     sf_object_name = "Contact"
     queryable_fields = sf_client.get_queryable_fields_by_type(sf_object_name)
 
@@ -988,7 +988,7 @@ def test_salesforce_connector_single() -> None:
         domain=None,
     )
 
-    # onyx_parent_sf_type = OnyxSalesforceType(parent_type, sf_client)
+    # om_parent_sf_type = OmSalesforceType(parent_type, sf_client)
 
     child_types: set[str] = set()
     parent_to_child_types: dict[str, set[str]] = {}  # map from parent to child types
@@ -1009,7 +1009,7 @@ def test_salesforce_connector_single() -> None:
         logger.debug(f"Found {len(child_types)} child types for {parent_type_working}")
 
         for child_type, child_relationship in child_types_working.items():
-            # onyx_sf_type = OnyxSalesforceType(child_type, sf_client)
+            # om_sf_type = OmSalesforceType(child_type, sf_client)
 
             # map parent to child type
             if parent_type_working not in parent_to_child_types:

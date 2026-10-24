@@ -13,7 +13,7 @@ Covers:
   10. Registry integration
 
 Run with:
-  pytest tests/unit/onyx/connectors/folder/test_folder_connector.py -v
+  pytest tests/unit/om/connectors/folder/test_folder_connector.py -v
 """
 
 import hashlib
