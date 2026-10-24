@@ -1,6 +1,6 @@
 # TODO(fork): set the `IMAGE_REGISTRY` repository variable (Settings > Actions > Variables)
 # to your container-registry namespace, e.g. "myorg" or "ghcr.io/myorg". This workflow
-# publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,model-server,sandbox}.
+# publishes/pulls ${{ vars.IMAGE_REGISTRY }}/om-{backend,web-server,sandbox}.
 # NOTE: do NOT rename the om-* image basenames casually -- see DO_NOT_RENAME.md.
 name: Run Integration Tests v2
 concurrency:
@@ -146,64 +146,6 @@ jobs:
             type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:backend-cache,mode=max
           no-cache: ${{ vars.DOCKER_NO_CACHE == 'true' }}
 
-  build-model-server-image:
-    runs-on:
-      [
-        runs-on,
-        runner=1cpu-linux-arm64,
-        "run-id=${{ github.run_id }}-build-model-server-image",
-        "extras=ecr-cache",
-      ]
-    timeout-minutes: 45
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
-        with:
-          persist-credentials: false
-
-      - name: Format branch name for cache
-        id: format-branch
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REF_NAME: ${{ github.ref_name }}
-        run: |
-          if [ -n "${PR_NUMBER}" ]; then
-            CACHE_SUFFIX="${PR_NUMBER}"
-          else
-            # shellcheck disable=SC2001
-            CACHE_SUFFIX=$(echo "${REF_NAME}" | sed 's/[^A-Za-z0-9._-]/-/g')
-          fi
-          echo "cache-suffix=${CACHE_SUFFIX}" >> $GITHUB_OUTPUT
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # ratchet:docker/setup-buildx-action@v3
-
-      # needed for pulling Vespa, Redis, Postgres, and Minio images
-      # otherwise, we hit the "Unauthenticated users" limit
-      # https://docs.docker.com/docker-hub/usage/
-      - name: Login to Docker Hub
-        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # ratchet:docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-
-      - name: Build and push Model Server Docker image
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # ratchet:docker/build-push-action@v6
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile.model_server
-          push: true
-          tags: ${{ env.RUNS_ON_ECR_CACHE }}:integration-test-model-server-test-${{ github.run_id }}
-          cache-from: |
-            type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ github.event.pull_request.head.sha || github.sha }}
-            type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ steps.format-branch.outputs.cache-suffix }}
-            type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache
-            type=registry,ref=${{ vars.IMAGE_REGISTRY }}/om-model-server:latest
-          cache-to: |
-            type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ github.event.pull_request.head.sha || github.sha }},mode=max
-            type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache-${{ steps.format-branch.outputs.cache-suffix }},mode=max
-            type=registry,ref=${{ env.RUNS_ON_ECR_CACHE }}:model-server-cache,mode=max
-
   build-integration-image:
     runs-on:
       [
@@ -273,7 +215,6 @@ jobs:
       [
         discover-test-dirs,
         build-backend-image,
-        build-model-server-image,
         build-integration-image,
       ]
     runs-on:
@@ -321,7 +262,6 @@ jobs:
           REQUIRE_EMAIL_VERIFICATION=false
           DISABLE_TELEMETRY=true
           OM_BACKEND_IMAGE=${ECR_CACHE}:integration-test-backend-test-${RUN_ID}
-          OM_MODEL_SERVER_IMAGE=${ECR_CACHE}:integration-test-model-server-test-${RUN_ID}
           INTEGRATION_TESTS_MODE=true
           MCP_SERVER_ENABLED=true
           AUTO_LLM_UPDATE_INTERVAL_SECONDS=10
@@ -344,8 +284,6 @@ jobs:
             cache \
             minio \
             api_server \
-            inference_model_server \
-            indexing_model_server \
             background \
             -d
         id: start_docker
@@ -597,7 +535,7 @@ jobs:
 
   multitenant-tests:
     needs:
-      [build-backend-image, build-model-server-image, build-integration-image]
+      [build-backend-image, build-integration-image]
     runs-on:
       [
         runs-on,
@@ -631,7 +569,6 @@ jobs:
           DISABLE_TELEMETRY=true \
           OPENAI_DEFAULT_API_KEY=${OPENAI_API_KEY} \
           OM_BACKEND_IMAGE=${ECR_CACHE}:integration-test-backend-test-${RUN_ID} \
-          OM_MODEL_SERVER_IMAGE=${ECR_CACHE}:integration-test-model-server-test-${RUN_ID} \
           DEV_MODE=true \
           docker compose -f docker-compose.multitenant-dev.yml up \
             relational_db \
@@ -639,8 +576,6 @@ jobs:
             cache \
             minio \
             api_server \
-            inference_model_server \
-            indexing_model_server \
             background \
             -d
         id: start_docker_multi_tenant

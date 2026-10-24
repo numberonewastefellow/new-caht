@@ -11,10 +11,8 @@ from om.db.search_settings import get_current_search_settings
 from om.natural_language_processing.search_nlp_models import EmbeddingModel
 from om.utils.logger import setup_logger
 from om.utils.timing import log_function_time
-from shared_configs.configs import MODEL_SERVER_HOST
-from shared_configs.configs import MODEL_SERVER_PORT
 from shared_configs.enums import EmbedTextType
-from shared_configs.model_server_models import Embedding
+from shared_configs.embedding_models import Embedding
 
 logger = setup_logger()
 
@@ -70,8 +68,6 @@ def get_query_embeddings(queries: list[str], db_session: Session) -> list[Embedd
     model = EmbeddingModel.from_db_model(
         search_settings=search_settings,
         # The below are globally set, this flow always uses the indexing one
-        server_host=MODEL_SERVER_HOST,
-        server_port=MODEL_SERVER_PORT,
     )
 
     query_embedding = model.encode(queries, text_type=EmbedTextType.QUERY)

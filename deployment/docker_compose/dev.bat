@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 set COMPOSE_CMD=docker compose -f docker-compose.yml -f docker-compose.dev-windows.yml
 :: NOTE: OpenSearch (the document index) is not listed here; a full `dev up`
 :: starts it (it has no compose profile, so it always runs).
-set INFRA=relational_db cache inference_model_server indexing_model_server minio code-interpreter smartsearch phoenix
+set INFRA=relational_db cache cortex_embed_vllm minio code-interpreter smartsearch phoenix
 set APP=api_server background web_server nginx
 
 :: Office MCP server (PPT + DOCX + PDF) runs from a separate compose file
@@ -22,7 +22,10 @@ if "!_arg!"=="" goto resolve_done
 if /i "!_arg!"=="api" set SERVICES=!SERVICES! api_server
 if /i "!_arg!"=="web" set SERVICES=!SERVICES! web_server
 if /i "!_arg!"=="background" set SERVICES=!SERVICES! background
-if /i "!_arg!"=="model" set SERVICES=!SERVICES! inference_model_server indexing_model_server
+if /i "!_arg!"=="model" set SERVICES=!SERVICES! cortex_embed_vllm
+if /i "!_arg!"=="embedding" set SERVICES=!SERVICES! cortex_embed_vllm
+if /i "!_arg!"=="cortex" set SERVICES=!SERVICES! cortex_embed_vllm
+if /i "!_arg!"=="rerank" set SERVICES=!SERVICES! cortex_rerank_vllm
 if /i "!_arg!"=="nginx" set SERVICES=!SERVICES! nginx
 if /i "!_arg!"=="db" set SERVICES=!SERVICES! relational_db
 if /i "!_arg!"=="cache" set SERVICES=!SERVICES! cache
@@ -250,7 +253,10 @@ if "!_arg!"=="" goto :eof
 if /i "!_arg!"=="api" set SERVICES=!SERVICES! api_server
 if /i "!_arg!"=="web" set SERVICES=!SERVICES! web_server
 if /i "!_arg!"=="background" set SERVICES=!SERVICES! background
-if /i "!_arg!"=="model" set SERVICES=!SERVICES! inference_model_server indexing_model_server
+if /i "!_arg!"=="model" set SERVICES=!SERVICES! cortex_embed_vllm
+if /i "!_arg!"=="embedding" set SERVICES=!SERVICES! cortex_embed_vllm
+if /i "!_arg!"=="cortex" set SERVICES=!SERVICES! cortex_embed_vllm
+if /i "!_arg!"=="rerank" set SERVICES=!SERVICES! cortex_rerank_vllm
 if /i "!_arg!"=="nginx" set SERVICES=!SERVICES! nginx
 if /i "!_arg!"=="db" set SERVICES=!SERVICES! relational_db
 if /i "!_arg!"=="cache" set SERVICES=!SERVICES! cache
@@ -425,7 +431,8 @@ echo   Service shortcuts:
 echo     api        = api_server
 echo     web        = web_server
 echo     background = background
-echo     model      = inference_model_server + indexing_model_server
+echo     cortex     = cortex_embed_vllm (embeddings; aliases: model, embedding)
+echo     rerank     = cortex_rerank_vllm (reranker, optional)
 echo     nginx      = nginx
 echo     db         = relational_db
 echo     cache      = cache (redis)

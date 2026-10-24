@@ -37,7 +37,7 @@
 
 ## Run as non-root user
 By default, some onyx containers run as root. If you'd like to explicitly run the onyx containers as a non-root user, update the values.yaml file for the following components:
-  * `celery_shared`, `api`, `webserver`, `indexCapability`, `inferenceCapability`
+  * `celery_shared`, `api`, `webserver`
     ```yaml
     securityContext:
       runAsNonRoot: true

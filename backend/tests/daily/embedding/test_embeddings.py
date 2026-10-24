@@ -8,7 +8,7 @@ from tenacity import wait_exponential
 
 from om.natural_language_processing.search_nlp_models import EmbeddingModel
 from shared_configs.enums import EmbedTextType
-from shared_configs.model_server_models import EmbeddingProvider
+from shared_configs.embedding_models import EmbeddingProvider
 
 VALID_SAMPLE = ["hi", "hello my name is bob", "woah there!!!. 😃"]
 VALID_LONG_SAMPLE = ["hi " * 999]
@@ -29,8 +29,6 @@ def _run_embeddings(
 @pytest.fixture
 def openai_embedding_model() -> EmbeddingModel:
     return EmbeddingModel(
-        server_host="localhost",
-        server_port=9000,
         model_name="text-embedding-3-small",
         normalize=True,
         query_prefix=None,
@@ -49,8 +47,6 @@ def test_openai_embedding(openai_embedding_model: EmbeddingModel) -> None:
 @pytest.fixture
 def cohere_embedding_model() -> EmbeddingModel:
     return EmbeddingModel(
-        server_host="localhost",
-        server_port=9000,
         model_name="embed-english-light-v3.0",
         normalize=True,
         query_prefix=None,
@@ -69,8 +65,6 @@ def test_cohere_embedding(cohere_embedding_model: EmbeddingModel) -> None:
 @pytest.fixture
 def litellm_embedding_model() -> EmbeddingModel:
     return EmbeddingModel(
-        server_host="localhost",
-        server_port=9000,
         model_name="text-embedding-3-small",
         normalize=True,
         query_prefix=None,
@@ -90,8 +84,6 @@ def test_litellm_embedding(litellm_embedding_model: EmbeddingModel) -> None:
 @pytest.fixture
 def local_nomic_embedding_model() -> EmbeddingModel:
     return EmbeddingModel(
-        server_host="localhost",
-        server_port=9000,
         model_name="nomic-ai/nomic-embed-text-v1",
         normalize=True,
         query_prefix="search_query: ",
@@ -110,8 +102,6 @@ def test_local_nomic_embedding(local_nomic_embedding_model: EmbeddingModel) -> N
 @pytest.fixture
 def azure_embedding_model() -> EmbeddingModel:
     return EmbeddingModel(
-        server_host="localhost",
-        server_port=9000,
         model_name="text-embedding-3-small",
         normalize=True,
         query_prefix=None,
@@ -146,7 +136,7 @@ def test_azure_embedding(azure_embedding_model: EmbeddingModel) -> None:
 #     assert len(result[0]) == 1536
 
 #     # this should fail
-#     with pytest.raises(ModelServerRateLimitError):
+#     with pytest.raises(Exception):
 #         azure_embedding_model.encode(VALID_LONG_SAMPLE, EmbedTextType.QUERY)
 #         azure_embedding_model.encode(VALID_LONG_SAMPLE, EmbedTextType.QUERY)
 #         azure_embedding_model.encode(VALID_LONG_SAMPLE, EmbedTextType.QUERY)

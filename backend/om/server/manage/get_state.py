@@ -63,7 +63,6 @@ def get_versions() -> AllVersions:
     """
     # Fetch the latest tags from DockerHub for each image component.
     dockerhub_repos = [
-        "om/om-model-server",
         "om/om-backend",
         "om/om-web-server",
     ]

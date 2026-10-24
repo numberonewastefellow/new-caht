@@ -15,7 +15,7 @@
 # from om.document_index.vespa.index import VespaIndex
 # from scripts.query_time_check.seed_dummy_docs import TOTAL_ACL_ENTRIES_PER_CATEGORY
 # from scripts.query_time_check.seed_dummy_docs import TOTAL_DOC_SETS
-# from shared_configs.model_server_models import Embedding
+# from shared_configs.embedding_models import Embedding
 
 # # make sure these are smaller than TOTAL_ACL_ENTRIES_PER_CATEGORY and TOTAL_DOC_SETS, respectively
 # NUMBER_OF_ACL_ENTRIES_PER_QUERY = 6

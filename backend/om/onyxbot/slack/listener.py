@@ -92,8 +92,6 @@ from om.redis.redis_pool import get_redis_client
 from om.server.manage.models import SlackBotTokens
 from om.utils.logger import setup_logger
 from shared_configs.configs import DISALLOWED_SLACK_BOT_TENANT_LIST
-from shared_configs.configs import MODEL_SERVER_HOST
-from shared_configs.configs import MODEL_SERVER_PORT
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
 from shared_configs.configs import SLACK_CHANNEL_ID
 from shared_configs.contextvars import CURRENT_TENANT_ID_CONTEXTVAR
@@ -246,8 +244,6 @@ class SlackbotHandler:
                 search_settings = get_current_search_settings(db_session)
                 embedding_model = EmbeddingModel.from_db_model(
                     search_settings=search_settings,
-                    server_host=MODEL_SERVER_HOST,
-                    server_port=MODEL_SERVER_PORT,
                 )
                 warm_up_bi_encoder(embedding_model=embedding_model)
 

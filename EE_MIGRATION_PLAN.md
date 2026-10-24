@@ -178,7 +178,7 @@ Remove or gut these modules:
 - `backend/onyx/utils/variable_functionality.py` (contains `fetch_versioned_implementation`)
 - `global_version` module / `set_is_ee_based_on_env_variable()`
 
-Update Go tooling: `tools/ods/cmd/compose.go`
+Update Go tooling (REMOVED 2026-10-24, `tools/ods` deleted): `tools/ods/cmd/compose.go`
 
 ---
 

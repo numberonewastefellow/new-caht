@@ -19,14 +19,10 @@ launch_web_ui: false
 # Only retrieve documents, not LLM response
 only_retrieve_docs: false
 
-# Whether to use a cloud GPU for processing
-use_cloud_gpu: false
-
-# IP address of the model server (placeholder)
-model_server_ip: "PUT_PUBLIC_CLOUD_IP_HERE"
-
-# Port of the model server (placeholder)
-model_server_port: "PUT_PUBLIC_CLOUD_PORT_HERE"
+# OpenAI-compatible embeddings endpoint to use instead of the local embedding_server
+# container, e.g. a remote/cloud GPU box: "http://<host>:8000/v1/embeddings".
+# Leave empty to start the local embedding_server container.
+embedding_server_url: ""
 
 # Name for existing testing env (empty string uses default ports)
 environment_name: ""

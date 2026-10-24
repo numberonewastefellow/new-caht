@@ -17,11 +17,9 @@ from om.indexing.models import IndexChunk
 from om.natural_language_processing.search_nlp_models import EmbeddingModel
 from om.utils.logger import setup_logger
 from om.utils.timing import log_function_time
-from shared_configs.configs import INDEXING_MODEL_SERVER_HOST
-from shared_configs.configs import INDEXING_MODEL_SERVER_PORT
 from shared_configs.enums import EmbeddingProvider
 from shared_configs.enums import EmbedTextType
-from shared_configs.model_server_models import Embedding
+from shared_configs.embedding_models import Embedding
 
 
 logger = setup_logger()
@@ -67,8 +65,6 @@ class IndexingEmbedder(ABC):
             deployment_name=deployment_name,
             reduced_dimension=reduced_dimension,
             # The below are globally set, this flow always uses the indexing one
-            server_host=INDEXING_MODEL_SERVER_HOST,
-            server_port=INDEXING_MODEL_SERVER_PORT,
             retrim_content=True,
             callback=callback,
         )

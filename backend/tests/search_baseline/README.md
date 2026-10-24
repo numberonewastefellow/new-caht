@@ -24,7 +24,7 @@ Retrieval-layer search via the production path
 | File | Purpose |
 |------|---------|
 | `corpus.py` | Fixed, themed document corpus across KBs / sources / dates. |
-| `seed_search_corpus.py` | Index the corpus with **real** model-server embeddings into OpenSearch. |
+| `seed_search_corpus.py` | Index the corpus with **real** embeddings (from the OpenAI-compatible embedding server) into OpenSearch. |
 | `harness.py` | `run_search()` + `get_index()` → normalized `BaselineHit`s. |
 | `snapshot.py` | Save/load/assert golden snapshots under `baselines/opensearch/`. |
 | `test_opensearch_baseline.py` | The baseline test cases (ranked-order goldens). |

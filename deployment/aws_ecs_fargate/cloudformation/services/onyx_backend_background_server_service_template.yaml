@@ -145,11 +145,6 @@ Resources:
                 - "${Environment}-onyx-redis-service.${ImportedNamespace}"
                 - ImportedNamespace: !ImportValue
                     Fn::Sub: "${Environment}-onyx-cluster-OnyxNamespaceName"
-            - Name: MODEL_SERVER_HOST
-              Value: !Sub 
-                - "${Environment}-onyx-model-server-inference-service.${ImportedNamespace}"
-                - ImportedNamespace: !ImportValue
-                    Fn::Sub: "${Environment}-onyx-cluster-OnyxNamespaceName"
             - Name: VESPA_HOST
               Value: !Sub 
                 - "${Environment}-onyx-vespaengine-service.${ImportedNamespace}"
@@ -158,11 +153,6 @@ Resources:
             - Name: POSTGRES_HOST
               Value: !Sub 
                 - "${Environment}-onyx-postgres-service.${ImportedNamespace}"
-                - ImportedNamespace: !ImportValue
-                    Fn::Sub: "${Environment}-onyx-cluster-OnyxNamespaceName"
-            - Name: INDEXING_MODEL_SERVER_HOST
-              Value: !Sub 
-                - "${Environment}-onyx-model-server-indexing-service.${ImportedNamespace}"
                 - ImportedNamespace: !ImportValue
                     Fn::Sub: "${Environment}-onyx-cluster-OnyxNamespaceName"
             - Name: AUTH_TYPE

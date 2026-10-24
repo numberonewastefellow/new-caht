@@ -1,5 +1,5 @@
 group "default" {
-  targets = ["backend", "model-server", "web"]
+  targets = ["backend", "web"]
 }
 
 variable "BACKEND_REPOSITORY" {
@@ -8,10 +8,6 @@ variable "BACKEND_REPOSITORY" {
 
 variable "WEB_SERVER_REPOSITORY" {
   default = "om/om-web-server"
-}
-
-variable "MODEL_SERVER_REPOSITORY" {
-  default = "om/om-model-server"
 }
 
 variable "INTEGRATION_REPOSITORY" {
@@ -40,17 +36,6 @@ target "web" {
   cache-to   = ["type=inline"]
 
   tags      = ["${WEB_SERVER_REPOSITORY}:${TAG}"]
-}
-
-target "model-server" {
-  context = "backend"
-
-  dockerfile = "Dockerfile.model_server"
-
-  cache-from = ["type=registry,ref=${MODEL_SERVER_REPOSITORY}:latest"]
-  cache-to   = ["type=inline"]
-
-  tags      = ["${MODEL_SERVER_REPOSITORY}:${TAG}"]
 }
 
 target "integration" {

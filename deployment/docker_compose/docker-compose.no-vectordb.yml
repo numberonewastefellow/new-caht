@@ -33,9 +33,6 @@ services:
       opensearch:
         condition: service_started
         required: false
-      inference_model_server:
-        condition: service_started
-        required: false
       minio:
         condition: service_started
         required: false
@@ -48,26 +45,13 @@ services:
       opensearch:
         condition: service_started
         required: false
-      indexing_model_server:
-        condition: service_started
-        required: false
-      inference_model_server:
-        condition: service_started
-        required: false
     environment:
       - DISABLE_VECTOR_DB=true
       - FILE_STORE_BACKEND=postgres
 
-  # Move OpenSearch and indexing model server to a profile so they do not start.
+  # Move OpenSearch to a profile so it does not start.
   opensearch:
     profiles: ["vectordb"]
-
-  indexing_model_server:
-    profiles: ["vectordb"]
-
-  # Inference model server is only needed for local embeddings, not for LLM chat.
-  inference_model_server:
-    profiles: ["inference"]
 
   # Code interpreter is not needed in minimal mode.
   code-interpreter:

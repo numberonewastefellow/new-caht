@@ -13,7 +13,7 @@ from om.context.search.models import InferenceChunk
 from om.db.enums import EmbeddingPrecision
 from om.document_index.opensearch.constants import DEFAULT_MAX_CHUNK_SIZE
 from om.indexing.models import DocMetadataAwareIndexChunk
-from shared_configs.model_server_models import Embedding
+from shared_configs.embedding_models import Embedding
 
 # NOTE: "Document" in the naming convention is used to refer to the entire
 # document as represented in Onyx. What is actually stored in the index is the

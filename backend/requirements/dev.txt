@@ -128,7 +128,6 @@ faker==40.1.2
 fastapi==0.128.0
     # via
     #   onyx
-    #   onyx-devtools
 fastavro==1.12.1
     # via cohere
 fastuuid==0.14.0
@@ -317,8 +316,6 @@ oauthlib==3.2.2
     # via
     #   kubernetes
     #   requests-oauthlib
-onyx-devtools==0.5.7
-    # via onyx
 openai==2.14.0
     # via
     #   litellm
@@ -326,7 +323,6 @@ openai==2.14.0
 openapi-generator-cli==7.17.0
     # via
     #   onyx
-    #   onyx-devtools
 packaging==24.2
     # via
     #   black

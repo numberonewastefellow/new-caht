@@ -37,11 +37,6 @@ jobs:
             backend/requirements/default.txt
             backend/requirements/dev.txt
 
-      - name: Generate OpenAPI schema and Python client
-        shell: bash
-        run: |
-          ods openapi all
-
       # needed for pulling external images otherwise, we hit the "Unauthenticated users" limit
       # https://docs.docker.com/docker-hub/usage/
       - name: Login to Docker Hub

@@ -17,8 +17,6 @@ from om.server.manage.embedding.models import CloudEmbeddingProvider
 from om.server.manage.embedding.models import CloudEmbeddingProviderCreationRequest
 from om.server.manage.embedding.models import TestEmbeddingRequest
 from om.utils.logger import setup_logger
-from shared_configs.configs import MODEL_SERVER_HOST
-from shared_configs.configs import MODEL_SERVER_PORT
 from shared_configs.enums import EmbeddingProvider
 from shared_configs.enums import EmbedTextType
 
@@ -37,8 +35,6 @@ def test_embedding_configuration(
 ) -> None:
     try:
         test_model = EmbeddingModel(
-            server_host=MODEL_SERVER_HOST,
-            server_port=MODEL_SERVER_PORT,
             api_key=test_llm_request.api_key,
             api_url=test_llm_request.api_url,
             provider_type=test_llm_request.provider_type,

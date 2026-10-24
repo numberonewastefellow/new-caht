@@ -35,8 +35,6 @@ from om.indexing.models import ChunkEmbedding
 from om.indexing.models import DocMetadataAwareIndexChunk
 from om.indexing.models import IndexChunk
 from om.natural_language_processing.search_nlp_models import EmbeddingModel
-from shared_configs.configs import MODEL_SERVER_HOST
-from shared_configs.configs import MODEL_SERVER_PORT
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
 from shared_configs.enums import EmbedTextType
 from tests.search_baseline.harness import ensure_index_ready
@@ -146,8 +144,6 @@ def ingest(index_dir: str, engine: str = "opensearch") -> dict[str, int]:
         search_settings = get_current_search_settings(db_session)
         model = EmbeddingModel.from_db_model(
             search_settings=search_settings,
-            server_host=MODEL_SERVER_HOST,
-            server_port=MODEL_SERVER_PORT,
         )
 
         all_chunks: list[DocMetadataAwareIndexChunk] = []

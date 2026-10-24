@@ -1,8 +1,7 @@
 """
 Constants for natural language processing, including embedding and reranking models.
 
-This file contains constants moved from model_server to support the gradual migration
-of API-based calls to bypass the model server.
+This file contains constants for API-based embedding providers.
 """
 
 from shared_configs.enums import EmbeddingProvider

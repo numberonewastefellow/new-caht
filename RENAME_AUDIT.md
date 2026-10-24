@@ -159,7 +159,7 @@ Safe on a fresh deploy; on a running cluster either migrate the state or leave a
   desktop Rust `TRAY_ID="onyx-tray"`, window labels.
 - **Helm chart internals** — directory `deployment/helm/charts/onyx/` + `_helpers.tpl` identifiers
   `onyx.name`/`onyx.fullname`/… (~28 defs) + every `include "onyx.*"` across ~60 templates. Lockstep.
-- **Tool package** `tools/ods` `name="onyx-devtools"` (+ `uv.lock`, CI `uv run --with onyx-devtools`)
+- **Tool package** (REMOVED 2026-10-24: `tools/ods`, `onyx-devtools`, its CI/pre-commit/launch.json uses are deleted) `tools/ods` `name="onyx-devtools"` (+ `uv.lock`, CI `uv run --with onyx-devtools`)
   → coordinated rename. Leave `onyx.app`/`onyx-dot-app` values (Bucket A). `go.mod` module path
   `github.com/onyx-dot-app/onyx/tools/ods` → leave until the fork's real remote slug is finalized.
 - **Brand PROSE → `VertualAI`**: `README.md`, root `*_PLAN.md` / design docs, `docs/**`, compose/CI

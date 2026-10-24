@@ -70,7 +70,7 @@ from om.redis.lock_context import redis_shared_lock
 from om.utils.logger import setup_logger
 from om.utils.text_processing import remove_invalid_unicode_chars
 from shared_configs.configs import MULTI_TENANT
-from shared_configs.model_server_models import Embedding
+from shared_configs.embedding_models import Embedding
 
 logger = setup_logger(__name__)
 

@@ -2,7 +2,7 @@
 # SEED TEST — Fresh DB + API server for testing seed_all.py
 # =============================================================================
 # Spins up a fresh Postgres + API server + nginx on alternate ports, reusing
-# existing OpenSearch, Redis, model servers, and MinIO from the main stack.
+# existing OpenSearch, Redis, the embedding server, and MinIO from the main stack.
 #
 # Usage:
 #   docker compose -f docker-compose.yml -f docker-compose.seed-test.yml up -d seed_test_db seed_test_api seed_test_nginx
@@ -51,7 +51,7 @@ services:
         condition: service_started
       cache:
         condition: service_started
-      inference_model_server:
+      cortex_embed_vllm:
         condition: service_started
     restart: "no"
     environment:
@@ -59,7 +59,8 @@ services:
       - FILE_STORE_BACKEND=s3
       - POSTGRES_HOST=seed_test_db
       - REDIS_HOST=cache
-      - MODEL_SERVER_HOST=inference_model_server
+      - EMBEDDING_SERVER_URL=http://cortex_embed:8000/v1/embeddings
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-nomic-ai/nomic-embed-text-v1}
       - S3_ENDPOINT_URL=http://minio:9000
       - S3_AWS_ACCESS_KEY_ID=minioadmin
       - S3_AWS_SECRET_ACCESS_KEY=minioadmin

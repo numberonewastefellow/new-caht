@@ -30,17 +30,15 @@ def main() -> None:
         return
 
     set_env_variables(
-        config.model_server_ip,
-        config.model_server_port,
-        config.use_cloud_gpu,
+        config.embedding_server_url,
         config.llm,
     )
-    manage_data_directories(env_name, config.output_folder, config.use_cloud_gpu)
+    manage_data_directories(env_name, config.output_folder)
     if config.commit_sha:
         switch_to_commit(config.commit_sha)
 
     start_docker_compose(
-        env_name, config.launch_web_ui, config.use_cloud_gpu, config.only_state
+        env_name, config.launch_web_ui, config.embedding_server_url, config.only_state
     )
 
 

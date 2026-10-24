@@ -12,10 +12,6 @@ from om.db.llm import upsert_llm_provider
 from om.server.manage.llm.models import LLMProviderUpsertRequest
 from om.server.manage.llm.models import ModelConfigurationUpsertRequest
 
-# Set environment variables to disable model server for testing
-os.environ["DISABLE_MODEL_SERVER"] = "true"
-os.environ["MODEL_SERVER_HOST"] = "disabled"
-os.environ["MODEL_SERVER_PORT"] = "9000"
 
 from sqlalchemy import inspect
 from sqlalchemy.orm import Session
@@ -455,7 +451,6 @@ class TestSlackBotFederatedSearch:
         for p in patches:
             p.stop()
 
-    @patch("om.utils.gpu_utils.fast_gpu_status_request", return_value=False)
     @patch(
         "om.document_index.opensearch.opensearch_document_index.OpenSearchDocumentIndex.hybrid_retrieval",
         return_value=[],
@@ -463,7 +458,6 @@ class TestSlackBotFederatedSearch:
     def test_slack_bot_public_channel_filtering(
         self,
         mock_document_index: Mock,  # noqa: ARG002
-        mock_gpu_status: Mock,  # noqa: ARG002
         db_session: Session,
     ) -> None:
         """Test that slack bot in public channel sees only public channel messages"""
@@ -514,7 +508,6 @@ class TestSlackBotFederatedSearch:
         finally:
             self._teardown_common_mocks(patches)
 
-    @patch("om.utils.gpu_utils.fast_gpu_status_request", return_value=False)
     @patch(
         "om.document_index.opensearch.opensearch_document_index.OpenSearchDocumentIndex.hybrid_retrieval",
         return_value=[],
@@ -522,7 +515,6 @@ class TestSlackBotFederatedSearch:
     def test_slack_bot_private_channel_filtering(
         self,
         mock_document_index: Mock,  # noqa: ARG002
-        mock_gpu_status: Mock,  # noqa: ARG002
         db_session: Session,
     ) -> None:
         """Test that slack bot in private channel sees private + public channel messages"""
@@ -573,7 +565,6 @@ class TestSlackBotFederatedSearch:
         finally:
             self._teardown_common_mocks(patches)
 
-    @patch("om.utils.gpu_utils.fast_gpu_status_request", return_value=False)
     @patch(
         "om.document_index.opensearch.opensearch_document_index.OpenSearchDocumentIndex.hybrid_retrieval",
         return_value=[],
@@ -581,7 +572,6 @@ class TestSlackBotFederatedSearch:
     def test_slack_bot_dm_filtering(
         self,
         mock_document_index: Mock,  # noqa: ARG002
-        mock_gpu_status: Mock,  # noqa: ARG002
         db_session: Session,
     ) -> None:
         """Test that slack bot in DM sees all messages (no filtering)"""

@@ -4,7 +4,7 @@ This is the gate that was missing. `test_process_config_module_paths` covers
 supervisord and `test_deploy_module_paths` covers docker-compose, but nothing covered
 Dockerfile `COPY` paths, the ROOT pyproject, or `.sh` scripts inside the package. A
 stale `COPY ./onyx/__init__.py` therefore survived the rename and only surfaced when
-someone ran `docker compose build` on the model_server target -- no Python import, no
+someone ran `docker compose build` on a backend image target -- no Python import, no
 test, would ever have flagged it.
 
 Rule: for every git-tracked build/config file, any reference to a package path or module
@@ -191,7 +191,7 @@ def test_dockerfile_copy_sources_exist() -> None:
     offenders: list[str] = []
     checked = 0
 
-    for name in ("Dockerfile", "Dockerfile.model_server"):
+    for name in ("Dockerfile",):
         dockerfile = backend / name
         if not dockerfile.exists():
             continue

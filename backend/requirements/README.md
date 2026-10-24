@@ -25,7 +25,6 @@ backend/
     ├── default.txt
     ├── dev.txt
     ├── ee.txt
-    ├── model_server.txt
     └── combined.txt
 ```
 
@@ -47,9 +46,8 @@ curl -LsSf https://astral.py/uv/install.sh | sh
 1. Edit `pyproject.toml`
 2. Add/update/remove dependencies in the appropriate section:
    - `[dependency-groups]` for dev tools
-   - `[project.dependencies]` for **shared** dependencies (used by both backend and model_server)
+   - `[project.dependencies]` for **shared** dependencies (used by the backend)
    - `[project.optional-dependencies.backend]` for backend-only dependencies
-   - `[project.optional-dependencies.model_server]` for model_server-only dependencies (ML packages)
    - `[project.optional-dependencies.ee]` for EE features
 3. Commit your changes - pre-commit hooks will automatically regenerate the lock file and requirements
 
@@ -67,7 +65,6 @@ uv lock
 uv export --no-emit-project --no-default-groups --no-hashes --extra backend -o backend/requirements/default.txt
 uv export --no-emit-project --no-default-groups --no-hashes --group dev -o backend/requirements/dev.txt
 uv export --no-emit-project --no-default-groups --no-hashes --extra ee -o backend/requirements/ee.txt
-uv export --no-emit-project --no-default-groups --no-hashes --extra model_server -o backend/requirements/model_server.txt
 ```
 
 ### 4. Installing Dependencies
@@ -87,9 +84,6 @@ uv sync --extra backend --extra dev
 
 # For backend with EE (shared + backend + ee)
 uv sync --extra backend --extra ee
-
-# For model server (shared + model_server, NO backend deps!)
-uv sync --extra model_server
 ```
 
 `uv` aggressively [ignores active virtual environments](https://docs.astral.sh/uv/concepts/projects/config/#project-environment-path) and prefers the root virtual environment.

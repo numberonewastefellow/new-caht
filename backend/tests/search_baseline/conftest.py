@@ -1,11 +1,12 @@
 """Pytest fixtures for the search baseline suite.
 
 These are *integration* tests: they require the dev stack (Postgres + OpenSearch
-+ model server) to be running. Fixtures initialize the SQL engine, verify the
++ embedding server) to be running. Fixtures initialize the SQL engine, verify the
 required services are reachable (skipping the suite otherwise), and seed the
 fixed corpus once per session.
 """
 
+import os
 from collections.abc import Iterator
 
 import httpx
@@ -15,8 +16,6 @@ from sqlalchemy.orm import Session
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.db.engine.sql_engine import SqlEngine
 from om.db.search_settings import get_current_search_settings
-from shared_configs.configs import MODEL_SERVER_HOST
-from shared_configs.configs import MODEL_SERVER_PORT
 from tests.search_baseline.seed_search_corpus import seed_corpus
 
 
@@ -69,10 +68,12 @@ def _opensearch_up() -> bool:
 @pytest.fixture(scope="session")
 def require_opensearch() -> None:
     """Skip if OpenSearch or the model server are unreachable."""
-    if not _service_up(f"http://{MODEL_SERVER_HOST}:{MODEL_SERVER_PORT}/health"):
-        pytest.skip(
-            f"Model server not reachable at {MODEL_SERVER_HOST}:{MODEL_SERVER_PORT}"
-        )
+    embedding_url = os.environ.get(
+        "EMBEDDING_SERVER_URL", "http://localhost:8000/v1/embeddings"
+    )
+    health_url = embedding_url.split("/v1/")[0] + "/health"
+    if not _service_up(health_url):
+        pytest.skip(f"Embedding server not reachable at {health_url}")
     if not _opensearch_up():
         pytest.skip("OpenSearch not reachable")
 

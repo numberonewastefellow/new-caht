@@ -806,6 +806,24 @@ RECENCY_BIAS_MULTIPLIER = float(os.environ.get("RECENCY_BIAS_MULTIPLIER") or 1.0
 # Vespa schema, which no longer exists.
 RERANK_COUNT = int(os.environ.get("RERANK_COUNT") or 1000)
 
+# Cross-encoder reranking of retrieved chunks via an OpenAI/Cohere-style /v1/rerank
+# endpoint (the Cortex vLLM reranker). Off by default; fails open if the server is down.
+RERANK_ENABLED = os.environ.get("RERANK_ENABLED", "false").lower() == "true"
+RERANK_SERVER_URL = (
+    os.environ.get("RERANK_SERVER_URL") or "http://cortex_rerank:8000/v1/rerank"
+)
+RERANK_MODEL = os.environ.get("RERANK_MODEL") or "BAAI/bge-reranker-v2-m3"
+RERANK_API_KEY = os.environ.get("RERANK_API_KEY") or None
+# How many of the top retrieved chunks are sent to the reranker
+RERANK_TOP_N = int(os.environ.get("RERANK_TOP_N") or 20)
+RERANK_TIMEOUT_SECONDS = float(os.environ.get("RERANK_TIMEOUT_SECONDS") or 10)
+# Chat only: the LLM "section selection" step runs after retrieval and can drop the
+# reranker's winner (it prefers passages repeating the query words). When the rerank
+# actually ran, its top-K sections are always kept. 0 disables the guard.
+RERANK_PROTECT_TOP_K = int(os.environ.get("RERANK_PROTECT_TOP_K") or 2)
+# Chunk text is cut to this many characters (cross-encoders have ~512 token limits)
+RERANK_MAX_CHARS_PER_DOC = int(os.environ.get("RERANK_MAX_CHARS_PER_DOC") or 1200)
+
 
 #####
 # Tool Configs

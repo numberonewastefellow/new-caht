@@ -45,25 +45,11 @@ services:
   #           cpus: ${OPENSEARCH_CPU_RESERVATION}
   #           memory: ${OPENSEARCH_MEM_RESERVATION}
   #
-  inference_model_server:
+  cortex_embed_vllm:
     deploy:
       resources:
         limits:
-          # cpus: ${INFERENCE_CPU_LIMIT}
-          memory: ${INFERENCE_MEM_LIMIT:-5g}
-  #       reservations:
-  #         cpus: ${INFERENCE_CPU_RESERVATION}
-  #         memory: ${INFERENCE_MEM_RESERVATION}
-  #
-  indexing_model_server:
-    deploy:
-      resources:
-        limits:
-          # cpus: ${INDEXING_CPU_LIMIT}
-          memory: ${INDEXING_MEM_LIMIT:-5g}
-  #       reservations:
-  #         cpus: ${INDEXING_CPU_RESERVATION}
-  #         memory: ${INDEXING_MEM_RESERVATION}
+          memory: ${EMBEDDING_MEM_LIMIT:-8g}
   #
   relational_db:
     deploy:

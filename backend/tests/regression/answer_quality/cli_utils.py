@@ -94,19 +94,12 @@ def get_docker_container_env_vars(env_name: str) -> dict:
     return combined_env_vars
 
 
-def manage_data_directories(env_name: str, base_path: str, use_cloud_gpu: bool) -> None:
+def manage_data_directories(env_name: str, base_path: str) -> None:
     # Use the user's home directory as the base path
     target_path = os.path.join(os.path.expanduser(base_path), env_name)
     directories = {
         "DANSWER_POSTGRES_DATA_DIR": os.path.join(target_path, "postgres/"),
     }
-    if not use_cloud_gpu:
-        directories["DANSWER_INDEX_MODEL_CACHE_DIR"] = os.path.join(
-            target_path, "index_model_cache/"
-        )
-        directories["DANSWER_INFERENCE_MODEL_CACHE_DIR"] = os.path.join(
-            target_path, "inference_model_cache/"
-        )
 
     # Create directories if they don't exist
     for env_var, directory in directories.items():
@@ -118,17 +111,15 @@ def manage_data_directories(env_name: str, base_path: str, use_cloud_gpu: bool) 
 
 
 def set_env_variables(
-    remote_server_ip: str,
-    remote_server_port: str,
-    use_cloud_gpu: bool,
+    embedding_server_url: str,
     llm_config: dict,
 ) -> None:
     env_vars: dict = {}
     env_vars["ENV_SEED_CONFIGURATION"] = json.dumps({"llms": [llm_config]})
-    if use_cloud_gpu:
-        env_vars["MODEL_SERVER_HOST"] = remote_server_ip
-        env_vars["MODEL_SERVER_PORT"] = remote_server_port
-        env_vars["INDEXING_MODEL_SERVER_HOST"] = remote_server_ip
+    # A remote/cloud GPU box and a local container are the same thing: an
+    # OpenAI-compatible /v1/embeddings URL. Empty means use the compose embedding_server.
+    if embedding_server_url:
+        env_vars["EMBEDDING_SERVER_URL"] = embedding_server_url
 
     for env_var_name, env_var in env_vars.items():
         os.environ[env_var_name] = env_var
@@ -141,7 +132,7 @@ def _is_port_in_use(port: int) -> bool:
 
 
 def start_docker_compose(
-    env_name: str, launch_web_ui: bool, use_cloud_gpu: bool, only_state: bool = False
+    env_name: str, launch_web_ui: bool, embedding_server_url: str, only_state: bool = False
 ) -> None:
     print("Starting Docker Compose...")
     os.chdir(os.path.dirname(__file__))
@@ -155,9 +146,9 @@ def start_docker_compose(
     if only_state:
         command += " index relational_db"
     else:
-        if use_cloud_gpu:
-            command += " --scale indexing_model_server=0"
-            command += " --scale inference_model_server=0"
+        if embedding_server_url:
+            # Embeddings come from the remote server; don't start the local one
+            command += " --scale embedding_server_vllm=0"
         if launch_web_ui:
             web_ui_port = 3000
             while _is_port_in_use(web_ui_port):

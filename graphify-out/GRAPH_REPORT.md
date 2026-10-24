@@ -1,15 +1,16 @@
-# Graph Report - .  (2026-07-26)
+# Graph Report - danswer20022026  (2026-10-24)
 
 ## Corpus Check
-- Large corpus: 8338 files · ~7,146,170 words. Semantic extraction will be expensive (many Claude tokens). Consider running on a subfolder.
+- 7500 files · ~7,318,571 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 63079 nodes · 158928 edges · 2645 communities (2213 shown, 432 thin omitted)
-- Extraction: 71% EXTRACTED · 29% INFERRED · 0% AMBIGUOUS · INFERRED: 45372 edges (avg confidence: 0.56)
+- 72946 nodes · 172765 edges · 4145 communities (3289 shown, 856 thin omitted)
+- Extraction: 71% EXTRACTED · 29% INFERRED · 0% AMBIGUOUS · INFERRED: 49922 edges (avg confidence: 0.56)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2ca01e56`
+- Built from commit: `73573ebe`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1192,6 +1193,7 @@
 - [[_COMMUNITY_Community 1177|Community 1177]]
 - [[_COMMUNITY_Community 1178|Community 1178]]
 - [[_COMMUNITY_Community 1179|Community 1179]]
+- [[_COMMUNITY_Community 1180|Community 1180]]
 - [[_COMMUNITY_Community 1181|Community 1181]]
 - [[_COMMUNITY_Community 1182|Community 1182]]
 - [[_COMMUNITY_Community 1183|Community 1183]]
@@ -1770,6 +1772,7 @@
 - [[_COMMUNITY_Community 1769|Community 1769]]
 - [[_COMMUNITY_Community 1771|Community 1771]]
 - [[_COMMUNITY_Community 1772|Community 1772]]
+- [[_COMMUNITY_Community 1773|Community 1773]]
 - [[_COMMUNITY_Community 1774|Community 1774]]
 - [[_COMMUNITY_Community 1777|Community 1777]]
 - [[_COMMUNITY_Community 1778|Community 1778]]
@@ -1912,6 +1915,7 @@
 - [[_COMMUNITY_Community 1973|Community 1973]]
 - [[_COMMUNITY_Community 1974|Community 1974]]
 - [[_COMMUNITY_Community 1976|Community 1976]]
+- [[_COMMUNITY_Community 1977|Community 1977]]
 - [[_COMMUNITY_Community 1978|Community 1978]]
 - [[_COMMUNITY_Community 1979|Community 1979]]
 - [[_COMMUNITY_Community 1981|Community 1981]]
@@ -2001,6 +2005,7 @@
 - [[_COMMUNITY_Community 2093|Community 2093]]
 - [[_COMMUNITY_Community 2095|Community 2095]]
 - [[_COMMUNITY_Community 2096|Community 2096]]
+- [[_COMMUNITY_Community 2102|Community 2102]]
 - [[_COMMUNITY_Community 2169|Community 2169]]
 - [[_COMMUNITY_Community 2170|Community 2170]]
 - [[_COMMUNITY_Community 2175|Community 2175]]
@@ -2024,11 +2029,15 @@
 - [[_COMMUNITY_Community 2278|Community 2278]]
 - [[_COMMUNITY_Community 2279|Community 2279]]
 - [[_COMMUNITY_Community 2280|Community 2280]]
+- [[_COMMUNITY_Community 2288|Community 2288]]
 - [[_COMMUNITY_Community 2289|Community 2289]]
 - [[_COMMUNITY_Community 2299|Community 2299]]
 - [[_COMMUNITY_Community 2300|Community 2300]]
 - [[_COMMUNITY_Community 2301|Community 2301]]
 - [[_COMMUNITY_Community 2302|Community 2302]]
+- [[_COMMUNITY_Community 2303|Community 2303]]
+- [[_COMMUNITY_Community 2307|Community 2307]]
+- [[_COMMUNITY_Community 2308|Community 2308]]
 - [[_COMMUNITY_Community 2310|Community 2310]]
 - [[_COMMUNITY_Community 2311|Community 2311]]
 - [[_COMMUNITY_Community 2312|Community 2312]]
@@ -2037,6 +2046,7 @@
 - [[_COMMUNITY_Community 2315|Community 2315]]
 - [[_COMMUNITY_Community 2316|Community 2316]]
 - [[_COMMUNITY_Community 2318|Community 2318]]
+- [[_COMMUNITY_Community 2333|Community 2333]]
 - [[_COMMUNITY_Community 2340|Community 2340]]
 - [[_COMMUNITY_Community 2343|Community 2343]]
 - [[_COMMUNITY_Community 2344|Community 2344]]
@@ -2105,37 +2115,1313 @@
 - [[_COMMUNITY_Community 2639|Community 2639]]
 - [[_COMMUNITY_Community 2640|Community 2640]]
 - [[_COMMUNITY_Community 2641|Community 2641]]
+- [[_COMMUNITY_Community 2645|Community 2645]]
+- [[_COMMUNITY_Community 2646|Community 2646]]
+- [[_COMMUNITY_Community 2647|Community 2647]]
+- [[_COMMUNITY_Community 2648|Community 2648]]
+- [[_COMMUNITY_Community 2649|Community 2649]]
+- [[_COMMUNITY_Community 2650|Community 2650]]
+- [[_COMMUNITY_Community 2651|Community 2651]]
+- [[_COMMUNITY_Community 2652|Community 2652]]
+- [[_COMMUNITY_Community 2653|Community 2653]]
+- [[_COMMUNITY_Community 2654|Community 2654]]
+- [[_COMMUNITY_Community 2655|Community 2655]]
+- [[_COMMUNITY_Community 2656|Community 2656]]
+- [[_COMMUNITY_Community 2657|Community 2657]]
+- [[_COMMUNITY_Community 2658|Community 2658]]
+- [[_COMMUNITY_Community 2659|Community 2659]]
+- [[_COMMUNITY_Community 2660|Community 2660]]
+- [[_COMMUNITY_Community 2661|Community 2661]]
+- [[_COMMUNITY_Community 2662|Community 2662]]
+- [[_COMMUNITY_Community 2663|Community 2663]]
+- [[_COMMUNITY_Community 2664|Community 2664]]
+- [[_COMMUNITY_Community 2665|Community 2665]]
+- [[_COMMUNITY_Community 2666|Community 2666]]
+- [[_COMMUNITY_Community 2667|Community 2667]]
+- [[_COMMUNITY_Community 2668|Community 2668]]
+- [[_COMMUNITY_Community 2669|Community 2669]]
+- [[_COMMUNITY_Community 2670|Community 2670]]
+- [[_COMMUNITY_Community 2671|Community 2671]]
+- [[_COMMUNITY_Community 2672|Community 2672]]
+- [[_COMMUNITY_Community 2673|Community 2673]]
+- [[_COMMUNITY_Community 2674|Community 2674]]
+- [[_COMMUNITY_Community 2675|Community 2675]]
+- [[_COMMUNITY_Community 2676|Community 2676]]
+- [[_COMMUNITY_Community 2677|Community 2677]]
+- [[_COMMUNITY_Community 2678|Community 2678]]
+- [[_COMMUNITY_Community 2679|Community 2679]]
+- [[_COMMUNITY_Community 2680|Community 2680]]
+- [[_COMMUNITY_Community 2681|Community 2681]]
+- [[_COMMUNITY_Community 2682|Community 2682]]
+- [[_COMMUNITY_Community 2683|Community 2683]]
+- [[_COMMUNITY_Community 2684|Community 2684]]
+- [[_COMMUNITY_Community 2685|Community 2685]]
+- [[_COMMUNITY_Community 2686|Community 2686]]
+- [[_COMMUNITY_Community 2687|Community 2687]]
+- [[_COMMUNITY_Community 2688|Community 2688]]
+- [[_COMMUNITY_Community 2689|Community 2689]]
+- [[_COMMUNITY_Community 2690|Community 2690]]
+- [[_COMMUNITY_Community 2691|Community 2691]]
+- [[_COMMUNITY_Community 2692|Community 2692]]
+- [[_COMMUNITY_Community 2693|Community 2693]]
+- [[_COMMUNITY_Community 2694|Community 2694]]
+- [[_COMMUNITY_Community 2695|Community 2695]]
+- [[_COMMUNITY_Community 2696|Community 2696]]
+- [[_COMMUNITY_Community 2697|Community 2697]]
+- [[_COMMUNITY_Community 2698|Community 2698]]
+- [[_COMMUNITY_Community 2699|Community 2699]]
+- [[_COMMUNITY_Community 2700|Community 2700]]
+- [[_COMMUNITY_Community 2701|Community 2701]]
+- [[_COMMUNITY_Community 2702|Community 2702]]
+- [[_COMMUNITY_Community 2703|Community 2703]]
+- [[_COMMUNITY_Community 2704|Community 2704]]
+- [[_COMMUNITY_Community 2705|Community 2705]]
+- [[_COMMUNITY_Community 2706|Community 2706]]
+- [[_COMMUNITY_Community 2707|Community 2707]]
+- [[_COMMUNITY_Community 2708|Community 2708]]
+- [[_COMMUNITY_Community 2709|Community 2709]]
+- [[_COMMUNITY_Community 2710|Community 2710]]
+- [[_COMMUNITY_Community 2711|Community 2711]]
+- [[_COMMUNITY_Community 2712|Community 2712]]
+- [[_COMMUNITY_Community 2713|Community 2713]]
+- [[_COMMUNITY_Community 2714|Community 2714]]
+- [[_COMMUNITY_Community 2715|Community 2715]]
+- [[_COMMUNITY_Community 2716|Community 2716]]
+- [[_COMMUNITY_Community 2717|Community 2717]]
+- [[_COMMUNITY_Community 2718|Community 2718]]
+- [[_COMMUNITY_Community 2719|Community 2719]]
+- [[_COMMUNITY_Community 2720|Community 2720]]
+- [[_COMMUNITY_Community 2721|Community 2721]]
+- [[_COMMUNITY_Community 2722|Community 2722]]
+- [[_COMMUNITY_Community 2723|Community 2723]]
+- [[_COMMUNITY_Community 2724|Community 2724]]
+- [[_COMMUNITY_Community 2725|Community 2725]]
+- [[_COMMUNITY_Community 2726|Community 2726]]
+- [[_COMMUNITY_Community 2727|Community 2727]]
+- [[_COMMUNITY_Community 2728|Community 2728]]
+- [[_COMMUNITY_Community 2729|Community 2729]]
+- [[_COMMUNITY_Community 2730|Community 2730]]
+- [[_COMMUNITY_Community 2731|Community 2731]]
+- [[_COMMUNITY_Community 2732|Community 2732]]
+- [[_COMMUNITY_Community 2733|Community 2733]]
+- [[_COMMUNITY_Community 2734|Community 2734]]
+- [[_COMMUNITY_Community 2735|Community 2735]]
+- [[_COMMUNITY_Community 2736|Community 2736]]
+- [[_COMMUNITY_Community 2737|Community 2737]]
+- [[_COMMUNITY_Community 2738|Community 2738]]
+- [[_COMMUNITY_Community 2739|Community 2739]]
+- [[_COMMUNITY_Community 2740|Community 2740]]
+- [[_COMMUNITY_Community 2741|Community 2741]]
+- [[_COMMUNITY_Community 2742|Community 2742]]
+- [[_COMMUNITY_Community 2743|Community 2743]]
+- [[_COMMUNITY_Community 2744|Community 2744]]
+- [[_COMMUNITY_Community 2745|Community 2745]]
+- [[_COMMUNITY_Community 2746|Community 2746]]
+- [[_COMMUNITY_Community 2747|Community 2747]]
+- [[_COMMUNITY_Community 2748|Community 2748]]
+- [[_COMMUNITY_Community 2749|Community 2749]]
+- [[_COMMUNITY_Community 2750|Community 2750]]
+- [[_COMMUNITY_Community 2751|Community 2751]]
+- [[_COMMUNITY_Community 2752|Community 2752]]
+- [[_COMMUNITY_Community 2753|Community 2753]]
+- [[_COMMUNITY_Community 2754|Community 2754]]
+- [[_COMMUNITY_Community 2755|Community 2755]]
+- [[_COMMUNITY_Community 2756|Community 2756]]
+- [[_COMMUNITY_Community 2757|Community 2757]]
+- [[_COMMUNITY_Community 2758|Community 2758]]
+- [[_COMMUNITY_Community 2759|Community 2759]]
+- [[_COMMUNITY_Community 2760|Community 2760]]
+- [[_COMMUNITY_Community 2761|Community 2761]]
+- [[_COMMUNITY_Community 2762|Community 2762]]
+- [[_COMMUNITY_Community 2763|Community 2763]]
+- [[_COMMUNITY_Community 2764|Community 2764]]
+- [[_COMMUNITY_Community 2765|Community 2765]]
+- [[_COMMUNITY_Community 2766|Community 2766]]
+- [[_COMMUNITY_Community 2767|Community 2767]]
+- [[_COMMUNITY_Community 2768|Community 2768]]
+- [[_COMMUNITY_Community 2769|Community 2769]]
+- [[_COMMUNITY_Community 2770|Community 2770]]
+- [[_COMMUNITY_Community 2771|Community 2771]]
+- [[_COMMUNITY_Community 2772|Community 2772]]
+- [[_COMMUNITY_Community 2773|Community 2773]]
+- [[_COMMUNITY_Community 2774|Community 2774]]
+- [[_COMMUNITY_Community 2775|Community 2775]]
+- [[_COMMUNITY_Community 2776|Community 2776]]
+- [[_COMMUNITY_Community 2777|Community 2777]]
+- [[_COMMUNITY_Community 2778|Community 2778]]
+- [[_COMMUNITY_Community 2779|Community 2779]]
+- [[_COMMUNITY_Community 2780|Community 2780]]
+- [[_COMMUNITY_Community 2781|Community 2781]]
+- [[_COMMUNITY_Community 2782|Community 2782]]
+- [[_COMMUNITY_Community 2783|Community 2783]]
+- [[_COMMUNITY_Community 2784|Community 2784]]
+- [[_COMMUNITY_Community 2785|Community 2785]]
+- [[_COMMUNITY_Community 2786|Community 2786]]
+- [[_COMMUNITY_Community 2787|Community 2787]]
+- [[_COMMUNITY_Community 2788|Community 2788]]
+- [[_COMMUNITY_Community 2789|Community 2789]]
+- [[_COMMUNITY_Community 2790|Community 2790]]
+- [[_COMMUNITY_Community 2791|Community 2791]]
+- [[_COMMUNITY_Community 2792|Community 2792]]
+- [[_COMMUNITY_Community 2793|Community 2793]]
+- [[_COMMUNITY_Community 2794|Community 2794]]
+- [[_COMMUNITY_Community 2795|Community 2795]]
+- [[_COMMUNITY_Community 2796|Community 2796]]
+- [[_COMMUNITY_Community 2797|Community 2797]]
+- [[_COMMUNITY_Community 2798|Community 2798]]
+- [[_COMMUNITY_Community 2799|Community 2799]]
+- [[_COMMUNITY_Community 2800|Community 2800]]
+- [[_COMMUNITY_Community 2801|Community 2801]]
+- [[_COMMUNITY_Community 2802|Community 2802]]
+- [[_COMMUNITY_Community 2803|Community 2803]]
+- [[_COMMUNITY_Community 2804|Community 2804]]
+- [[_COMMUNITY_Community 2805|Community 2805]]
+- [[_COMMUNITY_Community 2806|Community 2806]]
+- [[_COMMUNITY_Community 2807|Community 2807]]
+- [[_COMMUNITY_Community 2808|Community 2808]]
+- [[_COMMUNITY_Community 2809|Community 2809]]
+- [[_COMMUNITY_Community 2810|Community 2810]]
+- [[_COMMUNITY_Community 2811|Community 2811]]
+- [[_COMMUNITY_Community 2812|Community 2812]]
+- [[_COMMUNITY_Community 2813|Community 2813]]
+- [[_COMMUNITY_Community 2814|Community 2814]]
+- [[_COMMUNITY_Community 2815|Community 2815]]
+- [[_COMMUNITY_Community 2816|Community 2816]]
+- [[_COMMUNITY_Community 2817|Community 2817]]
+- [[_COMMUNITY_Community 2818|Community 2818]]
+- [[_COMMUNITY_Community 2819|Community 2819]]
+- [[_COMMUNITY_Community 2820|Community 2820]]
+- [[_COMMUNITY_Community 2821|Community 2821]]
+- [[_COMMUNITY_Community 2822|Community 2822]]
+- [[_COMMUNITY_Community 2823|Community 2823]]
+- [[_COMMUNITY_Community 2824|Community 2824]]
+- [[_COMMUNITY_Community 2825|Community 2825]]
+- [[_COMMUNITY_Community 2826|Community 2826]]
+- [[_COMMUNITY_Community 2827|Community 2827]]
+- [[_COMMUNITY_Community 2828|Community 2828]]
+- [[_COMMUNITY_Community 2829|Community 2829]]
+- [[_COMMUNITY_Community 2830|Community 2830]]
+- [[_COMMUNITY_Community 2831|Community 2831]]
+- [[_COMMUNITY_Community 2832|Community 2832]]
+- [[_COMMUNITY_Community 2833|Community 2833]]
+- [[_COMMUNITY_Community 2834|Community 2834]]
+- [[_COMMUNITY_Community 2835|Community 2835]]
+- [[_COMMUNITY_Community 2836|Community 2836]]
+- [[_COMMUNITY_Community 2837|Community 2837]]
+- [[_COMMUNITY_Community 2838|Community 2838]]
+- [[_COMMUNITY_Community 2839|Community 2839]]
+- [[_COMMUNITY_Community 2840|Community 2840]]
+- [[_COMMUNITY_Community 2841|Community 2841]]
+- [[_COMMUNITY_Community 2842|Community 2842]]
+- [[_COMMUNITY_Community 2843|Community 2843]]
+- [[_COMMUNITY_Community 2844|Community 2844]]
+- [[_COMMUNITY_Community 2845|Community 2845]]
+- [[_COMMUNITY_Community 2846|Community 2846]]
+- [[_COMMUNITY_Community 2847|Community 2847]]
+- [[_COMMUNITY_Community 2848|Community 2848]]
+- [[_COMMUNITY_Community 2849|Community 2849]]
+- [[_COMMUNITY_Community 2850|Community 2850]]
+- [[_COMMUNITY_Community 2851|Community 2851]]
+- [[_COMMUNITY_Community 2852|Community 2852]]
+- [[_COMMUNITY_Community 2853|Community 2853]]
+- [[_COMMUNITY_Community 2854|Community 2854]]
+- [[_COMMUNITY_Community 2855|Community 2855]]
+- [[_COMMUNITY_Community 2856|Community 2856]]
+- [[_COMMUNITY_Community 2857|Community 2857]]
+- [[_COMMUNITY_Community 2858|Community 2858]]
+- [[_COMMUNITY_Community 2859|Community 2859]]
+- [[_COMMUNITY_Community 2860|Community 2860]]
+- [[_COMMUNITY_Community 2861|Community 2861]]
+- [[_COMMUNITY_Community 2862|Community 2862]]
+- [[_COMMUNITY_Community 2863|Community 2863]]
+- [[_COMMUNITY_Community 2864|Community 2864]]
+- [[_COMMUNITY_Community 2865|Community 2865]]
+- [[_COMMUNITY_Community 2866|Community 2866]]
+- [[_COMMUNITY_Community 2867|Community 2867]]
+- [[_COMMUNITY_Community 2868|Community 2868]]
+- [[_COMMUNITY_Community 2869|Community 2869]]
+- [[_COMMUNITY_Community 2870|Community 2870]]
+- [[_COMMUNITY_Community 2871|Community 2871]]
+- [[_COMMUNITY_Community 2872|Community 2872]]
+- [[_COMMUNITY_Community 2873|Community 2873]]
+- [[_COMMUNITY_Community 2874|Community 2874]]
+- [[_COMMUNITY_Community 2875|Community 2875]]
+- [[_COMMUNITY_Community 2876|Community 2876]]
+- [[_COMMUNITY_Community 2877|Community 2877]]
+- [[_COMMUNITY_Community 2878|Community 2878]]
+- [[_COMMUNITY_Community 2879|Community 2879]]
+- [[_COMMUNITY_Community 2880|Community 2880]]
+- [[_COMMUNITY_Community 2881|Community 2881]]
+- [[_COMMUNITY_Community 2882|Community 2882]]
+- [[_COMMUNITY_Community 2883|Community 2883]]
+- [[_COMMUNITY_Community 2884|Community 2884]]
+- [[_COMMUNITY_Community 2885|Community 2885]]
+- [[_COMMUNITY_Community 2886|Community 2886]]
+- [[_COMMUNITY_Community 2887|Community 2887]]
+- [[_COMMUNITY_Community 2888|Community 2888]]
+- [[_COMMUNITY_Community 2889|Community 2889]]
+- [[_COMMUNITY_Community 2890|Community 2890]]
+- [[_COMMUNITY_Community 2891|Community 2891]]
+- [[_COMMUNITY_Community 2892|Community 2892]]
+- [[_COMMUNITY_Community 2893|Community 2893]]
+- [[_COMMUNITY_Community 2894|Community 2894]]
+- [[_COMMUNITY_Community 2895|Community 2895]]
+- [[_COMMUNITY_Community 2896|Community 2896]]
+- [[_COMMUNITY_Community 2897|Community 2897]]
+- [[_COMMUNITY_Community 2898|Community 2898]]
+- [[_COMMUNITY_Community 2899|Community 2899]]
+- [[_COMMUNITY_Community 2900|Community 2900]]
+- [[_COMMUNITY_Community 2901|Community 2901]]
+- [[_COMMUNITY_Community 2902|Community 2902]]
+- [[_COMMUNITY_Community 2903|Community 2903]]
+- [[_COMMUNITY_Community 2904|Community 2904]]
+- [[_COMMUNITY_Community 2905|Community 2905]]
+- [[_COMMUNITY_Community 2906|Community 2906]]
+- [[_COMMUNITY_Community 2907|Community 2907]]
+- [[_COMMUNITY_Community 2908|Community 2908]]
+- [[_COMMUNITY_Community 2909|Community 2909]]
+- [[_COMMUNITY_Community 2910|Community 2910]]
+- [[_COMMUNITY_Community 2911|Community 2911]]
+- [[_COMMUNITY_Community 2912|Community 2912]]
+- [[_COMMUNITY_Community 2913|Community 2913]]
+- [[_COMMUNITY_Community 2914|Community 2914]]
+- [[_COMMUNITY_Community 2915|Community 2915]]
+- [[_COMMUNITY_Community 2916|Community 2916]]
+- [[_COMMUNITY_Community 2917|Community 2917]]
+- [[_COMMUNITY_Community 2918|Community 2918]]
+- [[_COMMUNITY_Community 2919|Community 2919]]
+- [[_COMMUNITY_Community 2920|Community 2920]]
+- [[_COMMUNITY_Community 2921|Community 2921]]
+- [[_COMMUNITY_Community 2922|Community 2922]]
+- [[_COMMUNITY_Community 2923|Community 2923]]
+- [[_COMMUNITY_Community 2924|Community 2924]]
+- [[_COMMUNITY_Community 2925|Community 2925]]
+- [[_COMMUNITY_Community 2926|Community 2926]]
+- [[_COMMUNITY_Community 2927|Community 2927]]
+- [[_COMMUNITY_Community 2928|Community 2928]]
+- [[_COMMUNITY_Community 2929|Community 2929]]
+- [[_COMMUNITY_Community 2930|Community 2930]]
+- [[_COMMUNITY_Community 2931|Community 2931]]
+- [[_COMMUNITY_Community 2932|Community 2932]]
+- [[_COMMUNITY_Community 2933|Community 2933]]
+- [[_COMMUNITY_Community 2934|Community 2934]]
+- [[_COMMUNITY_Community 2935|Community 2935]]
+- [[_COMMUNITY_Community 2936|Community 2936]]
+- [[_COMMUNITY_Community 2937|Community 2937]]
+- [[_COMMUNITY_Community 2938|Community 2938]]
+- [[_COMMUNITY_Community 2939|Community 2939]]
+- [[_COMMUNITY_Community 2940|Community 2940]]
+- [[_COMMUNITY_Community 2941|Community 2941]]
+- [[_COMMUNITY_Community 2942|Community 2942]]
+- [[_COMMUNITY_Community 2943|Community 2943]]
+- [[_COMMUNITY_Community 2944|Community 2944]]
+- [[_COMMUNITY_Community 2945|Community 2945]]
+- [[_COMMUNITY_Community 2946|Community 2946]]
+- [[_COMMUNITY_Community 2947|Community 2947]]
+- [[_COMMUNITY_Community 2948|Community 2948]]
+- [[_COMMUNITY_Community 2949|Community 2949]]
+- [[_COMMUNITY_Community 2950|Community 2950]]
+- [[_COMMUNITY_Community 2951|Community 2951]]
+- [[_COMMUNITY_Community 2952|Community 2952]]
+- [[_COMMUNITY_Community 2953|Community 2953]]
+- [[_COMMUNITY_Community 2954|Community 2954]]
+- [[_COMMUNITY_Community 2955|Community 2955]]
+- [[_COMMUNITY_Community 2956|Community 2956]]
+- [[_COMMUNITY_Community 2957|Community 2957]]
+- [[_COMMUNITY_Community 2958|Community 2958]]
+- [[_COMMUNITY_Community 2959|Community 2959]]
+- [[_COMMUNITY_Community 2960|Community 2960]]
+- [[_COMMUNITY_Community 2961|Community 2961]]
+- [[_COMMUNITY_Community 2962|Community 2962]]
+- [[_COMMUNITY_Community 2963|Community 2963]]
+- [[_COMMUNITY_Community 2964|Community 2964]]
+- [[_COMMUNITY_Community 2965|Community 2965]]
+- [[_COMMUNITY_Community 2966|Community 2966]]
+- [[_COMMUNITY_Community 2967|Community 2967]]
+- [[_COMMUNITY_Community 2968|Community 2968]]
+- [[_COMMUNITY_Community 2969|Community 2969]]
+- [[_COMMUNITY_Community 2970|Community 2970]]
+- [[_COMMUNITY_Community 2971|Community 2971]]
+- [[_COMMUNITY_Community 2972|Community 2972]]
+- [[_COMMUNITY_Community 2973|Community 2973]]
+- [[_COMMUNITY_Community 2974|Community 2974]]
+- [[_COMMUNITY_Community 2975|Community 2975]]
+- [[_COMMUNITY_Community 2976|Community 2976]]
+- [[_COMMUNITY_Community 2977|Community 2977]]
+- [[_COMMUNITY_Community 2978|Community 2978]]
+- [[_COMMUNITY_Community 2979|Community 2979]]
+- [[_COMMUNITY_Community 2980|Community 2980]]
+- [[_COMMUNITY_Community 2981|Community 2981]]
+- [[_COMMUNITY_Community 2982|Community 2982]]
+- [[_COMMUNITY_Community 2983|Community 2983]]
+- [[_COMMUNITY_Community 2984|Community 2984]]
+- [[_COMMUNITY_Community 2985|Community 2985]]
+- [[_COMMUNITY_Community 2986|Community 2986]]
+- [[_COMMUNITY_Community 2987|Community 2987]]
+- [[_COMMUNITY_Community 2988|Community 2988]]
+- [[_COMMUNITY_Community 2989|Community 2989]]
+- [[_COMMUNITY_Community 2990|Community 2990]]
+- [[_COMMUNITY_Community 2991|Community 2991]]
+- [[_COMMUNITY_Community 2992|Community 2992]]
+- [[_COMMUNITY_Community 2993|Community 2993]]
+- [[_COMMUNITY_Community 2994|Community 2994]]
+- [[_COMMUNITY_Community 2995|Community 2995]]
+- [[_COMMUNITY_Community 2996|Community 2996]]
+- [[_COMMUNITY_Community 2997|Community 2997]]
+- [[_COMMUNITY_Community 2998|Community 2998]]
+- [[_COMMUNITY_Community 2999|Community 2999]]
+- [[_COMMUNITY_Community 3000|Community 3000]]
+- [[_COMMUNITY_Community 3001|Community 3001]]
+- [[_COMMUNITY_Community 3002|Community 3002]]
+- [[_COMMUNITY_Community 3003|Community 3003]]
+- [[_COMMUNITY_Community 3004|Community 3004]]
+- [[_COMMUNITY_Community 3005|Community 3005]]
+- [[_COMMUNITY_Community 3006|Community 3006]]
+- [[_COMMUNITY_Community 3007|Community 3007]]
+- [[_COMMUNITY_Community 3008|Community 3008]]
+- [[_COMMUNITY_Community 3009|Community 3009]]
+- [[_COMMUNITY_Community 3010|Community 3010]]
+- [[_COMMUNITY_Community 3011|Community 3011]]
+- [[_COMMUNITY_Community 3012|Community 3012]]
+- [[_COMMUNITY_Community 3013|Community 3013]]
+- [[_COMMUNITY_Community 3014|Community 3014]]
+- [[_COMMUNITY_Community 3015|Community 3015]]
+- [[_COMMUNITY_Community 3016|Community 3016]]
+- [[_COMMUNITY_Community 3017|Community 3017]]
+- [[_COMMUNITY_Community 3018|Community 3018]]
+- [[_COMMUNITY_Community 3019|Community 3019]]
+- [[_COMMUNITY_Community 3020|Community 3020]]
+- [[_COMMUNITY_Community 3021|Community 3021]]
+- [[_COMMUNITY_Community 3022|Community 3022]]
+- [[_COMMUNITY_Community 3023|Community 3023]]
+- [[_COMMUNITY_Community 3024|Community 3024]]
+- [[_COMMUNITY_Community 3025|Community 3025]]
+- [[_COMMUNITY_Community 3026|Community 3026]]
+- [[_COMMUNITY_Community 3027|Community 3027]]
+- [[_COMMUNITY_Community 3028|Community 3028]]
+- [[_COMMUNITY_Community 3029|Community 3029]]
+- [[_COMMUNITY_Community 3030|Community 3030]]
+- [[_COMMUNITY_Community 3031|Community 3031]]
+- [[_COMMUNITY_Community 3032|Community 3032]]
+- [[_COMMUNITY_Community 3033|Community 3033]]
+- [[_COMMUNITY_Community 3034|Community 3034]]
+- [[_COMMUNITY_Community 3035|Community 3035]]
+- [[_COMMUNITY_Community 3036|Community 3036]]
+- [[_COMMUNITY_Community 3037|Community 3037]]
+- [[_COMMUNITY_Community 3038|Community 3038]]
+- [[_COMMUNITY_Community 3039|Community 3039]]
+- [[_COMMUNITY_Community 3040|Community 3040]]
+- [[_COMMUNITY_Community 3041|Community 3041]]
+- [[_COMMUNITY_Community 3042|Community 3042]]
+- [[_COMMUNITY_Community 3043|Community 3043]]
+- [[_COMMUNITY_Community 3044|Community 3044]]
+- [[_COMMUNITY_Community 3045|Community 3045]]
+- [[_COMMUNITY_Community 3046|Community 3046]]
+- [[_COMMUNITY_Community 3047|Community 3047]]
+- [[_COMMUNITY_Community 3048|Community 3048]]
+- [[_COMMUNITY_Community 3049|Community 3049]]
+- [[_COMMUNITY_Community 3050|Community 3050]]
+- [[_COMMUNITY_Community 3051|Community 3051]]
+- [[_COMMUNITY_Community 3052|Community 3052]]
+- [[_COMMUNITY_Community 3053|Community 3053]]
+- [[_COMMUNITY_Community 3054|Community 3054]]
+- [[_COMMUNITY_Community 3055|Community 3055]]
+- [[_COMMUNITY_Community 3056|Community 3056]]
+- [[_COMMUNITY_Community 3057|Community 3057]]
+- [[_COMMUNITY_Community 3058|Community 3058]]
+- [[_COMMUNITY_Community 3059|Community 3059]]
+- [[_COMMUNITY_Community 3060|Community 3060]]
+- [[_COMMUNITY_Community 3061|Community 3061]]
+- [[_COMMUNITY_Community 3062|Community 3062]]
+- [[_COMMUNITY_Community 3063|Community 3063]]
+- [[_COMMUNITY_Community 3064|Community 3064]]
+- [[_COMMUNITY_Community 3065|Community 3065]]
+- [[_COMMUNITY_Community 3066|Community 3066]]
+- [[_COMMUNITY_Community 3067|Community 3067]]
+- [[_COMMUNITY_Community 3068|Community 3068]]
+- [[_COMMUNITY_Community 3069|Community 3069]]
+- [[_COMMUNITY_Community 3070|Community 3070]]
+- [[_COMMUNITY_Community 3071|Community 3071]]
+- [[_COMMUNITY_Community 3072|Community 3072]]
+- [[_COMMUNITY_Community 3073|Community 3073]]
+- [[_COMMUNITY_Community 3074|Community 3074]]
+- [[_COMMUNITY_Community 3075|Community 3075]]
+- [[_COMMUNITY_Community 3076|Community 3076]]
+- [[_COMMUNITY_Community 3077|Community 3077]]
+- [[_COMMUNITY_Community 3078|Community 3078]]
+- [[_COMMUNITY_Community 3079|Community 3079]]
+- [[_COMMUNITY_Community 3080|Community 3080]]
+- [[_COMMUNITY_Community 3081|Community 3081]]
+- [[_COMMUNITY_Community 3082|Community 3082]]
+- [[_COMMUNITY_Community 3083|Community 3083]]
+- [[_COMMUNITY_Community 3084|Community 3084]]
+- [[_COMMUNITY_Community 3085|Community 3085]]
+- [[_COMMUNITY_Community 3086|Community 3086]]
+- [[_COMMUNITY_Community 3087|Community 3087]]
+- [[_COMMUNITY_Community 3088|Community 3088]]
+- [[_COMMUNITY_Community 3089|Community 3089]]
+- [[_COMMUNITY_Community 3090|Community 3090]]
+- [[_COMMUNITY_Community 3091|Community 3091]]
+- [[_COMMUNITY_Community 3092|Community 3092]]
+- [[_COMMUNITY_Community 3093|Community 3093]]
+- [[_COMMUNITY_Community 3094|Community 3094]]
+- [[_COMMUNITY_Community 3095|Community 3095]]
+- [[_COMMUNITY_Community 3096|Community 3096]]
+- [[_COMMUNITY_Community 3097|Community 3097]]
+- [[_COMMUNITY_Community 3098|Community 3098]]
+- [[_COMMUNITY_Community 3099|Community 3099]]
+- [[_COMMUNITY_Community 3100|Community 3100]]
+- [[_COMMUNITY_Community 3101|Community 3101]]
+- [[_COMMUNITY_Community 3102|Community 3102]]
+- [[_COMMUNITY_Community 3103|Community 3103]]
+- [[_COMMUNITY_Community 3104|Community 3104]]
+- [[_COMMUNITY_Community 3105|Community 3105]]
+- [[_COMMUNITY_Community 3106|Community 3106]]
+- [[_COMMUNITY_Community 3107|Community 3107]]
+- [[_COMMUNITY_Community 3108|Community 3108]]
+- [[_COMMUNITY_Community 3109|Community 3109]]
+- [[_COMMUNITY_Community 3110|Community 3110]]
+- [[_COMMUNITY_Community 3111|Community 3111]]
+- [[_COMMUNITY_Community 3112|Community 3112]]
+- [[_COMMUNITY_Community 3113|Community 3113]]
+- [[_COMMUNITY_Community 3114|Community 3114]]
+- [[_COMMUNITY_Community 3115|Community 3115]]
+- [[_COMMUNITY_Community 3116|Community 3116]]
+- [[_COMMUNITY_Community 3117|Community 3117]]
+- [[_COMMUNITY_Community 3118|Community 3118]]
+- [[_COMMUNITY_Community 3119|Community 3119]]
+- [[_COMMUNITY_Community 3120|Community 3120]]
+- [[_COMMUNITY_Community 3121|Community 3121]]
+- [[_COMMUNITY_Community 3122|Community 3122]]
+- [[_COMMUNITY_Community 3123|Community 3123]]
+- [[_COMMUNITY_Community 3124|Community 3124]]
+- [[_COMMUNITY_Community 3125|Community 3125]]
+- [[_COMMUNITY_Community 3126|Community 3126]]
+- [[_COMMUNITY_Community 3127|Community 3127]]
+- [[_COMMUNITY_Community 3128|Community 3128]]
+- [[_COMMUNITY_Community 3129|Community 3129]]
+- [[_COMMUNITY_Community 3130|Community 3130]]
+- [[_COMMUNITY_Community 3131|Community 3131]]
+- [[_COMMUNITY_Community 3132|Community 3132]]
+- [[_COMMUNITY_Community 3133|Community 3133]]
+- [[_COMMUNITY_Community 3134|Community 3134]]
+- [[_COMMUNITY_Community 3135|Community 3135]]
+- [[_COMMUNITY_Community 3136|Community 3136]]
+- [[_COMMUNITY_Community 3137|Community 3137]]
+- [[_COMMUNITY_Community 3138|Community 3138]]
+- [[_COMMUNITY_Community 3139|Community 3139]]
+- [[_COMMUNITY_Community 3140|Community 3140]]
+- [[_COMMUNITY_Community 3141|Community 3141]]
+- [[_COMMUNITY_Community 3142|Community 3142]]
+- [[_COMMUNITY_Community 3143|Community 3143]]
+- [[_COMMUNITY_Community 3144|Community 3144]]
+- [[_COMMUNITY_Community 3145|Community 3145]]
+- [[_COMMUNITY_Community 3146|Community 3146]]
+- [[_COMMUNITY_Community 3147|Community 3147]]
+- [[_COMMUNITY_Community 3148|Community 3148]]
+- [[_COMMUNITY_Community 3149|Community 3149]]
+- [[_COMMUNITY_Community 3150|Community 3150]]
+- [[_COMMUNITY_Community 3151|Community 3151]]
+- [[_COMMUNITY_Community 3152|Community 3152]]
+- [[_COMMUNITY_Community 3153|Community 3153]]
+- [[_COMMUNITY_Community 3154|Community 3154]]
+- [[_COMMUNITY_Community 3155|Community 3155]]
+- [[_COMMUNITY_Community 3156|Community 3156]]
+- [[_COMMUNITY_Community 3157|Community 3157]]
+- [[_COMMUNITY_Community 3158|Community 3158]]
+- [[_COMMUNITY_Community 3159|Community 3159]]
+- [[_COMMUNITY_Community 3160|Community 3160]]
+- [[_COMMUNITY_Community 3161|Community 3161]]
+- [[_COMMUNITY_Community 3162|Community 3162]]
+- [[_COMMUNITY_Community 3163|Community 3163]]
+- [[_COMMUNITY_Community 3164|Community 3164]]
+- [[_COMMUNITY_Community 3165|Community 3165]]
+- [[_COMMUNITY_Community 3166|Community 3166]]
+- [[_COMMUNITY_Community 3167|Community 3167]]
+- [[_COMMUNITY_Community 3168|Community 3168]]
+- [[_COMMUNITY_Community 3169|Community 3169]]
+- [[_COMMUNITY_Community 3170|Community 3170]]
+- [[_COMMUNITY_Community 3171|Community 3171]]
+- [[_COMMUNITY_Community 3172|Community 3172]]
+- [[_COMMUNITY_Community 3173|Community 3173]]
+- [[_COMMUNITY_Community 3174|Community 3174]]
+- [[_COMMUNITY_Community 3175|Community 3175]]
+- [[_COMMUNITY_Community 3176|Community 3176]]
+- [[_COMMUNITY_Community 3177|Community 3177]]
+- [[_COMMUNITY_Community 3178|Community 3178]]
+- [[_COMMUNITY_Community 3179|Community 3179]]
+- [[_COMMUNITY_Community 3180|Community 3180]]
+- [[_COMMUNITY_Community 3181|Community 3181]]
+- [[_COMMUNITY_Community 3182|Community 3182]]
+- [[_COMMUNITY_Community 3183|Community 3183]]
+- [[_COMMUNITY_Community 3184|Community 3184]]
+- [[_COMMUNITY_Community 3185|Community 3185]]
+- [[_COMMUNITY_Community 3186|Community 3186]]
+- [[_COMMUNITY_Community 3187|Community 3187]]
+- [[_COMMUNITY_Community 3188|Community 3188]]
+- [[_COMMUNITY_Community 3189|Community 3189]]
+- [[_COMMUNITY_Community 3190|Community 3190]]
+- [[_COMMUNITY_Community 3191|Community 3191]]
+- [[_COMMUNITY_Community 3192|Community 3192]]
+- [[_COMMUNITY_Community 3193|Community 3193]]
+- [[_COMMUNITY_Community 3194|Community 3194]]
+- [[_COMMUNITY_Community 3195|Community 3195]]
+- [[_COMMUNITY_Community 3196|Community 3196]]
+- [[_COMMUNITY_Community 3197|Community 3197]]
+- [[_COMMUNITY_Community 3198|Community 3198]]
+- [[_COMMUNITY_Community 3199|Community 3199]]
+- [[_COMMUNITY_Community 3200|Community 3200]]
+- [[_COMMUNITY_Community 3201|Community 3201]]
+- [[_COMMUNITY_Community 3202|Community 3202]]
+- [[_COMMUNITY_Community 3203|Community 3203]]
+- [[_COMMUNITY_Community 3204|Community 3204]]
+- [[_COMMUNITY_Community 3205|Community 3205]]
+- [[_COMMUNITY_Community 3206|Community 3206]]
+- [[_COMMUNITY_Community 3207|Community 3207]]
+- [[_COMMUNITY_Community 3208|Community 3208]]
+- [[_COMMUNITY_Community 3209|Community 3209]]
+- [[_COMMUNITY_Community 3210|Community 3210]]
+- [[_COMMUNITY_Community 3211|Community 3211]]
+- [[_COMMUNITY_Community 3212|Community 3212]]
+- [[_COMMUNITY_Community 3213|Community 3213]]
+- [[_COMMUNITY_Community 3214|Community 3214]]
+- [[_COMMUNITY_Community 3215|Community 3215]]
+- [[_COMMUNITY_Community 3216|Community 3216]]
+- [[_COMMUNITY_Community 3217|Community 3217]]
+- [[_COMMUNITY_Community 3218|Community 3218]]
+- [[_COMMUNITY_Community 3219|Community 3219]]
+- [[_COMMUNITY_Community 3220|Community 3220]]
+- [[_COMMUNITY_Community 3221|Community 3221]]
+- [[_COMMUNITY_Community 3222|Community 3222]]
+- [[_COMMUNITY_Community 3223|Community 3223]]
+- [[_COMMUNITY_Community 3224|Community 3224]]
+- [[_COMMUNITY_Community 3225|Community 3225]]
+- [[_COMMUNITY_Community 3226|Community 3226]]
+- [[_COMMUNITY_Community 3227|Community 3227]]
+- [[_COMMUNITY_Community 3228|Community 3228]]
+- [[_COMMUNITY_Community 3229|Community 3229]]
+- [[_COMMUNITY_Community 3230|Community 3230]]
+- [[_COMMUNITY_Community 3231|Community 3231]]
+- [[_COMMUNITY_Community 3232|Community 3232]]
+- [[_COMMUNITY_Community 3233|Community 3233]]
+- [[_COMMUNITY_Community 3234|Community 3234]]
+- [[_COMMUNITY_Community 3235|Community 3235]]
+- [[_COMMUNITY_Community 3236|Community 3236]]
+- [[_COMMUNITY_Community 3237|Community 3237]]
+- [[_COMMUNITY_Community 3238|Community 3238]]
+- [[_COMMUNITY_Community 3239|Community 3239]]
+- [[_COMMUNITY_Community 3240|Community 3240]]
+- [[_COMMUNITY_Community 3241|Community 3241]]
+- [[_COMMUNITY_Community 3242|Community 3242]]
+- [[_COMMUNITY_Community 3243|Community 3243]]
+- [[_COMMUNITY_Community 3244|Community 3244]]
+- [[_COMMUNITY_Community 3245|Community 3245]]
+- [[_COMMUNITY_Community 3246|Community 3246]]
+- [[_COMMUNITY_Community 3247|Community 3247]]
+- [[_COMMUNITY_Community 3248|Community 3248]]
+- [[_COMMUNITY_Community 3249|Community 3249]]
+- [[_COMMUNITY_Community 3250|Community 3250]]
+- [[_COMMUNITY_Community 3251|Community 3251]]
+- [[_COMMUNITY_Community 3252|Community 3252]]
+- [[_COMMUNITY_Community 3253|Community 3253]]
+- [[_COMMUNITY_Community 3254|Community 3254]]
+- [[_COMMUNITY_Community 3255|Community 3255]]
+- [[_COMMUNITY_Community 3256|Community 3256]]
+- [[_COMMUNITY_Community 3257|Community 3257]]
+- [[_COMMUNITY_Community 3258|Community 3258]]
+- [[_COMMUNITY_Community 3259|Community 3259]]
+- [[_COMMUNITY_Community 3260|Community 3260]]
+- [[_COMMUNITY_Community 3261|Community 3261]]
+- [[_COMMUNITY_Community 3262|Community 3262]]
+- [[_COMMUNITY_Community 3263|Community 3263]]
+- [[_COMMUNITY_Community 3264|Community 3264]]
+- [[_COMMUNITY_Community 3265|Community 3265]]
+- [[_COMMUNITY_Community 3266|Community 3266]]
+- [[_COMMUNITY_Community 3267|Community 3267]]
+- [[_COMMUNITY_Community 3268|Community 3268]]
+- [[_COMMUNITY_Community 3269|Community 3269]]
+- [[_COMMUNITY_Community 3270|Community 3270]]
+- [[_COMMUNITY_Community 3271|Community 3271]]
+- [[_COMMUNITY_Community 3272|Community 3272]]
+- [[_COMMUNITY_Community 3273|Community 3273]]
+- [[_COMMUNITY_Community 3274|Community 3274]]
+- [[_COMMUNITY_Community 3275|Community 3275]]
+- [[_COMMUNITY_Community 3276|Community 3276]]
+- [[_COMMUNITY_Community 3277|Community 3277]]
+- [[_COMMUNITY_Community 3278|Community 3278]]
+- [[_COMMUNITY_Community 3279|Community 3279]]
+- [[_COMMUNITY_Community 3280|Community 3280]]
+- [[_COMMUNITY_Community 3281|Community 3281]]
+- [[_COMMUNITY_Community 3282|Community 3282]]
+- [[_COMMUNITY_Community 3283|Community 3283]]
+- [[_COMMUNITY_Community 3284|Community 3284]]
+- [[_COMMUNITY_Community 3285|Community 3285]]
+- [[_COMMUNITY_Community 3286|Community 3286]]
+- [[_COMMUNITY_Community 3287|Community 3287]]
+- [[_COMMUNITY_Community 3288|Community 3288]]
+- [[_COMMUNITY_Community 3289|Community 3289]]
+- [[_COMMUNITY_Community 3290|Community 3290]]
+- [[_COMMUNITY_Community 3291|Community 3291]]
+- [[_COMMUNITY_Community 3292|Community 3292]]
+- [[_COMMUNITY_Community 3293|Community 3293]]
+- [[_COMMUNITY_Community 3294|Community 3294]]
+- [[_COMMUNITY_Community 3295|Community 3295]]
+- [[_COMMUNITY_Community 3296|Community 3296]]
+- [[_COMMUNITY_Community 3297|Community 3297]]
+- [[_COMMUNITY_Community 3298|Community 3298]]
+- [[_COMMUNITY_Community 3299|Community 3299]]
+- [[_COMMUNITY_Community 3300|Community 3300]]
+- [[_COMMUNITY_Community 3301|Community 3301]]
+- [[_COMMUNITY_Community 3302|Community 3302]]
+- [[_COMMUNITY_Community 3303|Community 3303]]
+- [[_COMMUNITY_Community 3304|Community 3304]]
+- [[_COMMUNITY_Community 3305|Community 3305]]
+- [[_COMMUNITY_Community 3306|Community 3306]]
+- [[_COMMUNITY_Community 3307|Community 3307]]
+- [[_COMMUNITY_Community 3308|Community 3308]]
+- [[_COMMUNITY_Community 3309|Community 3309]]
+- [[_COMMUNITY_Community 3310|Community 3310]]
+- [[_COMMUNITY_Community 3311|Community 3311]]
+- [[_COMMUNITY_Community 3312|Community 3312]]
+- [[_COMMUNITY_Community 3313|Community 3313]]
+- [[_COMMUNITY_Community 3314|Community 3314]]
+- [[_COMMUNITY_Community 3315|Community 3315]]
+- [[_COMMUNITY_Community 3316|Community 3316]]
+- [[_COMMUNITY_Community 3317|Community 3317]]
+- [[_COMMUNITY_Community 3318|Community 3318]]
+- [[_COMMUNITY_Community 3319|Community 3319]]
+- [[_COMMUNITY_Community 3320|Community 3320]]
+- [[_COMMUNITY_Community 3321|Community 3321]]
+- [[_COMMUNITY_Community 3322|Community 3322]]
+- [[_COMMUNITY_Community 3323|Community 3323]]
+- [[_COMMUNITY_Community 3324|Community 3324]]
+- [[_COMMUNITY_Community 3325|Community 3325]]
+- [[_COMMUNITY_Community 3326|Community 3326]]
+- [[_COMMUNITY_Community 3327|Community 3327]]
+- [[_COMMUNITY_Community 3328|Community 3328]]
+- [[_COMMUNITY_Community 3329|Community 3329]]
+- [[_COMMUNITY_Community 3330|Community 3330]]
+- [[_COMMUNITY_Community 3331|Community 3331]]
+- [[_COMMUNITY_Community 3332|Community 3332]]
+- [[_COMMUNITY_Community 3333|Community 3333]]
+- [[_COMMUNITY_Community 3334|Community 3334]]
+- [[_COMMUNITY_Community 3335|Community 3335]]
+- [[_COMMUNITY_Community 3336|Community 3336]]
+- [[_COMMUNITY_Community 3337|Community 3337]]
+- [[_COMMUNITY_Community 3338|Community 3338]]
+- [[_COMMUNITY_Community 3339|Community 3339]]
+- [[_COMMUNITY_Community 3340|Community 3340]]
+- [[_COMMUNITY_Community 3341|Community 3341]]
+- [[_COMMUNITY_Community 3342|Community 3342]]
+- [[_COMMUNITY_Community 3343|Community 3343]]
+- [[_COMMUNITY_Community 3344|Community 3344]]
+- [[_COMMUNITY_Community 3345|Community 3345]]
+- [[_COMMUNITY_Community 3346|Community 3346]]
+- [[_COMMUNITY_Community 3347|Community 3347]]
+- [[_COMMUNITY_Community 3348|Community 3348]]
+- [[_COMMUNITY_Community 3349|Community 3349]]
+- [[_COMMUNITY_Community 3350|Community 3350]]
+- [[_COMMUNITY_Community 3351|Community 3351]]
+- [[_COMMUNITY_Community 3352|Community 3352]]
+- [[_COMMUNITY_Community 3353|Community 3353]]
+- [[_COMMUNITY_Community 3354|Community 3354]]
+- [[_COMMUNITY_Community 3355|Community 3355]]
+- [[_COMMUNITY_Community 3356|Community 3356]]
+- [[_COMMUNITY_Community 3357|Community 3357]]
+- [[_COMMUNITY_Community 3358|Community 3358]]
+- [[_COMMUNITY_Community 3359|Community 3359]]
+- [[_COMMUNITY_Community 3360|Community 3360]]
+- [[_COMMUNITY_Community 3361|Community 3361]]
+- [[_COMMUNITY_Community 3362|Community 3362]]
+- [[_COMMUNITY_Community 3363|Community 3363]]
+- [[_COMMUNITY_Community 3364|Community 3364]]
+- [[_COMMUNITY_Community 3365|Community 3365]]
+- [[_COMMUNITY_Community 3366|Community 3366]]
+- [[_COMMUNITY_Community 3367|Community 3367]]
+- [[_COMMUNITY_Community 3368|Community 3368]]
+- [[_COMMUNITY_Community 3369|Community 3369]]
+- [[_COMMUNITY_Community 3370|Community 3370]]
+- [[_COMMUNITY_Community 3371|Community 3371]]
+- [[_COMMUNITY_Community 3372|Community 3372]]
+- [[_COMMUNITY_Community 3373|Community 3373]]
+- [[_COMMUNITY_Community 3374|Community 3374]]
+- [[_COMMUNITY_Community 3375|Community 3375]]
+- [[_COMMUNITY_Community 3376|Community 3376]]
+- [[_COMMUNITY_Community 3377|Community 3377]]
+- [[_COMMUNITY_Community 3378|Community 3378]]
+- [[_COMMUNITY_Community 3379|Community 3379]]
+- [[_COMMUNITY_Community 3380|Community 3380]]
+- [[_COMMUNITY_Community 3381|Community 3381]]
+- [[_COMMUNITY_Community 3382|Community 3382]]
+- [[_COMMUNITY_Community 3383|Community 3383]]
+- [[_COMMUNITY_Community 3384|Community 3384]]
+- [[_COMMUNITY_Community 3385|Community 3385]]
+- [[_COMMUNITY_Community 3386|Community 3386]]
+- [[_COMMUNITY_Community 3387|Community 3387]]
+- [[_COMMUNITY_Community 3388|Community 3388]]
+- [[_COMMUNITY_Community 3389|Community 3389]]
+- [[_COMMUNITY_Community 3390|Community 3390]]
+- [[_COMMUNITY_Community 3391|Community 3391]]
+- [[_COMMUNITY_Community 3392|Community 3392]]
+- [[_COMMUNITY_Community 3393|Community 3393]]
+- [[_COMMUNITY_Community 3394|Community 3394]]
+- [[_COMMUNITY_Community 3395|Community 3395]]
+- [[_COMMUNITY_Community 3396|Community 3396]]
+- [[_COMMUNITY_Community 3397|Community 3397]]
+- [[_COMMUNITY_Community 3398|Community 3398]]
+- [[_COMMUNITY_Community 3399|Community 3399]]
+- [[_COMMUNITY_Community 3400|Community 3400]]
+- [[_COMMUNITY_Community 3401|Community 3401]]
+- [[_COMMUNITY_Community 3402|Community 3402]]
+- [[_COMMUNITY_Community 3403|Community 3403]]
+- [[_COMMUNITY_Community 3404|Community 3404]]
+- [[_COMMUNITY_Community 3405|Community 3405]]
+- [[_COMMUNITY_Community 3406|Community 3406]]
+- [[_COMMUNITY_Community 3407|Community 3407]]
+- [[_COMMUNITY_Community 3408|Community 3408]]
+- [[_COMMUNITY_Community 3409|Community 3409]]
+- [[_COMMUNITY_Community 3410|Community 3410]]
+- [[_COMMUNITY_Community 3411|Community 3411]]
+- [[_COMMUNITY_Community 3412|Community 3412]]
+- [[_COMMUNITY_Community 3413|Community 3413]]
+- [[_COMMUNITY_Community 3414|Community 3414]]
+- [[_COMMUNITY_Community 3415|Community 3415]]
+- [[_COMMUNITY_Community 3416|Community 3416]]
+- [[_COMMUNITY_Community 3417|Community 3417]]
+- [[_COMMUNITY_Community 3418|Community 3418]]
+- [[_COMMUNITY_Community 3419|Community 3419]]
+- [[_COMMUNITY_Community 3420|Community 3420]]
+- [[_COMMUNITY_Community 3421|Community 3421]]
+- [[_COMMUNITY_Community 3422|Community 3422]]
+- [[_COMMUNITY_Community 3423|Community 3423]]
+- [[_COMMUNITY_Community 3424|Community 3424]]
+- [[_COMMUNITY_Community 3425|Community 3425]]
+- [[_COMMUNITY_Community 3426|Community 3426]]
+- [[_COMMUNITY_Community 3427|Community 3427]]
+- [[_COMMUNITY_Community 3428|Community 3428]]
+- [[_COMMUNITY_Community 3429|Community 3429]]
+- [[_COMMUNITY_Community 3430|Community 3430]]
+- [[_COMMUNITY_Community 3431|Community 3431]]
+- [[_COMMUNITY_Community 3432|Community 3432]]
+- [[_COMMUNITY_Community 3433|Community 3433]]
+- [[_COMMUNITY_Community 3434|Community 3434]]
+- [[_COMMUNITY_Community 3435|Community 3435]]
+- [[_COMMUNITY_Community 3436|Community 3436]]
+- [[_COMMUNITY_Community 3437|Community 3437]]
+- [[_COMMUNITY_Community 3438|Community 3438]]
+- [[_COMMUNITY_Community 3439|Community 3439]]
+- [[_COMMUNITY_Community 3440|Community 3440]]
+- [[_COMMUNITY_Community 3441|Community 3441]]
+- [[_COMMUNITY_Community 3442|Community 3442]]
+- [[_COMMUNITY_Community 3443|Community 3443]]
+- [[_COMMUNITY_Community 3444|Community 3444]]
+- [[_COMMUNITY_Community 3445|Community 3445]]
+- [[_COMMUNITY_Community 3446|Community 3446]]
+- [[_COMMUNITY_Community 3447|Community 3447]]
+- [[_COMMUNITY_Community 3448|Community 3448]]
+- [[_COMMUNITY_Community 3449|Community 3449]]
+- [[_COMMUNITY_Community 3450|Community 3450]]
+- [[_COMMUNITY_Community 3451|Community 3451]]
+- [[_COMMUNITY_Community 3452|Community 3452]]
+- [[_COMMUNITY_Community 3453|Community 3453]]
+- [[_COMMUNITY_Community 3454|Community 3454]]
+- [[_COMMUNITY_Community 3455|Community 3455]]
+- [[_COMMUNITY_Community 3456|Community 3456]]
+- [[_COMMUNITY_Community 3457|Community 3457]]
+- [[_COMMUNITY_Community 3458|Community 3458]]
+- [[_COMMUNITY_Community 3459|Community 3459]]
+- [[_COMMUNITY_Community 3460|Community 3460]]
+- [[_COMMUNITY_Community 3461|Community 3461]]
+- [[_COMMUNITY_Community 3462|Community 3462]]
+- [[_COMMUNITY_Community 3463|Community 3463]]
+- [[_COMMUNITY_Community 3464|Community 3464]]
+- [[_COMMUNITY_Community 3465|Community 3465]]
+- [[_COMMUNITY_Community 3466|Community 3466]]
+- [[_COMMUNITY_Community 3467|Community 3467]]
+- [[_COMMUNITY_Community 3468|Community 3468]]
+- [[_COMMUNITY_Community 3469|Community 3469]]
+- [[_COMMUNITY_Community 3470|Community 3470]]
+- [[_COMMUNITY_Community 3471|Community 3471]]
+- [[_COMMUNITY_Community 3472|Community 3472]]
+- [[_COMMUNITY_Community 3473|Community 3473]]
+- [[_COMMUNITY_Community 3474|Community 3474]]
+- [[_COMMUNITY_Community 3475|Community 3475]]
+- [[_COMMUNITY_Community 3476|Community 3476]]
+- [[_COMMUNITY_Community 3477|Community 3477]]
+- [[_COMMUNITY_Community 3478|Community 3478]]
+- [[_COMMUNITY_Community 3479|Community 3479]]
+- [[_COMMUNITY_Community 3480|Community 3480]]
+- [[_COMMUNITY_Community 3481|Community 3481]]
+- [[_COMMUNITY_Community 3482|Community 3482]]
+- [[_COMMUNITY_Community 3483|Community 3483]]
+- [[_COMMUNITY_Community 3484|Community 3484]]
+- [[_COMMUNITY_Community 3485|Community 3485]]
+- [[_COMMUNITY_Community 3486|Community 3486]]
+- [[_COMMUNITY_Community 3487|Community 3487]]
+- [[_COMMUNITY_Community 3488|Community 3488]]
+- [[_COMMUNITY_Community 3489|Community 3489]]
+- [[_COMMUNITY_Community 3490|Community 3490]]
+- [[_COMMUNITY_Community 3491|Community 3491]]
+- [[_COMMUNITY_Community 3492|Community 3492]]
+- [[_COMMUNITY_Community 3493|Community 3493]]
+- [[_COMMUNITY_Community 3494|Community 3494]]
+- [[_COMMUNITY_Community 3495|Community 3495]]
+- [[_COMMUNITY_Community 3496|Community 3496]]
+- [[_COMMUNITY_Community 3497|Community 3497]]
+- [[_COMMUNITY_Community 3498|Community 3498]]
+- [[_COMMUNITY_Community 3499|Community 3499]]
+- [[_COMMUNITY_Community 3500|Community 3500]]
+- [[_COMMUNITY_Community 3501|Community 3501]]
+- [[_COMMUNITY_Community 3502|Community 3502]]
+- [[_COMMUNITY_Community 3503|Community 3503]]
+- [[_COMMUNITY_Community 3504|Community 3504]]
+- [[_COMMUNITY_Community 3505|Community 3505]]
+- [[_COMMUNITY_Community 3506|Community 3506]]
+- [[_COMMUNITY_Community 3507|Community 3507]]
+- [[_COMMUNITY_Community 3508|Community 3508]]
+- [[_COMMUNITY_Community 3509|Community 3509]]
+- [[_COMMUNITY_Community 3510|Community 3510]]
+- [[_COMMUNITY_Community 3511|Community 3511]]
+- [[_COMMUNITY_Community 3512|Community 3512]]
+- [[_COMMUNITY_Community 3513|Community 3513]]
+- [[_COMMUNITY_Community 3514|Community 3514]]
+- [[_COMMUNITY_Community 3515|Community 3515]]
+- [[_COMMUNITY_Community 3516|Community 3516]]
+- [[_COMMUNITY_Community 3517|Community 3517]]
+- [[_COMMUNITY_Community 3518|Community 3518]]
+- [[_COMMUNITY_Community 3519|Community 3519]]
+- [[_COMMUNITY_Community 3520|Community 3520]]
+- [[_COMMUNITY_Community 3521|Community 3521]]
+- [[_COMMUNITY_Community 3522|Community 3522]]
+- [[_COMMUNITY_Community 3523|Community 3523]]
+- [[_COMMUNITY_Community 3524|Community 3524]]
+- [[_COMMUNITY_Community 3525|Community 3525]]
+- [[_COMMUNITY_Community 3527|Community 3527]]
+- [[_COMMUNITY_Community 3528|Community 3528]]
+- [[_COMMUNITY_Community 3529|Community 3529]]
+- [[_COMMUNITY_Community 3530|Community 3530]]
+- [[_COMMUNITY_Community 3531|Community 3531]]
+- [[_COMMUNITY_Community 3532|Community 3532]]
+- [[_COMMUNITY_Community 3533|Community 3533]]
+- [[_COMMUNITY_Community 3534|Community 3534]]
+- [[_COMMUNITY_Community 3535|Community 3535]]
+- [[_COMMUNITY_Community 3536|Community 3536]]
+- [[_COMMUNITY_Community 3537|Community 3537]]
+- [[_COMMUNITY_Community 3538|Community 3538]]
+- [[_COMMUNITY_Community 3539|Community 3539]]
+- [[_COMMUNITY_Community 3540|Community 3540]]
+- [[_COMMUNITY_Community 3541|Community 3541]]
+- [[_COMMUNITY_Community 3542|Community 3542]]
+- [[_COMMUNITY_Community 3543|Community 3543]]
+- [[_COMMUNITY_Community 3544|Community 3544]]
+- [[_COMMUNITY_Community 3545|Community 3545]]
+- [[_COMMUNITY_Community 3546|Community 3546]]
+- [[_COMMUNITY_Community 3547|Community 3547]]
+- [[_COMMUNITY_Community 3548|Community 3548]]
+- [[_COMMUNITY_Community 3549|Community 3549]]
+- [[_COMMUNITY_Community 3550|Community 3550]]
+- [[_COMMUNITY_Community 3551|Community 3551]]
+- [[_COMMUNITY_Community 3552|Community 3552]]
+- [[_COMMUNITY_Community 3553|Community 3553]]
+- [[_COMMUNITY_Community 3554|Community 3554]]
+- [[_COMMUNITY_Community 3555|Community 3555]]
+- [[_COMMUNITY_Community 3556|Community 3556]]
+- [[_COMMUNITY_Community 3557|Community 3557]]
+- [[_COMMUNITY_Community 3558|Community 3558]]
+- [[_COMMUNITY_Community 3559|Community 3559]]
+- [[_COMMUNITY_Community 3560|Community 3560]]
+- [[_COMMUNITY_Community 3561|Community 3561]]
+- [[_COMMUNITY_Community 3562|Community 3562]]
+- [[_COMMUNITY_Community 3563|Community 3563]]
+- [[_COMMUNITY_Community 3564|Community 3564]]
+- [[_COMMUNITY_Community 3565|Community 3565]]
+- [[_COMMUNITY_Community 3566|Community 3566]]
+- [[_COMMUNITY_Community 3567|Community 3567]]
+- [[_COMMUNITY_Community 3568|Community 3568]]
+- [[_COMMUNITY_Community 3569|Community 3569]]
+- [[_COMMUNITY_Community 3570|Community 3570]]
+- [[_COMMUNITY_Community 3571|Community 3571]]
+- [[_COMMUNITY_Community 3572|Community 3572]]
+- [[_COMMUNITY_Community 3573|Community 3573]]
+- [[_COMMUNITY_Community 3574|Community 3574]]
+- [[_COMMUNITY_Community 3575|Community 3575]]
+- [[_COMMUNITY_Community 3576|Community 3576]]
+- [[_COMMUNITY_Community 3577|Community 3577]]
+- [[_COMMUNITY_Community 3578|Community 3578]]
+- [[_COMMUNITY_Community 3579|Community 3579]]
+- [[_COMMUNITY_Community 3580|Community 3580]]
+- [[_COMMUNITY_Community 3581|Community 3581]]
+- [[_COMMUNITY_Community 3582|Community 3582]]
+- [[_COMMUNITY_Community 3583|Community 3583]]
+- [[_COMMUNITY_Community 3584|Community 3584]]
+- [[_COMMUNITY_Community 3585|Community 3585]]
+- [[_COMMUNITY_Community 3586|Community 3586]]
+- [[_COMMUNITY_Community 3587|Community 3587]]
+- [[_COMMUNITY_Community 3588|Community 3588]]
+- [[_COMMUNITY_Community 3589|Community 3589]]
+- [[_COMMUNITY_Community 3590|Community 3590]]
+- [[_COMMUNITY_Community 3591|Community 3591]]
+- [[_COMMUNITY_Community 3592|Community 3592]]
+- [[_COMMUNITY_Community 3593|Community 3593]]
+- [[_COMMUNITY_Community 3594|Community 3594]]
+- [[_COMMUNITY_Community 3595|Community 3595]]
+- [[_COMMUNITY_Community 3596|Community 3596]]
+- [[_COMMUNITY_Community 3597|Community 3597]]
+- [[_COMMUNITY_Community 3598|Community 3598]]
+- [[_COMMUNITY_Community 3599|Community 3599]]
+- [[_COMMUNITY_Community 3600|Community 3600]]
+- [[_COMMUNITY_Community 3601|Community 3601]]
+- [[_COMMUNITY_Community 3602|Community 3602]]
+- [[_COMMUNITY_Community 3603|Community 3603]]
+- [[_COMMUNITY_Community 3604|Community 3604]]
+- [[_COMMUNITY_Community 3605|Community 3605]]
+- [[_COMMUNITY_Community 3606|Community 3606]]
+- [[_COMMUNITY_Community 3607|Community 3607]]
+- [[_COMMUNITY_Community 3608|Community 3608]]
+- [[_COMMUNITY_Community 3609|Community 3609]]
+- [[_COMMUNITY_Community 3610|Community 3610]]
+- [[_COMMUNITY_Community 3611|Community 3611]]
+- [[_COMMUNITY_Community 3612|Community 3612]]
+- [[_COMMUNITY_Community 3613|Community 3613]]
+- [[_COMMUNITY_Community 3614|Community 3614]]
+- [[_COMMUNITY_Community 3615|Community 3615]]
+- [[_COMMUNITY_Community 3616|Community 3616]]
+- [[_COMMUNITY_Community 3617|Community 3617]]
+- [[_COMMUNITY_Community 3618|Community 3618]]
+- [[_COMMUNITY_Community 3619|Community 3619]]
+- [[_COMMUNITY_Community 3620|Community 3620]]
+- [[_COMMUNITY_Community 3621|Community 3621]]
+- [[_COMMUNITY_Community 3622|Community 3622]]
+- [[_COMMUNITY_Community 3623|Community 3623]]
+- [[_COMMUNITY_Community 3624|Community 3624]]
+- [[_COMMUNITY_Community 3625|Community 3625]]
+- [[_COMMUNITY_Community 3626|Community 3626]]
+- [[_COMMUNITY_Community 3627|Community 3627]]
+- [[_COMMUNITY_Community 3628|Community 3628]]
+- [[_COMMUNITY_Community 3629|Community 3629]]
+- [[_COMMUNITY_Community 3630|Community 3630]]
+- [[_COMMUNITY_Community 3631|Community 3631]]
+- [[_COMMUNITY_Community 3632|Community 3632]]
+- [[_COMMUNITY_Community 3633|Community 3633]]
+- [[_COMMUNITY_Community 3634|Community 3634]]
+- [[_COMMUNITY_Community 3635|Community 3635]]
+- [[_COMMUNITY_Community 3636|Community 3636]]
+- [[_COMMUNITY_Community 3637|Community 3637]]
+- [[_COMMUNITY_Community 3638|Community 3638]]
+- [[_COMMUNITY_Community 3639|Community 3639]]
+- [[_COMMUNITY_Community 3640|Community 3640]]
+- [[_COMMUNITY_Community 3641|Community 3641]]
+- [[_COMMUNITY_Community 3642|Community 3642]]
+- [[_COMMUNITY_Community 3643|Community 3643]]
+- [[_COMMUNITY_Community 3644|Community 3644]]
+- [[_COMMUNITY_Community 3645|Community 3645]]
+- [[_COMMUNITY_Community 3646|Community 3646]]
+- [[_COMMUNITY_Community 3647|Community 3647]]
+- [[_COMMUNITY_Community 3648|Community 3648]]
+- [[_COMMUNITY_Community 3649|Community 3649]]
+- [[_COMMUNITY_Community 3650|Community 3650]]
+- [[_COMMUNITY_Community 3651|Community 3651]]
+- [[_COMMUNITY_Community 3652|Community 3652]]
+- [[_COMMUNITY_Community 3653|Community 3653]]
+- [[_COMMUNITY_Community 3654|Community 3654]]
+- [[_COMMUNITY_Community 3655|Community 3655]]
+- [[_COMMUNITY_Community 3656|Community 3656]]
+- [[_COMMUNITY_Community 3657|Community 3657]]
+- [[_COMMUNITY_Community 3658|Community 3658]]
+- [[_COMMUNITY_Community 3659|Community 3659]]
+- [[_COMMUNITY_Community 3660|Community 3660]]
+- [[_COMMUNITY_Community 3661|Community 3661]]
+- [[_COMMUNITY_Community 3662|Community 3662]]
+- [[_COMMUNITY_Community 3663|Community 3663]]
+- [[_COMMUNITY_Community 3664|Community 3664]]
+- [[_COMMUNITY_Community 3665|Community 3665]]
+- [[_COMMUNITY_Community 3666|Community 3666]]
+- [[_COMMUNITY_Community 3667|Community 3667]]
+- [[_COMMUNITY_Community 3668|Community 3668]]
+- [[_COMMUNITY_Community 3669|Community 3669]]
+- [[_COMMUNITY_Community 3670|Community 3670]]
+- [[_COMMUNITY_Community 3671|Community 3671]]
+- [[_COMMUNITY_Community 3672|Community 3672]]
+- [[_COMMUNITY_Community 3673|Community 3673]]
+- [[_COMMUNITY_Community 3674|Community 3674]]
+- [[_COMMUNITY_Community 3675|Community 3675]]
+- [[_COMMUNITY_Community 3676|Community 3676]]
+- [[_COMMUNITY_Community 3677|Community 3677]]
+- [[_COMMUNITY_Community 3678|Community 3678]]
+- [[_COMMUNITY_Community 3679|Community 3679]]
+- [[_COMMUNITY_Community 3680|Community 3680]]
+- [[_COMMUNITY_Community 3681|Community 3681]]
+- [[_COMMUNITY_Community 3682|Community 3682]]
+- [[_COMMUNITY_Community 3683|Community 3683]]
+- [[_COMMUNITY_Community 3684|Community 3684]]
+- [[_COMMUNITY_Community 3685|Community 3685]]
+- [[_COMMUNITY_Community 3686|Community 3686]]
+- [[_COMMUNITY_Community 3687|Community 3687]]
+- [[_COMMUNITY_Community 3688|Community 3688]]
+- [[_COMMUNITY_Community 3689|Community 3689]]
+- [[_COMMUNITY_Community 3690|Community 3690]]
+- [[_COMMUNITY_Community 3691|Community 3691]]
+- [[_COMMUNITY_Community 3692|Community 3692]]
+- [[_COMMUNITY_Community 3693|Community 3693]]
+- [[_COMMUNITY_Community 3694|Community 3694]]
+- [[_COMMUNITY_Community 3695|Community 3695]]
+- [[_COMMUNITY_Community 3696|Community 3696]]
+- [[_COMMUNITY_Community 3697|Community 3697]]
+- [[_COMMUNITY_Community 3698|Community 3698]]
+- [[_COMMUNITY_Community 3699|Community 3699]]
+- [[_COMMUNITY_Community 3700|Community 3700]]
+- [[_COMMUNITY_Community 3701|Community 3701]]
+- [[_COMMUNITY_Community 3702|Community 3702]]
+- [[_COMMUNITY_Community 3703|Community 3703]]
+- [[_COMMUNITY_Community 3704|Community 3704]]
+- [[_COMMUNITY_Community 3705|Community 3705]]
+- [[_COMMUNITY_Community 3706|Community 3706]]
+- [[_COMMUNITY_Community 3707|Community 3707]]
+- [[_COMMUNITY_Community 3708|Community 3708]]
+- [[_COMMUNITY_Community 3709|Community 3709]]
+- [[_COMMUNITY_Community 3710|Community 3710]]
+- [[_COMMUNITY_Community 3711|Community 3711]]
+- [[_COMMUNITY_Community 3712|Community 3712]]
+- [[_COMMUNITY_Community 3713|Community 3713]]
+- [[_COMMUNITY_Community 3714|Community 3714]]
+- [[_COMMUNITY_Community 3715|Community 3715]]
+- [[_COMMUNITY_Community 3716|Community 3716]]
+- [[_COMMUNITY_Community 3717|Community 3717]]
+- [[_COMMUNITY_Community 3718|Community 3718]]
+- [[_COMMUNITY_Community 3719|Community 3719]]
+- [[_COMMUNITY_Community 3720|Community 3720]]
+- [[_COMMUNITY_Community 3721|Community 3721]]
+- [[_COMMUNITY_Community 3722|Community 3722]]
+- [[_COMMUNITY_Community 3723|Community 3723]]
+- [[_COMMUNITY_Community 3724|Community 3724]]
+- [[_COMMUNITY_Community 3725|Community 3725]]
+- [[_COMMUNITY_Community 3726|Community 3726]]
+- [[_COMMUNITY_Community 3727|Community 3727]]
+- [[_COMMUNITY_Community 3728|Community 3728]]
+- [[_COMMUNITY_Community 3729|Community 3729]]
+- [[_COMMUNITY_Community 3730|Community 3730]]
+- [[_COMMUNITY_Community 3731|Community 3731]]
+- [[_COMMUNITY_Community 3732|Community 3732]]
+- [[_COMMUNITY_Community 3733|Community 3733]]
+- [[_COMMUNITY_Community 3734|Community 3734]]
+- [[_COMMUNITY_Community 3735|Community 3735]]
+- [[_COMMUNITY_Community 3736|Community 3736]]
+- [[_COMMUNITY_Community 3737|Community 3737]]
+- [[_COMMUNITY_Community 3738|Community 3738]]
+- [[_COMMUNITY_Community 3739|Community 3739]]
+- [[_COMMUNITY_Community 3740|Community 3740]]
+- [[_COMMUNITY_Community 3741|Community 3741]]
+- [[_COMMUNITY_Community 3742|Community 3742]]
+- [[_COMMUNITY_Community 3743|Community 3743]]
+- [[_COMMUNITY_Community 3744|Community 3744]]
+- [[_COMMUNITY_Community 3745|Community 3745]]
+- [[_COMMUNITY_Community 3746|Community 3746]]
+- [[_COMMUNITY_Community 3747|Community 3747]]
+- [[_COMMUNITY_Community 3748|Community 3748]]
+- [[_COMMUNITY_Community 3749|Community 3749]]
+- [[_COMMUNITY_Community 3750|Community 3750]]
+- [[_COMMUNITY_Community 3751|Community 3751]]
+- [[_COMMUNITY_Community 3752|Community 3752]]
+- [[_COMMUNITY_Community 3753|Community 3753]]
+- [[_COMMUNITY_Community 3754|Community 3754]]
+- [[_COMMUNITY_Community 3755|Community 3755]]
+- [[_COMMUNITY_Community 3756|Community 3756]]
+- [[_COMMUNITY_Community 3757|Community 3757]]
+- [[_COMMUNITY_Community 3758|Community 3758]]
+- [[_COMMUNITY_Community 3759|Community 3759]]
+- [[_COMMUNITY_Community 3760|Community 3760]]
+- [[_COMMUNITY_Community 3761|Community 3761]]
+- [[_COMMUNITY_Community 3762|Community 3762]]
+- [[_COMMUNITY_Community 3763|Community 3763]]
+- [[_COMMUNITY_Community 3764|Community 3764]]
+- [[_COMMUNITY_Community 3765|Community 3765]]
+- [[_COMMUNITY_Community 3766|Community 3766]]
+- [[_COMMUNITY_Community 3767|Community 3767]]
+- [[_COMMUNITY_Community 3768|Community 3768]]
+- [[_COMMUNITY_Community 3769|Community 3769]]
+- [[_COMMUNITY_Community 3770|Community 3770]]
+- [[_COMMUNITY_Community 3771|Community 3771]]
+- [[_COMMUNITY_Community 3772|Community 3772]]
+- [[_COMMUNITY_Community 3773|Community 3773]]
+- [[_COMMUNITY_Community 3774|Community 3774]]
+- [[_COMMUNITY_Community 3775|Community 3775]]
+- [[_COMMUNITY_Community 3776|Community 3776]]
+- [[_COMMUNITY_Community 3777|Community 3777]]
+- [[_COMMUNITY_Community 3778|Community 3778]]
+- [[_COMMUNITY_Community 3779|Community 3779]]
+- [[_COMMUNITY_Community 3780|Community 3780]]
+- [[_COMMUNITY_Community 3781|Community 3781]]
+- [[_COMMUNITY_Community 3782|Community 3782]]
+- [[_COMMUNITY_Community 3783|Community 3783]]
+- [[_COMMUNITY_Community 3784|Community 3784]]
+- [[_COMMUNITY_Community 3785|Community 3785]]
+- [[_COMMUNITY_Community 3786|Community 3786]]
+- [[_COMMUNITY_Community 3787|Community 3787]]
+- [[_COMMUNITY_Community 3788|Community 3788]]
+- [[_COMMUNITY_Community 3789|Community 3789]]
+- [[_COMMUNITY_Community 3790|Community 3790]]
+- [[_COMMUNITY_Community 3791|Community 3791]]
+- [[_COMMUNITY_Community 3792|Community 3792]]
+- [[_COMMUNITY_Community 3793|Community 3793]]
+- [[_COMMUNITY_Community 3794|Community 3794]]
+- [[_COMMUNITY_Community 3795|Community 3795]]
+- [[_COMMUNITY_Community 3796|Community 3796]]
+- [[_COMMUNITY_Community 3797|Community 3797]]
+- [[_COMMUNITY_Community 3798|Community 3798]]
+- [[_COMMUNITY_Community 3799|Community 3799]]
+- [[_COMMUNITY_Community 3800|Community 3800]]
+- [[_COMMUNITY_Community 3801|Community 3801]]
+- [[_COMMUNITY_Community 3802|Community 3802]]
+- [[_COMMUNITY_Community 3803|Community 3803]]
+- [[_COMMUNITY_Community 3804|Community 3804]]
+- [[_COMMUNITY_Community 3805|Community 3805]]
+- [[_COMMUNITY_Community 3806|Community 3806]]
+- [[_COMMUNITY_Community 3807|Community 3807]]
+- [[_COMMUNITY_Community 3808|Community 3808]]
+- [[_COMMUNITY_Community 3809|Community 3809]]
+- [[_COMMUNITY_Community 3810|Community 3810]]
+- [[_COMMUNITY_Community 3811|Community 3811]]
+- [[_COMMUNITY_Community 3812|Community 3812]]
+- [[_COMMUNITY_Community 3813|Community 3813]]
+- [[_COMMUNITY_Community 3814|Community 3814]]
+- [[_COMMUNITY_Community 3815|Community 3815]]
+- [[_COMMUNITY_Community 3816|Community 3816]]
+- [[_COMMUNITY_Community 3817|Community 3817]]
+- [[_COMMUNITY_Community 3818|Community 3818]]
+- [[_COMMUNITY_Community 3819|Community 3819]]
+- [[_COMMUNITY_Community 3820|Community 3820]]
+- [[_COMMUNITY_Community 3821|Community 3821]]
+- [[_COMMUNITY_Community 3822|Community 3822]]
+- [[_COMMUNITY_Community 3823|Community 3823]]
+- [[_COMMUNITY_Community 3824|Community 3824]]
+- [[_COMMUNITY_Community 3825|Community 3825]]
+- [[_COMMUNITY_Community 3826|Community 3826]]
+- [[_COMMUNITY_Community 3827|Community 3827]]
+- [[_COMMUNITY_Community 3828|Community 3828]]
+- [[_COMMUNITY_Community 3829|Community 3829]]
+- [[_COMMUNITY_Community 3830|Community 3830]]
+- [[_COMMUNITY_Community 3831|Community 3831]]
+- [[_COMMUNITY_Community 3832|Community 3832]]
+- [[_COMMUNITY_Community 3833|Community 3833]]
+- [[_COMMUNITY_Community 3834|Community 3834]]
+- [[_COMMUNITY_Community 3835|Community 3835]]
+- [[_COMMUNITY_Community 3836|Community 3836]]
+- [[_COMMUNITY_Community 3837|Community 3837]]
+- [[_COMMUNITY_Community 3838|Community 3838]]
+- [[_COMMUNITY_Community 3839|Community 3839]]
+- [[_COMMUNITY_Community 3840|Community 3840]]
+- [[_COMMUNITY_Community 3841|Community 3841]]
+- [[_COMMUNITY_Community 3842|Community 3842]]
+- [[_COMMUNITY_Community 3843|Community 3843]]
+- [[_COMMUNITY_Community 3844|Community 3844]]
+- [[_COMMUNITY_Community 3845|Community 3845]]
+- [[_COMMUNITY_Community 3846|Community 3846]]
+- [[_COMMUNITY_Community 3847|Community 3847]]
+- [[_COMMUNITY_Community 3848|Community 3848]]
+- [[_COMMUNITY_Community 3849|Community 3849]]
+- [[_COMMUNITY_Community 3850|Community 3850]]
+- [[_COMMUNITY_Community 3851|Community 3851]]
+- [[_COMMUNITY_Community 3852|Community 3852]]
+- [[_COMMUNITY_Community 3853|Community 3853]]
+- [[_COMMUNITY_Community 3854|Community 3854]]
+- [[_COMMUNITY_Community 3855|Community 3855]]
+- [[_COMMUNITY_Community 3856|Community 3856]]
+- [[_COMMUNITY_Community 3857|Community 3857]]
+- [[_COMMUNITY_Community 3858|Community 3858]]
+- [[_COMMUNITY_Community 3859|Community 3859]]
+- [[_COMMUNITY_Community 3860|Community 3860]]
+- [[_COMMUNITY_Community 3861|Community 3861]]
+- [[_COMMUNITY_Community 3862|Community 3862]]
+- [[_COMMUNITY_Community 3863|Community 3863]]
+- [[_COMMUNITY_Community 3864|Community 3864]]
+- [[_COMMUNITY_Community 3865|Community 3865]]
+- [[_COMMUNITY_Community 3866|Community 3866]]
+- [[_COMMUNITY_Community 3867|Community 3867]]
+- [[_COMMUNITY_Community 3868|Community 3868]]
+- [[_COMMUNITY_Community 3869|Community 3869]]
+- [[_COMMUNITY_Community 3870|Community 3870]]
+- [[_COMMUNITY_Community 3871|Community 3871]]
+- [[_COMMUNITY_Community 3872|Community 3872]]
+- [[_COMMUNITY_Community 3873|Community 3873]]
+- [[_COMMUNITY_Community 3874|Community 3874]]
+- [[_COMMUNITY_Community 3875|Community 3875]]
+- [[_COMMUNITY_Community 3876|Community 3876]]
+- [[_COMMUNITY_Community 3877|Community 3877]]
+- [[_COMMUNITY_Community 3878|Community 3878]]
+- [[_COMMUNITY_Community 3879|Community 3879]]
+- [[_COMMUNITY_Community 3880|Community 3880]]
+- [[_COMMUNITY_Community 3881|Community 3881]]
+- [[_COMMUNITY_Community 3882|Community 3882]]
+- [[_COMMUNITY_Community 3883|Community 3883]]
+- [[_COMMUNITY_Community 3884|Community 3884]]
+- [[_COMMUNITY_Community 3885|Community 3885]]
+- [[_COMMUNITY_Community 3886|Community 3886]]
+- [[_COMMUNITY_Community 3887|Community 3887]]
+- [[_COMMUNITY_Community 3888|Community 3888]]
+- [[_COMMUNITY_Community 3889|Community 3889]]
+- [[_COMMUNITY_Community 3890|Community 3890]]
+- [[_COMMUNITY_Community 3891|Community 3891]]
+- [[_COMMUNITY_Community 3892|Community 3892]]
+- [[_COMMUNITY_Community 3893|Community 3893]]
+- [[_COMMUNITY_Community 3894|Community 3894]]
+- [[_COMMUNITY_Community 3895|Community 3895]]
+- [[_COMMUNITY_Community 3896|Community 3896]]
+- [[_COMMUNITY_Community 3897|Community 3897]]
+- [[_COMMUNITY_Community 3898|Community 3898]]
+- [[_COMMUNITY_Community 3899|Community 3899]]
+- [[_COMMUNITY_Community 3900|Community 3900]]
+- [[_COMMUNITY_Community 3901|Community 3901]]
+- [[_COMMUNITY_Community 3902|Community 3902]]
+- [[_COMMUNITY_Community 3903|Community 3903]]
+- [[_COMMUNITY_Community 3904|Community 3904]]
+- [[_COMMUNITY_Community 3906|Community 3906]]
+- [[_COMMUNITY_Community 3907|Community 3907]]
+- [[_COMMUNITY_Community 3908|Community 3908]]
+- [[_COMMUNITY_Community 3909|Community 3909]]
+- [[_COMMUNITY_Community 3910|Community 3910]]
+- [[_COMMUNITY_Community 3911|Community 3911]]
+- [[_COMMUNITY_Community 3912|Community 3912]]
+- [[_COMMUNITY_Community 3913|Community 3913]]
+- [[_COMMUNITY_Community 3914|Community 3914]]
+- [[_COMMUNITY_Community 3915|Community 3915]]
+- [[_COMMUNITY_Community 3916|Community 3916]]
+- [[_COMMUNITY_Community 3917|Community 3917]]
+- [[_COMMUNITY_Community 3918|Community 3918]]
+- [[_COMMUNITY_Community 3919|Community 3919]]
+- [[_COMMUNITY_Community 3920|Community 3920]]
+- [[_COMMUNITY_Community 3921|Community 3921]]
+- [[_COMMUNITY_Community 3922|Community 3922]]
+- [[_COMMUNITY_Community 3923|Community 3923]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `SecondsSinceUnixEpoch` - 457 edges
-2. `UserRole` - 456 edges
-3. `Span` - 418 edges
-4. `SupportedSQLDialect` - 403 edges
-5. `HTTPException` - 391 edges
-6. `Project` - 362 edges
-7. `ModelProvider` - 356 edges
-8. `Placement` - 353 edges
-9. `IndexingHeartbeatInterface` - 347 edges
-10. `Packet` - 336 edges
+1. `DocumentSource` - 1476 edges
+2. `MessageType` - 571 edges
+3. `UserRole` - 459 edges
+4. `SecondsSinceUnixEpoch` - 458 edges
+5. `Changelog` - 424 edges
+6. `Span` - 418 edges
+7. `SupportedSQLDialect` - 403 edges
+8. `FileOrigin` - 397 edges
+9. `HTTPException` - 391 edges
+10. `Project` - 362 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `API endpoint prefix rename plan` --semantically_similar_to--> `Rename audit inventory (onyx/danswer)`  [INFERRED] [semantically similar]
-  API_RENAME_PLAN.md → RENAME_AUDIT.md
-- `Client` --uses--> `Span`  [INFERRED]
-  phoenix/tests/unit/server/api/routers/v1/test_spans.py → backend/om/tracing/framework/spans.py
-- `DatasetsList()` --calls--> `useFilter()`  [INFERRED]
-  phoenix/app/src/pages/project/DatasetSelectorPopoverContent.tsx → web/src/hooks/useFilter.ts
-- `main()` --calls--> `createAgent()`  [INFERRED]
-  phoenix/js/examples/apps/langchain-quickstart/src/index.ts → web/src/app/admin/assistants/lib.ts
-- `Persona -> Agent rename` --semantically_similar_to--> `Proven layered rename methodology`  [INFERRED] [semantically similar]
-  AGENT_RENAME_STATUS.md → PERSONA_RENAME_HANDOFF.md
+- `LLM as a Judge` --semantically_similar_to--> `Ragas Evaluation Library (Tool Call & Goal Accuracy)`  [INFERRED] [semantically similar]
+  phoenix/docs/phoenix/cookbook/prompt-engineering/llm-as-a-judge-prompt-optimization.mdx → graphify-out/.graphify_chunklist_17.txt
+- `OpenButton` --semantically_similar_to--> `setupUser() helper`  [INFERRED] [semantically similar]
+  web/lib/opal/src/components/buttons/OpenButton/README.md → graphify-out/.graphify_chunklist_55.txt
+- `Phoenix Playground Providers` --semantically_similar_to--> `Perplexica 🔍`  [INFERRED] [semantically similar]
+  graphify-out/.graphify_chunklist_10.txt → Perplexica/README.md
+- `Multi-tenant migrations` --semantically_similar_to--> `Celery Beat DynamicTenantScheduler`  [INFERRED] [semantically similar]
+  backend/alembic/README.md → graphify-out/.graphify_chunklist_02.txt
+- `OpenAIModel` --semantically_similar_to--> `LiteLLMModel (Phoenix eval model)`  [INFERRED] [semantically similar]
+  phoenix/docs/phoenix/integrations/llm-providers/openai/openai-evals.mdx → graphify-out/.graphify_chunklist_24.txt
 
 ## Import Cycles
 - 1-file cycle: `Perplexica/src/lib/agents/media/image.ts -> Perplexica/src/lib/agents/media/image.ts`
 - 1-file cycle: `Perplexica/src/lib/agents/search/classifier.ts -> Perplexica/src/lib/agents/search/classifier.ts`
 - 1-file cycle: `Perplexica/src/lib/agents/suggestions/index.ts -> Perplexica/src/lib/agents/suggestions/index.ts`
 - 1-file cycle: `examples/assistants-api/topics_analyzer.py -> examples/assistants-api/topics_analyzer.py`
-- 1-file cycle: `backend/model_server/main.py -> backend/model_server/main.py`
 - 1-file cycle: `backend/om/access/rbac/repository.py -> backend/om/access/rbac/repository.py`
 - 1-file cycle: `backend/om/auth/oauth_token_manager.py -> backend/om/auth/oauth_token_manager.py`
 - 1-file cycle: `backend/om/auth/pat.py -> backend/om/auth/pat.py`
@@ -2151,6 +3437,7 @@
 - 1-file cycle: `backend/om/background/celery/tasks/external_group_syncing/tasks.py -> backend/om/background/celery/tasks/external_group_syncing/tasks.py`
 - 1-file cycle: `backend/om/background/celery/tasks/hierarchyfetching/tasks.py -> backend/om/background/celery/tasks/hierarchyfetching/tasks.py`
 - 1-file cycle: `backend/om/background/celery/tasks/monitoring/tasks.py -> backend/om/background/celery/tasks/monitoring/tasks.py`
+- 1-file cycle: `backend/om/background/celery/tasks/pruning/tasks.py -> backend/om/background/celery/tasks/pruning/tasks.py`
 
 ## Hyperedges (group relationships)
 - **Workflow Builder Panel Management (tabs, resize, collapse)** — wb_ui_ux_improvements_tabbed_sidebar, wb_ui_ux_improvements_tabbed_config_panel, wb_ui_ux_improvements_resizable_panels, wb_ui_ux_improvements_collapsible_panels [EXTRACTED 1.00]
@@ -2323,319 +3610,319 @@
 - **Interactive-composed button family** — interactive_readme_interactive_base, interactive_readme_interactive_container, button_readme_button, openbutton_readme_openbutton [INFERRED 0.85]
 - **Craft sandbox session flow** — craft_readme_craft, craft_readme_sandbox_backend, craft_readme_session_lifecycle, craft_readme_sandbox_cleanup, craft_readme_opencode_agent [INFERRED 0.85]
 
-## Communities (2645 total, 432 thin omitted)
+## Communities (4145 total, 856 thin omitted)
 
 ### Community 0 - "Phoenix Playground UI"
 Cohesion: 0.01
-Nodes (693): LazyEditorWrapper(), ConfirmNavigationDialog(), ChatRoleMap, useCredentialsContext(), PlaygroundContext, PlaygroundProvider(), usePlaygroundContext(), TimePreset (+685 more)
+Nodes (656): Card(), AttributesJSONBlock(), buttonContainerCSS, formatValue(), hasStringifiedJSON(), parseStringifiedJSON(), codeEditorFormWrapperCSS, CodeLanguageRadioGroup() (+648 more)
 
 ### Community 1 - "Web Admin Icons & Colors"
 Cohesion: 0.01
-Nodes (517): AccountsAccessPage(), OpenApiActionCard(), DEFAULT_COLOR, FILE_TYPE_COLORS, getColorfulFileIcon(), getFileTypeColor(), makeColorfulIcon(), TOOL_COLORS (+509 more)
+Nodes (518): ActionLineItem(), DEFAULT_COLOR, FILE_TYPE_COLORS, getColorfulFileIcon(), getFileTypeColor(), makeColorfulIcon(), TOOL_COLORS, ActionsPopover() (+510 more)
 
 ### Community 2 - "Phoenix Auth & API Keys UI"
 Cohesion: 0.01
-Nodes (492): Alert(), AnnotationConfigDialog(), iframeStyle, AuthGuardProps, CanManageRetentionPolicy(), IsAdmin(), IsAuthenticated(), APIKeyFormParams (+484 more)
+Nodes (469): Alert(), AnnotationConfigDialog(), iframeStyle, AuthGuardProps, CanManageRetentionPolicy(), IsAdmin(), IsAuthenticated(), APIKeyFormParams (+461 more)
 
 ### Community 3 - "Web API Key Admin"
 Cohesion: 0.01
-Nodes (363): AdminPageTitle(), createApiKey(), deleteApiKey(), regenerateApiKey(), updateApiKey(), OmApiKeyFormProps, APIKey, APIKeyArgs (+355 more)
+Nodes (317): ActionbarProps, ToolsListProps, CardSection(), CardSectionProps, AdminPageTitle(), CategoryBarChart, CHART_COLORS, ChartProps (+309 more)
 
 ### Community 4 - "Analytics & Usage Models (WS-H)"
-Cohesion: 0.01
-Nodes (504): AllVersions, AgentUsagePoint, AssistantDailyUsagePoint, AssistantStatsResponse, DailyUsagePoint, Pydantic response schemas for the WS-H analytics API., Totals across the whole selected window, for the dashboard KPI tiles., Message volume for a single agent (bar-chart datum). (+496 more)
+Cohesion: 0.00
+Nodes (593): AgentLabelCreate, AgentLabelResponse, AgentLabelSnapshot, AgentSharedNotificationData, AgentSnapshot, AgentUpsertRequest, AttachedDocumentSnapshot, FullAgentSnapshot (+585 more)
 
 ### Community 5 - "Phoenix Annotation UI"
-Cohesion: 0.01
-Nodes (426): AnnotationColorSwatch(), AnnotationLabel(), baseAnnotationLabelCSS, annotationLabelCSS, AnnotationSummaryGroupProps, AnnotationSummaryGroupStacks(), AnnotationSummaryGroupTokens(), useAnnotationSummaryGroup() (+418 more)
+Cohesion: 0.00
+Nodes (577): AnnotationColorSwatch(), AnnotationDetailsContent(), AnnotationLabel(), baseAnnotationLabelCSS, AnnotationNameAndValue(), AnnotationNameAndValueProps, getAnnotationDisplayValue(), textCSS() (+569 more)
 
 ### Community 6 - "Web Admin Navigation"
 Cohesion: 0.01
-Nodes (117): AdminBreadcrumb(), AdminBreadcrumbProps, defaultIconColor, iconColorMap, AdminCommandPaletteProps, AdminMobileMenuProps, colorMap, ADMIN_ROUTE_LABELS (+109 more)
+Nodes (103): AdminBreadcrumb(), AdminBreadcrumbProps, defaultIconColor, iconColorMap, AdminCommandPaletteProps, AdminMobileMenuProps, colorMap, ADMIN_ROUTE_LABELS (+95 more)
 
 ### Community 7 - "Agent Chat Packets & Citations"
-Cohesion: 0.02
-Nodes (408): AgentResponseStart, AgentTool, Any, CitationMapping, Emitter, Packet, SearchDoc, ToolCallInfo (+400 more)
+Cohesion: 0.01
+Nodes (489): AgentResponseStart, Add an expected packet to the queue.          Args:             expected_pkt: Th, Add multiple expected packets to the queue.          Args:             packets:, AnswerStream, Any, CitationMapping, Emitter, Packet (+481 more)
 
 ### Community 8 - "Connectors (Airtable/Asana)"
 Cohesion: 0.01
-Nodes (316): Process a single Airtable field and return sections or metadata.          Args:, Process a single Airtable record into a Document.          Args:             rec, AsanaConnector, Tests for Asana connector configuration parsing., test_asana_connector_project_ids_normalization(), test_asana_connector_team_id_normalization(), AsanaTask, Any (+308 more)
+Nodes (344): AdminSearchRequest, AdminSearchResponse, AirtableClientNotSetUpError, Process a single Airtable field and return sections or metadata.          Args:, Process a single Airtable record into a Document.          Args:             rec, AirtableApi, AsanaConnector, Tests for Asana connector configuration parsing. (+336 more)
 
 ### Community 9 - "Web Tools & Actions UI"
 Cohesion: 0.01
-Nodes (281): ToolsListProps, ActionLineItem(), SwitchListProps, Page(), Button(), AttachmentButton(), ButtonRenaming(), ButtonRenamingProps (+273 more)
+Nodes (338): BuildLLMPopover(), BuildLLMPopoverProps, ModelOption, BuildMessageListProps, groupStreamItems(), autoSelectBestLlm(), BuildOnboardingModalProps, InitialValues (+330 more)
 
 ### Community 10 - "Phoenix Annotation Inputs"
 Cohesion: 0.01
-Nodes (292): AnnotationDetailsContent(), AnnotationInputExplanation(), customTableCSS, CategoricalAnnotationInputProps, Annotation, CodeLanguageRadioGroup(), ComboBox(), ComboBoxItem() (+284 more)
+Nodes (309): ALPHABET, AnnotationInputExplanation(), AnnotationInputLabel(), CategoricalAnnotationInput, CategoricalAnnotationInputProps, ContinuousAnnotationInput, ContinuousAnnotationInputProps, FreeformAnnotationInput (+301 more)
 
 ### Community 11 - "Web Markdown & Citation Rendering"
 Cohesion: 0.01
-Nodes (308): CitationMap, MinimalMarkdownComponentOverrides, MinimalMarkdownProps, Attempt, constructCurrentPythonState(), IMAGE_EXTENSIONS, isTerminalDelta(), PythonToolRenderer() (+300 more)
+Nodes (313): CitationMap, AgentAvatar(), AgentAvatarProps, MinimalMarkdownComponentOverrides, MinimalMarkdownProps, Attempt, constructCurrentPythonState(), IMAGE_EXTENSIONS (+305 more)
 
 ### Community 12 - "Chat Datetime & OAuth Tokens"
-Cohesion: 0.01
-Nodes (292): Smoke test that asking for current date yields a streamed response.      This ex, test_stream_chat_current_date_response(), AnswerStream, OAuthTokenManager, Check if token is expired (with 60 second buffer), Exchange authorization code for access token, Build OAuth authorization URL, Manages OAuth token retrieval, refresh, and validation (+284 more)
+Cohesion: 0.03
+Nodes (107): Queue, Any, ChatFullResponse, Engine, EvalationAck, EvalConfigurationOptions, EvalProvider, EvalToolResult (+99 more)
 
 ### Community 13 - "Connector Indexing Types"
-Cohesion: 0.02
-Nodes (286): F, HTTPError, Any, CheckpointOutput, ConnectorFailure, Document, GenerateSlimDocumentOutput, ImageSection (+278 more)
+Cohesion: 0.05
+Nodes (49): datetime, GraphClient, Any, ClientContext, DriveItem, ExternalAccess, GraphClient, acquire_token_for_rest() (+41 more)
 
 ### Community 14 - "Connector Checkpoint & Slim Docs"
 Cohesion: 0.02
-Nodes (254): Any, CheckpointOutput, Client, HierarchyNode, IndexingHeartbeatInterface, SecondsSinceUnixEpoch, SlimDocument, Any (+246 more)
+Nodes (362): ExternalAccess, Access a document has in its source system (pre-sync into Om ACLs)., No principals, not public — i.e. private/inaccessible. A safe         fail-clos, Any, CheckpointOutput, Client, HierarchyNode, IndexingHeartbeatInterface (+354 more)
 
 ### Community 15 - "Phoenix Datasets & Dashboards"
 Cohesion: 0.01
-Nodes (264): APIsPage(), DatasetContext, DatasetProvider(), useDatasetContext(), dashboardsLoader(), AddDatasetExampleButton(), DatasetDownloadMenu(), DatasetHistoryTable() (+256 more)
+Nodes (297): APIsPage(), DatasetContext, DatasetProvider(), useDatasetContext(), AddDatasetExampleButton(), DatasetDownloadMenu(), DatasetHistoryTable(), DatasetLabelConfigButton() (+289 more)
 
 ### Community 16 - "Phoenix Button Components"
 Cohesion: 0.01
-Nodes (222): AnnotationSaveButton, AnnotationSaveButtonProps, externalLinkButtonCSS, ExternalLinkButtonCustomProps, ExternalLinkButtonProps, IconButtonProps, linkButtonCSS, LinkButtonProps (+214 more)
+Nodes (308): alertCSS, AlertProps, dismissButtonCSS, iconTitleWrapCSS, getSeverityIcon(), AnnotationSaveButton, AnnotationSaveButtonProps, externalLinkButtonCSS (+300 more)
 
 ### Community 17 - "Web LLM Setup & Onboarding"
 Cohesion: 0.02
-Nodes (210): requestEmailVerification(), LineItemProps, buildInitialValues(), getModelOptions(), submitLlmTestRequest(), testApiKeyHelper(), TestApiKeyResult, testCustomProvider() (+202 more)
+Nodes (220): PerUserAuthConfig(), PerUserAuthConfigProps, ToolsSectionProps, requestEmailVerification(), ComboBoxDropdown, ComboBoxDropdownProps, buildInitialValues(), getModelOptions() (+212 more)
 
 ### Community 18 - "Web App Layout & Metadata"
 Cohesion: 0.01
-Nodes (198): AdminLayoutProps, Layout(), LayoutProps, toChatSession(), geist, generateMetadata(), hanken, plusJakarta (+190 more)
+Nodes (249): AccountsAccessPage(), getAdminNavGroups(), ClientLayout(), ClientLayoutProps, AdminLayoutProps, Layout(), LayoutProps, InputPrompt (+241 more)
 
 ### Community 19 - "Phoenix Chart Tooltips"
 Cohesion: 0.02
-Nodes (236): getBinName(), GqlBin, ChartTooltip(), ChartTooltipDivider(), ChartTooltipItem(), ChartTooltipItemProps, ChartTooltipProps, colorPreviewCSS() (+228 more)
+Nodes (238): getBinName(), GqlBin, ChartTooltip(), ChartTooltipDivider(), ChartTooltipItem(), ChartTooltipItemProps, ChartTooltipProps, colorPreviewCSS() (+230 more)
 
 ### Community 20 - "Phoenix Experiment Cost Metrics"
-Cohesion: 0.01
-Nodes (220): GLOBAL_COLORS, TextProps, ExperimentAverageRunTokenCosts(), ExperimentAverageRunTokenCostsProps, ExperimentAverageRunTokenCostsDetails(), ExperimentAverageRunTokenCount(), ExperimentAverageRunTokenCountProps, ExperimentAverageRunTokenCountDetails() (+212 more)
+Cohesion: 0.03
+Nodes (57): ExperimentAverageRunTokenCostsDetails(), ExperimentRepeatedRunGroupTokenCostDetails(), ExperimentRunTokenCostsDetails(), ExperimentTokenCostsDetails(), ExperimentAverageRunTokenCostsDetailsQuery, ExperimentAverageRunTokenCostsDetailsQuery$data, ExperimentAverageRunTokenCostsDetailsQuery$variables, node (+49 more)
 
 ### Community 21 - "Phoenix GraphQL DataLoaders"
-Cohesion: 0.03
-Nodes (189): CursorSortColumnValue, AnnotationSummaryDataLoader, _cache_key_fn(), _get_stmt(), _cache_key_fn(), DocumentEvaluationSummaryCache, DocumentEvaluationSummaryDataLoader, _get_stmt() (+181 more)
+Cohesion: 0.02
+Nodes (294): BadRequest, An error raised due to a malformed or invalid request., argument, CursorSortColumnValue, _cache_key_fn(), _get_stmt(), _DatasetExampleGlobalId, _DatasetExampleRevisionGlobalId (+286 more)
 
 ### Community 22 - "Phoenix Experiment Queries"
-Cohesion: 0.03
-Nodes (146): argument, DatasetExampleRowId, DocumentRetrievalMetrics, ExperimentAnnotationSummary, ExperimentRepeatedRunGroup, ExperimentRepeatedRunGroupAnnotationSummary, ExperimentRowId, ExperimentRunSort (+138 more)
+Cohesion: 0.08
+Nodes (31): delete_projects(), delete_traces(), DeleteExperimentsInput, DeleteExperimentsInput, ExperimentMutationMixin, ExperimentMutationPayload, Context, Info (+23 more)
 
 ### Community 23 - "Backend Agent/API Test Fixtures"
 Cohesion: 0.01
-Nodes (212): test_update_agent_with_null_label_ids_preserves_labels(), DATestUser, FullAgentSnapshot, RecencyBiasSetting, DATestAPIKey, DATestUser, UserRole, DATestUser (+204 more)
+Nodes (653): test_update_agent_with_null_label_ids_preserves_labels(), get_display_email(), ChatSessionDetail, datetime, PaginatedSessions, QAFeedbackType, Session, StreamingResponse (+645 more)
 
 ### Community 24 - "Document External Access"
-Cohesion: 0.02
-Nodes (241): DocExternalAccess, ExternalAccess, NodeExternalAccess, Typed representations of "who may access a document".  * :class:`ExternalAcces, Access a document has in its source system (pre-sync into Om ACLs)., No principals, not public — i.e. private/inaccessible. A safe         fail-clos, External access paired with the document id it applies to (index sync)., External access for a hierarchy node (e.g. a folder / space / drive). (+233 more)
+Cohesion: 0.03
+Nodes (180): DocExternalAccess, NodeExternalAccess, Typed representations of "who may access a document".  * :class:`ExternalAcces, External access paired with the document id it applies to (index sync)., External access for a hierarchy node (e.g. a folder / space / drive)., _truncate_set(), build_ext_team_name_for_om(), Namespace an external group id by its source so ids from different     connecto (+172 more)
 
 ### Community 25 - "Phoenix JSON & Content Blocks"
 Cohesion: 0.01
-Nodes (204): AttributesJSONBlock(), buttonContainerCSS, formatValue(), hasStringifiedJSON(), parseStringifiedJSON(), JSONBlock(), JSONBlockProps, PreBlock() (+196 more)
+Nodes (157): DynamicContent, DynamicContentProps, jsonBlockCSS, textWrapCSS, SectionHeading(), Disclosure(), DisclosureGroup(), DisclosureGroupProps (+149 more)
 
 ### Community 26 - "User Roles & Agent Config"
-Cohesion: 0.04
-Nodes (238): User roles     - Basic can't perform any admin actions     - Admin can perform a, UserRole, AgentUpsertRequest, FullAgentSnapshot, RecencyBiasSetting, Tool, ChatMessageDetail, InferenceSection (+230 more)
+Cohesion: 0.05
+Nodes (278): AgentLabelCreate, User roles     - Basic can't perform any admin actions     - Admin can perform a, UserRole, AgentUpsertRequest, FullAgentSnapshot, RecencyBiasSetting, Tool, Select (+270 more)
 
 ### Community 27 - "Document Access & Indexing"
-Cohesion: 0.02
-Nodes (208): DocumentAccess, Full access description for an Om document.      Constructed only via :meth:`b, DocumentIndex, MetadataUpdateRequest, ChunkIndexRequest, DocumentIndex, InferenceChunk, InferenceSection (+200 more)
+Cohesion: 0.04
+Nodes (158): DocumentAccess, Full access description for an Om document.      Constructed only via :meth:`b, DocumentIndex, MetadataUpdateRequest, ChunkIndexRequest, DocumentIndex, InferenceChunk, InferenceSection (+150 more)
 
 ### Community 28 - "Phoenix LDAP Auth Tests"
-Cohesion: 0.01
-Nodes (218): _ApiKeyKind, _app(), _app_ldap_no_email(), _app_ldap_no_sign_up(), _app_ldap_posix(), _app_ldap_posix_memberuid(), _app_ldap_unique_id(), _env() (+210 more)
+Cohesion: 0.02
+Nodes (191): _ApiKeyKind, JSONResponse, BaseTransport, _app(), _env(), _existing_project(), _existing_spans(), Combine all environment variable configurations for testing. (+183 more)
 
 ### Community 29 - "Phoenix Evaluators"
-Cohesion: 0.02
-Nodes (146): apply_input_mapping(), BaseEvaluator, BuiltInEvaluator, cast_template_variable_types(), ContainsEvaluator, evaluation_result_to_span_annotation(), EvaluationResult, ExactMatchEvaluator (+138 more)
+Cohesion: 0.04
+Nodes (45): apply_input_mapping(), ContainsEvaluator, JSONDistanceEvaluator, Tests for builtin evaluators using context structures similar to subscriptions.p, Test ContainsEvaluator with path mapping into nested message structures., Test ContainsEvaluator with dataset experiment context structure., Test ExactMatchEvaluator extracting values from nested structures., Test ExactMatchEvaluator with mismatched values from nested paths. (+37 more)
 
 ### Community 30 - "Phoenix Annotation Mutations"
-Cohesion: 0.03
-Nodes (140): Annotation, AuthMethod, Session, CreateDocumentAnnotationInput, CreateProjectSessionAnnotationInput, CreateSpanAnnotationInput, CreateSpanNoteInput, CreateTraceAnnotationInput (+132 more)
+Cohesion: 0.02
+Nodes (135): Annotation, AuthMethod, CreateDocumentAnnotationInput, CreateProjectSessionAnnotationInput, CreateSpanAnnotationInput, CreateSpanNoteInput, CreateTraceAnnotationInput, get_user_identifier() (+127 more)
 
 ### Community 31 - "Web OAuth & Connector Onboarding"
-Cohesion: 0.01
-Nodes (180): autoSelectBestLlm(), BuildOnboardingModalProps, InitialValues, COMING_SOON_CONNECTORS, ConnectDataBanner(), ConnectDataBannerProps, ConnectorBannersRow(), ConnectorBannersRowProps (+172 more)
+Cohesion: 0.02
+Nodes (125): COMING_SOON_CONNECTORS, ConnectDataBanner(), ConnectDataBannerProps, ConnectorBannersRow(), ConnectorBannersRowProps, BuildConnectorConfig, RequestConnectorModalProps, SelectedConnectorState (+117 more)
 
 ### Community 32 - "Phoenix Annotation Tests"
 Cohesion: 0.02
-Nodes (138): Test DataFrame span document annotations.          Verifies column/index layou, Test zero score handling in span document annotations., Test server-side identifier validation via direct HTTP requests.          Veri, Tests the Phoenix trace annotation client functionality.      Verifies that th, Tests creating and updating single trace annotations.          Verifies that:, Tests handling multiple trace annotations at once.          Verifies that:, Tests using DataFrames for trace annotations.          Tests three ways to use, Tests handling trace annotations with zero scores.          Verifies that: (+130 more)
+Nodes (149): Test DataFrame span document annotations.          Verifies column/index layou, Test zero score handling in span document annotations., Test server-side identifier validation via direct HTTP requests.          Veri, Tests the Phoenix trace annotation client functionality.      Verifies that th, Tests creating and updating single trace annotations.          Verifies that:, Tests handling multiple trace annotations at once.          Verifies that:, Tests using DataFrames for trace annotations.          Tests three ways to use, Tests handling trace annotations with zero scores.          Verifies that: (+141 more)
 
 ### Community 33 - "Web Chat SubQuestions & SlackBot"
-Cohesion: 0.02
-Nodes (163): Page(), BaseQuestionIdentifier, SubQuestionDetail, AttachedDocumentSnapshot, HierarchyNodeSnapshot, BasicClickable(), CollapsibleCardProps, ConnectorCardProps (+155 more)
+Cohesion: 0.01
+Nodes (214): AddPromptModalProps, BaseQuestionIdentifier, ChatSessionGroup, ChatSessionSummary, CreateInputPromptRequest, DocumentsResponse, EditPromptModalProps, LLMRelevanceFilterPacket (+206 more)
 
 ### Community 34 - "Phoenix LLM Message Converters (JS)"
-Cohesion: 0.02
-Nodes (177): anthropicMessagePartToOpenAI, anthropicMessageToOpenAI, anthropicToolCallToOpenAI, anthropicToolChoiceToOpenAI, anthropicToolDefinitionToOpenAI, AnthropicImageBlock, anthropicImageBlockSchema, AnthropicMessagePart (+169 more)
+Cohesion: 0.03
+Nodes (135): anthropicMessagePartToOpenAI, anthropicMessageToOpenAI, anthropicToolCallToOpenAI, anthropicToolChoiceToOpenAI, anthropicToolDefinitionToOpenAI, AnthropicImageBlock, anthropicImageBlockSchema, AnthropicMessagePart (+127 more)
 
 ### Community 35 - "Web Client Layout & Settings"
-Cohesion: 0.02
-Nodes (149): getAdminNavGroups(), ClientLayout(), ClientLayoutProps, AppSettings, FEATURE_TOGGLES, Agent, buildSimilarCredentialInfoURL(), FederatedConnectorOAuthStatus (+141 more)
+Cohesion: 0.01
+Nodes (239): [0.1.1](https://github.com/Arize-ai/phoenix/compare/v0.1.0...v0.1.1) (2023-11-09), [10.0.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.0.0...arize-phoenix-v10.0.1) (2025-05-21), [10.0.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.0.1...arize-phoenix-v10.0.2) (2025-05-22), [10.0.4](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.0.3...arize-phoenix-v10.0.4) (2025-05-22), [10.13.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.13.1...arize-phoenix-v10.13.2) (2025-06-17), [10.2.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.2.0...arize-phoenix-v10.2.1) (2025-05-29), [10.2.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.2.1...arize-phoenix-v10.2.2) (2025-05-29), [10.3.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.3.0...arize-phoenix-v10.3.1) (2025-05-30) (+231 more)
 
 ### Community 36 - "Phoenix Dataset Events"
-Cohesion: 0.04
-Nodes (206): BackgroundTasks, DataManipulationEvent, FormData, InputKeys, DatasetAction, DatasetExampleAdditionEvent, ExampleContent, int (+198 more)
+Cohesion: 0.02
+Nodes (307): Session, BackgroundTasks, SupportedSQLDialect, DbUsageWarningEmailSender, get_user(), as_kv(), _clean(), DataManipulationEvent (+299 more)
 
 ### Community 37 - "Phoenix Experiment Comparison Queries"
-Cohesion: 0.13
-Nodes (146): AnnotationConfigInput, _comparison_count_expression(), DbTableStats, ExperimentRunMetricComparison, ExperimentRunMetricComparisons, ModelsInput, Query, # TODO: temporary workaround until we can figure out why (+138 more)
+Cohesion: 0.09
+Nodes (167): _comparison_count_expression(), _consolidate_sqlite_db_table_stats(), DbTableStats, ExperimentRunMetricComparison, ExperimentRunMetricComparisons, _longest_matching_prefix(), ModelsInput, Query (+159 more)
 
 ### Community 38 - "Phoenix Annotation Config & Evaluators"
-Cohesion: 0.05
-Nodes (130): _AnnotationConfig, BuiltinEvaluator, CaseInsensitiveContains, _CategoricalOutputConfigList, CodeEvaluator, Dataset, DatasetEvaluators, DatasetExample (+122 more)
+Cohesion: 0.10
+Nodes (112): _AnnotationConfig, BuiltinEvaluator, CaseInsensitiveContains, _CategoricalOutputConfigList, CodeEvaluator, Dataset, DatasetEvaluators, DatasetExample (+104 more)
 
 ### Community 39 - "Phoenix Model Store Tests"
-Cohesion: 0.02
-Nodes (125): AsyncWebSocketSession, fetch_trigger(), Control when the GenerativeModelStore runs by patching its sleep method., Test cases for GenerativeModelStore daemon., Test that GenerativeModelStore correctly manages model lifecycle through daemon, TestGenerativeModelStore, project(), Inserts a project into the database. (+117 more)
+Cohesion: 0.22
+Nodes (5): project(), Inserts a project into the database., TestAnnotationConfigMutations, Any, AsyncGraphQLClient
 
 ### Community 40 - "Phoenix Annotation Config UI"
-Cohesion: 0.01
-Nodes (161): ALPHABET, AnnotationInputLabel(), AnnotationNameAndValue(), AnnotationNameAndValueProps, getAnnotationDisplayValue(), textCSS(), AnnotationScoreText(), AnnotationScoreTextProps (+153 more)
+Cohesion: 0.02
+Nodes (83): MessageBar(), MessageBarProps, bubbleCSS, MessageBubble(), MessageBubbleProps, timestampCSS, MessageBubbleSkeleton(), MessageBubbleSkeletonProps (+75 more)
 
 ### Community 41 - "Phoenix Server Ops & Email"
 Cohesion: 0.02
-Nodes (174): Masks unexpected errors raised from GraphQL resolvers., _should_mask_error(), ConnectionMethod, SimpleEmailSender, EmailMessage, GraphQLError, AuthSettings, _bool_val() (+166 more)
+Nodes (181): Masks unexpected errors raised from GraphQL resolvers., _should_mask_error(), get_printable_db_url(), get_dataset_experiments_url(), get_experiment_url(), get_func_name(), Makes a best-effort attempt to get the name of the function., GraphQLError (+173 more)
 
 ### Community 42 - "Phoenix Playground LLM Clients"
-Cohesion: 0.09
-Nodes (135): ChatCompletionChunk, ClientT, defaultdict, FunctionToolParam, GenerativeModelBuiltinProviderInput, GenerativeModelCustomProviderInput, GenerativeModelInput, PlaygroundToolCall (+127 more)
+Cohesion: 0.10
+Nodes (131): ToolCall, ChatCompletionChunk, ClientT, defaultdict, FunctionToolParam, GenerativeModelBuiltinProviderInput, GenerativeModelCustomProviderInput, GenerativeModelInput (+123 more)
 
 ### Community 43 - "Phoenix Experiment Compare UI"
-Cohesion: 0.01
-Nodes (162): AlphabeticIndexIcon(), AlphabeticIndexIconProps, iconBaseCSS, ExperimentCompareTable(), calculateAnnotationListHeight(), calculateEstimatedRowHeight(), node, PlaygroundDatasetExamplesTableFragment$data (+154 more)
+Cohesion: 0.02
+Nodes (139): EvaluatorItem, EvaluatorMenuItemProps, EvaluatorSelectMenuItem(), ExperimentCompareTable(), calculateAnnotationListHeight(), calculateEstimatedRowHeight(), node, PlaygroundDatasetExamplesTableFragment$data (+131 more)
 
 ### Community 44 - "Confluence Connector"
 Cohesion: 0.02
-Nodes (139): Any, ExternalAccess, OmConfluence, Any, HierarchyNode, SecondsSinceUnixEpoch, Any, BeautifulSoup (+131 more)
+Nodes (107): Any, ExternalAccess, OmConfluence, Any, BeautifulSoup, ConfluenceUser, CredentialsProviderInterface, ConfluenceUser (+99 more)
 
 ### Community 45 - "Web Action Cards UI"
-Cohesion: 0.02
-Nodes (141): ActionbarProps, ActionCardProps, ActionCardContext, ActionCardContextValue, ActionCardProvider(), ActionCardProviderProps, defaultValue, useActionCardContext() (+133 more)
+Cohesion: 0.01
+Nodes (279): ActionCardProps, ActionCardContext, ActionCardContextValue, ActionCardProvider(), ActionCardProviderProps, defaultValue, useActionCardContext(), ActionCardHeader() (+271 more)
 
 ### Community 46 - "Web Agent Options UI"
-Cohesion: 0.02
-Nodes (132): AdvancedOptions(), Agent, AgentsMultiSelect(), AgentsMultiSelectFormType, AgentsMultiSelectProps, AutoModeToggleProps, DisplayModels(), DisplayNameField() (+124 more)
+Cohesion: 0.03
+Nodes (119): AdvancedOptions(), Agent, AgentsMultiSelect(), AgentsMultiSelectFormType, AgentsMultiSelectProps, AutoModeToggleProps, DisplayModels(), DisplayNameField() (+111 more)
 
 ### Community 47 - "Phoenix Classification Evaluators"
 Cohesion: 0.02
-Nodes (133): ClassificationEvaluator, ClassificationEvaluator, create_classifier(), Factory to create a `ClassificationEvaluator`.      Note: The evaluator requir, # TODO: Remove this once we deprecate the source attribute, # TODO: Remove this once we deprecate the source attribute, LLM-based evaluator for classification-style judgements.      Supports label-o, # TODO: Remove this once we deprecate the source attribute (+125 more)
+Nodes (117): ClassificationEvaluator, ClassificationEvaluator, LLM-based evaluator for classification-style judgements.      Supports label-o, PhoenixTemplateMappingError, Formatter, _coerce_prompt_version_data(), ContentPartTemplate, _convert_prompt_version_content() (+109 more)
 
 ### Community 48 - "Phoenix Model Provider Auth UI"
-Cohesion: 0.01
-Nodes (142): AWS_AUTH_METHOD_LABELS, AWS_AUTH_METHOD_OPTIONS, AWSAuthMethod, AZURE_AUTH_METHOD_LABELS, AZURE_AUTH_METHOD_OPTIONS, AzureAuthMethod, GenerativeModelSDK, ModelProviders (+134 more)
+Cohesion: 0.02
+Nodes (97): AWSAuthMethod, AzureAuthMethod, GenerativeModelSDK, SDK_DEFAULT_PROVIDER, EditCustomProviderButtonQuery, EditCustomProviderButtonQuery$data, EditCustomProviderButtonQuery$variables, GenerativeModelSDK (+89 more)
 
 ### Community 49 - "Document Indexing Adapter"
-Cohesion: 0.02
-Nodes (136): DocumentIndexingBatchAdapter, # NOTE: even documents we skipped since they were already up, Default adapter: handles DB prep, locking, metadata enrichment, and finalize., Any, Celery, ConnectorFailure, Document, DocumentBatchStorage (+128 more)
+Cohesion: 0.10
+Nodes (16): Document, FileStore, BatchStoragePathInfo, FileStoreDocumentBatchStorage, FileStore-based implementation of document batch storage., Generate file name for a document batch., Store a batch of documents using FileStore., Retrieve a batch of documents from FileStore. (+8 more)
 
 ### Community 50 - "Phoenix Experiment Compare Views"
-Cohesion: 0.02
-Nodes (134): ColorSwatch, ColorSwatchProps, ColorSwatchShape, ExperimentCompareDetailsDialog(), ExperimentCompareGridPage(), Annotation, AnnotationName, BaseExperimentRun (+126 more)
+Cohesion: 0.01
+Nodes (203): ColorSwatchProps, ColorSwatchShape, AnnotationSummaries, areAllExperimentRunsSelected(), areSomeExperimentRunsSelected(), Experiment, ExperimentCompareContext, ExperimentCompareContextType (+195 more)
 
 ### Community 51 - "Salesforce Connector"
 Cohesion: 0.02
-Nodes (112): Any, CheckpointOutput, Message, SecondsSinceUnixEpoch, GenerateDocumentsOutput, OmSalesforce, OmSalesforceSQLite, SecondsSinceUnixEpoch (+104 more)
+Nodes (127): CheckpointOutput, SecondsSinceUnixEpoch, GenerateDocumentsOutput, OmSalesforce, OmSalesforceSQLite, SecondsSinceUnixEpoch, Any, BasicExpertInfo (+119 more)
 
 ### Community 52 - "Phoenix GraphQL Schema"
-Cohesion: 0.05
-Nodes (139): evaluation_result_to_model(), get_evaluator_project_ids(), Look up project IDs for DatasetEvaluators.      Returns a list of project IDs, get_mask_errors_extension(), build_graphql_schema(), _implementing_types(), Builds a strawberry schema., Iterates over strawberry types implementing the given strawberry interface. (+131 more)
+Cohesion: 0.08
+Nodes (108): evaluation_result_to_model(), get_mask_errors_extension(), build_graphql_schema(), _implementing_types(), Builds a strawberry schema., Iterates over strawberry types implementing the given strawberry interface., _as_coroutine(), _cleanup_chat_completion_over_dataset_resources() (+100 more)
 
 ### Community 53 - "Agent Tracing Processor"
 Cohesion: 0.02
-Nodes (74): ABC, TracingProcessor, Any, Span, Trace, TSpanData, Any, BaseException (+66 more)
+Nodes (77): TracingProcessor, Any, Span, Trace, TSpanData, Any, TracingProcessor, TSpanData (+69 more)
 
 ### Community 54 - "MCP Server Integration"
-Cohesion: 0.03
-Nodes (156): datetime, MCPConnectionConfig, MCPServer, MCPServerStatus, Session, Tool, User, UUID (+148 more)
+Cohesion: 0.08
+Nodes (43): MCPConnectionConfig, MCPServer, Session, Tool, User, UUID, add_user_to_mcp_server(), create_connection_config() (+35 more)
 
 ### Community 55 - "Phoenix Time Format & Prefs"
-Cohesion: 0.02
-Nodes (123): getFormatterFromSamplingInterval(), TimeFormatterConfig, PreferencesContext, PreferencesProvider(), usePreferencesContext(), ConnectedTimeRangeSelector(), LAST_N_TIME_RANGES, LAST_N_TIME_RANGES_MAP (+115 more)
+Cohesion: 0.01
+Nodes (184): Breadcrumb(), breadcrumbCSS, BreadcrumbProps, BreadcrumbProps, Breadcrumbs(), breadcrumbsCSS, FeatureFlagsProvider(), getFeatureFlags() (+176 more)
 
 ### Community 56 - "Google Drive Connector"
 Cohesion: 0.03
-Nodes (120): AdminService, RetrievedDriveFile, SecondsSinceUnixEpoch, GoogleDriveFileType, GoogleDriveService, Resource, SecondsSinceUnixEpoch, Any (+112 more)
+Nodes (92): RetrievedDriveFile, SecondsSinceUnixEpoch, GoogleDriveFileType, GoogleDriveService, Resource, SecondsSinceUnixEpoch, Any, GoogleDriveFileType (+84 more)
 
 ### Community 57 - "Phoenix Evaluators (JS)"
-Cohesion: 0.03
-Nodes (96): EvaluatorBase, FunctionEvaluator, FunctionEvaluatorArgs, CONCISENESS_CLASSIFICATION_EVALUATOR_CONFIG, CORRECTNESS_CLASSIFICATION_EVALUATOR_CONFIG, DOCUMENT_RELEVANCE_CLASSIFICATION_EVALUATOR_CONFIG, FAITHFULNESS_CLASSIFICATION_EVALUATOR_CONFIG, HALLUCINATION_CLASSIFICATION_EVALUATOR_CONFIG (+88 more)
+Cohesion: 0.04
+Nodes (72): CONCISENESS_CLASSIFICATION_EVALUATOR_CONFIG, CORRECTNESS_CLASSIFICATION_EVALUATOR_CONFIG, DOCUMENT_RELEVANCE_CLASSIFICATION_EVALUATOR_CONFIG, FAITHFULNESS_CLASSIFICATION_EVALUATOR_CONFIG, HALLUCINATION_CLASSIFICATION_EVALUATOR_CONFIG, REFUSAL_CLASSIFICATION_EVALUATOR_CONFIG, TOOL_INVOCATION_CLASSIFICATION_EVALUATOR_CONFIG, TOOL_RESPONSE_HANDLING_CLASSIFICATION_EVALUATOR_CONFIG (+64 more)
 
 ### Community 58 - "Community 58"
-Cohesion: 0.03
-Nodes (109): operations, appendDatasetExamples(), AppendDatasetExamplesParams, AppendDatasetExamplesResponse, mockGet, mockPost, createDataset(), CreateDatasetParams (+101 more)
+Cohesion: 0.02
+Nodes (135): components, $defs, operations, paths, webhooks, appendDatasetExamples(), AppendDatasetExamplesParams, AppendDatasetExamplesResponse (+127 more)
 
 ### Community 59 - "Community 59"
 Cohesion: 0.02
-Nodes (112): HubPeriodicTask, on_celeryd_init(), on_setup_logging(), on_task_postrun(), on_task_prerun(), on_worker_init(), on_worker_ready(), on_worker_shutdown() (+104 more)
+Nodes (216): DocumentIndexingBatchAdapter, # NOTE: even documents we skipped since they were already up, Default adapter: handles DB prep, locking, metadata enrichment, and finalize., Worker, Celery, Redis, RedisConnector, RedisLock (+208 more)
 
 ### Community 60 - "Community 60"
 Cohesion: 0.02
-Nodes (161): TypedDict, AnnotateSessionsRequestBody, AnnotateSessionsResponseBody, AnnotateSpanDocumentsRequestBody, AnnotateSpanDocumentsResponseBody, AnnotateSpansRequestBody, AnnotateSpansResponseBody, AnnotateTracesRequestBody (+153 more)
+Nodes (175): ChannelType, MCPConnectionData, TypedDict to allow use as a type hint for a JSONB column     in Postgres, LDAPGroupRoleMapping, LDAP group to Phoenix role mapping.      Attributes:         group_dn: LDAP g, AttachmentType, BotProfileType, ChannelTopicPurposeType (+167 more)
 
 ### Community 61 - "Community 61"
-Cohesion: 0.02
-Nodes (117): filter_task_modules(), LivenessProbe, on_celeryd_init(), on_secondary_worker_init(), on_setup_logging(), on_task_postrun(), on_task_prerun(), on_worker_ready() (+109 more)
+Cohesion: 0.03
+Nodes (85): HubPeriodicTask, on_celeryd_init(), on_setup_logging(), on_task_postrun(), on_task_prerun(), on_worker_init(), on_worker_ready(), on_worker_shutdown() (+77 more)
 
 ### Community 62 - "Community 62"
 Cohesion: 0.03
-Nodes (147): Redis, UUID, SearchDocKey, Headers, BaseTokenizer, ChatMessage, SearchDoc, SearchDocKey (+139 more)
+Nodes (162): get_hashed_api_key_from_request(), Extract and hash API key from Authorization header.      Accepts both "Bearer <k, Request, SearchDocKey, Headers, BaseTokenizer, ChatMessage, SearchDoc (+154 more)
 
 ### Community 63 - "Community 63"
-Cohesion: 0.04
-Nodes (143): AwsToolChoiceConversion, GoogleToolChoiceConversion, test_valid_anthropic_tool_schemas_can_be_normalized_and_denormalized_without_data_loss(), test_valid_openai_tool_schemas_can_be_normalized_and_denormalized_without_data_loss(), test_validation_of_anthropic_thinking_budget_tokens(), ContentPartInput, PromptMessageInput, ResponseFormatInput (+135 more)
+Cohesion: 0.05
+Nodes (135): AwsToolChoiceConversion, GoogleToolChoiceConversion, test_valid_anthropic_tool_schemas_can_be_normalized_and_denormalized_without_data_loss(), test_valid_openai_tool_schemas_can_be_normalized_and_denormalized_without_data_loss(), test_validation_of_anthropic_thinking_budget_tokens(), ContentPartInput, PromptMessageInput, ResponseFormatInput (+127 more)
 
 ### Community 64 - "Community 64"
-Cohesion: 0.02
-Nodes (92): AgentsTable(), StarterMessage, StarterMessageBase, agentComparator(), AgentUpsertParameters, AgentUpsertRequest, buildAgentUpsertRequest(), closerToZeroNegativesFirstComparator() (+84 more)
+Cohesion: 0.01
+Nodes (139): ComparePanel(), useCreateModal(), formatTimestamp(), MigrationStatus, MigrationStatusSection(), RetrievalStatus, CompletedHeader, CompletedHeaderProps (+131 more)
 
 ### Community 65 - "Community 65"
-Cohesion: 0.03
-Nodes (120): Any, Delta, ToolCallKickoff, LanguageModelInput, ModelResponseStream, ReasoningEffort, ToolChoiceOptions, Any (+112 more)
+Cohesion: 0.06
+Nodes (64): Any, Delta, ToolCallKickoff, LanguageModelInput, ModelResponseStream, ReasoningEffort, ToolChoiceOptions, Any (+56 more)
 
 ### Community 66 - "Community 66"
-Cohesion: 0.08
-Nodes (118): DataLoaders, _NoOp, AsyncServerInterceptor, BaseHTTPMiddleware, _Callback, CanGetLastUpdatedAt, DbDiskUsageMonitor, Monitors database disk space usage and triggers warnings/blocking when threshold (+110 more)
+Cohesion: 0.10
+Nodes (109): DataLoaders, _NoOp, AsyncServerInterceptor, BaseHTTPMiddleware, _Callback, CanGetLastUpdatedAt, DbDiskUsageMonitor, Monitors database disk space usage and triggers warnings/blocking when threshold (+101 more)
 
 ### Community 67 - "Community 67"
 Cohesion: 0.03
-Nodes (116): AccessType, Any, DATestUser, DocumentSource, InputType, DATestUser, DATestLLMProvider, DATestUser (+108 more)
+Nodes (85): MCPApiKeyModalProps, MCPAuthTemplate, AddMembersDialog(), AddMembersDialogProps, ROLE_LABEL, ConnectorMultiSelect(), ConnectorMultiSelectProps, FederatedConnectorSelector() (+77 more)
 
 ### Community 68 - "Community 68"
 Cohesion: 0.02
-Nodes (107): AGENT_MODEL_CONFIG_SCHEMA, AgentModelConfig, DEFAULT_MODEL_MENU_VALUE, getAgentModelConfigFromLocalStorage(), toAgentModelConfig(), toModelMenuValue(), AgentsPage(), Chat() (+99 more)
+Nodes (110): AGENT_MODEL_CONFIG_SCHEMA, AgentModelConfig, DEFAULT_MODEL_MENU_VALUE, getAgentModelConfigFromLocalStorage(), toAgentModelConfig(), toModelMenuValue(), AgentsPage(), Chat() (+102 more)
 
 ### Community 69 - "Community 69"
-Cohesion: 0.02
-Nodes (116): Get ancestor hierarchy node IDs for a batch of documents.          Uses Redis, Upsert docs, map CC pairs, return context or mark as indexed if no-op., Acquire transaction/row locks on docs for the critical section., Enrich chunks with access, document sets, boosts, token counts, and hierarchy., _acquire_user_file_locks(), KnowledgeFileIndexingAdapter, Check if all files for associated assistants are processed and notify owners., # NOTE: this creates its own session to avoid committing the overall (+108 more)
+Cohesion: 0.05
+Nodes (44): _acquire_user_file_locks(), Check if all files for associated assistants are processed and notify owners., # NOTE: this creates its own session to avoid committing the overall, Acquire locks for the specified user files., Session, UUID, IndexAttemptMetadata, Session (+36 more)
 
 ### Community 70 - "Community 70"
 Cohesion: 0.04
-Nodes (113): AccessTokenDatabase, CaptchaVerificationError, Raised when captcha verification fails., AuthBackend, Role updates are not allowed through the user update endpoint for security reaso, UserCreate, UserRead, UserUpdate (+105 more)
+Nodes (98): AccessTokenDatabase, CaptchaVerificationError, is_captcha_enabled(), Captcha verification for user registration., Raised when captcha verification fails., Response from Google reCAPTCHA verification API., Check if captcha verification is enabled., Verify a reCAPTCHA token with Google's API.      Args:         token: The reCAPT (+90 more)
 
 ### Community 71 - "Community 71"
-Cohesion: 0.03
-Nodes (99): CardSection(), CardSectionProps, BooleanFormField, Label(), SubLabel(), NumberInput(), EmbeddingFormContext, EmbeddingFormContextType (+91 more)
+Cohesion: 0.04
+Nodes (64): validateInternalRedirect(), buildFiltersFromCreationRequest(), buildRequestBodyFromCreationRequest(), createSlackChannelConfig(), deleteSlackChannelConfig(), isAgentASlackBotAgent(), SlackChannelConfigCreationRequest, updateSlackChannelConfig() (+56 more)
 
 ### Community 72 - "Community 72"
-Cohesion: 0.02
-Nodes (113): BaseException, ChannelType, _UIType, DATestGatingType, AuthType, BlobType, ChatMessageSimpleType, DocumentIndexType (+105 more)
+Cohesion: 0.01
+Nodes (196): AppSettingsSchema, CustomAnalyticsScriptPayload, LogoDisplayStyle, NavigationItem, Pydantic schemas for application settings.  Field names deliberately mirror th, A custom sidebar navigation entry (either an icon name or an inline SVG)., The application-level settings object read by the web app for gating., Admin payload to set the injected custom analytics ``<script>``. (+188 more)
 
 ### Community 73 - "Community 73"
 Cohesion: 0.02
-Nodes (110): do_run_migrations(), filter_tenants_by_range(), get_schema_options(), include_object(), provide_iam_token_for_alembic(), # NOTE: can cause missed schemas if a schema is created in between workers, NOTE(rkuo): This generates a sql script that can be used to migrate the database, Run migrations in 'online' mode.      Supports pytest-alembic by checking for a (+102 more)
+Nodes (140): do_run_migrations(), filter_tenants_by_range(), get_schema_options(), include_object(), provide_iam_token_for_alembic(), # NOTE: can cause missed schemas if a schema is created in between workers, NOTE(rkuo): This generates a sql script that can be used to migrate the database, Run migrations in 'online' mode.      Supports pytest-alembic by checking for a (+132 more)
 
 ### Community 74 - "Community 74"
 Cohesion: 0.02
-Nodes (83): ensure_working_dir_if_needed(), get_env_admins(), Parse the PHOENIX_ADMINS environment variable to extract the semicolon separated, Ensure the working directory exists. This is needed because the working director, Any, MonkeyPatch, URL, Test that PKCE with auth_method='none' is allowed. (+75 more)
+Nodes (79): get_env_admins(), Parse the PHOENIX_ADMINS environment variable to extract the semicolon separated, Any, MonkeyPatch, URL, Test that PKCE with auth_method='none' is allowed., Test that duplicate scopes are removed while preserving order., Test that IPv6 addresses with multiple colons are not incorrectly parsed. (+71 more)
 
 ### Community 75 - "Community 75"
 Cohesion: 0.05
-Nodes (69): _JtiSet, Tests for secret management access control and value visibility.      Verifies, Test secret CRUD permissions and value visibility by role.          Verifies:, Tests REST API v1 access control using both cookie and API key authentication., Test role-based access control across all v1 API endpoints with cookies and API, Tests for brute force login protection.      The brute force rate limiter is e, Test that changing a user's role invalidates their existing tokens.          T, TestApiAccessViaCookiesOrApiKeys (+61 more)
+Nodes (57): _JtiSet, Tests for secret management access control and value visibility.      Verifies, Test secret CRUD permissions and value visibility by role.          Verifies:, Tests REST API v1 access control using both cookie and API key authentication., Test role-based access control across all v1 API endpoints with cookies and API, Tests for brute force login protection.      The brute force rate limiter is e, Test that changing a user's role invalidates their existing tokens.          T, TestApiAccessViaCookiesOrApiKeys (+49 more)
 
 ### Community 76 - "Community 76"
-Cohesion: 0.03
-Nodes (103): ProjectContext, ProjectProvider(), useProjectContext(), StreamStateProvider(), TracingContext, TracingProvider(), DatasetEvaluatorSpans(), DatasetEvaluatorSpans_project$data (+95 more)
+Cohesion: 0.02
+Nodes (138): ProjectContext, ProjectProvider(), useProjectContext(), TracingContext, TracingProvider(), node, ProjectConfigPage_projectConfigCard$data, ProjectConfigPage_projectConfigCard$key (+130 more)
 
 ### Community 77 - "Community 77"
 Cohesion: 0.02
-Nodes (94): DirectionType, _add_trace_id_to_scores(), async_evaluate_dataframe(), _coerce_to_str(), create_evaluator(), evaluate_dataframe(), Evaluator, _get_evaluator_metadata() (+86 more)
+Nodes (132): DirectionType, _add_trace_id_to_scores(), async_evaluate_dataframe(), bind_evaluator(), _coerce_to_str(), create_classifier(), create_evaluator(), evaluate_dataframe() (+124 more)
 
 ### Community 78 - "Community 78"
 Cohesion: 0.03
@@ -2643,139 +3930,135 @@ Nodes (49): AnthropicConfig, AnthropicProvider, providerConfigFields, BaseEmbedd
 
 ### Community 79 - "Community 79"
 Cohesion: 0.05
-Nodes (101): ExecutionDetails, ExperimentEvaluationRun, AsyncExperiments, _bind_task_signature(), _build_evaluation_tasks(), _build_incomplete_evaluation_tasks(), _build_tasks_for_multi_output_evaluator(), _build_tasks_for_named_evaluators() (+93 more)
+Nodes (86): ExperimentEvaluationRun, AsyncExperiments, _bind_task_signature(), _build_evaluation_tasks(), _build_incomplete_evaluation_tasks(), _build_tasks_for_multi_output_evaluator(), _build_tasks_for_named_evaluators(), capture_spans() (+78 more)
 
 ### Community 80 - "Community 80"
-Cohesion: 0.03
-Nodes (93): client, ExampleType, main(), openai, main(), main(), main(), main() (+85 more)
+Cohesion: 0.04
+Nodes (92): createDataset(), mockPost, client, ExampleType, main(), openai, main(), main() (+84 more)
 
 ### Community 81 - "Community 81"
-Cohesion: 0.07
-Nodes (112): AnnotationConfigData, CategoricalAnnotationConfigInput, CategoricalAnnotationValue, ContinuousAnnotationConfigInput, FreeformAnnotationConfigInput, _EvaluatorPromptToolFunctionParameters, _EvaluatorPromptToolFunctionParametersExplanationProperty, _EvaluatorPromptToolFunctionParametersLabelProperty (+104 more)
+Cohesion: 0.02
+Nodes (317): AnnotationConfigData, AnnotationConfigInput, CategoricalAnnotationConfig, CategoricalAnnotationConfigInput, CategoricalAnnotationValue, ContinuousAnnotationConfig, ContinuousAnnotationConfigInput, ContinuousOutputConfig (+309 more)
 
 ### Community 82 - "Community 82"
 Cohesion: 0.03
-Nodes (117): Agent, AgentLabel, AgentWorkflow, AgentWorkflowStep, Session, UUID, WorkflowCreate, WorkflowExecution (+109 more)
+Nodes (109): Agent, AgentLabel, AgentWorkflow, AgentWorkflowStep, Session, UUID, WorkflowCreate, WorkflowExecution (+101 more)
 
 ### Community 83 - "Community 83"
-Cohesion: 0.03
-Nodes (133): Finalize DB updates, store plaintext, and mark docs as indexed., Any, ConnectorCredentialPair, ConnectorCredentialPairIdentifier, datetime, DbDocument, DocumentRow, ExternalAccess (+125 more)
+Cohesion: 0.02
+Nodes (145): Get ancestor hierarchy node IDs for a batch of documents.          Uses Redis, Finalize DB updates, store plaintext, and mark docs as indexed., Upsert docs, map CC pairs, return context or mark as indexed if no-op., Acquire transaction/row locks on docs for the critical section., Enrich chunks with access, document sets, boosts, token counts, and hierarchy., Session, UpdatableChunkData, Document (+137 more)
 
 ### Community 84 - "Community 84"
-Cohesion: 0.02
-Nodes (101): movieAgent, analyze_topics(), show_response(), wait_on_run(), Returns an instance of the Datasets class for interacting with dataset-related A, Returns an instance of the Experiments class for interacting with experiment-rel, Datasets, instrumentation (+93 more)
+Cohesion: 0.04
+Nodes (51): movieAgent, analyze_topics(), show_response(), wait_on_run(), instrumentation, openai, SPACE_KNOWLEDGE_BASE, spaceKnowledgeApplication() (+43 more)
 
 ### Community 85 - "Community 85"
-Cohesion: 0.03
-Nodes (121): IndexFilters, Session, User, ConnectorCredentialPair, Session, CloudEmbeddingProvider, EmbeddingProvider, IndexModelStatus (+113 more)
+Cohesion: 0.02
+Nodes (153): ConnectorCredentialPair, Session, CloudEmbeddingProvider, EmbeddingProvider, IndexModelStatus, SavedSearchSettings, SearchSettings, Session (+145 more)
 
 ### Community 86 - "Community 86"
-Cohesion: 0.03
-Nodes (84): AgentSpanData, Any, FunctionSpanData, GenerationSpanData, Span, Any, Any, datetime (+76 more)
+Cohesion: 0.04
+Nodes (63): AgentSpanData, FunctionSpanData, GenerationSpanData, Any, Any, datetime, GenerationSpanData, Span (+55 more)
 
 ### Community 87 - "Community 87"
-Cohesion: 0.04
-Nodes (91): bind_evaluator(), Helper to bind an evaluator with a fixed input mapping.      This function all, LiteLLM can return a `mock_response` from completion, we set it in model_kwargs, test_generate_properly_mixes_column_outputs(), test_generate_tolerance_to_exceptions(), test_litellm_model_llm_generate(), test_llm_generate(), test_llm_generate_with_included_prompts_and_responses() (+83 more)
+Cohesion: 0.03
+Nodes (89): LiteLLM can return a `mock_response` from completion, we set it in model_kwargs, test_generate_properly_mixes_column_outputs(), test_generate_tolerance_to_exceptions(), test_litellm_model_llm_generate(), test_llm_generate(), test_llm_generate_with_included_prompts_and_responses(), test_llm_generate_with_output_parser(), EvalCriteria (+81 more)
 
 ### Community 88 - "Community 88"
-Cohesion: 0.03
-Nodes (122): Any, ConfluenceConnector, GithubConnector, JiraConnector, CheckpointedConnector, CT, SecondsSinceUnixEpoch, Any (+114 more)
+Cohesion: 0.04
+Nodes (101): GithubConnector, JiraConnector, JiraConnector, CheckpointedConnector, CT, SecondsSinceUnixEpoch, Any, ZendeskConnector (+93 more)
 
 ### Community 89 - "Community 89"
-Cohesion: 0.02
-Nodes (91): CanModify(), useViewerCanModify(), DatasetLabelFilterButton(), DatasetLabelFilterButtonProps, DatasetsPage(), EvaluatorsFilterBar(), EvaluatorsFilterContext, EvaluatorsFilterProvider() (+83 more)
+Cohesion: 0.40
+Nodes (4): node, PromptLabelConfigButtonQuery, PromptLabelConfigButtonQuery$data, PromptLabelConfigButtonQuery$variables
 
 ### Community 90 - "Community 90"
-Cohesion: 0.04
-Nodes (84): _complete_flow(), _exchange_code_for_tokens(), _get_callback_url(), _get_user_by_email(), Comprehensive OIDC authentication integration tests.  This module contains all, Verify tokens were successfully issued., Verify access was denied and user redirected to login., Verify sensitive cookies (state, nonce) are cleaned up. (+76 more)
+Cohesion: 0.05
+Nodes (71): _complete_flow(), _exchange_code_for_tokens(), _get_callback_url(), _get_user_by_email(), Comprehensive OIDC authentication integration tests.  This module contains all, Verify tokens were successfully issued., Verify access was denied and user redirected to login., Verify sensitive cookies (state, nonce) are cleaned up. (+63 more)
 
 ### Community 91 - "Community 91"
-Cohesion: 0.03
-Nodes (107): APIRoute, decode_anonymous_user_jwt_token(), FastAPI, Request, Exception, JSONResponse, Request, JSONResponse (+99 more)
+Cohesion: 0.09
+Nodes (52): APIRoute, JSONResponse, Request, Any, Request, Response, JSONResponse, Request (+44 more)
 
 ### Community 92 - "Community 92"
-Cohesion: 0.02
-Nodes (102): AnnotationSummaries, areAllExperimentRunsSelected(), areSomeExperimentRunsSelected(), Experiment, ExperimentCompareContext, ExperimentCompareContextType, ExperimentCompareDetailsProvider(), ExperimentRepetition (+94 more)
+Cohesion: 0.04
+Nodes (63): filter_task_modules(), LivenessProbe, on_celeryd_init(), on_secondary_worker_init(), on_setup_logging(), on_task_postrun(), on_task_prerun(), on_worker_ready() (+55 more)
 
 ### Community 93 - "Community 93"
-Cohesion: 0.05
-Nodes (86): _DatasetExampleGlobalId, _DatasetExampleRevisionGlobalId, _ExperimentGlobalId, timedelta, Any, AsyncClient, AsyncSession, Base (+78 more)
+Cohesion: 0.06
+Nodes (69): timedelta, Any, AsyncSession, datetime, Project, ProjectSession, Span, Trace (+61 more)
 
 ### Community 94 - "Community 94"
 Cohesion: 0.03
-Nodes (74): Any, Placement, _extract_nested_arguments_obj(), _extract_tool_call_kickoffs(), extract_tool_calls_from_response_text(), _extract_xml_attribute(), _extract_xml_tool_calls_from_response_text(), _find_function_calls_open_marker() (+66 more)
+Nodes (51): Placement, _looks_like_xml_tool_call_payload(), Attempt to extract tool calls from response text as a fallback.      This is a l, Detect XML-style marshaled tool calls emitted as plain text., _try_fallback_tool_extraction(), _extract_tool_call_kickoffs(), extract_tool_calls_from_response_text(), _increment_turns() (+43 more)
 
 ### Community 95 - "Community 95"
-Cohesion: 0.04
-Nodes (76): BuildSession, Session, ChatMessageSimple, ExtractedWorkspaceFiles, FileToolMetadata, MessageType, _build_workspace_message(), construct_message_history() (+68 more)
+Cohesion: 0.10
+Nodes (25): ExtractedWorkspaceFiles, MessageType, construct_message_history(), create_message(), create_workspace_files(), Tests for the construct_message_history function., Test basic functionality when all messages fit within token budget., Test that custom agent prompt is inserted before the last user message. (+17 more)
 
 ### Community 96 - "Community 96"
-Cohesion: 0.03
-Nodes (84): getIconButtonColor(), IconButton(), iconButtonCSS(), cardCSS(), HeadingProps, headingBaseCSS, textBaseCSS, textSizeCSS (+76 more)
+Cohesion: 0.18
+Nodes (7): Default, FromStartTime, meta, MutedColor, SubtleColor, WithHours, TimerProps
 
 ### Community 97 - "Community 97"
-Cohesion: 0.04
-Nodes (82): CanSetLastUpdatedAt, dedup(), Discard subsequent duplicates after the first appearance in `items`., DocumentAnnotationDmlEvent, _AnnoAttr, _Key, _SpanAttr, _time() (+74 more)
-
-### Community 98 - "Community 98"
-Cohesion: 0.02
-Nodes (3): ChevronUpDown(), FolderOutline(), loadingCircleKeyframes
+Cohesion: 0.05
+Nodes (74): CanSetLastUpdatedAt, dedup(), Discard subsequent duplicates after the first appearance in `items`., DocumentAnnotationDmlEvent, _AnnoAttr, _Key, _SpanAttr, _time() (+66 more)
 
 ### Community 99 - "Community 99"
-Cohesion: 0.03
-Nodes (102): Celery, Task, Event, Thread, Any, Queue, ConnectorCredentialPairIdentifier, ConnectorFailure (+94 more)
+Cohesion: 0.04
+Nodes (83): ConnectorCredentialPairIdentifier, ConnectorFailure, IndexAttempt, IndexingStatus, Select, Session, T, Session (+75 more)
 
 ### Community 100 - "Community 100"
 Cohesion: 0.02
 Nodes (68): MustacheTemplateFormatter, Mustache template formatter using pystache.      Supports full Mustache syntax, Parity tests to ensure Python and TypeScript Mustache variable extraction behave, Test that Python extracts the same variables as expected.          The expecte, Tests specifically for depth tracking logic with valid templates., Verify that # increases depth - variables inside sections are not extracted., Tests ensuring Python parse() matches TypeScript extractVariablesFromMustacheLik, Verify that ^ increases depth - variables inside inverted sections are not extra (+60 more)
 
 ### Community 101 - "Community 101"
-Cohesion: 0.04
-Nodes (72): BadRequest, An error raised due to a malformed or invalid request., DatasetEvaluator, DatasetEvaluatorFilter, DatasetEvaluatorSort, DatasetExperimentAnnotationSummary, DatasetVersionSort, Validate that all config names in the list are unique.      Args:         con (+64 more)
+Cohesion: 0.03
+Nodes (216): AddExamplesToDatasetInput, AddSpansToDatasetInput, assign_correctness_llm_evaluator_to_dataset(), assign_exact_match_builtin_evaluator_to_dataset(), Factory fixture to assign the correctness LLM evaluator to a dataset.     Reuse, _assert_spans_equal(), _extract_city(), Test that providing a single split ID filters examples correctly. (+208 more)
 
 ### Community 102 - "Community 102"
-Cohesion: 0.04
-Nodes (105): DocAwareChunk, DocMetadataAwareIndexChunk, DocAwareChunk, IndexingDocument, Section, ConnectorFailure, DocAwareChunk, IndexChunk (+97 more)
+Cohesion: 0.06
+Nodes (70): DocAwareChunk, IndexingDocument, ConnectorFailure, DocAwareChunk, IndexChunk, BaseTokenizer, DBDocument, DocAwareChunk (+62 more)
 
 ### Community 103 - "Community 103"
-Cohesion: 0.04
-Nodes (108): AssignUserRequest, KnowledgeFile, Session, UploadFile, User, UUID, Workspace, CategorizedFilesSnapshot (+100 more)
+Cohesion: 0.05
+Nodes (81): KnowledgeFile, Session, UploadFile, User, UUID, KnowledgeFileSnapshot, Response, Session (+73 more)
 
 ### Community 104 - "Community 104"
-Cohesion: 0.03
-Nodes (97): CollapsibleSectionProps, SlackChannelConfigFormFieldsProps, AdvancedOptionsToggle(), AdvancedOptionsToggleProps, ConnectorConfigForm(), ConnectorConfigStep(), ConnectorConfigStepProps, getUserIdentifier() (+89 more)
+Cohesion: 0.01
+Nodes (244): CollapsibleSectionProps, AdvancedConfigDisplay(), buildConfigEntries(), ConfigDisplay(), ConfigItemProps, DeletionErrorStatus(), IndexAttemptErrorsModalProps, IndexAttemptsTable() (+236 more)
 
 ### Community 105 - "Community 105"
 Cohesion: 0.02
-Nodes (82): CreateBuiltInDatasetEvaluatorSlideover(), CreateLLMDatasetEvaluatorInitialState, CreateLLMDatasetEvaluatorSlideover(), AddEvaluatorMenu(), AddEvaluatorMenuContents(), BuiltInEvaluatorsQueryKey, CodeEvaluatorTemplateSubmenuProps, LLMEvaluatorTemplateSubmenuProps (+74 more)
+Nodes (111): CreateDatasetFormProps, DatasetForm(), DatasetFormParams, formBodyStyles, DatasetItem, DatasetSelectWithSplitsProps, LabelItem, SplitItem (+103 more)
 
 ### Community 106 - "Community 106"
-Cohesion: 0.02
-Nodes (66): Any, Session, Any, # NOTE: maintaining `VALID_EMAIL_DOMAIN` to keep backwards compatibility, # NOTE: This timeout applies to all requests the client makes, including bulk, # NOTE: To get useful partial results, this value should be less than the client, # NOTE: Currently only supported in the Confluence and Google Drive connectors +, # NOTE: if you are having problems accessing the VertualAi web UI locally (espec (+58 more)
+Cohesion: 0.01
+Nodes (124): aggregate_weekly(), get_stars(), pull_github_metrics(), Response, Any, Any, # NOTE: maintaining `VALID_EMAIL_DOMAIN` to keep backwards compatibility, # NOTE: This timeout applies to all requests the client makes, including bulk (+116 more)
 
 ### Community 107 - "Community 107"
-Cohesion: 0.04
-Nodes (98): Ensure chat still streams answers when only an Anthropic provider is configured., test_answer_with_only_anthropic_provider(), Agent, CloudEmbeddingProvider, CloudEmbeddingProviderCreationRequest, EmbeddingProvider, LLMModelFlowType, LLMProviderModel (+90 more)
+Cohesion: 0.05
+Nodes (70): Ensure chat still streams answers when only an Anthropic provider is configured., test_answer_with_only_anthropic_provider(), CloudEmbeddingProvider, CloudEmbeddingProviderCreationRequest, EmbeddingProvider, LLMModelFlowType, LLMProviderModel, LLMRecommendations (+62 more)
 
 ### Community 108 - "Community 108"
-Cohesion: 0.11
-Nodes (80): AnthropicClientKwargs, AuthenticationMethodApiKey, AuthenticationMethodDefaultCredentials, AWSBedrockClientKwargs, AzureOpenAIClientKwargs, GenerativeModelSDK, GoogleGenAIClientKwargs, GoogleGenAIHttpOptions (+72 more)
+Cohesion: 0.12
+Nodes (75): AnthropicClientKwargs, AuthenticationMethodApiKey, AuthenticationMethodDefaultCredentials, AWSBedrockClientKwargs, AzureOpenAIClientKwargs, GenerativeModelSDK, GoogleGenAIClientKwargs, GoogleGenAIHttpOptions (+67 more)
 
 ### Community 109 - "Community 109"
 Cohesion: 0.05
-Nodes (74): Any, Embedding, EmbedRequest, EmbedResponse, Request, AbstractEventLoop, Any, BaseException (+66 more)
+Nodes (42): AbstractEventLoop, Any, BaseException, Embedding, EmbeddingProvider, EmbedTextType, Exception, IndexingHeartbeatInterface (+34 more)
 
 ### Community 110 - "Community 110"
-Cohesion: 0.04
-Nodes (78): Conflict, CustomGraphQLError, InsufficientStorage, NotFound, An error raised when the requested resource is not found., An error raised when login fails or a user or other entity is not authorized, An error raised when the database has insufficient storage to complete a request, An error raised when a mutation cannot be completed due to a conflict with (+70 more)
+Cohesion: 0.05
+Nodes (54): Conflict, CustomGraphQLError, InsufficientStorage, NotFound, An error raised when the requested resource is not found., An error raised when login fails or a user or other entity is not authorized, An error raised when the database has insufficient storage to complete a request, An error raised when a mutation cannot be completed due to a conflict with (+46 more)
 
 ### Community 111 - "Community 111"
-Cohesion: 0.06
-Nodes (106): AuthStatus, AuthUrl, AccessType, ConnectorCredentialPair, ConnectorIndexingStatusLite, ConnectorStatus, DocumentSource, FederatedConnectorStatus (+98 more)
+Cohesion: 0.03
+Nodes (206): get_invited_users(), get_pending_users(), write_invited_users(), write_pending_users(), AuthStatus, AuthUrl, Task, ConnectorCredentialPair (+198 more)
 
 ### Community 112 - "Community 112"
-Cohesion: 0.04
-Nodes (78): Connectable, EvaluationName, PhoenixEvaluationNameIsMissing, PhoenixException, PhoenixMigrationError, DataFrame, DocumentAnnotation, Evaluations (+70 more)
+Cohesion: 0.05
+Nodes (61): Connectable, EvaluationName, DataFrame, DocumentAnnotation, Evaluations, Request, Response, SpanAnnotation (+53 more)
 
 ### Community 113 - "Community 113"
 Cohesion: 0.04
@@ -2783,7 +4066,7 @@ Nodes (78): CronExpression, MaxCountRule, MaxDaysOrCountRule, MaxDaysRule, Creat
 
 ### Community 114 - "Community 114"
 Cohesion: 0.03
-Nodes (60): ConnectedTraceTree$data, ConnectedTraceTree$key, node, SpanKind, SpanStatusCode, ConnectedTraceTreeQuery, ConnectedTraceTreeQuery$data, ConnectedTraceTreeQuery$variables (+52 more)
+Nodes (59): ConnectedTraceTree$data, ConnectedTraceTree$key, node, SpanKind, SpanStatusCode, ConnectedTraceTreeQuery, ConnectedTraceTreeQuery$data, ConnectedTraceTreeQuery$variables (+51 more)
 
 ### Community 115 - "Community 115"
 Cohesion: 0.04
@@ -2794,136 +4077,136 @@ Cohesion: 0.03
 Nodes (57): metadata, AssistantSteps(), Chat(), BaseMessage, ChatWindow(), File, Message, Widget (+49 more)
 
 ### Community 117 - "Community 117"
-Cohesion: 0.05
-Nodes (75): _QueueInserters, :param db: A function to initiate a new database session.         :param initia, TransactionResult, truncate_name(), DocumentAnnotationQueueInserter, DocumentEvaluationInsertionEvent, EvaluationInsertionEvent, _insert_document_evaluation() (+67 more)
+Cohesion: 0.08
+Nodes (53): _QueueInserters, :param db: A function to initiate a new database session.         :param initia, TransactionResult, DocumentAnnotationQueueInserter, DocumentEvaluationInsertionEvent, EvaluationInsertionEvent, _insert_document_evaluation(), insert_evaluation() (+45 more)
 
 ### Community 118 - "Community 118"
 Cohesion: 0.03
-Nodes (89): AttachmentProcessingResult, BitbucketConnector, BitbucketConnector, Any, ConfluenceConnector, ConfluenceConnector, GithubConnector, JiraConnector (+81 more)
+Nodes (98): AttachmentProcessingResult, BitbucketConnector, BitbucketConnector, Any, ConfluenceConnector, ConfluenceConnector, GithubConnector, Document (+90 more)
 
 ### Community 119 - "Community 119"
-Cohesion: 0.03
-Nodes (89): init_worker(), on_celeryd_init(), on_setup_logging(), on_task_postrun(), on_task_prerun(), on_worker_init(), on_worker_ready(), on_worker_shutdown() (+81 more)
+Cohesion: 0.19
+Nodes (12): BuildSession, Session, User, build_session(), db_session(), Fixtures for build mode tests., Create a database session for testing using the actual PostgreSQL database., Set up tenant context for testing. (+4 more)
 
 ### Community 120 - "Community 120"
-Cohesion: 0.04
-Nodes (84): Celery, Redis, RedisConnector, RedisLock, Session, Task, AccessType, ConnectorCredentialPair (+76 more)
+Cohesion: 0.08
+Nodes (55): AccessType, ConnectorCredentialPair, ConnectorCredentialPairStatus, datetime, DocumentSource, R, SearchSettings, Select (+47 more)
 
 ### Community 121 - "Community 121"
-Cohesion: 0.04
-Nodes (64): FileOrigin, FileRecord, Session, Any, FileOrigin, FileRecord, FileStoreModel, FileWithMimeType (+56 more)
+Cohesion: 0.02
+Nodes (138): Session, FileRecord, Session, Any, FileOrigin, FileRecord, FileStoreModel, FileWithMimeType (+130 more)
 
 ### Community 122 - "Community 122"
 Cohesion: 0.05
-Nodes (74): ChatCompletionContentPartInputAudioParam, ChatCompletionContentPartRefusalParam, ChatCompletionRole, File, _(), _assistant_msg(), _AssistantMessageConversion, _ContentPartsConversion (+66 more)
+Nodes (95): _InvocationParametersConversion, ChatCompletionContentPartInputAudioParam, ChatCompletionContentPartRefusalParam, ChatCompletionRole, File, _(), _assistant_msg(), _AssistantMessageConversion (+87 more)
 
 ### Community 123 - "Community 123"
 Cohesion: 0.03
-Nodes (63): AbstractContextManager, Any, OpenSearchSearchType, BaseException, OpenSearchSearchType, observe_opensearch_search(), Prometheus metrics for OpenSearch search latency, throughput, and errors.  Track, Increments the search-error counter, labeled by exception class name. (+55 more)
+Nodes (65): AbstractContextManager, Any, DocumentChunk, OpenSearchSearchType, BaseException, OpenSearchSearchType, observe_opensearch_search(), Prometheus metrics for OpenSearch search latency, throughput, and errors.  Track (+57 more)
 
 ### Community 124 - "Community 124"
-Cohesion: 0.06
-Nodes (59): Action, BaseAnthropicTool, BetaToolBash20250124Param, BetaToolComputerUse20250124Param, BetaToolTextEditor20250728Param, initialize_agent_llm(), BetaToolUnionParam, Any (+51 more)
+Cohesion: 0.09
+Nodes (25): BaseAnthropicTool, BetaToolBash20250124Param, BetaToolTextEditor20250728Param, Command, initialize_agent_llm(), Any, BaseAnthropicTool, BetaToolUnionParam (+17 more)
 
 ### Community 125 - "Community 125"
-Cohesion: 0.03
-Nodes (90): add_common_args(), apply_common_args(), Add --url and --key arguments to any argparse parser., Apply --url and --key from parsed args to CONFIG., Response, Make a streaming API call (for workflow run endpoints).      Unlike the regular, stream_api(), main() (+82 more)
+Cohesion: 0.07
+Nodes (36): Response, Make a streaming API call (for workflow run endpoints).      Unlike the regular, stream_api(), main(), Automated Test Suite: All Showcase Workflows ===================================, Print with Unicode fallback for Windows terminals., Fetch all workflows and return a name -> id mapping., Run a workflow and collect structured results.      Returns dict with:       age (+28 more)
 
 ### Community 126 - "Community 126"
-Cohesion: 0.06
-Nodes (42): get_evaluators(), Get all evaluators for the given DatasetEvaluator node IDs.      Returns a lis, Cassette, output_config(), prompt_version(), Tests for validate_consistent_llm_evaluator_and_prompt_version with multiple con, When each config has a matching tool definition (by name), validation         s, All configs must be CategoricalAnnotationConfig, even if only the primary (+34 more)
+Cohesion: 0.10
+Nodes (16): output_config(), prompt_version(), When each config has a matching tool definition (by name), validation         s, All configs must be CategoricalAnnotationConfig, even if only the primary, Test helper that wraps validate_evaluator_prompt_and_configs., TestLLMEvaluator, TestValidateConsistentLLMEvaluatorAndPromptVersion, validate_consistent_llm_evaluator_and_prompt_version() (+8 more)
 
 ### Community 127 - "Community 127"
-Cohesion: 0.04
-Nodes (86): BasicExpertInfo, Session, SlackChannelConfig, ChatMessageDetail, CitationInfo, SavedSearchDoc, SocketModeRequest, TenantSocketModeClient (+78 more)
+Cohesion: 0.10
+Nodes (30): SlackChannelConfig, SlackMessageInfo, WebClient, Any, ChannelType, ThreadMessage, WebClient, handle_message() (+22 more)
 
 ### Community 128 - "Community 128"
 Cohesion: 0.03
-Nodes (60): Any, Response, Unit tests for SSRF protection in URL validation utilities.  These tests verify, Test that http scheme is accepted for public URLs., Test that https scheme is accepted for public URLs., Test that localhost (127.0.0.1) is blocked., Test that 'localhost' hostname is blocked., Test that 10.x.x.x addresses are blocked. (+52 more)
+Nodes (62): Any, Response, Unit tests for SSRF protection in URL validation utilities.  These tests verify, Test that http scheme is accepted for public URLs., Test that https scheme is accepted for public URLs., Test that localhost (127.0.0.1) is blocked., Test that 'localhost' hostname is blocked., Test that 10.x.x.x addresses are blocked. (+54 more)
 
 ### Community 129 - "Community 129"
-Cohesion: 0.05
-Nodes (54): Any, Pattern, AnswerRule, Session, StandardAnswer, StandardAnswerCategory, MonkeyPatch, AnswerRule (+46 more)
+Cohesion: 0.11
+Nodes (28): Any, AnswerRule, Session, StandardAnswer, StandardAnswerCategory, MonkeyPatch, emit_event(), logged_operation() (+20 more)
 
 ### Community 130 - "Community 130"
 Cohesion: 0.04
 Nodes (74): Any, ChannelMetadata, ChunkIndexRequest, FederatedConnectorDetail, InferenceChunk, Session, SlackContext, SlackMessage (+66 more)
 
 ### Community 131 - "Community 131"
-Cohesion: 0.05
-Nodes (36): BuiltInEvaluatorOutputConfig, CategoricalAnnotationConfig, ContinuousAnnotationConfig, ContinuousOutputConfig, CategoricalOutputConfig, Connection, Context, CursorString (+28 more)
+Cohesion: 0.07
+Nodes (19): BuiltInEvaluatorOutputConfig, Connection, Context, CursorString, DatasetEvaluators, datetime, Identifier, Info (+11 more)
 
 ### Community 132 - "Community 132"
-Cohesion: 0.04
-Nodes (89): api(), get_or_create_labels(), headers(), _load_apikey_file(), _load_env_file(), Shared configuration and API client for VirtualAI agent tools.  API key resoluti, Make an API call to VirtualAI., Resolve label names to IDs, creating any that don't exist yet. (+81 more)
+Cohesion: 0.06
+Nodes (49): api(), Make an API call to VirtualAI., Response, cleanup_connector(), create_chat_session(), create_folder_connector(), load_search_tests(), main() (+41 more)
 
 ### Community 133 - "Community 133"
 Cohesion: 0.04
-Nodes (70): _gen_attributes(), _gen_documents(), _gen_embeddings(), _gen_evals(), _gen_llm(), _gen_messages(), _gen_spans(), _get_tracers() (+62 more)
+Nodes (52): Any, GenerationSpanData, LLM, Span, ChatCompletionMessageToolCall, Choice, Fixture to create an OpenAIModel., Sanity check of the initialization of OpenAI wrapper     NB: this is intentiona (+44 more)
 
 ### Community 134 - "Community 134"
-Cohesion: 0.02
-Nodes (59): Multi-tenant isolation tests for Discord bot.  These tests ensure tenant isolati, Guilds created in tenant 1 are not visible from tenant 2.          Creates guild, Tests for bot config isolation in cloud mode., Tests for guild access isolation between tenants., Tenant 2 cannot access or modify tenant 1's guild by ID.          Creates a guil, Tests for cache manager tenant isolation., Cache correctly maps guild_id to tenant_id., Each tenant has unique API key. (+51 more)
+Cohesion: 0.04
+Nodes (30): Unit tests for Discord bot cache manager.  Tests for DiscordCacheManager class, Tests for cache lookup operations., Lookup registered guild returns correct tenant ID., Lookup unregistered guild returns None., Lookup tenant's API key returns valid key., Lookup unknown tenant returns None., After loading returns all cached guild IDs., Tests for cache update operations. (+22 more)
 
 ### Community 135 - "Community 135"
-Cohesion: 0.04
-Nodes (78): Extract value(s) + links from a field regardless of its type.         Attachment, _translate_content_to_doc(), Any, Document, DocumentSource, ImageSection, IO, Any (+70 more)
+Cohesion: 0.03
+Nodes (142): Extract value(s) + links from a field regardless of its type.         Attachment, Any, datetime, F, HTTPError, Any, Document, DocumentSource (+134 more)
 
 ### Community 136 - "Community 136"
-Cohesion: 0.05
-Nodes (61): DocumentChunk, TenantState, MonkeyPatch, OpenSearchClient, TenantState, IndexInfo, OpenSearchIndexError, OpenSearchServerSideTimeout (+53 more)
+Cohesion: 0.07
+Nodes (46): MonkeyPatch, OpenSearchClient, TenantState, get_opensearch_doc_chunk_id(), Returns a unique identifier for the chunk.      This will be the string used to, _create_test_document_chunk(), _generate_test_vector(), _patch_global_tenant_state() (+38 more)
 
 ### Community 137 - "Community 137"
 Cohesion: 0.05
-Nodes (88): UserManager, AutoScrollRequest, Any, User, UserManager, Session, User, UserManager (+80 more)
+Nodes (86): For normal users to change password if they know the old one.         Raises 40, UserManager, AutoScrollRequest, Any, User, UserManager, Session, User (+78 more)
 
 ### Community 138 - "Community 138"
-Cohesion: 0.05
-Nodes (62): _(), _ContentConversion, create_prompt_version_from_anthropic(), _get_tool_params(), _InvocationParameters, _InvocationParametersConversion, _MessageConversion, _ModelKwargsConversion (+54 more)
+Cohesion: 0.06
+Nodes (42): _(), AnthropicMessageModelKwargs, _ContentConversion, create_prompt_version_from_anthropic(), _get_tool_params(), _InvocationParameters, _MessageConversion, _ModelKwargsConversion (+34 more)
 
 ### Community 139 - "Community 139"
-Cohesion: 0.05
-Nodes (60): Any, HierarchyNode, Issue, JIRA, SecondsSinceUnixEpoch, Any, BasicExpertInfo, Issue (+52 more)
+Cohesion: 0.04
+Nodes (75): Any, BasicExpertInfo, datetime, DocumentSource, Exception, T, Issue, JIRA (+67 more)
 
 ### Community 140 - "Community 140"
-Cohesion: 0.03
-Nodes (65): Any, ChannelMetadata, ChannelType, ChunkIndexRequest, LLM, build_channel_override_query(), build_channel_query_filter(), build_slack_queries() (+57 more)
+Cohesion: 0.05
+Nodes (49): Any, ChannelMetadata, ChannelType, ChunkIndexRequest, LLM, ModelResponse, LLM, build_channel_override_query() (+41 more)
 
 ### Community 141 - "Community 141"
 Cohesion: 0.04
-Nodes (35): identify_langchain_client(), LangChainModelAdapter, Type guard to check if a content part is a TextContentPart., Transform List[Message] TypedDict to LangChain message objects.          Args:, MultimodalPrompt, BaseModel, ExtraInfo, is_list_of() (+27 more)
+Nodes (31): MultimodalPrompt, BaseModel, ExtraInfo, is_list_of(), A string identifier for the text model being used., Run the LLM on the given prompt., Usage, BedrockModel (+23 more)
 
 ### Community 142 - "Community 142"
 Cohesion: 0.04
-Nodes (58): Any, Any, BasicExpertInfo, CheckpointOutput, Document, SecondsSinceUnixEpoch, Exception, F (+50 more)
+Nodes (34): Any, BasicExpertInfo, ConnectorCheckpoint, ConnectorFailure, ConnectorStopSignal, convert_metadata_dict_to_list_of_strings(), DocExtractionContext, DocIndexingContext (+26 more)
 
 ### Community 143 - "Community 143"
 Cohesion: 0.04
-Nodes (67): Logger, LoggerAdapter, Any, Redis, RedisLock, datetime, ReleaseNoteEntry, Session (+59 more)
+Nodes (61): Any, Redis, RedisLock, datetime, ReleaseNoteEntry, Session, Redis, UUID (+53 more)
 
 ### Community 144 - "Community 144"
 Cohesion: 0.04
-Nodes (75): Celery, ConnectorCredentialPair, DocumentSource, Redis, Session, Task, BaseConnector, ConnectorCheckpoint (+67 more)
+Nodes (71): Celery, ConnectorCredentialPair, DocumentSource, Redis, Session, Task, Celery, ConnectorFailure (+63 more)
 
 ### Community 145 - "Community 145"
-Cohesion: 0.04
-Nodes (75): LLM, WellKnownLLMProviderDescriptor, LLMProviderView, Session, User, WellKnownLLMProviderDescriptor, BedrockFinalModelResponse, BedrockModelsRequest (+67 more)
+Cohesion: 0.06
+Nodes (64): Agent, User, WellKnownLLMProviderDescriptor, LLMProviderView, Session, User, WellKnownLLMProviderDescriptor, BedrockFinalModelResponse (+56 more)
 
 ### Community 146 - "Community 146"
-Cohesion: 0.04
-Nodes (68): _AnyTuple, CompoundSelect, _build_ranked_revisions_query(), create_experiment_examples_snapshot_insert(), exclude_dataset_evaluator_projects(), exclude_experiment_projects(), generate_expected_repetitions_cte(), get_ancestor_span_rowids() (+60 more)
+Cohesion: 0.03
+Nodes (95): _AnyTuple, CompoundSelect, _build_ranked_revisions_query(), create_experiment_examples_snapshot_insert(), _date_trunc_for_sqlite(), exclude_dataset_evaluator_projects(), exclude_experiment_projects(), generate_expected_repetitions_cte() (+87 more)
 
 ### Community 147 - "Community 147"
-Cohesion: 0.04
-Nodes (78): Any, Request, User, Any, SamlConfigData, Any, NoReturn, Request (+70 more)
+Cohesion: 0.16
+Nodes (23): SamlConfigData, SamlVerifyCheck, SamlConfigData, SamlVerifyCheck, _by_key(), _config(), Unit tests for structural SAML config verification., test_disabled_is_warning() (+15 more)
 
 ### Community 148 - "Community 148"
-Cohesion: 0.03
-Nodes (60): DynamicTenantScheduler, on_beat_init(), on_setup_logging(), Only updates the actual beat schedule on the celery app when it changes, Compare schedules by task name only to determine if an update is needed., This scheduler is useful because we can dynamically adjust task generation rates, Given a list of tenant id's, generates a new beat schedule for celery., on_celeryd_init() (+52 more)
+Cohesion: 0.14
+Nodes (15): DynamicTenantScheduler, on_beat_init(), on_setup_logging(), Only updates the actual beat schedule on the celery app when it changes, Compare schedules by task name only to determine if an update is needed., This scheduler is useful because we can dynamically adjust task generation rates, Given a list of tenant id's, generates a new beat schedule for celery., Any (+7 more)
 
 ### Community 149 - "Community 149"
-Cohesion: 0.04
-Nodes (58): AppService, Service that controls the phoenix application., DataFrame, datetime, Evaluations, SpanQuery, TraceDataset, DataFrame (+50 more)
+Cohesion: 0.05
+Nodes (51): # IMPORTANT: This must come before any imports that depend on namespace packages, AppService, Service that controls the phoenix application., DataFrame, datetime, Evaluations, SpanQuery, TraceDataset (+43 more)
 
 ### Community 150 - "Community 150"
 Cohesion: 0.04
@@ -2934,104 +4217,104 @@ Cohesion: 0.06
 Nodes (59): _create_test_user(), _get_user_by_email(), _ldap_login(), LDAPTestUser, Integration tests for LDAP authentication.  These tests use a real in-process, Verify LDAP login was successful and tokens were issued.      Checks:     - H, Verify user was created in Phoenix DB with correct attributes.      Args:, Perform LDAP login and return response details.      Returns:         Tuple o (+51 more)
 
 ### Community 152 - "Community 152"
-Cohesion: 0.05
-Nodes (53): Any, WebContent, WebContent, WebSearchResult, WebSearchResult, WebSearchResult, WebSearchResult, WebSearchResult (+45 more)
+Cohesion: 0.04
+Nodes (55): Any, WebContent, WebContent, WebSearchResult, WebSearchResult, WebSearchResult, WebSearchResult, WebSearchResult (+47 more)
 
 ### Community 153 - "Community 153"
 Cohesion: 0.06
-Nodes (48): empty_dataset(), llm_evaluator(), Test that creating evaluators with the same name on different datasets succeeds., Test updating an LLM evaluator via its DatasetEvaluator assignment., Test that updating without prompt_version_id creates a new prompt and version., Test that updating with prompt_version_id pointing to different prompt switches, Test that updating with prompt_version_id but changed content creates new versio, Test that updating with prompt_version_id and unchanged content doesn't create n (+40 more)
+Nodes (44): empty_dataset(), llm_evaluator(), Test that creating evaluators with the same name on different datasets succeeds., Test updating an LLM evaluator via its DatasetEvaluator assignment., Test that updating without prompt_version_id creates a new prompt and version., Test that updating with prompt_version_id pointing to different prompt switches, Test that updating with prompt_version_id but changed content creates new versio, Test that updating with prompt_version_id and unchanged content doesn't create n (+36 more)
 
 ### Community 154 - "Community 154"
-Cohesion: 0.05
-Nodes (54): FakeRepo, Unit tests for the clean-room RBAC layer.  Two review gates from WS-B Phase 1:, In-memory stand-in for TeamRepository (only the methods the PDP uses)., test_admin_allowed_on_any_team_and_instance_ops(), test_admin_holds_every_permission(), test_administerable_team_ids_scoping(), test_auth_disabled_user_is_none_allows_everything(), test_basic_can_only_view_and_lower_roles_have_nothing() (+46 more)
+Cohesion: 0.12
+Nodes (23): FakeRepo, Unit tests for the clean-room RBAC layer.  Two review gates from WS-B Phase 1:, In-memory stand-in for TeamRepository (only the methods the PDP uses)., test_admin_allowed_on_any_team_and_instance_ops(), test_admin_holds_every_permission(), test_administerable_team_ids_scoping(), test_auth_disabled_user_is_none_allows_everything(), test_basic_can_only_view_and_lower_roles_have_nothing() (+15 more)
 
 ### Community 155 - "Community 155"
 Cohesion: 0.03
-Nodes (59): Any, Exception, LLMUserIdentity, Tests for get_bedrock_token_limit function., Test that matching is case-insensitive., Test that :NNNk suffix takes priority over LiteLLM., Test that LiteLLM exceptions fall through to mapping., Test parsing :200k suffix. (+51 more)
+Nodes (65): Any, Exception, LLM, LLMUserIdentity, ModelConfigurationView, Tests for get_bedrock_token_limit function., Test that matching is case-insensitive., Test that :NNNk suffix takes priority over LiteLLM. (+57 more)
 
 ### Community 156 - "Community 156"
-Cohesion: 0.04
-Nodes (49): CanReadToken, ClaimSet, _ItemT_contra, TokenAttributes, AccessToken, RefreshToken, timedelta, TokenStore (+41 more)
+Cohesion: 0.05
+Nodes (35): CanReadToken, ClaimSet, _ItemT_contra, Any, _AnyT, Base, datetime, AccessToken (+27 more)
 
 ### Community 157 - "Community 157"
-Cohesion: 0.04
-Nodes (47): LDAPAuthenticator, LDAPConfig, LogCaptureFixture, Test _get_user_groups method for AD and POSIX modes., AD mode: returns groups from memberOf attribute., AD mode: returns empty list when memberOf is empty., AD mode: returns empty list when memberOf attribute is missing., POSIX mode: searches group base DNs for membership. (+39 more)
+Cohesion: 0.02
+Nodes (92): LDAPAuthenticator, LDAPUserInfo, AsyncSession, LDAPConfig, User, LDAPConfig, LogCaptureFixture, get_or_create_ldap_user() (+84 more)
 
 ### Community 158 - "Community 158"
-Cohesion: 0.04
-Nodes (57): Message, ClientUser, _build_conversation_context(), _build_reply_chain_context(), _build_thread_context(), check_implicit_invocation(), format_message_content(), _format_messages_as_context() (+49 more)
+Cohesion: 0.03
+Nodes (64): Message, ClientUser, Tests for thread creation and response routing., Message in thread - response appended to thread., thread_only_mode=true creates new thread for response., thread_only_mode=false uses message.reply()., Thread name is truncated to 100 chars., Error response in channel creates thread. (+56 more)
 
 ### Community 159 - "Community 159"
 Cohesion: 0.05
-Nodes (52): AsyncDatasets, Dataset, DatasetKeys, Datasets, DatasetUploadError, _get_csv_column_headers(), _infer_keys(), _InputDatasetExample (+44 more)
+Nodes (50): DatasetIdentifier, AsyncDatasets, DatasetKeys, Datasets, DatasetUploadError, _get_csv_column_headers(), _infer_keys(), _InputDatasetExample (+42 more)
 
 ### Community 160 - "Community 160"
 Cohesion: 0.06
 Nodes (58): AnnotationAttribute, AnnotationExpression, AnnotationName, AnnotationType, Attribute, BinOp, Call, Constant (+50 more)
 
 ### Community 161 - "Community 161"
-Cohesion: 0.05
-Nodes (69): CCPairFullInfo, datetime, DocumentSyncStatus, IndexAttemptErrorPydantic, IndexAttemptSnapshot, JSONResponse, PaginatedReturn, Session (+61 more)
+Cohesion: 0.04
+Nodes (76): workspace_invite_only_enabled(), CCPairFullInfo, datetime, DocumentSyncStatus, IndexAttemptErrorPydantic, IndexAttemptSnapshot, JSONResponse, PaginatedReturn (+68 more)
 
 ### Community 162 - "Community 162"
 Cohesion: 0.04
 Nodes (44): Namespace, Any, PromptTemplateFormat, DotDict, get_template_formatter(), ListWrapper, NoOpFormatter, ParsedVariable (+36 more)
 
 ### Community 163 - "Community 163"
-Cohesion: 0.04
-Nodes (46): alertCSS, AlertProps, dismissButtonCSS, iconTitleWrapCSS, getSeverityIcon(), ColumnMultiSelector(), ACCEPTED_FILE_TYPES, CreateDatasetFromFileParams (+38 more)
+Cohesion: 0.13
+Nodes (23): DropOverlay(), DropZone(), FileDropZone(), FileInput(), FileList(), FileListItem(), getStatusText(), dropOverlayCSS (+15 more)
 
 ### Community 164 - "Community 164"
-Cohesion: 0.04
-Nodes (72): UpgradePlanModalProps, UseUsageLimitsReturn, ArtifactsTabProps, createLibraryDirectory(), CreateSessionOptions, deleteConnector(), deleteLibraryFile(), fetchLibraryTree() (+64 more)
+Cohesion: 0.03
+Nodes (50): useFunctionality(), LLMDatasetEvaluatorDetails(), PromptLink(), inferIncludeExplanationFromPrompt(), CustomProvidersCard_data$data, CustomProvidersCard_data$key, GenerativeModelSDK, node (+42 more)
 
 ### Community 165 - "Community 165"
-Cohesion: 0.03
-Nodes (79): dependencies, autoprefixer, class-variance-authority, clsx, cmdk, cookies-next, date-fns, @dnd-kit/core (+71 more)
+Cohesion: 0.02
+Nodes (87): dependencies, autoprefixer, class-variance-authority, clsx, cmdk, cookies-next, date-fns, @dnd-kit/core (+79 more)
 
 ### Community 166 - "Community 166"
-Cohesion: 0.05
-Nodes (49): AnthropicMessageModelKwargs, AsyncPromptVersionTags, _FormattedPrompt, GoogleModelKwargs, Any, AsyncClient, Client, PromptVersion (+41 more)
+Cohesion: 0.04
+Nodes (47): AsyncPromptVersionTags, _FormattedPrompt, Any, AsyncClient, Client, PromptVersion, PromptVersionTag, Any (+39 more)
 
 ### Community 167 - "Community 167"
 Cohesion: 0.05
-Nodes (48): AxeroConnector, AxeroForum, _get_auth_header(), _get_entities(), _get_forums(), _get_obj_by_id(), _map_post_to_parent(), _rate_limited_request() (+40 more)
+Nodes (46): AxeroConnector, AxeroForum, _get_auth_header(), _get_entities(), _get_forums(), _get_obj_by_id(), _map_post_to_parent(), _rate_limited_request() (+38 more)
 
 ### Community 168 - "Community 168"
-Cohesion: 0.06
-Nodes (66): Any, BUILT_IN_TOOL_TYPES, Session, Tool, ToolCall, UUID, Any, Session (+58 more)
+Cohesion: 0.05
+Nodes (76): Any, BUILT_IN_TOOL_TYPES, Session, Tool, ToolCall, UUID, Any, Session (+68 more)
 
 ### Community 169 - "Community 169"
 Cohesion: 0.05
 Nodes (38): Body, bodySchema, chatModelSchema, embeddingModelSchema, ensureChatExists(), messageSchema, POST(), safeValidateBody() (+30 more)
 
 ### Community 170 - "Community 170"
-Cohesion: 0.05
-Nodes (51): DatasetKeys, FileHeaders, FileName, FilePointer, FileType, DatasetKeys, Loader, MetaPathFinder (+43 more)
+Cohesion: 0.07
+Nodes (44): DatasetKeys, FileHeaders, FileName, FilePointer, FileType, DatasetKeys, Any, DataFrame (+36 more)
 
 ### Community 171 - "Community 171"
 Cohesion: 0.04
-Nodes (49): CitationMapping, DocumentSource, SearchDoc, collapse_citations(), Collapse the citations in the text to use the smallest possible numbers.      Th, create_test_search_doc(), Unit tests for citation_utils module.  This module tests the collapse_citations, Tests for collapse_citations with existing citation mappings. (+41 more)
+Nodes (50): DocumentSource, SearchDoc, collapse_citations(), extract_citation_order_from_text(), Collapse the citations in the text to use the smallest possible numbers.      Th, Extract citation numbers from text in order of first appearance.      Parses cit, create_test_search_doc(), Unit tests for citation_utils module.  This module tests the collapse_citations (+42 more)
 
 ### Community 172 - "Community 172"
 Cohesion: 0.05
-Nodes (69): BuildChatPanel(), BuildChatPanelProps, BuildOutputPanel, BuildOutputPanelProps, tabs, TabValue, deriveSandboxStatus(), SandboxStatusIndicator() (+61 more)
+Nodes (7): Span, SpanCost, Any, ColumnElement, Dialect, get_attribute_value(), Get the value of a nested attribute from a dictionary. The `key` is a     strin
 
 ### Community 173 - "Community 173"
-Cohesion: 0.05
-Nodes (36): AirtableClientNotSetUpError, AirtableConnector, parse_airtable_url(), Initialize an AirtableConnector.          Args:             base_id: The ID of t, Constructs the URL for a record, optionally including field and attachment IDs, # TODO: support this, # NOTE: all are made lowercase to avoid case sensitivity issues, Determine if a field type should be treated as metadata.          When treat_all (+28 more)
+Cohesion: 0.04
+Nodes (50): AirtableConnector, parse_airtable_url(), Initialize an AirtableConnector.          Args:             base_id: The ID of t, Constructs the URL for a record, optionally including field and attachment IDs, # TODO: support this, # NOTE: all are made lowercase to avoid case sensitivity issues, Determine if a field type should be treated as metadata.          When treat_all, Try to resolve a human-readable base name from the API. (+42 more)
 
 ### Community 174 - "Community 174"
-Cohesion: 0.03
-Nodes (75): author, bugs, url, import, require, dependencies, @arizeai/openinference-semantic-conventions, @arizeai/openinference-vercel (+67 more)
+Cohesion: 0.05
+Nodes (40): author, bugs, url, dependencies, @arizeai/openinference-semantic-conventions, @arizeai/openinference-vercel, @arizeai/phoenix-config, @arizeai/phoenix-otel (+32 more)
 
 ### Community 175 - "Community 175"
-Cohesion: 0.04
-Nodes (74): DynamicCitationProcessor, Unit tests for DynamicCitationProcessor.  This module contains comprehensive tes, Test processing tokens, updating mapping, then continuing., Test that citations after mapping update are processed., Test get_next_citation_number returns 1 when no citations exist., Test default initialization of DynamicCitationProcessor., Test get_seen_citations returns empty dict when no citations processed., Test get_seen_citations returns correct citation number to SearchDoc mapping. (+66 more)
+Cohesion: 0.01
+Nodes (307): CitationInfo, CitationMapping, Match, SearchDoc, CitationMapping, DynamicCitationProcessor, ToolResponse, Agent (+299 more)
 
 ### Community 176 - "Community 176"
 Cohesion: 0.05
-Nodes (34): AccessTokenClaims, AccessTokenId, ApiKeyClaims, ApiKeyId, _ClaimSetT, PasswordResetTokenClaims, PasswordResetTokenId, get_env_enable_prometheus() (+26 more)
+Nodes (44): AccessTokenClaims, AccessTokenId, ApiKeyClaims, ApiKeyId, _ClaimSetT, PasswordResetTokenClaims, PasswordResetTokenId, TokenAttributes (+36 more)
 
 ### Community 177 - "Community 177"
 Cohesion: 0.06
@@ -3039,43 +4322,43 @@ Nodes (29): AnthropicAdapter, get_anthropic_rate_limit_errors(), identify_anthro
 
 ### Community 178 - "Community 178"
 Cohesion: 0.05
-Nodes (71): KGRelationship, KGRelationshipExtractionStaging, KGRelationshipTypeExtractionStaging, KGStage, Session, RedisLock, _create_one_parent_child_relationship(), Creates a relationship between the entity and its parent, if it exists.     Then (+63 more)
+Nodes (75): KGRelationship, KGRelationshipExtractionStaging, KGRelationshipTypeExtractionStaging, KGStage, Session, RedisLock, KGConfigSettings, _clean_name() (+67 more)
 
 ### Community 179 - "Community 179"
-Cohesion: 0.06
-Nodes (49): get_google_genai_rate_limit_errors(), get_anthropic_langchain_rate_limit_errors(), get_openai_langchain_rate_limit_errors(), create_anthropic_langchain_client(), create_openai_langchain_client(), Factory functions for creating LangChain clients., Factory function to create LangChain Anthropic clients., Factory function to create LangChain OpenAI clients. (+41 more)
+Cohesion: 0.04
+Nodes (58): get_anthropic_langchain_rate_limit_errors(), get_openai_langchain_rate_limit_errors(), identify_langchain_client(), LangChainModelAdapter, Type guard to check if a content part is a TextContentPart., Transform List[Message] TypedDict to LangChain message objects.          Args:, create_anthropic_langchain_client(), create_openai_langchain_client() (+50 more)
 
 ### Community 180 - "Community 180"
-Cohesion: 0.05
-Nodes (53): Synchronization of builtin evaluator registry to database.  This module ensure, Synchronize the in-memory builtin evaluator registry to the database.      Thi, sync_builtin_evaluators(), _delete_expired_childless_records(), _delete_expired_childless_records_on_generative_models(), _ensure_admins(), _ensure_builtin_evaluators(), _ensure_default_project_trace_retention_policy() (+45 more)
+Cohesion: 0.04
+Nodes (55): Synchronization of builtin evaluator registry to database.  This module ensure, Synchronize the in-memory builtin evaluator registry to the database.      Thi, sync_builtin_evaluators(), get_builtin_evaluators(), Returns list of (key, evaluator_class) tuples., _delete_expired_childless_records(), _delete_expired_childless_records_on_generative_models(), _ensure_admins() (+47 more)
 
 ### Community 181 - "Community 181"
 Cohesion: 0.04
 Nodes (41): LanguageModelInput, LLMUserIdentity, ReasoningEffort, ToolChoiceOptions, _is_vertex_model_rejecting_output_config(), _prompt_to_dicts(), # NOTE: must pass in None instead of empty strings otherwise litellm, # NOTE: Sometimes _model_kwargs may have an "api_key" kwarg (+33 more)
 
 ### Community 182 - "Community 182"
-Cohesion: 0.04
-Nodes (44): Any, NoReturn, JiraConnector, mock_jira_cc_pair(), test_jira_permission_sync(), make_mock_sensitive_value(), Wrapper class for sensitive values that require explicit masking decisions.  Thi, Prevent accidental string conversion. (+36 more)
+Cohesion: 0.06
+Nodes (28): _decrypt_string(), _encrypt_string(), Tests for SensitiveValue wrapper class., Test that subscript access raises SensitiveAccessError., Test that bool() works for truthiness checks., Test equality comparison between SensitiveValues with same encrypted bytes., Simple mock encryption (just encoding for tests)., Test equality comparison between SensitiveValues with different encrypted bytes. (+20 more)
 
 ### Community 183 - "Community 183"
 Cohesion: 0.03
 Nodes (12): MockController, test_async_executor_retries(), test_async_executor_sigint_handling(), test_executor_ramps_up_when_target_increases(), test_executor_respects_reduced_target(), test_sync_executor_retries(), test_sync_executor_sigint_handling(), InterruptingIterator (+4 more)
 
 ### Community 184 - "Community 184"
-Cohesion: 0.05
-Nodes (58): ButtonContentProps, ButtonProps, iconVariants, iconWrapper(), TooltipSide, BODY_PRESETS, BodyLayout(), BodyLayoutProps (+50 more)
+Cohesion: 0.06
+Nodes (54): ButtonContentProps, ButtonProps, iconVariants, iconWrapper(), TooltipSide, BODY_PRESETS, BodyLayout(), BodyLayoutProps (+46 more)
 
 ### Community 185 - "Community 185"
 Cohesion: 0.05
 Nodes (68): AssistantMessage, ChatMessage, LLM, Session, UserMessage, MessageType, _build_llm_messages_for_summarization(), calculate_total_history_tokens() (+60 more)
 
 ### Community 186 - "Community 186"
-Cohesion: 0.07
-Nodes (33): AccessType, Any, CCPairFullInfo, ConnectorIndexingStatusLite, ConnectorStatus, DATestCCPair, DATestUser, datetime (+25 more)
+Cohesion: 0.12
+Nodes (18): AccessType, ConnectorIndexingStatusLite, DATestCCPair, DATestUser, datetime, test_index_attempt_pagination(), _verify_index_attempt_pagination(), _cc_pair_creator() (+10 more)
 
 ### Community 187 - "Community 187"
-Cohesion: 0.05
-Nodes (42): CostModelLookup, Add or update a single model in the lookup., Remove a model from the lookup., Merge a collection of models into the existing lookup.          For each model, Find the most appropriate generative model for cost tracking based on attributes, Test cases for CostModelLookup.merge() method., Test merge with additions, updates, and deletions in one call., Test multiple sequential merge operations. (+34 more)
+Cohesion: 0.09
+Nodes (22): CostModelLookup, Add or update a single model in the lookup., Remove a model from the lookup., Merge a collection of models into the existing lookup.          For each model, Find the most appropriate generative model for cost tracking based on attributes, Test cases for CostModelLookup.merge() method., Test merge with additions, updates, and deletions in one call., Test multiple sequential merge operations. (+14 more)
 
 ### Community 188 - "Community 188"
 Cohesion: 0.06
@@ -3086,8 +4369,8 @@ Cohesion: 0.04
 Nodes (37): ParsedResult, _parse_user_info(), Parses user info from the IDP's ID token.      Validates required OIDC claims, Test suite for _parse_user_info with real-world IDP examples., Test parsing a typical Google ID token., Test parsing an Auth0 ID token with custom namespace claims., Test parsing an Okta ID token., Test parsing a Microsoft Azure AD ID token. (+29 more)
 
 ### Community 190 - "Community 190"
-Cohesion: 0.04
-Nodes (50): Breadcrumb(), breadcrumbCSS, BreadcrumbProps, BreadcrumbProps, Breadcrumbs(), breadcrumbsCSS, useFeatureFlag(), Counter() (+42 more)
+Cohesion: 0.03
+Nodes (70): [01.05.2026: Appended Messages for Playground Experiments](/docs/phoenix/release-notes/01-2026/01-05-2026-appended-messages-for-playground-experiments) 💬, [01.17.2026: Phoenix CLI: Terminal Access for AI Coding Assistants](/docs/phoenix/release-notes/01-2026/01-17-2026-phoenix-cli-ai-agent-debugging) 🖥️, [01.19.2026: Export Annotations with Traces](/docs/phoenix/release-notes/02-2026/02-01-2026-tool-selection-and-tool-invocation-evaluators), [01.21.2026: Create Datasets from Traces with Span Associations](/docs/phoenix/release-notes/01-2026/01-21-2026-create-datasets-from-traces) 🔗, [01.21.2026: Create Datasets from Traces with Span Associations](/docs/phoenix/release-notes/02-2026/02-01-2026-tool-selection-and-tool-invocation-evaluators), [01.21.2026: Phoenix CLI: Datasets, Experiments & Annotations](/docs/phoenix/release-notes/01-2026/01-21-2026-cli-datasets-experiments-annotations) 🧪, [01.22.2026: CLI Commands for Prompts, Datasets, and Experiments](/docs/phoenix/release-notes/02-2026/02-01-2026-tool-selection-and-tool-invocation-evaluators), [01.22.2026: CLI Prompt Commands: Pipe Prompts to AI Assistants](/docs/phoenix/release-notes/01-2026/01-22-2026-cli-prompt-commands) 📝 (+62 more)
 
 ### Community 191 - "Community 191"
 Cohesion: 0.06
@@ -3095,35 +4378,35 @@ Nodes (50): ConcurrentConnectionsChart(), Props, ConnectionMonitor(), EndpointRo
 
 ### Community 192 - "Community 192"
 Cohesion: 0.05
-Nodes (51): CreateSpansResponseBody, DuplicateSpanInfo, InvalidSpanInfo, Any, AsyncClient, Client, datetime, Response (+43 more)
+Nodes (46): CreateSpansResponseBody, DuplicateSpanInfo, InvalidSpanInfo, Any, AsyncClient, Client, InsertedSpanAnnotation, Span (+38 more)
 
 ### Community 193 - "Community 193"
-Cohesion: 0.06
-Nodes (45): Agent, main(), phoenixTopicDataset, phoenixTopicExamples, terminalFormatDataset, terminalFormatExamples, createTerminalSafeFormatEvaluator(), anthropic (+37 more)
+Cohesion: 0.03
+Nodes (96): Agent, main(), Datasets, phoenixTopicDataset, phoenixTopicExamples, terminalFormatDataset, terminalFormatExamples, createTerminalSafeFormatEvaluator() (+88 more)
 
 ### Community 194 - "Community 194"
-Cohesion: 0.04
-Nodes (46): Tests for LLM provider utilities., Tests for OpenRouter vendor prefix stripping., Test stripping matching vendor prefix., Test stripping Mistral prefix., Test preserving name when no prefix pattern., Test preserving name when no slash in model ID., Test handling partial vendor name matches., Tests for Bedrock model validation. (+38 more)
+Cohesion: 0.05
+Nodes (38): Tests for LLM provider utilities., Tests for Bedrock display name generation., Tests for Bedrock model validation., Test valid Claude model., Test that embedding models are filtered., Test basic Claude model name., Test that image generation models are filtered., Test that non-streaming models are filtered. (+30 more)
 
 ### Community 195 - "Community 195"
-Cohesion: 0.08
-Nodes (66): Agent, AgentLabel, AgentSnapshot, datetime, MinimalAgentSnapshot, Select, Session, User (+58 more)
+Cohesion: 0.04
+Nodes (115): AgentLabelPatchRequest, AgentShareRequest, create_agent(), create_label(), delete_agent(), delete_label(), get_agent(), get_agents_admin_paginated() (+107 more)
 
 ### Community 196 - "Community 196"
 Cohesion: 0.07
 Nodes (43): criteria_evaluator_factory(), LLMCriteriaEvaluator, LLMRelationalEvaluator, _parse_label_from_explanation(), An experiment evaluator that uses an LLM to evaluate whether a response is relev, An experiment evaluator that uses an LLM to evaluate whether the text meets a cu, An LLM experiment evaluator that checks how a response is related to reference t, RelevanceEvaluator (+35 more)
 
 ### Community 197 - "Community 197"
-Cohesion: 0.05
-Nodes (41): ImageGenerationProvider, ImageGenerationProviderCredentials, Any, ImageGenerationProviderCredentials, ImageGenerationResponse, Any, ImageGenerationProviderCredentials, ImageGenerationResponse (+33 more)
+Cohesion: 0.07
+Nodes (32): ImageGenerationProvider, ImageGenerationProviderCredentials, Any, ImageGenerationProviderCredentials, ImageGenerationResponse, Any, ImageGenerationProviderCredentials, ImageGenerationResponse (+24 more)
 
 ### Community 198 - "Community 198"
-Cohesion: 0.06
-Nodes (54): ASGITransport, BulkInserter, AbstractEventLoop, Any, ASGIApp, AsyncClient, AsyncConnection, AsyncEngine (+46 more)
+Cohesion: 0.04
+Nodes (74): ASGITransport, BulkInserter, Cassette, AbstractEventLoop, Any, ASGIApp, AsyncClient, AsyncConnection (+66 more)
 
 ### Community 199 - "Community 199"
 Cohesion: 0.06
-Nodes (44): Celery, ConnectorCredentialPair, ElementExternalAccess, Redis, RedisConnector, RedisLock, Session, Task (+36 more)
+Nodes (42): Any, OAuthConfig, Session, Tool, Update OAuth configuration.      NOTE: If client_id or client_secret are None, e, update_oauth_config(), _create_test_oauth_config(), _create_test_tool_with_oauth() (+34 more)
 
 ### Community 200 - "Community 200"
 Cohesion: 0.04
@@ -3131,7 +4414,7 @@ Nodes (38): Any, Exception, OmAPIClient, Async HTTP client for communicating wit
 
 ### Community 201 - "Community 201"
 Cohesion: 0.10
-Nodes (58): CaptureFixture, classification_dataframe(), mock_respx_responses(), Test that when both rails appear in the response, only the one after     'Label, Test that when the rails includes a space, it is extracted in entirety., Test that the label can be parsed successfully without the label prefix., This is the base case, where the explanation precedes the label, per CoT thinkin, relevance_evaluator() (+50 more)
+Nodes (61): CaptureFixture, classification_dataframe(), mock_respx_responses(), Test that when both rails appear in the response, only the one after     'Label, Test that when the rails includes a space, it is extracted in entirety., Test that the label can be parsed successfully without the label prefix., This is the base case, where the explanation precedes the label, per CoT thinkin, relevance_evaluator() (+53 more)
 
 ### Community 202 - "Community 202"
 Cohesion: 0.06
@@ -3139,11 +4422,11 @@ Nodes (63): Any, AsyncClient, Client, DbSessionFactory, Faker, LegacyClient, Spa
 
 ### Community 203 - "Community 203"
 Cohesion: 0.04
-Nodes (41): Annotations, AsyncAnnotations, AsyncDatasets, AsyncExperiments, AsyncProjects, AsyncPrompts, AsyncSessions, AsyncTraces (+33 more)
+Nodes (43): Annotations, AsyncAnnotations, AsyncDatasets, AsyncExperiments, AsyncProjects, AsyncPrompts, AsyncSessions, AsyncTraces (+35 more)
 
 ### Community 204 - "Community 204"
-Cohesion: 0.08
-Nodes (58): datetime, Session, DocMetadataAwareIndexChunk, DocumentSource, BaselineHit, Path, BaselineHit, Session (+50 more)
+Cohesion: 0.17
+Nodes (34): BaselineHit, Path, BaselineHit, Session, BaselineHit, hit_doc_ids(), Ordered list of document ids (the primary baseline invariant)., A normalized, snapshot-stable view of a single retrieved chunk. (+26 more)
 
 ### Community 205 - "Community 205"
 Cohesion: 0.05
@@ -3158,16 +4441,16 @@ Cohesion: 0.06
 Nodes (52): clickAndWaitForPossibleUrlChange(), clickFirstVisible(), clickServerRowAndWaitForPossibleUrlChangeWithRetry(), closeActionsPopover(), collectActionPopoverEntries(), completeOauthFlow(), configureOauthServerAndEnableTool(), createAssistantAndWaitForTool() (+44 more)
 
 ### Community 208 - "Community 208"
-Cohesion: 0.06
-Nodes (44): CategoryBarChart, CHART_COLORS, ChartProps, SeriesDef, TimeSeriesChart, TOOLTIP_CONTENT_STYLE, AgentUsagePoint, ChatSessionDetail (+36 more)
+Cohesion: 0.02
+Nodes (93): AgentsTable(), StarterMessage, StarterMessageBase, agentComparator(), AgentUpsertParameters, AgentUpsertRequest, buildAgentUpsertRequest(), closerToZeroNegativesFirstComparator() (+85 more)
 
 ### Community 209 - "Community 209"
 Cohesion: 0.08
 Nodes (24): Projector, _Base, Concatenation, Explosion, _get_spans_dataframe(), _HasTmpSuffix, _outer_join(), Projection (+16 more)
 
 ### Community 210 - "Community 210"
-Cohesion: 0.07
-Nodes (58): AddUsersToTeamRequest, Any, Session, User, UUID, AccessDecision, Session, Team (+50 more)
+Cohesion: 0.06
+Nodes (71): AddUsersToTeamRequest, Any, Any, Select, Session, User, UUID, AccessDecision (+63 more)
 
 ### Community 211 - "Community 211"
 Cohesion: 0.03
@@ -3178,8 +4461,8 @@ Cohesion: 0.06
 Nodes (37): Any, GenerateDocumentsOutput, HierarchyNode, T, NotionConnector, NotionPage, Initialize with parameters., # NOTE: this also removes all benefits polling, since we need to traverse (+29 more)
 
 ### Community 213 - "Community 213"
-Cohesion: 0.06
-Nodes (42): ChatCompletionMessage, LLMConfig, ChatMessageSimple, LLMConfig, _get_history_message_formatter(), Convert a list of ChatMessageSimple to LanguageModelInput format.      Converts, translate_history_to_llm_format(), Tool call for ChatMessageSimple representation (mirrors OpenAI format).      Use (+34 more)
+Cohesion: 0.04
+Nodes (69): Agent, ChatFileType, ChatLoadedFile, ChatMessageSimple, ChatSession, ChatSessionCreationRequest, CitationInfo, DbSearchDoc (+61 more)
 
 ### Community 214 - "Community 214"
 Cohesion: 0.06
@@ -3187,7 +4470,7 @@ Nodes (24): Any, WorkflowContext, WorkflowContext, _apply_operator(), evaluate_c
 
 ### Community 215 - "Community 215"
 Cohesion: 0.05
-Nodes (41): Any, Document, coda_credentials(), connector(), connector_doc_generator(), Test suite for connector validation and credential handling., Test that validate_connector_settings succeeds with valid credentials., Test that workspace-scoped connector validates successfully. (+33 more)
+Nodes (43): Any, Document, coda_credentials(), connector(), connector_doc_generator(), Test suite for connector validation and credential handling., Test that validate_connector_settings succeeds with valid credentials., Test that workspace-scoped connector validates successfully. (+35 more)
 
 ### Community 216 - "Community 216"
 Cohesion: 0.07
@@ -3198,20 +4481,20 @@ Cohesion: 0.06
 Nodes (48): _acl_for_user_without_teams(), get_access_for_document(), get_access_for_documents(), get_access_for_knowledge_files(), get_acl_for_user(), get_null_document_access(), _mit_access_for_documents(), Document-access resolution (Contract 2 public API).  Two directions, one ACL v (+40 more)
 
 ### Community 218 - "Community 218"
-Cohesion: 0.08
-Nodes (45): Session, ConnectorCredentialPair, DocumentSource, Session, complete_doc_permission_sync_attempt(), complete_external_group_sync_attempt(), create_external_group_sync_attempt(), delete_doc_permission_sync_attempts__no_commit() (+37 more)
+Cohesion: 0.04
+Nodes (81): DocPermissionSyncAttempt, Session, ConnectorCredentialPair, DocumentSource, Session, ConnectorCredentialPair, DocumentSource, Session (+73 more)
 
 ### Community 219 - "Community 219"
 Cohesion: 0.05
-Nodes (45): Message, Client, DiscordChannelView, Message, Tests for Discord bot event handling with mocked Discord API.  These tests mock, Previously used key DMs user and deletes message., Guild already in cache DMs user and deletes message., User without admin perms gets DM and message deleted. (+37 more)
+Nodes (44): Message, Client, DiscordChannelView, Message, Previously used key DMs user and deletes message., Guild already in cache DMs user and deletes message., User without admin perms gets DM and message deleted., Registration in DM sends DM and returns True. (+36 more)
 
 ### Community 220 - "Community 220"
-Cohesion: 0.05
-Nodes (48): ChatMessageSimple, LLM, ChatMinimalTextMessage, LLM, ChatCompletionMessage, ChatMinimalTextMessage, LLM, Any (+40 more)
+Cohesion: 0.12
+Nodes (25): ChatCompletionMessage, ChatMinimalTextMessage, LLM, InferenceChunk, LLM, Session, demonstrate(), _fmt() (+17 more)
 
 ### Community 221 - "Community 221"
-Cohesion: 0.05
-Nodes (51): _alembic_config(), _schema(), DbUsageWarningEmailSender, EmailSender, PasswordResetEmailSender, WelcomeEmailSender, _db_backend(), _emails() (+43 more)
+Cohesion: 0.36
+Nodes (4): DbUsageWarningEmailSender, EmailSender, PasswordResetEmailSender, WelcomeEmailSender
 
 ### Community 222 - "Community 222"
 Cohesion: 0.05
@@ -3222,92 +4505,92 @@ Cohesion: 0.08
 Nodes (35): get_litellm_rate_limit_errors(), _is_base64(), _is_url(), LiteLLMAdapter, Async text generation using LiteLLM., Generate object using structured output., Generate object using tool calling., Async generate object using structured output. (+27 more)
 
 ### Community 224 - "Community 224"
-Cohesion: 0.07
-Nodes (45): Session, User, WebContentProvider, WebContentProviderType, WebContentProviderView, WebSearchProvider, WebSearchProviderType, WebSearchProviderView (+37 more)
+Cohesion: 0.08
+Nodes (42): Session, User, WebContentProvider, WebContentProviderType, WebContentProviderView, WebSearchProvider, WebSearchProviderType, WebSearchProviderView (+34 more)
 
 ### Community 225 - "Community 225"
 Cohesion: 0.05
-Nodes (32): MinimalEvaluator, MockLLM, # TODO: Remove this once the deprecated 'source' argument and 'heuristic' KindTy, Mock LLM for testing that uses a valid provider., Test the LLMEvaluator class., Test LLMEvaluator initialization with string template., Test LLMEvaluator initialization with explicit required_fields., Test LLMEvaluator accepts PromptTemplate instance. (+24 more)
+Nodes (30): MinimalEvaluator, MockLLM, # TODO: Remove this once the deprecated 'source' argument and 'heuristic' KindTy, Mock LLM for testing that uses a valid provider., Test the LLMEvaluator class., Test LLMEvaluator initialization with string template., Test LLMEvaluator initialization with explicit required_fields., Test LLMEvaluator accepts PromptTemplate instance. (+22 more)
 
 ### Community 226 - "Community 226"
-Cohesion: 0.05
-Nodes (33): HTTPServer, HTTPServerV6, run_server(), Event, LDAPMITMProxy, LDAPProtocol, main(), Thread-safe credential addition. (+25 more)
+Cohesion: 0.11
+Nodes (14): LDAPMITMProxy, main(), Man-in-the-middle proxy that validates LDAP TLS by attempting credential theft., Identify application via reverse DNS lookup., Return structured events, optionally filtered by timestamp., Create HTTP handler bound to this proxy instance., Start background HTTP API if not already running., Gracefully stop HTTP API server. (+6 more)
 
 ### Community 227 - "Community 227"
-Cohesion: 0.15
-Nodes (39): AddExamplesToDatasetInput, AddSpansToDatasetInput, delete_projects(), delete_traces(), CreateDatasetInput, DatasetExamplePatch, DeleteDatasetExamplesInput, DeleteDatasetInput (+31 more)
+Cohesion: 0.06
+Nodes (45): OAuthTokenManager, Manages OAuth token retrieval, refresh, and validation, Session, User, User, OAuthConfig, Session, create_test_user() (+37 more)
 
 ### Community 228 - "Community 228"
-Cohesion: 0.06
-Nodes (57): Iterative Evaluation & Experimentation Workflow (Python), Phoenix Tracing / OpenInference Instrumentation, Iterative Evaluation & Experimentation Workflow (TypeScript), Mastra Agent Framework, Analyzing Customer Review Evals with Repetition Experiments, Experiment Repetitions, Comparing LlamaIndex Query Engines with a Pairwise Evaluator, PairwiseComparisonEvaluator (LlamaIndex) (+49 more)
+Cohesion: 0.08
+Nodes (25): Phoenix run_experiment (Dataset + Task + Evaluators), Use Cases, Conclusion, Download Data, Evaluation-Driven Development (Three Pillars), Generating more data, Implement Text2SQL, Interpreting the results (+17 more)
 
 ### Community 229 - "Community 229"
-Cohesion: 0.06
-Nodes (46): get_assistant_stats(), get_rollups(), get_summary(), get_top_agents(), get_usage(), Admin analytics API (clean-room reimplementation).  Serves the lightweight adm, Read cached daily rollup rows for the window., Recompute and upsert the daily rollup cache for the window. (+38 more)
+Cohesion: 0.07
+Nodes (43): AnalyticsService, Tenant-scoped analytics aggregation service.  Clean-room reimplementation of t, Top agents by assistant-message volume in the window (bar chart)., Per-day message volume + unique users for a single assistant/agent.          C, Recompute daily metrics for the window and upsert into analytics_rollup., Read cached rollup rows for the window., Per-day (queries, active_users, avg_latency_seconds).          No feedback joi, Per-day (likes, dislikes) counted as feedback events on assistant msgs. (+35 more)
 
 ### Community 230 - "Community 230"
-Cohesion: 0.04
-Nodes (44): FullStoryIdentity, getUniqueUserId(), isFullStoryEnabled(), setIdentity(), ViewerContext, ViewerContextType, ViewerProvider(), AnnotationConfigListAssociateAnnotationConfigWithProjectMutation (+36 more)
+Cohesion: 0.02
+Nodes (118): FullStoryIdentity, getUniqueUserId(), isFullStoryEnabled(), setIdentity(), CanModify(), useViewer(), useViewerCanModify(), ViewerContext (+110 more)
 
 ### Community 231 - "Community 231"
 Cohesion: 0.05
-Nodes (46): AverageType, _ClassCounts, _format_beta_for_name(), PrecisionRecallFScore, Collect all unique labels from expected and output sequences.          Preserv, Format beta value for use in metric names.      Args:         beta (float): T, Compute confusion matrix counts for each label.          Args:             ex, Perform safe division, returning zero_division value when denominator is zero. (+38 more)
+Nodes (45): AverageType, _ClassCounts, _format_beta_for_name(), PrecisionRecallFScore, Collect all unique labels from expected and output sequences.          Preserv, Format beta value for use in metric names.      Args:         beta (float): T, Compute confusion matrix counts for each label.          Args:             ex, Perform safe division, returning zero_division value when denominator is zero. (+37 more)
 
 ### Community 232 - "Community 232"
-Cohesion: 0.05
-Nodes (50): Document, KGEnhancedDocumentMetadata, Document, KGChunkFormat, KGConfigSettings, KGEnhancedDocumentMetadata, ModelResponse, LLM (+42 more)
+Cohesion: 0.10
+Nodes (32): Document, KGChunkFormat, KGConfigSettings, KGEnhancedDocumentMetadata, OmCallTypes, KGAttributeTrackInfo, KGClassificationInstructions, KGClassificationResult (+24 more)
 
 ### Community 233 - "Community 233"
-Cohesion: 0.05
-Nodes (53): Any, Any, analyze_tenants(), collect_control_plane_data_from_pod(), collect_tenant_data(), find_recent_tenant_data(), main(), Analyze tenant activity data and return gated tenants with no query in last 3 mo (+45 more)
+Cohesion: 0.12
+Nodes (19): Any, confirm_step(), execute_control_plane_delete(), execute_control_plane_query_from_pod(), find_background_pod(), find_worker_pod(), get_tenant_status(), Cleanup utilities that work WITHOUT bastion access. Control plane and data plane (+11 more)
 
 ### Community 234 - "Community 234"
 Cohesion: 0.07
 Nodes (40): BuildSession, Session, User, build_session_with_user(), mock_sandbox_manager(), Tests for file upload functionality in build sessions.  Tests the file upload an, Test that uploading a file delegates to the sandbox manager., Test that upload returns the correct relative path. (+32 more)
 
 ### Community 235 - "Community 235"
-Cohesion: 0.08
-Nodes (40): Agent, Session, create_guild_config(), delete_guild_config(), Create a new guild config with a registration key (guild_id=NULL)., Update guild config fields., Delete guild config (cascades to channel configs). Returns True if deleted., update_guild_config() (+32 more)
+Cohesion: 0.09
+Nodes (30): Agent, Session, get_guild_config_by_internal_id(), Get a specific guild config by its ID., Update guild config fields., update_guild_config(), _create_test_agent(), db_session() (+22 more)
 
 ### Community 236 - "Community 236"
 Cohesion: 0.06
 Nodes (39): C(), D(), E(), L(), M(), u(), x(), b() (+31 more)
 
 ### Community 237 - "Community 237"
-Cohesion: 0.05
-Nodes (57): WS-A integrator hand-off (removals summary), WS-D integrator hand-off, ods — VertualAI devtools CLI (Go/wheel), screenshot-diff visual regression testing, Clean-Room Reimplementation Discipline, CONTRACTS.md — cross-workstream contracts, Onyx-EE Clean-Room Rewrite Program, 12 mandatory engineering standards (+49 more)
+Cohesion: 0.22
+Nodes (10): Contract 2 — Access API, Index ACL rename (team: prefixes, no reindex), WS-B — Team / RBAC (enterprise access control), RBAC/ReBAC (Zanzibar relationship tuples), LLM query expansion (history-aware rephrase), Weighted Reciprocal Rank Fusion (RRF), Streaming SSE typed-packet transport, WS-E — Search / query-expansion clean-room (+2 more)
 
 ### Community 238 - "Community 238"
-Cohesion: 0.07
-Nodes (31): Any, Pattern, Request, PhoenixException, BruteForceLoginLimitExceeded, BruteForceLoginRateLimiter, fastapi_ip_rate_limiter(), fastapi_route_rate_limiter() (+23 more)
+Cohesion: 0.18
+Nodes (4): BruteForceLoginRateLimiter, In-memory rate limiter that tracks failed login attempts per user key (email/use, This rate limiter holds a cache of token buckets that enforce rate limits., ServerRateLimiter
 
 ### Community 239 - "Community 239"
-Cohesion: 0.09
-Nodes (15): getAvailableStrategies(), getStrategyDescription(), DEFAULT_RATE_LIMIT_CONFIG, RateLimitConfig, RateLimiter, RateLimiterState, RateLimitResult, RateLimitStrategy (+7 more)
+Cohesion: 0.08
+Nodes (19): getAvailableStrategies(), getStrategyDescription(), DEFAULT_RATE_LIMIT_CONFIG, RateLimitConfig, RateLimiter, RateLimiterState, RateLimitResult, RateLimitStrategy (+11 more)
 
 ### Community 240 - "Community 240"
 Cohesion: 0.06
-Nodes (54): cmd_search(), download_svg(), extract_search_queries(), find_best_icon(), generate_icon_with_svg(), _generate_text_icon(), get_all_agents(), get_color_for_agent() (+46 more)
+Nodes (53): cmd_search(), download_svg(), extract_search_queries(), find_best_icon(), generate_icon_with_svg(), _generate_text_icon(), get_all_agents(), get_color_for_agent() (+45 more)
 
 ### Community 241 - "Community 241"
-Cohesion: 0.05
-Nodes (28): AsyncOAuth2Mixin, AsyncOpenIDMixin, BaseApp, OAuth2ClientConfig, Configuration for an OAuth2/OIDC identity provider., Any, AssignableUserRoleName, OAuth2ClientConfig (+20 more)
+Cohesion: 0.06
+Nodes (25): AsyncOAuth2Mixin, AsyncOpenIDMixin, BaseApp, Any, AssignableUserRoleName, OAuth2ClientConfig, ParsedResult, OAuth2Client (+17 more)
 
 ### Community 242 - "Community 242"
-Cohesion: 0.07
-Nodes (55): AuthorizeUrlResponse, Any, FederatedConnector, FederatedConnectorDetail, FederatedConnectorSource, FederatedConnectorStatus, Request, Response (+47 more)
+Cohesion: 0.09
+Nodes (40): AuthorizeUrlResponse, Any, FederatedConnector, FederatedConnectorDetail, FederatedConnectorStatus, Request, Response, Session (+32 more)
 
 ### Community 243 - "Community 243"
 Cohesion: 0.05
 Nodes (36): DocumentSource, JSONResponse, User, JSONResponse, Session, User, JSONResponse, Session (+28 more)
 
 ### Community 244 - "Community 244"
-Cohesion: 0.05
-Nodes (33): FixtureRequest, Session, BackendConfig, file_store(), FileTestData, _get_all_backend_configs(), Test getting file size for a non-existent file returns None, Create an S3BackedFileStore instance for testing with parametrized backend (+25 more)
+Cohesion: 0.06
+Nodes (24): Test getting file size for a non-existent file returns None, Test suite for S3BackedFileStore using real S3-compatible storage (MinIO or AWS, Test that the file store initializes properly, Test saving and reading a text file, Test saving and reading a binary file, Test saving a file with metadata, Test the has_file method, Test reading a file using temporary file (+16 more)
 
 ### Community 245 - "Community 245"
-Cohesion: 0.07
-Nodes (23): DocumentSource, Path, _get_file_external_access(), _is_path_allowed(), Validate folder paths exist, are directories, and are within allowed directories, Check if a path falls within the allowed directories whitelist., Read OS file permissions and map to ExternalAccess model.      Linux: Uses sta, connector() (+15 more)
+Cohesion: 0.04
+Nodes (36): GenerateDocumentsOutput, DocumentSource, Path, _compute_doc_id(), _get_file_external_access(), _is_path_allowed(), LocalFolderConnector, _process_single_file() (+28 more)
 
 ### Community 246 - "Community 246"
 Cohesion: 0.07
@@ -3315,59 +4598,59 @@ Nodes (48): Tests for dataframe_to_spans conversion and timezone validation., Ac
 
 ### Community 247 - "Community 247"
 Cohesion: 0.05
-Nodes (35): CustomProviderConfig, GenerativeModelCustomProvider, AuthenticationMethodAzureADTokenProvider, AWSBedrockAuthenticationMethodAccessKeys, datetime, Self, BuiltInProviderChatSearchParams, ChatSearchParamsModel (+27 more)
+Nodes (57): get_evaluator_project_ids(), get_evaluators(), _get_llm_evaluators(), Get LLM evaluators for the given node IDs.      Returns a list of LLMEvaluator, Get all evaluators for the given DatasetEvaluator node IDs.      Returns a lis, Look up project IDs for DatasetEvaluators.      Returns a list of project IDs, CustomProviderConfig, PlaygroundClientRegistry (+49 more)
 
 ### Community 248 - "Community 248"
 Cohesion: 0.08
-Nodes (31): _compile_regular_expression(), CreateModelMutationInput, CreateModelMutationPayload, DeleteModelMutationInput, DeleteModelMutationPayload, ModelMutationMixin, Compile the given string as a regular expression.     Raises a BadRequest error, Generate TokenPrice instances based on the input. (+23 more)
+Nodes (30): _compile_regular_expression(), CreateModelMutationInput, CreateModelMutationPayload, DeleteModelMutationInput, DeleteModelMutationPayload, ModelMutationMixin, Compile the given string as a regular expression.     Raises a BadRequest error, Generate TokenPrice instances based on the input. (+22 more)
 
 ### Community 249 - "Community 249"
 Cohesion: 0.08
 Nodes (30): get_openai_rate_limit_errors(), identify_openai_client(), _is_base64(), _is_url(), OpenAIAdapter, Async text generation using OpenAI client., Generate structured output using OpenAI client., Async structured output generation using OpenAI client. (+22 more)
 
 ### Community 250 - "Community 250"
-Cohesion: 0.08
-Nodes (50): AnyValue, Attributes, Any, AttributeValue, datetime, Event, KeyValue, Span (+42 more)
+Cohesion: 0.11
+Nodes (44): AnyValue, Attributes, Any, AttributeValue, datetime, Event, KeyValue, Span (+36 more)
 
 ### Community 251 - "Community 251"
-Cohesion: 0.07
-Nodes (50): AuthErrorCode, _LOWERCASE_ALPHANUMS_AND_UNDERSCORES, min_length, CanReadToken, ClaimSet, ClaimSetStatus, compute_password_hash(), delete_access_token_cookie() (+42 more)
+Cohesion: 0.33
+Nodes (6): Checks that the email has a valid format.      Args:         email (str): the, validate_email_format(), test_validate_email_format_does_not_raise_on_valid_format(), test_validate_email_format_raises_on_invalid_format(), test_validate_password_format_does_not_raise_on_valid_format(), test_validate_password_format_raises_on_invalid_format()
 
 ### Community 252 - "Community 252"
 Cohesion: 0.07
 Nodes (27): ScimToken, Session, UUID, Request, ScimToken, Session, User, Session (+19 more)
 
 ### Community 253 - "Community 253"
-Cohesion: 0.05
-Nodes (25): Any, _T, CoreSchema, GetCoreSchemaHandler, ItemsView, KeysView, KT, ST (+17 more)
+Cohesion: 0.04
+Nodes (39): Any, SecondsSinceUnixEpoch, ThreadSafeSet, _T, DriveRetrievalStage, GDriveMimeType, GoogleDriveCheckpoint, Describes the point in the retrieval+indexing process that the     connector is (+31 more)
 
 ### Community 254 - "Community 254"
 Cohesion: 0.04
-Nodes (30): DatasetEvaluatorsDataLoader, DatasetExampleRevisionsDataLoader, DocumentRetrievalMetricsDataLoader, ExperimentRunAnnotations, ExperimentSequenceNumberDataLoader, LatencyMsQuantileCache, ProjectByNameDataLoader, SpanCostSummaryByProjectSessionDataLoader (+22 more)
+Nodes (35): DatasetEvaluatorsByIdDataLoader, DatasetExampleRevisionsDataLoader, DocumentEvaluationsDataLoader, DocumentRetrievalMetricsDataLoader, ExperimentRunCountsDataLoader, SessionNumTracesWithErrorDataLoader, SpanCostDetailSummaryEntriesByTraceDataLoader, SpanCostSummaryByExperimentRepeatedRunGroupDataLoader (+27 more)
 
 ### Community 255 - "Community 255"
 Cohesion: 0.05
-Nodes (50): get_hashed_api_key_from_request(), Extract and hash API key from Authorization header.      Accepts both "Bearer <k, build_displayable_pat(), calculate_expiration(), generate_pat(), get_hashed_pat_from_request(), hash_pat(), Personal Access Token generation and validation. (+42 more)
+Nodes (47): build_displayable_pat(), calculate_expiration(), generate_pat(), get_hashed_pat_from_request(), hash_pat(), Personal Access Token generation and validation., Generate cryptographically secure PAT., Hash PAT using SHA256 (no salt needed due to cryptographic randomness). (+39 more)
 
 ### Community 256 - "Community 256"
-Cohesion: 0.07
-Nodes (47): ConnectorCredentialPair, IndexAttempt, Redis, Session, Task, IndexAttempt, Session, datetime (+39 more)
+Cohesion: 0.05
+Nodes (64): Celery, Redis, ConnectorCredentialPair, IndexAttempt, Redis, Session, Task, IndexAttempt (+56 more)
 
 ### Community 257 - "Community 257"
-Cohesion: 0.06
-Nodes (43): Agent, BaseFilters, datetime, DocumentIndex, IndexFilters, InferenceChunk, InferenceSection, LLM (+35 more)
+Cohesion: 0.03
+Nodes (89): Agent, BaseFilters, datetime, DocumentIndex, IndexFilters, InferenceChunk, InferenceSection, LLM (+81 more)
 
 ### Community 258 - "Community 258"
-Cohesion: 0.11
-Nodes (51): NewCheckLazyImportsCommand(), runCheckLazyImports(), EagerImportResult, FileViolation, CheckLazyImports(), collectPythonFiles(), compileModulePatterns(), DefaultLazyImportModules() (+43 more)
+Cohesion: 0.08
+Nodes (43): findToolCallArguments(), findToolCallId(), findToolCallName(), fromOpenAIMessage(), fromOpenAIToolCall(), fromOpenAIToolChoice(), fromOpenAIToolDefinition(), safelyConvertMessageToProvider() (+35 more)
 
 ### Community 259 - "Community 259"
 Cohesion: 0.11
 Nodes (53): test_concat_documents_no_select(), test_concat_documents_no_select_but_no_data(), test_concat_documents_with_select(), test_concat_documents_with_select_and_non_default_separator(), test_concat_documents_with_select_but_no_data(), test_concat_documents_with_select_but_with_typo_in_array_name(), test_default_project(), test_end_time() (+45 more)
 
 ### Community 260 - "Community 260"
-Cohesion: 0.08
-Nodes (50): Exception, OAuth2Client, Any, AssignableUserRoleName, AsyncSession, Secret, TypeGuard, User (+42 more)
+Cohesion: 0.05
+Nodes (89): AuthErrorCode, _LOWERCASE_ALPHANUMS_AND_UNDERSCORES, min_length, OAuth2Client, CanReadToken, ClaimSet, ClaimSetStatus, compute_password_hash() (+81 more)
 
 ### Community 261 - "Community 261"
 Cohesion: 0.14
@@ -3379,23 +4662,23 @@ Nodes (47): Path, Path, Path, Path, EndpointSpec, EndpointSpec, parse_openapi_sc
 
 ### Community 263 - "Community 263"
 Cohesion: 0.08
-Nodes (38): _Attribute, _can_recreate_via_client(), ChatPromptVersionInput, ContentPartInput, _create_chat_prompt(), CreateChatPromptInput, _GetPopulation, _GetWeather (+30 more)
+Nodes (37): _Attribute, _can_recreate_via_client(), ChatPromptVersionInput, ContentPartInput, _create_chat_prompt(), CreateChatPromptInput, _GetPopulation, _GetWeather (+29 more)
 
 ### Community 264 - "Community 264"
-Cohesion: 0.07
-Nodes (33): Any, AsyncGraphQLClient, DbSessionFactory, dataset_with_deletion(), dataset_with_evaluators(), dataset_with_patch_revision(), dataset_with_three_versions(), datasets_for_filtering() (+25 more)
+Cohesion: 0.05
+Nodes (49): add_common_args(), apply_common_args(), Add --url and --key arguments to any argparse parser., Apply --url and --key from parsed args to CONFIG., Path, main(), patch_starters(), _safe_print() (+41 more)
 
 ### Community 265 - "Community 265"
 Cohesion: 0.07
 Nodes (47): connectProviderFlow(), ConnectProviderFlowArgs, ProviderTestPayload, ProviderUpsertPayload, WEB_SEARCH_PROVIDER_ENDPOINTS, WebProviderCategory, buildContentProviderConfig(), canConnectContentProvider() (+39 more)
 
 ### Community 266 - "Community 266"
-Cohesion: 0.07
-Nodes (40): EntityType, KGEntityType, Session, EnableKGConfigRequest, KGConfigSettings, Session, KGConfigSettings, EnableKGConfigRequest (+32 more)
+Cohesion: 0.10
+Nodes (29): EnableKGConfigRequest, KGConfigSettings, Session, EnableKGConfigRequest, EntityType, Session, User, process_kg_commands() (+21 more)
 
 ### Community 267 - "Community 267"
-Cohesion: 0.07
-Nodes (50): Session, LLMProviderUpsertRequest, Session, User, create_default_image_gen_config_from_api_key(), create_image_generation_config__no_commit(), delete_image_generation_config__no_commit(), get_all_image_generation_configs() (+42 more)
+Cohesion: 0.08
+Nodes (48): Session, LLMProviderUpsertRequest, Session, User, create_default_image_gen_config_from_api_key(), create_image_generation_config__no_commit(), delete_image_generation_config__no_commit(), get_all_image_generation_configs() (+40 more)
 
 ### Community 268 - "Community 268"
 Cohesion: 0.11
@@ -3406,8 +4689,8 @@ Cohesion: 0.12
 Nodes (20): Any, ScimGroupResource, ScimPatchOperation, ScimUserResource, User, UUID, Paginated query result (RFC 7644 §3.4.2). Note capital ``Resources``.      Out, ScimListResponse (+12 more)
 
 ### Community 270 - "Community 270"
-Cohesion: 0.06
-Nodes (45): Any, Engine, aio_postgresql_engine(), aio_sqlite_engine(), create_engine(), _default(), _dumps(), _extract_iam_config_from_url() (+37 more)
+Cohesion: 0.04
+Nodes (63): Any, Engine, ConnectionMethod, aio_postgresql_engine(), aio_sqlite_engine(), create_engine(), _default(), _dumps() (+55 more)
 
 ### Community 271 - "Community 271"
 Cohesion: 0.07
@@ -3419,23 +4702,23 @@ Nodes (37): _decode_if_sqlite(), Comprehensive test for CaseInsensitiveContains 
 
 ### Community 273 - "Community 273"
 Cohesion: 0.04
-Nodes (30): Integration tests for Discord bot API endpoints.  These tests hit actual API end, Tests for /manage/admin/discord-bot/guilds endpoints., POST /guilds creates a new guild config with registration key., GET /guilds returns all guild configs., GET /guilds/{config_id} returns the specific guild config., GET /guilds/{config_id} returns 404 for non-existent guild., PATCH /guilds/{config_id} updates the guild config., Tests for /manage/admin/discord-bot/config endpoints. (+22 more)
+Nodes (27): Integration tests for Discord bot API endpoints.  These tests hit actual API end, Tests for /manage/admin/discord-bot/guilds endpoints., POST /guilds creates a new guild config with registration key., GET /guilds returns all guild configs., GET /guilds/{config_id} returns the specific guild config., GET /guilds/{config_id} returns 404 for non-existent guild., PATCH /guilds/{config_id} updates the guild config., Tests for /manage/admin/discord-bot/config endpoints. (+19 more)
 
 ### Community 274 - "Community 274"
-Cohesion: 0.05
-Nodes (51): AutoGen, GroupChatManager (AutoGen), CrewAI, CrewAI Processes (Sequential / Hierarchical), Google GenAI SDK, LangGraph, Agent Supervision / Supervisor (LangGraph), Send API (LangGraph) (+43 more)
+Cohesion: 0.08
+Nodes (27): AutoGen Core Concepts, Design Considerations and Limitations, Evaluator–Optimizer Loop, GroupChatManager (AutoGen), Orchestrator Pattern, Parallel Agent Execution, Prompt Chaining, Routing (+19 more)
 
 ### Community 275 - "Community 275"
-Cohesion: 0.06
-Nodes (46): Any, Task, Any, ChatFullResponse, Engine, EvalationAck, EvalConfigurationOptions, EvalProvider (+38 more)
+Cohesion: 0.38
+Nodes (6): Any, Task, eval_run_task(), Background task to run an evaluation with the given configuration, Scheduled task to run evaluations on configured datasets.     Runs weekly on Sun, scheduled_eval_task()
 
 ### Community 276 - "Community 276"
-Cohesion: 0.08
-Nodes (50): ConnectorCredentialPair, Document, DocumentSetCreationRequest, DocumentSetDBModel, DocumentSetUpdateRequest, Select, Session, User (+42 more)
+Cohesion: 0.09
+Nodes (47): ConnectorCredentialPair, Document, DocumentSetCreationRequest, DocumentSetDBModel, DocumentSetUpdateRequest, Select, Session, User (+39 more)
 
 ### Community 277 - "Community 277"
-Cohesion: 0.06
-Nodes (35): AccessType, ArtifactType, BuildSessionStatus, ChatSessionSharedStatus, ConnectorCredentialPairStatus, DefaultAppMode, EmbeddingPrecision, HierarchyNodeType (+27 more)
+Cohesion: 0.04
+Nodes (48): 0. Confidence Assessment & Existing Proof, 10. Verification Plan, 2. Orchestration Modes, 3. Database Schema Changes, 4. Backend Implementation, 4a. Agent-as-Tool Adapter, 4b. Workflow Engine, 4c. API Endpoints (+40 more)
 
 ### Community 278 - "Community 278"
 Cohesion: 0.06
@@ -3446,8 +4729,8 @@ Cohesion: 0.07
 Nodes (24): PhoenixContextLimitExceeded, PhoenixException, PhoenixUnsupportedAudioFormat, PhoenixUnsupportedImageFormat, GoogleGenAIModel, get_image_format_from_base64(), Determines the image format from a base64 encoded string by checking file signat, _download_image_from_url() (+16 more)
 
 ### Community 280 - "Community 280"
-Cohesion: 0.07
-Nodes (25): build_template_variables(), convert_openai_message_to_internal(), create_playground_message(), extract_and_convert_example_messages(), extract_value_from_path(), PlaygroundToolCallFunction, Helper functions for extracting and converting messages from dataset examples., Convert an OpenAI-format message to the internal PlaygroundMessage dict. (+17 more)
+Cohesion: 0.06
+Nodes (30): build_template_variables(), convert_openai_message_to_internal(), create_playground_message(), extract_and_convert_example_messages(), extract_value_from_path(), PlaygroundToolCallFunction, Helper functions for extracting and converting messages from dataset examples., Convert an OpenAI-format message to the internal PlaygroundMessage dict. (+22 more)
 
 ### Community 281 - "Community 281"
 Cohesion: 0.06
@@ -3462,28 +4745,28 @@ Cohesion: 0.08
 Nodes (29): academicSearchAction, schema, doneAction, planAction, schema, ActionRegistry, schema, scrapeURLAction (+21 more)
 
 ### Community 284 - "Community 284"
-Cohesion: 0.08
-Nodes (34): components, $defs, paths, webhooks, main(), mockExperimentRuns, mockGet, listExperiments() (+26 more)
+Cohesion: 0.07
+Nodes (28): Any, ConnectorFailure, SecondsSinceUnixEpoch, TextSection, DrupalWikiConnector, Get all attachments for a specific page.          Args:             page_id: ID, Download attachment content.          Args:             attachment_id: ID of the, Validate if the attachment file type is supported.          Args:             at (+20 more)
 
 ### Community 285 - "Community 285"
-Cohesion: 0.08
-Nodes (49): DATestUser, Response, assert_response_is_equivalent(), _create_image_gen_config(), _delete_image_gen_config(), _find_default_provider(), _find_default_vision_provider(), _get_all_image_gen_configs() (+41 more)
+Cohesion: 0.09
+Nodes (48): DATestUser, assert_response_is_equivalent(), _create_image_gen_config(), _delete_image_gen_config(), _find_default_provider(), _find_default_vision_provider(), _get_all_image_gen_configs(), _get_all_providers_admin() (+40 more)
 
 ### Community 286 - "Community 286"
-Cohesion: 0.09
-Nodes (45): CherryPickState, cherryPickToRelease(), createCherryPickPR(), extractPRNumbers(), findNearestStableTag(), finishCherryPick(), NewCherryPickCommand(), normalizeVersion() (+37 more)
+Cohesion: 0.08
+Nodes (35): Celery, Task, Event, Thread, Any, Queue, ConnectorIndexingLogBuilder, docfetching_proxy_task() (+27 more)
 
 ### Community 287 - "Community 287"
-Cohesion: 0.06
-Nodes (40): ExportTraceServiceResponse, Any, Request, ServicerContext, Any, CanReadToken, ExportTraceServiceRequest, ProjectName (+32 more)
+Cohesion: 0.04
+Nodes (57): AuthCredentials, BaseUser, ExportTraceServiceResponse, HTTPConnection, Request, Any, CanReadToken, Request (+49 more)
 
 ### Community 288 - "Community 288"
-Cohesion: 0.06
-Nodes (31): Test cases for the generate_classification_schema function., Test that explanation field is properly handled based on include_explanation par, Test that explanation field appears before label field in properties., Test that required fields are in the correct order., Test complete schema generation with various combinations of parameters., Test that invalid inputs raise appropriate ValueError exceptions., Test that string labels generate proper enum schema., Test that dict labels with optional description field work correctly. (+23 more)
+Cohesion: 0.05
+Nodes (40): Imports and registers all adapters, register_adapters(), Test cases for the generate_classification_schema function., Test that explanation field is properly handled based on include_explanation par, Test that explanation field appears before label field in properties., Test that required fields are in the correct order., Test complete schema generation with various combinations of parameters., Test that invalid inputs raise appropriate ValueError exceptions. (+32 more)
 
 ### Community 291 - "Community 291"
-Cohesion: 0.07
-Nodes (42): OmLoggingAdapter, SlackChannelConfig, SlackMessageInfo, ThreadMessage, WebClient, WebClient, OmLoggingAdapter, Session (+34 more)
+Cohesion: 0.08
+Nodes (33): OmLoggingAdapter, SlackChannelConfig, SlackMessageInfo, ThreadMessage, WebClient, WebClient, OmLoggingAdapter, Session (+25 more)
 
 ### Community 292 - "Community 292"
 Cohesion: 0.07
@@ -3502,16 +4785,16 @@ Cohesion: 0.10
 Nodes (48): Any, AsyncClient, DbSessionFactory, StringIO, Test CSV upload with split_keys, including whitespace stripping., Test JSONL upload with split_keys, including whitespace stripping., Test PyArrow upload with split_keys., Test that uploading datasets reuses existing splits instead of creating duplicat (+40 more)
 
 ### Community 296 - "Community 296"
-Cohesion: 0.06
-Nodes (39): log_structured_event(), Structured (OpenSearch-friendly) event logging for the WS-H feature set.  CONT, Best-effort read of the current tenant id; never raises., Emit one JSON structured log line for OpenSearch ingestion.      Never raises:, Time a block and emit a structured event on exit.      Yields a mutable contex, _resolve_tenant_id(), timed_event(), fetch_custom_analytics_script() (+31 more)
+Cohesion: 0.18
+Nodes (16): fetch_custom_analytics_script(), fetch_settings(), get_logo(), get_logotype(), Application settings API (clean-room replacement for enterprise-settings).  Se, update_custom_analytics_script(), update_settings(), upload_logo() (+8 more)
 
 ### Community 297 - "Community 297"
-Cohesion: 0.06
-Nodes (30): Any, SearchSettings, IndexingSetting, AssistantKnowledgeFilters, BaseFilters, BasicChunkRequest, ChunkIndexRequest, ChunkSearchRequest (+22 more)
+Cohesion: 0.08
+Nodes (16): Any, SearchSettings, IndexingSetting, InferenceChunk, InferenceChunkUncleaned, Convert a sequence of InferenceChunk or InferenceSection objects to SearchDoc ob, Convert a SavedSearchDoc to SearchDoc by dropping the db_doc_id field., IMPORTANT: careful using this and not providing a db_doc_id If db_doc_id is not (+8 more)
 
 ### Community 298 - "Community 298"
-Cohesion: 0.12
-Nodes (45): ActionsBlock, Block, ChannelConfig, ChatBasicResponse, datetime, SearchDoc, SlackMessageInfo, DocumentSource (+37 more)
+Cohesion: 0.15
+Nodes (40): ActionsBlock, Block, ChannelConfig, ChatBasicResponse, datetime, SearchDoc, SlackMessageInfo, ActionsBlock (+32 more)
 
 ### Community 299 - "Community 299"
 Cohesion: 0.11
@@ -3519,27 +4802,27 @@ Nodes (35): LLMProviderUpsertRequest, LLMProviderView, Session, _mask_string(), 
 
 ### Community 300 - "Community 300"
 Cohesion: 0.05
-Nodes (44): accuracy(), accuracy_label(), jaccard_similarity(), jaccard_similarity2(), task(), dummy_task(), random_score(), random_score_with_bias() (+36 more)
+Nodes (45): accuracy(), accuracy_label(), jaccard_similarity(), jaccard_similarity2(), task(), dummy_task(), random_score(), random_score_with_bias() (+37 more)
 
 ### Community 301 - "Community 301"
-Cohesion: 0.09
-Nodes (46): AgentLabelPatchRequest, AgentShareRequest, create_agent(), create_label(), delete_agent(), delete_label(), get_agent(), get_agents_admin_paginated() (+38 more)
+Cohesion: 0.05
+Nodes (29): ConnectorMapping, Registry mapping for connector classes., Unit tests for lazy loading connector factory to validate: 1. All connector mapp, Test that connector classes are cached after first load., Test handling of import errors., Test handling of missing class in module., Test the identify_connector_class function., Clear cache before each test. (+21 more)
 
 ### Community 302 - "Community 302"
-Cohesion: 0.06
-Nodes (31): Authorization, IsAdmin, IsAdminIfAuthEnabled, IsLocked, IsNotReadOnly, IsNotViewer, Permission class that restricts data-modifying operations when insufficient stor, Create user-friendly error message when storage operations are blocked. (+23 more)
+Cohesion: 0.17
+Nodes (12): Authorization, IsAdmin, IsAdminIfAuthEnabled, IsLocked, IsNotReadOnly, IsNotViewer, Permission class that restricts data-modifying operations when insufficient stor, Create user-friendly error message when storage operations are blocked. (+4 more)
 
 ### Community 303 - "Community 303"
-Cohesion: 0.08
-Nodes (41): get_invited_users(), get_pending_users(), remove_user_from_invited_users(), write_invited_users(), write_pending_users(), DocumentSource, GoogleAppCredentials, GoogleServiceAccountKey (+33 more)
+Cohesion: 0.04
+Nodes (46): 1. Automated Data Analysis Pipeline, 2. Code Debug & Fix Assistant, 3. ML Model Rapid Prototyper, 4. IT Incident Triage & Resolution, 5. Data Analyst - Chart Generator (Persona/Agent), Automated test runner (12 tests for coding workflows), Datasets in this directory, Domain-Specific Multi-Agent Workflows (6 New) (+38 more)
 
 ### Community 304 - "Community 304"
 Cohesion: 0.07
-Nodes (44): InferenceChunk, Salesforce, Session, InferenceChunk, ContentRange, censor_salesforce_chunks(), _create_empty_censored_chunk(), _extract_salesforce_object_id_from_url() (+36 more)
+Nodes (43): InferenceChunk, Salesforce, Session, InferenceChunk, ContentRange, censor_salesforce_chunks(), _create_empty_censored_chunk(), _extract_salesforce_object_id_from_url() (+35 more)
 
 ### Community 305 - "Community 305"
-Cohesion: 0.05
-Nodes (28): MessageType, mock_message(), Helper to create mock Discord messages., Unit tests for Discord bot context builders.  Tests the thread and reply context, Thread with system messages only includes content messages., Bot messages in thread are included for context., Thread with only system messages returns None., Thread parent is ForumChannel - does NOT fetch starter message. (+20 more)
+Cohesion: 0.04
+Nodes (37): MessageType, mock_message(), Helper to create mock Discord messages., Unit tests for Discord bot context builders.  Tests the thread and reply context, Thread with system messages only includes content messages., Bot messages in thread are included for context., Thread with only system messages returns None., Thread parent is ForumChannel - does NOT fetch starter message. (+29 more)
 
 ### Community 306 - "Community 306"
 Cohesion: 0.06
@@ -3558,8 +4841,8 @@ Cohesion: 0.08
 Nodes (45): Agent__UserSpecificConfig, AccessToken, Memory, Session, User, UserRole, UserSpecificAssistantPreference, UUID (+37 more)
 
 ### Community 310 - "Community 310"
-Cohesion: 0.08
-Nodes (34): buildAlembicEnv(), Current(), detectPostgresHost(), Downgrade(), FindAlembicBinary(), findAlembicContainer(), History(), isContainerRunning() (+26 more)
+Cohesion: 0.04
+Nodes (46): 10. References, 1. Ambiguous Search Results: Security Considerations, 2. Mock LDAP Server Protocol Compliance, 3. Anonymous Bind Prevention, 4. Configuration Recommendations, 5. Optional Enhancements, 6. Docker Development & Testing Environment, 7. STARTTLS Implementation & Security (+38 more)
 
 ### Community 311 - "Community 311"
 Cohesion: 0.07
@@ -3579,15 +4862,15 @@ Nodes (30): _CompletionTokens, Initialize the cost calculator with token pricing
 
 ### Community 315 - "Community 315"
 Cohesion: 0.05
-Nodes (23): _OIDCServer, Dynamic test overrides for simulating IDP state changes., Consume and return user override if available., Consume and return role override if available., Consume and return email override if available., Consume and return picture override if available., A mock OpenID Connect (OIDC) server implementation for testing OAuth2/OIDC authe, Initialize a new OIDC server instance.          Args:             port: The p (+15 more)
+Nodes (20): _OIDCServer, Consume and return user override if available., Consume and return role override if available., Consume and return email override if available., Consume and return picture override if available., A mock OpenID Connect (OIDC) server implementation for testing OAuth2/OIDC authe, Generate session data for the current auth request, considering test overrides., Set up the FastAPI routes for the OIDC server.          This method configures (+12 more)
 
 ### Community 316 - "Community 316"
 Cohesion: 0.08
-Nodes (33): _auto_instrument_installed_openinference_libraries(), _construct_grpc_endpoint(), _construct_http_endpoint(), _exporter_transport(), _get_class_signature(), _has_scheme(), _maybe_grpc_endpoint(), _maybe_http_endpoint() (+25 more)
+Nodes (36): _auto_instrument_installed_openinference_libraries(), _construct_grpc_endpoint(), _construct_http_endpoint(), _exporter_transport(), _get_class_signature(), GRPCSpanExporter, _has_scheme(), _maybe_grpc_endpoint() (+28 more)
 
 ### Community 317 - "Community 317"
-Cohesion: 0.09
-Nodes (40): TodoItem, TodoStatus, ToolCallKind, ToolCallStatus, getRawInput(), getRawOutput(), getToolCallId(), getToolNameRaw() (+32 more)
+Cohesion: 0.10
+Nodes (38): TodoItem, ToolCallStatus, getRawInput(), getRawOutput(), getToolCallId(), getToolNameRaw(), ParsedArtifact, ParsedError (+30 more)
 
 ### Community 318 - "Community 318"
 Cohesion: 0.04
@@ -3598,24 +4881,24 @@ Cohesion: 0.08
 Nodes (43): Exception, Salesforce, SecondsSinceUnixEpoch, OmSalesforceSQLite, _build_created_date_time_filter_for_salesforce(), _build_last_modified_time_filter_for_salesforce(), _bulk_retrieve_from_salesforce(), fetch_all_csvs_in_parallel() (+35 more)
 
 ### Community 320 - "Community 320"
-Cohesion: 0.09
-Nodes (42): ConnectorCredentialPair, ExternalUserGroup, ExternalAccess, ExternalUserGroup, Github, get_external_access_permission(), GitHub repository visibility options., Represents a GitHub user with their basic information. (+34 more)
+Cohesion: 0.04
+Nodes (104): AdminService, Github, ConnectorCredentialPair, ExternalUserGroup, ExternalAccess, ExternalUserGroup, Github, get_external_access_permission() (+96 more)
 
 ### Community 321 - "Community 321"
-Cohesion: 0.05
-Nodes (35): BedrockFinalModelResponse, BedrockModelsRequest, get_default_llm_model_name(), get_default_vision_model_name(), LLMCost, LLMProvider, LLMProviderDescriptor, LLMProviderUpsertRequest (+27 more)
+Cohesion: 0.04
+Nodes (45): Analyze prompt for edge cases, Calculate average latency across runs, Commands, Datasets, Datasets with counts, Discover all available query fields, Discover the schema with introspection, Drill into run outputs (+37 more)
 
 ### Community 322 - "Community 322"
-Cohesion: 0.08
-Nodes (43): Any, Request, Response, SamlConfigUpsertRequest, SamlConfigView, Session, User, UserManager (+35 more)
+Cohesion: 0.04
+Nodes (82): Any, Request, Response, SamlConfigUpsertRequest, SamlConfigView, Session, User, UserManager (+74 more)
 
 ### Community 323 - "Community 323"
-Cohesion: 0.07
-Nodes (32): Any, Exception, Placement, ToolResponse, CodeInterpreterClient, FileInput, CIStreamEvent, ExecuteResponse (+24 more)
+Cohesion: 0.25
+Nodes (7): Remove a surrounding markdown code fence (```python ... ```), if present.      T, Ask the LLM to repair failing code given the traceback.          Returns correct, Truncate output string to max_length and append truncation message if needed., Truncate keeping the TAIL of the string (with a leading marker).      Used for t, _strip_code_fences(), _truncate_output(), _truncate_tail()
 
 ### Community 324 - "Community 324"
-Cohesion: 0.07
-Nodes (39): construct_agent(), construct_agent(), AgentState, call_llm(), create_rag_agent(), extract_qa_evaluations(), extract_query_node(), extract_retrieval_evaluations() (+31 more)
+Cohesion: 0.08
+Nodes (34): AgentState, call_llm(), extract_qa_evaluations(), extract_query_node(), extract_retrieval_evaluations(), main(), MessageHistory, LangGraph RAG Agent with Manual Phoenix Instrumentation and Evaluation  This e (+26 more)
 
 ### Community 325 - "Community 325"
 Cohesion: 0.09
@@ -3630,56 +4913,56 @@ Cohesion: 0.09
 Nodes (37): AgnoSVG(), AnthropicSVG(), BedrockSVG(), BeeAISVG(), ClaudeSVG(), CrewAISVG(), DSPYSVG(), GeminiSVG() (+29 more)
 
 ### Community 328 - "Community 328"
-Cohesion: 0.12
-Nodes (19): Adapters for different LLM SDKs and providers., Imports and registers all adapters, register_adapters(), GoogleGenAIAdapter, GoogleGenAIRateLimitError, identify_google_genai_client(), Extract text from content, handling both string and structured content., Transform List[Message] TypedDict to Google GenAI format.          Note: Syste (+11 more)
+Cohesion: 0.10
+Nodes (25): Adapters for different LLM SDKs and providers., Logger, LoggerAdapter, Exception, get_google_genai_rate_limit_errors(), GoogleGenAIAdapter, GoogleGenAIRateLimitError, identify_google_genai_client() (+17 more)
 
 ### Community 329 - "Community 329"
-Cohesion: 0.06
-Nodes (44): PyPI Analytics Script, Grafana Dashboard File Provider, Grafana Prometheus Datasource, cAdvisor Container Metrics, PostgreSQL Database Service (port 5433), Phoenix DevOps Docker Compose Environment, Grafana Service (compose), OIDC Dev Server Service (compose) (+36 more)
+Cohesion: 0.11
+Nodes (24): Analytics, How to Run, Grafana Dashboard File Provider, Grafana Prometheus Datasource, cAdvisor Container Metrics, PostgreSQL Database Service (port 5433), Phoenix DevOps Docker Compose Environment, Grafana Service (compose) (+16 more)
 
 ### Community 330 - "Community 330"
-Cohesion: 0.09
-Nodes (42): datetime, KGEntity, KGEntityExtractionStaging, Session, Document, KGEntity, KGEntityExtractionStaging, KGRelationshipExtractionStaging (+34 more)
+Cohesion: 0.07
+Nodes (46): datetime, KGEntity, KGEntityExtractionStaging, Session, Document, KGEntity, KGEntityExtractionStaging, KGRelationshipExtractionStaging (+38 more)
 
 ### Community 331 - "Community 331"
-Cohesion: 0.08
-Nodes (20): Session, PostgresBackedFileStore, Session, delete_file_content_by_file_id(), get_file_content_by_file_id(), get_file_content_by_file_id_optional(), Atomic upsert using INSERT ... ON CONFLICT DO UPDATE to avoid     race condition, Move a file_content row from old_file_id to new_file_id in-place.      This avoi (+12 more)
+Cohesion: 0.04
+Nodes (44): 10. Add credential template, 11. Source colors, 1. Add `FOLDER` to DocumentSource enum + description, 2. Add config variables, 3. Extract shared utils from File Connector, 4. Create Folder Connector, 5. Register connector, 6. Add SYNC config (EE — permission sync registration) (+36 more)
 
 ### Community 332 - "Community 332"
-Cohesion: 0.08
-Nodes (38): FileDescriptor, InMemoryChatFile, KnowledgeFile, Session, UUID, ChatFileType, get_default_file_store(), Returns the configured file store implementation based on FILE_STORE_BACKEND. (+30 more)
+Cohesion: 0.10
+Nodes (31): FileDescriptor, InMemoryChatFile, KnowledgeFile, Session, UUID, ChatFileType, build_frontend_file_url(), build_full_frontend_file_url() (+23 more)
 
 ### Community 333 - "Community 333"
 Cohesion: 0.10
-Nodes (30): RateLimitPolicy, RateLimitScope, Session, User, UUID, Live budget view for a single active policy (remaining-budget API + admin gauge), RemainingBudgetItem, Pure sliding-window arithmetic for a given period, evaluated at ``now_ms``. (+22 more)
+Nodes (28): Any, RateLimitPolicy, User, UUID, Live budget view for a single active policy (remaining-budget API + admin gauge), RemainingBudgetItem, log_ratelimit_event(), observe_check() (+20 more)
 
 ### Community 334 - "Community 334"
 Cohesion: 0.12
 Nodes (24): Any, And, _compare(), Comparison, _eq(), FilterNode, _get_ci(), Not (+16 more)
 
 ### Community 335 - "Community 335"
-Cohesion: 0.16
-Nodes (31): DATestUser, FileDescriptor, LLMOverride, Response, UUID, DAQueryHistoryEntry, DATestChatMessage, DATestChatSession (+23 more)
+Cohesion: 0.05
+Nodes (44): 1. Password Policy Handling, 2. Retry Logic for Transient Failures, 3. Metrics/Observability, 4. Nested Group Resolution for Active Directory, 5. Connection Health Checks, 6. Group Search Pagination, API Response Updates, Configuration (+36 more)
 
 ### Community 336 - "Community 336"
 Cohesion: 0.10
-Nodes (35): _down(), Verify that the database is in a clean state before running migrations.      T, _up(), _verify_clean_state(), _version_num(), Test the migration that changes the column type from JSONB to JSON for the, test_change_jsonb_to_json_for_prompts(), test_data_migration_for_project_sessions() (+27 more)
+Nodes (36): _down(), Verify that the database is in a clean state before running migrations.      T, _up(), _verify_clean_state(), _version_num(), Test the migration that changes the column type from JSONB to JSON for the, test_change_jsonb_to_json_for_prompts(), test_data_migration_for_project_sessions() (+28 more)
 
 ### Community 337 - "Community 337"
 Cohesion: 0.05
 Nodes (25): DemoClass, function_with_args(), MockCallableWithoutName, Test getting name of a partial function wrapping a method., Test getting name of a deeply nested local function., A function with arguments., Test getting name of a partial function wrapping a lambda., Test getting name of a builtin function. (+17 more)
 
 ### Community 338 - "Community 338"
-Cohesion: 0.09
-Nodes (26): GenAIGenerateContentResponse, _extract_last_user_message(), _google_schema_to_json_schema(), _LLMRequestHandler, Handle Anthropic messages endpoint (streaming)., Stream text content for Anthropic using Pydantic models.          Echoes the l, Send an Anthropic SSE event. Data should be a JSON string., Handle AWS Bedrock ConverseStream endpoint with binary event stream. (+18 more)
+Cohesion: 0.05
+Nodes (56): ChatCompletionToolUnionParam, CompletionCreateParamsStreaming, GenAIGenerateContentResponse, _BedrockConverseRequest, _estimate_tokens(), _extract_last_user_message(), _generate_anthropic_tool_use_id(), _generate_bedrock_tool_use_id() (+48 more)
 
 ### Community 339 - "Community 339"
 Cohesion: 0.07
-Nodes (28): InsertedSessionAnnotation, Any, AsyncClient, Client, SessionAnnotationData, SessionData, _AnnotatorKind, SessionAnnotationData (+20 more)
+Nodes (25): InsertedSessionAnnotation, Any, AsyncClient, Client, SessionAnnotationData, SessionData, SessionAnnotationData, AsyncSessions (+17 more)
 
 ### Community 340 - "Community 340"
-Cohesion: 0.07
-Nodes (37): Any, _create_document_annotation(), _extract_id_value(), _extract_id_value_from_index(), _get_index_names(), _IdConfig, _is_multiindex(), _is_valid_value() (+29 more)
+Cohesion: 0.06
+Nodes (44): _AnnotatorKind, Any, _create_document_annotation(), _create_session_annotation(), _create_span_annotation(), _create_trace_annotation(), _extract_id_value(), _extract_id_value_from_index() (+36 more)
 
 ### Community 341 - "Community 341"
 Cohesion: 0.07
@@ -3694,24 +4977,24 @@ Cohesion: 0.08
 Nodes (24): Namespace, color_output(), CompareAnalysis, Make the comparison between 2 analysis for a specific query          Args:, Try to identify differences between the two analysis based             on the se, Try to identify possible reasons why a change has been detected by             c, Check if the scores have changed between analysis.          Returns:, Check if the selected documents are the same and in the same order.          Ret (+16 more)
 
 ### Community 344 - "Community 344"
-Cohesion: 0.12
-Nodes (42): AssistantMessage, ModelResponse, MonkeyPatch, ChatCompletionDeltaToolCall, LitellmLLM, _accumulate_stream_to_assistant_message(), _create_delta(), default_multi_llm() (+34 more)
+Cohesion: 0.13
+Nodes (40): AssistantMessage, ModelResponse, MonkeyPatch, ChatCompletionDeltaToolCall, LitellmLLM, _accumulate_stream_to_assistant_message(), _create_delta(), default_multi_llm() (+32 more)
 
 ### Community 345 - "Community 345"
-Cohesion: 0.08
-Nodes (39): Evaluators, Example, _bind_task_signature(), _convert_client_dataset(), _decode_unix_nano(), evaluate_experiment(), _evaluators_by_name(), _get_all_experiment_runs() (+31 more)
+Cohesion: 0.04
+Nodes (80): Test DatasetKeys with split_keys included., Test that split keys cannot overlap with input keys., Test that split keys cannot overlap with output keys., Test that split keys cannot overlap with metadata keys., Test that check_differences validates split keys exist in available columns., Test DatasetKeys with empty split_keys (default behavior)., TestDataset, TestDatasetKeys (+72 more)
 
 ### Community 346 - "Community 346"
-Cohesion: 0.05
-Nodes (25): LDAPGroup, _LDAPServer, LDAPUser, Mock LDAP server for integration testing.  This module provides a lightweight, Mock LDAP server for integration testing.      Implements minimal LDAP protoco, Initialize mock LDAP server.          Args:             port: TCP port to lis, Add or update a user in the mock directory.          Args:             userna, LDAP server hostname. (+17 more)
+Cohesion: 0.07
+Nodes (15): _LDAPServer, Mock LDAP server for integration testing.      Implements minimal LDAP protoco, Initialize mock LDAP server.          Args:             port: TCP port to lis, Add or update a user in the mock directory.          Args:             userna, LDAP server hostname., Service account bind DN., Service account bind password., Base DN for user searches. (+7 more)
 
 ### Community 347 - "Community 347"
-Cohesion: 0.06
-Nodes (26): Any, TemplateFormatter, FStringTemplateFormatter, Regular f-string template formatter.      Supports path variables like `{refer, Tests for FStringTemplateFormatter.parse_with_types() (default implementation)., Test that FString formatter treats all variables as string (default)., Tests for F-string path variable support with dict wrapping., Test that path variables work with nested dicts. (+18 more)
+Cohesion: 0.05
+Nodes (35): ChatCompletionMessageRole, PromptTemplateFormat, TemplateFormatter, Any, TemplateFormatter, PromptMessageRole, convert_chat_role_to_prompt_role(), get_template_formatter() (+27 more)
 
 ### Community 348 - "Community 348"
 Cohesion: 0.08
-Nodes (29): adminRoutes, router, adminWebSocket, WebSocketMessage, createEndpointHandler(), createProviderMiddleware(), handleFailureInjection(), sleep() (+21 more)
+Nodes (30): adminRoutes, router, adminWebSocket, WebSocketMessage, createEndpointHandler(), createProviderMiddleware(), handleFailureInjection(), sleep() (+22 more)
 
 ### Community 349 - "Community 349"
 Cohesion: 0.08
@@ -3738,12 +5021,12 @@ Cohesion: 0.08
 Nodes (29): getSearxngURL(), GET(), Topic, websitesForTopic, ImageSearchBody, POST(), searchSearxng(), SearxngSearchOptions (+21 more)
 
 ### Community 355 - "Community 355"
-Cohesion: 0.13
-Nodes (38): Default, Result, Self, State, Url, Option, PathBuf, RwLock (+30 more)
+Cohesion: 0.10
+Nodes (53): AppHandle, Default, Result, Self, State, Url, Menu, Option (+45 more)
 
 ### Community 356 - "Community 356"
 Cohesion: 0.09
-Nodes (37): client, main(), openai, PromptVersion, PromptModelProviders, AnthropicPromptVersionInput, AwsPromptVersionInput, AzureOpenAIPromptVersionInput (+29 more)
+Nodes (35): client, main(), openai, PromptVersion, PromptModelProviders, AnthropicPromptVersionInput, AwsPromptVersionInput, AzureOpenAIPromptVersionInput (+27 more)
 
 ### Community 357 - "Community 357"
 Cohesion: 0.10
@@ -3754,20 +5037,20 @@ Cohesion: 0.05
 Nodes (41): background, decoration, family, colors, dark, light, primary, contextual (+33 more)
 
 ### Community 359 - "Community 359"
-Cohesion: 0.09
-Nodes (29): get_display_email(), ChatSessionDetail, datetime, PaginatedSessions, QAFeedbackType, Session, StreamingResponse, User (+21 more)
+Cohesion: 0.05
+Nodes (43): Admin Provisioning, Approaches Considered and Rejected, Azure AD Claim Analysis, Azure AD v1.0 Endpoints, Background, Behavior, Case Sensitivity, Changing Configuration for Existing Deployments (+35 more)
 
 ### Community 360 - "Community 360"
-Cohesion: 0.08
-Nodes (31): GenerateDocumentsOutput, PydanticHierarchyNode, Session, SlimDocument, _cleanup_test_hierarchy_nodes(), _make_hierarchy_nodes(), _make_slim_docs(), MockSlimConnectorWithPermSync (+23 more)
+Cohesion: 0.15
+Nodes (21): PydanticHierarchyNode, Session, SlimDocument, _cleanup_test_hierarchy_nodes(), _make_hierarchy_nodes(), _make_slim_docs(), MockSlimConnectorWithPermSync, External dependency unit tests for pruning hierarchy node extraction and DB pers (+13 more)
 
 ### Community 361 - "Community 361"
 Cohesion: 0.10
 Nodes (29): Agent, FederatedConnector, Session, SlackBot, SlackChannelConfig, User, Result from a single Slack query including stats., SlackQueryResult (+21 more)
 
 ### Community 362 - "Community 362"
-Cohesion: 0.07
-Nodes (32): DATestCCPair, DATestUser, Session, User, GitHubTestEnvSetupTuple, Github, Change the visibility of a repository.          Args:             repo_owner: Re, Add a team to a repository with specified permissions.          Args: (+24 more)
+Cohesion: 0.08
+Nodes (36): Any, from_litellm_model_response(), from_litellm_model_response_stream(), Message, _parse_delta_tool_calls(), _parse_function_call(), _parse_message_tool_calls(), Parse tool calls for streaming responses (delta format). (+28 more)
 
 ### Community 363 - "Community 363"
 Cohesion: 0.08
@@ -3786,8 +5069,8 @@ Cohesion: 0.11
 Nodes (18): AsyncExecutor, ConcurrencyController, ExecutionDetails, ExecutionStatus, Executor, get_executor_on_sync_context(), A class that provides asynchronous execution of tasks using a producer-consumer, Synchronous executor for generating outputs from inputs using a given generation (+10 more)
 
 ### Community 367 - "Community 367"
-Cohesion: 0.07
-Nodes (22): _InsertableT, DocumentAnnotation, Insertable, Insertables, Postponed, Precursors, QueueInserter, Add postponed items back to the queue for retry. (+14 more)
+Cohesion: 0.06
+Nodes (24): _InsertableT, DocumentAnnotation, Insertable, Insertables, Postponed, Precursors, QueueInserter, Add postponed items back to the queue for retry. (+16 more)
 
 ### Community 368 - "Community 368"
 Cohesion: 0.05
@@ -3795,7 +5078,7 @@ Nodes (41): dependencies, axios, better-sqlite3, clsx, drizzle-orm, @google/gena
 
 ### Community 369 - "Community 369"
 Cohesion: 0.05
-Nodes (40): author, bugs, url, dependencies, @arizeai/openinference-semantic-conventions, @arizeai/openinference-vercel, @opentelemetry/api, @opentelemetry/core (+32 more)
+Nodes (37): author, bugs, url, dependencies, @arizeai/openinference-semantic-conventions, @arizeai/openinference-vercel, @opentelemetry/api, @opentelemetry/core (+29 more)
 
 ### Community 370 - "Community 370"
 Cohesion: 0.05
@@ -3806,28 +5089,28 @@ Cohesion: 0.07
 Nodes (23): DisposableEmailValidator, is_disposable_email(), Utility to validate and block disposable/temporary email addresses.  This module, Get the cached set of disposable email domains.         Refreshes the cache if n, Check if an email address uses a disposable domain.          Args:             e, Check if an email address uses a disposable/temporary domain.      This is a con, Force a refresh of the disposable domains list.      This can be called manually, Thread-safe singleton validator for disposable email domains.      Fetches and c (+15 more)
 
 ### Community 372 - "Community 372"
-Cohesion: 0.08
-Nodes (39): ChatFileType, ChatLoadedFile, ChatMessage, ChatMessageSimple, ChatSession, ChatSessionCreationRequest, CitationInfo, DbSearchDoc (+31 more)
+Cohesion: 0.05
+Nodes (43): Appendices, Approach 1: Zero-Migration Strategy, Approach 2: Schema Migration, Approach Comparison, Architecture Overview, Authentication Flow (Simplified), Authentication Framework, Authentication Method Framework (+35 more)
 
 ### Community 373 - "Community 373"
-Cohesion: 0.10
-Nodes (38): Connector, datetime, DocumentSource, IndexAttempt, InputType, ObjectCreationIdResponse, Session, StatusResponse (+30 more)
+Cohesion: 0.07
+Nodes (51): ConnectorCredentialPair, Session, Connector, datetime, DocumentSource, IndexAttempt, InputType, ObjectCreationIdResponse (+43 more)
 
 ### Community 374 - "Community 374"
-Cohesion: 0.12
-Nodes (37): Agent, Any, ChannelConfig, Session, SlackChannelConfig, User, ChannelConfig, Session (+29 more)
+Cohesion: 0.10
+Nodes (40): Agent, ChannelConfig, Session, SlackChannelConfig, User, Session, SlackChannelConfig, ChannelConfig (+32 more)
 
 ### Community 375 - "Community 375"
-Cohesion: 0.08
-Nodes (40): Experiment (Python Quickstart), Financial Completeness Evaluator (Python), Evaluation (Python Quickstart), Prompt Hub, Prompt Playground, Arize AX vs Phoenix Product Distinction, CrewAI Financial Research Chatbot, Phoenix Cloud (+32 more)
+Cohesion: 0.21
+Nodes (13): Experiment (Python Quickstart), Financial Completeness Evaluator (Python), Evaluation (Python Quickstart), Prompt Hub, Prompt Playground, Arize AX vs Phoenix Product Distinction, CrewAI Financial Research Chatbot, Phoenix Cloud (+5 more)
 
 ### Community 376 - "Community 376"
 Cohesion: 0.07
 Nodes (29): _assistant_msg(), _dict(), _image(), _MockFormatter, _str(), _system_msg(), TestChatCompletionAssistantMessageParam, TestChatCompletionContentPartImageParam (+21 more)
 
 ### Community 377 - "Community 377"
-Cohesion: 0.10
-Nodes (38): Any, Request, Select, Self, _PromptIdentifier, create_prompt(), create_prompt_version_tag(), CreatePromptRequestBody (+30 more)
+Cohesion: 0.11
+Nodes (19): AnswerRule, SafeRegex, AnswerRule, Keyword / regex matching engine for standard answers (pure, persistence-free)., Persistence-free view of a standard answer, sufficient to match a message., Split a keyword-mode trigger string into individual, non-empty tokens., Matches messages against standard-answer rules.      Compiled regexes and per-, True if ``message`` triggers ``rule`` under the rule's match mode. (+11 more)
 
 ### Community 378 - "Community 378"
 Cohesion: 0.10
@@ -3842,20 +5125,20 @@ Cohesion: 0.12
 Nodes (18): AnthropicLLM, GeminiLLM, GroqLLM, LemonadeLLM, Message, LMStudioLLM, GenerateObjectInput, GenerateObjectOutput (+10 more)
 
 ### Community 381 - "Community 381"
-Cohesion: 0.09
-Nodes (18): AsyncNetworkStream, Any, ASGIApp, Event, Message, Request, Response, Scope (+10 more)
+Cohesion: 0.10
+Nodes (16): AsyncNetworkStream, Any, ASGIApp, Event, Message, Scope, ASGIWebSocketAsyncNetworkStream, ASGIWebSocketTransportError (+8 more)
 
 ### Community 382 - "Community 382"
-Cohesion: 0.09
-Nodes (35): Notification, Session, User, UUID, ReleaseNoteEntry, Session, Session, User (+27 more)
+Cohesion: 0.11
+Nodes (30): Notification, Session, User, UUID, Session, User, Notification, Session (+22 more)
 
 ### Community 383 - "Community 383"
 Cohesion: 0.08
 Nodes (28): FeatureFlagProvider, Any, User, UUID, Any, UUID, get_default_feature_flag_provider(), get_posthog_feature_flag_provider() (+20 more)
 
 ### Community 384 - "Community 384"
-Cohesion: 0.07
-Nodes (34): Config, Session, datetime, DocumentSource, DocMetadataAwareIndexChunk, DocumentIndex, Session, CorpusDoc (+26 more)
+Cohesion: 0.16
+Nodes (17): datetime, DocumentSource, DocMetadataAwareIndexChunk, Session, CorpusDoc, CorpusDoc, doc_ids_in_kb(), doc_ids_with_source() (+9 more)
 
 ### Community 385 - "Community 385"
 Cohesion: 0.11
@@ -3870,8 +5153,8 @@ Cohesion: 0.05
 Nodes (38): action, default_icon, default_popup, background, service_worker, type, chrome_url_overrides, newtab (+30 more)
 
 ### Community 388 - "Community 388"
-Cohesion: 0.07
-Nodes (26): CustomDropdown(), DefaultDropdown, DefaultDropdownElement(), DefaultDropdownProps, Option, StringOrNumberOption, timeRangeValues, AccessTypeForm() (+18 more)
+Cohesion: 0.16
+Nodes (9): timeRangeValues, dateOptions, getDateRangeString(), getFormattedDateRangeString(), getTimeAgoString(), getXDaysAgo(), getXYearsAgo(), timeOptions (+1 more)
 
 ### Community 389 - "Community 389"
 Cohesion: 0.10
@@ -3890,56 +5173,56 @@ Cohesion: 0.09
 Nodes (33): Set the global SessionManager (called from main.py lifespan)., set_session_manager(), create_app(), _ensure_docker_image_available(), lifespan(), Run the API using Uvicorn.      This is for local/dev usage. Production deploy, Ensure the Docker executor image is available locally.      This checks if the, Manage application lifespan events. (+25 more)
 
 ### Community 393 - "Community 393"
-Cohesion: 0.07
-Nodes (38): GET /api/providers, Perplexica Search API (POST /api/search), Perplexica Architecture Overview, Citations Mechanism, Classification Step, How Perplexica Works (flow), VertualAI Chrome Extension, Updating Perplexica Guide (+30 more)
+Cohesion: 0.20
+Nodes (12): VertualAI Chrome Extension, office-mcp-server docker-compose service, Document Generator Workflow, 54 docx_* Word Tools, Office MCP Server (PPT/DOCX/PDF), docx_convert_to_pdf (LibreOffice), 37 ppt_* PowerPoint Tools, Presentation Generator Workflow (+4 more)
 
 ### Community 394 - "Community 394"
 Cohesion: 0.12
 Nodes (37): DocumentSource, HierarchyNode, PydanticHierarchyNode, Session, ensure_source_node_exists(), _extract_node_permissions(), _flush_or_commit(), get_all_hierarchy_nodes_for_source() (+29 more)
 
 ### Community 395 - "Community 395"
-Cohesion: 0.10
-Nodes (37): DATestLLMProvider, DATestUser, Integration tests for image generation config endpoints.  Tests cover CRUD opera, Test getting all image generation configs., Test getting credentials for an image generation config., Test getting credentials for a non-existent config returns 404., Test updating an image generation config with new direct credentials., Test updating an image generation config by cloning from an LLM provider. (+29 more)
+Cohesion: 0.08
+Nodes (19): CodaApiClient, CodaConnector, CodaDoc, CodaPage, CodaRow, CodaTable, Fetch a specific Coda document by its ID., Fetch a specific page from a Coda document. (+11 more)
 
 ### Community 396 - "Community 396"
 Cohesion: 0.08
 Nodes (33): Any, configure_litellm_settings(), initialize_litellm(), load_model_metadata_enrichments(), Load model metadata enrichments from JSON file and merge into litellm.model_cost, # TODO: We might not need to register ollama_chat in addition to ollama but let', register_ollama_models(), Singleton module for litellm configuration. This ensures litellm is configured e (+25 more)
 
 ### Community 397 - "Community 397"
-Cohesion: 0.12
-Nodes (27): ComboBoxDropdown, ComboBoxDropdownProps, escapeRegex(), highlightMatch(), OptionItem, OptionItemProps, OptionsList(), OptionsListProps (+19 more)
+Cohesion: 0.08
+Nodes (26): _cache_key_fn(), DocumentEvaluationSummaryCache, DocumentEvaluationSummaryDataLoader, _get_stmt(), Ranking metrics computed on a list of evaluation scores sorted from high to, Normalized Discounted Cumulative Gain (NDCG) at `k` with log base 2         dis, Precision at `k`, defined as the fraction of truthy scores among first, Return `1/R` where `R` is the rank of the first hit, i.e. the 1-based         i (+18 more)
 
 ### Community 398 - "Community 398"
-Cohesion: 0.08
-Nodes (22): DiffLine, DiffViewProps, RawOutputBlockProps, ThinkingCardProps, getStatusIcon(), TodoItemRow(), TodoListCardProps, getLanguageHint() (+14 more)
+Cohesion: 0.05
+Nodes (39): API Reference, Environment Variables, External Links, Installation, Quick Start, Adding Context Attributes, Additional Features, Advanced Configuration (+31 more)
 
 ### Community 399 - "Community 399"
-Cohesion: 0.08
-Nodes (38): Dataset, Golden Dataset, How to: Datasets, How to: Experiments, Experiment, Datasets and Experiments Quickstart, Arize Phoenix Overview (Japanese), OpenTelemetry (+30 more)
+Cohesion: 0.50
+Nodes (8): How to: Experiments, Datasets and Experiments Quickstart, Dataset Evaluators, Repetitions, run_experiment, Experiment Task Function, Dataset Splits, Evaluator
 
 ### Community 400 - "Community 400"
 Cohesion: 0.12
 Nodes (29): ExperimentsWithIncompleteRuns, Any, AsyncClient, DbSessionFactory, GlobalID, Helper to fetch incomplete evaluations., Comprehensive test for /incomplete-evaluations endpoint.          This test va, A simple test of the expected flow for the experiments API flow (+21 more)
 
 ### Community 401 - "Community 401"
-Cohesion: 0.08
-Nodes (38): Horizontal scaling, Phoenix Self-Hosting Architecture, PostgreSQL storage backend, PostgreSQL schema isolation, Single-tenant model, SQLite storage backend, Phoenix server environment variables, Phoenix Self-Hosting Configuration (+30 more)
+Cohesion: 0.16
+Nodes (20): List Project Sessions (GET /v1/projects/{project_identifier}/sessions), Create Spans (POST /v1/projects/{project_identifier}/spans), px api graphql (GraphQL introspection), @arizeai/phoenix-cli (px), asEvaluator, createDataset, createPrompt, getPrompt (+12 more)
 
 ### Community 402 - "Community 402"
 Cohesion: 0.09
 Nodes (26): _AsyncSessionContextManager, mock_async_session(), mock_user_create(), _mock_user_manager_methods(), Unit tests for the user registration workflow in UserManager.create().  Tests co, Valid emails should pass domain validation., Test invite logic for multi-tenant environments., First user in tenant should not require invite. (+18 more)
 
 ### Community 403 - "Community 403"
-Cohesion: 0.11
-Nodes (27): DocPermissionSyncAttempt, ConnectorCredentialPair, DocumentSource, Session, create_doc_permission_sync_attempt(), get_doc_permission_sync_attempt(), get_latest_doc_permission_sync_attempt_for_cc_pair(), get_recent_doc_permission_sync_attempts_for_cc_pair() (+19 more)
+Cohesion: 0.10
+Nodes (22): Any, IndexingHeartbeatInterface, SecondsSinceUnixEpoch, _build_document_link(), _build_time_range_query(), _clean_email_and_extract_name(), _full_thread_from_id(), _get_message_body() (+14 more)
 
 ### Community 404 - "Community 404"
 Cohesion: 0.11
 Nodes (28): Any, LLMRecommendations, Session, fetch_existing_llm_provider(), _cleanup_provider(), _create_mock_admin(), _create_mock_llm_recommendations(), provider_name() (+20 more)
 
 ### Community 405 - "Community 405"
-Cohesion: 0.17
-Nodes (32): RateLimitPolicy, RateLimitUsage, RateLimitScope, Session, User, create_policy(), delete_policy(), get_remaining_budget() (+24 more)
+Cohesion: 0.15
+Nodes (31): RateLimitScope, Session, User, create_policy(), delete_policy(), get_remaining_budget(), get_usage_history(), list_policies() (+23 more)
 
 ### Community 406 - "Community 406"
 Cohesion: 0.08
@@ -3955,7 +5238,7 @@ Nodes (32): apiGraphqlHandler(), datasetHandler(), datasetsHandler(), downloadEx
 
 ### Community 409 - "Community 409"
 Cohesion: 0.11
-Nodes (25): _(), _ContentConversion, create_prompt_version_from_google(), _FunctionDeclarationConversion, _has_function_call(), _has_function_response(), _has_text(), _RoleConversion (+17 more)
+Nodes (26): _(), _ContentConversion, create_prompt_version_from_google(), _FunctionDeclarationConversion, GoogleModelKwargs, _has_function_call(), _has_function_response(), _has_text() (+18 more)
 
 ### Community 410 - "Community 410"
 Cohesion: 0.12
@@ -3974,28 +5257,28 @@ Cohesion: 0.12
 Nodes (35): BaseModel, DataFrame, Encoding, DataFrame, calculate_metrics(), check_keys(), compute_average_precision_at_i(), compute_precision_at_i() (+27 more)
 
 ### Community 414 - "Community 414"
-Cohesion: 0.09
-Nodes (31): DataFrame, Evaluation, Span, TraceDataset, BaseException, DataFrame, DatasetFixture, DocumentEvaluationFixture (+23 more)
+Cohesion: 0.10
+Nodes (29): DataFrame, Evaluation, Span, TraceDataset, BaseException, DataFrame, DatasetFixture, DocumentEvaluationFixture (+21 more)
 
 ### Community 415 - "Community 415"
-Cohesion: 0.20
-Nodes (34): _collect_full_response(), _effective_config(), get_search_history(), Search API router.  Endpoints (all authenticated):   POST /search/search-flow, Tenant config with per-request overrides applied., Consume the packet stream into a single non-streaming response., read_expansion_settings(), search_flow_classification() (+26 more)
+Cohesion: 0.18
+Nodes (33): SearchFlowConfig, StreamingResponse, BaseFilters, ChunkIndexRequest, DocumentIndex, HistoryTurn, IndexFilters, InferenceChunk (+25 more)
 
 ### Community 416 - "Community 416"
-Cohesion: 0.14
-Nodes (21): _assert_spans_equal(), _extract_city(), Test that providing a single split ID filters examples correctly., Test that providing multiple split IDs includes examples from all specified spli, Test backward compatibility: when no splits are specified, all examples are incl, Test that builtin evaluators use name for annotation names in dataset runs., Compare two span dictionaries with relaxed floating-point comparison for latency, _request_bodies_contain_same_city() (+13 more)
+Cohesion: 0.08
+Nodes (35): MCPLibTool, Request, Tool, ToolSnapshot, get_tools_by_mcp_server_id(), admin_list_mcp_tools_by_id(), b64url(), get_mcp_server_db_tools() (+27 more)
 
 ### Community 417 - "Community 417"
 Cohesion: 0.16
 Nodes (16): Any, datetime, GenerateDocumentsOutput, TextSection, HubSpot, HubSpotConnector, Clean HTML content and extract raw text, Generate HubSpot URL for different object types (+8 more)
 
 ### Community 418 - "Community 418"
-Cohesion: 0.10
-Nodes (35): Any, datetime, FederatedConnector, FederatedConnectorSource, Session, UUID, create_federated_connector(), create_federated_connector_document_set_mapping() (+27 more)
+Cohesion: 0.14
+Nodes (23): datetime, Session, UUID, create_federated_connector_document_set_mapping(), delete_federated_connector(), delete_federated_connector_document_set_mapping(), get_federated_connector_document_set_mappings(), get_federated_connector_document_set_mappings_by_document_set_names() (+15 more)
 
 ### Community 419 - "Community 419"
-Cohesion: 0.08
-Nodes (33): InferenceChunk, InferenceSection, LLM, InferenceChunk, LLM, Session, InferenceChunk, ContextExpansionType (+25 more)
+Cohesion: 0.12
+Nodes (23): InferenceChunk, InferenceSection, LLM, InferenceChunk, ContextExpansionType, combine_retrieval_results(), _chunk(), Tests for the post-retrieval "reranking/reordering" layer above raw retrieval. (+15 more)
 
 ### Community 420 - "Community 420"
 Cohesion: 0.08
@@ -4003,43 +5286,43 @@ Nodes (21): DATestUser, _activate_exa_provider(), Integration tests for SSRF pro
 
 ### Community 421 - "Community 421"
 Cohesion: 0.07
-Nodes (30): all_of(), any_of(), check_resource_spec(), find_env_in_containers(), find_resource(), get_deployment_containers(), HPAValidators, iter_resources_by_kind() (+22 more)
+Nodes (30): all_of(), any_of(), check_resource_spec(), find_env_in_containers(), find_resource(), get_deployment_containers(), HPAValidators, InstrumentationValidators (+22 more)
 
 ### Community 422 - "Community 422"
 Cohesion: 0.08
 Nodes (31): _find_bracket_end(), _has_start_anchor(), _is_valid_quantifier(), Regex specificity scorer based on heuristics intended for tie-breaking.  This, Check if pattern has a start anchor (after all leading inline flags).     Handl, Remove all leading inline flags and anchors from pattern for content analysis., r"""     Score the content of a pattern by analyzing each character.      Ite, r"""     Score an escape sequence.      Args:         char: The character fo (+23 more)
 
 ### Community 423 - "Community 423"
-Cohesion: 0.06
-Nodes (35): author, bugs, url, dependencies, ai, @arizeai/openinference-core, jsonpath-plus, mustache (+27 more)
+Cohesion: 0.04
+Nodes (47): author, bugs, url, dependencies, ai, @arizeai/openinference-core, jsonpath-plus, mustache (+39 more)
 
 ### Community 424 - "Community 424"
 Cohesion: 0.09
 Nodes (20): Any, Concatenation, Explosion, _normalize_field(), Projection, Represents a concatenation operation in a span query., Represents a query for spans using the query DSL., Filter spans based on a condition. (+12 more)
 
 ### Community 425 - "Community 425"
-Cohesion: 0.12
-Nodes (13): Any, Event, PriorityQueue, Signals, ConcurrencyController, ExecutionDetails, Executor, get_executor_on_sync_context() (+5 more)
+Cohesion: 0.06
+Nodes (36): Building from source & deployment (CONTRIBUTING.md), Architecture, Execution Flow, File Extraction, File Injection, File Management, File Storage API, How It Works: Architecture & Security (+28 more)
 
 ### Community 426 - "Community 426"
 Cohesion: 0.06
 Nodes (35): author, dependencies, fastify, @fastify/cors, @fastify/static, mailparser, smtp-server, zod (+27 more)
 
 ### Community 427 - "Community 427"
-Cohesion: 0.10
-Nodes (33): assign_correctness_llm_evaluator_to_dataset(), assign_exact_match_builtin_evaluator_to_dataset(), correctness_llm_evaluator(), dataset_with_experiments_and_runs(), dataset_with_experiments_runs_and_evals(), dataset_with_experiments_without_runs(), dataset_with_messages(), dataset_with_revisions() (+25 more)
+Cohesion: 0.11
+Nodes (29): correctness_llm_evaluator(), dataset_with_experiments_and_runs(), dataset_with_experiments_runs_and_evals(), dataset_with_experiments_without_runs(), dataset_with_messages(), dataset_with_revisions(), empty_dataset(), experiments_with_incomplete_runs() (+21 more)
 
 ### Community 428 - "Community 428"
 Cohesion: 0.13
 Nodes (32): create_api_key(), delete_api_key(), list_api_keys(), regenerate_existing_api_key(), update_existing_api_key(), ApiKeyDescriptor, build_displayable_api_key(), _deprecated_hash_api_key() (+24 more)
 
 ### Community 429 - "Community 429"
-Cohesion: 0.11
-Nodes (31): Agent, Any, LLM, LLMOverride, LLMProviderView, User, LLMProviderView, _build_model_kwargs() (+23 more)
+Cohesion: 0.05
+Nodes (38): 10. Timing Attack on User Existence, 1. Case Normalization of Unique ID, 1. Configuration (`src/phoenix/config.py`), 1. Unique ID is Mandatory, 2. Configuration Changes Mid-Flight, 2. LDAPUserInfo (`src/phoenix/server/ldap.py`), 2. PUA Character Safety, 3. Admin Pre-Provisioning (`PHOENIX_ADMINS`) (+30 more)
 
 ### Community 430 - "Community 430"
-Cohesion: 0.08
-Nodes (24): LLMConfig, PromptCacheProvider, PromptCacheProvider, AnthropicPromptCacheProvider, Anthropic adapter for prompt caching (explicit caching with cache_control)., Anthropic supports explicit prompt caching., Get cache TTL for Anthropic (5 minutes default)., PromptCacheProvider (+16 more)
+Cohesion: 0.03
+Nodes (75): CacheMetadata, LanguageModelInput, LLMConfig, CacheMetadata, ChatCompletionMessage, LanguageModelInput, CacheMetadata, LanguageModelInput (+67 more)
 
 ### Community 431 - "Community 431"
 Cohesion: 0.08
@@ -4050,16 +5333,16 @@ Cohesion: 0.11
 Nodes (25): Any, Response, WebSearchResult, Any, MonkeyPatch, BraveClient, _build_error_message(), _clean_string() (+17 more)
 
 ### Community 433 - "Community 433"
-Cohesion: 0.11
-Nodes (33): DataFrame, Path, build(), _build_exif(), check(), copy_prior_claims(), _deg_to_dms_rational(), load_sources() (+25 more)
+Cohesion: 0.25
+Nodes (17): DataFrame, build(), _build_exif(), copy_prior_claims(), _deg_to_dms_rational(), load_sources(), Build a realistic, multi-format synthetic evidence packet for claim CL1 (residen, Convert signed decimal degrees to EXIF (deg, min, sec) float rationals.      Pil (+9 more)
 
 ### Community 434 - "Community 434"
 Cohesion: 0.12
-Nodes (31): BedrockToolTypeDef, _input_attributes(), _llm_input_messages_attributes(), _llm_invocation_parameters_attributes(), _llm_model_name_attributes(), _llm_output_message_attributes(), _llm_span_kind_attributes(), _llm_token_usage_attributes() (+23 more)
+Nodes (32): AnthropicToolUnionParam, BedrockToolTypeDef, _input_attributes(), _llm_input_messages_attributes(), _llm_invocation_parameters_attributes(), _llm_model_name_attributes(), _llm_output_message_attributes(), _llm_span_kind_attributes() (+24 more)
 
 ### Community 435 - "Community 435"
-Cohesion: 0.07
-Nodes (20): Test that to_dict() excludes None values and includes non-None values., Test that pretty_print() calls json.dumps correctly., Tests for deprecated 'source' argument and 'heuristic' KindType support., Score should accept deprecated 'source' and convert 'heuristic' to 'code'., Evaluator should accept deprecated 'source' and convert 'heuristic' to 'code'., create_evaluator should support 'source' and convert 'heuristic' to 'code'., Providing both 'kind' and deprecated 'source' with different values should error, Evaluator constructor should also error on conflicting 'kind' and 'source'. (+12 more)
+Cohesion: 0.06
+Nodes (21): Test that to_dict() excludes None values and includes non-None values., Test that pretty_print() calls json.dumps correctly., Tests for deprecated 'source' argument and 'heuristic' KindType support., Score should accept deprecated 'source' and convert 'heuristic' to 'code'., Evaluator should accept deprecated 'source' and convert 'heuristic' to 'code'., create_evaluator should support 'source' and convert 'heuristic' to 'code'., Providing both 'kind' and deprecated 'source' with different values should error, Evaluator constructor should also error on conflicting 'kind' and 'source'. (+13 more)
 
 ### Community 436 - "Community 436"
 Cohesion: 0.07
@@ -4070,16 +5353,16 @@ Cohesion: 0.11
 Nodes (13): AzureOptions, _get_token_param_str(), _is_base64(), _is_url(), _model_supports_temperature(), OpenAIModel, Get the default parameters for calling OpenAI API., Get the token parameter string for the given model.     OpenAI o1 and o3 models (+5 more)
 
 ### Community 438 - "Community 438"
-Cohesion: 0.12
-Nodes (23): NodeStatus, _edge_label(), _load_trace(), load_workflow_trace(), load_workflow_trace_by_message(), _now_iso(), persist_workflow_trace(), Workflow execution TRACE GRAPH — models, incremental builder, and persistence. (+15 more)
+Cohesion: 0.04
+Nodes (103): AgentTool, Redis, UUID, AgentWorkflow, AgentWorkflowStep, Any, ChatFile, ChatMessageSimple (+95 more)
 
 ### Community 439 - "Community 439"
 Cohesion: 0.06
 Nodes (34): author, bin, phoenix-cli, px, bugs, url, dependencies, @arizeai/openinference-semantic-conventions (+26 more)
 
 ### Community 440 - "Community 440"
-Cohesion: 0.08
-Nodes (33): LangGraph, LlamaIndex Workflows, Agent framework comparison example, agent_framework_comparison requirements.txt, Code Generation Agent example (LangChain/LangGraph), code_gen_agent requirements.txt, Qdrant vector store, Scheduled evals with cron example (+25 more)
+Cohesion: 0.09
+Nodes (21): GPT-Researcher (inspiration), How to use, Llama Researcher, generate_report_from_context(), llamaindex-workflows-research-agent requirements.txt, get_docs_from_tavily_search(), LLM, dangerously_using_project context manager (+13 more)
 
 ### Community 441 - "Community 441"
 Cohesion: 0.09
@@ -4090,44 +5373,44 @@ Cohesion: 0.11
 Nodes (14): Any, GenerateDocumentsOutput, SecondsSinceUnixEpoch, Lightweight validation to surface common misconfigurations early., Return suites for a project. If the project is in single-suite mode,         som, Get case field definitions from TestRail API., Parse items string from field config into ID -> label mapping.          Format:, Build both field labels and value mappings in one pass.          Returns: (+6 more)
 
 ### Community 443 - "Community 443"
-Cohesion: 0.13
-Nodes (32): ColumnElement, Session, User, UserRole, UUID, Any, UUID, _make_query_chain() (+24 more)
+Cohesion: 0.12
+Nodes (35): ColumnElement, Session, User, UserRole, UUID, PaginatedReturn, UserRole, Any (+27 more)
 
 ### Community 444 - "Community 444"
-Cohesion: 0.11
-Nodes (21): Any, datetime, DocumentSource, IndexFilters, Tag, TenantState, _get_hybrid_search_normalization_weights(), get_min_max_normalization_pipeline_name_and_config() (+13 more)
+Cohesion: 0.10
+Nodes (23): Any, datetime, DocumentSource, IndexFilters, Tag, TenantState, Verifies and creates the index if necessary.          Also puts the desired clus, set_cluster_state() (+15 more)
 
 ### Community 445 - "Community 445"
-Cohesion: 0.11
-Nodes (33): Session, User, get_guild_config_by_internal_id(), Get a specific guild config by its ID., create_bot_request(), create_guild_request(), delete_bot_config_endpoint(), delete_guild_request() (+25 more)
+Cohesion: 0.10
+Nodes (33): Session, User, get_guild_configs(), Get all guild configs for this tenant., create_bot_request(), create_guild_request(), delete_bot_config_endpoint(), delete_guild_request() (+25 more)
 
 ### Community 446 - "Community 446"
 Cohesion: 0.11
 Nodes (15): Session, StandardAnswer, StandardAnswerCategory, CategoryNotFoundError, fetch_standard_answer_categories_by_ids(), Data-access layer for standard answers (repositories).  Pure persistence: each, (#answers, #slack-channels) still referencing this category.          Counts d, Idempotently seed the id=0 catch-all category used by the query API. (+7 more)
 
 ### Community 447 - "Community 447"
-Cohesion: 0.06
-Nodes (22): Session, db_session(), DBBaseTest, FileRecord, Test S3 client initialization with IAM role (no explicit credentials), Test S3 bucket name configuration, Test S3 key generation with default prefix, Test S3 key generation with custom prefix (+14 more)
+Cohesion: 0.05
+Nodes (37): Can we reuse the `connectors/` folder? — Analysis, Context, Cross-cutting constraints (from `CLAUDE.md`), Example, Example, Example, Example (template JSON), F1 — Parallel Fan-Out / Fan-In Orchestration (+29 more)
 
 ### Community 448 - "Community 448"
-Cohesion: 0.06
-Nodes (34): process_tokens(), Test that citations before mapping update are skipped., Test complex text with mixed citations and code blocks., Test get_seen_citations accumulates citations across multiple process_token call, Test leading space handling when space already exists., Test leading space handling when no space exists., Test citation formatting with link., Test citation formatting without link. (+26 more)
+Cohesion: 0.05
+Nodes (36): 1. No User Clarification / Interaction Mid-Workflow, 2. No Parallel Agent Execution, 3. LLM-Decision Mode Limitations, Current Workaround, Desired Behavior, Impact, Problem, Reference Implementation (+28 more)
 
 ### Community 449 - "Community 449"
-Cohesion: 0.06
-Nodes (18): Edge case tests for citation modes., Test REMOVE mode when citation is at the very start of text., Test REMOVE mode when citation is at the very end of text., Test REMOVE mode with multiple consecutive citations., Test REMOVE mode when citation is followed by newline., Test REMOVE mode when text is only citations., Test KEEP_MARKERS mode when citation is at the start., Test all modes with citation inside parentheses (see [1]). (+10 more)
+Cohesion: 0.05
+Nodes (36): Active Directory Configuration Example, Active Directory with Nested Groups, Advanced Authentication Configuration, API Keys, AWS Cognito, Brute Force Login Protection, Common OAuth2 Configuration Examples, Configuring LDAP Authentication (+28 more)
 
 ### Community 450 - "Community 450"
 Cohesion: 0.06
 Nodes (33): author, dependencies, @electric-sql/pglite, description, devDependencies, eslint, @eslint/js, globals (+25 more)
 
 ### Community 451 - "Community 451"
-Cohesion: 0.06
-Nodes (33): author, dependencies, @ai-sdk/openai, @arizeai/phoenix-client, @arizeai/phoenix-evals, dotenv, @mastra/arize, @mastra/client-js (+25 more)
+Cohesion: 0.05
+Nodes (38): author, dependencies, @ai-sdk/openai, @arizeai/phoenix-client, @arizeai/phoenix-evals, dotenv, @mastra/arize, @mastra/client-js (+30 more)
 
 ### Community 452 - "Community 452"
-Cohesion: 0.15
-Nodes (19): Test chat completion with multiple repetitions., Test that builtin evaluators use the name for annotation names., Test that builtin evaluators use the name for annotations in dataset runs., Test that evaluators with multiple output_configs produce one result per config., Test that providing a single split ID filters examples correctly., Test that providing multiple split IDs includes examples from all specified spli, Test basic chat completion mutation without a dataset., Test backward compatibility: when no splits are specified, all examples are incl (+11 more)
+Cohesion: 0.05
+Nodes (36): 0.0.1, 0.0.2, 0.0.3, 0.0.4, 0.1.0, 0.2.0, 0.3.0, 0.3.1 (+28 more)
 
 ### Community 453 - "Community 453"
 Cohesion: 0.09
@@ -4142,24 +5425,24 @@ Cohesion: 0.08
 Nodes (19): MockDocument, Unit tests for search utility functions., Test that higher weighted list influences ranking more., Test RRF with empty result list., Test RRF with multiple empty result lists., Test RRF with mix of empty and non-empty lists., Test that mismatched weights and results raises ValueError., Mock document for testing RRF. (+11 more)
 
 ### Community 456 - "Community 456"
-Cohesion: 0.08
-Nodes (24): AgentLabelCreate, AgentLabelResponse, AgentLabelSnapshot, AgentSharedNotificationData, AgentSnapshot, AgentUpsertRequest, AttachedDocumentSnapshot, FullAgentSnapshot (+16 more)
+Cohesion: 0.05
+Nodes (36): [0.0.5](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.0.4...arize-phoenix-evals-v0.0.5) (2024-02-24), [0.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.9.2...arize-phoenix-evals-v0.10.0) (2024-05-29), [0.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.10.0...arize-phoenix-evals-v0.11.0) (2024-05-31), [0.17.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.17.0...arize-phoenix-evals-v0.17.1) (2024-10-17), [0.17.3](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.17.2...arize-phoenix-evals-v0.17.3) (2024-11-06), [0.18.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.18.0...arize-phoenix-evals-v0.18.1) (2025-01-07), [0.19.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.18.1...arize-phoenix-evals-v0.19.0) (2025-01-16), [0.21.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.21.0...arize-phoenix-evals-v0.21.1) (2025-07-02) (+28 more)
 
 ### Community 457 - "Community 457"
 Cohesion: 0.11
 Nodes (31): check_and_refresh_oauth_tokens(), check_oauth_account_has_refresh_token(), get_oauth_accounts_requiring_refresh_token(), Check if any OAuth tokens are expired or about to expire and refresh them., Check if an OAuth account has a refresh token.     Returns True if a refresh tok, Returns a list of OAuth accounts for a user that are missing refresh tokens., # NOTE: Keeping this as a utility function for potential future debugging,, Utility function for testing - Sets an OAuth token to expire in a short time (+23 more)
 
 ### Community 458 - "Community 458"
-Cohesion: 0.11
-Nodes (31): DbDocument, Select, Session, User, UUID, Session, StatusResponse, User (+23 more)
+Cohesion: 0.12
+Nodes (24): _cleanup_chat_completion_resources(), Cleanup all resources on cancellation or error. MUST be called in a finally bloc, AsyncGenTracker, create_tracked_async_gen(), Unit tests for playground cancellation cleanup logic.  Tests the cleanup mecha, Verify generators of completed tasks are still explicitly closed.          A t, Verify all in-progress tasks and generators are cleaned up., Verify cleanup handles empty in_progress list gracefully. (+16 more)
 
 ### Community 459 - "Community 459"
 Cohesion: 0.08
-Nodes (17): Any, _CompiledMatcher, linear_time_engine_available(), _load_re2(), _looks_catastrophic(), ReDoS-resistant regular-expression handling for standard answers.  Admin-autho, Validate an admin-supplied regex; raise :class:`UnsafeRegexError` if unusable., A validated, compiled pattern that searches within a bounded input.      Const (+9 more)
+Nodes (20): Pattern, Any, _CompiledMatcher, linear_time_engine_available(), _load_re2(), _looks_catastrophic(), ReDoS-resistant regular-expression handling for standard answers.  Admin-autho, Validate an admin-supplied regex; raise :class:`UnsafeRegexError` if unusable. (+12 more)
 
 ### Community 460 - "Community 460"
-Cohesion: 0.06
-Nodes (33): CitationMapping, Test citations at stream boundaries., Test full conversation flow with multiple turns., Test real-world citation patterns., Test get_next_citation_number returns max + 1 when citations exist., Test get_next_citation_number with non-sequential citation numbers., Test that citing the same document multiple times only adds it once to seen_cita, Test processing a single citation [1]. (+25 more)
+Cohesion: 0.11
+Nodes (35): MCPServer, MCPServerStatus, Session, User, connect_admin_oauth(), _connect_oauth(), connect_user_oauth(), create_mcp_server_simple() (+27 more)
 
 ### Community 461 - "Community 461"
 Cohesion: 0.06
@@ -4170,12 +5453,12 @@ Cohesion: 0.06
 Nodes (32): author, bin, @arizeai/phoenix-mcp, bugs, url, dependencies, @arizeai/phoenix-client, glob (+24 more)
 
 ### Community 463 - "Community 463"
-Cohesion: 0.07
-Nodes (33): Phoenix Tracing README, Phoenix Tracing Skill, Annotations, Annotator Kind (HUMAN/LLM/CODE), Python Annotation Patterns, TypeScript Annotation Patterns, Flattening Convention, Context Propagation (trace_id/span_id/parent_id) (+25 more)
+Cohesion: 0.20
+Nodes (11): Phoenix Tracing README, Phoenix Tracing Skill, Annotations, Annotator Kind (HUMAN/LLM/CODE), Python Annotation Patterns, TypeScript Annotation Patterns, Context Propagation (trace_id/span_id/parent_id), OpenInference Semantic Conventions (+3 more)
 
 ### Community 464 - "Community 464"
-Cohesion: 0.06
-Nodes (4): getDefaultModelSelector(), getLLMProviderOptions(), test, DEFAULT_PORT
+Cohesion: 0.07
+Nodes (6): getProviderCard(), openProviderModal(), PROVIDERS, getDefaultModelSelector(), getLLMProviderOptions(), test
 
 ### Community 465 - "Community 465"
 Cohesion: 0.09
@@ -4186,32 +5469,32 @@ Cohesion: 0.10
 Nodes (30): AnnotationTableName, _get_table_schema_info(), Schema information for a database table.      This class encapsulates all sche, Get schema information for a database table.      Retrieves comprehensive sche, _TableSchemaInfo, _get_common_annotation_columns(), _get_common_constraint_names(), _get_common_nullable_columns() (+22 more)
 
 ### Community 467 - "Community 467"
-Cohesion: 0.09
-Nodes (25): AnthropicInstrumentor, BetaMessage, BetaMessageParam, BetaTextBlockParam, BetaToolResultBlockParam, BetaToolUseBlockParam, call_llm(), ComputerUseState (+17 more)
+Cohesion: 0.13
+Nodes (15): AnthropicInstrumentor, BetaMessage, BetaTextBlockParam, BetaToolUseBlockParam, call_llm(), ComputerUseState, initialize_instrumentor(), main() (+7 more)
 
 ### Community 468 - "Community 468"
-Cohesion: 0.09
-Nodes (29): Session, datetime, DocumentSource, BaseMessage, build_reminder_message(), build_system_prompt(), _build_user_information_section(), calculate_reserved_tokens() (+21 more)
+Cohesion: 0.07
+Nodes (40): UserMemoryContext, InferenceSection, datetime, DocumentSource, DocumentIndex, InferenceSection, BaseMessage, build_reminder_message() (+32 more)
 
 ### Community 469 - "Community 469"
-Cohesion: 0.11
-Nodes (30): DiscordChannelView, Session, bulk_create_channel_configs(), create_channel_config(), delete_discord_channel_config(), get_channel_config_by_discord_ids(), get_channel_config_by_internal_ids(), get_channel_configs() (+22 more)
+Cohesion: 0.09
+Nodes (40): DiscordChannelView, Session, bulk_create_channel_configs(), create_channel_config(), create_guild_config(), delete_discord_channel_config(), delete_guild_config(), get_channel_config_by_discord_ids() (+32 more)
 
 ### Community 470 - "Community 470"
 Cohesion: 0.12
 Nodes (19): AgentSpanData, Any, FunctionSpanData, GenerationSpanData, Logger, Span, SpanData, Trace (+11 more)
 
 ### Community 471 - "Community 471"
-Cohesion: 0.11
-Nodes (18): Any, PostgresBackedFileStore, _make_session_ctx(), _mock_lobject(), Unit tests for PostgresBackedFileStore.  These tests mock the database layer (se, StringIO content should be encoded to UTF-8 bytes., Build a context-manager mock that yields mock_session., Changing file ID should reuse the same large object (no copy). (+10 more)
+Cohesion: 0.06
+Nodes (34): 1. Tracing a function, 2. As a with clause to trace specific code blocks, Adding Images to your Traces, Additional Features, Agents, Chains, Context Manager, Context Manager (+26 more)
 
 ### Community 472 - "Community 472"
 Cohesion: 0.10
 Nodes (32): Dify Tracing, Arize Phoenix (observability platform), Flowise Tracing, LangFlow Tracing, Dify, Flowise, LangFlow, Prompt flow (Microsoft PromptFlow) (+24 more)
 
 ### Community 473 - "Community 473"
-Cohesion: 0.08
-Nodes (19): Key created in tenant 1 cannot be used in tenant 2 context., Key format discord_<tenant_id>.<token> encodes correct tenant., parse_discord_registration_key(), Discord registration key generation and parsing., Parse registration key to extract tenant_id.      Returns tenant_id or None if i, Key with empty token part returns None., Tenant ID with URL encoding is decoded correctly., Key with special characters in tenant ID. (+11 more)
+Cohesion: 0.07
+Nodes (20): List guilds returns exactly the guilds for that tenant.          Creates 1 guild, Key created in tenant 1 cannot be used in tenant 2 context., Key format discord_<tenant_id>.<token> encodes correct tenant., parse_discord_registration_key(), Discord registration key generation and parsing., Parse registration key to extract tenant_id.      Returns tenant_id or None if i, Key with empty token part returns None., Tenant ID with URL encoding is decoded correctly. (+12 more)
 
 ### Community 474 - "Community 474"
 Cohesion: 0.10
@@ -4234,24 +5517,24 @@ Cohesion: 0.06
 Nodes (31): dependencies, lucide-react, react, react-dom, devDependencies, autoprefixer, oxfmt, oxlint (+23 more)
 
 ### Community 479 - "Community 479"
-Cohesion: 0.07
-Nodes (11): getProviderCard(), openProviderModal(), PROVIDERS, getDefaultModelSelector(), getLLMProviderOptions(), chatSessionIds, getCommandMenuContent(), openCommandMenu() (+3 more)
+Cohesion: 0.06
+Nodes (4): getDefaultModelSelector(), getLLMProviderOptions(), test, DEFAULT_PORT
 
 ### Community 480 - "Community 480"
-Cohesion: 0.08
-Nodes (31): Appended Messages for Playground Experiments, Prompts Release (Phoenix 8.0), Tool Invocation Evaluator, Tool Selection Evaluator, Claude Opus 4.6 Model Support, Custom Providers, Dataset Evaluators, Prompt Version Tag (+23 more)
+Cohesion: 0.20
+Nodes (11): Prompts Release (Phoenix 8.0), Prompt Version Tag, Prompt Versioning (Linear History), Pulling a prompt, Pulling a prompt by Name or ID, Pulling a prompt by Tag, Pulling a prompt by Version ID, toSDK Prompt Conversion (+3 more)
 
 ### Community 481 - "Community 481"
-Cohesion: 0.10
-Nodes (28): admin_search(), get_valid_tags(), Admin/curator search + tag lookup (clean-room).  - ``admin_search`` runs a dir, DocumentSource, Session, Tag, BaseFilters, DocumentSource (+20 more)
+Cohesion: 0.32
+Nodes (13): DocumentSource, Session, Tag, check_tag_validity(), create_or_add_document_tag(), create_or_add_document_tag_list(), delete_document_tags_for_documents__no_commit(), delete_orphan_tags__no_commit() (+5 more)
 
 ### Community 482 - "Community 482"
-Cohesion: 0.09
-Nodes (29): clean_name(), convert_all(), convert_one(), create_via_api(), derive_starter_name(), list_tools(), load_open_webui_files(), main() (+21 more)
+Cohesion: 0.15
+Nodes (19): clean_name(), convert_all(), convert_one(), create_via_api(), derive_starter_name(), list_tools(), load_open_webui_files(), main() (+11 more)
 
 ### Community 483 - "Community 483"
-Cohesion: 0.11
-Nodes (27): _api_url_builder(), check_indexing_status(), create_cc_pair(), create_connector(), create_credential(), _get_existing_connector_names(), run_cc_once(), upload_file() (+19 more)
+Cohesion: 0.20
+Nodes (15): cleanup_docker(), get_api_server_host_port(), get_current_commit_sha(), get_docker_container_env_vars(), _is_port_in_use(), manage_data_directories(), This pulls all containers with the provided env_name     It then grabs the JSON, Retrieves environment variables from "background" and "api_server" Docker contai (+7 more)
 
 ### Community 484 - "Community 484"
 Cohesion: 0.09
@@ -4271,19 +5554,19 @@ Nodes (31): Arconia Tracing Guide, OpenInference Semantic Conventions, OpenTelem
 
 ### Community 488 - "Community 488"
 Cohesion: 0.13
-Nodes (18): Agent, get_custom_agent_prompt(), Get the custom agent prompt from agent or workspace instructions. If it's replac, Tests for chat_utils.py, specifically get_custom_agent_prompt., Tests for the get_custom_agent_prompt function., Test that custom agent with None system_prompt returns None., Test that custom agent in a workspace uses agent's system_prompt, not workspace, Test that custom agent with replace_base_system_prompt=True in a workspace still (+10 more)
+Nodes (15): Tests for chat_utils.py, specifically get_custom_agent_prompt., Tests for the get_custom_agent_prompt function., Test that custom agent with None system_prompt returns None., Test that custom agent in a workspace uses agent's system_prompt, not workspace, Test that custom agent with replace_base_system_prompt=True in a workspace still, Create a mock Agent with the specified attributes., Create a mock ChatSession with the specified attributes., Create a mock Workspace with the specified attributes. (+7 more)
 
 ### Community 489 - "Community 489"
-Cohesion: 0.09
-Nodes (20): CategorizedFilesSnapshot, DATestUser, KnowledgeFileSnapshot, WorkspaceSnapshot, DATestLLMProvider, DATestUser, Upload files to a workspace via API., Get all files associated with a workspace via API. (+12 more)
+Cohesion: 0.07
+Nodes (22): get_openrouter_available_models(), _get_openrouter_models_response(), Perform GET to OpenRouter /models and return parsed JSON., Fetch available models from OpenRouter `/models` endpoint.      Parses id, nam, Tests for LLM model fetch endpoints.  These tests verify the full request/respon, Test that models are NOT synced when provider_name is None., Tests for the OpenRouter model fetch endpoint., Mock response from OpenRouter API. (+14 more)
 
 ### Community 490 - "Community 490"
-Cohesion: 0.07
-Nodes (31): Code Interpreter repository guidelines (AGENTS.md), Code Interpreter Helm chart metadata (Chart.yaml), Code Interpreter architecture overview (CLAUDE.md), Execution backend abstraction (plugin pattern), Layered architecture (API/service/model/core), Building from source & deployment (CONTRIBUTING.md), Pre-loaded executor image (instant DinD startup), BaseExecutor abstraction / ExecutorProtocol (+23 more)
+Cohesion: 0.11
+Nodes (20): Code Interpreter repository guidelines (AGENTS.md), Code Interpreter Helm chart metadata (Chart.yaml), Code Interpreter architecture overview (CLAUDE.md), Execution backend abstraction (plugin pattern), Layered architecture (API/service/model/core), Pre-loaded executor image (instant DinD startup), BaseExecutor abstraction / ExecutorProtocol, Docker-in-Docker deployment (+12 more)
 
 ### Community 491 - "Community 491"
-Cohesion: 0.08
-Nodes (24): getCurrentTheme(), getCurrentThemeMode(), getSystemTheme(), isProviderThemeMode(), ProviderTheme, ProviderThemeMode, ThemeContext, ThemeContextType (+16 more)
+Cohesion: 0.12
+Nodes (27): Celery, Redis, Connector, ConnectorCredentialPair, ConnectorCredentialPairStatus, Credential, datetime, OmCeleryPriority (+19 more)
 
 ### Community 492 - "Community 492"
 Cohesion: 0.06
@@ -4302,12 +5585,12 @@ Cohesion: 0.13
 Nodes (28): main(), estimateTokens(), generateItemId(), generateResponseId(), getInputText(), handleNonStreaming(), handleStreaming(), sleep() (+20 more)
 
 ### Community 496 - "Community 496"
-Cohesion: 0.10
-Nodes (23): EvalsEvaluator, EvaluationScore, ExperimentEvaluation, is_evals_evaluator(), is_evaluation_result(), is_experiment_evaluation(), is_score_result(), Validate that a function signature is compatible with evaluator requirements. (+15 more)
+Cohesion: 0.06
+Nodes (40): _default_eval_scorer(), Convert function result to EvaluationResult., BaseEvaluator, EvalsEvaluator, EvaluationScore, Evaluator, ExperimentEvaluation, is_evals_evaluator() (+32 more)
 
 ### Community 497 - "Community 497"
-Cohesion: 0.16
-Nodes (15): BatchSpanProcessor, GRPCSpanExporter, HTTPSpanExporter, OTLPTransportProtocol, Simple SpanProcessor implementation.      SimpleSpanProcessor is an implementa, Batch SpanProcessor implementation.      `BatchSpanProcessor` is an implementa, OTLP span exporter using HTTP.      For more information, see:     - `opentel, OTLP span exporter using gRPC.      For more information, see:     - `opentel (+7 more)
+Cohesion: 0.08
+Nodes (24): node, ProjectRetentionPolicyCard_policy$data, ProjectRetentionPolicyCard_policy$key, node, ProjectRetentionPolicyCard_query$data, ProjectRetentionPolicyCard_query$key, node, ProjectRetentionPolicyCardSetProjectRetentionPolicyMutation (+16 more)
 
 ### Community 498 - "Community 498"
 Cohesion: 0.06
@@ -4334,20 +5617,20 @@ Cohesion: 0.16
 Nodes (28): InputPrompt, Session, User, UUID, Session, User, CreateInputPromptRequest, disable_input_prompt_for_user() (+20 more)
 
 ### Community 504 - "Community 504"
-Cohesion: 0.10
-Nodes (28): LLMRecommendations, LLMRecommendations, MonkeyPatch, _build_recommendations(), test_model_configurations_non_vertex_preserve_provider_order(), test_model_configurations_vertex_are_sorted_by_name(), ModelConfigurationView, fetch_default_model_for_provider() (+20 more)
+Cohesion: 0.07
+Nodes (36): LLMRecommendations, LLMRecommendations, MonkeyPatch, get_default_llm_model_name(), get_default_vision_model_name(), Find the default conversation model name for a provider.      Returns the model, Find the default vision model name for a provider.      Returns the model name i, _build_recommendations() (+28 more)
 
 ### Community 505 - "Community 505"
-Cohesion: 0.11
-Nodes (26): FastAPI, FastAPI, FastAPI, LoggerAdapter, Request, BaseRoute, add_latency_logging_middleware(), close_auth_limiter() (+18 more)
+Cohesion: 0.09
+Nodes (38): Role updates are not allowed through the user update endpoint for security reaso, UserRead, UserUpdate, Any, APIRouter, Exception, FastAPI, JSONResponse (+30 more)
 
 ### Community 506 - "Community 506"
-Cohesion: 0.08
-Nodes (13): JSONResponse, MonkeyPatch, Request, SCIM error handling (RFC 7644 §3.12).  A single :class:`ScimError` exception c, Raised anywhere in the SCIM stack to return a SCIM-formatted error., Render a :class:`ScimError` as an ``application/scim+json`` response., scim_error_response(), ScimError (+5 more)
+Cohesion: 0.05
+Nodes (31): Request, JSONResponse, MonkeyPatch, Request, build_scim_token_display(), _extract_bearer_token(), generate_scim_token(), hash_scim_token() (+23 more)
 
 ### Community 507 - "Community 507"
-Cohesion: 0.08
-Nodes (12): Any, build_custom_tools_from_openapi_schema_and_headers(), CustomTool, Test the POST method of a custom tool.         Verifies that the tool correctly, Test the custom tool with custom headers.         Verifies that the tool correct, Test the custom tool with an empty list of custom headers.         Verifies that, Test suite for CustomTool functionality.     This class tests the creation, runn, Test that an invalid OpenAPI schema raises a ValueError. (+4 more)
+Cohesion: 0.06
+Nodes (32): 0. Resolution ledger (every blocker + major), 10. End-to-end verification plan (acceptance gates), 1. Revised 5-hop architecture, 2. Packet contract changes (additive, backward-compatible), 3.1 Startup wiring (fixes B1, M3, B1-forge, m1-memory), 3.2 Per-cell loop + flush barrier (fixes B2, B5-exit_code, m1), 3. Layer A — Kernel (`code-interpreter/code-interpreter/app/services/_kernel.py`), 4.1 Imports & state (+24 more)
 
 ### Community 508 - "Community 508"
 Cohesion: 0.07
@@ -4370,36 +5653,36 @@ Cohesion: 0.07
 Nodes (29): author, bin, cli-agent, dependencies, ai, @ai-sdk/anthropic, @ai-sdk/anthropic-v5, @ai-sdk/mcp (+21 more)
 
 ### Community 513 - "Community 513"
-Cohesion: 0.12
-Nodes (25): baseArgs(), composeDir(), composeFiles(), envForTag(), execDockerCompose(), NewComposeCommand(), profileLabel(), runCompose() (+17 more)
+Cohesion: 0.06
+Nodes (31): 1. Choose the right file (or create a new one), 2. Define the metric, 3. Wire it into the instrumentator (if request-scoped), 4. Wire it into setup_prometheus_metrics (if infrastructure-scoped), 5. Write tests, 6. Document the metric, 7. Update Grafana dashboards, Adding New Metrics (+23 more)
 
 ### Community 514 - "Community 514"
 Cohesion: 0.09
 Nodes (17): Split content into chunks that fit Discord's message limit., _split_message(), Unit tests for Discord bot message utilities.  Tests for: - Message splitting (_, 5000 char message splits into 3 chunks., Concatenated chunks equal original content., Handles unicode characters correctly., Tests for _split_message function., Message under 2000 chars returns single chunk. (+9 more)
 
 ### Community 515 - "Community 515"
-Cohesion: 0.09
-Nodes (19): Create a sample dataset example for testing., Test suite for ExampleProxy edge cases and special scenarios., Test proxy behavior with empty input/output/metadata., Test string representation format., Test access to nested data structures., Test suite for ExampleProxy Mapping interface implementation., Test that ExampleProxy properly implements Mapping interface., Test dictionary-style access using square brackets. (+11 more)
+Cohesion: 0.04
+Nodes (41): Test that deleting attributes raises AttributeError., Test suite for ensuring ExampleProxy behaves equivalently to direct dict access., Test that object-style and dict-style access return equivalent values., Create a sample dataset example for testing., Test that proxy data remains consistent with wrapped object., Test suite for ExampleProxy edge cases and special scenarios., Test proxy behavior with empty input/output/metadata., Test string representation format. (+33 more)
 
 ### Community 516 - "Community 516"
 Cohesion: 0.09
 Nodes (28): _extract_provider(), _extract_region(), _format_name(), _generate_display_name_from_model(), _generate_provider_display_name(), _get_model_info(), _infer_vendor_from_model_name(), parse_litellm_model_name() (+20 more)
 
 ### Community 517 - "Community 517"
-Cohesion: 0.10
-Nodes (20): NotificationHookParams, NotificationParams, NotificationVariant, toastQueue, useNotify(), RootLayout(), ActionToast, Default (+12 more)
+Cohesion: 0.07
+Nodes (27): Video(), videoCSS, VideoProps, NotificationHookParams, NotificationParams, NotificationVariant, toastQueue, RootLayout() (+19 more)
 
 ### Community 518 - "Community 518"
-Cohesion: 0.08
-Nodes (24): MessagesState, call_llm(), construct_agent(), initialize_agent_llm(), initialize_instrumentor(), main(), Initialize the OpenAIInstrumentor, so all the llm calls are instrumented, Initialize the agent llm, this will bind the tools to the agent llm. (+16 more)
+Cohesion: 0.16
+Nodes (14): MessagesState, call_llm(), construct_agent(), initialize_agent_llm(), initialize_instrumentor(), main(), Initialize the OpenAIInstrumentor, so all the llm calls are instrumented, Initialize the agent llm, this will bind the tools to the agent llm. (+6 more)
 
 ### Community 519 - "Community 519"
-Cohesion: 0.09
-Nodes (17): deduplicate_queries(), Deduplicate queries by case-insensitive comparison and sum weights.      Args:, Test suite for deduplicate_queries function., Test deduplication with no duplicate queries., Test deduplication with exact duplicate queries., Test that deduplication is case-insensitive., Test deduplication with mix of duplicates and unique queries., Test deduplication with empty list. (+9 more)
+Cohesion: 0.08
+Nodes (22): deduplicate_queries(), _estimate_section_tokens(), An explanation of the search tool found below:  Step 1: Queries - The LLM will g, Deduplicate queries by case-insensitive comparison and sum weights.      Args:, Estimate token count for a section using the LLM tokenizer.      Args:         s, Trim sections to fit within a token budget using the LLM tokenizer.      Args:, _trim_sections_by_tokens(), Test suite for deduplicate_queries function. (+14 more)
 
 ### Community 520 - "Community 520"
-Cohesion: 0.15
-Nodes (29): BedrockAgentRuntimeInstrumentation (JS), Bedrock Action Groups & Knowledge Base tracing (as tools), Amazon Bedrock Agents Tracing (boto3 BedrockInstrumentor), BedrockModel (Phoenix eval model), BedrockInstrumentation (AWS SDK for JavaScript), Amazon Bedrock Tracing (boto3 invoke_model), OpenInference (OpenTelemetry-compliant LLM instrumentation standard), AnthropicModel (Phoenix eval model) (+21 more)
+Cohesion: 0.10
+Nodes (32): BedrockAgentRuntimeInstrumentation (JS), Bedrock Action Groups & Knowledge Base tracing (as tools), Amazon Bedrock Agents Tracing (boto3 BedrockInstrumentor), BedrockModel, BedrockInstrumentation (AWS SDK for JavaScript), Amazon Bedrock Tracing (boto3 invoke_model), OpenInference (OpenTelemetry-compliant LLM instrumentation standard), AnthropicModel (+24 more)
 
 ### Community 521 - "Community 521"
 Cohesion: 0.10
@@ -4410,16 +5693,16 @@ Cohesion: 0.13
 Nodes (25): Task, Session, datetime, datetime, Session, TaskQueueState, # TODO: make this a check for None and add behavior for 0 day TTL, should_perform_chat_ttl_check() (+17 more)
 
 ### Community 523 - "Community 523"
-Cohesion: 0.14
-Nodes (15): EmbeddingProvider, Encoding, InferenceChunk, BaseTokenizer, _check_tokenizer_cache(), _get_default_tokenizer(), get_tokenizer(), HuggingFaceTokenizer (+7 more)
+Cohesion: 0.09
+Nodes (26): IndexFilters, Session, User, EmbeddingProvider, Encoding, InferenceChunk, Session, User (+18 more)
 
 ### Community 524 - "Community 524"
-Cohesion: 0.11
-Nodes (20): Session, StreamingResponse, UsageReportSchema, User, DailyUsagePoint, datetime, IO, Session (+12 more)
+Cohesion: 0.18
+Nodes (9): DailyUsagePoint, datetime, IO, Session, UsageReportSchema, UUID, Usage-reporting service (clean-room rewrite).  Generates a usage report synchr, UsageReportService (+1 more)
 
 ### Community 525 - "Community 525"
-Cohesion: 0.11
-Nodes (28): Any, Path, Session, Usage, _extract_cache_read_tokens(), _extract_cached_tokens(), _extract_prompt_tokens(), _get_usage_value() (+20 more)
+Cohesion: 0.09
+Nodes (31): Any, Path, Session, Usage, LLM, LitellmLLM, Uses Litellm library to allow easy configuration to use a multitude of LLMs, _extract_cache_read_tokens() (+23 more)
 
 ### Community 526 - "Community 526"
 Cohesion: 0.11
@@ -4438,40 +5721,40 @@ Cohesion: 0.07
 Nodes (28): AnnotationConfigInput, CategoricalAnnotationConfigInput, CategoricalAnnotationConfigValueInput, ChatPromptVersionInput, ContentPartInput, ContinuousAnnotationConfigInput, EvaluatorInputMappingInput, EvaluatorOutputPreviewMutation (+20 more)
 
 ### Community 530 - "Community 530"
-Cohesion: 0.13
-Nodes (17): _LDAPRequestHandler, TCP request handler for LDAP protocol messages.      Processes incoming LDAP m, Process LDAP protocol messages from client.          Handles multiple messages, Read a complete BER-encoded LDAP message from the socket.          LDAP messag, Handle LDAP bind request (authentication).          Args:             message, Authenticate user credentials.          Args:             dn: Bind DN, Validate DN syntax using ldap3's parser.          This ensures the mock server, Handle LDAP search request.          Supports two types of searches: (+9 more)
+Cohesion: 0.07
+Nodes (27): LDAPGroup, _LDAPRequestHandler, LDAPUser, Mock LDAP server for integration testing.  This module provides a lightweight, Add or update a POSIX group in the mock directory.          Args:, TCP request handler for LDAP protocol messages.      Processes incoming LDAP m, Process LDAP protocol messages from client.          Handles multiple messages, Read a complete BER-encoded LDAP message from the socket.          LDAP messag (+19 more)
 
 ### Community 531 - "Community 531"
 Cohesion: 0.07
 Nodes (28): dependencies, @arizeai/openinference-instrumentation-openai, @arizeai/openinference-semantic-conventions, @arizeai/phoenix-client, @arizeai/phoenix-evals, @arizeai/phoenix-otel, autoevals, @clack/prompts (+20 more)
 
 ### Community 532 - "Community 532"
-Cohesion: 0.07
-Nodes (24): PromptData, PromptVersion, DEFAULT_PROMPT_NAMES, DEFAULT_TAG_NAMES, LoadedWithLatest, LoadedWithTag, LoadedWithVersion, MaxPromptWidth (+16 more)
+Cohesion: 0.06
+Nodes (30): 1. API Key, 2. Custom URL (optional), Available Tool IDs, Commands, Creating Agents from JSON, Directory Structure, Field Mapping, Full deployment (all agents) (+22 more)
 
 ### Community 533 - "Community 533"
-Cohesion: 0.14
-Nodes (21): build_ext_team_name_for_om(), Namespace an external group id by its source so ids from different     connecto, DocumentSource, ConnectorCredentialPair, DocumentSource, Session, User__ExternalTeamId, _create_test_connector_credential_pair() (+13 more)
+Cohesion: 0.16
+Nodes (18): ConnectorCredentialPair, DocumentSource, Session, User__ExternalTeamId, _create_test_connector_credential_pair(), _get_public_external_groups(), _get_user_external_groups(), Test syncing external groups for the first time (initial sync) (+10 more)
 
 ### Community 534 - "Community 534"
-Cohesion: 0.09
-Nodes (28): AI Evals Course, ComposeResponse State Evaluator, GenRecipeArgs State Evaluator, GenWebArgs State Evaluator, GetRecipes State Evaluator, GetWebInfo State Evaluator, ParseRequest State Evaluator, PlanToolCalls State Evaluator (+20 more)
+Cohesion: 0.22
+Nodes (13): LLM-as-Judge Lessons Learned, Phoenix Datasets, Experiments, Phoenix Methods Guide, llm_classify Categorical Eval, llm_generate Eval, SpanQuery DSL, Phoenix OTEL Tracing (+5 more)
 
 ### Community 535 - "Community 535"
-Cohesion: 0.07
-Nodes (27): @types/node, devDependencies, mastra, tsx, @types/node, typescript, @types/node, devDependencies (+19 more)
+Cohesion: 0.08
+Nodes (24): @types/node, @types/node, devDependencies, rimraf, tsc-alias, tsx, @types/node, vitest (+16 more)
 
 ### Community 536 - "Community 536"
-Cohesion: 0.10
-Nodes (18): JSON_ro, CacheMetadata, LanguageModelInput, PgRedisKVStore, KeyValueStore, PgRedisKVStore, CacheManager, generate_cache_key_hash() (+10 more)
+Cohesion: 0.12
+Nodes (15): CacheMetadata, LanguageModelInput, PgRedisKVStore, CacheManager, generate_cache_key_hash(), _make_json_serializable(), Cache manager for storing and retrieving prompt cache metadata., Retrieve cache metadata.          Args:             provider: LLM provider name (+7 more)
 
 ### Community 537 - "Community 537"
-Cohesion: 0.11
-Nodes (16): datetime, RateLimitPolicy, RateLimitScope, RateLimitUsage, Session, UUID, _hour_bucket(), RateLimitRepository (+8 more)
+Cohesion: 0.14
+Nodes (12): datetime, RateLimitPolicy, RateLimitScope, UUID, _hour_bucket(), Persistence for rate-limit policies + the durable usage roll-up.  Kept as a th, Atomically add to the current hour's roll-up row (UPSERT; no read-modify-write r, Total tokens recorded for a subject over the last ``period_hours`` (roll-up). (+4 more)
 
 ### Community 538 - "Community 538"
-Cohesion: 0.15
-Nodes (27): Any, ClientSession, Exception, MCPLibTool, MCPTransport, OAuthClientProvider, T, ExceptionGroup (+19 more)
+Cohesion: 0.07
+Nodes (43): AbstractEventLoop, Any, ClientSession, Event, Exception, MCPLibTool, MCPTransport, OAuthClientProvider (+35 more)
 
 ### Community 539 - "Community 539"
 Cohesion: 0.12
@@ -4482,36 +5765,36 @@ Cohesion: 0.11
 Nodes (17): Calculates detailed cost breakdowns for LLM spans based on token usage and prici, SpanCostDetailsCalculator, _Cost, Represents the expected cost breakdown for a token type in tests.      This na, Comprehensive test suite for SpanCostDetailsCalculator.      This test suite c, Comprehensive test for calculate_details method covering all scenarios., Test handling of spans without token count data.          This test verifies t, Test edge cases for cost_per_token calculation.          This test verifies pr (+9 more)
 
 ### Community 541 - "Community 541"
-Cohesion: 0.09
-Nodes (20): normalize_timestamps(), If the input timestamps contains a Unix or datetime timestamp or ISO8601     ti, Any, Span, Any, Path, SpanConversationAttributes, json_string_to_span() (+12 more)
+Cohesion: 0.20
+Nodes (9): Any, Path, _exception(), _row(), test_to_span_fully_unflattens_all_dot_separators(), test_to_spans_from_df(), test_trace_dataset_load_logs_warning_when_an_evaluation_cannot_be_loaded(), test_trace_dataset_load_raises_error_when_input_id_does_not_match_metadata() (+1 more)
 
 ### Community 542 - "Community 542"
-Cohesion: 0.14
-Nodes (19): Any, AdaptiveTokenBucket, An adaptive rate-limiter that adjusts the rate based on the number of rate limit, async_warp_time(), freeze_time(), test_token_bucket_adaptively_increases_rate_over_time(), test_token_bucket_decreases_rate(), test_token_bucket_decreases_rate_once_per_cooldown_period() (+11 more)
+Cohesion: 0.25
+Nodes (17): Any, async_warp_time(), freeze_time(), test_token_bucket_adaptively_increases_rate_over_time(), test_token_bucket_decreases_rate(), test_token_bucket_decreases_rate_once_per_cooldown_period(), test_token_bucket_does_not_increase_rate_past_maximum(), test_token_bucket_gains_tokens_over_time() (+9 more)
 
 ### Community 543 - "Community 543"
-Cohesion: 0.17
-Nodes (9): EndpointId, createRateLimiter(), DEFAULT_GLOBAL_CONFIG, DynamicConfig, EndpointConfig, EndpointRegistry, ErrorType, GlobalConfig (+1 more)
+Cohesion: 0.24
+Nodes (4): EndpointId, createRateLimiter(), EndpointRegistry, sanitizeObject()
 
 ### Community 544 - "Community 544"
-Cohesion: 0.10
-Nodes (17): TestCase, fast_gpu_status_request(), _get_gpu_status_from_model_server(), gpu_status_request(), For use in sync flows, where we don't want to retry / we want to cache this., Test cases for onyx/utils/gpu_utils.py with DISABLE_MODEL_SERVER environment var, Test cases for GPU utilities with DISABLE_MODEL_SERVER support, Test that GPU status returns False when DISABLE_MODEL_SERVER is true (+9 more)
+Cohesion: 0.12
+Nodes (22): Session, _cleanup_provider(), _create_mock_admin(), _create_test_provider(), provider_name(), Tests for the test_llm_configuration endpoint (/admin/llm/test).  This tests the, Test that a failed LLM test raises an HTTPException with status 400.          Wh, Test that when testing an existing provider without changing the API key, (+14 more)
 
 ### Community 545 - "Community 545"
-Cohesion: 0.09
-Nodes (6): _get_exporter_from_processor(), Helper function to get the exporter from a span processor.     Handles both old, Test that register can still set global tracer provider when requested., Reset OpenTelemetry tracer provider for test isolation., reset_tracer_provider(), TestRegister
+Cohesion: 0.06
+Nodes (21): BatchSpanProcessor, HTTPSpanExporter, OTLPTransportProtocol, An extension of `opentelemetry.sdk.trace.TracerProvider` with Phoenix-aware defa, Simple SpanProcessor implementation.      SimpleSpanProcessor is an implementa, Batch SpanProcessor implementation.      `BatchSpanProcessor` is an implementa, OTLP span exporter using HTTP.      For more information, see:     - `opentel, SimpleSpanProcessor (+13 more)
 
 ### Community 546 - "Community 546"
-Cohesion: 0.07
-Nodes (27): name, overrides, react-is, @types/react, @types/react-dom, private, scripts, build (+19 more)
+Cohesion: 0.11
+Nodes (19): scripts, build, dev, dev:profile, format, format:check, lint, lint:fix-unused (+11 more)
 
 ### Community 547 - "Community 547"
 Cohesion: 0.11
 Nodes (27): AgentSpecInstrumentor, Open Agent Spec, Agno Tracing Integration, phoenix.otel.register (auto_instrument setup), AutoGen AgentChat Tracing, AutoGen Tracing, BeeAI Tracing (Python), CrewAI Tracing (+19 more)
 
 ### Community 548 - "Community 548"
-Cohesion: 0.09
-Nodes (27): Exporters API reference (rst), Processors API reference (rst), Tracer Provider API reference (rst), Phoenix Sphinx API Documentation Maintenance README, API Reference Sphinx Requirements, Register API reference (rst), Settings API reference (rst), Phoenix OTEL docs build README (+19 more)
+Cohesion: 0.05
+Nodes (43): Exporters API reference (rst), Processors API reference (rst), Tracer Provider API reference (rst), api_reference/requirements.txt, Autodoc, Building the Documentation, conf.py, Configuration (+35 more)
 
 ### Community 549 - "Community 549"
 Cohesion: 0.11
@@ -4530,36 +5813,36 @@ Cohesion: 0.09
 Nodes (27): cli-agent Phoenix docker-compose service, Anthropic Claude via AI SDK integration, CLI Agent Starter Kit (Phoenix docs assistant), Declarative tool architecture (AI SDK tool()), demo-document-relevancy-experiment changelog, Document relevancy experiment demo, Space knowledge retrieval application (GPT-4o-mini), Confusion matrix (TPR/TNR/Accuracy) (+19 more)
 
 ### Community 553 - "Community 553"
-Cohesion: 0.11
-Nodes (13): AdaptiveTokenBucket, printif(), RateLimiter, RateLimitError, Print arguments if the condition is True.      Args:         condition (bool), Lazily initialize async primitives to ensure they are created in the correct eve, An adaptive rate-limiter that adjusts the rate based on the number of rate limit, UnavailableTokensError (+5 more)
+Cohesion: 0.15
+Nodes (8): AdaptiveTokenBucket, printif(), RateLimitError, Print arguments if the condition is True.      Args:         condition (bool), An adaptive rate-limiter that adjusts the rate based on the number of rate limit, UnavailableTokensError, Any, BaseException
 
 ### Community 554 - "Community 554"
-Cohesion: 0.09
-Nodes (16): MockEvaluator, Test evaluate_dataframe with multiple evaluators., Test that the returned DataFrame has the exact expected structure., Mock evaluator for testing., Test the base Evaluator class., Mock evaluator for testing., Test that evaluation continues to work even if tracing fails., Test evaluator initialization with various parameters. (+8 more)
+Cohesion: 0.08
+Nodes (19): MockEvaluator, Test evaluator tracing and trace_id injection., Mock evaluator for testing., Test that trace_id is added to Score metadata when tracing is enabled., Test that evaluation works without trace_id when tracing is not configured., Test the base Evaluator class., Test that trace_id is added to Score metadata in async evaluation., Mock evaluator for testing. (+11 more)
 
 ### Community 555 - "Community 555"
-Cohesion: 0.13
-Nodes (17): Event, get_compressed_context(), main(), get_docs_from_tavily_search(), DocsScrapedEvent, LLMResponseEvent, ReportPromptCreatedEvent, ResearchAssistantWorkflow (+9 more)
+Cohesion: 0.10
+Nodes (22): Event, get_compressed_context(), main(), get_sub_queries(), Gets the sub queries     Args:         query: original query         llm: LLM, DocsScrapedEvent, LLMResponseEvent, ReportPromptCreatedEvent (+14 more)
 
 ### Community 556 - "Community 556"
-Cohesion: 0.12
-Nodes (15): main(), asEvaluatorFn(), TestRecord, AnyFn, createEvaluator(), CreateEvaluatorOptions, generateUniqueName(), CustomRecord (+7 more)
+Cohesion: 0.05
+Nodes (39): EvaluatorBase, FunctionEvaluator, FunctionEvaluatorArgs, examples, ExampleType, main(), model, main() (+31 more)
 
 ### Community 557 - "Community 557"
-Cohesion: 0.16
-Nodes (26): async_evaluate_experiment(), async_get_experiment(), async_resume_evaluation(), async_resume_experiment(), async_run_experiment(), evaluate_experiment(), get_experiment(), Run an experiment using a given dataset of examples.      An experiment is a u (+18 more)
+Cohesion: 0.06
+Nodes (30): Configuration, License, Add the repository (if published), Advanced Configuration, Basic Installation, Check pod status, Code Interpreter Helm Chart, Custom Volume Mounts (+22 more)
 
 ### Community 558 - "Community 558"
 Cohesion: 0.07
 Nodes (26): AnthropicAuthenticationMethodInput, AnthropicClientKwargsInput, AnthropicCustomProviderConfigInput, AWSBedrockAccessKeysInput, AWSBedrockAuthenticationMethodInput, AWSBedrockClientKwargsInput, AWSBedrockCustomProviderConfigInput, AzureOpenAIADTokenProviderInput (+18 more)
 
 ### Community 559 - "Community 559"
-Cohesion: 0.11
-Nodes (18): InsertedTraceAnnotation, Any, AsyncClient, Client, TraceAnnotationData, TraceAnnotationData, AsyncTraces, Log multiple trace annotations.          Args:             trace_annotations (+10 more)
+Cohesion: 0.12
+Nodes (16): InsertedTraceAnnotation, Any, AsyncClient, Client, TraceAnnotationData, TraceAnnotationData, AsyncTraces, Log multiple trace annotations.          Args:             trace_annotations (+8 more)
 
 ### Community 560 - "Community 560"
-Cohesion: 0.14
-Nodes (26): Any, AsyncGraphQLClient, DbSessionFactory, Project, Span, _SpanRowId, Trace, _TraceRowId (+18 more)
+Cohesion: 0.17
+Nodes (20): AsyncGraphQLClient, Span, _SpanRowId, _TraceRowId, _get_descendant_rowids(), _get_num_child_spans(), _get_num_spans_per_trace(), project_with_a_single_trace_and_span() (+12 more)
 
 ### Community 561 - "Community 561"
 Cohesion: 0.12
@@ -4574,12 +5857,12 @@ Cohesion: 0.11
 Nodes (26): build_cl1_message(), build_cl1_message_from_documents(), build_cl2_message(), build_cl3_message(), _cl1_wrapper(), create_chat_session(), find_workflow_id(), load_claim_data() (+18 more)
 
 ### Community 564 - "Community 564"
-Cohesion: 0.09
-Nodes (27): Working-Memory Checkpoints, Deep Research Stop-and-Restart, Human-in-the-Loop Interrupt/Resume, Long-Term Semantic Memory, Three-Layer Agent Memory, check-for-workflow-triggers Beat Poller, Autonomous HITL Pause (no human), System Chat-Session Output Sink (+19 more)
+Cohesion: 0.05
+Nodes (45): Working-Memory Checkpoints, Deep Research Stop-and-Restart, Human-in-the-Loop Interrupt/Resume, Long-Term Semantic Memory, Three-Layer Agent Memory, check-for-workflow-triggers Beat Poller, Autonomous HITL Pause (no human), System Chat-Session Output Sink (+37 more)
 
 ### Community 565 - "Community 565"
-Cohesion: 0.11
-Nodes (24): generate_icon(), get_all_agents(), get_color_for_agent(), get_initials(), get_symbol(), hsl_to_hex(), main(), process_agent() (+16 more)
+Cohesion: 0.08
+Nodes (34): headers(), _load_apikey_file(), _load_env_file(), Shared configuration and API client for VirtualAI agent tools.  API key resoluti, Resolve in_code_tool_id names (e.g. 'PythonTool') to DB IDs.      Queries GET /a, Parse a simple .env file (KEY=VALUE lines)., Read API key from apikey.txt (first non-empty line)., Resolve API key from all sources (CLI > apikey.txt > .env > env var). (+26 more)
 
 ### Community 566 - "Community 566"
 Cohesion: 0.11
@@ -4594,8 +5877,8 @@ Cohesion: 0.09
 Nodes (21): Any, Family, Family, MockFixture, family_class_dispatch(), FamilyFileGeneratorInMemory, generate_family_class(), Generate a family file for a given URL and name.      Args:         url: The URL (+13 more)
 
 ### Community 569 - "Community 569"
-Cohesion: 0.19
-Nodes (25): Any, ClientContext, DriveItem, ExternalAccess, ExternalUserGroup, GraphClient, Execute a SharePoint query with retry logic for rate limiting., sleep_and_retry() (+17 more)
+Cohesion: 0.08
+Nodes (25): node, ProjectAnnotationConfigCardContent_project_annotations$data, ProjectAnnotationConfigCardContent_project_annotations$key, node, ProjectAnnotationConfigCardContentAddAnnotationConfigToProjectMutation, ProjectAnnotationConfigCardContentAddAnnotationConfigToProjectMutation$data, ProjectAnnotationConfigCardContentAddAnnotationConfigToProjectMutation$variables, node (+17 more)
 
 ### Community 570 - "Community 570"
 Cohesion: 0.09
@@ -4618,16 +5901,16 @@ Cohesion: 0.15
 Nodes (24): InferenceSection, WebContent, WebSearchResult, Path, WebContent, _expand_range_centered(), filter_web_search_results_with_no_title_or_snippet(), inference_section_from_internet_page_scrape() (+16 more)
 
 ### Community 575 - "Community 575"
-Cohesion: 0.22
-Nodes (25): ConnectorOutput, Document, GoogleDriveConnector, GoogleDriveConnector, google_drive_service_acct_connector_factory(), assert_expected_docs_in_retrieved_docs(), id_to_name(), load_connector_outputs() (+17 more)
+Cohesion: 0.18
+Nodes (25): GoogleDriveConnector, ConnectorOutput, GoogleDriveConnector, GoogleDriveConnector, GoogleDriveConnector, google_drive_service_acct_connector_factory(), id_to_name(), load_connector_outputs() (+17 more)
 
 ### Community 576 - "Community 576"
 Cohesion: 0.11
 Nodes (24): HierarchyNodeType, _clear_parents(), ExpectedHierarchyNode, extract_folder_id_from_url(), flatten_hierarchy(), _get_expected_file_content(), get_expected_hierarchy_for_folder_1(), get_expected_hierarchy_for_folder_2() (+16 more)
 
 ### Community 577 - "Community 577"
-Cohesion: 0.12
-Nodes (13): Any, Session, BaseHTTPRequestHandler, _attach_python_tool_to_default_agent(), CapturedRequest, mock_ci_server(), _MockCIHandler, MockCodeInterpreterServer (+5 more)
+Cohesion: 0.10
+Nodes (16): Any, Session, BaseHTTPRequestHandler, HTTPServer, HTTPServerV6, run_server(), _attach_python_tool_to_default_agent(), CapturedRequest (+8 more)
 
 ### Community 578 - "Community 578"
 Cohesion: 0.16
@@ -4638,32 +5921,32 @@ Cohesion: 0.10
 Nodes (11): ScimUserService, _FakeDb, _FakeUserMappingRepo, Clean-room tests for SCIM service mapping logic (no DB required).  Full DB per, Minimal stand-in that records commits (no real transaction)., _reactivating_service(), test_reactivate_activates_relinks_and_commits(), test_sync_external_id_creates_then_updates() (+3 more)
 
 ### Community 580 - "Community 580"
-Cohesion: 0.12
-Nodes (21): extract_citation_order_from_text(), Extract citation numbers from text in order of first appearance.      Parses cit, create_citation_packets(), create_custom_tool_packets(), create_fetch_packets(), create_file_reader_packets(), create_image_generation_packets(), create_memory_packets() (+13 more)
+Cohesion: 0.14
+Nodes (12): API Endpoint, Code Examples, LDAPAuthenticator Class (Skeleton), LDAPConfig Dataclass, Current Implementation (Stopgap), Database Schema Details, Future Migration (Dedicated Schema), LDAP Authentication - Appendices (+4 more)
 
 ### Community 581 - "Community 581"
-Cohesion: 0.11
-Nodes (15): DeploymentValidators, Validators specific to Deployment resources., Validate replica count in Deployment., Validate container resource limits., Validate container resource requests., Validate environment variable value., Validate environment variable from secret., Validate environment variable from configmap. (+7 more)
+Cohesion: 0.08
+Nodes (19): DeploymentValidators, Factory for resource existence validators., Create a validator that checks if a resource kind exists., Create a validator that checks resource count., Validators specific to Deployment resources., Validate replica count in Deployment., Validate container resource limits., Validate container resource requests. (+11 more)
 
 ### Community 582 - "Community 582"
-Cohesion: 0.11
-Nodes (20): BuildMessageListProps, groupStreamItems(), BuildSessionButtonProps, TextChunk(), TextChunkProps, UserMessage(), UserMessageProps, BuildSessionData (+12 more)
+Cohesion: 0.06
+Nodes (31): 1. Formatter Overlay vs. Modifying Base Templates, 2. Top-Level Variable Extraction Only, 3. Root Variable Extraction for Dotted Paths, 4. Type-Aware Schema Generation, 5. Native Mustache Parser for Validation, 6. Frontend/Backend Parity for Variable Extraction, Architecture Overview, Component Roles (+23 more)
 
 ### Community 583 - "Community 583"
 Cohesion: 0.10
-Nodes (21): BuildContext, BuildContextValue, BuildProvider(), BuildProviderProps, BLOCKED_EXTENSIONS, createFailedFile(), createOptimisticFile(), FileValidationResult (+13 more)
+Nodes (23): _extract_urls_from_sitemap(), _get_sitemap_locations_from_robots(), list_pages_for_site(), Extract sitemap URLs from robots.txt, Extract URLs from a sitemap XML file, Get list of pages from a site's sitemaps, check_internet_connection(), _ensure_absolute_url() (+15 more)
 
 ### Community 584 - "Community 584"
 Cohesion: 0.08
 Nodes (25): env, browser, ignorePatterns, plugins, version, rules, eqeqeq, eslint/no-implicit-conversion (+17 more)
 
 ### Community 585 - "Community 585"
-Cohesion: 0.11
-Nodes (16): DatasetIdentifier, _parse_datetime(), Resolve dataset ID and name from various input forms.          Returns:, Gets the dataset for a specific version, or gets the latest version of, When the dataset was created., Get dataset versions as a list of dictionaries.          Args:             da, When the dataset was last updated., Async version of _get_dataset_id_by_name. (+8 more)
+Cohesion: 0.06
+Nodes (22): Dataset, _parse_datetime(), The dataset description., The current version ID., The dataset split names., List of examples in this version., Additional dataset metadata., When the dataset was created. (+14 more)
 
 ### Community 586 - "Community 586"
-Cohesion: 0.10
-Nodes (26): gRPC Trace Collection, Remote Collector Configuration, Langfuse, LangSmith, Phoenix Cloud Migration (Legacy to New), LlamaTrace, Phoenix Cloud, Phoenix Application Endpoint (+18 more)
+Cohesion: 0.09
+Nodes (26): gRPC Trace Collection, Remote Collector Configuration, Langfuse, LangSmith, Phoenix Cloud Migration (Legacy to New), LlamaTrace, Phoenix Cloud, **Application Endpoint** (+18 more)
 
 ### Community 587 - "Community 587"
 Cohesion: 0.08
@@ -4710,48 +5993,48 @@ Cohesion: 0.08
 Nodes (25): compilerOptions, allowJs, esModuleInterop, forceConsistentCasingInFileNames, incremental, isolatedModules, jsx, lib (+17 more)
 
 ### Community 598 - "Community 598"
-Cohesion: 0.12
+Cohesion: 0.13
 Nodes (19): AnnAssign, ClassDef, ConvertDataClassToTypedDict, get_ancestor_fields(), Parse the provided code, insert an import for NotRequired, and transform     da, Recursively collects the field names defined in all ancestor classes.      Arg, For each class that inherits from others, remove any field that is already, Sort class definitions so that each parent class appears before its children. (+11 more)
 
 ### Community 599 - "Community 599"
 Cohesion: 0.11
-Nodes (18): Test SSO (SAML/OIDC) bypass of invite whitelist., SAML/OIDC should bypass invite whitelist., Basic auth should enforce invite whitelist., Test invite whitelist scenarios., Empty whitelist should allow all users., Populated whitelist should block non-invited users., Whitelist should match emails case-insensitively., TestSAMLOIDCBehavior (+10 more)
+Nodes (17): Test SSO (SAML/OIDC) bypass of invite whitelist., SAML/OIDC should bypass invite whitelist., Basic auth should enforce invite whitelist., Test invite whitelist scenarios., Empty whitelist should allow all users., Populated whitelist should block non-invited users., Whitelist should match emails case-insensitively., TestSAMLOIDCBehavior (+9 more)
 
 ### Community 600 - "Community 600"
-Cohesion: 0.12
-Nodes (13): gradio_interface(), run_autogen_agents(), run_sql_query(), SQLQueryInput, handle_tool_calls(), router(), get_schema(), get_table() (+5 more)
+Cohesion: 0.08
+Nodes (20): gradio_interface(), run_autogen_agents(), run_sql_query(), SQLQueryInput, BaseTool, CalculatorInput, CalculatorTool, Input for CalculatorTool. (+12 more)
 
 ### Community 601 - "Community 601"
-Cohesion: 0.14
-Nodes (23): ConnectorCredentialPair, Session, DocumentSource, Session, User__ExternalTeamId, UUID, delete_public_external_team_for_cc_pair__no_commit(), delete_user__ext_team_for_cc_pair__no_commit() (+15 more)
+Cohesion: 0.13
+Nodes (21): get_user_external_group_ids(), External-team principals for hierarchy browse filtering.  A user's hierarchy-b, The external-team ids (source-synced group memberships) a user belongs to., Session, User, DocumentSource, Session, User__ExternalTeamId (+13 more)
 
 ### Community 602 - "Community 602"
 Cohesion: 0.12
 Nodes (21): Any, MessageType, WebClient, ConnectorCredentialPair, ExternalUserGroup, WebClient, WebClient, _get_slack_group_ids() (+13 more)
 
 ### Community 603 - "Community 603"
-Cohesion: 0.08
-Nodes (17): Pydantic model for Slack federated search entities., Validate search_all_channels configuration, Slack federated connector credentials., Information about a Slack team/workspace., Information about a Slack user., Individual search result from Slack., Response from Slack federated search., Validate default_search_days is positive and reasonable (+9 more)
+Cohesion: 0.17
+Nodes (7): Pydantic model for Slack federated search entities., Validate search_all_channels configuration, Validate default_search_days is positive and reasonable, Validate max_messages_per_query is positive and reasonable, Validate each channel is a non-empty string, Validate each exclude pattern is a non-empty string, SlackEntities
 
 ### Community 604 - "Community 604"
 Cohesion: 0.13
 Nodes (23): Connector, ConnectorCredentialPair, ConnectorCredentialPairStatus, Credential, datetime, IndexAttempt, OmCeleryPriority, SearchSettings (+15 more)
 
 ### Community 605 - "Community 605"
-Cohesion: 0.26
-Nodes (17): ClearProjectInput, CreateProjectInput, ClearProjectInput, CreateProjectInput, PatchProjectInput, ProjectMutationMixin, ProjectMutationPayload, PatchProjectInput (+9 more)
+Cohesion: 0.21
+Nodes (18): ClearProjectInput, CreateProjectInput, ClearProjectInput, CreateProjectInput, validate_hex_color(), PatchProjectInput, ProjectMutationMixin, ProjectMutationPayload (+10 more)
 
 ### Community 606 - "Community 606"
-Cohesion: 0.18
-Nodes (22): Color, Compare(), CompareDirectories(), decodePNG(), listPNGs(), SaveDiffImage(), statusOrder(), contains() (+14 more)
+Cohesion: 0.06
+Nodes (30): 1. Create Chat Session, 2. Send Message (SSE Streaming), API Integration, Architecture Overview, Backend Endpoints Used, Browser Support, Build Commands, Cloud Deployment (Recommended) (+22 more)
 
 ### Community 607 - "Community 607"
 Cohesion: 0.17
 Nodes (21): dev.sh script, add_profile(), check_dependencies(), compose_cmd(), generate_schema_override(), get_profile_config(), HEALTH_LOG_CHECK, HEALTH_TIMEOUT (+13 more)
 
 ### Community 608 - "Community 608"
-Cohesion: 0.18
-Nodes (25): API Server (uvicorn om.main:app), Background Worker (supervisord + Celery), Redis Cache, Code Interpreter Service, VertualAI Craft file-system mode, Indexing Model Server, Inference Model Server, MinIO S3 File Store (+17 more)
+Cohesion: 0.15
+Nodes (28): API Server (uvicorn om.main:app), Background Worker (supervisord + Celery), Redis Cache, Code Interpreter Service, VertualAI Craft file-system mode, Indexing Model Server, Inference Model Server, MinIO S3 File Store (+20 more)
 
 ### Community 609 - "Community 609"
 Cohesion: 0.08
@@ -4794,32 +6077,32 @@ Cohesion: 0.17
 Nodes (8): Session, Team, UUID, Data-access layer for teams and team-scoped grants.  Every method takes a call, Read queries for teams, memberships, and resource -> team grant edges., All teams the user belongs to (member or curator)., Teams for which the user has the team-scoped curator flag set., TeamRepository
 
 ### Community 619 - "Community 619"
-Cohesion: 0.12
-Nodes (18): Any, FederatedConnector, FederatedConnectorSource, FederatedConnectorMissingException, get_federated_connector(), get_federated_connector_cls(), _load_federated_connector_class(), Factory for creating federated connector instances. (+10 more)
+Cohesion: 0.16
+Nodes (19): Any, FederatedConnectorSource, Any, FederatedConnector, FederatedConnectorSource, create_federated_connector(), Update a federated connector with credential and config validation., Validate credentials for a federated connector using the connector's validation (+11 more)
 
 ### Community 620 - "Community 620"
-Cohesion: 0.09
-Nodes (13): Any, Emitter, Placement, ToolResponse, Initialize tool with optional emitter. Emitter can be set later via set_emitter(, Get the emitter. Raises if not set., Should be the name of the tool passed to the LLM as the json field, Should be the name of the tool displayed to the user (+5 more)
+Cohesion: 0.11
+Nodes (9): Emitter, Initialize tool with optional emitter. Emitter can be set later via set_emitter(, Get the emitter. Raises if not set., Should be the name of the tool passed to the LLM as the json field, Should be the name of the tool displayed to the user, Whether this tool is currently available for use given         the state of the, This is the full definition of the tool with all of the parameters, settings, et, Emit the start packet for this tool. Each tool implementation should         emi (+1 more)
 
 ### Community 621 - "Community 621"
-Cohesion: 0.10
-Nodes (18): R, Test that a function that completes within timeout works correctly, Test that a function that exceeds timeout raises TimeoutError, Test that other exceptions from the function are propagated properly, Test that args and kwargs are properly passed to the function, test_run_with_timeout_completes(), test_run_with_timeout_propagates_exceptions(), test_run_with_timeout_raises_on_timeout() (+10 more)
+Cohesion: 0.12
+Nodes (17): floor_to_minute(), get_timestamp_range(), is_timezone_aware(), local_now(), First adds one minute to `max_time`, because time intervals are right     open, Returns True if the datetime is timezone-aware, False otherwise., Generate a sequence of datetime objects at regular intervals between start and e, Floor datetime to the minute by taking a round-trip through string     format b (+9 more)
 
 ### Community 622 - "Community 622"
-Cohesion: 0.09
-Nodes (8): BinaryIO, _prepare_dataframe_as_csv(), Prepare pandas DataFrame for upload as compressed CSV., Test different patterns for output column detection., Test validation of problematic CSV scenarios., TestCSVProcessing, TestDatasetUploadError, TestHelperFunctions
+Cohesion: 0.10
+Nodes (7): BinaryIO, _prepare_dataframe_as_csv(), Prepare pandas DataFrame for upload as compressed CSV., Test different patterns for output column detection., Test validation of problematic CSV scenarios., TestCSVProcessing, TestHelperFunctions
 
 ### Community 623 - "Community 623"
-Cohesion: 0.16
-Nodes (20): completeSnapshotFiles(), NewDBRestoreCommand(), resolveInputPath(), runDBRestore(), runDBRestoreSeeded(), DBRestoreOptions, CopyToContainer(), BackendDir() (+12 more)
+Cohesion: 0.07
+Nodes (29): 3.1 First Pause — Save original task (lines ~661-678), 3.2 Resume — Conversation-aware re-call (lines ~467-497), 3.3 Use override when running paused step (lines ~596-608), 3.4 Re-pause with accumulated conversation (lines ~654-712), 4.1 First Pause — Save original task (lines ~1280-1302), 4.2 Resume — Direct agent re-call BEFORE orchestrator loop (lines ~948-998), Bugs Fixed During Testing, Context (+21 more)
 
 ### Community 624 - "Community 624"
-Cohesion: 0.16
-Nodes (19): _cache_key_fn(), _get_results(), _get_results_postgresql(), _get_results_sqlite(), FloatCol, AbstractCache, Any, AsyncSession (+11 more)
+Cohesion: 0.11
+Nodes (27): _cache_key_fn(), _get_results(), _get_results_postgresql(), _get_results_sqlite(), LatencyMsQuantileCache, LatencyMsQuantileDataLoader, test_latency_ms_quantiles_p25_p50_p75(), FloatCol (+19 more)
 
 ### Community 625 - "Community 625"
-Cohesion: 0.11
-Nodes (18): _cache_key_fn(), _get_stmt(), test_record_counts(), AbstractCache, Any, DbSessionFactory, Key, Param (+10 more)
+Cohesion: 0.14
+Nodes (16): _cache_key_fn(), _get_stmt(), RecordCountCache, RecordCountDataLoader, test_record_counts(), AbstractCache, Any, DbSessionFactory (+8 more)
 
 ### Community 626 - "Community 626"
 Cohesion: 0.22
@@ -4830,36 +6113,36 @@ Cohesion: 0.08
 Nodes (13): Test handling of span_id in DataFrame index., Test error handling for missing score columns., Test that auto-detection handles various types of data in _score columns., Test auto-detection when some _score columns have valid data and others don't., Test that auto-detection produces same results as explicit score names., Test the to_annotation_dataframe utility function., Test that annotation names use the score name by default., Test that multiple span_id columns are preserved in the output. (+5 more)
 
 ### Community 628 - "Community 628"
-Cohesion: 0.14
-Nodes (15): CodeEvaluator, Evaluator, LLMEvaluator, A convenience super class for defining code evaluators.      This class is int, A convenience super class for defining LLM evaluators.      This class is inte, A helper super class to guide the implementation of an `Evaluator` object., _validate_sig(), Any (+7 more)
+Cohesion: 0.06
+Nodes (28): ABC, Any, ImageGenerationResponse, JSON_ro, CodeEvaluator, Evaluator, LLMEvaluator, A convenience super class for defining code evaluators.      This class is int (+20 more)
 
 ### Community 629 - "Community 629"
 Cohesion: 0.13
 Nodes (23): chat_completion(), compose_response(), gen_recipe_args(), gen_web_args(), generate_single_trace_with_spans(), generate_traces_phoenix(), get_recipes(), get_web_info() (+15 more)
 
 ### Community 630 - "Community 630"
-Cohesion: 0.11
-Nodes (24): Phoenix CLI Design Principles, @arizeai/phoenix-cli, px api graphql command, OpenAPI Code Generation, Datasets (examples with splits), Experiments (task + evaluators on datasets), @arizeai/phoenix-client, Phoenix Prompts (versioned, taggable) (+16 more)
+Cohesion: 0.05
+Nodes (46): Adding Commands, Architecture, Building, CLI Design Principles, Development Guide, Directory Structure, Setup, Testing (+38 more)
 
 ### Community 631 - "Community 631"
-Cohesion: 0.11
-Nodes (16): SpanAnnotationData, _chunk_span_annotations_dataframe(), _create_span_annotation(), Create a span annotation data object.      identifier: Enables multiple annota, Split DataFrame into chunks for span annotation processing., Test suite for direct annotation creation functions., Test creating span annotations with different parameter combinations., Test creating document annotations with position handling. (+8 more)
+Cohesion: 0.10
+Nodes (14): SpanAnnotationData, _chunk_span_annotations_dataframe(), Split DataFrame into chunks for span annotation processing., Test suite for direct annotation creation functions., Test creating span annotations with different parameter combinations., Test creating document annotations with position handling., Test identifier handling edge cases., Test suite for the public wrapper functions users will call directly. (+6 more)
 
 ### Community 632 - "Community 632"
 Cohesion: 0.22
 Nodes (7): DbSessionFactory, GenerativeModel, GenerativeModelStore, Project, SpanCostCalculator, Tracer, TestTracer
 
 ### Community 633 - "Community 633"
-Cohesion: 0.09
-Nodes (24): LLM Judge Prompt Template, Judge Template Structure, ClassificationEvaluator (Python), create_classifier factory, classification_evaluator_configs (built-in prompts), LLM (provider-agnostic wrapper), createClassificationEvaluator (TypeScript), Evaluator Decision Framework (+16 more)
+Cohesion: 0.25
+Nodes (9): LLM Judge Prompt Template, Template Structure, ClassificationEvaluator (Python), create_classifier factory, classification_evaluator_configs (built-in prompts), createClassificationEvaluator (TypeScript), FaithfulnessEvaluator, HallucinationEvaluator (deprecated) (+1 more)
 
 ### Community 634 - "Community 634"
-Cohesion: 0.08
-Nodes (13): Test suite for SlackEntities validation, Test that default values are set correctly, Test search_all_channels=True ignores channels list, Test search_all_channels=False with valid channels, Test search_all_channels=False without channels raises error, Test channel list validation, Test exclude channel patterns validation, Test exclude patterns work with specific channel list (+5 more)
+Cohesion: 0.05
+Nodes (27): Any, Test OAuth callback with error response, Test OAuth callback without authorization code, Test OAuth callback when Slack API returns error, Test OAuth callback when authed_user is missing from response, Test OAuth callback when authed_user is missing access_token, Test suite for SlackEntities validation, Test that default values are set correctly (+19 more)
 
 ### Community 635 - "Community 635"
-Cohesion: 0.12
-Nodes (13): get_shared_schema_session(), Session pinned to the global ``public`` schema. Use ONLY for PUBLIC_SCHEMA_TABLE, Data access for the global ``user_tenant_mapping`` table (email -> tenant routin, Idempotently add an (email, tenant_id) mapping., Remove a single mapping. Returns rows deleted., Activate/deactivate every mapping for a tenant. Returns rows affected., Deactivate all of a user's mappings and activate them on ``to_tenant``., Repository over the global email->tenant mapping table. (+5 more)
+Cohesion: 0.05
+Nodes (36): Session, get_current_tenant_session(), get_shared_schema_session(), get_tenant_session(), get_tenant_session_dependency(), Contract 3 — the single tenant-context surface every workstream imports.  This, FastAPI dependency yielding a tenant-scoped session.      Rejects unauthentica, Temporarily bind the current tenant for a block of work (background jobs, tests) (+28 more)
 
 ### Community 636 - "Community 636"
 Cohesion: 0.08
@@ -4894,8 +6177,8 @@ Cohesion: 0.11
 Nodes (20): Info, Any, Prometheus metrics setup for the VertualAi API server.  Orchestrates HTTP reques, Initialize HTTP request metrics for the VertualAi API server.      Must be calle, setup_prometheus_metrics(), Slow request counter metric.  Increments a counter whenever a request exceeds a, Increment slow request counter when duration exceeds threshold., slow_request_callback() (+12 more)
 
 ### Community 644 - "Community 644"
-Cohesion: 0.14
-Nodes (14): Any, DATestImageGenerationConfig, DATestUser, ImageGenerationConfigManager, Get all image generation configs., Get credentials for an image generation config., Update an existing image generation config., Convert custom_config values to strings (API expects dict[str, str]). (+6 more)
+Cohesion: 0.13
+Nodes (28): OAuthConfig, Session, User, create_oauth_config_endpoint(), delete_oauth_config_endpoint(), get_oauth_config_endpoint(), handle_oauth_callback(), initiate_oauth_flow() (+20 more)
 
 ### Community 645 - "Community 645"
 Cohesion: 0.13
@@ -4906,8 +6189,8 @@ Cohesion: 0.09
 Nodes (23): scripts, build, clean, dev, dev:no-phoenix, dev:verbose, eval, eval:benchmark (+15 more)
 
 ### Community 647 - "Community 647"
-Cohesion: 0.17
-Nodes (21): downloadS3Dir(), getS3Bucket(), newCompareCommand(), NewScreenshotDiffCommand(), newUploadBaselinesCommand(), printSummary(), resolveCompareDefaults(), resolveUploadDefaults() (+13 more)
+Cohesion: 0.07
+Nodes (29): 1. Active Directory (Microsoft), 1. Bind Operation (Authentication), 2. LDAP Filters (Query Language), 2. OpenLDAP, 3. 389 Directory Server, 3. Attributes (User Fields), 4. Groups & Role Mapping, Authentication Flow Comparison (+21 more)
 
 ### Community 648 - "Community 648"
 Cohesion: 0.13
@@ -4918,12 +6201,12 @@ Cohesion: 0.09
 Nodes (14): Test with multiple span_id columns and index., Test auto-detection of score columns when score_names is None., Test that score values are extracted correctly., Test that label values are extracted correctly., Test that explanation values are extracted correctly., Test that metadata values are extracted correctly., Test that different span_id column names are detected correctly., Test that original dataframe is not modified. (+6 more)
 
 ### Community 650 - "Community 650"
-Cohesion: 0.13
-Nodes (22): EvaluationScore, ExperimentEvaluation, _bind_evaluator_signature(), create_evaluator(), _default_eval_scorer(), get_func_name(), Convert function result to EvaluationResult., A decorator that configures a sync or async function to be used as an experiment (+14 more)
+Cohesion: 0.14
+Nodes (20): EvaluationScore, ExperimentEvaluation, _bind_evaluator_signature(), create_evaluator(), get_func_name(), A decorator that configures a sync or async function to be used as an experiment, Makes a best-effort attempt to get the name of the function., Check that the wrapped function has a valid signature for use as an evaluator. (+12 more)
 
 ### Community 651 - "Community 651"
-Cohesion: 0.09
-Nodes (12): ExampleProxy, Immutable proxy for backward compatibility with legacy Example dataclass interfa, Access to input field., Access to output field., Access to metadata field., Support dictionary-style access., Support iteration over dictionary keys., Support len() function for dictionary-style length. (+4 more)
+Cohesion: 0.07
+Nodes (28): A1. Auto figure capture *(smallest, ship first)*, A2. Live streaming stdout/stderr, A3. Rich outputs (`display()`, inline images, plotly/HTML), Appendix — Before/After on a real interaction (user-visible payoff), B0. Foundation — `exec_command` primitive *(gates all of Track B)*, B1. Read-only agent (Read + Grep + Terminal), B2. File edit/write, B3. Git operations (+ optional PR) (+20 more)
 
 ### Community 652 - "Community 652"
 Cohesion: 0.09
@@ -4934,8 +6217,8 @@ Cohesion: 0.13
 Nodes (18): loadConfigFromEnvironment(), EnvironmentConfig, getEnvironmentConfig(), getHeadersFromEnvironment(), getIntFromEnvironment(), getStrFromEnvironment(), AssertEquals, _CheckConfigApiKey (+10 more)
 
 ### Community 654 - "Community 654"
-Cohesion: 0.10
-Nodes (22): Test basic operations of ThreadSafeDict, Test ThreadSafeDict with concurrent access from multiple threads, Test bulk operations of ThreadSafeDict, Test ThreadSafeDict with concurrent bulk operations, Test atomic operations with ThreadSafeDict's lock, Test that parallel_yield correctly yields values from multiple generators., Test parallel_yield with empty generators., Test parallel_yield with generators of different lengths. (+14 more)
+Cohesion: 0.13
+Nodes (25): OAuthConfig, OAuthUserToken, Session, Tool, UUID, create_oauth_config(), delete_oauth_config(), delete_user_oauth_token() (+17 more)
 
 ### Community 655 - "Community 655"
 Cohesion: 0.13
@@ -4950,32 +6233,32 @@ Cohesion: 0.13
 Nodes (22): build_c1_message(), build_c2_message(), build_c3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), Financial Crime Investigation Workflow — Test Suite ============================ (+14 more)
 
 ### Community 658 - "Community 658"
-Cohesion: 0.14
-Nodes (16): ExpansionSettingsResponse, ExpansionSettingsUpdateRequest, Request/response schemas for the search API.  Authored clean-room from the fro, Partial update; only provided (non-None) fields are applied., SearchFlowClassificationRequest, SearchFlowClassificationResponse, SearchFullResponse, SearchHistoryResponse (+8 more)
+Cohesion: 0.15
+Nodes (15): ExpansionSettingsResponse, ExpansionSettingsUpdateRequest, Request/response schemas for the search API.  Authored clean-room from the fro, Partial update; only provided (non-None) fields are applied., SearchFlowClassificationRequest, SearchFlowClassificationResponse, SearchFullResponse, SearchHistoryResponse (+7 more)
 
 ### Community 659 - "Community 659"
-Cohesion: 0.13
-Nodes (22): Code Generation Eval (Archived), CODE_READABILITY_PROMPT_TEMPLATE, Reference (Citation) Link Eval (Archived), REF_LINK_EVAL_PROMPT_TEMPLATE_STR, User Frustration Eval, USER_FRUSTRATION_PROMPT_TEMPLATE, Agent Handoff Evaluation, Multi-Agent System Evaluation (+14 more)
+Cohesion: 0.11
+Nodes (25): Code Generation Eval (Archived), CODE_READABILITY_PROMPT_TEMPLATE, Reference (Citation) Link Eval (Archived), REF_LINK_EVAL_PROMPT_TEMPLATE_STR, User Frustration Eval, USER_FRUSTRATION_PROMPT_TEMPLATE, Agent Handoff Evaluation, Multi-Agent System Evaluation (+17 more)
 
 ### Community 660 - "Community 660"
 Cohesion: 0.16
 Nodes (20): Any, GoogleDocsService, TextSection, _add_finished_section(), _build_gdoc_section_link(), CurrentHeading, _extract_id_from_heading(), _extract_text_from_paragraph() (+12 more)
 
 ### Community 661 - "Community 661"
-Cohesion: 0.11
-Nodes (16): CacheMetadata, LanguageModelInput, LLMConfig, CacheMetadata, LanguageModelInput, process_with_prompt_cache(), Main processor for prompt caching., # TODO: test with a history containing images (+8 more)
+Cohesion: 0.07
+Nodes (27): Architecture, Event Types, Exit Codes, Expected Results, Files, Future Testing, Grafana (VULNERABLE), LDAP TLS Security Testing (+19 more)
 
 ### Community 662 - "Community 662"
 Cohesion: 0.16
 Nodes (20): CloudEmbeddingProvider, CloudEmbeddingProviderCreationRequest, EmbeddingProvider, Session, User, SensitiveValue, SimpleNamespace, delete_embedding_provider() (+12 more)
 
 ### Community 663 - "Community 663"
-Cohesion: 0.13
-Nodes (13): AbstractEventLoop, Event, Thread, MCPSessionManager, Holds a live MCP session with its async resources., Thread-safe pool of persistent MCP sessions keyed by (scope_id, server_url)., Runs in a dedicated daemon thread. Opens the async transport + session         a, Return a persistent session, creating one if needed. (+5 more)
+Cohesion: 0.07
+Nodes (27): Available Evaluators, Configuring Inputs, contains, exact_match, Input Mapping Examples, json_distance, levenshtein_distance, Notes (+19 more)
 
 ### Community 664 - "Community 664"
-Cohesion: 0.18
-Nodes (13): DATestUser, datetime, IndexAttemptErrorPydantic, IndexAttemptSnapshot, IndexingStatus, PaginatedReturn, IndexAttemptSnapshot, DATestIndexAttempt (+5 more)
+Cohesion: 0.07
+Nodes (27): 1. Why Unique ID is Required for Placeholders, 2. Configuration Constraints for Placeholder Mode, 389 Directory Server: nsUniqueId, 3. PUA Marker Stripping, 4. Database Collation, Active Directory: objectGUID, Admin-Provisioned Users, Case Normalization (+19 more)
 
 ### Community 665 - "Community 665"
 Cohesion: 0.23
@@ -4990,8 +6273,8 @@ Cohesion: 0.12
 Nodes (21): CompletedProcess, current_head_rev(), engine(), Black-box integration tests for the parallel alembic migration runner (backend/a, Create a temporary tenant schema with no tables at all.      Alembic will treat, Create a tenant schema whose alembic_version points to a non-existent     revisi, In non-multi-tenant mode there are no tenant_ schemas, so the script     should, A tenant schema already at head should not be targeted for migration. (+13 more)
 
 ### Community 668 - "Community 668"
-Cohesion: 0.09
-Nodes (18): create_test_search_doc(), mock_search_docs(), Test multiple mapping updates during processing., Test that workspace file citations don't conflict with search tool citations., Test that adding more workspace files in subsequent messages works correctly., Test HYPERLINK mode with special characters in URL., Test HYPERLINK mode when document has no URL., Test that update_citation_mapping ignores duplicate citation numbers.      This (+10 more)
+Cohesion: 0.07
+Nodes (26): 1. Session Manager (`session_manager.py`), 2. Persistent Kernel (`_kernel.py`), 3. API Changes, 4. Client Changes (`code_interpreter_client.py`), 5. PythonTool Changes (`python_tool.py`), Architecture, Backward Compatibility, Code Interpreter Service (code-interpreter/) (+18 more)
 
 ### Community 669 - "Community 669"
 Cohesion: 0.17
@@ -5006,16 +6289,16 @@ Cohesion: 0.09
 Nodes (21): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, jsx, lib, module, moduleDetection, moduleResolution (+13 more)
 
 ### Community 672 - "Community 672"
-Cohesion: 0.11
-Nodes (13): Tests for bot lifecycle management., setup_hook calls cache.refresh_all()., setup_hook calls api_client.initialize()., close() calls api_client.close()., TestBotLifecycle, main(), OmDiscordClient, Discord bot client with integrated message handling. (+5 more)
+Cohesion: 0.07
+Nodes (20): Tests for Discord bot event handling with mocked Discord API.  These tests mock, Tests for message handling behavior., Thinking emoji is added during processing., Thinking emoji is removed after response., add_reaction failure doesn't block processing., DM to bot sends redirect message., Tests for bot lifecycle management., setup_hook calls cache.refresh_all(). (+12 more)
 
 ### Community 673 - "Community 673"
 Cohesion: 0.12
 Nodes (22): om-* Docker Image Naming Convention (IMAGE_REGISTRY), runs-on Self-Hosted Runners with ECR Cache, Setup Playwright Composite Action, Setup Python and Install Dependencies Composite Action, Slack Notify on Failure Composite Action, Build and Push Docker Images on Tag Workflow, Tag Beta Version Workflow, Tag Latest Version Workflow (+14 more)
 
 ### Community 674 - "Community 674"
-Cohesion: 0.19
-Nodes (20): get_env_disable_basic_auth(), Gets the value of the ENV_PHOENIX_DISABLE_BASIC_AUTH environment variable., Request, Response, User, _check_brute_force_limit(), _create_auth_response(), _initiate_password_reset() (+12 more)
+Cohesion: 0.22
+Nodes (18): Request, Response, User, _check_brute_force_limit(), _create_auth_response(), _initiate_password_reset(), _ldap_login(), _login() (+10 more)
 
 ### Community 675 - "Community 675"
 Cohesion: 0.09
@@ -5026,16 +6309,16 @@ Cohesion: 0.13
 Nodes (8): SessionData, _make_session_data(), TestAsyncGetSessionsDataframe, TestAsyncSessionsGet, TestAsyncSessionsList, TestGetSessionsDataframe, TestSessionsGet, TestSessionsList
 
 ### Community 677 - "Community 677"
-Cohesion: 0.10
-Nodes (13): ColumnWidths, QueryStats, Statistics for a query's performance metrics., Widths of columns in the output table., Get the width for a specific column., Get median and p90 execution times., Get the execution plan from the run closest to the median execution time., Format a row for the results table. (+5 more)
+Cohesion: 0.13
+Nodes (12): ColumnWidths, QueryResult, Widths of columns in the output table., Get the width for a specific column., Stores the results of running a query multiple times., Check if the query executed successfully., Get the execution plan from the run closest to the median execution time., Format a row for the results table. (+4 more)
 
 ### Community 678 - "Community 678"
-Cohesion: 0.12
-Nodes (13): _convert_to_metadata_value(), Convert a Salesforce field value to a valid metadata value.      Document metada, Unit tests for _yield_doc_batches and metadata type conversion in SalesforceConn, Tests for the _convert_to_metadata_value helper function., String values should be returned as-is., Boolean True should be converted to string 'True'., Boolean False should be converted to string 'False'., Integer values should be converted to string. (+5 more)
+Cohesion: 0.08
+Nodes (25): Benchmark - SWE Bench, Cline Coding Agent (Act Mode, clinerules), Cline - Coding Agent, Cline + SWE Bench Setup, Code Appendix, Coding Agents and Rule Files, Configuration, Helper: Log Experiments to Phoenix (+17 more)
 
 ### Community 679 - "Community 679"
-Cohesion: 0.09
-Nodes (12): Password at exactly max length should be accepted (not rejected)., Test security-critical input validation., Minimal LDAP configuration for testing., Create authenticator instance., SECURITY: Empty username must be rejected to prevent anonymous bind bypass., SECURITY: Whitespace-only username must be rejected., SECURITY: Empty password must be rejected to prevent anonymous bind bypass., SECURITY: None password must be rejected. (+4 more)
+Cohesion: 0.22
+Nodes (11): AccessDecision, Session, User, Permission, PermissionService, General team-scoped decision: role holds the permission AND is in         scope, May the user curate a resource that is granted to ``owning_team_ids``?, Team ids the user may administer. ``None`` means "all" (admin). (+3 more)
 
 ### Community 680 - "Community 680"
 Cohesion: 0.09
@@ -5050,16 +6333,16 @@ Cohesion: 0.09
 Nodes (12): Tests for the DotDict class., Test attribute access on DotDict., Test nested attribute access returns DotDict., Test key access on DotDict., Test nested key access., Test mixed attribute and key access., Test that missing key raises AttributeError for attribute access., Test that missing key raises KeyError for bracket access. (+4 more)
 
 ### Community 683 - "Community 683"
-Cohesion: 0.13
-Nodes (19): SalesforceObject, get_affected_parent_ids_by_type(), get_child_ids(), get_record(), get_type_from_id(), Get the type of an object from its ID., Retrieve the record and return it as a SalesforceObject.     The object type wil, Get IDs of objects that are of the specified parent types and are either in the (+11 more)
+Cohesion: 0.12
+Nodes (19): SalesforceObject, find_ids_by_type(), get_affected_parent_ids_by_type(), get_child_ids(), get_record(), get_type_from_id(), Get the type of an object from its ID., Retrieve the record and return it as a SalesforceObject.     The object type wil (+11 more)
 
 ### Community 684 - "Community 684"
 Cohesion: 0.16
 Nodes (20): ColumnElement, HierarchyNode, Session, _get_accessible_hierarchy_nodes_for_source(), Build the WHERE clause governing whether a caller may see a node.      A node, Query the nodes of ``source`` visible to the caller, ordered by name.      Kep, Return the nodes of ``source`` the caller is allowed to browse.      Visibilit, _visibility_predicate() (+12 more)
 
 ### Community 685 - "Community 685"
-Cohesion: 0.13
-Nodes (15): RateLimitScope, UUID, Enums, namespaces, and key/subject helpers for the rate-limits subsystem.  Kep, Stable string that identifies a policy's subject bucket.      Tenant-wide scop, subject_key(), Unit tests for the rate-limits core logic (no live Redis/DB required).  Covers, Mirror of the engine's Lua weighting so the algorithm is asserted independently., _sliding_estimate() (+7 more)
+Cohesion: 0.15
+Nodes (13): Stable string that identifies a policy's subject bucket.      Tenant-wide scop, subject_key(), Unit tests for the rate-limits core logic (no live Redis/DB required).  Covers, Mirror of the engine's Lua weighting so the algorithm is asserted independently., _sliding_estimate(), test_budget_decision_boundary(), test_hour_bucket_truncates_to_utc_hour(), test_sliding_weight_full_at_window_start() (+5 more)
 
 ### Community 686 - "Community 686"
 Cohesion: 0.16
@@ -5070,32 +6353,32 @@ Cohesion: 0.11
 Nodes (13): ChatFile, Unit tests for chat_files handling in tool_runner.py.  These tests verify that c, Tests for passing chat_files to PythonTool., Tests for the ChatFile model itself., Test ChatFile model creation., Test ChatFile with unicode filename., Test ChatFile with spaces in filename., Create sample chat files for testing. (+5 more)
 
 ### Community 688 - "Community 688"
-Cohesion: 0.13
-Nodes (16): ChatCompletionToolUnionParam, CompletionCreateParamsStreaming, _estimate_tokens(), _generate_id(), _generate_tool_call_id(), Stream a tool call for OpenAI Responses API using Pydantic models., Generate a unique ID for responses., Generate OpenAI-style tool call ID (call_XXXX...). (+8 more)
+Cohesion: 0.15
+Nodes (25): BasicExpertInfo, SocketModeRequest, TenantSocketModeClient, Block, FeedbackVisibility, get_clicker_name(), handle_doc_feedback_button(), handle_followup_button() (+17 more)
 
 ### Community 689 - "Community 689"
-Cohesion: 0.11
-Nodes (11): cmpop, BooleanExpression, BooleanOperation, ComparisonOperation, _get_sqlalchemy_comparison_operator(), _is_supported_comparison_operator(), JSONAttribute, UnaryBooleanOperation (+3 more)
+Cohesion: 0.13
+Nodes (10): cmpop, BooleanExpression, BooleanOperation, ComparisonOperation, _get_sqlalchemy_comparison_operator(), _is_supported_comparison_operator(), UnaryBooleanOperation, BoolOp (+2 more)
 
 ### Community 690 - "Community 690"
-Cohesion: 0.12
-Nodes (21): Context Engineering, Long-running agent failure modes (context drift, bandwidth overload, tool blindness), I/S/T/F context model (Information, State, Tools, Format), Six Principles for Optimizing Context, Three-tier memory & context-scaling patterns, Prompt (expanded Phoenix definition), Prompt Format (F-String vs Mustache), Prompt Template (+13 more)
+Cohesion: 0.07
+Nodes (33): Context Engineering, Long-running agent failure modes (context drift, bandwidth overload, tool blindness), I/S/T/F context model (Information, State, Tools, Format), Six Principles for Optimizing Context, Three-tier memory & context-scaling patterns, **Benefits of Structured Outputs:**, Prompt, Prompt Format (+25 more)
 
 ### Community 691 - "Community 691"
 Cohesion: 0.15
 Nodes (20): CoreV1Api, _get_kubernetes_client(), _is_kubernetes_available(), Integration test for KubernetesSandboxManager.provision().  This test requires:, Test that send_message() communicates with the sandbox agent successfully., Test that the webapp passthrough (Next.js server) is accessible in the sandbox., Check if Kubernetes is available and configured., Get a configured Kubernetes CoreV1Api client. (+12 more)
 
 ### Community 692 - "Community 692"
-Cohesion: 0.20
-Nodes (20): _assert_autoincrement_preserved(), _create_user_role(), Tests to ensure autoincrement behavior is preserved for tables with sqlite_autoi, Test that users table preserves autoincrement behavior., Test that password_reset_tokens table preserves autoincrement behavior., Test that refresh_tokens table preserves autoincrement behavior., Test that access_tokens table preserves autoincrement behavior., Test that api_keys table preserves autoincrement behavior. (+12 more)
+Cohesion: 0.22
+Nodes (19): _assert_autoincrement_preserved(), _create_user_role(), Tests to ensure autoincrement behavior is preserved for tables with sqlite_autoi, Test that users table preserves autoincrement behavior., Test that password_reset_tokens table preserves autoincrement behavior., Test that refresh_tokens table preserves autoincrement behavior., Test that access_tokens table preserves autoincrement behavior., Test that api_keys table preserves autoincrement behavior. (+11 more)
 
 ### Community 693 - "Community 693"
-Cohesion: 0.18
-Nodes (20): ConnectionParams, create_external_url(), ephemeral_postgresql(), _extract_ddl_ephemeral(), _extract_ddl_external(), _extract_ddl_with_url(), main(), Validate the syntax of the generated schema file using pglast.      Returns Tr (+12 more)
+Cohesion: 0.13
+Nodes (24): ConnectionParams, create_external_url(), ephemeral_postgresql(), _extract_ddl_ephemeral(), _extract_ddl_external(), _extract_ddl_with_url(), main(), Validate the syntax of the generated schema file using pglast.      Returns Tr (+16 more)
 
 ### Community 694 - "Community 694"
-Cohesion: 0.12
-Nodes (11): PostgreSQLDDLExtractor, Extract DDL from PostgreSQL databases., Context manager entry., Establish database connection., Format foreign key constraints with consistent line breaks., Format UNIQUE constraints with consistent line breaks., Format CHECK constraints with ARRAY values for better git diff readability., Split CHECK constraint into prefix and constraint body. (+3 more)
+Cohesion: 0.08
+Nodes (16): PostgreSQLDDLExtractor, Extract DDL from PostgreSQL databases., Context manager entry., Context manager exit., Establish database connection., Close database connection., Format foreign key constraints with consistent line breaks., Format UNIQUE constraints with consistent line breaks. (+8 more)
 
 ### Community 695 - "Community 695"
 Cohesion: 0.18
@@ -5110,24 +6393,24 @@ Cohesion: 0.12
 Nodes (14): _dict(), _f(), _g(), _MockFormatter, TestContentConversion, TestFunctionDeclarationConversion, TestTextPartConversion, TestToolKwargsConversion (+6 more)
 
 ### Community 698 - "Community 698"
-Cohesion: 0.10
-Nodes (17): DefaultImageGenerationConfig, ImageGenerationConfigCreate, ImageGenerationConfigUpdate, ImageGenerationConfigView, ImageGenerationCredentials, _mask_api_key(), Mask API key, showing first 4 and last 4 characters., Response model for image generation config with related data. (+9 more)
+Cohesion: 0.08
+Nodes (26): After First Start, Architecture, Architecture Notes, Arize Phoenix — LLM Observability & Tracing, Building from Source, Configuration Reference, dev.bat Commands, Disable Phoenix (+18 more)
 
 ### Community 699 - "Community 699"
-Cohesion: 0.14
+Cohesion: 0.15
 Nodes (8): gradio_interface(), AgentFlow, RouterInputEvent, ToolCallEvent, StartEvent, StopEvent, This class is used to map the skills to their function names and function callab, SkillMap
 
 ### Community 700 - "Community 700"
-Cohesion: 0.17
-Nodes (6): GeminiModel, An interface for using Google's Gemini models.      This class wraps the Googl, Any, ExtraInfo, MultimodalPrompt, Usage
+Cohesion: 0.08
+Nodes (25): 0.0.1, 0.1.0, 0.2.0, 0.2.1, 0.3.0, 0.3.1, 0.3.2, 0.3.3 (+17 more)
 
 ### Community 701 - "Community 701"
 Cohesion: 0.13
 Nodes (16): Any, Base, ExternalUser, LocalUser, main(), SQLAlchemy Polymorphic Inheritance Example  This script demonstrates single ta, Initialize a new user.          This method prevents direct instantiation of t, Return a string representation of the user. (+8 more)
 
 ### Community 702 - "Community 702"
-Cohesion: 0.18
-Nodes (20): Request, create_project(), CreateProjectRequestBody, CreateProjectResponseBody, delete_project(), get_project(), get_projects(), GetProjectResponseBody (+12 more)
+Cohesion: 0.08
+Nodes (26): Action Menu (Three Dots), Breadcrumbs, Button Dropdown, Buttons, Checkboxes and Switches, Code Editor Areas (CodeMirror), Dialogs/Modals, Dropdown Menus (+18 more)
 
 ### Community 703 - "Community 703"
 Cohesion: 0.10
@@ -5166,8 +6449,8 @@ Cohesion: 0.10
 Nodes (19): env, browser, extends, ignorePatterns, jsPlugins, plugins, version, rules (+11 more)
 
 ### Community 712 - "Community 712"
-Cohesion: 0.19
-Nodes (19): get_default_admin_user_emails_(), AgentUpsertRequest, LLMProviderUpsertRequest, Session, Settings, CustomToolSeed, get_seed_config(), NavigationItemSeed (+11 more)
+Cohesion: 0.21
+Nodes (18): get_default_admin_user_emails_(), AgentUpsertRequest, LLMProviderUpsertRequest, Session, Settings, CustomToolSeed, get_seed_config(), _parse_env() (+10 more)
 
 ### Community 713 - "Community 713"
 Cohesion: 0.13
@@ -5182,16 +6465,16 @@ Cohesion: 0.13
 Nodes (13): SearchQuery, Session, UUID, SearchQuery, Session, UUID, Repository for per-user search history (the ``search_query`` table).  The sess, SearchQueryRepository (+5 more)
 
 ### Community 716 - "Community 716"
-Cohesion: 0.17
-Nodes (15): InferenceChunk, InferenceSection, ChunkIndexRequest, DocumentIndex, IndexFilters, InferenceChunk, QueryExpansionResult, SearchFlowConfig (+7 more)
+Cohesion: 0.29
+Nodes (7): InferenceChunk, InferenceSection, merge_chunks_into_sections(), Weighted reciprocal-rank fusion + chunk->section merging.  Reciprocal-rank fus, Fuse ranked chunk lists via weighted RRF.      Chunk identity is ``InferenceCh, Group fused chunks by document into per-document sections.      Document order, weighted_reciprocal_rank_fusion()
 
 ### Community 717 - "Community 717"
-Cohesion: 0.18
-Nodes (19): DocumentSource, OAuthConnector, Query, Request, Session, User, AuthorizeResponse, CallbackResponse (+11 more)
+Cohesion: 0.08
+Nodes (26): aioboto3/aiobotocore (AWS Bedrock), Alternative Considered: Thread Pool Workaround, Anthropic SDK, Appendix: AWS Credential Refresh, Async LLM Client Lifecycle Management, Benefits, boto3 vs aiobotocore: Code-Level Comparison, Consequences Without Proper Lifecycle Management (+18 more)
 
 ### Community 718 - "Community 718"
-Cohesion: 0.15
-Nodes (16): Any, TenantActionResponse, emit_tenant_event(), Structured, OpenSearch-friendly event logging for tenancy operations (Standard 9, Emit one structured tenancy log line. Never raises., Time an operation and emit a success/failure event automatically.      Usage::, tenant_operation(), drop_tenant_schema() (+8 more)
+Cohesion: 0.05
+Nodes (49): Any, Config, TenantActionResponse, TenantListResponse, emit_tenant_event(), Structured, OpenSearch-friendly event logging for tenancy operations (Standard 9, Emit one structured tenancy log line. Never raises., Time an operation and emit a success/failure event automatically.      Usage:: (+41 more)
 
 ### Community 719 - "Community 719"
 Cohesion: 0.15
@@ -5218,16 +6501,16 @@ Cohesion: 0.10
 Nodes (19): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, moduleResolution, noEmit (+11 more)
 
 ### Community 725 - "Community 725"
-Cohesion: 0.15
-Nodes (8): Test evaluator tracing and trace_id injection., Test that trace_id is added to Score metadata when tracing is enabled., Test that evaluation works without trace_id when tracing is not configured., Test that trace_id is added to Score metadata in async evaluation., TestTracedEvaluator, An extension of `opentelemetry.sdk.trace.TracerProvider` with Phoenix-aware defa, TracerProvider, TestTracerProvider
+Cohesion: 0.16
+Nodes (23): SlackMessageInfo, SocketModeRequest, TenantSocketModeClient, acknowledge_message(), apologize_for_fail(), build_request_details(), _check_tenant_gated(), create_process_slack_event() (+15 more)
 
 ### Community 726 - "Community 726"
 Cohesion: 0.10
 Nodes (19): compilerOptions, esModuleInterop, isolatedModules, lib, module, moduleResolution, noEmit, paths (+11 more)
 
 ### Community 727 - "Community 727"
-Cohesion: 0.12
-Nodes (15): ExpandedQuery, ExpansionStrategy, ExpansionTrace, HistoryTurn, QueryExpansionResult, Domain models for LLM-backed query expansion.  Three complementary transforms, Ordered, de-duplicated expansion variants to run in addition to the         ori, One prior conversation turn used for history-aware expansion. (+7 more)
+Cohesion: 0.08
+Nodes (24): 1. `fetch_versioned_implementation(module, attr)` — Backend dynamic dispatch, 2. `global_version.is_ee_version()` — Direct boolean checks, 3. Frontend gating — `usePaidEnterpriseFeaturesEnabled()` + `eeGated()`, EE (Enterprise Edition) Removal — Migration Plan, How EE Currently Works (3 Mechanisms), Migration Plan (4 Phases), Overview, Phase 1: Backend — Merge EE code into main (biggest phase) (+16 more)
 
 ### Community 728 - "Community 728"
 Cohesion: 0.10
@@ -5246,16 +6529,16 @@ Cohesion: 0.10
 Nodes (19): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+11 more)
 
 ### Community 732 - "Community 732"
-Cohesion: 0.11
-Nodes (13): Any, ComputedAttributes, ComputedValues, MimeType, A Span is a single unit of work in a trace     Conforms to OpenTelemetry     h, SpanKind is loosely inspired by OpenTelemetry's SpanKind     It captures the ty, Context propagation for a span, Span (+5 more)
+Cohesion: 0.05
+Nodes (36): normalize_timestamps(), If the input timestamps contains a Unix or datetime timestamp or ISO8601     ti, Any, datetime, Any, Span, DataFrame, ComputedAttributes (+28 more)
 
 ### Community 733 - "Community 733"
 Cohesion: 0.11
 Nodes (19): Any, DataFrame, Path, compute_metrics_with_judgy(), load_judge_prompt(), load_test_data(), load_traces_from_phoenix(), output_parser() (+11 more)
 
 ### Community 734 - "Community 734"
-Cohesion: 0.10
-Nodes (11): Test has_sufficient_claims method with role mapping., Test that claims are sufficient when role is present and can be mapped., Test that claims are sufficient when role is unmapped in non-strict mode (defaul, Test that claims are sufficient even when role is unmapped in strict mode., Test that claims are insufficient when role is missing in non-strict mode., Test that claims are insufficient when role is missing in strict mode., Test that all claims (email, groups, roles) must be present when configured., Test that claims are insufficient when role is missing in non-strict mode. (+3 more)
+Cohesion: 0.06
+Nodes (19): Unit tests for OAuth2Client., Test has_sufficient_claims method with role mapping., Test that claims are sufficient when role is present and can be mapped., Test that claims are sufficient when role is unmapped in non-strict mode (defaul, Test that claims are sufficient even when role is unmapped in strict mode., Test that claims are insufficient when role is missing in non-strict mode., Test that claims are insufficient when role is missing in strict mode., Test that all claims (email, groups, roles) must be present when configured. (+11 more)
 
 ### Community 735 - "Community 735"
 Cohesion: 0.17
@@ -5266,8 +6549,8 @@ Cohesion: 0.17
 Nodes (19): clear_sf_db(), create_csv_file(), create_csv_with_example_data(), main_build(), Clears the SF DB by deleting all files in the data directory., Creates a CSV file for the given object type and records.      Args:         obj, Creates CSV files with example data, organized by object type., Tests querying functionality by verifying:     1. All expected Account IDs are f (+11 more)
 
 ### Community 737 - "Community 737"
-Cohesion: 0.13
-Nodes (11): Test OAuth callback with error response, Test OAuth callback without authorization code, Test OAuth callback when Slack API returns error, Test OAuth callback when authed_user is missing from response, Test OAuth callback when authed_user is missing access_token, Test suite for SlackFederatedConnector, Test credentials for Slack connector, Test the validate_entities method in SlackFederatedConnector (+3 more)
+Cohesion: 0.08
+Nodes (24): AI Coding Assistant Examples, Analyze Agent Performance, Claude Code, Cursor / Windsurf, Debug a Failed Agent Run, Export to Files, "Failed to resolve project", Fetch a Single Trace (+16 more)
 
 ### Community 738 - "Community 738"
 Cohesion: 0.10
@@ -5278,28 +6561,28 @@ Cohesion: 0.26
 Nodes (19): create_test_agent(), create_workflow_with_override(), delete_agent(), delete_workflow(), get_agent(), get_workflow(), log(), main() (+11 more)
 
 ### Community 740 - "Community 740"
-Cohesion: 0.13
-Nodes (17): Task, datetime, LLMRecommendations, Session, check_for_auto_llm_updates(), Periodic task to fetch LLM model updates from GitHub     and sync them to provid, fetch_llm_recommendations_from_github(), _get_cached_last_updated_at() (+9 more)
+Cohesion: 0.18
+Nodes (14): datetime, LLMRecommendations, Session, fetch_llm_recommendations_from_github(), _get_cached_last_updated_at(), Service for fetching and syncing LLM model configurations from GitHub.  This ser, Reset the cache timestamp in Redis. Useful for testing., Get the cached last_updated_at timestamp from Redis. (+6 more)
 
 ### Community 741 - "Community 741"
 Cohesion: 0.15
 Nodes (13): F, R, Any, Exception, T, _RateLimitDecorator, _RateLimitedRequest, RateLimitTriedTooManyTimesError (+5 more)
 
 ### Community 742 - "Community 742"
-Cohesion: 0.14
-Nodes (18): Request, build_scim_token_display(), _extract_bearer_token(), generate_scim_token(), hash_scim_token(), parse_tenant_from_token(), SCIM bearer-token generation, hashing and request authentication.  Tokens are, FastAPI dependency: authenticate a SCIM request and bind its tenant.      Yiel (+10 more)
+Cohesion: 0.08
+Nodes (25): Adding Extra Tools to Agents, Architecture, Based On, Changing the LLM Model, Components, Custom PPT Templates, Customization, Docker Container (+17 more)
 
 ### Community 743 - "Community 743"
-Cohesion: 0.16
-Nodes (18): FastAPI, LoggerAdapter, Pattern, Verify _match_route resolves /api/items/abc-123 to /api/items/{item_id}., Verify _match_route returns None for paths not in the route map., Verify _match_route handles exact (non-parameterized) paths., test_match_route_exact_paths(), test_match_route_resolves_parameterized_paths() (+10 more)
+Cohesion: 0.05
+Nodes (56): AsyncEngine, Engine, Exception, JSONResponse, Request, FastAPI, LoggerAdapter, Pattern (+48 more)
 
 ### Community 744 - "Community 744"
-Cohesion: 0.19
-Nodes (13): Any, DATestUser, DATestUser, DATestUser, DocumentIndexClient, Test that chat sessions are deleted after the retention period expires., test_chat_retention(), DATestSettings (+5 more)
+Cohesion: 0.08
+Nodes (25): Backwards Compatibility, Build Failures After Upgrade, CI Fails But Local Passes, CI Workflows, Config File Locations, Config Location Strategy, Config Not Found, Current Tools (+17 more)
 
 ### Community 745 - "Community 745"
-Cohesion: 0.12
-Nodes (19): Custom Tracer Provider (BeeAI), BeeAIInstrumentation, BeeAI Tracing (JS) integration, CallbackManager manual instrumentation, LangChain.js instrumentation, LangChain 1.0 version support, ArizeExporter / Observability config, Mastra Tracing with ArizeExporter (+11 more)
+Cohesion: 0.07
+Nodes (28): Custom Tracer Provider, Install, BeeAIInstrumentation, BeeAI Tracing (JS) integration, Method 1: Pass tracerProvider on instantiation, Method 2: Set tracerProvider after instantiation, Method 3: Pass tracerProvider to registerInstrumentations, Observe (+20 more)
 
 ### Community 746 - "Community 746"
 Cohesion: 0.13
@@ -5346,8 +6629,8 @@ Cohesion: 0.11
 Nodes (18): compilerOptions, declaration, declarationMap, esModuleInterop, forceConsistentCasingInFileNames, lib, module, moduleResolution (+10 more)
 
 ### Community 757 - "Community 757"
-Cohesion: 0.12
-Nodes (19): Sessions (multi-turn conversation tracking), Session (sequence of linked traces), session_id / thread_id / conversation_id metadata keys, using_session / setSession context propagation, LLM-as-Judge evaluation, Retrieval relevance evaluator (LLM-as-Judge), Tool result evaluator (code-based), Conversation coherence evaluator (+11 more)
+Cohesion: 0.10
+Nodes (25): 2.3 LLM-as-Judge Evaluations, Install the Phoenix Evals Package, LLM-as-Judge evaluation, Log Evaluations to Phoenix, Retrieval Relevance Evaluator, Run the Evaluation Script, The Debugging Workflow, Tool Result Evaluator (+17 more)
 
 ### Community 758 - "Community 758"
 Cohesion: 0.11
@@ -5374,44 +6657,44 @@ Cohesion: 0.26
 Nodes (12): anthropicProvider, geminiGenerateProvider, geminiGenerateV1Provider, geminiStreamProvider, geminiStreamV1Provider, openaiChatProvider, openaiResponsesProvider, ENDPOINT_IDS (+4 more)
 
 ### Community 765 - "Community 765"
-Cohesion: 0.26
-Nodes (18): AsyncSession, ProjectSession, Request, Trace, SessionAnnotationData, annotate_sessions(), AnnotateSessionsRequestBody, AnnotateSessionsResponseBody (+10 more)
+Cohesion: 0.09
+Nodes (19): Coming Soon, Configuration, Contributing, Existing Deployments, How It Works, Key Features, License, New Installations (+11 more)
 
 ### Community 766 - "Community 766"
 Cohesion: 0.11
 Nodes (18): ignorePatterns, plugins, rules, eqeqeq, eslint/no-implicit-conversion, eslint/prefer-const, import/no-duplicates, no-console (+10 more)
 
 ### Community 767 - "Community 767"
-Cohesion: 0.12
-Nodes (19): Playground A/B Testing (Sync Models/Templates/Inputs), LLM Replay from Span, Prompt Playground, Span Attribute to Playground State Translation, F-string vs Mustache Prompt Formatting, Prompt Template, Prompt Revisions (Linear Git-like History), Structured Output vs Tools (+11 more)
+Cohesion: 0.22
+Nodes (11): Anatomy of a Prompt, F-string vs Mustache Prompt Formatting, Model, Prompt Template, Prompt Versioning, Revisions, Structured Output, Structured Output vs Tools (+3 more)
 
 ### Community 769 - "Community 769"
-Cohesion: 0.11
-Nodes (12): clean_text(), decode_escapes(), find_all_json_objects(), is_valid_email(), normalize_curly_quotes(), Find all JSON objects in text using balanced brace matching.      Iterates throu, LLMs models sometime restructure whitespaces or edits special characters to fit, Can use a library instead if more detailed checks are needed (+4 more)
+Cohesion: 0.07
+Nodes (27): find_snippet_in_content(), _normalize_and_match(), _normalize_text_with_mapping(), Performs a token based fuzzy search for the snippet in the content.      min_thr, Finds where the snippet is located in the content.      Strategy:     1. Normali, Normalizes the snippet & content, then performs a direct string match., Text normalization that maintains position mapping.      Returns:         tuple:, SnippetMatchResult (+19 more)
 
 ### Community 770 - "Community 770"
 Cohesion: 0.19
 Nodes (17): create_agent(), delete_agent(), log(), Test: Conditional Router (If-Else Branch in Sequential Workflows)  Verifies: 1., Create a workflow with:     Step 0: Classifier agent (outputs text containing "P, Test that workflow with conditional_router step was created correctly., Test that positive input triggers TRUE branch., Test that negative input triggers FALSE branch. (+9 more)
 
 ### Community 771 - "Community 771"
-Cohesion: 0.21
-Nodes (17): airtable_config(), AirtableConfig, compare_documents(), create_test_document(), Utility function to compare actual and expected documents, ignoring order., Test behavior when all non-attachment fields are treated as metadata., Test that passing an Airtable URL produces the same results as base_id + table_i, Test index_all mode discovers all bases/tables and returns documents.      The t (+9 more)
+Cohesion: 0.17
+Nodes (23): get_assistant_stats(), get_rollups(), get_summary(), get_top_agents(), get_usage(), Admin analytics API (clean-room reimplementation).  Serves the lightweight adm, Read cached daily rollup rows for the window., Recompute and upsert the daily rollup cache for the window. (+15 more)
 
 ### Community 773 - "Community 773"
 Cohesion: 0.11
 Nodes (17): compilerOptions, baseUrl, esModuleInterop, forceConsistentCasingInFileNames, jsx, jsxImportSource, lib, module (+9 more)
 
 ### Community 774 - "Community 774"
-Cohesion: 0.20
-Nodes (15): build_html_email(), build_user_email_invite(), _get_application_name(), Resolve the branded application name from application settings.      Falls bac, send_email(), send_email_with_sendgrid(), send_email_with_smtplib(), send_forgot_password_email() (+7 more)
+Cohesion: 0.24
+Nodes (13): build_html_email(), build_user_email_invite(), _get_application_name(), Resolve the branded application name from application settings.      Falls bac, send_email(), send_email_with_sendgrid(), send_email_with_smtplib(), send_forgot_password_email() (+5 more)
 
 ### Community 775 - "Community 775"
 Cohesion: 0.16
 Nodes (15): ChatFullResponse, Send a chat message to the VertualAi API server and get a response.          Thi, APIConnectionError, APIError, APIResponseError, APITimeoutError, CacheError, DiscordBotError (+7 more)
 
 ### Community 776 - "Community 776"
-Cohesion: 0.14
-Nodes (17): CompletedProcess, confirm_step(), ControlPlaneConfig, execute_control_plane_query(), find_worker_pod(), get_control_plane_config(), get_tenant_status(), Execute a SQL query against the control plane database via SSH.      Args: (+9 more)
+Cohesion: 0.07
+Nodes (32): CompletedProcess, check_documents_deleted(), cleanup_control_plane(), cleanup_tenant(), drop_data_plane_schema(), get_tenant_index_name(), get_tenant_users(), main() (+24 more)
 
 ### Community 777 - "Community 777"
 Cohesion: 0.14
@@ -5430,8 +6713,8 @@ Cohesion: 0.14
 Nodes (9): MockFixture, Page, MockPage, Test that the recurse_depth parameter is parsed correctly.      -1 should be par, site(), test_get_doc_from_page(), test_load_from_state_calls_poll_source_with_nones(), test_mediawiki_connector_recurse_depth() (+1 more)
 
 ### Community 781 - "Community 781"
-Cohesion: 0.25
-Nodes (15): MonkeyPatch, OmWebCrawler, Lightweight built-in crawler that fetches HTML directly and extracts readable te, FakeResponse, PDF content within max_pdf_size_bytes should be processed normally., HTML content exceeding max_html_size_bytes should be rejected., HTML content within max_html_size_bytes should be processed normally., PDF content exceeding max_pdf_size_bytes should be rejected. (+7 more)
+Cohesion: 0.13
+Nodes (26): WebContent, MonkeyPatch, OmWebCrawler, Lightweight built-in crawler that fetches HTML directly and extracts readable te, FakeResponse, PDF content within max_pdf_size_bytes should be processed normally., HTML content exceeding max_html_size_bytes should be rejected., HTML content within max_html_size_bytes should be processed normally. (+18 more)
 
 ### Community 782 - "Community 782"
 Cohesion: 0.14
@@ -5442,12 +6725,12 @@ Cohesion: 0.17
 Nodes (15): Dataset, DatasetsOptions, fetchDatasets(), Dataset, formatDatasetOutput(), FormatDatasetOutputOptions, formatDatasetPretty(), formatDatasetsOutput() (+7 more)
 
 ### Community 784 - "Community 784"
-Cohesion: 0.18
-Nodes (10): Composed, Execute database query with standardized error handling.          Returns empt, Extract DDL for all user-defined types (enums, etc.) in the specified schema., Extract complete DDL information for a single table., Get column information for a table., Get table constraints (PRIMARY KEY, UNIQUE, CHECK)., Get foreign key constraints with full details., Get standalone indexes for a table.          Excludes constraint-created index (+2 more)
+Cohesion: 0.15
+Nodes (13): Composed, Execute database query with standardized error handling.          Returns empt, Extract complete DDL information for a single table., Get column information for a table., Get table constraints (PRIMARY KEY, UNIQUE, CHECK)., Get foreign key constraints with full details., Get standalone indexes for a table.          Excludes constraint-created index, Get triggers for a table. (+5 more)
 
 ### Community 785 - "Community 785"
-Cohesion: 0.12
-Nodes (11): AnnotationSummaryCache, CacheForDataLoaders, LatencyMsQuantileDataLoader, RecordCountCache, RecordCountDataLoader, SpanCostDetailSummaryEntriesByProjectSessionDataLoader, test_latency_ms_quantiles_p25_p50_p75(), DbSessionFactory (+3 more)
+Cohesion: 0.17
+Nodes (7): DatasetEvaluatorsDataLoader, CacheForDataLoaders, SpanCostDetailSummaryEntriesByProjectSessionDataLoader, DbSessionFactory, DbSessionFactory, Key, Result
 
 ### Community 786 - "Community 786"
 Cohesion: 0.18
@@ -5462,16 +6745,16 @@ Cohesion: 0.11
 Nodes (11): ArrowRight(), EditOutline(), PlusOutline(), SearchOutline(), SettingsOutline(), TrashOutline(), CustomStyling, Default (+3 more)
 
 ### Community 789 - "Community 789"
-Cohesion: 0.15
-Nodes (12): InsertedSpanDocumentAnnotation, _AnnotatorKind, SpanDocumentAnnotationData, SpanDocumentAnnotationData, Add a single span document annotation.          Args:             span_id (st, Log multiple span document annotations.          Args:             document_a, Log multiple span document annotations from a pandas DataFrame.          This, Add a single span document annotation asynchronously.          Args: (+4 more)
+Cohesion: 0.17
+Nodes (11): InsertedSpanDocumentAnnotation, _AnnotatorKind, SpanDocumentAnnotationData, SpanDocumentAnnotationData, Log multiple span document annotations.          Args:             document_a, Log multiple span document annotations from a pandas DataFrame.          This, Add a single span document annotation asynchronously.          Args:, Log multiple span document annotations asynchronously.          Args: (+3 more)
 
 ### Community 790 - "Community 790"
 Cohesion: 0.11
 Nodes (17): compilerOptions, baseUrl, esModuleInterop, forceConsistentCasingInFileNames, isolatedModules, module, moduleResolution, noEmit (+9 more)
 
 ### Community 791 - "Community 791"
-Cohesion: 0.15
-Nodes (11): Tests for Bedrock display name generation., Test basic Claude model name., Test Claude model with region prefix (cross-region inference)., Test Llama model name., Test Amazon Nova model name., Test Mistral model name., Test that version suffixes like :0 are removed., Test that date stamps like -20241022-v2 are removed. (+3 more)
+Cohesion: 0.11
+Nodes (20): decode_anonymous_user_jwt_token(), Request, ASGIApp, Logger, Receive, Request, Scope, Send (+12 more)
 
 ### Community 792 - "Community 792"
 Cohesion: 0.16
@@ -5494,28 +6777,28 @@ Cohesion: 0.13
 Nodes (13): PostgresQueryError, QueryExecutionError, QueryParseError, QueryTimeoutError, Base exception for PostgreSQL query errors., Initialize the error with a message and optional query name., Raised when a query exceeds the timeout limit., Initialize the timeout error with the timeout duration. (+5 more)
 
 ### Community 797 - "Community 797"
-Cohesion: 0.14
-Nodes (5): AnalyzeData, Provides insights, trends, or analysis based on the data and prompt., GenerateSQLQuery, Generates and runs an SQL query based on the prompt.          Args:, Skill
+Cohesion: 0.12
+Nodes (7): handle_tool_calls(), router(), AnalyzeData, Provides insights, trends, or analysis based on the data and prompt., GenerateSQLQuery, Generates and runs an SQL query based on the prompt.          Args:, Skill
 
 ### Community 798 - "Community 798"
-Cohesion: 0.11
-Nodes (18): asExperimentEvaluator, bind_evaluator, Evaluator Input Mapping, create_dataset (Python), Meta Evaluation (evaluator as task), evals_2.0_rag_demo.ipynb tutorial, createDataset (TypeScript), Experiment Dry Run (+10 more)
+Cohesion: 0.08
+Nodes (24): asExperimentEvaluator, Best Practices, bind_evaluator, create_classifier (Factory), Evaluators: LLM Evaluators in Python, Input Mapping, Quick Start, Running (+16 more)
 
 ### Community 799 - "Community 799"
-Cohesion: 0.11
-Nodes (11): Unit tests for LDAP authentication module.  Tests security-critical functional, Test timing attack prevention for user enumeration., LDAP configuration for timing tests., Create authenticator instance., Dummy bind should use randomized DN to prevent caching., Dummy bind should not raise exceptions (timing only, result ignored)., Test user search across multiple base DNs., User in second search base should be found after first base returns empty. (+3 more)
+Cohesion: 0.12
+Nodes (22): BaseConnector, ConnectorCheckpoint, datetime, IndexAttempt, Session, T, _build_checkpoint_pointer(), check_checkpoint_size() (+14 more)
 
 ### Community 800 - "Community 800"
 Cohesion: 0.15
 Nodes (11): _extract_root_variable(), Extract the root variable name from a path expression.      Examples:, Tests for the _extract_root_variable helper function., Test extracting root from simple variable name., Test extracting root from single-level path., Test extracting root from multi-level path., Test extracting root from bracket notation., Test extracting root from numeric index. (+3 more)
 
 ### Community 801 - "Community 801"
-Cohesion: 0.13
-Nodes (17): OpenAI Chat Completions API (chat.completions.create), OpenAI Responses API Type Support, OpenAI Responses API (responses.create), Built-in Code Evaluators, Claude Opus 4.6 Support, Custom Model Providers, Dataset Evaluators, Phoenix 13.0 Release (+9 more)
+Cohesion: 0.09
+Nodes (24): OpenAI Chat Completions API (chat.completions.create), OpenAI Responses API Type Support, OpenAI Responses API (responses.create), Built-in Code Evaluators, Claude Opus 4.6 Support, Custom Model Providers, Dataset and Experiment UX, Dataset Evaluators (+16 more)
 
 ### Community 802 - "Community 802"
-Cohesion: 0.18
-Nodes (15): get_user_external_group_ids(), External-team principals for hierarchy browse filtering.  A user's hierarchy-b, The external-team ids (source-synced group memberships) a user belongs to., Session, User, DocumentSource, Session, User (+7 more)
+Cohesion: 0.35
+Nodes (10): DocumentSource, Session, User, _get_user_access_info(), list_accessible_hierarchy_node_documents(), list_accessible_hierarchy_nodes(), _require_opensearch(), HierarchyNodeDocumentsRequest (+2 more)
 
 ### Community 803 - "Community 803"
 Cohesion: 0.14
@@ -5526,40 +6809,40 @@ Cohesion: 0.19
 Nodes (9): financialOrchestratorAgent, financialResearcherAgent, financialWriterAgent, main(), financialResearcherAgent, main(), mastra, financialAnalysisTool (+1 more)
 
 ### Community 805 - "Community 805"
-Cohesion: 0.14
-Nodes (15): AnthropicToolUnionParam, _BedrockConverseRequest, _generate_anthropic_tool_use_id(), _generate_bedrock_tool_use_id(), _generate_fake_data(), _generate_from_schema(), Mock LLM server for integration testing.  This module provides a lightweight H, Stream a tool use block for Anthropic using Pydantic models. (+7 more)
+Cohesion: 0.12
+Nodes (20): EntityType, KGEntityType, Session, Document, KGEnhancedDocumentMetadata, get_configured_entity_types(), get_entity_types(), get_entity_types_with_grounded_source_name() (+12 more)
 
 ### Community 806 - "Community 806"
 Cohesion: 0.13
 Nodes (14): _AttrStrIdentifier, _get_stmt(), Construct a Select statement for the provided table along with a mapping that, TableFieldsDataLoader, Any, Base, DbSessionFactory, Key (+6 more)
 
 ### Community 807 - "Community 807"
-Cohesion: 0.18
-Nodes (13): FastAPI, Path, Response, F, GPUStatus, get_model_app(), lifespan(), _move_files_recursively() (+5 more)
+Cohesion: 0.08
+Nodes (22): Define Evaluators For Each Experiment Run, Define Task Function, Dry-Run Experiment, Notebook Walkthrough, PairwiseComparisonEvaluator (LlamaIndex), Upload Dataset to Phoenix, View Results in Phoenix, Build a RAG system (+14 more)
 
 ### Community 808 - "Community 808"
-Cohesion: 0.26
-Nodes (16): BasicExpertInfo, Channel, ExternalAccess, GraphClient, Message, SecondsSinceUnixEpoch, ConversationMember, fetch_expert_infos() (+8 more)
+Cohesion: 0.07
+Nodes (44): BasicExpertInfo, Channel, ExternalAccess, GraphClient, Message, SecondsSinceUnixEpoch, ConversationMember, _add_prefer_header() (+36 more)
 
 ### Community 809 - "Community 809"
 Cohesion: 0.13
 Nodes (15): Any, AsyncSession, Select, Session, T, UP, _add_live_user_count_where_clause(), get_access_token_db() (+7 more)
 
 ### Community 810 - "Community 810"
-Cohesion: 0.18
-Nodes (13): ApiKey, delete_discord_service_api_key(), get_discord_service_api_key(), get_or_create_discord_service_api_key(), Delete the Discord service API key for a tenant.      Called when:     - Bot con, Get the Discord service API key if it exists., Get existing Discord service API key or create one.      The API key is used by, Tests for Discord service API key operations. (+5 more)
+Cohesion: 0.16
+Nodes (14): ApiKey, delete_discord_service_api_key(), get_discord_service_api_key(), get_or_create_discord_service_api_key(), Delete the Discord service API key for a tenant.      Called when:     - Bot con, Get the Discord service API key if it exists., Get existing Discord service API key or create one.      The API key is used by, DELETE /config also deletes the service API key (self-hosted flow). (+6 more)
 
 ### Community 811 - "Community 811"
-Cohesion: 0.12
-Nodes (13): Session, RedisLock, RedisLock, RedisLock, Resets the knowledge graph index., reset_full_kg_index__commit(), Clears the KG fields (kg_entities, kg_relationships, kg_terms) for every     chu, Reset the kg info in OpenSearch for all documents of a given source name,     or (+5 more)
+Cohesion: 0.02
+Nodes (136): KnowledgeFileIndexingAdapter, Task, Any, Session, Task, Document, KnowledgeFile, Session (+128 more)
 
 ### Community 812 - "Community 812"
 Cohesion: 0.15
 Nodes (4): Any, HTMLRenderer, format_slack_message(), SlackRenderer
 
 ### Community 813 - "Community 813"
-Cohesion: 0.32
-Nodes (16): Any, _actual_key(), _apply_filtered(), _apply_no_path(), _apply_one(), _apply_simple(), _drop_entries(), _get_ci() (+8 more)
+Cohesion: 0.15
+Nodes (30): Any, ScimPatchOperation, _actual_key(), _apply_filtered(), _apply_no_path(), _apply_one(), apply_patch(), _apply_simple() (+22 more)
 
 ### Community 814 - "Community 814"
 Cohesion: 0.21
@@ -5586,12 +6869,12 @@ Cohesion: 0.12
 Nodes (16): compilerOptions, declaration, declarationMap, esModuleInterop, forceConsistentCasingInFileNames, module, moduleResolution, outDir (+8 more)
 
 ### Community 820 - "Community 820"
-Cohesion: 0.26
-Nodes (15): getAlembicSchema(), NewDBCurrentCommand(), NewDBDowngradeCommand(), NewDBHistoryCommand(), NewDBUpgradeCommand(), runDBCurrent(), runDBDowngrade(), runDBHistory() (+7 more)
+Cohesion: 0.08
+Nodes (23): 1.0.1, 1.0.10, 1.0.11, 1.0.2, 1.0.3, 1.0.4, 1.0.5, 1.0.6 (+15 more)
 
 ### Community 821 - "Community 821"
-Cohesion: 0.27
-Nodes (15): NewOpenAPIAllCommand(), NewOpenAPIClientCommand(), NewOpenAPICommand(), NewOpenAPISchemaCommand(), runOpenAPIAll(), runOpenAPIClient(), runOpenAPISchema(), OpenAPIOptions (+7 more)
+Cohesion: 0.08
+Nodes (24): import, require, import, require, exports, ./datasets, ./experiments, ./prompts (+16 more)
 
 ### Community 822 - "Community 822"
 Cohesion: 0.16
@@ -5638,28 +6921,28 @@ Cohesion: 0.18
 Nodes (15): actionabilityJudge, CATEGORIES, classifyTicket(), classifyTicketTask(), createSupportTicketDataset(), datasetExamples, improvedSupportAgent(), improvedSupportAgentTask() (+7 more)
 
 ### Community 834 - "Community 834"
-Cohesion: 0.18
-Nodes (10): Attribute, DatasetExampleAttribute, ExperimentRunAttribute, ExperimentRunEvalAttribute, HasAliasedTables, _is_supported_dataset_example_attribute(), _is_supported_experiment_run_attribute_name(), Name (+2 more)
+Cohesion: 0.12
+Nodes (14): Attribute, DatasetExampleAttribute, ExperimentRunAttribute, ExperimentRunEvalAttribute, ExperimentRunFilterConditionNode, ExperimentsName, HasAliasedTables, _is_supported_dataset_example_attribute() (+6 more)
 
 ### Community 835 - "Community 835"
 Cohesion: 0.12
 Nodes (8): CheckboxCellProps, ContentColumnProps, HiddenInputProps, SidebarLayoutProps, SourceIconsRowProps, TableCellProps, TableRowProps, TwoColumnLayoutProps
 
 ### Community 836 - "Community 836"
-Cohesion: 0.19
-Nodes (14): LDAPUserInfo, AsyncSession, LDAPConfig, User, get_or_create_ldap_user(), _lookup_by_email(), _lookup_by_unique_id(), Look up LDAP user by immutable unique ID (objectGUID, entryUUID, etc.).      U (+6 more)
+Cohesion: 0.08
+Nodes (23): 1. Human-in-the-Loop: How Enterprise Frameworks Handle User Feedback, 2. Memory Architecture: Enterprise Standard vs. Our Current State, 3. Our Current Architecture: What Exists, 4. How Our Deep Research Handles Feedback (Reference Implementation), 5. Recommended Architecture for Enterprise-Grade Workflows, 6. Summary: Current State vs Enterprise Grade, 7. Priority Order for Implementation, 8. Files That Need Changes (+15 more)
 
 ### Community 837 - "Community 837"
-Cohesion: 0.21
-Nodes (10): Test the create_project mutation., Test patching only the project description., Test patching only the gradient colors., Test patching description and gradient together., Test that invalid hex colors are rejected., Test the clear_project mutation's selective deletion functionality.          T, Test the create_project mutation with only required fields., TestProjectMutations (+2 more)
+Cohesion: 0.09
+Nodes (19): AsyncWebSocketSession, Test the create_project mutation., Test patching only the project description., Test patching only the gradient colors., Test patching description and gradient together., Test that invalid hex colors are rejected., Test the clear_project mutation's selective deletion functionality.          T, Test the create_project mutation with only required fields. (+11 more)
 
 ### Community 838 - "Community 838"
 Cohesion: 0.13
 Nodes (7): PKCEUtils, AuthQueryParams, TokenBodyParams, AuthCodeStore, OIDCConfig, OIDCDiscoveryDocument, TokenClaims
 
 ### Community 839 - "Community 839"
-Cohesion: 0.16
-Nodes (4): DirectoryError, This wraps pathlib.Path and will raise a DirectoryError if no local storage is c, RestrictedPath, Any
+Cohesion: 0.08
+Nodes (16): DirectoryError, get_pids_path(), get_running_pid(), _get_temp_path(), This wraps pathlib.Path and will raise a DirectoryError if no local storage is c, Get path to  directory in which to store temp phoenix server files., Get path to directory in which to store temp phoenix instance pid files.     Th, RestrictedPath (+8 more)
 
 ### Community 840 - "Community 840"
 Cohesion: 0.12
@@ -5670,28 +6953,28 @@ Cohesion: 0.17
 Nodes (12): main(), lcInstrumentation, provider, BudgetBasicsTool, compact(), destinationSchema, durationSchema, EssentialInfoTool (+4 more)
 
 ### Community 842 - "Community 842"
-Cohesion: 0.14
-Nodes (11): Any, ExecutionPlan, QueryResult, Stores an execution plan with its associated execution time., Stores the results of running a query multiple times., Check if the query executed successfully., Run EXPLAIN ANALYZE on multiple queries in randomized sequential order., Run EXPLAIN ANALYZE on a single query with its own connection. (+3 more)
+Cohesion: 0.50
+Nodes (3): ExecutionPlan, Stores an execution plan with its associated execution time., Store the results of running a query.
 
 ### Community 843 - "Community 843"
-Cohesion: 0.14
-Nodes (11): AsyncConnection, BaseException, TracebackType, PostgresQueryAnalyzer, Analyzes PostgreSQL query performance using EXPLAIN ANALYZE., Set up the database engine when entering the context manager., Clean up the database engine when exiting the context manager., Run the EXPLAIN ANALYZE query and extract timing information. (+3 more)
+Cohesion: 0.11
+Nodes (13): AsyncConnection, BaseException, TracebackType, PostgresQueryAnalyzer, Analyzes PostgreSQL query performance using EXPLAIN ANALYZE., Set up the database engine when entering the context manager., Clean up the database engine when exiting the context manager., Get an existing query result or create a new one. (+5 more)
 
 ### Community 844 - "Community 844"
-Cohesion: 0.26
-Nodes (16): Request, create_user(), CreateUserRequestBody, CreateUserResponseBody, DbUser, delete_user(), GetUserResponseBody, GetUsersResponseBody (+8 more)
+Cohesion: 0.16
+Nodes (22): SearchSettingsCreationRequest, SavedSearchSettings, Call run_indexing_pipeline with all heavy dependencies mocked out., SearchSettingsCreationRequest, Session, IdReturn, Creates a new EmbeddingModel row and cancels the previous secondary indexing if, set_new_search_settings() (+14 more)
 
 ### Community 845 - "Community 845"
-Cohesion: 0.20
-Nodes (14): Any, AsyncGraphQLClient, dataset_with_experiment_runs(), experiments_with_runs(), experiments_with_runs_and_annotations(), Inserts two experiments, the first of which contains one errored run and the, A dataset with an associated experiment with six runs.      | Run ID | Trace S, Inserts three experiments, two with runs and annotations and one without. (+6 more)
+Cohesion: 0.09
+Nodes (21): Create LangChain Agent and Define Task Function, Dataset, Evaluate Experiment, Experiments in Phoenix, Instrument LangChain and OpenAI, Jaro-Winkler Similarity Evaluator, Notebook Walkthrough, Re-run with GPT 3.5 Turbo and Compare Results (+13 more)
 
 ### Community 847 - "Community 847"
 Cohesion: 0.12
 Nodes (16): aliases, components, hooks, lib, ui, utils, rsc, $schema (+8 more)
 
 ### Community 848 - "Community 848"
-Cohesion: 0.18
-Nodes (16): attach_tools_to_agents(), delete_server(), discover_tools(), find_existing_server(), get_tool_ids_from_db(), list_tools(), main(), Register Office MCP Server in VirtualAI ======================================== (+8 more)
+Cohesion: 0.06
+Nodes (46): get_or_create_labels(), Resolve label names to IDs, creating any that don't exist yet., bulk_create(), bulk_update(), create_assistant(), delete_assistant(), export_assistants(), list_assistants() (+38 more)
 
 ### Community 849 - "Community 849"
 Cohesion: 0.18
@@ -5702,36 +6985,36 @@ Cohesion: 0.18
 Nodes (12): Any, generate_oauth_state(), get_oauth_callback_uri(), OAuthSession, Generic OAuth utilities for federated connectors API layer., Verify OAuth state parameter and retrieve session data.      Args:         state, Generate the OAuth callback URI for a federated connector.      Returns:, Represents an OAuth session stored in Redis. (+4 more)
 
 ### Community 851 - "Community 851"
-Cohesion: 0.19
-Nodes (15): LLM, _encode_image_for_llm_prompt(), prepare_image_bytes(), Use default LLM (if it is multimodal) to generate a summary of an image., Prepare a data URL with the correct MIME type for the LLM message., Resize image if it's larger than the specified max size in MB., Raised when an image uses a MIME type unsupported by the summarization flow., Prepare image bytes for summarization.     Resizes image if it's larger than 20M (+7 more)
+Cohesion: 0.06
+Nodes (32): Any, datetime, Self, TenantState, LLM, _encode_image_for_llm_prompt(), prepare_image_bytes(), Prepare a data URL with the correct MIME type for the LLM message. (+24 more)
 
 ### Community 852 - "Community 852"
-Cohesion: 0.23
-Nodes (14): GoogleDriveConnector, GoogleDriveConnector, ConnectorOutput, Document, GoogleDriveConnector, google_drive_oauth_uploaded_connector_factory(), test_google_drive_sections(), _check_for_error() (+6 more)
+Cohesion: 0.09
+Nodes (23): Additional Grafana Implementation Patterns, Attribute Mapping, Bind Configuration, Configuration Field Comparison, Configuration Format, DN Handling, Files Reviewed, Grafana's Group Matching Logic (+15 more)
 
 ### Community 853 - "Community 853"
-Cohesion: 0.29
-Nodes (15): HierarchyNode, GoogleDriveConnector, assert_hierarchy_nodes_match_expected(), get_expected_hierarchy_for_shared_drives(), _pick(), Assert that retrieved hierarchy nodes match expected structure.      Checks node, Pick nodes from ALL_EXPECTED_HIERARCHY_NODES by their IDs., Get expected hierarchy nodes for shared drives. (+7 more)
+Cohesion: 0.19
+Nodes (29): Document, HierarchyNode, GoogleDriveConnector, ConnectorOutput, Document, GoogleDriveConnector, google_drive_oauth_uploaded_connector_factory(), assert_expected_docs_in_retrieved_docs() (+21 more)
 
 ### Community 854 - "Community 854"
-Cohesion: 0.21
-Nodes (15): DATestLLMProvider, DATestUser, llm_provider(), Test multiple chat session soft deletions to ensure proper handling     when the, Reset all data once before running any tests in this module., Test multiple chat session hard deletions to ensure CASCADE deletes work correct, Test edge cases for both soft and hard deletion to ensure robustness., Test soft deletion of a chat session.     Soft delete should mark the chat as de (+7 more)
+Cohesion: 0.09
+Nodes (21): 1. MCP Protocol Specification (Official), 2. LangChain / LangGraph MCP Adapters, 3. Microsoft Agent Framework (AutoGen + Semantic Kernel), 4. OpenAI Agents SDK, 5. AWS Bedrock AgentCore, 6. FastMCP / Prefect, Enterprise Architecture Patterns (Ranked), Files to Change (+13 more)
 
 ### Community 855 - "Community 855"
-Cohesion: 0.17
-Nodes (16): Opal Button, Opal Components (@opal/components), Opal Core Primitives (@opal/core), Interactive Primitive, Interactive.Base, Interactive.Container, --interactive-foreground buy-in model, Jest Mocking Strategy (+8 more)
+Cohesion: 0.20
+Nodes (11): Mocking Strategy, transformIgnorePatterns (Jest ESM handling), Two Approaches:, Why Use transformIgnorePatterns:, fetch API Mocking Pattern, React Integration Testing Guide, Minimal Mocking, setupUser() helper (+3 more)
 
 ### Community 856 - "Community 856"
-Cohesion: 0.15
-Nodes (16): Branch-aware Summarization via Tree, Chat History Compression, Progressive Summarization, Compression Token Budget (trigger/recent ratios), Chat Context Management Overview, Custom Agent Prompt Placement, Document JSON Representation for Citations, Emitter Object Queue (+8 more)
+Cohesion: 0.20
+Nodes (12): Branch-aware Summarization via Tree, Chat History Compression, Progressive Summarization, Token Budget, Chat Context Management Overview, Custom Agent Prompt, Document JSON Representation for Citations, Three Message Representations (+4 more)
 
 ### Community 857 - "Community 857"
-Cohesion: 0.12
-Nodes (9): Tests for CitationMode.REMOVE - citations are completely removed from output., Test that REMOVE mode removes citation markers from output., Test that REMOVE mode does not emit CitationInfo objects., Test that REMOVE mode still tracks seen citations., Test that REMOVE mode handles spacing correctly (no double spaces)., Test that REMOVE mode handles spacing before punctuation correctly., Test REMOVE mode with comma-separated citations [1, 2, 3]., Test REMOVE mode with unicode bracket citation 【1】. (+1 more)
+Cohesion: 0.09
+Nodes (22): 0. The big picture — two altitudes, 1.1 Keyword / lexical search (BM25), 1.2 Semantic / vector / similarity search, 1.3 Hybrid search (combine keyword + semantic via `alpha`), 1.4 Ranking profiles & how `alpha` is chosen, 1.5 The engine "rerank": first-phase → global-phase, 1.6 Filters → YQL (`build_vespa_filters`), 1. Core concepts (with examples) (+14 more)
 
 ### Community 858 - "Community 858"
-Cohesion: 0.12
-Nodes (9): Tests for CitationMode.KEEP_MARKERS - original markers preserved unchanged., Test that KEEP_MARKERS mode preserves original [1] format., Test that KEEP_MARKERS mode does not emit CitationInfo objects., Test that KEEP_MARKERS mode still tracks seen citations., Test KEEP_MARKERS mode with double bracket citation [[1]]., Test KEEP_MARKERS mode with comma-separated citations [1, 2, 3]., Test KEEP_MARKERS mode with unicode bracket citation 【1】., Test that KEEP_MARKERS mode preserves text spacing naturally. (+1 more)
+Cohesion: 0.09
+Nodes (23): Azure AD Token Provider (Service Principal), Azure API Key Authentication, Azure Authentication Methods Overview, Azure OpenAI Authentication, Azure SDK Implementation Details, Client Factory Pattern, Cloud LLM Authentication Methods, Coverage Analysis (+15 more)
 
 ### Community 859 - "Community 859"
 Cohesion: 0.12
@@ -5746,12 +7029,12 @@ Cohesion: 0.15
 Nodes (11): NewDatasetLabelButton(), DatasetLabelsSettingsCard(), DatasetLabelsTable(), SettingsDatasetsPage(), DatasetLabelsSettingsCardFragment$data, DatasetLabelsSettingsCardFragment$key, node, node (+3 more)
 
 ### Community 862 - "Community 862"
-Cohesion: 0.12
-Nodes (7): Test DatasetKeys with split_keys included., Test that split keys cannot overlap with input keys., Test that split keys cannot overlap with output keys., Test that split keys cannot overlap with metadata keys., Test that check_differences validates split keys exist in available columns., Test DatasetKeys with empty split_keys (default behavior)., TestDatasetKeys
+Cohesion: 0.09
+Nodes (22): 05 — Content Marketing Pipeline (Sequential Mode), 06 — Personal Finance Advisor (LLM-Decision Mode), Agents (Personas), Agents (Personas), Bug Fix: `_apply_input_mapping` (Sequential Workflows), Configuration Notes, Create both workflows:, Delete if needed: (+14 more)
 
 ### Community 863 - "Community 863"
-Cohesion: 0.12
-Nodes (9): Tests for _build_reply_chain_context function., Message replies to one message returns 1 message in chain., A → B → C → D reply chain returns full chain in chronological order., Chain depth > MAX_CONTEXT_MESSAGES stops at limit., Message is not a reply returns None., Reply to deleted message handles gracefully with partial chain., message.reference.message_id is None returns None., discord.HTTPException on fetch stops chain. (+1 more)
+Cohesion: 0.18
+Nodes (13): FileToolMetadata, _make_file_metadata(), Tests for the forgotten-files mechanism in construct_message_history.      These, Shorthand wrapper around construct_message_history., Find the forgotten-files metadata message in the result, if any., When the file message fits in context, no forgotten-file message         should, When the context budget is too tight and the file message gets         truncated, Simulates the scenario where summary truncation in process_message         remov (+5 more)
 
 ### Community 864 - "Community 864"
 Cohesion: 0.14
@@ -5778,28 +7061,28 @@ Cohesion: 0.23
 Nodes (14): Any, extract_litellm_entries(), fetch_data(), filter_models(), LiteLLMPricingEntry, main(), ModelConfig, ModelCostManifest (+6 more)
 
 ### Community 870 - "Community 870"
-Cohesion: 0.16
-Nodes (9): InsertedSpanAnnotation, SpanAnnotationData, Add a note to a span asynchronously.          Notes are a special type of anno, Log multiple span annotations from a pandas DataFrame asynchronously., Log multiple span annotations asynchronously.          Args:             span, Add a single span annotation.          Args:             span_id (str): The I, Add a note to a span.          Notes are a special type of annotation that all, Log multiple span annotations from a pandas DataFrame.          This method al (+1 more)
+Cohesion: 0.10
+Nodes (21): Router / Function-Calling & Parameter-Extraction Evals, Advanced - Combining all the evals into our experiment, Agent logic, Build a version of our agent that tracks all the necessary information for evals, Agent Convergence / Path Eval, Define the tools, Evaluating our Python code generation tool, Evaluating our SQL generation tool (+13 more)
 
 ### Community 871 - "Community 871"
-Cohesion: 0.14
-Nodes (16): Advisory lock migration serialization analysis, Alembic transaction modes (Mode 1/2/3), CREATE INDEX CONCURRENTLY escape hatch, Phoenix env.py run_migrations, Industry precedent (Flyway, Prisma, Liquibase, Django), Migration authoring guidelines (pair DML with DDL, idempotent DML), Mode 3 external transaction (Phoenix env.py), PgBouncer transaction mode lock interaction (+8 more)
+Cohesion: 0.05
+Nodes (45): Advisory lock migration serialization analysis, Advisory Lock Analysis, Alembic transaction modes (Mode 1/2/3), Alternative: Session-level lock + `PHOENIX_MIGRATION_DATABASE_URL`, CREATE INDEX CONCURRENTLY, Decision, Phoenix env.py run_migrations, Honest assessment (+37 more)
 
 ### Community 872 - "Community 872"
 Cohesion: 0.17
 Nodes (8): Utility class to replace user IDs with usernames in a message.     Handles cachi, During indexing, replace pattern sets that may cause confusion to the model, Simply replaces all tags with `@<USER_ID>` in order to prevent us from         t, Simply replaces all channel mentions with `#<CHANNEL_ID>` in order         to ma, Simply replaces @channel, @here, and @everyone so we don't tag         a bunch o, Replaces pattern of <!something|another-thing> with another-thing         This i, Add a 0 width whitespace after every @, SlackTextCleaner
 
 ### Community 873 - "Community 873"
-Cohesion: 0.17
-Nodes (15): check_documents_deleted(), cleanup_control_plane(), cleanup_tenant(), drop_data_plane_schema(), get_tenant_index_name(), get_tenant_users(), main(), Get list of user emails from the tenant's data plane schema.      Args: (+7 more)
+Cohesion: 0.09
+Nodes (21): ✅ Add to transformIgnorePatterns:, Additional Resources, "Cannot find module 'package-name'", Current Mocks, Decision Tree, ✅ DO Mock:, ❌ DON'T Mock:, ✅ Example 1: ESM Package (+13 more)
 
 ### Community 874 - "Community 874"
 Cohesion: 0.23
 Nodes (10): findCompleteCSVRowEnd(), parseCSVColumns(), parseCSVRow(), removeBOM(), formatJSONLError(), getTypeDescription(), JSONLParseError, JSONLParseResult (+2 more)
 
 ### Community 875 - "Community 875"
-Cohesion: 0.23
-Nodes (15): AppHandle, Menu, build_tray_menu(), focus_main_window(), handle_tray_menu_event(), inject_chat_link_intercept(), main(), open_docs() (+7 more)
+Cohesion: 0.09
+Nodes (22): Assertions, Avoiding Interactive Report Server, Common Flaky Patterns and Fixes, Common Gotchas, Critical Lessons Learned, Debugging Flaky Tests, Debugging Workflow, Discovering Selectors Workflow (+14 more)
 
 ### Community 876 - "Community 876"
 Cohesion: 0.23
@@ -5810,16 +7093,16 @@ Cohesion: 0.26
 Nodes (9): BeautifulSoup, datetime, get_pages(), get_title(), parse_post_date(), This is the XenforoConnector class. It is used to connect to a Xenforo forum and, # TODO: if a caller calls this for each page of a thread, it may see the, scrape_page_posts() (+1 more)
 
 ### Community 878 - "Community 878"
-Cohesion: 0.19
-Nodes (12): Session, ConnectorCredentialPair, ExternalUserGroup, OmConfluence, emit_background_error(), Currently just saves a row in the background_errors table.      In the future, c, _build_final_group_to_member_email_map(), _build_group_member_email_map() (+4 more)
+Cohesion: 0.09
+Nodes (22): Browser Settings, Check State, Command Reference, Cookies and Storage, Debugging, Dialogs, Environment Variables, Frames (+14 more)
 
 ### Community 879 - "Community 879"
 Cohesion: 0.26
 Nodes (14): ExternalAccess, JIRA, Holder, HolderMap, _build_external_access_from_holder_map(), _build_holder_map(), get_project_permissions(), _get_role_id() (+6 more)
 
 ### Community 880 - "Community 880"
-Cohesion: 0.18
-Nodes (13): LLM, Any, UUID, classify_search_flow(), Lightweight LLM classification: is a query a document-search or a chat turn., Return True if the query should go to the search flow., emit_search_event(), Structured, OpenSearch-friendly logging for the clean-room search stack.  Engi (+5 more)
+Cohesion: 0.14
+Nodes (18): admin_search(), get_valid_tags(), Admin/curator search + tag lookup (clean-room).  - ``admin_search`` runs a dir, BaseFilters, DocumentSource, SearchDoc, Session, User (+10 more)
 
 ### Community 881 - "Community 881"
 Cohesion: 0.23
@@ -5830,16 +7113,16 @@ Cohesion: 0.30
 Nodes (14): Any, _attr(), _group_resource_type(), _group_schema(), SCIM discovery payloads: /ServiceProviderConfig, /ResourceTypes, /Schemas.  Th, Build one attribute definition for a Schema resource (RFC 7643 §7)., /ServiceProviderConfig — capabilities of this SCIM SP (RFC 7644 §5)., resource_type() (+6 more)
 
 ### Community 883 - "Community 883"
-Cohesion: 0.23
-Nodes (14): ScimPatchOperation, apply_patch(), Clean-room tests for the RFC 7644 §3.5.2 PATCH applier, incl. Okta/Entra shapes., test_add_member_appends(), test_op_is_case_insensitive(), test_path_active_string_value_preserved_for_downstream_coercion(), test_pathless_dotted_key_sets_nested(), test_pathless_replace_active_bool() (+6 more)
+Cohesion: 0.17
+Nodes (16): An implementation of the token-bucket algorithm for use as a rate limiter., TokenBucket, freeze_time(), test_brute_force_allows_login_under_threshold(), test_brute_force_blocks_after_max_attempts(), test_brute_force_normalizes_key(), test_brute_force_partition_cleanup(), test_brute_force_resets_failed_count_after_lockout_expires() (+8 more)
 
 ### Community 884 - "Community 884"
-Cohesion: 0.15
-Nodes (13): Session, get_current_tenant_session(), get_tenant_session(), get_tenant_session_dependency(), Contract 3 — the single tenant-context surface every workstream imports.  This, FastAPI dependency yielding a tenant-scoped session.      Rejects unauthentica, Temporarily bind the current tenant for a block of work (background jobs, tests), Session for the tenant currently bound in the contextvar (request-scoped default (+5 more)
+Cohesion: 0.19
+Nodes (20): AssignUserRequest, TenantActionResponse, TenantListResponse, User, CreateTenantRequest, assign_user(), create_tenant(), deactivate_tenant() (+12 more)
 
 ### Community 885 - "Community 885"
-Cohesion: 0.18
-Nodes (8): Any, Span, attach_error_to_current_span(), attach_error_to_span(), Any error that occurred during span execution.          Returns:             Spa, Represents an error that occurred during span execution.      Attributes:, SpanError, SpanError
+Cohesion: 0.11
+Nodes (26): Any, Span, Any, Span, agent_span(), ensure_trace(), function_span(), generation_span() (+18 more)
 
 ### Community 886 - "Community 886"
 Cohesion: 0.24
@@ -5855,7 +7138,7 @@ Nodes (13): MonkeyPatch, _has_control_chars(), _looks_protocol_relative(), Relay
 
 ### Community 889 - "Community 889"
 Cohesion: 0.15
-Nodes (9): BaseTool, CalculatorInput, CalculatorTool, Input for CalculatorTool., gradio_interface(), run_crewai(), Input for SQLQueryTool., SQLQueryInput (+1 more)
+Nodes (13): DocumentSource, InferenceChunk, User, _censor_source_chunks(), _censoring_sources(), _post_query_chunk_censoring(), Post-query censoring — the fail-closed safety net over the sync staleness window, Sources whose results must pass a query-time censoring check: those that     bo (+5 more)
 
 ### Community 890 - "Community 890"
 Cohesion: 0.18
@@ -5866,20 +7149,20 @@ Cohesion: 0.18
 Nodes (14): KubernetesExecutor, executor(), _mock_pod_running(), _mock_stream_resp(), Tests that binary files with high bytes (>= 0x80) survive the tar pipeline.  R, ASCII-only archives survive latin-1→UTF-8, explaining why the bug     only trig, Create a KubernetesExecutor without calling __init__ (no cluster needed)., Make read_namespaced_pod return a Running pod. (+6 more)
 
 ### Community 892 - "Community 892"
-Cohesion: 0.40
-Nodes (10): CommitExistsOnBranch(), IsCommitAppliedOnBranch(), newTestRepo(), TestIsCommitAppliedOnBranch_ExactSHA(), TestIsCommitAppliedOnBranch_NoFalsePositiveFromBody(), TestIsCommitAppliedOnBranch_NoMatch(), TestIsCommitAppliedOnBranch_SubjectMatch(), TestLoadCherryPickStateMissing() (+2 more)
+Cohesion: 0.15
+Nodes (13): ChatMessageSimple, create_assistant_with_tool_call(), create_tool_response(), Tests for llm_loop.py, specifically the construct_message_history function., Test that tool calls and responses after last user message are preserved., Tool responses remain when their assistant tool call is present., Helper to create an ASSISTANT message with tool_calls for testing., Approximate token counter for tests (~4 chars per token). (+5 more)
 
 ### Community 893 - "Community 893"
 Cohesion: 0.22
 Nodes (10): _bind_free_attribute_names(), compile_sqlalchemy_filter_condition(), FreeAttributeNameBinder, test_compile_sqlalchemy_filter_condition_correctly_compiles(), test_compile_sqlalchemy_filter_condition_raises_appropriate_error_message(), test_free_attribute_name_binder_produces_correct_output(), test_sqlalchemy_transformer_correctly_compiles(), AST (+2 more)
 
 ### Community 894 - "Community 894"
-Cohesion: 0.16
-Nodes (7): ExperimentRun, ExperimentRunEval, ExperimentRunFilterConditionNode, ExperimentsName, A node in a tree representing a SQLAlchemy expression., Compiles the node into a SQLAlchemy expression., Subscript
+Cohesion: 0.18
+Nodes (4): ExperimentRun, ExperimentRunEval, JSONAttribute, Subscript
 
 ### Community 895 - "Community 895"
-Cohesion: 0.17
-Nodes (15): Internal Documentation Index, Async LLM Client Lifecycle Management, aioboto3 vs boto3 Event-Loop Blocking, Unified Client Factory Pattern (PlaygroundStreamingClient), Cloud LLM Authentication Methods, AWS Bedrock Bearer Token (Unsupported), Auth Client Factory Pattern, Default Credential Chain (Azure/AWS) (+7 more)
+Cohesion: 0.12
+Nodes (16): Internal Documentation, aioboto3 vs boto3 Event-Loop Blocking, Unified Client Factory Pattern (PlaygroundStreamingClient), AWS Bedrock Bearer Token (Unsupported), Auth Client Factory Pattern, Default Credential Chain (Azure/AWS), Core Pillars, Evals (+8 more)
 
 ### Community 896 - "Community 896"
 Cohesion: 0.36
@@ -5902,8 +7185,8 @@ Cohesion: 0.18
 Nodes (13): path_to_module(), Convert a repo/backend-relative script path to a dotted module.      e.g. "onyx/, _collect_modules(), _command_strings(), _compose_files(), Every module path in docker-compose service commands must resolve.  Compose `com, Flatten every service command/entrypoint into shell strings., test_compose_module_paths_resolve() (+5 more)
 
 ### Community 901 - "Community 901"
-Cohesion: 0.28
-Nodes (10): ApiKeyMutationMixin, CreateApiKeyInput, CreateSystemApiKeyMutationPayload, CreateUserApiKeyInput, CreateUserApiKeyMutationPayload, DeleteApiKeyInput, DeleteApiKeyMutationPayload, Context (+2 more)
+Cohesion: 0.10
+Nodes (20): 1. Cache Manager (`backend/om/onyxbot/discord/cache.py`), 1. Per-Tenant API Keys, 2. API Client (`backend/om/onyxbot/discord/api_client.py`), 2. Database Context Variables, API Key Provisioning Strategy, Cache Refresh Strategy, Component Details, Concurrency Control (+12 more)
 
 ### Community 902 - "Community 902"
 Cohesion: 0.14
@@ -5914,20 +7197,20 @@ Cohesion: 0.15
 Nodes (5): LabelFraction, DataFrame, LabelFraction, EvaluationSummary, LabelFraction
 
 ### Community 904 - "Community 904"
-Cohesion: 0.19
-Nodes (4): Context, Info, GenerativeModelCustomProvider, lazy
+Cohesion: 0.10
+Nodes (18): 1. HuggingFace model repo IDs — trained models, NOW re-hosted under `bommina`, 2. Other frozen external contracts (from the Stage-1 `onyx`→`om` rename), 3. How we OWN the trained models (DONE — kept as historical record), Already renamed to `om` (no longer frozen — kept here so nobody "restores" them), DO NOT RENAME — external contracts, Frozen items found in the full audit (Stage-2 sweep), Third-party public models (also do NOT rename — not ours to rename), 0. Reconcile stale tracking docs FIRST (2 discrepancies found) (+10 more)
 
 ### Community 905 - "Community 905"
 Cohesion: 0.16
 Nodes (11): Any, Should extract and normalize root path from scope, stripping trailing slashes., Tests for prepending root path to URLs with normalization., Should prepend root path to input path with proper normalization., Tests for extracting root path from ASGI scope., TestGetRootPath, TestPrependRootPath, get_root_path() (+3 more)
 
 ### Community 906 - "Community 906"
-Cohesion: 0.27
-Nodes (14): AnnotationConfig, Any, AsyncClient, annotation_configs(), Creates five annotation configs., test_cannot_create_annotation_config_with_duplicate_name(), test_cannot_create_annotation_config_with_reserved_name_for_notes(), test_cannot_update_annotation_config_name_to_reserved_name_for_notes() (+6 more)
+Cohesion: 0.10
+Nodes (21): Updating Perplexica Guide, perplexica docker-compose service, Contribution, Donations, Expose Perplexica to network, ✨ Features, Help and Support, One-Click Deployment (+13 more)
 
 ### Community 907 - "Community 907"
-Cohesion: 0.13
-Nodes (15): definitions, Identifier, Number, PermissionEntry, Target, Value, oneOf, anyOf (+7 more)
+Cohesion: 0.15
+Nodes (13): definitions, Identifier, Number, PermissionEntry, Target, description, oneOf, anyOf (+5 more)
 
 ### Community 908 - "Community 908"
 Cohesion: 0.22
@@ -5942,8 +7225,8 @@ Cohesion: 0.18
 Nodes (14): Prompt Version Editing in Playground (Phoenix 12.2+), Load Prompt by Tag into Playground (Phoenix 12.2+), Paginate Compare Experiments (Phoenix 12.3+), Dataset Labels (Phoenix 12.3+), View Traces in Compare Experiments (Phoenix 12.5+), Filter Annotations in Compare Experiments Slideover (Phoenix 12.7+), Filter Prompts Page by Label (Phoenix 12.7+), Metadata Support for Experiment Run Annotations (Phoenix 12.9+) (+6 more)
 
 ### Community 911 - "Community 911"
-Cohesion: 0.18
-Nodes (14): LDAP Authentication Support, Authentication & RBAC, Prompt Playground, Sessions, Braintrust, Phoenix vs Braintrust Comparison, OpenTelemetry, Adding Users to a Phoenix Instance (+6 more)
+Cohesion: 0.13
+Nodes (16): LDAP Authentication Support, Authentication & RBAC, Bug Fixes and Improvements 🐛, Prompt Playground, Bug Fixes and Improvements 🐛, Sessions, Braintrust, Phoenix vs Braintrust Comparison (+8 more)
 
 ### Community 912 - "Community 912"
 Cohesion: 0.19
@@ -5958,8 +7241,8 @@ Cohesion: 0.18
 Nodes (13): If provisioning races, newly inactive users should still be blocked., Helper should validate email format before returning value., A brand new JWT user should be provisioned automatically., Tokens without a usable email claim should be ignored., Existing web-login users should be returned and their expiry synced., Inactive users should not be re-authenticated via JWT., test_extract_email_requires_valid_format(), test_get_or_create_user_handles_race_conditions() (+5 more)
 
 ### Community 915 - "Community 915"
-Cohesion: 0.21
-Nodes (13): DocumentSource, OAuthCredentials, ServiceAccountCredentials, JSONResponse, Session, User, get_google_creds(), get_google_oauth_creds() (+5 more)
+Cohesion: 0.20
+Nodes (11): Path, EditTool, Implement the view command, Implement the str_replace command, which replaces old_str with new_str in the fi, Implement the insert command, which inserts new_str at the specified line in the, An filesystem editor tool that allows the agent to view, create, and edit files., Implement the undo_edit command., Read the content of a file from a given path; raise a ToolError if an error occu (+3 more)
 
 ### Community 916 - "Community 916"
 Cohesion: 0.16
@@ -5970,24 +7253,24 @@ Cohesion: 0.25
 Nodes (12): Session, _fetch(), get_or_create_config(), is_enabled(), load_config(), Per-tenant standard-answers feature config (dedicated typed table, Standard 5)., Immutable snapshot of the config, safe to pass around after the session closes., Return the tenant's config as an immutable view; defaults if unset. (+4 more)
 
 ### Community 918 - "Community 918"
-Cohesion: 0.25
-Nodes (11): WebContent, _charset_from_content_type(), decode_html_bytes(), extract_pdf_text(), has_pdf_signature(), is_pdf_mime_type(), is_pdf_resource(), is_pdf_url() (+3 more)
+Cohesion: 0.10
+Nodes (20): API Reference, Environment Variables, External Links, Indices and tables, Installation, Annotations, Client Initialization, Datasets (+12 more)
 
 ### Community 919 - "Community 919"
 Cohesion: 0.22
 Nodes (13): ModuleType, T, all_subclasses(), Animal, find_all_subclasses_in_dir(), find_all_subclasses_in_package(), import_all_modules_from_dir(), import_all_submodules_from_package() (+5 more)
 
 ### Community 920 - "Community 920"
-Cohesion: 0.25
-Nodes (13): Any, collect_schema_refs(), get_all_referenced_schemas(), main(), Transform OpenAPI schema for public documentation.  Filters endpoints tagged wit, Transform the OpenAPI spec for public documentation., Recursively collect all $ref references from an object., Get all schemas referenced by initial_refs, including nested references. (+5 more)
+Cohesion: 0.13
+Nodes (17): datetime, Response, SpanQuery, tzinfo, _decode_df_from_json_string(), _normalize_datetime(), _process_span_dataframe(), Retrieves spans based on the provided filter conditions.          Args: (+9 more)
 
 ### Community 921 - "Community 921"
-Cohesion: 0.20
-Nodes (13): FixtureRequest, blob_connector(), Buckets in a different region should be accessible and links should reflect the, Validate basic R2 connector creation and document loading, Fixture requires (BlobType, bucket_name) and optional init kwargs.      Param fo, Validate R2 connector with European residency setting, Plain and document file types should be fully indexed.      Multimedia and unkno, test_blob_gcs_connector() (+5 more)
+Cohesion: 0.04
+Nodes (46): Any, datetime, GenerateDocumentsOutput, GenerateDocumentsOutput, GenerateDocumentsOutput, GenerateDocumentsOutput, Any, Document (+38 more)
 
 ### Community 922 - "Community 922"
-Cohesion: 0.21
-Nodes (10): Document, Session, _create_test_document(), Test suite for tag creation race condition handling.  Tests that concurrent tag, Test that multiple concurrent calls to create_or_add_document_tag_list         w, Test that concurrent single tag and tag list operations on the same         tag, Create a minimal test document., Tests for tag creation race condition handling. (+2 more)
+Cohesion: 0.10
+Nodes (20): Anthropic, Architecture, Basic Usage, Best Practices, Configuration, Continuation Flag, Core Components, Environment Variables (+12 more)
 
 ### Community 923 - "Community 923"
 Cohesion: 0.20
@@ -5998,8 +7281,8 @@ Cohesion: 0.26
 Nodes (6): The primary intent of a two-tier system is to make cache invalidation more effic, TwoTierCache, Any, _Key, _Section, _SubKey
 
 ### Community 925 - "Community 925"
-Cohesion: 0.14
-Nodes (8): Detailed spacing edge cases for REMOVE mode., Test REMOVE mode with citation between sentences., Test REMOVE mode with citation before question mark., Test REMOVE mode with citation before exclamation mark., Test REMOVE mode with citation before semicolon., Test REMOVE mode with citation before closing parenthesis., Test REMOVE mode with citation before closing bracket., TestRemoveModeSpacingEdgeCases
+Cohesion: 0.11
+Nodes (17): Compare Models, Configure Evaluation, Download Benchmark Dataset, Evaluate Results and Plot Confusion Matrix, Get Explanations, Notebook Walkthrough, Run Code Readability Classification, Classification Eval Walkthroughs (+9 more)
 
 ### Community 926 - "Community 926"
 Cohesion: 0.29
@@ -6011,7 +7294,7 @@ Nodes (13): ContentPart, extractMessageContent(), formatPromptOutput(), FormatPr
 
 ### Community 928 - "Community 928"
 Cohesion: 0.15
-Nodes (14): Categorical Evaluation, Eval Data Types, Score (Numeric) Evaluation, Score Abstraction, Phoenix Evals SDK (Client-Side), Phoenix Evaluation Overview, Document Relevance Metric, Exact Match Metric (+6 more)
+Nodes (13): Categorical Evaluation, Eval Data Types, Score (Numeric) Evaluation, Score Abstraction, Phoenix Evals SDK (Client-Side), Phoenix Evaluation Overview, Document Relevance Metric, Exact Match Metric (+5 more)
 
 ### Community 929 - "Community 929"
 Cohesion: 0.34
@@ -6022,12 +7305,12 @@ Cohesion: 0.20
 Nodes (13): get_pg_config(), _get_ssl_args(), _get_ssl_context(), Convert PostgreSQL SSL parameters to an SSL context.      Args:         ssl_a, Convert SQLAlchemy URL to driver-specific configuration.      Args:         u, Remove asyncpg-specific parameters from a SQLAlchemy URL query.      Args:, SSL parameters for PostgreSQL connections.      All fields are optional. Only, Extract SSL parameters from a SQLAlchemy URL query.      Args:         query_ (+5 more)
 
 ### Community 931 - "Community 931"
-Cohesion: 0.14
-Nodes (8): Tests for LLM provider model sync functionality., Test that ValueError is raised when provider not found., Tests for sync_model_configurations function., Test that optional fields default correctly., Test that new models are inserted., Test that existing models are not overwritten., Test that commit is not called when no new models., TestSyncModelConfigurations
+Cohesion: 0.10
+Nodes (19): About generate_traces_phoenix.py, File Structure, Helpful Phoenix Code, Homework 5 – Failure Analysis with Phoenix and LLM Evaluations, Key features:, Key Learning Objectives, LLM-Based Evaluation, Loading and Analyzing Traces (+11 more)
 
 ### Community 932 - "Community 932"
-Cohesion: 0.16
-Nodes (7): Generate DDL string for a single table., Build the CREATE TABLE statement., Process a list of constraints, formatting and indenting them., Apply consistent formatting to CREATE INDEX statements., Add proper indentation to constraint definitions, preserving line wrapping., Quote PostgreSQL identifier if it contains mixed case or special characters., Get PostgreSQL reserved keywords that require quoting.          Based on Postg
+Cohesion: 0.10
+Nodes (12): Generate DDL string for a single table., Build the CREATE TABLE statement., Process a list of constraints, formatting and indenting them., Apply consistent formatting to constraints for visual consistency., Apply consistent formatting to CREATE INDEX statements., Add proper indentation to constraint definitions, preserving line wrapping., Normalize column arrays from PostgreSQL into Python lists.          PostgreSQL, Parse PostgreSQL array string format into Python list.          PostgreSQL arr (+4 more)
 
 ### Community 933 - "Community 933"
 Cohesion: 0.30
@@ -6046,28 +7329,28 @@ Cohesion: 0.34
 Nodes (13): estimateTokens(), extractContentsText(), extractFunctionDeclarations(), GeminiRequestBody, generateResponseId(), getToolConfig(), handleNonStreaming(), handleStreaming() (+5 more)
 
 ### Community 937 - "Community 937"
-Cohesion: 0.19
-Nodes (7): PlaygroundClientRegistry, register_llm_client(), SingletonMeta, ModelKey, ModelName, Any, GenerativeProviderKey
+Cohesion: 0.10
+Nodes (20): CLI commands, Common gotchas, Components, Customize docs sites, Deploy, Document APIs, Edge cases, Example file structure (+12 more)
 
 ### Community 938 - "Community 938"
 Cohesion: 0.21
 Nodes (13): highspot_connector(), load_test_data(), Test poll_source functionality with date range filtering., Test credential validation., Load test data from JSON file., Create a Highspot connector with credentials from environment variables., Test basic functionality of the Highspot connector., Test slim document retrieval. (+5 more)
 
 ### Community 939 - "Community 939"
-Cohesion: 0.24
-Nodes (10): useBuildSessionController(), UseBuildSessionControllerProps, useOutputPanelOpen(), useToggleOutputPanel(), usePreProvisionPolling(), UsePreProvisionPollingOptions, checkPreProvisionedSession(), CRAFT_SEARCH_PARAM_NAMES (+2 more)
+Cohesion: 0.10
+Nodes (19): [1.0.3](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.0.2...arize-phoenix-client-v1.0.3) (2025-02-27), [1.12.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.11.0...arize-phoenix-client-v1.12.0) (2025-07-03), [1.15.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.15.1...arize-phoenix-client-v1.15.2) (2025-08-14), [1.18.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.17.1...arize-phoenix-client-v1.18.0) (2025-09-04), [1.18.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.18.1...arize-phoenix-client-v1.18.2) (2025-09-11), [1.25.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.24.0...arize-phoenix-client-v1.25.0) (2025-11-24), [1.27.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.27.0...arize-phoenix-client-v1.27.1) (2025-12-16), [1.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.2.1...arize-phoenix-client-v1.3.0) (2025-04-09) (+11 more)
 
 ### Community 940 - "Community 940"
-Cohesion: 0.22
-Nodes (10): PageVersion, usePageVersion(), UiConfig, UiConfigContext, UiConfigProvider(), UiVersion, useUiConfig(), VersionedPage() (+2 more)
+Cohesion: 0.11
+Nodes (18): Chain of Thought (CoT) Prompting, Few Shot CoT Prompting, Final Results, Load Dataset Into Phoenix, Self-Consistency CoT, Self-Consistency CoT Prompting, Set up Dependencies and Keys, Zero-Shot CoT Prompting (+10 more)
 
 ### Community 941 - "Community 941"
-Cohesion: 0.16
-Nodes (14): Bearer Token Passthrough Auth, FastMCP framework, VertualAI MCP Server, Model Context Protocol (MCP), open_urls tool, search_indexed_documents tool, search_web tool, QueryExpander (+6 more)
+Cohesion: 0.08
+Nodes (26): Bearer Token Passthrough Auth, FastMCP framework, VertualAI MCP Server, Model Context Protocol (MCP), open_urls tool, search_indexed_documents tool, search_web tool, API (+18 more)
 
 ### Community 942 - "Community 942"
 Cohesion: 0.14
-Nodes (14): Mintlify Documentation Skill, Contribution License Agreement (Arize AI), Phoenix CLAUDE.md (AGENTS.md pointer), Phoenix Code of Conduct, Contributor Covenant v2.0, Contributing to Arize-Phoenix, Small Simple Pull Requests Principle, Debugpy Python Server Debugging (+6 more)
+Nodes (12): Best Practices, Debugpy Python Server Debugging, Phoenix Developer's Guide, HTTP Methods, Pagination, Path Structure, Query Parameters, Response Format (+4 more)
 
 ### Community 943 - "Community 943"
 Cohesion: 0.18
@@ -6078,44 +7361,44 @@ Cohesion: 0.14
 Nodes (13): compilerOptions, declaration, esModuleInterop, module, moduleResolution, outDir, resolveJsonModule, rootDir (+5 more)
 
 ### Community 945 - "Community 945"
-Cohesion: 0.21
-Nodes (13): find_snippet_in_content(), _normalize_and_match(), _normalize_text_with_mapping(), Performs a token based fuzzy search for the snippet in the content.      min_thr, Finds where the snippet is located in the content.      Strategy:     1. Normali, Normalizes the snippet & content, then performs a direct string match., Text normalization that maintains position mapping.      Returns:         tuple:, SnippetMatchResult (+5 more)
+Cohesion: 0.11
+Nodes (19): Recharts analytics dashboards (theme-aware), WS-H — Analytics / query-history / reporting, WS-H status log, 10. Component Usage, 11. Colors, 12. Data Fetching, 1. Import Standards, 2. React Component Functions (+11 more)
 
 ### Community 946 - "Community 946"
 Cohesion: 0.16
 Nodes (12): load_all_tests(), Tests the snippet matching functionality.      Each test case is defined in the, Expected results from the snippet matcher., A test takes in some content and a snippet.      Expected result is what we expe, We want to be able to handle strings or list of strings for content and snippet., The root structure of the test data JSON file., Loads all tests from the JSON file and returns them as a list of tuples.      Ea, test_snippet_finding() (+4 more)
 
 ### Community 947 - "Community 947"
-Cohesion: 0.14
-Nodes (11): get_openapi_schema(), test_get_openapi_schema(), Any, APIRouter, APIRouter, APIRouter, create_auth_router(), Create auth router with all authentication endpoints.      Creates a fresh rou (+3 more)
+Cohesion: 0.20
+Nodes (9): APIRouter, GenerativeModelCustomProvider, BuiltInProviderChatSearchParams, ChatSearchParamsModel, create_chat_router(), CustomProviderChatSearchParams, _get_pydantic_ai_model_from_builtin_provider(), _get_pydantic_ai_model_from_generative_model_custom_provider() (+1 more)
 
 ### Community 948 - "Community 948"
 Cohesion: 0.14
 Nodes (13): Integration tests for Personal Access Token (PAT) API.  Test Suite: 1. test_pat_, Expiration timestamp is end-of-day (23:59:59 UTC); never-expiring tokens work; r, Validate input errors: empty name, name too long, negative/zero expiration., PATs are sorted by created_at DESC; last_used_at updates after authentication., Complete PAT lifecycle: create, authenticate, revoke., PATs inherit user roles and permissions:     - Admin PAT: Full access to admin-o, PATs authenticate as real users, and users can only see/manage their own tokens., test_pat_expiration_flow() (+5 more)
 
 ### Community 949 - "Community 949"
-Cohesion: 0.15
-Nodes (14): Phoenix BEM Design System Skill, PHOENIX_SQL_DATABASE_URL Configuration, Phoenix Docker Compose Stack (phoenix + postgres), Phoenix Authentication (introduced v5), Phoenix Migration Guide, Dataset-to-Inferences Rename, Concurrent Session-ID Index Migration, Elastic License 2.0 (ELv2) (+6 more)
+Cohesion: 0.12
+Nodes (17): Examples, Pattern, Phoenix Design System — BEM Naming, Rules, PHOENIX_SQL_DATABASE_URL Configuration, Phoenix Docker Compose Stack (phoenix + postgres), Phoenix Authentication (introduced v5), Phoenix Migration Guide (+9 more)
 
 ### Community 950 - "Community 950"
 Cohesion: 0.20
 Nodes (10): Any, Dialect, _(), Base, ExperimentRunOutput, JSONB, JsonDict, JsonList (+2 more)
 
 ### Community 951 - "Community 951"
-Cohesion: 0.25
-Nodes (6): Any, Response, A httpx.Client wrapper that warns if there is a server/client version mismatch., A httpx.Client wrapper that warns if there is a server/client version mismatch., VersionedAsyncClient, VersionedClient
+Cohesion: 0.22
+Nodes (8): get_env_client_headers(), get_env_phoenix_api_key(), Any, Response, A httpx.Client wrapper that warns if there is a server/client version mismatch., A httpx.Client wrapper that warns if there is a server/client version mismatch., VersionedAsyncClient, VersionedClient
 
 ### Community 952 - "Community 952"
-Cohesion: 0.14
-Nodes (14): description, properties, required, type, Capability, type, default, description (+6 more)
+Cohesion: 0.18
+Nodes (11): properties, description, type, default, description, type, identifier, local (+3 more)
 
 ### Community 953 - "Community 953"
 Cohesion: 0.23
 Nodes (13): login(), main(), Verify case-insensitive username handling.      LDAP servers typically perform, Verify that users have correct roles assigned after LDAP authentication., Run a complete test suite for one Phoenix instance., Attempt login, return (status_code, access_token or None)., Wait for Phoenix health endpoint., Run test cases, return (passed, failed) counts. (+5 more)
 
 ### Community 954 - "Community 954"
-Cohesion: 0.14
-Nodes (8): Test that LDAP connections are properly closed to prevent file descriptor leaks., Minimal LDAP configuration for testing., Create authenticator instance., Socket must be closed even when bind() fails (wrong password)., Socket must be closed when start_tls() raises., Socket must be closed when open() raises., Anonymous bind must close socket when start_tls() fails., TestSocketLeakPrevention
+Cohesion: 0.10
+Nodes (19): Async Operations, Basic Interactions, Built-in Mocks, Common Async Mistakes, Common Patterns, Examples, Form Interactions, Handling Async State Updates (+11 more)
 
 ### Community 955 - "Community 955"
 Cohesion: 0.14
@@ -6134,16 +7417,16 @@ Cohesion: 0.14
 Nodes (13): compilerOptions, declaration, esModuleInterop, forceConsistentCasingInFileNames, module, moduleResolution, outDir, resolveJsonModule (+5 more)
 
 ### Community 959 - "Community 959"
-Cohesion: 0.19
-Nodes (14): Test that args and kwargs are properly passed to the background function, Test running multiple background tasks concurrently, Test that run_in_background and wait_on_background work correctly for successful, Test that exceptions in background tasks are properly propagated, test_multiple_background_tasks(), test_run_in_background_and_wait_success(), test_run_in_background_propagates_exceptions(), test_run_in_background_with_args_and_kwargs() (+6 more)
+Cohesion: 0.10
+Nodes (19): Context, Cron parsing — decision required, Data Model, Existing Utilities to Reuse, Files to Modify, Implementation Order, Open question 1 — Run-as identity  ⚠️ policy decision, Open question 2 — Output sink  ⚠️ policy decision (+11 more)
 
 ### Community 960 - "Community 960"
-Cohesion: 0.21
-Nodes (13): check_sandbox_session_id(), create_chat_session(), find_agent_with_python(), find_python_tool_id(), main(), Sandbox Persistence Test ========================  Verifies that the Code Interp, Query DB for the sandbox_session_id of a chat session., Create a chat session and return its UUID. (+5 more)
+Cohesion: 0.12
+Nodes (17): Repetitions (experiments), Arize AX, **Evals**, **Experiments**, **How the Guides Fit Together**, **Prompts**, **What You’ll End Up With**, **Where to Start** (+9 more)
 
 ### Community 961 - "Community 961"
-Cohesion: 0.18
-Nodes (13): Annotation Config Endpoints, Annotations Endpoints (REST), Datasets Endpoints (REST), Download Exported File Endpoint, Annotations Resource (client), arize-phoenix-client, Datasets Resource (client), Projects Resource (client) (+5 more)
+Cohesion: 0.12
+Nodes (21): Annotation Config Endpoints, Annotations Endpoints (REST), Datasets Endpoints (REST), Download Exported File Endpoint, Annotations, Async Usage, arize-phoenix-client, Client Initialization (+13 more)
 
 ### Community 962 - "Community 962"
 Cohesion: 0.18
@@ -6154,16 +7437,16 @@ Cohesion: 0.28
 Nodes (8): Any, build_search_narrow(), call_api(), __call_with_retry(), encode_zulip_narrow_operand(), __raise_if_error(), ZulipAPIError, ZulipHTTPError
 
 ### Community 964 - "Community 964"
-Cohesion: 0.18
-Nodes (8): CredentialField, EntityField, FederatedConnector, Wrapper for backwards compatibility - delegates to entities_schema()., Return the specification of what credentials are required for Slack connector., Get back the OAuth URL for Slack authorization.          Returns the URL where u, Return the specifications of what entity configuration fields are available for, SlackFederatedConnector
+Cohesion: 0.09
+Nodes (17): Any, ChunkIndexRequest, CredentialField, EntityField, InferenceChunk, OAuthResult, SlackContext, FederatedConnector (+9 more)
 
 ### Community 965 - "Community 965"
 Cohesion: 0.22
 Nodes (8): SearchExpansionSettings, Session, FusionConfig, QueryExpansionConfig, Typed, ORM-decoupled views over the per-tenant search-expansion settings.  The, Fully-resolved config for one search flow., Load the tenant's config, falling back to defaults on any error., SearchFlowConfig
 
 ### Community 966 - "Community 966"
-Cohesion: 0.26
-Nodes (12): DocumentSetCreationRequest, DocumentSetUpdateRequest, Session, User, CheckDocSetPublicRequest, CheckDocSetPublicResponse, create_document_set(), delete_document_set() (+4 more)
+Cohesion: 0.18
+Nodes (17): _collect_full_response(), _effective_config(), get_search_history(), Search API router.  Endpoints (all authenticated):   POST /search/search-flow, Tenant config with per-request overrides applied., Consume the packet stream into a single non-streaming response., read_expansion_settings(), search_flow_classification() (+9 more)
 
 ### Community 967 - "Community 967"
 Cohesion: 0.15
@@ -6186,24 +7469,24 @@ Cohesion: 0.15
 Nodes (12): access, baseBranch, changelog, commit, fixed, ignore, linked, privatePackages (+4 more)
 
 ### Community 972 - "Community 972"
-Cohesion: 0.15
-Nodes (13): Coda Connector, Coda Connector Test Suite, TestCodaConnectorValidation, TestErrorHandling, TestLoadFromState, TestPollSource, TestWorkspaceScoping, Integration Test Suite (+5 more)
+Cohesion: 0.12
+Nodes (15): Additional Resources, CI/CD Integration, Coda Connector, Coda Connector Test Suite, Expected Test Duration, Overview, Prerequisites, Test Classes (+7 more)
 
 ### Community 973 - "Community 973"
 Cohesion: 0.33
 Nodes (12): TestClient, _client(), _get_file(), Upload a file and return its file_id., Test that we can upload and analyze an Excel file using openpyxl., test_execute_analyzes_excel_file(), test_execute_can_edit_staged_file(), test_execute_creates_file_and_returns_it() (+4 more)
 
 ### Community 974 - "Community 974"
-Cohesion: 0.17
-Nodes (9): Collector, GaugeMetricFamily, PoolStateCollector, Custom Prometheus collector that reads QueuePool state on each scrape.      Uses, QueuePool, Verify the custom collector reads pool.checkedout/checkedin/overflow/size., Verify the collector reports metrics for multiple engines., test_pool_state_collector_handles_multiple_engines() (+1 more)
+Cohesion: 0.11
+Nodes (18): 10. The 12-week pilot — 12-వారాల పైలట్: Baseline → Shadow → Assisted-Live, 11. Bilingual by default — ద్విభాషా లేబుళ్లు (Telugu / English glossary), 1. Positioning — గోడలు దాటని AI ("AI that never leaves your walls"), 2. The core recurring process — ప్రధాన ప్రక్రియ, 3. The Problem — సమస్య: the leak is *after* charging, not at charging, 4. Where the time goes — సమయం ఎక్కడ పోతుంది (current journey, bottlenecks marked), 5. The Solution — పరిష్కారం: four named agents (EXTRACT → CHECK HISTORY → VERIFY RECORDS → ROUTE & DRAFT), 6. Department data sources (read-only) — శాఖ డేటా వనరులు (+10 more)
 
 ### Community 975 - "Community 975"
 Cohesion: 0.23
 Nodes (11): downloadExperimentJson(), Experiment, ExperimentsOptions, fetchExperiments(), writeExperimentsToDirectory(), Experiment, formatDate(), formatExperimentsOutput() (+3 more)
 
 ### Community 976 - "Community 976"
-Cohesion: 0.19
-Nodes (13): Amazon Aurora IAM Database Authentication, AWS Fargate Deployment via CloudFormation, Phoenix Authentication, Brute Force Login Protection, OAuth2 Group-based Access Control & Role Mapping, LDAP Authentication, OAuth2 / OpenID Connect Identity Providers, Strong Password Policy (+5 more)
+Cohesion: 0.14
+Nodes (17): Amazon Aurora IAM Database Authentication, AWS Fargate Deployment via CloudFormation, Phoenix Authentication, Brute Force Login Protection, OAuth2 Group-based Access Control & Role Mapping, LDAP Authentication, OAuth2 / OpenID Connect Identity Providers, Strong Password Policy (+9 more)
 
 ### Community 978 - "Community 978"
 Cohesion: 0.21
@@ -6219,7 +7502,7 @@ Nodes (13): Dev Docker Compose Override, SmartSearch (Perplexica) Service, Windo
 
 ### Community 981 - "Community 981"
 Cohesion: 0.15
-Nodes (12): DrupalWikiBaseResponse, DrupalWikiCheckpoint, DrupalWikiPage, DrupalWikiPageResponse, DrupalWikiSpace, DrupalWikiSpaceResponse, Model for a Drupal Wiki space, Model for a Drupal Wiki page (+4 more)
+Nodes (11): build_channel_query_filter(), Test search all channels with no exclusions, Test search all channels with exclusions, Test with empty channels list, Test that channel names are normalized (# removed), Test with invalid entities, Test exclude patterns when channel list fetch fails, Test channel query filter string construction (+3 more)
 
 ### Community 982 - "Community 982"
 Cohesion: 0.23
@@ -6238,7 +7521,7 @@ Cohesion: 0.31
 Nodes (12): _bind_evaluator_signature(), create_evaluator(), _default_eval_scorer(), A decorator that configures a sync or async function to be used as an experiment, validate_evaluator_signature(), _wrap_coroutine_evaluation_function(), _wrap_sync_evaluation_function(), AnnotatorKind (+4 more)
 
 ### Community 986 - "Community 986"
-Cohesion: 0.24
+Cohesion: 0.20
 Nodes (9): provider, tracer, getEnvApiKey(), getEnvCollectorURL(), ensureCollectorEndpoint(), getDefaultSpanProcessor(), Headers, register() (+1 more)
 
 ### Community 987 - "Community 987"
@@ -6250,12 +7533,12 @@ Cohesion: 0.22
 Nodes (10): capture_spans(), _monkey_patch_span_init(), override_span(), A class that modifies spans with the specified resource attributes., Takes a span and merges in the resource attributes specified in the constructor., A context manager that captures spans and modifies them with the specified resou, SpanModifier, Any (+2 more)
 
 ### Community 989 - "Community 989"
-Cohesion: 0.15
-Nodes (8): BaseEvaluator, Evaluator, Protocol for evaluators that can score experiment outputs.      Any object imp, The name of the evaluator., The kind of evaluator (e.g., 'CODE', 'LLM')., A helper abstract class to guide the implementation of an `Evaluator` object., EvaluatorKind, EvaluatorName
+Cohesion: 0.11
+Nodes (18): ChatPromptVersionInput, ContentPartInput, CreateChatPromptInput, CreatePromptVersionTagInput, ModelProvider, node, PromptChatTemplateInput, PromptMessageInput (+10 more)
 
 ### Community 990 - "Community 990"
-Cohesion: 0.32
-Nodes (9): Evaluate the output synchronously., Evaluate the output asynchronously., Evaluate the output synchronously.          For subclassing, one should implem, Evaluate the output asynchronously.          For subclassing, one should imple, EvaluationResult, ExampleInput, ExampleMetadata, ExampleOutput (+1 more)
+Cohesion: 0.11
+Nodes (17): 1. Problem statement, 2.1 What we observe, 2.2 Why: `async for` does not call `aclose()` on exception, 2.3 How the generator actually gets closed: finalizer, 2. Root cause: CPython and asyncio behavior, 3. Official Python documentation, 4.1 Scenarios in `run_empirical_tests()`, 4.2 What aclosing can do for us (+9 more)
 
 ### Community 991 - "Community 991"
 Cohesion: 0.18
@@ -6282,8 +7565,8 @@ Cohesion: 0.15
 Nodes (12): AnnotationConfigInput, CategoricalAnnotationConfigInput, CategoricalAnnotationConfigValueInput, ContinuousAnnotationConfigInput, EditBuiltInDatasetEvaluatorSlideover_UpdateDatasetBuiltinEvaluatorMutation, EditBuiltInDatasetEvaluatorSlideover_UpdateDatasetBuiltinEvaluatorMutation$data, EditBuiltInDatasetEvaluatorSlideover_UpdateDatasetBuiltinEvaluatorMutation$variables, EvaluatorInputMappingInput (+4 more)
 
 ### Community 997 - "Community 997"
-Cohesion: 0.22
-Nodes (13): Phoenix Helm values.yaml, Phoenix Persistence Strategy Selection, Phoenix ConfigMap (PHOENIX_* env vars), Phoenix Deployment manifest, Phoenix Ingress, Phoenix PersistentVolumeClaim, Phoenix Service, Phoenix ServiceAccount (+5 more)
+Cohesion: 0.31
+Nodes (9): Phoenix Helm values.yaml, Phoenix Persistence Strategy Selection, Phoenix ConfigMap (PHOENIX_* env vars), Phoenix Deployment manifest, Phoenix Ingress, Phoenix PersistentVolumeClaim, Phoenix Service, Phoenix ServiceAccount (+1 more)
 
 ### Community 999 - "Community 999"
 Cohesion: 0.19
@@ -6294,8 +7577,8 @@ Cohesion: 0.22
 Nodes (9): checkOnyxPreference(), loadThemeAndBackground(), preloadChatInterface(), setIframeSrc(), setTheme(), showLoginPage(), startIframeLoadTimeout(), hideErrorModal() (+1 more)
 
 ### Community 1001 - "Community 1001"
-Cohesion: 0.23
-Nodes (5): get_running_pid(), Interface for phoenix services.     All services must define a ``command`` prop, Stops any running instance of the service, whether the instance is being run, Service, Popen
+Cohesion: 0.11
+Nodes (18): Community, Documentation, Environment Variables, Features, Installation, Quick Start, Usage Examples, Basic Usage (+10 more)
 
 ### Community 1002 - "Community 1002"
 Cohesion: 0.19
@@ -6310,16 +7593,16 @@ Cohesion: 0.18
 Nodes (11): __dirname, fastify, __filename, clientAuthMethodConfig, fastifyOptions, oidcServer, PORT, setupPlugins() (+3 more)
 
 ### Community 1005 - "Community 1005"
-Cohesion: 0.28
-Nodes (4): Context, GlobalID, Identifier, Info
+Cohesion: 0.11
+Nodes (19): 1. Name Sessions Semantically, 2. Always Clean Up, 3. Handle State Files Securely, 4. Timeout Long Sessions, A/B Testing Sessions, Authenticated Session Reuse, Best Practices, Common Patterns (+11 more)
 
 ### Community 1006 - "Community 1006"
 Cohesion: 0.26
 Nodes (5): MonkeyPatch, Returns a factory that creates fresh Bedrock runtime clients.          The fac, Context manager that temporarily removes environment variables.      Environme, without_env_vars(), TestWithoutEnvVars
 
 ### Community 1007 - "Community 1007"
-Cohesion: 0.15
-Nodes (13): definitions, Identifier, Number, PermissionEntry, Target, description, oneOf, anyOf (+5 more)
+Cohesion: 0.13
+Nodes (15): definitions, Identifier, Number, PermissionEntry, Target, Value, oneOf, anyOf (+7 more)
 
 ### Community 1008 - "Community 1008"
 Cohesion: 0.15
@@ -6334,40 +7617,40 @@ Cohesion: 0.15
 Nodes (12): Calls to the enterprise settings endpoint without authentication should fail wit, Test that image generation config is automatically created when a tenant is prov, Test that the first user of a tenant is automatically assigned ADMIN role., Test that an admin user can create a credential in their tenant., Test that an admin user can create a connector in their tenant., Test that an admin user can create and verify a connector-credential pair in the, test_admin_can_create_and_verify_cc_pair(), test_admin_can_create_connector() (+4 more)
 
 ### Community 1011 - "Community 1011"
-Cohesion: 0.15
-Nodes (12): get_contextvar_value(), Test that contextvar changes don't leak between separate parallel runs, Helper function that runs in a thread and returns the contextvar value, Test that run_with_timeout preserves contextvar values, Test that run_functions_in_parallel preserves contextvar values, Test that run_functions_tuples_in_parallel preserves contextvar values, Test that modifications to contextvars in threads don't affect other threads, test_contextvar_isolation_between_runs() (+4 more)
+Cohesion: 0.11
+Nodes (4): dropZoneFormCSS, fileChipCSS, fileChipRemoveButtonCSS, meta
 
 ### Community 1014 - "Community 1014"
-Cohesion: 0.26
-Nodes (12): agent-browser Automation Skill, Phoenix Playwright Test Examples, Playwright Role-Based Selector Strategy, Phoenix Playwright E2E Tests Skill, Phoenix UI Component Reference, Phoenix Skill Development Guide, agent-browser Authentication Patterns, agent-browser Command Reference (+4 more)
+Cohesion: 0.12
+Nodes (10): Playwright Role-Based Selector Strategy, Adding a Rule File, Anti-Patterns, Directory Structure, Existing Skills, Improving Consistency, Refining Existing Skills, Skill Development (+2 more)
 
 ### Community 1016 - "Community 1016"
 Cohesion: 0.17
 Nodes (12): @babel/helpers@<7.26.10, @babel/runtime@<7.26.10, braces@<3.0.3, esbuild@<=0.24.2, glob@>=10.3.7 <10.5.0, js-yaml@<4.1.1, mdast-util-to-hast@<13.2.1, minimatch (+4 more)
 
 ### Community 1017 - "Community 1017"
-Cohesion: 0.21
-Nodes (12): Exact Match Metric, PrecisionRecallFScore Metric, Evaluator, Heuristic Evaluator, LLM-based Evaluator, bind_evaluator, Input Mapping, Pydantic Input Schema (+4 more)
+Cohesion: 0.13
+Nodes (21): Exact Match Metric, PrecisionRecallFScore Metric, Evaluator, Heuristic Evaluator, LLM-based Evaluator, bind_evaluator, Evaluator Binding, Input Mapping (+13 more)
 
 ### Community 1018 - "Community 1018"
-Cohesion: 0.32
-Nodes (4): CheckpointOutput, SecondsSinceUnixEpoch, MockConnector, SingleConnectorYield
+Cohesion: 0.11
+Nodes (18): Files That Must Be Studied Before Implementing, Files That Must Be Studied Before Implementing, Files That Must Be Studied Before Implementing, General Testing Checklist (For All Deferred Items), Implementation Approach (When Ready), Implementation Approach (When Ready), Implementation Approach (When Ready), Item 10: AgentMessage Card Wrapper (+10 more)
 
 ### Community 1019 - "Community 1019"
-Cohesion: 0.18
-Nodes (9): Any, get_sqlite_db_path(), Get the path to the sqlite db file., Remove SQLite database and all associated files (WAL, SHM).      SQLite in WAL m, # NOTE: only used with shelves, deprecated at this point, Validate the checksum portion of an 18-character Salesforce ID.      Args:, remove_sqlite_db_files(), SalesforceObject (+1 more)
+Cohesion: 0.12
+Nodes (15): Any, get_object_type_path(), get_sqlite_db_path(), Get the path to the sqlite db file., Remove SQLite database and all associated files (WAL, SHM).      SQLite in WAL m, # NOTE: only used with shelves, deprecated at this point, Get the directory path for a specific object type., Validate the checksum portion of an 18-character Salesforce ID.      Args: (+7 more)
 
 ### Community 1020 - "Community 1020"
 Cohesion: 0.29
 Nodes (11): connection, IO, Session, create_populate_lobj(), delete_lobj_by_id(), get_pg_conn_from_session(), Kept around since it's used in the migration to move to S3/MinIO, Remove a large object by OID, regardless of driver implementation. (+3 more)
 
 ### Community 1021 - "Community 1021"
-Cohesion: 0.17
-Nodes (10): Any, log_ratelimit_event(), observe_check(), observe_recorded_tokens(), observe_remaining_budget(), Observability for the rate-limits subsystem: Prometheus metrics + structured eve, Set the per-scope remaining-budget gauge (caller passes the tightest value for t, Emit one OpenSearch-friendly JSON event line. Never raises. (+2 more)
+Cohesion: 0.11
+Nodes (17): 1. Hero header (replace `SettingsLayouts.Header` title/description, lines 172-186), 2. KPI overview strip (new, above the search/list), 3. Filter tabs (new) + search, 4. Redesigned `WorkflowCard` (lines 23-111), 5. Empty / loading states (lines 202-235), Bindings Verification (new design → existing code) — ALL GREEN, Context, Design-system constraints (from CLAUDE.md — must follow) (+9 more)
 
 ### Community 1022 - "Community 1022"
-Cohesion: 0.18
-Nodes (8): Any, Response, ExaWithTimeout, _extract_site_operators(), Exa client subclass that adds timeout support to HTTP requests.      The base Ex, Override request method to add timeout support., Extract site: operators and return cleaned query + full domains.      Returns (c, Exa
+Cohesion: 0.25
+Nodes (6): Any, Response, ExaWithTimeout, Exa client subclass that adds timeout support to HTTP requests.      The base Ex, Override request method to add timeout support., Exa
 
 ### Community 1023 - "Community 1023"
 Cohesion: 0.23
@@ -6378,12 +7661,12 @@ Cohesion: 0.24
 Nodes (11): Any, SalesforceConnector, extract_key_value_pairs_to_set(), _load_reference_data(), # NOTE: this is the correct document count., # TODO: make the credentials not expire, # TODO: make the credentials not expire, salesforce_connector() (+3 more)
 
 ### Community 1025 - "Community 1025"
-Cohesion: 0.39
-Nodes (5): Any, DATestUser, DATestDocumentSet, DATestDocumentSet, DocumentSetManager
+Cohesion: 0.47
+Nodes (3): DATestUser, DATestDocumentSet, DocumentSetManager
 
 ### Community 1026 - "Community 1026"
-Cohesion: 0.21
-Nodes (10): BytesIO, DATestUser, create_test_image(), create_test_text_file(), Create a test image file in memory for file attachment testing.      Args:, Create a test text file in memory for file attachment testing.      Args:, Test sending a chat message with an attached image file., Test sending a chat message with an attached text file. (+2 more)
+Cohesion: 0.22
+Nodes (9): BytesIO, create_test_image(), create_test_text_file(), Create a test image file in memory for file attachment testing.      Args:, Create a test text file in memory for file attachment testing.      Args:, Test sending a chat message with an attached image file., Test sending a chat message with an attached text file., test_send_message_with_image_attachment() (+1 more)
 
 ### Community 1027 - "Community 1027"
 Cohesion: 0.27
@@ -6398,12 +7681,12 @@ Cohesion: 0.23
 Nodes (6): Any, Lightweight stand-in for RedisDocumentSet used by monitor tests., _setup_common_patches(), _StubRedisDocumentSet, test_monitor_deletes_document_set_with_no_connectors(), test_monitor_preserves_federated_only_document_set()
 
 ### Community 1030 - "Community 1030"
-Cohesion: 0.32
-Nodes (12): Chat Service (FastAPI) Dependencies, Frontend (Streamlit) Dependencies, Phoenix AI Observability Platform, Phoenix On-Call Guide, Research Assistant Workflow (LlamaIndex), Manually Instrumented Chatbot Compose Stack, OpenInference Semantic Conventions, OpenTelemetry (OTel) (+4 more)
+Cohesion: 0.13
+Nodes (19): Chat Service (FastAPI) Dependencies, Frontend (Streamlit) Dependencies, Phoenix AI Observability Platform, On-Call Guide, Priority Levels for Bug Fix, Responsibilities, Tips, Research Assistant Workflow (LlamaIndex) (+11 more)
 
 ### Community 1031 - "Community 1031"
-Cohesion: 0.17
-Nodes (7): Tests for CitationMode.HYPERLINK - citations replaced with markdown links., Test that HYPERLINK mode formats citations as [[n]](url)., Test that HYPERLINK mode emits CitationInfo objects., Test that HYPERLINK mode tracks seen citations., Test that HYPERLINK mode populates cited_documents in order., Test that HYPERLINK mode is the default behavior., TestCitationModeHyperlink
+Cohesion: 0.14
+Nodes (15): Architecture, Button, Migration from legacy buttons, Props, Usage examples, Adding new components, Components, Opal Components (+7 more)
 
 ### Community 1032 - "Community 1032"
 Cohesion: 0.17
@@ -6426,8 +7709,8 @@ Cohesion: 0.17
 Nodes (4): EmailDebugger(), ErrorBoundary, Props, State
 
 ### Community 1037 - "Community 1037"
-Cohesion: 0.21
-Nodes (10): generate_timestamps(), llm_span(), random_split(), Generate random timestamps with different rates based on local time periods., Generate n random numbers that sum to total using Dirichlet distribution., Generate a synthetic LLM span with random token counts and model information., tool_span(), datetime (+2 more)
+Cohesion: 0.27
+Nodes (9): generate_timestamps(), llm_span(), random_split(), Generate random timestamps with different rates based on local time periods., Generate n random numbers that sum to total using Dirichlet distribution., Generate a synthetic LLM span with random token counts and model information., tool_span(), datetime (+1 more)
 
 ### Community 1038 - "Community 1038"
 Cohesion: 0.17
@@ -6438,16 +7721,16 @@ Cohesion: 0.32
 Nodes (11): install.sh script, check_onyx_health(), find_available_port(), HOST_PORT, is_port_available(), print_error(), print_info(), print_step() (+3 more)
 
 ### Community 1040 - "Community 1040"
-Cohesion: 0.21
-Nodes (10): create_user_feedback(), Creates RAG dataset for tutorial notebooks and persists to disk., _summary_      Args:         first_document_relevances (List[Optional[bool]]), main(), Main entry point for the script., Sanitize a title for use as a filename.      - Remove special characters     - R, Stream Wikipedia pages from Hugging Face and write them to zip files.      Args:, sanitize_filename() (+2 more)
+Cohesion: 0.15
+Nodes (13): create_user_feedback(), Creates RAG dataset for tutorial notebooks and persists to disk., _summary_      Args:         first_document_relevances (List[Optional[bool]]), Any, Run EXPLAIN ANALYZE on multiple queries in randomized sequential order., Run EXPLAIN ANALYZE on a single query with its own connection., main(), Main entry point for the script. (+5 more)
 
 ### Community 1041 - "Community 1041"
 Cohesion: 0.36
 Nodes (6): DBSchemaComparisonTest, TestUsers, Config, _DBBackend, Engine, _TableSchemaInfo
 
 ### Community 1042 - "Community 1042"
-Cohesion: 0.17
-Nodes (7): Tests for thread creation and response routing., Message in thread - response appended to thread., thread_only_mode=true creates new thread for response., thread_only_mode=false uses message.reply()., Thread name is truncated to 100 chars., Error response in channel creates thread., TestThreadCreationAndResponseRouting
+Cohesion: 0.12
+Nodes (18): Attack Surface Mitigation, Code Injection, Container Escape, CPU Limits, Data Exfiltration, Filesystem Isolation, Isolation Mechanisms, Memory Limits (+10 more)
 
 ### Community 1043 - "Community 1043"
 Cohesion: 0.17
@@ -6490,7 +7773,7 @@ Cohesion: 0.17
 Nodes (8): _MockLLMServer, Mock LLM server for integration testing.      Implements minimal streaming Ope, OpenAI-compatible base URL (same as url, SDK adds /v1)., Start the HTTP server., Stop the HTTP server., BaseException, Self, TracebackType
 
 ### Community 1053 - "Community 1053"
-Cohesion: 0.21
+Cohesion: 0.19
 Nodes (8): data_analyzer(), Provides insights, trends, or analysis based on the data and prompt.      Args, gradio_interface(), call_model(), create_agent_graph(), run_agent(), should_continue(), MessagesState
 
 ### Community 1054 - "Community 1054"
@@ -6498,8 +7781,8 @@ Cohesion: 0.17
 Nodes (11): compilerOptions, esModuleInterop, forceConsistentCasingInFileNames, module, moduleResolution, noEmit, outDir, skipLibCheck (+3 more)
 
 ### Community 1055 - "Community 1055"
-Cohesion: 0.20
-Nodes (11): _convert_sections_to_llm_string_with_citations(), _dedupe_preserve_order(), _estimate_result_chars(), _normalize_string_list(), Generate URL variants (with/without trailing slash) for database lookup.      Th, Estimate character count from document fields in a result dict., Convert InferenceSections to LLM string, reusing existing citations where availa, # TODO: Likely a behavior of our scraper, understand why this special pattern oc (+3 more)
+Cohesion: 0.11
+Nodes (17): 10. The 12-Week Pilot — Baseline → Shadow → Assisted-Live, 11. Bilingual by Default — Telugu / English, 1. Positioning — Offline, Air-Gapped, Sovereign, 2. The Core Recurring Process — the file's noting path, 3. The Problem — pattern-recognition failures, not effort failures, 4. Where the Time Goes — current journey & bottlenecks, 5. The Solution — four named agents on EXTRACT → CHECK → VERIFY → ROUTE & DRAFT, 6. Data Sources — read-only, real systems (+9 more)
 
 ### Community 1056 - "Community 1056"
 Cohesion: 0.20
@@ -6522,20 +7805,20 @@ Cohesion: 0.20
 Nodes (11): ClassificationEvaluatorConfig, convert_mustache_variables_to_camel_case(), get_index_file_contents(), get_template_file_contents(), PromptMessage, Compiles YAML prompts into TypeScript code., Gets the index.ts file contents with exports for all configs., Convert snake_case string to camelCase.     e.g., "document_text" -> "documentT (+3 more)
 
 ### Community 1061 - "Community 1061"
-Cohesion: 0.17
-Nodes (7): Test role-based access validation in validate_access., Test that access validation works with role mapping (doesn't throw)., Test that access validation works with VIEWER role., Test that access validation succeeds even with unmapped role (defaults to VIEWER, Test that validate_access works with both groups and roles configured., Test that group validation happens before role extraction., TestOAuth2ClientRoleValidation
+Cohesion: 0.12
+Nodes (16): AnnotatorKind, node, SpanKind, SpansTable_spans$data, SpansTable_spans$key, SpanStatusCode, EvalAttr, EvalResultKey (+8 more)
 
 ### Community 1062 - "Community 1062"
-Cohesion: 0.21
-Nodes (11): _make_conn_record(), Unit tests for SQLAlchemy connection pool Prometheus metrics., Verify checkin event reads endpoint from conn_record and observes hold time., Verify checkin gracefully handles missing endpoint info., Verify _build_route_map extracts APIRoute path regexes., Create a mock connection record with an info dict., Verify checkout event stores handler on conn_record and increments metrics., test_build_route_map_extracts_api_routes() (+3 more)
+Cohesion: 0.11
+Nodes (17): 🆕 2026-08-06 — File-upload demo + "ask for files" HITL + step-agent fix (agent-config only, NO backend change), 🎉 ALL 9 DEPARTMENT WORKFLOWS COMPLETE & GREEN — 36/36 guard-rail tests passing (workflows IDs 37–45), 🛡️ Anti-fabrication + HITL hardening (2026-08-06) — ALL 10 Extractors, 📐 BUILD RECIPE (per department — copy the Cybercrime toolchain), 🧠 CRITICAL LEARNINGS (apply to every remaining department), Department #1 — CYBERCRIME — BUILT & GREEN (the validated template) ✅, Department #2 — STATE POLICE CHARGE-SHEET — BUILT & GREEN ✅, Departments #3–#4 — DELEGATED & GREEN ✅ (background agents, same `sequential` template) (+9 more)
 
 ### Community 1063 - "Community 1063"
 Cohesion: 0.21
 Nodes (8): Write optional stdin data and close the pipe., Per-stream state for incremental decoding with truncation., Decode a raw chunk and return a ``StreamChunk`` if within limits., Flush the decoder and return a final chunk if any bytes remain., Read stdout/stderr incrementally and yield ``StreamChunk`` events.      Return, _stream_process_output(), _StreamTracker, _write_stdin()
 
 ### Community 1066 - "Community 1066"
-Cohesion: 0.20
-Nodes (11): get_login_tenant_id(), get_or_provision_tenant(), _provision_on_demand(), provision_tenant(), Billing-free, on-demand tenant provisioning (clean-room).  This replaces the O, Resolve the tenant for ``email`` at login, provisioning one on first sight., Resolve the tenant an email should authenticate into — **without** provisioning., Run per-tenant runtime setup inside the freshly-migrated tenant schema.      T (+3 more)
+Cohesion: 0.11
+Nodes (17): Adding a custom model, Advanced pricing configuration, Basic token counts, Completion token details, Detailed token breakdown (optional), Experiment-level costs, Managing model prices, Model information (+9 more)
 
 ### Community 1067 - "Community 1067"
 Cohesion: 0.17
@@ -6558,52 +7841,52 @@ Cohesion: 0.21
 Nodes (7): DEFAULT_PORT, McpServerProcess, startMcpApiKeyServer(), startMcpGoogleOAuthServer(), startMcpOauthServer(), StartServerOptions, waitForPort()
 
 ### Community 1072 - "Community 1072"
-Cohesion: 0.20
-Nodes (11): Multimodal Tracing, OpenInference Semantic Conventions, OpenLIT, OpenLLMetry, OpenTelemetry GenAI Conventions, Semantic Conventions, Span Attributes, Cost Tracking (+3 more)
+Cohesion: 0.13
+Nodes (19): BatchSpanProcessor, SimpleSpanProcessor, Mask Span Attributes, TraceConfig, FilteringSpanProcessor, Multimodal Tracing, OpenInference Semantic Conventions, OpenInferenceSpanProcessor (+11 more)
 
 ### Community 1073 - "Community 1073"
 Cohesion: 0.20
 Nodes (11): VirtualAI API Key (apikey.txt), VirtualAI Agent Creator Toolkit, create_assistants.py, generate_icon.py (legacy text avatars), generate_icon_v2.py (Iconify SVG icons), Iconify API, import_open_webui.py, Agent Label Taxonomy (45 labels) (+3 more)
 
 ### Community 1074 - "Community 1074"
-Cohesion: 0.18
-Nodes (10): mock_document_index_query(), mock_external_deps(), mock_file_store(), mock_gpu_status(), mock_nlp_embeddings_post(), Mock the file store to avoid S3/storage dependencies in tests., Convenience fixture to enable all common external dependency mocks., Patch model-server embedding HTTP calls used by NLP components. (+2 more)
+Cohesion: 0.22
+Nodes (8): mock_document_index_query(), mock_external_deps(), mock_file_store(), mock_nlp_embeddings_post(), Convenience fixture to enable all common external dependency mocks., Patch embedding calls so tests don't need a running embedding server., Stub document-index retrieval to a safe empty response to avoid CI flakiness., Mock the file store to avoid S3/storage dependencies in tests.
 
 ### Community 1075 - "Community 1075"
-Cohesion: 0.20
-Nodes (11): Audio Emotion Detection Eval, Categorical Evaluation, Numeric Score Evaluation, Prompt Formats, Evaluator Tracing (OpenTelemetry), Structured Output via Tool Calling, ClassificationEvaluator, LLMEvaluator (+3 more)
+Cohesion: 0.18
+Nodes (11): Audio Emotion Detection Eval, Categorical Evaluation, Numeric Score Evaluation, Prompt Formats, ClassificationEvaluator, LLMEvaluator, phoenix_prompt_to_prompt_template, Eval Prompt Templates (+3 more)
 
 ### Community 1076 - "Community 1076"
-Cohesion: 0.20
-Nodes (11): _encrypt_private_key(), _env_tls(), Configure TLS environment variables for testing.      This fixture sets up the, Fixture that provides TLS certificates in a temporary directory., Fixture that provides TLS certificates in a temporary directory., Encrypt an existing private key file with a password and save to a new file., _tls_certs_for_client(), _tls_certs_for_server() (+3 more)
+Cohesion: 0.02
+Nodes (113): _app(), _app_ldap_no_email(), _app_ldap_no_sign_up(), _app_ldap_posix(), _app_ldap_posix_memberuid(), _app_ldap_unique_id(), _encrypt_private_key(), _env() (+105 more)
 
 ### Community 1077 - "Community 1077"
-Cohesion: 0.35
-Nodes (10): Redis, UUID, _get_fence_key(), is_connected(), Generate the Redis key for a chat session stop signal fence.      Args:, Set or clear the stop signal fence for a chat session.      Args:         chat_s, Check if the chat session should continue (not stopped).      Args:         chat, Clear the stop signal for a chat session.      Args:         chat_session_id: Th (+2 more)
+Cohesion: 0.11
+Nodes (18): Arbitrary Output Column Names, Extract the Input and Output from LLM Spans, **Filtering for No Evaluations**, Filtering for Substring, Filtering on Metadata, Filtering Spans by Evaluation Results, How to Apply Filters, How to Apply Filters (UI) (+10 more)
 
 ### Community 1078 - "Community 1078"
-Cohesion: 0.18
-Nodes (10): ChannelType, AttachmentType, BotProfileType, ChannelTopicPurposeType, MessageType, Represents a Slack channel., Represents a Slack message attachment., Represents a Slack bot profile. (+2 more)
+Cohesion: 0.11
+Nodes (17): Architecture, Context, Endpoints reused (existing, unchanged), Files, Implementation notes, Known MVP limitations (by design / deferred — revisit later), Model multi-select — `web/src/refresh-components/popovers/LLMPopover.tsx`, Multi-Model "Compare Side-by-Side" Chat — Implementation Plan (+9 more)
 
 ### Community 1079 - "Community 1079"
-Cohesion: 0.24
-Nodes (7): Any, ImageGenerationResponse, ImageGenerationProvider, ImageGenerationProviderCredentials, Returns true if sufficient credentials are given to build this provider., Given credentials, builds an instance of the provider.         Should NOT be cal, Generates an image based on a prompt.
+Cohesion: 0.11
+Nodes (17): Build & Run, Contributing, Development, Environment Variables, Installation, License, Overview, Phoenix OIDC Debug Server (+9 more)
 
 ### Community 1080 - "Community 1080"
 Cohesion: 0.24
 Nodes (9): Any, _current_tenant_id(), log_scim_event(), _OperationHandle, Structured, OpenSearch-friendly logging for SCIM provisioning events.  Every c, Time a SCIM operation and emit a success/error event automatically.      Usage, Mutable handle so a ``with scim_operation(...)`` block can set entity_id., Emit one structured SCIM log line. Never raises.      ``as_error`` overrides t (+1 more)
 
 ### Community 1081 - "Community 1081"
-Cohesion: 0.20
-Nodes (6): ProviderType, Enum for internet search provider types, Whether this provider supports the site: operator in queries.         Override i, WebContentProviderConfig, WebSearchProvider, WebSearchResult
+Cohesion: 0.11
+Nodes (17): 1.0.2, 2.3.1, 2.4.0, 5.2.1, 5.4.0, 5.5.0, 5.5.3, 5.5.4 (+9 more)
 
 ### Community 1082 - "Community 1082"
 Cohesion: 0.29
 Nodes (9): AllUsersResponse, ChatSessionsResponse, UUID, ChatSessionSnapshot, get_chat_sessions(), get_session_history(), manage_users(), MessageSnapshot (+1 more)
 
 ### Community 1083 - "Community 1083"
-Cohesion: 0.31
-Nodes (10): Any, analyze_tenants(), collect_control_plane_data(), collect_tenant_data(), find_recent_tenant_data(), main(), Analyze tenant activity data and return gated tenants with no query in last 3 mo, Run the understand_tenants script on the pod and return the data. (+2 more)
+Cohesion: 0.11
+Nodes (17): Approach, Architecture, Backend Changes, Considerations, Data Flow, File Type Detection, Frontend Changes, Future Upgrade: Interactive Charts with Plotly / React Charts (+9 more)
 
 ### Community 1084 - "Community 1084"
 Cohesion: 0.22
@@ -6626,40 +7909,40 @@ Cohesion: 0.24
 Nodes (6): SessionIODataLoader, Kind, DbSessionFactory, Key, Result, Select
 
 ### Community 1089 - "Community 1089"
-Cohesion: 0.25
-Nodes (4): TestDataset, Any, DatasetWithExampleCount, ListDatasetExamplesData
+Cohesion: 0.11
+Nodes (17): 10. Integration notes (Wave 1), 1. Why this exists / what the old code did, 2. Research → algorithm choice, 3. Scopes, 4. Data model (per-tenant schema — Contract 3), 5. Runtime architecture, 6. Observability (FULL — the point of this workstream), 7. Config + UI (Phase 3) — configuring rate limits from the admin UI (+9 more)
 
 ### Community 1090 - "Community 1090"
 Cohesion: 0.25
 Nodes (6): Fixture that provides TLS certificates in a temporary directory., Fixture that provides TLS certificates in a temporary directory., Fixture that provides DSNs with different SSL configurations., TestPgConfig, Cert, TempPathFactory
 
 ### Community 1091 - "Community 1091"
-Cohesion: 0.22
-Nodes (6): Format a single column definition., Format column data type with proper casing and parameters.          Handles ar, Format a single (non-array) data type with proper length/precision., Format base PostgreSQL data types with proper length/precision handling., Format default values, handling special cases for arrays and enums., Any
+Cohesion: 0.11
+Nodes (18): 1. Always Snapshot Before Interacting, 2. Re-Snapshot After Navigation, 3. Re-Snapshot After Dynamic Changes, 4. Snapshot Specific Regions, Best Practices, Common Patterns, Contents, Element Not Visible in Snapshot (+10 more)
 
 ### Community 1092 - "Community 1092"
-Cohesion: 0.22
+Cohesion: 0.24
 Nodes (5): Constant, _get_cast_type_for_comparison(), Some column types (e.g., JSON columns) require an explicit cast before     comp, Term, SQLAlchemyDataType
 
 ### Community 1093 - "Community 1093"
-Cohesion: 0.20
-Nodes (8): useBoundingBox(), Content, Header, Root, SimpleCollapsibleContext, SimpleCollapsibleContextValue, SimpleCollapsibleHeaderProps, SimpleCollapsibleRootProps
+Cohesion: 0.11
+Nodes (17): 10. The 12-Week Pilot — Baseline → Shadow → Assisted-Live, 11. Bilingual by Default — Telugu / English, 1. Positioning — Offline, Air-Gapped, Sovereign, 2. The Core Recurring Process — the file's noting path, 3. The Problem — pattern-recognition failures, not effort failures, 4. Where the Time Goes — current journey & bottlenecks, 5. The Solution — four named agents on EXTRACT → CHECK → VERIFY → ROUTE & DRAFT, 6. Data Sources — read-only, real systems (+9 more)
 
 ### Community 1094 - "Community 1094"
-Cohesion: 0.22
-Nodes (11): PHOENIX_LDAP_* Environment Variable Contract, TLS Mode starttls Default, LDAP Metrics/Observability (Prometheus), LDAP Bind Operation (Search-and-Bind), LDAP vs OIDC (Primer for OIDC Engineers), Anonymous Bind Prevention, Adversarial MITM Proxy TLS Validation, TLS-Mode-Aware Port Defaulting (389/636) (+3 more)
+Cohesion: 0.04
+Nodes (53): Authentication Method Framework (LOCAL/OAuth2/LDAP), LDAPAuthenticator Class, LDAPConfig Dataclass, map_groups_to_role (First-Match-Wins), Complete Environment Variables, Configuration Examples, Configuration Reference, PHOENIX_LDAP_* Environment Variable Contract (+45 more)
 
 ### Community 1095 - "Community 1095"
 Cohesion: 0.27
 Nodes (7): applyTheme(), goToStep(), handleBack(), handleContinue(), toggleTheme(), updateThemeIcon(), validateDomain()
 
 ### Community 1096 - "Community 1096"
-Cohesion: 0.27
-Nodes (11): Phoenix CLI, Phoenix Evals Skill, Axial Coding, Phoenix Evals Common Mistakes (Python), Error Analysis, Multi-Turn Error Analysis, async_evaluate_dataframe, Batch Evaluation (evaluate_dataframe) (+3 more)
+Cohesion: 0.05
+Nodes (38): Datasets / Experiments / Prompts, GraphQL, Invocation, Phoenix CLI, Session JSON shape, Sessions, Setup, Trace JSON shape (+30 more)
 
 ### Community 1097 - "Community 1097"
-Cohesion: 0.29
-Nodes (4): Context, datetime, Info, JSON
+Cohesion: 0.11
+Nodes (18): 1. Validate the Source Branch, 2. Analyze the Diff, 3. Create the Clean Branch, 4. Plan the Commit Storyline, 5. Reimplement the Work, 6. Verify Correctness, 7. Push and Create PR, Arguments (+10 more)
 
 ### Community 1098 - "Community 1098"
 Cohesion: 0.22
@@ -6694,16 +7977,16 @@ Cohesion: 0.24
 Nodes (5): PromptTemplate, Build the prompt template with the given fields.         Will raise an error if, Returns another PromptTemplate with the given fields replaced.         Will igno, Apply global replacements such as [[CURRENT_DATETIME]]., A class for building prompt templates with placeholders.     Useful when buildin
 
 ### Community 1106 - "Community 1106"
-Cohesion: 0.18
-Nodes (11): properties, description, type, default, description, type, identifier, local (+3 more)
+Cohesion: 0.14
+Nodes (14): description, properties, required, type, Capability, type, default, description (+6 more)
 
 ### Community 1107 - "Community 1107"
 Cohesion: 0.25
 Nodes (5): createGithubLink(), extractOwnerAndRepoFromHtmlUrl(), formatDateDifference(), formatIssueLine(), getParticipants()
 
 ### Community 1108 - "Community 1108"
-Cohesion: 0.20
-Nodes (11): Workflow test CSV datasets & sample questions, Chat converse API curl examples, Content Marketing Pipeline workflow, Personal Finance Advisor workflow, _apply_input_mapping bug fix, LLM-decision orchestration mode, Sequential orchestration mode, Orchestrator problem-classification routing (+3 more)
+Cohesion: 0.07
+Nodes (30): Workflow test CSV datasets & sample questions, Chat converse API curl examples, Content Marketing Pipeline workflow, Personal Finance Advisor workflow, _apply_input_mapping bug fix, LLM-decision orchestration mode, Sequential orchestration mode, Agent Details (+22 more)
 
 ### Community 1109 - "Community 1109"
 Cohesion: 0.31
@@ -6730,16 +8013,16 @@ Cohesion: 0.35
 Nodes (10): log(), Test: Chart Generation & File Download in Workflows ============================, Test ML Model Rapid Prototyper generates downloadable charts., Test Data Analysis Pipeline chart generation., Run a workflow and collect all streaming data., run_and_collect(), test_data_analysis_chart(), test_fail() (+2 more)
 
 ### Community 1117 - "Community 1117"
-Cohesion: 0.22
-Nodes (10): OTel Context (span customization), using_attributes, using_metadata, using_session, using_tags, using_user, using_prompt_template, Add Metadata (Overview) (+2 more)
+Cohesion: 0.20
+Nodes (11): OTel Context (span customization), using_attributes, using_metadata, using_session, using_tags, using_user, using_prompt_template, Add Metadata (Overview) (+3 more)
 
 ### Community 1118 - "Community 1118"
-Cohesion: 0.29
-Nodes (10): suppress_tracing, Annotation Config (Rubric), Annotation (data model), annotator_kind (HUMAN/LLM/CODE), /v1/span_annotations REST endpoint, ClassificationEvaluator, LLM-as-a-Judge Evaluation, log_span_annotations_dataframe (+2 more)
+Cohesion: 0.21
+Nodes (13): Project, Span, Trace, capture_span_context, Annotation Config (Rubric), Annotation (data model), annotator_kind (HUMAN/LLM/CODE), /v1/span_annotations REST endpoint (+5 more)
 
 ### Community 1119 - "Community 1119"
-Cohesion: 0.22
-Nodes (9): Instrumentation, OpenInference, Arize AX, Hidden AI-Agent Instruction Block, phoenix.otel Wrapper, Setup Tracing, register (phoenix.otel), tracer decorators (chain/llm/tool/agent) (+1 more)
+Cohesion: 0.14
+Nodes (14): suppress_tracing, Example OTEL Spans, Projects, Span Kind, Spans, Traces, Arize AX, Hidden AI-Agent Instruction Block (+6 more)
 
 ### Community 1120 - "Community 1120"
 Cohesion: 0.20
@@ -6758,8 +8041,8 @@ Cohesion: 0.36
 Nodes (9): _fetch_public_key_payload(), get_public_key(), PublicKeyFormat, Fetch and cache the raw JWT verification material., Return the concrete public key used to verify the provided JWT token., _resolve_public_key_from_jwks(), verify_jwt_token(), Any (+1 more)
 
 ### Community 1124 - "Community 1124"
-Cohesion: 0.22
-Nodes (7): CitationInfo, Match, in_code_block(), Dynamic Citation Processor for LLM Responses  This module provides a citation pr, Process a token from the LLM stream.          This method:         1. Accumulate, Process a single citation match and return formatted citation text and citation, Check if we're currently inside a code block by counting triple backticks.
+Cohesion: 0.15
+Nodes (17): check_documents_deleted(), cleanup_control_plane(), cleanup_tenant(), drop_data_plane_schema(), get_tenant_index_name(), get_tenant_users(), main(), Get list of user emails from the tenant's data plane schema.      Args: (+9 more)
 
 ### Community 1125 - "Community 1125"
 Cohesion: 0.24
@@ -6770,35 +8053,31 @@ Cohesion: 0.29
 Nodes (9): Any, column_letter_to_index(), create_braintrust_dataset(), main(), parse_csv_file(), Create a Braintrust dataset with the filtered records., Main function to run the script., Convert Google Sheets column letter (A, B, C, etc.) to 0-based index. (+1 more)
 
 ### Community 1127 - "Community 1127"
-Cohesion: 0.29
-Nodes (9): ConnectorCredentialPair, ExternalUserGroup, JIRA, _build_group_member_email_map(), _get_jira_group_members_email(), jira_group_sync(), Sync Jira groups and their members.      This function fetches all groups from J, Get all member emails for a Jira group.      Filters out app accounts (bots, int (+1 more)
+Cohesion: 0.13
+Nodes (16): Checkpointing and Persistence, Conditional Routing, Core LangGraph Concepts, Design Considerations & Limitations, Edges, Evaluator–Optimizer Loop, Nodes, Orchestrator–Worker (+8 more)
 
 ### Community 1128 - "Community 1128"
-Cohesion: 0.29
-Nodes (9): Any, ChatCompletionMessage, LanguageModelInput, combine_messages_with_continuation(), prepare_messages_with_cacheable_transform(), Combine prefix and suffix messages, handling continuation flag.      Args:, Rebuild a mutated message using the original BaseModel type.      Some providers, Prepare messages for caching with optional transformation of cacheable prefix. (+1 more)
-
-### Community 1129 - "Community 1129"
-Cohesion: 0.27
-Nodes (5): Any, get_view_values(), Extract view values      Args:         state_values (dict): The Slack view-su, TenantSocketModeClient, SocketModeClient
+Cohesion: 0.12
+Nodes (16): Agent Tools, Analyze Experiment Traces & Results, Answer Relevance Evaluator, Budget Consistency Evaluator, Build the Agent, Define Agent Tools, Define Evaluators, Define & Upload Dataset (+8 more)
 
 ### Community 1130 - "Community 1130"
 Cohesion: 0.27
 Nodes (9): Session, User, get_default_assistant_configuration(), API endpoints for default assistant configuration., Get the current default assistant configuration.      Returns:         DefaultAs, Update the default assistant configuration.      Args:         update_request: R, update_default_assistant(), DefaultAssistantConfiguration (+1 more)
 
 ### Community 1131 - "Community 1131"
-Cohesion: 0.24
-Nodes (9): AsyncEngine, Engine, SQLAlchemy connection pool Prometheus metrics.  Provides production-grade visibi, Attach pool event listeners for metrics collection.      Listens to checkout, ch, Register pool metrics for all provided engines.      Args:         engines: Mapp, _register_pool_events(), setup_postgres_connection_pool_metrics(), Verify setup_postgres_connection_pool_metrics skips engines with NullPool. (+1 more)
+Cohesion: 0.33
+Nodes (16): DefaultIndexingEmbedder, Document, TextSection, filter_documents(), create_test_document(), test_contextual_rag(), test_filter_documents_empty_batch(), test_filter_documents_empty_content_with_title() (+8 more)
 
 ### Community 1132 - "Community 1132"
-Cohesion: 0.20
-Nodes (8): User, ApiKey, DisplayPriorityRequest, FullUserSnapshot, IdReturn, InvitedUserSnapshot, MinimalUserSnapshot, StatusResponse
+Cohesion: 0.18
+Nodes (16): Path, check(), Round-trip verify the generated packet against source CSV figures., _dms_to_deg(), _extract_docx(), extract_folder(), _extract_image(), extract_text() (+8 more)
 
 ### Community 1133 - "Community 1133"
-Cohesion: 0.24
-Nodes (9): Config, _build_alembic_config(), create_tenant_schema(), Per-tenant schema lifecycle + Alembic migration runner (clean-room).  Schema-p, Create the tenant's schema if absent. Returns True if it was created.      Val, Apply the full migration chain to a single tenant schema., Apply the migration chain to every tenant schema (and the default schema)., run_migrations_for_all_tenants() (+1 more)
+Cohesion: 0.12
+Nodes (16): **Before We Start**, **Connect Your Project in Phoenix**, **Create a Phoenix Cloud Account**, Financial Analysis Tool, Financial Orchestrator Agent, Financial Researcher Agent, Financial Search Tool, Financial Writer Agent (+8 more)
 
 ### Community 1134 - "Community 1134"
-Cohesion: 0.24
+Cohesion: 0.25
 Nodes (9): Any, capture_and_sync_with_alternate_posthog(), get_marketing_posthog_cookie_name(), parse_marketing_cookie(), posthog_on_error(), Log any PostHog delivery errors., # NOTE: These clients are separate because they are separate posthog projects., Identify in both PostHog projects and capture the event in marketing.     - Mark (+1 more)
 
 ### Community 1135 - "Community 1135"
@@ -6810,8 +8089,8 @@ Cohesion: 0.20
 Nodes (6): ConfigMapValidators, Validators specific to ConfigMap and envFrom behavior., Validate that deployment uses envFrom to reference a ConfigMap., Validate that a ConfigMap resource exists., Validate that ConfigMap contains a specific key with optional value check., Validate that envFrom references a ConfigMap with a specific name pattern.
 
 ### Community 1137 - "Community 1137"
-Cohesion: 0.20
-Nodes (4): initialize_llm(), router(), initialize_agent(), MessagesState
+Cohesion: 0.13
+Nodes (9): construct_agent(), initialize_llm(), router(), initialize_agent(), construct_agent(), create_rag_agent(), Create the RAG agent workflow, MessagesState (+1 more)
 
 ### Community 1138 - "Community 1138"
 Cohesion: 0.29
@@ -6822,16 +8101,16 @@ Cohesion: 0.31
 Nodes (7): selectRandomPrompts(), shuffleArray(), SuggestedPromptsProps, BuildPrompt, exampleBuildPrompts, getPromptsForAgent(), UserAgent
 
 ### Community 1140 - "Community 1140"
-Cohesion: 0.24
-Nodes (10): Evaluator Binding, HallucinationEvaluator, QAEvaluator (legacy), Evals Quickstart, run_evals, Evaluation Executors, Faithfulness Metric, Python Evaluations Quickstart (+2 more)
+Cohesion: 0.25
+Nodes (7): Evaluator Tracing, Executors, Features, Structured Output via Tool Calling, Structured Output via Tool Calling, Two Ways to Evaluate, async_evaluate_dataframe
 
 ### Community 1141 - "Community 1141"
 Cohesion: 0.20
 Nodes (9): run-nginx.sh script, NGINX_PROXY_CONNECT_TIMEOUT, NGINX_PROXY_READ_TIMEOUT, NGINX_PROXY_SEND_TIMEOUT, OM_BACKEND_API_HOST, OM_MCP_SERVER_HOST, OM_WEB_SERVER_HOST, SSL_CERT_FILE_NAME (+1 more)
 
 ### Community 1142 - "Community 1142"
-Cohesion: 0.22
-Nodes (10): Mock LLM Dashboard UI Entry, Vite React TypeScript Template, Synthetic Trace Data Generation (plpgsql), Mock LLM Real-time Dashboard, Mock LLM Server, Mock LLM Rate Limiting Strategies, LDAP MITM TLS Verification Proxy, Toxiproxy Network Simulation (+2 more)
+Cohesion: 0.06
+Nodes (31): Mock LLM Dashboard UI Entry, Vite React TypeScript Template, Synthetic Trace Data Generation (plpgsql), Admin & Monitoring, Anthropic-Compatible, Anthropic Streaming Details, Anthropic Tool Use, API Endpoints (+23 more)
 
 ### Community 1143 - "Community 1143"
 Cohesion: 0.24
@@ -6842,12 +8121,12 @@ Cohesion: 0.24
 Nodes (6): SessionTraceLatencyMsQuantileDataLoader, test_session_trace_latency_ms_quantile(), DbSessionFactory, Key, Result, DbSessionFactory
 
 ### Community 1145 - "Community 1145"
-Cohesion: 0.22
-Nodes (5): Apply consistent formatting to constraints for visual consistency., Normalize column arrays from PostgreSQL into Python lists.          PostgreSQL, Parse PostgreSQL array string format into Python list.          PostgreSQL arr, Format table-level constraints., Format foreign key constraint.
+Cohesion: 0.12
+Nodes (17): Deliverables, Dietary Restriction Definitions (for reference; taken from OpenAI o4):, Evaluate "Adherence to Dietary Preferences" for the Recipe Bot, Failure Mode: Adherence to Dietary Preferences, Homework 3: LLM-as-Judge for Recipe Bot Evaluation with Phoenix, Key Metrics to Understand, Key Phoenix Concepts You'll Use:, Option 1: Full Implementation (Most Learning) (+9 more)
 
 ### Community 1146 - "Community 1146"
-Cohesion: 0.20
-Nodes (6): Tests for message handling behavior., Thinking emoji is added during processing., Thinking emoji is removed after response., add_reaction failure doesn't block processing., DM to bot sends redirect message., TestMessageHandling
+Cohesion: 0.12
+Nodes (16): Architecture, Authentication, Capabilities, Claude Desktop, Configuring MCP Clients, Default Configuration, Environment Variables, Health Check (+8 more)
 
 ### Community 1147 - "Community 1147"
 Cohesion: 0.27
@@ -6878,8 +8157,8 @@ Cohesion: 0.20
 Nodes (9): GlobalRetentionPolicyCardMutation, GlobalRetentionPolicyCardMutation$data, GlobalRetentionPolicyCardMutation$variables, node, PatchProjectTraceRetentionPolicyInput, ProjectTraceRetentionRuleInput, ProjectTraceRetentionRuleMaxCountInput, ProjectTraceRetentionRuleMaxDaysInput (+1 more)
 
 ### Community 1154 - "Community 1154"
-Cohesion: 0.22
-Nodes (10): Build an Eval (LLM-as-Judge from scratch), SpanEvaluations, HallucinationEvaluator, llm_generate, QAEvaluator, run_evals, OpenAIModel, Online Evals (+2 more)
+Cohesion: 0.20
+Nodes (11): Build an Eval (LLM-as-Judge from scratch), SpanEvaluations, HallucinationEvaluator, llm_generate, QAEvaluator, run_evals, Azure OpenAI, OpenAIModel (+3 more)
 
 ### Community 1155 - "Community 1155"
 Cohesion: 0.20
@@ -6890,8 +8169,8 @@ Cohesion: 0.20
 Nodes (9): compilerOptions, lib, module, moduleResolution, target, extends, tsc-alias, resolveFullPaths (+1 more)
 
 ### Community 1157 - "Community 1157"
-Cohesion: 0.20
-Nodes (10): DN Comparison: RFC 4514 Canonicalization vs EqualFold, Multi-Server Failover Behavior Difference, Distinguished Name (DN), LDAP Search Filters, Ambiguous Search Result Rejection, RFC 4514 DN Canonicalization (canonicalize_dn), LDAP Injection Prevention (escape_filter_chars), LDAP Threat Model (+2 more)
+Cohesion: 0.32
+Nodes (4): TestPromptMutations, Any, AsyncGraphQLClient, DbSessionFactory
 
 ### Community 1158 - "Community 1158"
 Cohesion: 0.24
@@ -6902,8 +8181,8 @@ Cohesion: 0.40
 Nodes (4): TestTraceTransferMutationMixin, trace_transfer_fixture(), AsyncGraphQLClient, DbSessionFactory
 
 ### Community 1161 - "Community 1161"
-Cohesion: 0.29
-Nodes (9): generate_client(), generate_schema(), main(), Generate OpenAPI schema and Python client for Onyx API.  This script is bundle, Generate Python client from OpenAPI schema using openapi-generator-cli.      R, # TODO: remove this once openapi fixes the anyof/none issues, Generate OpenAPI schema to the specified path.      By default outputs tag-str, Strip tags from OpenAPI schema so openapi-generator puts all endpoints in Defaul (+1 more)
+Cohesion: 0.12
+Nodes (16): 1. `backend/om/main.py` (WS-A owns the billing/license router removals), 2. `backend/om/server/auth_check.py`, 3. `backend/om/server/tenants/api.py` (WS-M-owned aggregator; WS-A removes billing/proxy sub-routers), 4. Frontend menu / settings snippets, 5. Database migration, Dead-dependency + snapshot cleanup (DONE in review-fix pass), Design decisions, Files deleted (+8 more)
 
 ### Community 1162 - "Community 1162"
 Cohesion: 0.33
@@ -6930,12 +8209,12 @@ Cohesion: 0.22
 Nodes (8): __dirname, fastify, __filename, configResult, main(), setupServer(), smtpHandler, ServerConfigSchema
 
 ### Community 1168 - "Community 1168"
-Cohesion: 0.20
-Nodes (9): ChatCompletionMessageRole, PromptTemplateFormat, TemplateFormatter, PromptMessageRole, convert_chat_role_to_prompt_role(), get_template_formatter(), Helper functions for prompt template formatting in GraphQL operations., Returns the appropriate template formatter for the given format.      Args: (+1 more)
+Cohesion: 0.21
+Nodes (14): AttributeValue, Evaluations, Tracer, _gen_attributes(), _gen_documents(), _gen_embeddings(), _gen_llm(), _gen_messages() (+6 more)
 
 ### Community 1169 - "Community 1169"
-Cohesion: 0.22
-Nodes (9): ClassificationEvaluatorConfig, get_init_file_contents(), get_models_file_contents(), get_prompt_file_contents(), PromptMessage, Compiles YAML prompts into Python code., Gets the contents of _models.py containing Pydantic model definitions., Gets the Python code contents for a ClassificationEvaluatorConfig. (+1 more)
+Cohesion: 0.14
+Nodes (15): Configuring Inputs, Notes, Output, Parameters, See Also, Usage Examples, Exact Match Evaluator, Configuring Inputs (+7 more)
 
 ### Community 1170 - "Community 1170"
 Cohesion: 0.20
@@ -6962,20 +8241,24 @@ Cohesion: 0.20
 Nodes (8): Collapsible, Default, DefaultClosed, meta, WithExtra, WithoutTitleSeparator, WithSubtitle, WithTitleExtra
 
 ### Community 1176 - "Community 1176"
-Cohesion: 0.20
-Nodes (6): DocProcessingContext, IndexingWatchdogTerminalStatus, The different statuses the watchdog can finish with.      TODO: create broader s, # NOTE: this may actually be the same as SIGKILL, but parsed differently by pyth, The data we want to have when the watchdog finishes, SimpleJobResult
+Cohesion: 0.12
+Nodes (16): API Reference, Configuration, Evaluating Multiple Documents, Evaluating Traces, Formatting Tips, Input Requirements, Output Interpretation, Overview (+8 more)
 
 ### Community 1177 - "Community 1177"
-Cohesion: 0.20
-Nodes (9): list_tenant_schemas(), Return every provisioned tenant schema name (excludes system + default schemas)., is_safe_schema_name(), is_tenant_id(), new_tenant_id(), Tenant identifier / Postgres schema-name rules.  A tenant id doubles as its Po, True if ``name`` is safe to interpolate as a Postgres schema identifier., True if ``tenant_id`` has the strict provisioned-tenant shape. (+1 more)
+Cohesion: 0.12
+Nodes (16): 1. Generate Traces to Evaluate, 2. Export Traces from Phoenix, 3. Define Evaluation Dataset, 4. Create Custom Evaluators, 5. Setup Task and Dataset, 6. Add LLM Judge Evaluator, 7. Run Evaluation, Advanced Usage (+8 more)
 
 ### Community 1178 - "Community 1178"
 Cohesion: 0.27
-Nodes (9): Unified tracing setup for all providers (Braintrust, Langfuse, Phoenix, etc.)., Initialize Arize Phoenix tracing via OTLP/HTTP., Initialize all configured tracing providers.      Returns a list of provider nam, Initialize Braintrust tracing., Initialize Langfuse tracing using the native Langfuse SDK., _setup_braintrust(), _setup_langfuse(), _setup_phoenix() (+1 more)
+Nodes (9): add_trace_processor(), Adds a new trace processor. This processor will receive all traces/spans., Unified tracing setup for all providers (Braintrust, Langfuse, Phoenix, etc.)., Initialize Arize Phoenix tracing via OTLP/HTTP., Initialize all configured tracing providers.      Returns a list of provider nam, Initialize Braintrust tracing., _setup_braintrust(), _setup_phoenix() (+1 more)
 
 ### Community 1179 - "Community 1179"
 Cohesion: 0.20
 Nodes (9): extends, plugins, rules, @next/next/no-img-element, no-unused-vars, react-hooks/exhaustive-deps, @typescript-eslint/no-unused-vars, unused-imports/no-unused-imports (+1 more)
+
+### Community 1180 - "Community 1180"
+Cohesion: 0.12
+Nodes (16): 1. Setup (instrumentation.ts), 2. Usage (app code), Adding More Attributes, Alternative: Context API Pattern, Anti-Pattern: Don't Create Wrappers, Core Concept, Dependencies, Implementation (Best Practice) (+8 more)
 
 ### Community 1181 - "Community 1181"
 Cohesion: 0.20
@@ -6986,20 +8269,20 @@ Cohesion: 0.22
 Nodes (9): asEvaluator (JS), Experiments in the JS Client, runExperiment (JS), createDataset (JS), evaluateExperiment (JS), Datasets & Experiment Evaluation JS Methods, Experiments Module in phoenix-client (Python), PhoenixException Base Class (+1 more)
 
 ### Community 1183 - "Community 1183"
-Cohesion: 0.28
-Nodes (8): AdminSearchRequest, AdminSearchResponse, DocumentSource, Session, User, admin_search(), get_tags(), TagResponse
+Cohesion: 0.12
+Nodes (16): Cloud usage meter (EE control-plane; to be dropped), Environment facts (for the new design), Gaps identified (drive the redesign), Integrator snippets (shared files), ⚠️ NOT deleted — `tenant_usage` cloud meter (documented hand-off), Phase 1 — DONE (tables + core engine + design doc), Phase 2 — DONE (enforcement + observability API + metrics + logs), Phase 3 — DONE (admin UI + menu) (+8 more)
 
 ### Community 1184 - "Community 1184"
 Cohesion: 0.33
 Nodes (9): POST /v1/annotation_configs (create annotation config), PUT /v1/annotation_configs/{config_id}, GET session_annotations for session_ids, GET span_annotations for span_ids, GET trace_annotations for trace_ids, Projects REST API (Phoenix), Sessions REST API (Phoenix), Spans REST API (Phoenix) (+1 more)
 
 ### Community 1185 - "Community 1185"
-Cohesion: 0.36
-Nodes (5): create_llm_evaluator_from_inline(), Creates an LLMEvaluator instance from inline definition without database persist, _make_prompt_version_orm(), Create a minimal mock PromptVersion ORM object., TestCreateLLMEvaluatorFromInline
+Cohesion: 0.05
+Nodes (52): BaseEvaluator, BuiltInEvaluator, cast_template_variable_types(), create_llm_evaluator_from_inline(), evaluation_result_to_span_annotation(), EvaluationResult, ExactMatchEvaluator, get_builtin_evaluator_by_key() (+44 more)
 
 ### Community 1186 - "Community 1186"
-Cohesion: 0.22
-Nodes (8): AppSettingsSchema, CustomAnalyticsScriptPayload, LogoDisplayStyle, NavigationItem, Pydantic schemas for application settings.  Field names deliberately mirror th, A custom sidebar navigation entry (either an icon name or an inline SVG)., The application-level settings object read by the web app for gating., Admin payload to set the injected custom analytics ``<script>``.
+Cohesion: 0.12
+Nodes (16): Alembic, `backend/om/db/models.py`, `backend/om/main.py`, `backend/om/server/auth_check.py`, `backend/om/tenancy/context.py`, Integrator notes (snapshots to regenerate), Phase 1 — DONE (tables + token auth + discovery), Phase 2 — DONE (/Users + /Groups(Team) CRUD + PATCH + filter) (+8 more)
 
 ### Community 1187 - "Community 1187"
 Cohesion: 0.22
@@ -7010,12 +8293,12 @@ Cohesion: 0.22
 Nodes (5): Worker, This method will be called when the plugin is attached to a worker., Periodically log CPU and memory usage.          NOTE: must be async or else will, ResourceLogger, WorkerPlugin
 
 ### Community 1189 - "Community 1189"
-Cohesion: 0.25
-Nodes (8): Document, Select, Session, apply_document_access_filter(), get_accessible_documents_by_ids(), Document access filtering utilities.  This module provides reusable access fil, Apply document access filtering to a query.      This joins with DocumentByCon, Fetch documents by IDs, filtering to only those the user has access to.      U
+Cohesion: 0.12
+Nodes (17): Code changes:, Config changes:, For tool replacements - create new config:, For version upgrades - update existing config:, Migration Workflow, Phase 10: Test and Verify, Phase 11: Update Documentation, Phase 12: Add/Update Version Sync Check (+9 more)
 
 ### Community 1190 - "Community 1190"
-Cohesion: 0.25
-Nodes (5): Any, OAuthResult, Handle the response from the OAuth flow and return it in a standard format., Exchange authorization code for access token.          Args:             code: A, Check the entities and verify that they match the expected structure/all values
+Cohesion: 0.12
+Nodes (15): 1. Error Analysis, 2. Make Improvements, 3. Re-Run the Experiment, Agent Overview, Agent Structure, Iterating on the Agent, Mastra Agent Framework, Running the Experiment (+7 more)
 
 ### Community 1191 - "Community 1191"
 Cohesion: 0.25
@@ -7026,24 +8309,24 @@ Cohesion: 0.28
 Nodes (8): SamlConfigData, extract_email(), _iter_attribute_values(), _normalize_email(), Email extraction from a SAML assertion.  Different IdPs surface the user's ema, Validate + normalize (lowercased) or return None., SAML attributes are typically ``list[str]`` but tolerate scalars too., Best-effort email from assertion ``attributes`` then the ``name_id``.      Ret
 
 ### Community 1193 - "Community 1193"
-Cohesion: 0.22
-Nodes (6): TenantListResponse, Tenant-administration service (clean-room, no billing).  Thin orchestration la, Superuser-facing tenant administration. All methods are side-effect logged., Every tenant that appears in the mapping table, with user counts., Provision a new tenant (blocking) and return its id.          Delegates to :fu, TenantService
+Cohesion: 0.12
+Nodes (15): API Endpoint Prefix Rename Plan, Architecture, Backend Tests (19 occurrences, 9 files), Changes by Phase, Nginx & Deployment Files, Overview, Phase 1: Low-risk (few frontend files), Phase 2: Medium-risk (+7 more)
 
 ### Community 1194 - "Community 1194"
-Cohesion: 0.36
-Nodes (8): BaseTokenizer, Session, Tool, compute_all_tool_tokens(), compute_tool_tokens(), generate_tools_description(), is_document_search_available(), is_image_generation_available()
+Cohesion: 0.12
+Nodes (15): Endpoints, Error Handling, Fields in the Response, **GET** `/api/providers`, Get Available Providers and Models, Overview, Perplexica Search API Documentation, **POST** `/api/search` (+7 more)
 
 ### Community 1195 - "Community 1195"
-Cohesion: 0.33
-Nodes (8): Headers, build_llm_extra_headers(), clean_header_list(), get_custom_tool_additional_request_headers(), get_litellm_additional_request_headers(), get_relevant_headers(), header_dict_to_header_list(), header_list_to_header_dict()
+Cohesion: 0.12
+Nodes (15): Available Tool Types, Braintrust Dashboard, CLI Options, Local Development, Model Configuration, Multi-Turn Evaluations, Overview, Per-Test Configuration (+7 more)
 
 ### Community 1196 - "Community 1196"
 Cohesion: 0.28
 Nodes (8): HierarchyNode, compare_hierarchy_nodes(), notion_connector(), Compare yielded HierarchyNodes against expected ground truth.      Compares node, Create a NotionConnector with credentials from environment variables, Test the NotionConnector with a real Notion page.      Uses a Notion workspace u, test_notion_connector_basic(), NotionConnector
 
 ### Community 1197 - "Community 1197"
-Cohesion: 0.36
-Nodes (8): FixtureRequest, ZendeskConnector, get_credentials(), load_test_data(), test_zendesk_connector_basic(), test_zendesk_connector_slim(), zendesk_article_connector(), zendesk_ticket_connector()
+Cohesion: 0.17
+Nodes (10): Any, NoReturn, Prevent accidental string conversion., Prevent iteration over the value., Prevent subscript access., Prevent direct comparison which might expose value., Prevent JSON serialization., Prevent Pydantic from serializing without explicit get_value(). (+2 more)
 
 ### Community 1198 - "Community 1198"
 Cohesion: 0.44
@@ -7066,8 +8349,8 @@ Cohesion: 0.31
 Nodes (6): TestClient, _client(), Clean-room tests for SCIM discovery payloads + public discovery endpoints., test_discovery_endpoints_are_public_and_scim_json(), test_resource_types_list_response_shape(), test_unknown_schema_returns_scim_404()
 
 ### Community 1203 - "Community 1203"
-Cohesion: 0.22
-Nodes (9): VertualAI Background Jobs (Celery), Worker to Queue Mapping, Connector Flows (Load / Poll / Slim / Event), Writing a New VertualAI Connector, file_record DB Table (metadata) + external S3 content, VertualAI File Store (S3-compatible), S3BackedFileStore / FileStore interface, Backend Dev Env Template (.env) (+1 more)
+Cohesion: 0.17
+Nodes (12): VertualAI Background Jobs (Celery), Celery Beat DynamicTenantScheduler, Primary Coordinator Worker (singleton), Beat Watchdog Heartbeat, Worker → Queue Mapping, Connector Flows (Load / Poll / Slim / Event), Writing a New VertualAI Connector, file_record DB Table (metadata) + external S3 content (+4 more)
 
 ### Community 1204 - "Community 1204"
 Cohesion: 0.22
@@ -7090,8 +8373,8 @@ Cohesion: 0.36
 Nodes (6): OpenAIToolChoiceConversion, ChatCompletionToolChoiceOptionParam, PromptToolChoiceNone, PromptToolChoiceOneOrMore, PromptToolChoiceSpecificFunctionTool, PromptToolChoiceZeroOrMore
 
 ### Community 1209 - "Community 1209"
-Cohesion: 0.28
-Nodes (9): VertualAI Craft, OpenCode Agent (ACP), Craft Sandbox Backends, Craft Sandbox Cleanup (Celery task), Craft Session Lifecycle, Chat Widget Development Page, Widget API Key Security Note, VertualAI Chat Widget (+1 more)
+Cohesion: 0.18
+Nodes (14): VertualAI Craft, OpenCode Agent (ACP), Craft Sandbox Backends, Sandbox Backends, Sandbox Cleanup, Sandbox Workspace Structure, Session Lifecycle, Technical Architecture (+6 more)
 
 ### Community 1210 - "Community 1210"
 Cohesion: 0.53
@@ -7118,8 +8401,8 @@ Cohesion: 0.22
 Nodes (5): Internal method to paginate through available datasets with cursor-based paginat, List available datasets with automatic pagination handling.          This is t, Internal method to paginate through available datasets with cursor-based paginat, List available datasets with automatic pagination handling.          This is t, ListDatasetsResponseBody
 
 ### Community 1216 - "Community 1216"
-Cohesion: 0.28
-Nodes (9): What is Arize Phoenix (Overview), Phoenix Datasets & Experiments, Phoenix Evaluation, OpenInference Instrumentation, Phoenix Prompt Engineering, Phoenix Tracing, Phoenix Tracing Agent Setup Prompt, Phoenix Auto-Instrumentation (+1 more)
+Cohesion: 0.05
+Nodes (38): Phoenix Datasets & Experiments, Phoenix Evaluation, Features, Next Steps, OpenInference Instrumentation, Other Resources, Phoenix Prompt Engineering, Quick Starts (+30 more)
 
 ### Community 1217 - "Community 1217"
 Cohesion: 0.25
@@ -7138,8 +8421,8 @@ Cohesion: 0.31
 Nodes (7): DuplicateSpanInfo, InvalidSpanInfo, PhoenixException, Information about an invalid span., Information about a duplicate span., Raised when some spans fail to be queued for creation., SpanCreationError
 
 ### Community 1221 - "Community 1221"
-Cohesion: 0.28
-Nodes (8): CredentialField, EntityField, FieldSpec, OAuthResult, Model for describing a field specification., Model for describing an entity field in the entities specification., Model for describing a credential field in the credentials specification., Standardized OAuth result that all federated connectors should return from callb
+Cohesion: 0.21
+Nodes (10): BuildSession, Session, Test storing only completed tool calls., Test upserting agent plan - only latest should be kept., Tests for build message storage in the database., Test upserting agent plan when we don't know the existing ID., Test that streaming flow creates correct number of DB messages.          Simulat, Test creating a message with JSON metadata and turn_index. (+2 more)
 
 ### Community 1222 - "Community 1222"
 Cohesion: 0.22
@@ -7154,48 +8437,48 @@ Cohesion: 0.22
 Nodes (8): EditModelButtonMutation, EditModelButtonMutation$data, EditModelButtonMutation$variables, GenerativeProviderKey, node, TokenKind, TokenPriceInput, UpdateModelMutationInput
 
 ### Community 1225 - "Community 1225"
-Cohesion: 0.25
-Nodes (7): node, ProjectConfigPage_projectConfigCard$data, ProjectConfigPage_projectConfigCard$key, node, ProjectConfigPageProjectConfigCardQuery, ProjectConfigPageProjectConfigCardQuery$data, ProjectConfigPageProjectConfigCardQuery$variables
+Cohesion: 0.17
+Nodes (9): Any, ImageGenerationProviderCredentials, LLMConfig, _create_mock_image_generation_llm_config(), ImageGenerationProviderController, MockImageGenerationProvider, Create a mock LLMConfig for image generation., use_mock_image_generation_provider() (+1 more)
 
 ### Community 1226 - "Community 1226"
 Cohesion: 0.25
 Nodes (7): node, ProjectDashboardsTable_projects$data, ProjectDashboardsTable_projects$key, node, ProjectDashboardsTableProjectsQuery, ProjectDashboardsTableProjectsQuery$data, ProjectDashboardsTableProjectsQuery$variables
 
 ### Community 1227 - "Community 1227"
-Cohesion: 0.25
-Nodes (7): node, SettingsAnnotationsPageFragment$data, SettingsAnnotationsPageFragment$key, node, SettingsAnnotationsPageFragmentQuery, SettingsAnnotationsPageFragmentQuery$data, SettingsAnnotationsPageFragmentQuery$variables
+Cohesion: 0.16
+Nodes (10): Any, DocumentSource, InferenceChunk, SearchDoc, MockInternalSearchResult, Mock the search pipeline and connector availability.      Args:         connecto, A sequential replacement for run_functions_tuples_in_parallel.     Useful in tes, run_functions_tuples_sequential() (+2 more)
 
 ### Community 1228 - "Community 1228"
-Cohesion: 0.25
-Nodes (7): node, StreamToggle_data$data, StreamToggle_data$key, node, StreamToggleRefetchQuery, StreamToggleRefetchQuery$data, StreamToggleRefetchQuery$variables
+Cohesion: 0.17
+Nodes (11): Any, DocumentSource, UUID, _get_search_filters(), Tests for OpenSearch assistant knowledge filter construction.  These tests verif, Tests that when only knowledge_file_ids are provided (no attached_documents or, Tests that knowledge_file_ids are NOT added as a separate AND filter when the, Tests that when multiple user files are attached to an assistant,         all of (+3 more)
 
 ### Community 1229 - "Community 1229"
-Cohesion: 0.28
-Nodes (9): phoenix-helm Chart.yaml, Helm Chart README, Onyx Helm values.yaml, Autoscaling Engine (HPA vs KEDA), Helm API Server Deployment, Helm API HorizontalPodAutoscaler, Helm API KEDA ScaledObject, Helm API Service (+1 more)
+Cohesion: 0.38
+Nodes (7): phoenix-helm Chart.yaml, Helm Chart README, Autoscaling Engine (HPA vs KEDA), Helm API Server Deployment, Helm API HorizontalPodAutoscaler, Helm API KEDA ScaledObject, Helm API Service
 
 ### Community 1230 - "Community 1230"
-Cohesion: 0.22
-Nodes (9): Importing & Exporting Traces (Overview), get_spans_dataframe (client), SpanQuery (phoenix.client.types.spans), Predefined Queries, Span Query DSL (phoenix.trace.dsl.SpanQuery), query_spans, Save All Traces, log_traces (+1 more)
+Cohesion: 0.33
+Nodes (7): Importing & Exporting Traces (Overview), get_spans_dataframe (client), SpanQuery (phoenix.client.types.spans), Predefined Queries, Span Query DSL (phoenix.trace.dsl.SpanQuery), query_spans, Phoenix CLI (px)
 
 ### Community 1231 - "Community 1231"
-Cohesion: 0.31
-Nodes (8): GenerateReport(), imageToDataURI(), pngFileToDataURI(), reportData, reportEntry, Image, Result, URL
+Cohesion: 0.12
+Nodes (14): Create Synthetic Customer Review Data&#x20;, Define Evaluation Task as the Experiment to Run, Notebook Walkthrough, Experiment Repetitions, Run Experiment!&#x20;, Upload as a Dataset in Phoenix&#x20;, Create and Run an Experiment, Create Tools and Agent (+6 more)
 
 ### Community 1232 - "Community 1232"
 Cohesion: 0.22
 Nodes (8): dependencies, @arizeai/openinference-instrumentation-langchain, @arizeai/openinference-semantic-conventions, @langchain/core, @langchain/openai, @opentelemetry/exporter-trace-otlp-proto, @opentelemetry/resources, @opentelemetry/sdk-trace-node
 
 ### Community 1233 - "Community 1233"
-Cohesion: 0.22
-Nodes (9): generate_null_email_marker (MD5 of unique_id), Null Email Placeholder Marker (\ue000NULL(stopgap)), Phase 2 Nullable Email Column, Placeholder Mode Startup Constraints, Unique ID Extraction (objectGUID/entryUUID), Configurable JMESPath Email Attribute Path, preferred_username Fallback for Azure AD, Configuration Rollback User Lockout Limitation (+1 more)
+Cohesion: 0.11
+Nodes (21): Cross-Authentication Prevention, PHOENIX_ADMINS Startup Provisioning, Cross-Database Unicode Compatibility (SQLite/PostgreSQL), Unicode PUA LDAP Marker Collision-Free Proof, LDAP_CLIENT_ID_MARKER (\ue000LDAP(stopgap)), Stopgap OAuth2-Column LDAP Storage, allow_sign_up=true Default Decision, One-Way vs Two-Way Door Decision Framework (+13 more)
 
 ### Community 1234 - "Community 1234"
 Cohesion: 0.22
-Nodes (8): Test that o3 model name exactly matches., Test that o4 does not match., Test that models containing o1 in the middle match., Test that o3 with suffix matches., test_models_with_o1_in_middle(), test_o3_exact_match(), test_o3_with_suffix(), test_o4_does_not_match()
+Nodes (8): Test that o3 model name exactly matches., Test that o4 does not match., Test that gpt-5 with provider prefix and suffix matches., Test that gpt-5 with slash boundary matches., test_gpt_5_with_provider_and_suffix(), test_gpt_5_with_slash_boundary(), test_o3_exact_match(), test_o4_does_not_match()
 
 ### Community 1235 - "Community 1235"
 Cohesion: 0.22
-Nodes (9): Test that model names are case-sensitive., Test that gpt-5 with provider prefix and suffix matches., Test that gpt-5 with slash boundary matches., Test that o3 with slash boundary matches., test_case_sensitivity(), test_gpt_5_with_provider_and_suffix(), test_gpt_5_with_slash_boundary(), test_o3_with_slash_boundary() (+1 more)
+Nodes (9): Test that model names are case-sensitive., Test that models containing o1 in the middle match., Test that o3 with suffix matches., Test that o3 with slash boundary matches., test_case_sensitivity(), test_models_with_o1_in_middle(), test_o3_with_slash_boundary(), test_o3_with_suffix() (+1 more)
 
 ### Community 1236 - "Community 1236"
 Cohesion: 0.25
@@ -7238,8 +8521,8 @@ Cohesion: 0.22
 Nodes (7): Checked, Default, Disabled, Indeterminate, meta, NoLabel, WithChildren
 
 ### Community 1246 - "Community 1246"
-Cohesion: 0.22
-Nodes (8): get_tenant_invitation(), invite_emails_to_tenant(), User invitation / seat helpers for multi-tenant user management (clean-room).  T, Return the first pending (inactive) tenant invitation for ``email``, if any., Idempotently map ``emails`` to ``tenant_id``.      An email that already has an, Delete any mappings of ``emails`` to ``tenant_id`` (best-effort, never raises)., remove_emails_from_tenant(), TenantSnapshot
+Cohesion: 0.12
+Nodes (15): Annotations, Core Tracing & Projects, Cost & Pricing, Creating a Migration, Database, Datasets & Data Management, Entity Relationship Diagram (ERD), Evaluators (+7 more)
 
 ### Community 1247 - "Community 1247"
 Cohesion: 0.28
@@ -7254,24 +8537,28 @@ Cohesion: 0.29
 Nodes (8): SmolagentsInstrumentor, OpenAI Agents Instrumentation, OpenAI Agents SDK, Access to New Integrations in Projects (BeeAI, SmolAgents, OpenAI Agents SDK), MCP Span Tool Info in OpenAI Agents SDK, Tracing for MCP Client Server Applications (openinference-instrumentation-mcp), Model Context Protocol (MCP), OpenInference (OSS instrumentation library)
 
 ### Community 1252 - "Community 1252"
-Cohesion: 0.32
-Nodes (8): BatchSpanProcessor, SimpleSpanProcessor, Mask Span Attributes, TraceConfig, FilteringSpanProcessor, OpenInferenceSpanProcessor, Span Processor, Advanced Tracing (Overview)
+Cohesion: 0.12
+Nodes (16): 10. The 12-week pilot — 12-వారాల పైలట్: Baseline → Shadow → Assisted-Live, 11. Bilingual by default — ద్విభాషా లేబుళ్లు (Telugu / English glossary), 1. Positioning — గోడలు దాటని AI ("AI that never leaves your walls"), 2. The core recurring process — ప్రధాన ప్రక్రియ, 3. The Problem — సమస్య (real, cited — framed as pattern-recognition failures), 4. Where the time goes — సమయం ఎక్కడ పోతుంది (current journey, bottlenecks marked), 5. The Solution — పరిష్కారం: four named agents (EXTRACT → CHECK HISTORY → VERIFY → ROUTE & DRAFT), 6. Department data sources (read-only) — శాఖ డేటా వనరులు (+8 more)
 
 ### Community 1253 - "Community 1253"
 Cohesion: 0.36
 Nodes (7): get_db_connection(), hash_api_key(), load_api_key(), main(), Read the API key from apikey.txt., Hash the API key the same way the backend does (SHA-256)., Connect to the PostgreSQL database.
 
 ### Community 1254 - "Community 1254"
-Cohesion: 0.25
-Nodes (8): API endpoint prefix rename plan, External contracts (do NOT rename), Frozen onyx/danswer runtime strings, HuggingFace model repo IDs (re-hosted under bommina/om-*), Rename buckets A-D, Rename audit inventory (onyx/danswer), standard-answer 'danswer' false positive, Replace external onyx recommended-models link with own API
+Cohesion: 0.06
+Nodes (37): AI/LLM Integration, Architecture Overview, Background Workers (Celery), Celery background workers, Code Quality, Creating a Plan, Creating Migrations, Database & Migrations (+29 more)
 
 ### Community 1255 - "Community 1255"
 Cohesion: 0.36
 Nodes (7): client(), Test that /api/versions endpoint returns valid stable, dev, and migration config, test_handle_send_message_simple_with_history(), test_handle_simplified_chat_message(), test_versions_endpoint(), Any, TestClient
 
 ### Community 1256 - "Community 1256"
-Cohesion: 0.32
-Nodes (7): is_captcha_enabled(), Captcha verification for user registration., Response from Google reCAPTCHA verification API., Check if captcha verification is enabled., Verify a reCAPTCHA token with Google's API.      Args:         token: The reCAPT, RecaptchaResponse, verify_captcha_token()
+Cohesion: 0.12
+Nodes (15): 1. Create ECR repositories, 2. Authenticate Docker to ECR, 3. Push Phoenix and your apps (backend, frontend, db), Attach it to your deploy principal, Create the IAM policy, Create VPCs and Subnets, Deploy Phoenix (with Authentication), Deploy with: (+7 more)
+
+### Community 1257 - "Community 1257"
+Cohesion: 0.12
+Nodes (15): Agent Evaluation Harness, Available Evaluations, Benchmarking Strategy: Evaluating the Evaluators, Creating a New Benchmark, Creating New Evaluators, How the Benchmark Experiment Works, Keeping Benchmark Experiments Separate from Task Experiments, Phoenix UI: Two Separate Dataset Pages (+7 more)
 
 ### Community 1258 - "Community 1258"
 Cohesion: 0.36
@@ -7318,20 +8605,20 @@ Cohesion: 0.71
 Nodes (7): DATestUser, _assert_integration_mode_enabled(), _get_internal_search_tool_id(), _seed_connector_for_search_tool(), test_mock_llm_response_embedded_json_fallback_tool_call_debug(), test_mock_llm_response_parallel_tool_call_debug(), test_mock_llm_response_single_tool_call_debug()
 
 ### Community 1269 - "Community 1269"
-Cohesion: 0.57
-Nodes (7): DATestUser, _get_auth_headers(), _get_me(), _patch_personalization(), test_enable_memory_tool_independent_of_use_memories(), test_enable_memory_tool_round_trip(), test_personalization_round_trip()
+Cohesion: 0.71
+Nodes (6): _get_auth_headers(), _get_me(), _patch_personalization(), test_enable_memory_tool_independent_of_use_memories(), test_enable_memory_tool_round_trip(), test_personalization_round_trip()
 
 ### Community 1270 - "Community 1270"
-Cohesion: 0.36
-Nodes (7): DATestUser, DocumentBuilderType, Test that when a client disconnects mid-stream:     1. Client sends a message an, test_send_message__basic_searches(), test_send_message_disconnect_and_cleanup(), test_send_message_simple_with_history(), test_send_two_messages()
+Cohesion: 0.13
+Nodes (14): Create an experiment, Create synthetic dataset of questions, Create your first agent with the OpenAI SDK, Evaluating in Production, Evaluating our agent, Experiment in Development, Notebook Walkthrough, OpenAI Agents SDK (Runner, function_tool) (+6 more)
 
 ### Community 1271 - "Community 1271"
 Cohesion: 0.29
-Nodes (8): Project Files in Context (kept near end, RAG fallback), Option A: Workspace-scoped Search RAG, DR Search-availability Carve-out, Deep Research for Workspaces, Knowledge Scope Filter (primary vs additive triggers), Braintrust Eval Framework, VertualAI Evaluations (Braintrust), Per-test Tool Forcing and Assertions
+Nodes (8): Projects, Option A: Workspace-scoped Search RAG, DR Search-availability Carve-out, Deep Research for Workspaces, Knowledge Scope Filter (primary vs additive triggers), Braintrust Eval Framework, VertualAI Evaluations (Braintrust), Per-test Tool Forcing and Assertions
 
 ### Community 1272 - "Community 1272"
-Cohesion: 0.25
-Nodes (5): Tests for citation modes behavior with code blocks., Test that REMOVE mode doesn't process citations inside code blocks., Test that KEEP_MARKERS mode doesn't process citations inside code blocks., Test that HYPERLINK mode doesn't process citations inside code blocks., TestCitationModesWithCodeBlocks
+Cohesion: 0.12
+Nodes (15): Attributes, Parameters, Parameters, Parameters, Parameters, phoenix.evals.llm\_classify, phoenix.evals.llm\_generate, phoenix.evals.PromptTemplate (+7 more)
 
 ### Community 1273 - "Community 1273"
 Cohesion: 0.25
@@ -7366,8 +8653,8 @@ Cohesion: 0.25
 Nodes (8): Session, Create a DataFrame in call 1, analyze it in call 2., Create DataFrame, then call describe() in a separate execution., Add a column in call 2, verify in call 3., test_dataframe_describe(), test_dataframe_mutations_persist(), test_dataframe_persists_across_calls(), test_numpy_array_persists()
 
 ### Community 1282 - "Community 1282"
-Cohesion: 0.32
-Nodes (8): Trace Annotations, Annotator Kinds (Human / LLM / Code), LLM-as-a-Judge Evaluation, Trace Instrumentation & Suppression, Tracing Features, How-to Tracing Overview, LLM Tracing (OpenTelemetry / OTLP), AI Observability
+Cohesion: 0.12
+Nodes (18): Annotation Configuration, Annotation Source, Annotation Targets, Annotation Types, Trace Annotations, Annotator Kind, Evaluations from LLMs, Feedback from End-users (+10 more)
 
 ### Community 1283 - "Community 1283"
 Cohesion: 0.46
@@ -7402,8 +8689,8 @@ Cohesion: 0.25
 Nodes (5): SpanProjectsDataLoader, DbSessionFactory, Key, Result, ValueError
 
 ### Community 1291 - "Community 1291"
-Cohesion: 0.25
-Nodes (5): DataLoader that batches together user roles by their ids., UserRolesDataLoader, DbSessionFactory, Key, Result
+Cohesion: 0.13
+Nodes (10): JSONPathAST, Any, A singleton class that represents an unset or undefined value. Needed since Pyda, Undefined, InputMapping, Path expression validation for evaluator input mappings.  This module provides, Recursively walk AST and raise if node type is not in allowlist.      The json, Validate path expression using a restricted feature set.      Allowed: (+2 more)
 
 ### Community 1292 - "Community 1292"
 Cohesion: 0.25
@@ -7422,8 +8709,8 @@ Cohesion: 0.36
 Nodes (8): Coding Agents Integration Guide, Phoenix CLI (px / @arizeai/phoenix-cli), Phoenix Skills, Model Context Protocol (MCP), Phoenix Docs MCP, Phoenix MCP Server (@arizeai/phoenix-mcp), Anthropic, Claude Agent SDK
 
 ### Community 1297 - "Community 1297"
-Cohesion: 0.29
-Nodes (7): get_dataset_experiments_url(), get_experiment_url(), get_func_name(), Makes a best-effort attempt to get the name of the function., get_web_base_url(), Return the web UI base URL.      Returns:         str: the web UI base URL, Any
+Cohesion: 0.17
+Nodes (10): Tests for reasoning model detection., Test o1 models are detected as reasoning., Test o3 models are detected as reasoning., Test DeepSeek R1 is detected as reasoning., Test QwQ is detected as reasoning., Test GPT-4 is not detected as reasoning., Test Claude is not detected as reasoning., TestIsReasoningModel (+2 more)
 
 ### Community 1298 - "Community 1298"
 Cohesion: 0.32
@@ -7446,12 +8733,12 @@ Cohesion: 0.43
 Nodes (6): _ToolConfigConversion, PromptToolChoiceNone, PromptToolChoiceOneOrMore, PromptToolChoiceSpecificFunctionTool, PromptToolChoiceZeroOrMore, ToolConfig
 
 ### Community 1303 - "Community 1303"
-Cohesion: 0.25
-Nodes (8): Adapter Pattern, Anthropic Adapter, Azure OpenAI Adapter, Google GenAI Adapter, LangChain Adapter, LiteLLM Adapter, LLM Wrapper, OpenAI Adapter
+Cohesion: 0.15
+Nodes (16): Adapter Pattern, Anthropic Adapter, Azure OpenAI Adapter, Azure OpenAI Adapter, Configuring Model Providers, Google GenAI Adapter, Installation, Invocation Parameters (+8 more)
 
 ### Community 1304 - "Community 1304"
-Cohesion: 0.25
-Nodes (8): Craft (single autonomous coding agent), Persistent Python kernel (_kernel.py), SessionManager (session lifecycle), Persistent code-interpreter sessions, Code Interpreter feature (chat Python), VertualAI Craft (sandbox app builder), Sandbox & code execution setup guide, Kernel OS fd-level capture + cell barrier
+Cohesion: 0.11
+Nodes (19): Craft (single autonomous coding agent), Persistent Python kernel (_kernel.py), SessionManager (session lifecycle), Persistent code-interpreter sessions, Code Interpreter, VertualAI Craft (sandbox app builder), Feature Details, How it works (+11 more)
 
 ### Community 1305 - "Community 1305"
 Cohesion: 0.39
@@ -7478,8 +8765,8 @@ Cohesion: 0.25
 Nodes (7): compilerOptions, outDir, rootDir, tsBuildInfoFile, extends, include, references
 
 ### Community 1313 - "Community 1313"
-Cohesion: 0.25
-Nodes (8): Auto figure capture (A1), Sandbox / coding-agent upgrade spec, Track A - Code Interpreter polish, Track B - real codebase-editing agent, Track C - workflow-engine gaps (nesting + parallelism), Live streaming for Code Interpreter (final spec), PythonToolDelta additive packet fields, F1 - Parallel fan-out/fan-in
+Cohesion: 0.18
+Nodes (9): Loader, MetaPathFinder, ModuleSpec, PhoenixTraceFinder, PhoenixTraceLangchainLoader, PhoenixTraceLlamaIndexLoader, PhoenixTraceOpenAILoader, Any (+1 more)
 
 ### Community 1314 - "Community 1314"
 Cohesion: 0.25
@@ -7510,20 +8797,20 @@ Cohesion: 0.32
 Nodes (7): DEFAULT_HIDE_SELECTORS, DEFAULT_MASK_SELECTORS, ElementScreenshotOptions, expectElementScreenshot(), expectScreenshot(), ScreenshotOptions, waitForAnimations()
 
 ### Community 1324 - "Community 1324"
-Cohesion: 0.33
+Cohesion: 0.29
 Nodes (7): TypeScript createEvaluator, Evaluator Message Formats, Span Notes API, Datasets & Experiments, Guardrails AI Integration, Phoenix Python SDK, Phoenix TypeScript SDK
 
 ### Community 1326 - "Community 1326"
-Cohesion: 0.33
-Nodes (7): Mockup theme palette (accent themes), Celery background workers, Frontend coding standards, VertualAI project knowledge base (AGENTS.md), Testing strategy (4 test types), Worker deployment modes (lightweight vs standard), Accent theme design-system rules
+Cohesion: 0.23
+Nodes (9): custom_model(), default_model(), Inserts a default model with input and output costs., Inserts a custom model with input and output costs., TestModelMutations, Any, AsyncGraphQLClient, DbSessionFactory (+1 more)
 
 ### Community 1327 - "Community 1327"
-Cohesion: 0.43
-Nodes (4): aggregate_weekly(), get_stars(), pull_github_metrics(), Any
+Cohesion: 0.12
+Nodes (15): 1. `backend/om/db/models.py` (WS-D owns the standard-answer model block), 2. `backend/om/main.py` (WS-D delivers routers; integrator wires), 3. `backend/om/server/query_and_chat/query_backend.py` (remove old query endpoint), 4. `backend/om/onyxbot/slack/handlers/handle_message.py` (repoint the handler), 5. `backend/om/server/seeding.py` (repoint the default-category seed), 6. `backend/om/server/auth_check.py`, 7. Alembic, 8. Contract-3 facade shim — `backend/om/tenancy/context.py` (+7 more)
 
 ### Community 1328 - "Community 1328"
 Cohesion: 0.29
-Nodes (7): analytics_rollup materialized cache, AnalyticsService, app_settings typed config table, Analytics Structured Logging (Standard 9), usage_report / Reporting, WS-H Analytics/Query-History/Reporting/App-Settings, Rate-Limit Observability (Prometheus + budget API)
+Nodes (7): analytics_rollup materialized cache, AnalyticsService, app_settings typed config table, usage_report / Reporting, WS-H Analytics/Query-History/Reporting/App-Settings, Search Multi-Tenant Readiness (Contract 3), om.tenancy.context (Contract 3 facade)
 
 ### Community 1329 - "Community 1329"
 Cohesion: 0.29
@@ -7534,28 +8821,28 @@ Cohesion: 0.29
 Nodes (7): Experiments REST API (Phoenix), DELETE /v1/datasets/{id}, GET /v1/datasets/{id}, GET /v1/datasets/{id}/versions, GET /v1/datasets (list datasets), POST /v1/datasets/upload (JSON/CSV/PyArrow), POST /v1/datasets/{dataset_id}/experiments
 
 ### Community 1331 - "Community 1331"
-Cohesion: 0.33
-Nodes (6): Any, Session, kombu_message_cleanup_task(), kombu_message_cleanup_task_helper(), Runs periodically to clean up the kombu_message table, Helper function to clean up old messages from the `kombu_message` table that are
+Cohesion: 0.12
+Nodes (15): Overview, API Reference, Configuration, Evaluating Traces, Formatting Tips, Input Requirements, Output Interpretation, Related (+7 more)
 
 ### Community 1332 - "Community 1332"
 Cohesion: 0.43
 Nodes (5): Exception, HttpRequest, HttpResponse, RetryState, As initially designed by the SDK authors, this function is responsible for
 
 ### Community 1333 - "Community 1333"
-Cohesion: 0.33
-Nodes (6): Session, UpdatableChunkData, delete_chunk_stats_by_connector_credential_pair__no_commit(), Updates the chunk_boost_components for chunks in the database.      Args:, This deletes just chunk stats in postgres., update_chunk_boost_components__no_commit()
+Cohesion: 0.12
+Nodes (15): Overview, API Reference, Configuration, Evaluating Traces, Formatting Tips, Input Requirements, Output Interpretation, Related (+7 more)
 
 ### Community 1334 - "Community 1334"
-Cohesion: 0.38
-Nodes (4): Any, GoogleDrivePermission, GoogleDrivePermissionDetails, PermissionType
+Cohesion: 0.12
+Nodes (15): Overview, API Reference, Configuration, Evaluating Traces, Formatting Tips, Input Requirements, Output Interpretation, Related (+7 more)
 
 ### Community 1335 - "Community 1335"
 Cohesion: 0.38
 Nodes (6): DocumentSource, Session, SlackContext, UUID, FederatedRetrievalInfo, get_federated_retrieval_functions()
 
 ### Community 1336 - "Community 1336"
-Cohesion: 0.33
-Nodes (3): JSON_ro, KeyValueStore, KvKeyNotFoundError
+Cohesion: 0.12
+Nodes (15): 2.1.9, 2.2.2, 2.2.24, 2.2.28, 2.2.6, 2.2.7, 2.2.9, @arizeai/phoenix-mcp (+7 more)
 
 ### Community 1337 - "Community 1337"
 Cohesion: 0.43
@@ -7566,20 +8853,20 @@ Cohesion: 0.33
 Nodes (6): Any, mask_sensitive_data(), Shared data masking utilities for tracing processors., Truncate a string that exceeds MASKING_LENGTH., Mask data if it exceeds the maximum length threshold or contains sensitive infor, _truncate_str()
 
 ### Community 1339 - "Community 1339"
-Cohesion: 0.38
-Nodes (6): Response, _load_payload_json(), main(), _print_response(), Load and parse payload.json file., Print HTTP response in a readable format.
+Cohesion: 0.12
+Nodes (14): Breaking Changes, Community, Copyright, Patent, and License, Installation, Java Integrations, JavaScript Integrations, Packages, Platforms (+6 more)
 
 ### Community 1340 - "Community 1340"
-Cohesion: 0.38
-Nodes (3): AllUsersResponse, DATestUser, TenantManager
+Cohesion: 0.12
+Nodes (15): 1. Setup (START HERE), 2. Instrumentation, 3. Span Types (with full attribute schemas), 4. Organization, 5. Enrichment, 6. Production (CRITICAL), 7. Feedback, Common Workflows (+7 more)
 
 ### Community 1341 - "Community 1341"
 Cohesion: 0.29
 Nodes (6): Any, mock_db_session(), model_attrs(), Fixtures for unit-testing DAL classes with mocked sessions., Extract user-set attributes from a SQLAlchemy model instance.      Filters out, A MagicMock standing in for a SQLAlchemy Session.
 
 ### Community 1342 - "Community 1342"
-Cohesion: 0.29
-Nodes (5): BuildHookInterface, CustomBuildHook, Build hook to compile the Go binary and include it in the wheel., Build the Go binary before packaging., Any
+Cohesion: 0.12
+Nodes (15): 1. SAVEPOINT — span ingestion, evaluations, JWT refresh (runtime), 2. DDL — all migrations (startup), 3. Sequences — `nextval()` / `setval()` (ambiguous), 4. Other limitations to be aware of, Aurora product disambiguation, Aurora Replica Write Forwarding: Compatibility Analysis for Phoenix, Bottom line, Could SAVEPOINTs be removed? (+7 more)
 
 ### Community 1343 - "Community 1343"
 Cohesion: 0.33
@@ -7590,8 +8877,8 @@ Cohesion: 0.29
 Nodes (5): # NOTE: A bit flaky in our CI due to varying indexing times. Empirically, Tests that connectors indexing the same documents don't interfere with each othe, Tests that we can pause a connector while indexing is in progress and that     t, test_connector_pause_while_indexing(), test_overlapping_connector_creation()
 
 ### Community 1346 - "Community 1346"
-Cohesion: 0.29
-Nodes (7): Contributing to VertualAI, Third-party notices and attributions (NOTICE.md), Onyx / Danswer base fork (MIT), Perplexica (MIT, vendored), Arize Phoenix (Elastic License 2.0), Database seeding (seed_all.py), VertualAI platform overview (README)
+Cohesion: 0.09
+Nodes (20): Contributing Code, Contributing to VertualAI, Contribution Opportunities, Getting Help 🙋, Release Process, 👪 Community, 💡 Contributing, 🌱 Database Seeding (Restore Agents & Workflows) (+12 more)
 
 ### Community 1347 - "Community 1347"
 Cohesion: 0.48
@@ -7630,8 +8917,8 @@ Cohesion: 0.29
 Nodes (4): DatasetExamplesAndVersionsByExperimentRunDataLoader, DbSessionFactory, Key, Result
 
 ### Community 1356 - "Community 1356"
-Cohesion: 0.29
-Nodes (4): DocumentEvaluationsDataLoader, DbSessionFactory, Key, Result
+Cohesion: 0.12
+Nodes (15): API Reference, Configuration, Evaluating Traces, Formatting Tips, Input Requirements, Output Interpretation, Overview, Related (+7 more)
 
 ### Community 1357 - "Community 1357"
 Cohesion: 0.29
@@ -7642,8 +8929,8 @@ Cohesion: 0.29
 Nodes (4): ExperimentErrorRatesDataLoader, DbSessionFactory, Key, Result
 
 ### Community 1359 - "Community 1359"
-Cohesion: 0.29
-Nodes (4): ExperimentRunCountsDataLoader, DbSessionFactory, Key, Result
+Cohesion: 0.12
+Nodes (15): API Reference, Configuration, Evaluating Traces, Formatting Tips, Input Requirements, Output Interpretation, Overview, Related (+7 more)
 
 ### Community 1360 - "Community 1360"
 Cohesion: 0.29
@@ -7677,10 +8964,6 @@ Nodes (4): SessionAnnotationsBySessionDataLoader, DbSessionFactory, Key, Result
 Cohesion: 0.29
 Nodes (4): SessionNumTracesDataLoader, DbSessionFactory, Key, Result
 
-### Community 1368 - "Community 1368"
-Cohesion: 0.29
-Nodes (4): SessionNumTracesWithErrorDataLoader, DbSessionFactory, Key, Result
-
 ### Community 1369 - "Community 1369"
 Cohesion: 0.29
 Nodes (4): SessionTokenUsagesDataLoader, DbSessionFactory, Key, Result
@@ -7701,10 +8984,6 @@ Nodes (4): SpanCostDetailSummaryEntriesByGenerativeModelDataLoader, DbSessionFac
 Cohesion: 0.29
 Nodes (4): SpanCostDetailSummaryEntriesBySpanDataLoader, DbSessionFactory, Key, Result
 
-### Community 1374 - "Community 1374"
-Cohesion: 0.29
-Nodes (4): SpanCostDetailSummaryEntriesByTraceDataLoader, DbSessionFactory, Key, Result
-
 ### Community 1375 - "Community 1375"
 Cohesion: 0.29
 Nodes (4): SpanCostDetailsBySpanCostDataLoader, DbSessionFactory, Key, Result
@@ -7714,12 +8993,12 @@ Cohesion: 0.29
 Nodes (4): SpanCostSummaryByExperimentDataLoader, DbSessionFactory, Key, Result
 
 ### Community 1377 - "Community 1377"
-Cohesion: 0.29
-Nodes (4): SpanCostSummaryByExperimentRepeatedRunGroupDataLoader, DbSessionFactory, Key, Result
+Cohesion: 0.12
+Nodes (15): API Reference, Configuration, Evaluating Traces, Formatting Tips, Input Requirements, Output Interpretation, Overview, Related (+7 more)
 
 ### Community 1378 - "Community 1378"
-Cohesion: 0.29
-Nodes (4): SpanCostSummaryByExperimentRunDataLoader, DbSessionFactory, Key, Result
+Cohesion: 0.12
+Nodes (15): API Reference, Configuration, Evaluating Traces, Formatting Tips, Input Requirements, Output Interpretation, Overview, Related (+7 more)
 
 ### Community 1379 - "Community 1379"
 Cohesion: 0.29
@@ -7738,8 +9017,8 @@ Cohesion: 0.29
 Nodes (4): SpanDescendantsDataLoader, DbSessionFactory, Key, Result
 
 ### Community 1383 - "Community 1383"
-Cohesion: 0.29
-Nodes (4): TokenPricesByModelDataLoader, DbSessionFactory, Key, Result
+Cohesion: 0.12
+Nodes (15): DSPy / MIPROv2 Prompt Tuning, Load Dataset into Phoenix, Meta Prompting, Prompt Gradient Optimization, Prompt Optimization Technique #1: Few Shot Examples, Prompt Optimization Technique #2: Meta Prompting, Prompt Optimization Technique #3: Prompt Gradient Optimization, Prompt Optimization Technique #4: Prompt Tuning with DSPy (+7 more)
 
 ### Community 1384 - "Community 1384"
 Cohesion: 0.29
@@ -7758,8 +9037,8 @@ Cohesion: 0.33
 Nodes (6): A dataset with one example added in one version, A dataset with one example added in one version plus one experiment run, simple_dataset(), simple_dataset_with_one_experiment_run(), Any, DbSessionFactory
 
 ### Community 1388 - "Community 1388"
-Cohesion: 0.29
-Nodes (4): List of examples in this version., Iterate over examples., Get example by index., DatasetExample
+Cohesion: 0.12
+Nodes (16): Authenticated Proxy, Basic Proxy Configuration, Best Practices, Common Use Cases, Contents, Corporate Network Access, Geo-Location Testing, Proxy Bypass (+8 more)
 
 ### Community 1391 - "Community 1391"
 Cohesion: 0.38
@@ -7807,23 +9086,23 @@ Nodes (6): AddExamplesToDatasetInput, DatasetExampleInput, node, SpanToDatasetEx
 
 ### Community 1402 - "Community 1402"
 Cohesion: 0.33
-Nodes (7): Arize Phoenix (product), Phoenix Bug Report Issue Template, Feature Request Issue Template, Publish Experimental Docker Image Workflow, Publish Nightly Docker Image Workflow, Publish Release Docker Images Workflow, Helm CI Workflow
+Nodes (5): Arize Phoenix (product), Publish Experimental Docker Image Workflow, Publish Nightly Docker Image Workflow, Publish Release Docker Images Workflow, Helm CI Workflow
 
 ### Community 1403 - "Community 1403"
-Cohesion: 0.29
-Nodes (6): EvaluatorPreviewInput, EvaluatorPreviewItemInput, InlineLLMEvaluatorInput, Defines an inline LLM evaluator without requiring persistence., Input for previewing an evaluator. Either provide an existing evaluator ID, A single evaluator preview request with one or more contexts.
+Cohesion: 0.12
+Nodes (15): Export from Phoenix, For Large Projects and Datasets, Generated Files, Import issues with annotations, Import issues with traces, Import to Arize, ⚠️ Import Warning for Annotations ⚠️, More Support (+7 more)
 
 ### Community 1404 - "Community 1404"
 Cohesion: 0.29
 Nodes (6): Test that an admin can invite both registered and non-registered users., Test that a non-registered user gets a BASIC role when they register after being, Test that a user can accept an invitation and join the organization with BASIC r, test_admin_can_invite_users(), test_non_registered_user_gets_basic_role(), test_user_can_accept_invitation()
 
 ### Community 1405 - "Community 1405"
-Cohesion: 0.29
-Nodes (3): connectors(), Set up connectors for tests., test_update_kg_entity_types()
+Cohesion: 0.13
+Nodes (15): Building Golden Datasets, Cohen's Kappa, Production Estimate Correction, Evaluator Validation (Python), Evaluator Validation (TypeScript), Exact-Match Evaluator, Golden Dataset Structure, Golden Dataset (+7 more)
 
 ### Community 1406 - "Community 1406"
-Cohesion: 0.33
-Nodes (7): Cross-Authentication Prevention, LDAP_CLIENT_ID_MARKER (\ue000LDAP(stopgap)), Stopgap OAuth2-Column LDAP Storage, Stopgap to Dedicated LDAP Schema Migration, Email Recycling Attack Prevention, Enterprise Mode (Immutable unique_id), Simple Mode (Email Identifier)
+Cohesion: 0.14
+Nodes (9): LDAPProtocol, Thread-safe credential addition., Determine security verdict for this connection., Inspect traffic for security indicators., Security assessment verdict for a connection., LDAP protocol constants (RFC 4511)., Thread-safe result of TLS detection analysis with rich metadata., SecurityVerdict (+1 more)
 
 ### Community 1407 - "Community 1407"
 Cohesion: 0.29
@@ -7850,24 +9129,24 @@ Cohesion: 0.38
 Nodes (6): DataFrame, datetime, Table, df_to_bytes(), from_iso_format(), table_to_bytes()
 
 ### Community 1413 - "Community 1413"
-Cohesion: 0.33
-Nodes (7): Fail-Open on Redis Error, RateLimiterEngine (Redis Lua), Search Multi-Tenant Readiness (Contract 3), om.tenancy.context (Contract 3 facade), Schema-Per-Tenant Isolation, schema_translate_map binding, om.tenancy Multi-Tenant Isolation (WS-M)
+Cohesion: 0.12
+Nodes (15): Compatibility, Configuration, Creating a Dataset, Creating a Prompt, Datasets, Experiments, Get a Session, Installation (+7 more)
 
 ### Community 1414 - "Community 1414"
 Cohesion: 0.29
-Nodes (7): GCRA (rejected), rate_limit_policy table, rate_limit_usage roll-up, RateLimitScope tiers (GLOBAL/TENANT/TEAM/USER), Token-Weighted Sliding-Window Counter, Rate Limits (WS-F), SCIM Group -> Team mapping (Contract 1)
+Nodes (7): Analytics Structured Logging (Standard 9), Rate-Limit Observability (Prometheus + budget API), rate_limit_policy table, rate_limit_usage roll-up, RateLimitScope tiers (GLOBAL/TENANT/TEAM/USER), Rate Limits (WS-F), SCIM Group -> Team mapping (Contract 1)
 
 ### Community 1415 - "Community 1415"
-Cohesion: 0.33
-Nodes (7): Idempotent Soft Deprovision, Category-Scoped Answers, standard_answer_config table, Keyword/Regex Matching Model, ReDoS-Safe Regex (RE2), Soft-Delete + Partial-Unique Index, Standard Answers (WS-D)
+Cohesion: 0.29
+Nodes (8): Idempotent Soft Deprovision, Category-Scoped Answers, standard_answer_config table, Matching model, ReDoS-Safe Regex (RE2), ReDoS safety (safe_regex.py), Soft-Delete + Partial-Unique Index, Standard Answers (WS-D)
 
 ### Community 1416 - "Community 1416"
 Cohesion: 0.57
 Nodes (6): estimate_cpu_usage_percent(), estimate_memory_usage_bytes(), estimate_swap_usage_bytes(), gather_system_data(), is_cgroup_v2(), start_prometheus()
 
 ### Community 1417 - "Community 1417"
-Cohesion: 0.33
-Nodes (6): Test removal of unpaired UTF-16 surrogates that cause 'surrogates not allowed' e, Test that invalid Unicode characters are properly removed., test_remove_invalid_unicode_chars(), test_remove_surrogate_characters(), Remove Unicode characters that are invalid in UTF-8 or cause encoding issues., remove_invalid_unicode_chars()
+Cohesion: 0.08
+Nodes (26): DocAwareChunk, DocMetadataAwareIndexChunk, generate_enriched_content_for_chunk_embedding(), generate_enriched_content_for_chunk_text(), _convert_onyx_chunk_to_opensearch_document(), generate_opensearch_filtered_access_control_list(), Generates an access control list with PUBLIC_DOC_PAT removed.      In the OpenSe, Builds an OpenSearch DocumentChunk from an internal indexing chunk.      DIRECTI (+18 more)
 
 ### Community 1418 - "Community 1418"
 Cohesion: 0.29
@@ -7890,8 +9169,8 @@ Cohesion: 0.29
 Nodes (7): Helm Release on PR Merge Workflow, Publish Python Packages to PyPI Workflow, Release Please Workflow, Sync uv.lock on Release PRs Workflow, TypeScript Packages Publish Workflow, Publish Experimental TS Packages Workflow, Update Phoenix Package Versions Workflow
 
 ### Community 1423 - "Community 1423"
-Cohesion: 0.33
-Nodes (6): Experiment Progress Chart, Cost Tracking, Cost Summaries in Trace Headers, createProject GraphQL Mutation, transferTracesToProject GraphQL Mutation, Project Dashboards
+Cohesion: 0.22
+Nodes (7): Experiment Progress Chart, Cost Tracking, More Information in our documentation:, Cost Summaries in Trace Headers, createProject GraphQL Mutation, transferTracesToProject GraphQL Mutation, Project Dashboards
 
 ### Community 1424 - "Community 1424"
 Cohesion: 0.33
@@ -7906,8 +9185,8 @@ Cohesion: 0.60
 Nodes (5): _list_minimal_agents(), # TODO: refactor `AgentManager.verify`, not a good pattern, _share_agent(), test_agent_create_update_share_delete(), DATestUser
 
 ### Community 1427 - "Community 1427"
-Cohesion: 0.33
-Nodes (6): Alembic DB Migrations, Multi-tenant Alembic Migration Options, Public Table Tenant Migrations, Celery Beat DynamicTenantScheduler, Primary Coordinator Worker (singleton), Beat Watchdog Heartbeat
+Cohesion: 0.29
+Nodes (6): Alembic DB Migrations, Alembic DB Migrations, Multi-tenant migrations, Running migrations, To generate new migrations:, Public Table Tenant Migrations
 
 ### Community 1428 - "Community 1428"
 Cohesion: 0.33
@@ -7930,28 +9209,28 @@ Cohesion: 0.47
 Nodes (6): Phoenix Auth Kustomize Overlay, Phoenix Auth Patch (PHOENIX_ENABLE_AUTH), Phoenix Base Kustomization, Phoenix Server StatefulSet, Postgres StatefulSet + Service, Phoenix Kubernetes Deployment (Kustomize)
 
 ### Community 1433 - "Community 1433"
-Cohesion: 0.33
-Nodes (4): CacheMetadata, LanguageModelInput, Prepare messages for Anthropic caching.          Anthropic requires cache_contro, Extract cache metadata from Anthropic response.          Anthropic may return ca
+Cohesion: 0.12
+Nodes (15): AutoGen / Semantic Kernel, Claude Artifacts / ChatGPT Canvas, CrewAI, How Enterprise Frameworks Handle This, Implementation Notes (for when we build this), LangGraph Studio / LangSmith, Option A: Step-level `promote_output` flag (Recommended), Option B: Last-step auto-promotion (+7 more)
 
 ### Community 1434 - "Community 1434"
-Cohesion: 0.33
-Nodes (5): ChatCompletionMessage, _add_anthropic_cache_control(), Anthropic provider adapter for prompt caching., Add cache_control parameter to messages for Anthropic caching.      Args:, # TODO: Extract cache identifiers from response when implementing explicit cachi
+Cohesion: 0.13
+Nodes (14): Analyze Dataset Examples, Annotations, Common Workflows, Dataset and Experiment Commands, Datasets, Example: Reviewing Experiment Results, Experiments, Export for Analysis (+6 more)
 
 ### Community 1435 - "Community 1435"
-Cohesion: 0.33
-Nodes (4): CacheMetadata, LanguageModelInput, Transform messages to enable caching.          Args:             cacheable_prefi, Extract cache metadata from API response.          Args:             response: P
+Cohesion: 0.13
+Nodes (14): Agent Design Patterns, Design Considerations and Limitations, Evaluator–Optimizer Loop, Framework Primitives, Handoffs and State, Memory, Multi-Agent Collaboration, Orchestrator + Worker Pattern (+6 more)
 
 ### Community 1436 - "Community 1436"
-Cohesion: 0.33
-Nodes (4): CacheMetadata, LanguageModelInput, Prepare messages for OpenAI caching.          OpenAI handles caching automatical, Extract cache metadata from OpenAI response.          OpenAI responses may inclu
+Cohesion: 0.13
+Nodes (14): `eks`, Installing the VertualAI Helm chart (after Terraform), `onyx`, Overview, `postgres`, Quickstart (copy/paste), `redis`, `s3` (+6 more)
 
 ### Community 1437 - "Community 1437"
-Cohesion: 0.33
-Nodes (4): CacheMetadata, LanguageModelInput, Prepare messages for Vertex AI caching.          For implicit caching we attach, Extract cache metadata from Vertex AI response.          For this PR (implicit c
+Cohesion: 0.24
+Nodes (9): extract_connection_data(), Extract MCPConnectionData from a connection config, with proper typing.      Thi, Update an existing connection config, update_connection_config(), OmTokenStorage, store auth info in a particular user's connection config in postgres, OAuthClientInformationFull, OAuthToken (+1 more)
 
 ### Community 1438 - "Community 1438"
-Cohesion: 0.33
-Nodes (5): ChatCompletionMessage, _add_vertex_cache_control(), Vertex AI provider adapter for prompt caching., Add cache_control inside content blocks for Vertex AI/Gemini caching.      Gemin, # NOTE: unfortunately we need a much more sophisticated mechnism to support
+Cohesion: 0.18
+Nodes (9): matches_exclude_pattern(), Test glob pattern matching for channel exclusion, Test exact channel name match, Test glob patterns with * wildcard, Test matching against multiple patterns, Test that # prefix is handled correctly, Test that matching is case insensitive, Test that whitespace is trimmed (+1 more)
 
 ### Community 1439 - "Community 1439"
 Cohesion: 0.40
@@ -7962,20 +9241,20 @@ Cohesion: 0.47
 Nodes (5): datetime, LLM, best_match_time(), extract_time_filter(), Returns a datetime if a hard time filter should be applied for the given query
 
 ### Community 1441 - "Community 1441"
-Cohesion: 0.33
-Nodes (5): EvalConfigurationOptions, User, EvalRunAck, eval_run(), Run an evaluation with the given message and optional dataset.     This endpoint
+Cohesion: 0.13
+Nodes (14): Architecture, AWS S3, Configuration, Database Schema, Digital Ocean Spaces, File Store Interface, Implementation, Initialization (+6 more)
 
 ### Community 1442 - "Community 1442"
-Cohesion: 0.33
-Nodes (5): StatusResponse, get_version(), healthcheck(), # NOTE: This endpoint is critical for the multi-tenant flow and is hit before th, VersionResponse
+Cohesion: 0.13
+Nodes (15): 1. Why Two Endpoints?, 2. Why Authorization Code Flow?, 3. Understanding Tokens, 4. JWT Structure, Common Pitfalls, ✅ Correct: Send client_secret only in token request, ✅ Correct: Store token with expiration, Educational Resources (+7 more)
 
 ### Community 1443 - "Community 1443"
-Cohesion: 0.33
-Nodes (4): StandardAnswerCategoryModel, SlackChannelConfig, StandardAnswerCategory, SlackChannelConfigModel
+Cohesion: 0.13
+Nodes (14): Commands, Community, Configuration, Installation, JSON output shape, `px api graphql <query>`, `px dataset <dataset-identifier>`, `px datasets` (+6 more)
 
 ### Community 1444 - "Community 1444"
-Cohesion: 0.33
-Nodes (5): Session, User, enforce_rate_limits(), FastAPI enforcement dependency for the rate-limits subsystem.  ``enforce_rate_, Reject the request with 429 if any applicable rate-limit policy is over budget.
+Cohesion: 0.11
+Nodes (17): Session, User, RateLimitScope, Session, enforce_rate_limits(), FastAPI enforcement dependency for the rate-limits subsystem.  ``enforce_rate_, Reject the request with 429 if any applicable rate-limit policy is over budget., Pure sliding-window arithmetic for a given period, evaluated at ``now_ms``. (+9 more)
 
 ### Community 1445 - "Community 1445"
 Cohesion: 0.40
@@ -7986,36 +9265,36 @@ Cohesion: 0.67
 Nodes (5): Any, create_cc_pair(), create_connector(), create_credential(), main()
 
 ### Community 1447 - "Community 1447"
-Cohesion: 0.33
-Nodes (4): ExternalUserGroup, ExternalUserGroupSet, Convert from ExternalUserGroup to ExternalUserGroupSet., A version of ExternalUserGroup that uses a set for user_emails to avoid order-de
+Cohesion: 0.13
+Nodes (14): Authentication, Endpoint Configuration, Key Benefits, Manual Configuration, Production Configuration, Simple Setup, Using Decorators, Community (+6 more)
 
 ### Community 1448 - "Community 1448"
 Cohesion: 0.40
 Nodes (5): FastMCP, FunctionTool, PlainTextResponse, health(), make_many_tools()
 
 ### Community 1449 - "Community 1449"
-Cohesion: 0.40
-Nodes (5): Session, db_session(), _ensure_two_domain_corpus(), End-to-end test of the full reranking pipeline (marked `llm`).  Runs the layer-b, test_reranking_pipeline_sports_query()
+Cohesion: 0.17
+Nodes (12): Any, Pattern, Request, PhoenixException, BruteForceLoginLimitExceeded, fastapi_ip_rate_limiter(), fastapi_route_rate_limiter(), _LoginAttemptRecord (+4 more)
 
 ### Community 1450 - "Community 1450"
 Cohesion: 0.40
 Nodes (5): Path, Every `from tests.…` import must resolve to a real path in the test tree.  This, `tests.unit.om.db.conftest` -> tests/unit/om/db/conftest.py OR .../conftest/., test_intra_test_imports_resolve(), _test_module_exists()
 
 ### Community 1451 - "Community 1451"
-Cohesion: 0.53
-Nodes (5): MonkeyPatch, SimpleNamespace, _agent(), test_update_display_priority_invalid_ids(), test_update_display_priority_updates_subset()
+Cohesion: 0.13
+Nodes (14): API Reference, Common Pattern Examples, Constructor Arguments, Evaluating Traces, Input Requirements, Output Interpretation, Overview, Related (+6 more)
 
 ### Community 1452 - "Community 1452"
 Cohesion: 0.53
 Nodes (5): datetime, MonkeyPatch, SavedSearchDoc, _make_saved_doc(), test_build_documents_blocks_formats_naive_timestamp()
 
 ### Community 1453 - "Community 1453"
-Cohesion: 0.33
-Nodes (4): Test using multiple processors with different modes., Test using separate processors with different citation modes., Test that separate processors do not share state., TestCitationModeWithDifferentProcessors
+Cohesion: 0.13
+Nodes (14): API Reference, Averaging Strategies, Binary Classification, Constructor Arguments, Evaluating Traces, Input Requirements, Output Interpretation, Overview (+6 more)
 
 ### Community 1454 - "Community 1454"
-Cohesion: 0.33
-Nodes (4): Edge cases specific to KEEP_MARKERS mode., Test that KEEP_MARKERS preserves exact original text., Test KEEP_MARKERS with citation number not in mapping., TestKeepMarkersEdgeCases
+Cohesion: 0.14
+Nodes (10): initialize_agent(), get_vector_store(), initialize_vector_store(), load_web_content_to_vector_store(), analyze_rag_response(), create_rag_response(), Performs a web search using DuckDuckGo to fetch the top 5 relevant results for t, USE THIS TOOL FIRST for any user query. Fetches relevant information for the use (+2 more)
 
 ### Community 1455 - "Community 1455"
 Cohesion: 0.33
@@ -8042,8 +9321,8 @@ Cohesion: 0.33
 Nodes (4): Validators specific to TLS/SSL configuration., Validate TLS enabled settings., Validate TLS certificate and key files are set., TLSValidators
 
 ### Community 1461 - "Community 1461"
-Cohesion: 0.33
-Nodes (4): Factory for resource existence validators., Create a validator that checks if a resource kind exists., Create a validator that checks resource count., ResourceValidators
+Cohesion: 0.13
+Nodes (15): 1. Add Pauses for Clarity, 2. Use Descriptive Filenames, 3. Handle Recording in Error Cases, 4. Combine with Screenshots, Basic Recording, Best Practices, CI/CD Test Evidence, Contents (+7 more)
 
 ### Community 1462 - "Community 1462"
 Cohesion: 0.33
@@ -8057,6 +9336,10 @@ Nodes (4): Validators specific to storage resources., Validate PVC storage size.
 Cohesion: 0.33
 Nodes (4): Validators specific to ServiceAccount resources., Validate ServiceAccount name., Validate ServiceAccount has imagePullSecret., ServiceAccountValidators
 
+### Community 1465 - "Community 1465"
+Cohesion: 0.13
+Nodes (14): 10. The 12-week pilot, 11. Bilingual by default — Telugu / English, 1. Positioning — offline, air-gapped, sovereign, 2. The core recurring process, 3. The problem — undervaluation and wrong-flagging are *pattern-recognition failures at scale*, 4. Where the time goes — the current journey and its bottlenecks, 5. The solution — four named agents on the proven pipeline, 6. Data sources — read-only, real systems (+6 more)
+
 ### Community 1466 - "Community 1466"
 Cohesion: 0.47
 Nodes (5): EmailViewer(), EmailViewerProps, formatDate(), formatSize(), EmailContentType
@@ -8066,12 +9349,12 @@ Cohesion: 0.33
 Nodes (3): mockUserContext, UserContext, UserContextType
 
 ### Community 1468 - "Community 1468"
-Cohesion: 0.53
-Nodes (6): Anthropic Computer Use beta, noVNC / Ubuntu VM sandbox access, Computer Use (Operator) Agent example, computer_use_agent requirements.txt, Computer Use Demo (view-only VNC iframe page), Computer Use Demo (dual-iframe Gradio + VNC control page)
+Cohesion: 0.09
+Nodes (23): LangGraph, LlamaIndex Workflows, agent-framework-analysis, Background on the code, Prerequisites, Running the Agent, Setup, agent_framework_comparison requirements.txt (+15 more)
 
 ### Community 1469 - "Community 1469"
-Cohesion: 0.33
-Nodes (6): Project, Span, OpenInference Span Kind, Trace, capture_span_context, OpenInference Span Kinds (extended)
+Cohesion: 0.13
+Nodes (14): 1. Isolation model, 2. Request → tenant resolution, 3. How other features must use Contract 3, 4. Provisioning (billing-free, on demand), 5. Tenant-admin surface, 6. Config (Standard 5), 7. Structured logging (Standard 9), 8. Verification (+6 more)
 
 ### Community 1470 - "Community 1470"
 Cohesion: 0.33
@@ -8082,24 +9365,24 @@ Cohesion: 0.40
 Nodes (6): Tartan article (web-search test data), OnyxWebCrawler (legacy), Playwright fallback phase, VirtualAIWebCrawler, WebContentProvider interface, WebContentProviderType.ONYX_WEB_CRAWLER enum
 
 ### Community 1472 - "Community 1472"
-Cohesion: 0.33
-Nodes (3): DatasetEvaluatorsByIdDataLoader, DatasetEvaluators, DbSessionFactory
+Cohesion: 0.38
+Nodes (7): getAnthropicClient(), getGeminiClient(), getBaseUrl(), getTestClient(), resetRateLimit(), startServer(), stopServer()
 
 ### Community 1473 - "Community 1473"
-Cohesion: 0.33
-Nodes (6): _generate_null_email_marker(), Generate a legacy null email marker for testing., Test the LDAP schema migration with legacy data.      This test verifies:, test_ldap_schema_migration(), Config, Engine
+Cohesion: 0.13
+Nodes (14): Configure Tracing, Grouping Operations with Parent Spans, Install Dependencies, Next Steps, Running the Demo, Set up Phoenix Cloud, Setting Up Tracing, Summary (+6 more)
 
 ### Community 1474 - "Community 1474"
-Cohesion: 0.33
-Nodes (4): Test that deleting attributes raises AttributeError., Test suite for ExampleProxy immutability enforcement., Test that setting attributes raises AttributeError., TestExampleProxyImmutability
+Cohesion: 0.13
+Nodes (14): 1. Eliminating Waterfalls (CRITICAL), 2. Bundle Size Optimization (CRITICAL), 3. Server-Side Performance (HIGH), 4. Client-Side Data Fetching (MEDIUM-HIGH), 5. Re-render Optimization (MEDIUM), 6. Rendering Performance (MEDIUM), 7. JavaScript Performance (LOW-MEDIUM), 8. Advanced Patterns (LOW) (+6 more)
 
 ### Community 1475 - "Community 1475"
-Cohesion: 0.33
-Nodes (4): Test suite for ensuring ExampleProxy behaves equivalently to direct dict access., Test that object-style and dict-style access return equivalent values., Test that proxy data remains consistent with wrapped object., TestExampleProxyEquivalence
+Cohesion: 0.14
+Nodes (14): Authentication with State Persistence, Browser Automation with agent-browser, Common Patterns, Core Workflow, Data Extraction, Deep-Dive Documentation, Essential Commands, Form Submission (+6 more)
 
 ### Community 1476 - "Community 1476"
-Cohesion: 0.40
-Nodes (3): FileDescriptor, InMemoryChatFile, NOTE: is a `TypedDict` so it can be used as a type hint for a JSONB column     i
+Cohesion: 0.16
+Nodes (13): AI Evals Course, Homework 1 and 2, ComposeResponse State Evaluator, GenRecipeArgs State Evaluator, GenWebArgs State Evaluator, GetRecipes State Evaluator, GetWebInfo State Evaluator, ParseRequest State Evaluator (+5 more)
 
 ### Community 1477 - "Community 1477"
 Cohesion: 0.47
@@ -8226,36 +9509,36 @@ Cohesion: 0.40
 Nodes (4): DynamicFaIcon(), DynamicIconProps, getPreloadedIcon(), iconCache
 
 ### Community 1508 - "Community 1508"
-Cohesion: 0.33
-Nodes (6): Authentication Method Framework (LOCAL/OAuth2/LDAP), LDAPAuthenticator Class, LDAPConfig Dataclass, AuthSettings NamedTuple ldap_config Integration, get_env_ldap_config Loader, Referral Credential Leak Prevention (auto_referrals=False)
+Cohesion: 0.14
+Nodes (13): 10. Extending, 1. Architecture (OOP: models / repositories / services / API), 2. New tables (per-tenant schema), 3. Metrics & aggregation model, 4. API endpoints (all admin-gated + tenant-scoped), 5. Frontend screens, 6. Structured log events (OpenSearch — Standard 9), 7. Research references (Standard 2) (+5 more)
 
 ### Community 1509 - "Community 1509"
-Cohesion: 0.33
-Nodes (6): Auth Configuration Permutation Matrix, /auth/ldap/login Endpoint, LDAPLoginForm.tsx Component, LoginPage.tsx Auth-Method Rendering Logic, window.Config.ldapEnabled Injection, LDAP Login Endpoint Rate Limiting
+Cohesion: 0.14
+Nodes (14): Auth Configuration Permutation Matrix, /auth/ldap/login Endpoint, LDAPLoginForm.tsx Component, LoginPage.tsx Auth-Method Rendering Logic, window.Config.ldapEnabled Injection, `/auth/login` Endpoint Interaction, CSRF Protection Interaction, Current Authentication Configuration (+6 more)
 
 ### Community 1510 - "Community 1510"
-Cohesion: 0.33
-Nodes (6): map_groups_to_role (First-Match-Wins), PHOENIX_LDAP_GROUP_ROLE_MAPPINGS (Grafana-Compatible JSON), Nested Group Resolution (LDAP_MATCHING_RULE_IN_CHAIN), Grafana GroupToOrgRole Struct, Grafana IsMemberOf Group Matching, AD memberOf vs POSIX member Group Patterns
+Cohesion: 0.27
+Nodes (12): _api_url_builder(), check_indexing_status(), create_cc_pair(), create_connector(), create_credential(), _get_existing_connector_names(), run_cc_once(), upload_file() (+4 more)
 
 ### Community 1511 - "Community 1511"
-Cohesion: 0.33
-Nodes (6): Annotations (label and/or score feedback), Project metrics dashboard, Projects (observability organizational structure), Annotation config types (categorical/continuous/freeform), Human annotation / ground truth, Programmatic user feedback (thumbs up/down)
+Cohesion: 0.20
+Nodes (11): Annotations (label and/or score feedback), Project metrics dashboard, Projects (observability organizational structure), Sessions (multi-turn conversation tracking), Session (sequence of linked traces), session_id / thread_id / conversation_id metadata keys, using_session / setSession context propagation, Annotation config types (categorical/continuous/freeform) (+3 more)
 
 ### Community 1512 - "Community 1512"
 Cohesion: 0.47
 Nodes (5): _beat_module(), Every scheduled beat task must resolve to a registered task.  `beat_schedule.py`, Cloud beat tasks may live in a cloud-only app; here we just assert the     sched, test_cloud_beat_schedule_builds_with_string_task_names(), test_regular_beat_tasks_have_registered_consumers()
 
 ### Community 1513 - "Community 1513"
-Cohesion: 0.33
-Nodes (6): AgentTool (Persona-as-tool adapter), Orchestration modes (llm_decision / sequential / conditional), Unified tool system (built-in / OpenAPI / MCP), Workflow engine (run_workflow), F3 - Connected agents as builder nodes, F5 - Agent<->connector live data connectivity
+Cohesion: 0.12
+Nodes (18): 1. Current Architecture Assets (What Already Exists), AgentTool (Persona-as-tool adapter), Agentic LLM Loop, Deep Research orchestrator->sub-agent pattern, Orchestration modes (llm_decision / sequential / conditional), Orchestrator-Agent Pattern (Deep Research), Persona (Agent) System, Streaming Infrastructure (+10 more)
 
 ### Community 1514 - "Community 1514"
 Cohesion: 0.33
 Nodes (5): components, $defs, operations, paths, webhooks
 
 ### Community 1515 - "Community 1515"
-Cohesion: 0.33
-Nodes (3): HistoryRecorder, Search orchestration.  Flow (per request):   1. Expand the query (Phase-1 ``Q, Persists a search into history and returns the new row id (or None).
+Cohesion: 0.18
+Nodes (8): Check if token is expired (with 60 second buffer), Exchange authorization code for access token, Get valid access token, refreshing if necessary, Refresh access token using refresh token, Get the token expiration time, Any, OAuthUserToken, SensitiveValue
 
 ### Community 1516 - "Community 1516"
 Cohesion: 0.33
@@ -8281,13 +9564,17 @@ Nodes (6): Best-Effort Graceful Degradation, Continuation Handling, Explicit Pro
 Cohesion: 0.33
 Nodes (3): _PolicyExistenceCache, Per-tenant "does any enabled policy exist?" cache.  Kept in its own module (no, Short-TTL, explicitly-invalidatable, per-tenant existence cache.
 
+### Community 1523 - "Community 1523"
+Cohesion: 0.20
+Nodes (9): Embedding, IndexFilters, InferenceChunk, QueryType, Fetches chunk(s) based on document ID.          NOTE: This is used to reconstruc, Runs hybrid search and returns a list of inference chunks.          Args:, Runs keyword-only search and returns a list of inference chunks.          Args:, Runs semantic-only search and returns a list of inference chunks.          Args: (+1 more)
+
 ### Community 1524 - "Community 1524"
 Cohesion: 0.47
 Nodes (6): Access API / Document ACL (Contract 2), Clean-Room Reimplementation, EE-Rewrite Contracts (CONTRACTS.md), Team Model (Contract 1), Tenant Context (Contract 3), Workstream Handoff Process (HANDOFF.md)
 
 ### Community 1525 - "Community 1525"
-Cohesion: 0.33
-Nodes (6): get_object_type_path(), Get the directory path for a specific object type., find_ids_by_type(), Find all object IDs for rows of the specified type., get_object_shelf_path(), Get the path to the shelf file for a specific object type.
+Cohesion: 0.23
+Nodes (7): Session, WebSearchResult, add_web_provider_to_db(), delete_web_provider_from_db(), MockWebProvider, use_mock_web_provider(), WebProviderController
 
 ### Community 1526 - "Community 1526"
 Cohesion: 0.60
@@ -8310,8 +9597,8 @@ Cohesion: 0.33
 Nodes (5): ChatMessageRole, ModelProvider, ModelProviderCredentialConfig, OpenAIApiType, ToolChoice
 
 ### Community 1533 - "Community 1533"
-Cohesion: 0.33
-Nodes (6): _make_onyx_request_id(), make_randomized_onyx_request_id(), make_structured_onyx_request_id(), generates a randomized request id, Not used yet, but could be in the future!, helper function to return an id given a string input
+Cohesion: 0.14
+Nodes (12): Architecture Overview, Code Quality Checks, Commands, Core Architecture Patterns, Development Guidelines, Development Setup, E2E Tests, Integration Tests (+4 more)
 
 ### Community 1534 - "Community 1534"
 Cohesion: 0.33
@@ -8330,44 +9617,44 @@ Cohesion: 0.40
 Nodes (5): Environment Variable Based Admin User Configuration, REST API for Projects with RBAC, Role-Based Access Control (Projects), Project Management API Enhancements (get_project_by_identifier), API Key Generation via API (PHOENIX_ADMIN_SECRET)
 
 ### Community 1538 - "Community 1538"
-Cohesion: 0.50
-Nodes (5): Agentic AI list-page mockup (HTML), KPI overview strip (Systems/Autonomous/Sequential/Agents), Rebrand /admin/workflows as 'Agentic AI', Dual-version page mechanism (VersionedPage), Workflow dual-editor sync rule
+Cohesion: 0.11
+Nodes (20): Agentic AI list-page mockup (HTML), Mockup theme palette (accent themes), KPI overview strip (Systems/Autonomous/Sequential/Agents), Rebrand /admin/workflows as 'Agentic AI', Dual-version page mechanism (VersionedPage), 10. Component Usage, 11. Colors, 12. Data Fetching (+12 more)
 
 ### Community 1539 - "Community 1539"
 Cohesion: 0.40
 Nodes (4): Integration tests for the unified assistant., Combined test verifying unified assistant existence, tools, and starter messages, test_unified_assistant(), DATestUser
 
 ### Community 1540 - "Community 1540"
-Cohesion: 0.40
-Nodes (5): mprocs Dev Process Config, Phoenix App README, Playwright E2E Tests Workflow, TypeScript App CI Workflow, TypeScript Packages CI Workflow
+Cohesion: 0.12
+Nodes (15): mprocs Dev Process Config, Architecture, Arize Phoenix App, Authentication, Build, Dev Tools, Develop, Environment Variables (+7 more)
 
 ### Community 1541 - "Community 1541"
 Cohesion: 0.70
 Nodes (4): _build_db_session(), test_assign_default_pinned_assistants_noop_if_already_set(), test_assign_default_pinned_assistants_populates_ids(), test_assign_default_pinned_assistants_skips_when_no_defaults()
 
 ### Community 1542 - "Community 1542"
-Cohesion: 0.40
-Nodes (3): Repository, SerializedRepository, Requester
+Cohesion: 0.25
+Nodes (12): _gen_attributes(), _gen_documents(), _gen_embeddings(), _gen_evals(), _gen_llm(), _gen_messages(), _gen_spans(), _get_tracers() (+4 more)
 
 ### Community 1543 - "Community 1543"
-Cohesion: 0.40
-Nodes (4): ChunkIndexRequest, InferenceChunk, SlackContext, Perform a federated search on Slack.          Args:             query: The searc
+Cohesion: 0.14
+Nodes (14): 10. The 12-week pilot, 11. Bilingual — Telugu / English touches, 1. Positioning — Offline, air-gapped, sovereign, 2. The core recurring process, 3. The problem — every leak is a pattern-recognition failure, 4. Where the time goes — the current journey and its bottlenecks, 5. The solution — four named agents on EXTRACT → CHECK → VERIFY → ROUTE & DRAFT, 6. Data sources — read-only, real systems (+6 more)
 
 ### Community 1545 - "Community 1545"
 Cohesion: 0.40
 Nodes (4): Exception, handle_connector_error(), Standardized error handling utilities., Standard error handling for connectors.      Args:         e: The exception that
 
 ### Community 1546 - "Community 1546"
-Cohesion: 0.60
-Nodes (4): GoogleDriveConnector, _build_connector(), Test gdrive_doc_sync and gdrive_group_sync with real data from the test drive., test_gdrive_perm_sync_with_real_data()
+Cohesion: 0.15
+Nodes (10): GoogleDriveConnector, JiraConnector, _build_connector(), Test gdrive_doc_sync and gdrive_group_sync with real data from the test drive., test_gdrive_perm_sync_with_real_data(), mock_jira_cc_pair(), test_jira_permission_sync(), make_mock_sensitive_value() (+2 more)
 
 ### Community 1547 - "Community 1547"
-Cohesion: 0.40
-Nodes (4): Document, DocumentSource, create_test_document(), Create a test document with the given parameters.      Args:         doc_id: Opt
+Cohesion: 0.25
+Nodes (7): ConnectorFailure, Document, DocumentSource, create_test_document(), create_test_document_failure(), Create a test document with the given parameters.      Args:         doc_id: Opt, Create a test document failure with the given parameters.      Args:         doc
 
 ### Community 1548 - "Community 1548"
-Cohesion: 0.40
-Nodes (3): Any, Mock Slack OAuth response based on real example, Test successful OAuth callback handling
+Cohesion: 0.14
+Nodes (14): 10. The 12-week pilot, 11. Bilingual by default — Telugu / English, 1. Positioning — offline, air-gapped, sovereign, and strictly a coordination aide, 2. The core recurring process — what the coordination desk actually does, 3. The problem — coordination friction as pattern-recognition failure, at scale, 4. Where the time goes — the current coordination journey and its bottlenecks, 5. The solution — four named agents on the proven pipeline (coordination desk only), 6. Data sources — read-only, real systems (+6 more)
 
 ### Community 1549 - "Community 1549"
 Cohesion: 0.50
@@ -8385,9 +9672,13 @@ Nodes (4): Integration tests for the Projects client REST endpoints., Test CRUD 
 Cohesion: 0.40
 Nodes (5): Session, api(), Return a requests Session pointed at the service.      Note: Do NOT set Conten, Create a session, yield its id, then delete it., session_id()
 
+### Community 1553 - "Community 1553"
+Cohesion: 0.14
+Nodes (14): 10. The 12-week pilot — 12-వారాల పైలట్, 11. Bilingual touches — ద్విభాషా లేబుళ్లు (Telugu / English glossary), 1. Positioning — గోడలు దాటని AI ("AI that never leaves your walls"), 2. The core recurring process — ప్రధాన ప్రక్రియ, 3. The Problem — సమస్య (real, cited — framed as pattern-recognition failures), 4. Where the time goes — సమయం ఎక్కడ పోతుంది (current journey, bottlenecks marked), 5. The Solution — పరిష్కారం: a 4-agent workflow (EXTRACT → CHECK HISTORY → VERIFY → ROUTE & DRAFT), 6. Department data sources (read-only) — శాఖ డేటా వనరులు (+6 more)
+
 ### Community 1554 - "Community 1554"
-Cohesion: 0.40
-Nodes (4): This file contains tests for the following: - Ensuring deletion of a connector, Checks to make sure that connectors with overlapping documents work properly. Sp, # TODO: check for the CC pair rather than the connector once the refactor is don, test_connector_deletion_for_overlapping_connectors()
+Cohesion: 0.14
+Nodes (14): 10. The 12-week pilot, 11. Bilingual — Telugu / English touches, 1. Positioning — Offline, air-gapped, sovereign, 2. The core recurring process, 3. The problem — every leak is a pattern-recognition failure, 4. Where the time goes — the current journey and its bottlenecks, 5. The solution — four named agents on EXTRACT → CHECK → VERIFY → ROUTE & DRAFT, 6. Data sources — read-only, real systems (+6 more)
 
 ### Community 1555 - "Community 1555"
 Cohesion: 0.40
@@ -8418,16 +9709,16 @@ Cohesion: 0.40
 Nodes (5): _create_local_user(), _create_oauth_user(), Create a new local authentication user.      Creates a user with:     - Local, Create a new OAuth2 user.      Creates a user with:     - External authentica, Connection
 
 ### Community 1563 - "Community 1563"
-Cohesion: 0.40
-Nodes (5): Test complete migration lifecycle - all migrations can be applied and rolled bac, test_up_and_down_migrations(), Config, Engine, MonkeyPatch
+Cohesion: 0.14
+Nodes (14): 10. The 12-week pilot, 11. Bilingual by default — Telugu / English, 1. Positioning — offline, air-gapped, sovereign, and strictly clerical, 2. The core recurring process — what the Registry actually does, 3. The problem — registry friction as pattern-recognition failure, at scale, 4. Where the time goes — the current registry journey and its bottlenecks, 5. The solution — four named agents on the proven pipeline (Registry only), 6. Data sources — read-only, real systems (+6 more)
 
 ### Community 1564 - "Community 1564"
-Cohesion: 0.40
-Nodes (3): Context manager exit., Close database connection., BaseException
+Cohesion: 0.14
+Nodes (14): 10. The 12-week pilot, 11. Bilingual touches — Telugu / English, 1. Positioning — Sovereign, on-premise, officer-led, 2. The core recurring process, 3. The problem — pattern-recognition failures, at scale, 4. Where the time goes — the current journey & its bottlenecks, 5. The solution — four named agents on EXTRACT → CHECK → VERIFY → ROUTE & DRAFT, 6. Data sources — read-only, real systems (+6 more)
 
 ### Community 1565 - "Community 1565"
-Cohesion: 0.40
-Nodes (5): OnyxAPIClient (stateless), DiscordCacheManager, Lazy API-Key Provisioning, Per-Request API-Key Injection, Single-Client Multi-Tenant Discord Bot
+Cohesion: 0.18
+Nodes (11): OnyxAPIClient (stateless), DiscordCacheManager, Lazy API-Key Provisioning, Per-Request API-Key Injection, Single-Client Multi-Tenant Discord Bot, Fail-Open on Redis Error, GCRA (rejected), RateLimiterEngine (Redis Lua) (+3 more)
 
 ### Community 1566 - "Community 1566"
 Cohesion: 0.40
@@ -8466,20 +9757,24 @@ Cohesion: 0.50
 Nodes (4): generate_test_id_to_drive_id_mapping(), Test to generate mapping from test IDs to actual Google Drive IDs.      This tes, Generate a mapping from test file IDs to actual Google Drive file IDs.      This, test_generate_drive_id_mapping()
 
 ### Community 1577 - "Community 1577"
-Cohesion: 0.40
-Nodes (5): PHOENIX_ADMINS Startup Provisioning, Cross-Database Unicode Compatibility (SQLite/PostgreSQL), Unicode PUA LDAP Marker Collision-Free Proof, allow_sign_up=true Default Decision, One-Way vs Two-Way Door Decision Framework
+Cohesion: 0.14
+Nodes (14): credentials_stolen Security Event, Adversarial MITM Proxy (ldap_mitm_proxy.py), LDAPTLSSecurityTester (test_ldap_tls.py), OIDC User Selector Frontend, OIDC Dev Sidecar Patch, Postgres K8s Deployment, ROLE_ATTRIBUTE_PATH Constant-Value K8s Test, Phoenix Helm Test Values (+6 more)
 
 ### Community 1581 - "Community 1581"
-Cohesion: 0.40
-Nodes (5): Environment-classified failure policy, Golden snapshot inventory tier, Rename-agnostic root-package auto-detection, Migration-safety test suite, Web migration test counterpart
+Cohesion: 0.20
+Nodes (9): Environment-classified failure policy, Environment policy (important), Golden snapshot inventory tier, Migration-safety test suite, Rename-agnostic root-package auto-detection, Rename-agnostic by construction, Migration-safety test suite, Tiers (+1 more)
 
 ### Community 1582 - "Community 1582"
-Cohesion: 0.40
-Nodes (5): Deep Research orchestrator->sub-agent pattern, Multi-agent sequential orchestration system, Copilot Studio / Foundry-inspired workflow features, F2 - Event triggers (autonomous workflows), F4 - Prebuilt agent/workflow gallery
+Cohesion: 0.14
+Nodes (13): Abstract Syntax Tree (AST), Attribute, Compilation and Evaluation, Constant, Name, Output, Output, Output (+5 more)
 
 ### Community 1583 - "Community 1583"
 Cohesion: 0.40
 Nodes (3): Unified Office MCP Server.  Combines PPT and DOCX FastMCP apps under a single, Serve generated files for download. Path is relative to /app/., serve_file()
+
+### Community 1584 - "Community 1584"
+Cohesion: 0.14
+Nodes (13): Agent Evaluation, BrainTrust versus Arize Phoenix Versus Arize AX: Feature Comparison, Complete Ownership vs. Vendor Lock-In, Developer-First Experience, Evaluation & Observability, Evaluation (Offline & Online), How to Choose, Human-in-the-Loop (+5 more)
 
 ### Community 1585 - "Community 1585"
 Cohesion: 0.40
@@ -8506,16 +9801,16 @@ Cohesion: 0.40
 Nodes (4): DbSessionFactory, StrawberrySchema, interlaced_experiments(), strawberry_schema()
 
 ### Community 1592 - "Community 1592"
-Cohesion: 0.40
-Nodes (4): CacheMetadata, Interfaces and data structures for prompt caching., # TODO: Add explicit caching support in future PR, Metadata for cached prompt prefixes.
+Cohesion: 0.14
+Nodes (13): **Before We Start**, **Create a Phoenix Cloud Account**, **Create and Run the Crew**, **Define the Agents**, **Define the Tasks & Tool**, **Install Your Packages**, **Learn More About Traces**, **Register Your Project in Phoenix** (+5 more)
 
 ### Community 1593 - "Community 1593"
-Cohesion: 0.40
-Nodes (5): Code Evaluators (TypeScript), createEvaluator, Code-First Evaluation Principle, create_evaluator (Python decorator), Evaluator Types (Code/LLM/Human)
+Cohesion: 0.14
+Nodes (13): Code Evaluators (TypeScript), createEvaluator, Binary > Likert, Binary over Likert Scoring, Code Evaluator, Code-First Evaluation Principle, create_evaluator (Python decorator), Evaluator Types (+5 more)
 
 ### Community 1594 - "Community 1594"
-Cohesion: 0.40
-Nodes (5): RAG Failure Taxonomy, Dimension-Based Synthetic Generation (Python), Target Known Failure Modes, Two-Step Query Generation, Dimension-Based Synthetic Generation (TypeScript)
+Cohesion: 0.20
+Nodes (10): RAG Failure Taxonomy, Dimension-Based Synthetic Generation (Python), Dimension-Based Approach, Experiments: Generating Synthetic Test Data, Quality Control, Sample Sizes, Target Failure Modes, Two-Step Generation (+2 more)
 
 ### Community 1595 - "Community 1595"
 Cohesion: 0.50
@@ -8530,12 +9825,12 @@ Cohesion: 0.40
 Nodes (4): anyOf, description, $schema, title
 
 ### Community 1598 - "Community 1598"
-Cohesion: 0.40
-Nodes (3): go_main(), Utility function to seed chat history for testing.      num_sessions: the number, seed_chat_history()
+Cohesion: 0.14
+Nodes (12): Basic Dataset Upload, Common Patterns, Complete Evaluation Pipeline, Data Validation, Dataset Key Types, [Datasets](https://arize.com/docs/phoenix/datasets-and-experiments/quickstart-datasets), Example: Recipe Evaluation Dataset, Logging Evaluations to Phoenix (+4 more)
 
 ### Community 1599 - "Community 1599"
-Cohesion: 0.50
-Nodes (3): initialize_opentelemetry_tracer_provider(), normalize_http_collector_endpoint(), test_normalize_http_collector_endpoint()
+Cohesion: 0.14
+Nodes (13): Configuration, Demo Scripts, Development, Features, Installation, Key Findings, License, PostgreSQL JSON vs JSONB Demo (+5 more)
 
 ### Community 1600 - "Community 1600"
 Cohesion: 0.40
@@ -8546,8 +9841,8 @@ Cohesion: 0.40
 Nodes (3): plugin, baseThemes, customThemePath
 
 ### Community 1603 - "Community 1603"
-Cohesion: 0.40
-Nodes (5): Removed Billing/Control-Plane Coupling, Billing-Free Tenant Provisioning, Async Celery Background Deletion, No-Bastion Tenant Cleanup Workflow, GATED_ACCESS Status Safety Check
+Cohesion: 0.33
+Nodes (6): Removed Billing/Control-Plane Coupling, Billing-Free Tenant Provisioning, om.tenancy Multi-Tenant Isolation (WS-M), Async Celery Background Deletion, No-Bastion Tenant Cleanup Workflow, GATED_ACCESS Status Safety Check
 
 ### Community 1605 - "Community 1605"
 Cohesion: 0.60
@@ -8570,7 +9865,7 @@ Cohesion: 0.50
 Nodes (4): get_spans_dataframe Client Method, SpanQuery DSL, log_spans Client Method & Span Ingestion Route, uniquify_spans Helper
 
 ### Community 1614 - "Community 1614"
-Cohesion: 0.50
+Cohesion: 0.40
 Nodes (4): OpenInference Google GenAI Instrumentation, Span Replay, openinference-instrumentation-langchain4j, OpenInference Java
 
 ### Community 1615 - "Community 1615"
@@ -8586,8 +9881,8 @@ Cohesion: 0.83
 Nodes (4): Enhanced Filtering for Examples Table (Phoenix 12.5+), Dataset Splits (Phoenix 12.7+), Add Split Edit Menu to Examples (Phoenix 12.8+), Split Assignments When Uploading a Dataset (Phoenix 12.18+)
 
 ### Community 1618 - "Community 1618"
-Cohesion: 0.50
-Nodes (4): _consolidate_sqlite_db_table_stats(), _longest_matching_prefix(), Consolidate SQLite database stats by combining indexes with their respective tab, Return the longest prefix of s that matches any of the given prefixes.
+Cohesion: 0.14
+Nodes (14): Code Changes, Constraints, Database Migration, Effort Estimate, Implementation Checklist, Migration Path, Optional Email for LDAP Users, Phase 1 (Bridge) (+6 more)
 
 ### Community 1619 - "Community 1619"
 Cohesion: 0.67
@@ -8606,8 +9901,8 @@ Cohesion: 0.67
 Nodes (3): Celery, get_app(), Factory stub for running the user file processing Celery worker.
 
 ### Community 1623 - "Community 1623"
-Cohesion: 0.50
-Nodes (3): Message, EmailHeaders, Model for email headers extracted from IMAP messages.
+Cohesion: 0.19
+Nodes (9): Tests for OpenRouter vendor prefix stripping., Test stripping matching vendor prefix., Test stripping Mistral prefix., Test preserving name when no prefix pattern., Test preserving name when no slash in model ID., Test handling partial vendor name matches., TestStripOpenrouterVendorPrefix, Strip redundant vendor prefix from OpenRouter display names.      OpenRouter ret (+1 more)
 
 ### Community 1624 - "Community 1624"
 Cohesion: 0.50
@@ -8618,8 +9913,8 @@ Cohesion: 0.50
 Nodes (3): Document, IndexingDocument, documents_to_indexing_documents()
 
 ### Community 1626 - "Community 1626"
-Cohesion: 0.50
-Nodes (3): InferenceSection, convert_inference_sections_to_llm_string(), Convert InferenceSection objects to a JSON string for LLM.      Returns a JSON s
+Cohesion: 0.14
+Nodes (14): Available MCP Tools (91 total), Comments, Content, Design & Templates, Document Lifecycle, Formatting, PowerPoint Tools (37 `ppt_*`), Presentation Lifecycle (+6 more)
 
 ### Community 1627 - "Community 1627"
 Cohesion: 0.67
@@ -8642,32 +9937,32 @@ Cohesion: 0.67
 Nodes (3): Any, test_mt_cloud_telemetry_calls_event_telemetry_when_multi_tenant(), test_mt_cloud_telemetry_noop_when_not_multi_tenant()
 
 ### Community 1632 - "Community 1632"
-Cohesion: 0.50
-Nodes (3): InstrumentationValidators, Validators specific to instrumentation/OTLP configuration., Validate OTLP collector endpoints.
+Cohesion: 0.14
+Nodes (13): Auto-instrumentation (with LangChain4j)&#x20;, Environment Configuration Example for Phoenix Tracing, Gradle, Manual Instrumentation, Maven, Observability in Phoenix, openinference-instrumentation, openinference-instrumentation-langchain4j (+5 more)
 
 ### Community 1634 - "Community 1634"
-Cohesion: 0.67
-Nodes (4): Opal Content Layout, Content HeadingLayout, Content LabelLayout, Opal Tag
+Cohesion: 0.12
+Nodes (17): Content, HeadingLayout, HeadingLayout presets, Internal Layouts, LabelLayout, LabelLayout presets, Props, `sizePreset` — controls sizing (icon, padding, gap, font) (+9 more)
 
 ### Community 1635 - "Community 1635"
 Cohesion: 0.83
 Nodes (3): xvfb_startup.sh script, check_xvfb_running(), wait_for_xvfb()
 
 ### Community 1636 - "Community 1636"
-Cohesion: 0.50
-Nodes (3): NotFound, Key, Result
+Cohesion: 0.14
+Nodes (13): Annotations, Client Initialization, Documentation, Environment Variables, Features, Getting Started, Projects, Resources (+5 more)
 
 ### Community 1637 - "Community 1637"
 Cohesion: 0.50
 Nodes (4): GET /v1/datasets/{id}/csv (export examples as CSV), GET /v1/datasets/{id}/jsonl/openai_evals, GET /v1/datasets/{id}/jsonl/openai_ft (fine-tuning JSONL), GET /v1/datasets/{id}/examples
 
 ### Community 1638 - "Community 1638"
-Cohesion: 0.50
-Nodes (3): Generate DDL string for a user-defined type (enum)., User-defined type (enum) information., TypeInfo
+Cohesion: 0.14
+Nodes (13): Usage Examples, API Reference, Evaluating Traces, Implementing Case-Insensitive Matching, Important Notes, Input Requirements, Output Interpretation, Overview (+5 more)
 
 ### Community 1639 - "Community 1639"
-Cohesion: 0.50
-Nodes (3): # TODO: Notes for potential extensions and future improvements:, # NOTE: This does not need to increment the reasoning cycles because the custom, # NOTE: The overall execution may be much longer still because it could run a re
+Cohesion: 0.14
+Nodes (13): Installation, API Reference, Auto-Instrumentation, Batch Processing (Production), Configuration, Environment Variables (Recommended), Example, Metadata (+5 more)
 
 ### Community 1640 - "Community 1640"
 Cohesion: 0.50
@@ -8690,16 +9985,16 @@ Cohesion: 0.50
 Nodes (3): format_history(), Clean-room prompt templates for query expansion.  These strings are authored f, Render (role, content) turns into a compact transcript block.
 
 ### Community 1647 - "Community 1647"
-Cohesion: 0.50
-Nodes (3): Exports traces and spans. For example, could log them or send them to a backend., Exports a list of traces and spans.          Args:             items: The items, TracingExporter
+Cohesion: 0.24
+Nodes (13): Correctness Evaluator, Tool Invocation Evaluator, Tool Response Handling Evaluator, Tool Selection Evaluator, Core Concepts, Evaluator Traces, LLM Providers, Output Config (+5 more)
 
 ### Community 1648 - "Community 1648"
 Cohesion: 0.67
 Nodes (3): gitbook_connector(), test_gitbook_connector_basic(), GitbookConnector
 
 ### Community 1649 - "Community 1649"
-Cohesion: 0.50
-Nodes (4): Pull Request Template, Require Beta Cherry-pick Consideration Check, PR Title Conventional Commits Check, Ensure PR References Linear Workflow
+Cohesion: 0.29
+Nodes (6): Additional Options, Description, How Has This Been Tested?, Require Beta Cherry-pick Consideration Check, PR Title Conventional Commits Check, Ensure PR References Linear Workflow
 
 ### Community 1650 - "Community 1650"
 Cohesion: 0.67
@@ -8710,32 +10005,32 @@ Cohesion: 0.67
 Nodes (3): gong_connector(), test_gong_basic(), GongConnector
 
 ### Community 1652 - "Community 1652"
-Cohesion: 0.50
-Nodes (3): get_user(), Context, Info
+Cohesion: 0.14
+Nodes (13): Final Results, Generate LLM as a Judge Template using Meta Prompting, Iteration 1: Improve Accuracy, Iteration 2: Reduce Bias, Iteration 3: Reduce Cost and Latency, Iteration 4: Self-Refinement (Iterative LLM as Judge), Iteration 5: Combining Techniques, Load Dataset into Phoenix (+5 more)
 
 ### Community 1655 - "Community 1655"
-Cohesion: 0.50
-Nodes (3): get_sub_queries(), Gets the sub queries     Args:         query: original query         llm: LLM, LLM
+Cohesion: 0.14
+Nodes (13): Contract 1 — FINALIZED (WS-B, Wave 0) — Team model, Contract 1 — Team model (RBAC group concept), Contract 2 — Access API (document ACL), Contract 2 — FINALIZED (WS-B, Wave 0) — Access API + ACL rename, Contract 3 — FINALIZED (WS-M, Wave 0) — import these EXACT paths, Contract 3 — Tenant context (multi-tenant safety), CONTRACTS.md — shared foundation for the EE-rewrite workstreams, Deployment target (+5 more)
 
 ### Community 1656 - "Community 1656"
-Cohesion: 0.50
-Nodes (3): Any, BaseEmbedding, LLM
+Cohesion: 0.14
+Nodes (13): ▶ AGENT INSTRUCTIONS — START HERE (read this whole block first), Behavior spec (WHAT — write your own HOW; do NOT open Onyx files), Config + UI, Goal, Index ACL rename (Contract 2), New tables (Contract 1 — finalize names in Phase 1), Phases (with review gates), README (+5 more)
 
 ### Community 1657 - "Community 1657"
 Cohesion: 0.67
 Nodes (4): Mastra Arize Phoenix tracing integration (@mastra/arize), Mastra movie recommendation agent, Completeness eval on orchestrator spans, Mastra financial analysis multi-agent system
 
 ### Community 1658 - "Community 1658"
-Cohesion: 0.50
-Nodes (3): MCPMessage, Base MCP message following JSON-RPC 2.0, Convert to JSON-RPC message dict
+Cohesion: 0.14
+Nodes (13): ▶ AGENT INSTRUCTIONS — START HERE (read this whole block first), Config + UI, Goal, New design (WHAT to build), New tables (own names, typed), Phases (with review gates), README, Research first (Standard 2) (+5 more)
 
 ### Community 1659 - "Community 1659"
-Cohesion: 0.50
-Nodes (4): Air-gapped Deployment, Self-hosted Privacy, Phoenix Telemetry, Elastic License 2.0 (ELv2)
+Cohesion: 0.25
+Nodes (8): Air-gapped Deployment, Air-gapped deployments, How can I opt-out?, Self-Hosted Privacy, Telemetry, What kind of telemetry does Phoenix collect?, Why does Phoenix collect telemetry?, Elastic License 2.0 (ELv2)
 
 ### Community 1660 - "Community 1660"
-Cohesion: 0.50
-Nodes (3): Fixtures for no-vector-DB integration tests.  These tests are intended to run ag, Query the running server to check whether DISABLE_VECTOR_DB is set., _server_has_vector_db_disabled()
+Cohesion: 0.14
+Nodes (13): ▶ AGENT INSTRUCTIONS — START HERE (read this whole block first), Behavior spec (WHAT — implement your own HOW), Config, Coordination, DB tables, Goal, New / refactored files (your own layout, e.g.), Phases (with review gates) (+5 more)
 
 ### Community 1661 - "Community 1661"
 Cohesion: 0.50
@@ -8778,8 +10073,8 @@ Cohesion: 0.50
 Nodes (4): Hoist RegExp Creation, Hoist Static JSX Elements, Use Functional setState Updates, Use Lazy State Initialization
 
 ### Community 1673 - "Community 1673"
-Cohesion: 0.50
-Nodes (4): description, required, type, Capability
+Cohesion: 0.15
+Nodes (13): input.value / output.value, Input/Output, Metadata, Overview, Session and User Tracking, Universal Attributes, Why Capture I/O?, Context Manager Approach (+5 more)
 
 ### Community 1674 - "Community 1674"
 Cohesion: 0.50
@@ -8810,8 +10105,8 @@ Cohesion: 0.50
 Nodes (3): OpenTimeRange, TimeBinScale, TimeRange
 
 ### Community 1685 - "Community 1685"
-Cohesion: 0.67
-Nodes (3): getProviderCard(), openProviderModal(), PROVIDERS
+Cohesion: 0.14
+Nodes (13): 1. Create / edit the `.env` file, 2. Rebuild the backend images, 3. Start the stack, 4. Verify in the UI, Architecture Overview, Build fails during template setup, Code Interpreter tool not available in Agent Editor, Craft button not visible in sidebar (+5 more)
 
 ### Community 1692 - "Community 1692"
 Cohesion: 0.67
@@ -8845,41 +10140,53 @@ Nodes (3): Agent Path Convergence, Agent Reflection Eval, Self Reflection in LLM
 Cohesion: 1.00
 Nodes (3): Agent-only Fargate Task (app.yml), Phoenix Auth Fargate + ALB (phoenix-auth.yml), Two-AZ VPC (phoenix-network.yml)
 
+### Community 1702 - "Community 1702"
+Cohesion: 0.14
+Nodes (13): Architecture, Attribute mapping, Config + Admin UI, Data model (per-tenant — Contract 3), Endpoints, How to extend, Integrator hand-off (shared-file snippets), Multi-tenant readiness (+5 more)
+
 ### Community 1704 - "Community 1704"
 Cohesion: 0.67
 Nodes (3): CallToolResult, process_mcp_result(), Flatten MCP CallToolResult->text (prefers text content blocks).
 
 ### Community 1705 - "Community 1705"
-Cohesion: 0.67
-Nodes (3): SearchDoc, extract_url_snippet_map(), Given a list of SearchDocs, this will extract the url -> summary map.
+Cohesion: 0.21
+Nodes (13): create_chain_span_with_events(), create_llm_span_with_events(), create_retriever_span_with_events(), create_span_with_exception_event(), create_tool_span_with_events(), main(), Generate synthetic spans with events that have attributes using OpenTelemetry., Create a retriever span with search and ranking events. (+5 more)
+
+### Community 1712 - "Community 1712"
+Cohesion: 0.14
+Nodes (13): Best Practices for Synthetic Dataset Generation, Generate Agent Test Dataset, Generate Customer Support Queries, Generate Examples with Few-Shot Prompting, Notebook Walkthrough, Strategy 1: Creating Synthetic Benchmark Datasets, Strategy 2: Using Few-Shot Examples for Dataset Generation, Strategy 3: Creating Synthetic Datasets for Agents (+5 more)
 
 ### Community 1713 - "Community 1713"
-Cohesion: 1.00
-Nodes (3): Phoenix Collector, Exporter, OpenTelemetry Protocol (OTLP)
+Cohesion: 0.32
+Nodes (6): Collector, Exporter, Instrumentation, OpenInference, OpenTelememetry Protocol, OpenTelemetry Protocol (OTLP)
+
+### Community 1721 - "Community 1721"
+Cohesion: 0.14
+Nodes (13): experimental_telemetry AI SDK flag, Parent span grouping of a request, SupportBot, Tracing LLM calls, Tracing RAG pipelines (embedding + generation spans), Tracing tool calls (child spans), Build a RAG system, Conclusion (+5 more)
 
 ### Community 1723 - "Community 1723"
-Cohesion: 0.67
-Nodes (3): GPUStack Model Hub Overlay, VirtualAI Branding Proxy (nginx sub_filter), GPUStack Branding Guide
+Cohesion: 0.12
+Nodes (15): GPUStack Model Hub Overlay, VirtualAI Branding Proxy (nginx sub_filter), Add a Custom Logo Image, Apply Changes, Architecture Notes, Change Accent Colors, Change Brand Name, Change the Favicon (+7 more)
 
 ### Community 1724 - "Community 1724"
-Cohesion: 0.67
-Nodes (3): Production Compose (Let's Encrypt), Production Cloud Overlay, Production (No Let's Encrypt) Overlay
+Cohesion: 0.14
+Nodes (13): Attribute Helpers, Chaining Setters, Customizing Spans, Decorators, Example: setSession, getEmbeddingAttributes, getLLMAttributes, getRetrieverAttributes (+5 more)
 
 ### Community 1725 - "Community 1725"
 Cohesion: 1.00
 Nodes (3): Database Connection Pool Metrics, VertualAI Prometheus Metrics Reference, setup_prometheus_metrics()
 
 ### Community 1726 - "Community 1726"
-Cohesion: 1.00
-Nodes (3): Phoenix Management API, Deploy-time Provisioning, Admin Secret (PHOENIX_ADMIN_SECRET)
+Cohesion: 0.14
+Nodes (13): 1. Port Conflict Avoidance, 2. Path Prefixing, 3. HMR WebSocket Routing, 4. Vite Host Validation, 5. Traefik Routing, 6. Source Code Isolation, 7. Volume Mount Conflicts, Architecture (+5 more)
 
 ### Community 1728 - "Community 1728"
-Cohesion: 0.67
-Nodes (3): Arize AX, setup_tracing() function, TracingOptions enum (ARIZE/PHOENIX/AUTO/IN_MEMORY)
+Cohesion: 0.04
+Nodes (44): 1. ARIZE AX - Production Monitoring, 1. Environment-Specific Configuration, 2. Early Initialization, 2. PHOENIX - Local/Remote Development, 3. AUTO - Automatic Detection, 3. Project Naming Conventions, 4. IN_MEMORY - Testing, 4. Secure Credential Management (+36 more)
 
 ### Community 1730 - "Community 1730"
-Cohesion: 0.67
-Nodes (3): PromptTemplate, ClassificationTemplate, PromptPartTemplate
+Cohesion: 0.25
+Nodes (13): build_ar1_message(), build_ar2_message(), build_ar3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), Guard against the #1 failure mode: a marker being a substring of any drafter ste (+5 more)
 
 ### Community 1731 - "Community 1731"
 Cohesion: 1.00
@@ -8890,8 +10197,8 @@ Cohesion: 0.67
 Nodes (3): GIN Indexing on JSONB, PostgreSQL JSON vs JSONB, JSON Key Order Preservation vs JSONB Lexicographic Sort
 
 ### Community 1734 - "Community 1734"
-Cohesion: 0.67
-Nodes (3): download_benchmark_dataset(), Downloads an Arize evals benchmark dataset as a pandas dataframe.      Args:, DataFrame
+Cohesion: 0.25
+Nodes (13): build_co1_message(), build_co2_message(), build_co3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), Guard against the #1 failure mode: marker being a substring of any drafter step (+5 more)
 
 ### Community 1736 - "Community 1736"
 Cohesion: 0.67
@@ -8901,9 +10208,21 @@ Nodes (3): Amazon Bedrock, Google Gen AI, VertexAI
 Cohesion: 1.00
 Nodes (3): MCP context propagation, MCP Tracing (TypeScript), Model Context Protocol (MCP)
 
+### Community 1740 - "Community 1740"
+Cohesion: 0.25
+Nodes (13): build_cc1_message(), build_cc2_message(), build_cc3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), Guard against the #1 failure mode: a marker being a substring of any drafter ste (+5 more)
+
 ### Community 1741 - "Community 1741"
 Cohesion: 1.00
 Nodes (3): Phoenix LDAP Authentication, LDAP POSIX Group Mode (RFC 2307), LDAP Integration Test Harness
+
+### Community 1750 - "Community 1750"
+Cohesion: 0.12
+Nodes (20): Action, BetaToolComputerUse20250124Param, Any, BetaToolUnionParam, ToolResult, StrEnum, BaseAnthropicTool, Executes the tool with the given arguments. (+12 more)
+
+### Community 1752 - "Community 1752"
+Cohesion: 0.25
+Nodes (13): build_ep1_message(), build_ep2_message(), build_ep3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), Guard against the #1 failure mode: marker being a substring of any drafter step (+5 more)
 
 ### Community 1755 - "Community 1755"
 Cohesion: 1.00
@@ -8914,8 +10233,8 @@ Cohesion: 1.00
 Nodes (3): Early Length Check for Array Comparisons, Use Loop for Min/Max Instead of Sort, Use toSorted() Instead of sort() for Immutability
 
 ### Community 1757 - "Community 1757"
-Cohesion: 0.67
-Nodes (3): Capability vs Regression Evals, Continuous Feedback Loop, CI/CD Evals vs Production Monitoring
+Cohesion: 0.18
+Nodes (10): Sampling Saturation, Alerting, Capability vs Regression Evals, Feedback Loop, Implementation, Key Principles, Production: Continuous Evaluation, Saturation (+2 more)
 
 ### Community 1758 - "Community 1758"
 Cohesion: 0.67
@@ -8950,40 +10269,3456 @@ Cohesion: 0.67
 Nodes (3): ShellScopeEntryAllowedArgs, anyOf, description
 
 ### Community 1766 - "Community 1766"
-Cohesion: 0.67
-Nodes (3): Value, anyOf, description
+Cohesion: 0.25
+Nodes (13): build_hc1_message(), build_hc2_message(), build_hc3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), Guard against the #1 failure mode: marker being a substring of any drafter step (+5 more)
 
 ### Community 1771 - "Community 1771"
 Cohesion: 0.67
 Nodes (3): Delete a Span (DELETE /v1/spans/{span_identifier}), Delete a Trace (DELETE /v1/traces/{trace_identifier}), Delete a User by ID (DELETE /v1/users/{user_id})
 
+### Community 1813 - "Community 1813"
+Cohesion: 0.21
+Nodes (11): test_team_role_matrix(), UserRole, Permission, RBAC permission vocabulary + the least-privilege role -> permission matrix.  D, The in-principle permission set granted by a team-scoped role., Kinds of resource whose access can be scoped to a team., Atomic, checkable capabilities. Value is ``"{resource}:{action}"``., ResourceType (+3 more)
+
 ### Community 1824 - "Community 1824"
 Cohesion: 1.00
 Nodes (3): Claude Code Mention Workflow, anthropics/claude-code-action GitHub Action, Claude Code Review Workflow
 
+### Community 1830 - "Community 1830"
+Cohesion: 0.40
+Nodes (4): **Cursor IDE Integration**, Cursor MCP Button, **New **`phoenix-support`** Tool for Agents**, phoenix-support MCP Tool
+
+### Community 1837 - "Community 1837"
+Cohesion: 0.14
+Nodes (13): @changesets/cli tool, 1. Install pnpm (if you don't have it), 2. Install all dependencies for all packages, 3. Run scripts across all packages, Changesets, Development Guide, Examples, [notebooks](./examples/notebooks/) (+5 more)
+
+### Community 1857 - "Community 1857"
+Cohesion: 0.14
+Nodes (13): Agent Design Patterns, Agents, Core Concepts of CrewAI, Crews, Orchestrator-Workers, Parallelization, Pipelines, Planning (+5 more)
+
+### Community 1858 - "Community 1858"
+Cohesion: 0.18
+Nodes (13): MCPConnectionConfig, MCPTransport, OAuthClientProvider, DbMCPServer, _get_connection_config(), make_oauth_provider(), Get the connection config for an MCP server.     is_admin is true when we want t, Test if credentials work by calling the MCP server's tools/list endpoint (+5 more)
+
+### Community 1859 - "Community 1859"
+Cohesion: 0.38
+Nodes (3): DATestUser, DATestTeam, TeamManager
+
+### Community 1860 - "Community 1860"
+Cohesion: 0.19
+Nodes (10): FastAPI, FastMCP, FunctionTool, Request, Response, init_app(), make_many_tools(), metadata_url_for_resource() (+2 more)
+
+### Community 1861 - "Community 1861"
+Cohesion: 0.15
+Nodes (4): Final featured 9 (deep-dived), Government GTM — Consolidated Wave-1 Master Shortlist (TS & AP), Master ranking (all candidates), Strategic notes (for selection)
+
+### Community 1862 - "Community 1862"
+Cohesion: 0.15
+Nodes (13): 1. Multi-Server Failover Behavior, 2. DN Comparison for Group Matching, 3. No Group Match Behavior, 4. Role Assignment Strategy, Design Rationale, Failover Trigger Comparison, Grafana's Approach (`multildap.go`), Implementation Logic Discrepancies (+5 more)
+
+### Community 1863 - "Community 1863"
+Cohesion: 0.26
+Nodes (6): Test that multiple evaluators can be previewed at once., Get the global ID for the Contains builtin evaluator., TestEvaluatorPreviewMutation, Any, AsyncGraphQLClient, DbSessionFactory
+
+### Community 1864 - "Community 1864"
+Cohesion: 0.15
+Nodes (12): Current System Summary, Files to Modify, Implementation Steps, News Crawling Enhancement Plan, Research: All Major News Sites Use Google News Sitemaps, Step 1: Enhance Sitemap Parser for News Metadata, Step 2: Wire News Metadata into Web Connector, Step 3: Extract Article Metadata from HTML (+4 more)
+
+### Community 1865 - "Community 1865"
+Cohesion: 0.15
+Nodes (12): 0. Current repo state (what's already done — don't redo), 1. ⚠️ DECISION #1 — the target name (persona → ?), 2. Footprint (grounded — this is LARGE and central), 2a. Persona tables (10) — from `0001_baseline_schema.sql`, 2b. External FK-holders — **NOTE the inconsistent column names**, 2c. `persona`-named columns on the persona table itself (must rename), 3. ⚠️ SUBSTRING HAZARDS — do NOT rename (a naive sed corrupts these), 4. Proven methodology (worked twice — apply exactly) (+4 more)
+
+### Community 1866 - "Community 1866"
+Cohesion: 0.15
+Nodes (13): Building the Package, Contributing Documentation, Contributing Notebooks, Cursor / VS Code, Debugging the Python Server, Developer's Guide, Getting Started, Installing a `git` Branch on Colab (+5 more)
+
+### Community 1894 - "Community 1894"
+Cohesion: 0.10
+Nodes (21): Add more shortcuts, Build fails on M1/M2 Mac, Build for current architecture, Build Universal Binary (Intel + Apple Silicon), Building, Change the default URL in build, Code signing for distribution, Customization (+13 more)
+
+### Community 1964 - "Community 1964"
+Cohesion: 0.21
+Nodes (9): Any, Path, power_set(), test_document_evaluations_bad_results(), test_document_evaluations_construction(), test_document_evaluations_edge_cases(), test_document_evaluations_save_and_load_preserves_data(), test_evaluations_load_raises_error_when_input_id_does_not_match_metadata() (+1 more)
+
+### Community 1982 - "Community 1982"
+Cohesion: 0.15
+Nodes (12): ▶ AGENT INSTRUCTIONS — START HERE (read this whole block first), Behavior spec (WHAT — own HOW; do not open Onyx files), Config + UI, Goal, New tables (own names), Phases (with review gates), README, Research first (Standard 2) (+4 more)
+
+### Community 1983 - "Community 1983"
+Cohesion: 0.08
+Nodes (23): Add an Issue to the Project, Body Template, Bug Report, Component Labels (`c/`), Creating a Roadmap Issue, Existing Roadmap Issues (Q2 2026), Feature Request, Label Taxonomy (+15 more)
+
+### Community 2002 - "Community 2002"
+Cohesion: 0.15
+Nodes (12): ▶ AGENT INSTRUCTIONS — START HERE (read this whole block first), Behavior spec (WHAT — own HOW; do not open Onyx files), Config + UI, Goal, New tables (own names), Phases (with review gates), README, Research first (Standard 2) (+4 more)
+
+### Community 2004 - "Community 2004"
+Cohesion: 0.15
+Nodes (12): ▶ AGENT INSTRUCTIONS — START HERE (read this whole block first), Behavior spec (WHAT — own HOW; do not open Onyx files), Config + UI, Goal, New tables (own names), Phases (with review gates), README, Research first (Standard 2) (+4 more)
+
+### Community 2035 - "Community 2035"
+Cohesion: 0.15
+Nodes (12): ▶ AGENT INSTRUCTIONS — START HERE (read this whole block first), Behavior spec (WHAT — own HOW; do not open Onyx files), Config + UI, Goal, New tables (own names, typed), Phases (with review gates), README, Research first (Standard 2) (+4 more)
+
+### Community 2039 - "Community 2039"
+Cohesion: 0.15
+Nodes (12): ▶ AGENT INSTRUCTIONS — START HERE (read this whole block first), Behavior spec (WHAT — own HOW; do not open Onyx files), Config + UI, Goal, New tables (own names, typed), Phases (with review gates), README, Research first (Standard 2) (+4 more)
+
+### Community 2072 - "Community 2072"
+Cohesion: 0.33
+Nodes (5): Annotations, Data Retention Policies, Hotkeys, [Annotations](/docs/phoenix/tracing/llm-traces/how-to-annotate-traces) 🏷️, [Data Retention](/docs/phoenix/settings/data-retention) 💿, Full v9.0.0 Release, Hotkeys 🔥
+
+### Community 2102 - "Community 2102"
+Cohesion: 0.15
+Nodes (12): Assuming Span Output is Plain Text, Common Mistakes (Python), Deprecated project_name Parameter, Legacy Model Classes, Not Filtering Spans Appropriately, Too-Aggressive Time Filters, Using @create_evaluator for LLM-Based Evaluation, Using HallucinationEvaluator (+4 more)
+
+### Community 2170 - "Community 2170"
+Cohesion: 0.29
+Nodes (6): Accent Theme CSS Variables, Database Migrations — Alembic Rules, Design System — Accent Theme Rules, graphify, Rules when writing UI code, Workflow Editor — Dual Editor Rule
+
+### Community 2274 - "Community 2274"
+Cohesion: 0.12
+Nodes (16): AnthropicModel, Authentication Options, Basic Usage, BedrockModel, GeminiModel, GoogleGenAIModel, Key Features, LiteLLMModel (+8 more)
+
+### Community 2275 - "Community 2275"
+Cohesion: 0.15
+Nodes (12): Attribute Reference, Basic Vector Search, Document Metadata, Document Schema, Examples, Flattening Pattern for Documents, Large Document Handling, Ordering (+4 more)
+
+### Community 2276 - "Community 2276"
+Cohesion: 0.15
+Nodes (12): Analytics, Client-Side Caching, First time creating a prompt, Forking a prompt, Prompts, Server-Side Catching, Technical Considerations, Terminology (+4 more)
+
+### Community 2277 - "Community 2277"
+Cohesion: 0.15
+Nodes (12): 1. Architecture, 2. Config table & UI, 3. Attribute mapping (email extraction), 4. Security, 5. Structured log events (Standard 9), 6. Multi-tenant readiness (Contract 3), 7. Extending, 8. In-UI verification (`GET /admin/sso/saml/verify`) (+4 more)
+
+### Community 2278 - "Community 2278"
+Cohesion: 0.15
+Nodes (12): Basic Configuration, Configuration, Configuration Options, Development vs Production Configuration, Environment Variables, Installation, Manual Tracing, Non-Global Provider (+4 more)
+
+### Community 2279 - "Community 2279"
+Cohesion: 0.15
+Nodes (12): @arizeai/openinference-core, @arizeai/phoenix-cli, @arizeai/phoenix-client, @arizeai/phoenix-evals, @arizeai/phoenix-mcp, @arizeai/phoenix-otel, Attribute Helpers, Context Propagation (+4 more)
+
+### Community 2288 - "Community 2288"
+Cohesion: 0.15
+Nodes (13): 5.10 Use Lazy State Initialization, 5.11 Use Transitions for Non-Urgent Updates, 5.12 Use useRef for Transient Values, 5.1 Calculate Derived State During Rendering, 5.2 Defer State Reads to Usage Point, 5.3 Do not wrap a simple expression with a primitive result type in useMemo, 5.4 Extract Default Non-primitive Parameter Value from Memoized Component to Constant, 5.5 Extract to Memoized Components (+5 more)
+
+### Community 2303 - "Community 2303"
+Cohesion: 0.15
+Nodes (13): 7.10 Use Loop for Min/Max Instead of Sort, 7.11 Use Set/Map for O(1) Lookups, 7.12 Use toSorted() Instead of sort() for Immutability, 7.1 Avoid Layout Thrashing, 7.2 Build Index Maps for Repeated Lookups, 7.3 Cache Property Access in Loops, 7.4 Cache Repeated Function Calls, 7.5 Cache Storage API Calls (+5 more)
+
+### Community 2307 - "Community 2307"
+Cohesion: 0.15
+Nodes (12): After, Before, Before vs After Layout, Feature 1: Tabbed Sidebar, Feature 2: Tabbed Config Panel, Feature 3: Resizable Panels, Feature 4: Collapsible Panels, Feature 5: Visual Polish (+4 more)
+
+### Community 2308 - "Community 2308"
+Cohesion: 0.28
+Nodes (12): build_cc1_message(), build_cc2_message(), build_cc3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), run_case_test() (+4 more)
+
+### Community 2333 - "Community 2333"
+Cohesion: 0.17
+Nodes (11): Commands Reference, Installation, Interactive Development, Overview, Prompt Analysis, Prompt Optimization with AI Assistants, Prompt Version Management, `px prompt <identifier>` (+3 more)
+
+### Community 2345 - "Community 2345"
+Cohesion: 0.18
+Nodes (12): API Endpoints, Authorization Endpoint, DatabaseClient (src/database/client.ts), Discovery Endpoint, Health Check, ID Token Claims, JWKS Endpoint, OIDCServer (src/oidc/server.ts) (+4 more)
+
+### Community 2481 - "Community 2481"
+Cohesion: 0.21
+Nodes (10): log_structured_event(), Structured (OpenSearch-friendly) event logging for the WS-H feature set.  CONT, Best-effort read of the current tenant id; never raises., Emit one JSON structured log line for OpenSearch ingestion.      Never raises:, Time a block and emit a structured event on exit.      Yields a mutable contex, _resolve_tenant_id(), timed_event(), Any (+2 more)
+
+### Community 2484 - "Community 2484"
+Cohesion: 0.21
+Nodes (11): _file_id(), get_logo_file_id(), get_logotype_file_id(), _guess_file_type(), Logo / logotype asset storage for application settings (file-store backed).  K, File-store id of the uploaded logo (used by the runtime override lookup)., File-store id of the uploaded logotype (used by the runtime override lookup)., Persist a logo asset from a local file path (used by DB seeding). (+3 more)
+
+### Community 2645 - "Community 2645"
+Cohesion: 0.29
+Nodes (11): init_worker(), on_celeryd_init(), on_setup_logging(), on_task_postrun(), on_task_prerun(), on_worker_init(), on_worker_ready(), on_worker_shutdown() (+3 more)
+
+### Community 2646 - "Community 2646"
+Cohesion: 0.29
+Nodes (11): init_worker(), on_celeryd_init(), on_setup_logging(), on_task_postrun(), on_task_prerun(), on_worker_init(), on_worker_ready(), on_worker_shutdown() (+3 more)
+
+### Community 2647 - "Community 2647"
+Cohesion: 0.18
+Nodes (11): 1. Top Level (message_handler function):, 2. LLM Loop (run_llm_loop function), 3. LLM Step (run_llm_step function), Emitter, LLM Flow Architecture (message_handler -> run_llm_loop -> run_llm_step), Overview of LLM flow architecture, State Container, Stop Generation via Redis Signal (+3 more)
+
+### Community 2648 - "Community 2648"
+Cohesion: 0.17
+Nodes (11): Available Skills, CLI Agent Starter Kit, Common Span Attributes, Debugging with Phoenix CLI, Development, Environment Variables, Important Notes, Important: Private Package (+3 more)
+
+### Community 2649 - "Community 2649"
+Cohesion: 0.17
+Nodes (12): 1. Start the Virtual Machine Using Docker, 2. Access the Virtual Machine, 3. Input all the required configurations in the webpage, 4. Run the Agent, Computer Use Agent Examples, Features, File Structure, Installation (+4 more)
+
+### Community 2650 - "Community 2650"
+Cohesion: 0.26
+Nodes (8): AnnotationSummaryCache, AnnotationSummaryDataLoader, Ensure that the loader does not raise when all labels are NULL.      The expec, test_evaluation_summaries(), test_missing_label_aggregation(), test_multiple_annotations_score_weighting(), test_null_label_handling(), DbSessionFactory
+
+### Community 2651 - "Community 2651"
+Cohesion: 0.17
+Nodes (11): Available Skills, CLI, Examples, MCP, Phoenix Docs MCP (Documentation Access), Phoenix MCP Server (Direct Phoenix Operations), Recommended Setup, Related (+3 more)
+
+### Community 2652 - "Community 2652"
+Cohesion: 0.17
+Nodes (11): Explicit knowledge + overflowing project files, Field reference, Filter categories, How filters combine, Knowledge scope rules, Multiple explicit knowledge types (OR'd), No explicit knowledge attached, One explicit knowledge type (+3 more)
+
+### Community 2653 - "Community 2653"
+Cohesion: 0.17
+Nodes (7): Test that federated connector classes are cached after first load., Test handling of import errors., Test handling of missing class in module., Test the lazy loading mechanism., Clear cache before each test., Test successful federated connector class loading., TestFederatedConnectorClassLoading
+
+### Community 2654 - "Community 2654"
+Cohesion: 0.17
+Nodes (11): AnnotationConfigInput, CategoricalAnnotationConfigInput, CategoricalAnnotationConfigValueInput, ContinuousAnnotationConfigInput, CreateAnnotationConfigInput, FreeformAnnotationConfigInput, node, OptimizationDirection (+3 more)
+
+### Community 2655 - "Community 2655"
+Cohesion: 0.17
+Nodes (11): **Add a New Prompt Variant**, **Before We Start**, **Create a Dataset in the UI**, **Learn More About Prompts**, **Run the Prompt Against a Dataset**, **Save a Prompt from the Trace View**, **Step 1: Create a Dataset from Failed Traces**, **Step 2: Save a Prompt from a Trace** (+3 more)
+
+### Community 2656 - "Community 2656"
+Cohesion: 0.17
+Nodes (11): **Add a New Prompt Variant**, **Before We Start**, **Create a Dataset in the UI**, **Learn More About Prompts**, **Run the Prompt Against a Dataset**, **Save a Prompt from the Trace View**, **Step 1: Create a Dataset from Failed Traces**, **Step 2: Save a Prompt from a Trace** (+3 more)
+
+### Community 2657 - "Community 2657"
+Cohesion: 0.17
+Nodes (11): Annotate dataset examples, Creating a dataset, Define experiment task and evaluator, Evaluator Alignment Iteration Loop, LLM Judge Improvement Cycle, Make refinements, Notebook Walkthrough, Run experiment (+3 more)
+
+### Community 2658 - "Community 2658"
+Cohesion: 0.17
+Nodes (11): Current Testing Coverage, General Testing Overview, Guidelines for Writing Integration Tests, Instructions for Running Integration Tests Locally, Integration Tests, Manager/Test class pattern, mock_connector_server, VertualAI OpenAPI Schema Generator (+3 more)
+
+### Community 2659 - "Community 2659"
+Cohesion: 0.17
+Nodes (11): 1. Verify you're using Docker Desktop (NOT production!), 2. Build the OIDC dev image, 3. Deploy Postgres, 4. Deploy Phoenix with OIDC sidecar, 5. Verify the environment variable, 6. Test the OIDC login, Cleanup, K8s Test Setup for ROLE_ATTRIBUTE_PATH (+3 more)
+
+### Community 2660 - "Community 2660"
+Cohesion: 0.17
+Nodes (12): Admin User Creation Logic (`NewUserDialog.tsx`), Authentication Method Framework, Common Deployment Scenarios, Complete Permutation Matrix, Configuration Permutations & Behavior Matrix, Configuration Variables, Frontend Rendering Logic (`LoginPage.tsx`), Key Design Principles (+4 more)
+
+### Community 2661 - "Community 2661"
+Cohesion: 0.18
+Nodes (11): Agent-Assisted Setup, Alternative: MCP and Skills, How it works, IDE-Specific Instructions, Validate Your Setup, What the agent does, Claude Agent SDK Integration, Coding Agents (Claude Code, Cursor) (+3 more)
+
+### Community 2662 - "Community 2662"
+Cohesion: 0.17
+Nodes (12): 1. Correction, 2. Warning, 3. Temporary Ban, 4. Permanent Ban, Attribution, Contributor Covenant Code of Conduct, Enforcement, Enforcement Guidelines (+4 more)
+
+### Community 2663 - "Community 2663"
+Cohesion: 0.21
+Nodes (11): **Tracing**, Environment Variables, Installation, OpenInference, Phoenix Client, Phoenix OTEL, OpenInference, OpenTelemetry (OTLP) (+3 more)
+
+### Community 2664 - "Community 2664"
+Cohesion: 0.17
+Nodes (12): `BaseEvalModel` has been renamed to `BaseModel`, Installing and Using the `evals` module, Migrating from `phoenix.experimental.evals` to `phoenix.evals`, New, New, New, Old, Old (+4 more)
+
+### Community 2665 - "Community 2665"
+Cohesion: 0.17
+Nodes (11): [0.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.9.2...arize-phoenix-otel-v0.10.0) (2025-05-28), [0.10.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.10.0...arize-phoenix-otel-v0.10.1) (2025-05-28), [0.10.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.10.1...arize-phoenix-otel-v0.10.2) (2025-06-03), [0.13.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.13.0...arize-phoenix-otel-v0.13.1) (2025-09-10), [0.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.2.0...arize-phoenix-otel-v0.3.0) (2024-08-21), Bug Fixes, Bug Fixes, Changelog (+3 more)
+
+### Community 2666 - "Community 2666"
+Cohesion: 0.17
+Nodes (6): AsyncGraphQLClient, MonkeyPatch, Test that OLLAMA provider returns empty credential requirements, Test that other providers return their credential requirements, Integration test for the credentialsSet field on modelProviders.          Test, TestGenerativeProvider
+
+### Community 2667 - "Community 2667"
+Cohesion: 0.17
+Nodes (11): ▶ AGENT INSTRUCTIONS — START HERE (read this whole block first), Coordination, DB tables to drop (final phase, after boot verified), Delete (files), Goal, Phases (with review gates), README, Shared-file edits (deliver as snippets for the integrator) (+3 more)
+
+### Community 2668 - "Community 2668"
+Cohesion: 0.18
+Nodes (11): Default Behavior, Evaluation Parameters, Examples, Literal Mapping, Mapping a Built-in Evaluator, Mapping an LLM Evaluator, Mapping Modes, Mixing Path and Literal Mappings (+3 more)
+
+### Community 2669 - "Community 2669"
+Cohesion: 0.17
+Nodes (11): Access Keys Authentication, API Key Authentication, Azure Active Directory (Service Principal), Configuration Tips, Creating a Custom Provider, Default Credentials (IAM Role), Default Credentials (Managed Identity), Example: AWS Bedrock Configuration (+3 more)
+
+### Community 2670 - "Community 2670"
+Cohesion: 0.18
+Nodes (11): A/B Testing, Playground A/B Testing (Sync Models/Templates/Inputs), Evaluation Template, LLM Replay, Playground, Prompt Template, Span Attribute to Playground State Translation, Technical Features (+3 more)
+
+### Community 2671 - "Community 2671"
+Cohesion: 0.17
+Nodes (11): API, Architecture (clean OOP — models / repository / service), Config + UI, How to extend, Multi-tenant readiness (Contract 3), Research that informed the design, Standard Answers (WS-D) — module reference, Structured log events (Standard 9) (+3 more)
+
+### Community 2672 - "Community 2672"
+Cohesion: 0.17
+Nodes (11): Annotations (Chapter 2), Chapter 1: Your First Traces, Chapter 2: Annotations and Evaluation, Chapter 3: Sessions, Phoenix Tracing Tutorial (TypeScript), Prerequisites, Project Structure, Sessions (Chapter 3) (+3 more)
+
+### Community 2673 - "Community 2673"
+Cohesion: 0.17
+Nodes (11): Architecture Overview, Configuration (Environment Variables), E2E Test Script, Enum Note, Files Modified, Key Imports Reused (No Duplication), Reference Points in api.py, Reference Points in providers.py (+3 more)
+
+### Community 2674 - "Community 2674"
+Cohesion: 0.30
+Nodes (11): build_cid1_message(), build_cid2_message(), build_cid3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), run_case_test() (+3 more)
+
+### Community 2675 - "Community 2675"
+Cohesion: 0.30
+Nodes (11): build_lm1_message(), build_lm2_message(), build_lm3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), run_case_test() (+3 more)
+
+### Community 2676 - "Community 2676"
+Cohesion: 0.30
+Nodes (11): build_sp1_message(), build_sp2_message(), build_sp3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), run_case_test() (+3 more)
+
+### Community 2677 - "Community 2677"
+Cohesion: 0.30
+Nodes (11): build_pr1_message(), build_pr2_message(), build_pr3_message(), create_chat_session(), find_workflow_id(), load_case_data(), main(), run_case_test() (+3 more)
+
+### Community 2678 - "Community 2678"
+Cohesion: 0.18
+Nodes (10): Access — document ACL resolution (Contract 2), Circular-import note, How access is enforced (early-binding + set-intersection), Index field, Multi-tenant readiness, Principal encoding (team rename — Contract 2), Public API (frozen — Contract 2), Research (+2 more)
+
+### Community 2679 - "Community 2679"
+Cohesion: 0.18
+Nodes (10): BatchSpanProcessor Example - Using arize-phoenix-otel library, BatchSpanProcessor Example - Using OTel library, Customizing Attributes, Install Core Instrumentation Package, Span Processing, Specifying a session, Specifying Metadata, Specifying Tags (+2 more)
+
+### Community 2680 - "Community 2680"
+Cohesion: 0.27
+Nodes (10): apply_migration(), cleanup_orphans(), dry_run(), get_all_new_labels(), main(), Label Migration Script: Consolidate 331 labels → 45 labels =====================, Extract the unique set of new labels from the mapping., Preview what the migration would do. (+2 more)
+
+### Community 2681 - "Community 2681"
+Cohesion: 0.31
+Nodes (10): on_celeryd_init(), on_setup_logging(), on_task_postrun(), on_task_prerun(), on_worker_init(), on_worker_ready(), on_worker_shutdown(), Any (+2 more)
+
+### Community 2682 - "Community 2682"
+Cohesion: 0.31
+Nodes (10): on_celeryd_init(), on_setup_logging(), on_task_postrun(), on_task_prerun(), on_worker_init(), on_worker_ready(), on_worker_shutdown(), Any (+2 more)
+
+### Community 2683 - "Community 2683"
+Cohesion: 0.27
+Nodes (4): Any, __getattr__(), Stub for the (un-generated) OpenAPI client.  The real ``generated.onyx_openapi_c, _Stub
+
+### Community 2684 - "Community 2684"
+Cohesion: 0.18
+Nodes (11): datetime, MCPServerStatus, MCPTransport, Update an existing MCP server, update_mcp_server__no_commit(), Update an MCP server and associated tools, update_mcp_server_with_tools(), MCPAuthenticationPerformer (+3 more)
+
+### Community 2685 - "Community 2685"
+Cohesion: 0.29
+Nodes (10): datetime, Session, UUID, expire_saml_sessions_for_user(), get_last_saml_session(), Repository for the SAML SSO session ledger (``sso_saml_session``).  Maps an is, Record (or refresh) the cookie↔user mapping. Returns the expiry.      A user h, Return ``(email, updated_at)`` of the most recently touched SAML session. (+2 more)
+
+### Community 2686 - "Community 2686"
+Cohesion: 0.31
+Nodes (10): Any, analyze_tenants(), collect_control_plane_data_from_pod(), collect_tenant_data(), find_recent_tenant_data(), main(), Analyze tenant activity data and return gated tenants with no query in last 3 mo, Run the understand_tenants script on the data plane pod. (+2 more)
+
+### Community 2687 - "Community 2687"
+Cohesion: 0.24
+Nodes (10): BetaMessageParam, BetaToolResultBlockParam, inject_prompt_caching(), make_api_tool_result(), maybe_filter_to_n_most_recent_images(), _maybe_prepend_system_tool_result(), Convert an agent ToolResult to an API ToolResultBlockParam., Set cache breakpoints for the 3 most recent turns     one cache breakpoint is l (+2 more)
+
+### Community 2688 - "Community 2688"
+Cohesion: 0.18
+Nodes (10): Adding Tools, CLI Agent Starter Kit, Evaluations, Naming Convention, Project Structure, Quick Start, Resources, Scripts (+2 more)
+
+### Community 2689 - "Community 2689"
+Cohesion: 0.18
+Nodes (10): Additional Required Changes:, Backend Changes, Before opening PR, Connector Implementation, Connector Overview, Development Tip, Docs Changes, Frontend Changes (+2 more)
+
+### Community 2690 - "Community 2690"
+Cohesion: 0.20
+Nodes (5): LocalFileConnector, Connector that reads files from Postgres and yields Documents, including     emb, Iterates over each file path, fetches from Postgres, tries to parse text, test_single_text_file_with_metadata(), test_two_text_files_with_zip_metadata()
+
+### Community 2691 - "Community 2691"
+Cohesion: 0.18
+Nodes (10): 🔧 Decisions I made autonomously (please sanity-check), 📊 Earlier mid-session status (superseded by FINAL above), 📎 File-upload demo starters + step-agent fix (2026-08-06) — agent-config only, NO backend changes, 🎉 FINAL STATUS — ALL 9 DEPARTMENT WORKFLOWS BUILT & GREEN (36/36 guard-rail tests), Notes for your review — Gov-workflow build session (2026-08-05), ❓ Open questions for you (answer anytime; I won't block on them), 🔎 Phase 3 — existing workflows/agents (a judgment call for you), ⚠️ Two things to be aware of (+2 more)
+
+### Community 2692 - "Community 2692"
+Cohesion: 0.18
+Nodes (10): Adding labels and metadata, Cloning a prompt, Compose a prompt, Compose a Prompt, Editing a prompt in the playground, Making edits to a prompt, Save the prompt, Using the Phoenix Client (+2 more)
+
+### Community 2693 - "Community 2693"
+Cohesion: 0.18
+Nodes (10): Connect to Phoenix, Downloading all Spans as a Dataframe, Options for Exporting Data from Phoenix, Pre-defined Queries, Q\&A on Retrieved Data, Retrieved Documents, Save All Traces, Tool Calls (+2 more)
+
+### Community 2694 - "Community 2694"
+Cohesion: 0.18
+Nodes (10): 1. Navigate to the directory, 2. Install dependencies, 3. Set environment variables, 4. Start Phoenix (if running locally), 5. Run the application, 6. (Optional) Run evaluations, File structure, Next steps (+2 more)
+
+### Community 2695 - "Community 2695"
+Cohesion: 0.18
+Nodes (11): 1. Existing Unicode Tests Pass on Both Databases, 2. Database-Specific Implementation, 3. Column Mapping, 4. Proven in Production, Collision Prevention Analysis, Collision Probability Calculation, Conclusion, Cross-Database Compatibility (SQLite and PostgreSQL) (+3 more)
+
+### Community 2696 - "Community 2696"
+Cohesion: 0.18
+Nodes (10): 1. Setup Phoenix, 2. Install Dependencies, 3. Configure Environment, Mastra Agent with Arize Phoenix Tracing, Project Structure, Running Evals, Running the Agent, Setup (+2 more)
+
+### Community 2697 - "Community 2697"
+Cohesion: 0.31
+Nodes (10): OpenSearch, get_client(), list_indices(), list_with_hierarchy(), main(), query_document(), Create OpenSearch client from environment variables., Query a specific document and view its hierarchy ancestor node IDs. (+2 more)
+
+### Community 2698 - "Community 2698"
+Cohesion: 0.18
+Nodes (10): By Language, Developer Tools, Eval Library Integrations, Eval Model Integrations, Integration Types, LLM Providers, Platforms, Span Processors (+2 more)
+
+### Community 2699 - "Community 2699"
+Cohesion: 0.18
+Nodes (11): Calling `.get_spans()` on a tracer is no longer supported. Use `px.Client()` to get the spans as a dataframe from Phoenix., Endpoint should be configured via environment variables `PHOENIX_HOST`, `PHOENIX_PORT`, or `PHOENIX_COLLECTOR_ENDPOINT`., LangChain Tracing, New (v3.0.0), New (v3.0.0), New (v3.0.0), Old (v2.x), Old (v2.x) (+3 more)
+
+### Community 2700 - "Community 2700"
+Cohesion: 0.18
+Nodes (11): Cloud Platforms, Developer Tools, Evaluation Integrations, Integrations, Java Frameworks, LLM Providers, Observability Protocols, Platforms (+3 more)
+
+### Community 2701 - "Community 2701"
+Cohesion: 0.18
+Nodes (11): 1. Plan the Scope, 2. Create SKILL.md, 3. Structure the SKILL.md Body, 4. Organize Rule Files, 5. Write Rule Files, Code Examples, Creating a New Skill, Cross-References (+3 more)
+
+### Community 2702 - "Community 2702"
+Cohesion: 0.18
+Nodes (10): Configuration, ESM vs CommonJS, Flushing Spans Before Exit, Framework Integration, Metadata, Quick Start, See Also, Troubleshooting (+2 more)
+
+### Community 2703 - "Community 2703"
+Cohesion: 0.24
+Nodes (3): datetime, ProjectTraceRetentionPolicy, Check hourly and apply policies.
+
+### Community 2704 - "Community 2704"
+Cohesion: 0.18
+Nodes (10): Code Structure, Database Constraints, Educational Focus, Initialization Behavior, Key Concepts Demonstrated, Note on Security, Running the Example, Security Features (+2 more)
+
+### Community 2705 - "Community 2705"
+Cohesion: 0.18
+Nodes (11): Authentication Patterns, Basic Login Flow, Contents, Cookie-Based Auth, HTTP Basic Auth, OAuth / SSO Flows, Restoring Authentication, Saving Authentication State (+3 more)
+
+### Community 2706 - "Community 2706"
+Cohesion: 0.18
+Nodes (11): B2 — env-key LOCKSTEP families — ✅ RENAMED `ONYX_*` → `OM_*` (hard switch), B3 — infra resource names (renameable, but orphan LIVE state if already deployed), Bucket A — FROZEN (do NOT rename), Bucket B — RENAME-BUT-KEEP-VALUE (rename the name → `om_*`; FREEZE the value), Bucket C — RENAME (safe): internal → `om`, brand prose → `VertualAI`, Bucket D — STALE / BROKEN (rename that also fixes real breakage), Completed on this branch, How to read the buckets (+3 more)
+
+### Community 2707 - "Community 2707"
+Cohesion: 0.18
+Nodes (10): 1. Installing uv, 2. Adding/Updating Dependencies, 3. Generating Lock File and Requirements, 4. Installing Dependencies, 5. Upgrading Dependencies, File Structure, Overview, Requirements Management with uv (+2 more)
+
+### Community 2708 - "Community 2708"
+Cohesion: 0.18
+Nodes (10): Batch Evaluation with evaluate_dataframe (Python), DO NOT use run_evals, Extracting Explanations (LLM evaluators), Extracting Labels, Extracting Numeric Scores, Finding Failures, Input Mapping, Preferred: async_evaluate_dataframe (+2 more)
+
+### Community 2709 - "Community 2709"
+Cohesion: 0.18
+Nodes (10): using_attributes Context Managers (Python), setMetadata / Context (TypeScript), Additional Attributes, Best Practices, LangChain Integration, Multi-Turn Chatbot Example, See Also, Session ID Patterns (+2 more)
+
+### Community 2710 - "Community 2710"
+Cohesion: 0.18
+Nodes (10): Attribute Reference, Batch Embeddings, Batch Embeddings, EMBEDDING Spans, Examples, Purpose, Required Attributes, Single Embedding (+2 more)
+
+### Community 2711 - "Community 2711"
+Cohesion: 0.18
+Nodes (10): Attribute Reference, Complete Reranking Example, Examples, Input Documents, Output Documents, Purpose, Required Attributes, Reranker Parameters (+2 more)
+
+### Community 2712 - "Community 2712"
+Cohesion: 0.18
+Nodes (10): Deployment Scenarios, Environment Isolation, Future: Resource Tags, Performance Scaling, PostgreSQL, Scaling, Schema Isolation, SQLite (+2 more)
+
+### Community 2713 - "Community 2713"
+Cohesion: 0.18
+Nodes (11): Access Keys Authentication, AWS Authentication Methods Overview, AWS Bearer Token Authentication (Unsupported), AWS Bedrock Authentication, AWS Default Credential Chain, AWS SDK Implementation Details, Current Status, Potential Workarounds (Not Recommended) (+3 more)
+
+### Community 2714 - "Community 2714"
+Cohesion: 0.18
+Nodes (10): Edge Cases, Ephemeral Fields: Playground Yes, Evaluator No, Error Messages (Recommendation), Problem, Provider Routing For Evaluators, "Save as Default" and the Evaluator Test Button, SDK Modification: Block Incompatible Changes, The User's Mental Model (+2 more)
+
+### Community 2715 - "Community 2715"
+Cohesion: 0.18
+Nodes (10): Build the LangGraph Application, Clean Up Resources, Define Product Recommendation Tools, Define Router Logic, Deploy to Agent Engine, Inspect Traces in Phoenix, Next Steps, Notebook Walkthrough (+2 more)
+
+### Community 2716 - "Community 2716"
+Cohesion: 0.18
+Nodes (10): 3.1 Setting Up Sessions, 3.2 Running Multi-Turn Conversations, Add Session Tracking to Your Agent, **Congratulations!**, Install Dependencies, Next Steps, Summary, Track Conversation History (+2 more)
+
+### Community 2717 - "Community 2717"
+Cohesion: 0.25
+Nodes (10): find_workflow_id(), main(), Data Science Tutor Workflow -- Test Suite ======================================, Print with Unicode fallback for Windows terminals., Find the Data Science Tutor workflow by name., Run a workflow and collect structured results., Run a single test and return pass/fail result., run_test() (+2 more)
+
+### Community 2718 - "Community 2718"
+Cohesion: 0.25
+Nodes (10): find_workflow_id(), main(), Discussion & Debate Panel Workflow — Test Suite ================================, Print with Unicode fallback for Windows terminals., Find the Discussion & Debate Panel workflow by name., Run a workflow and collect structured results.      Returns dict with:       age, Run a single test and return pass/fail result., run_test() (+2 more)
+
+### Community 2719 - "Community 2719"
+Cohesion: 0.29
+Nodes (10): create_agent(), create_workflow(), delete_workflow(), find_or_create_agent(), find_workflow(), main(), Test: promote_output packet ordering -- sequential vs llm_decision =============, Find existing agent by name, or create new one. (+2 more)
+
+### Community 2720 - "Community 2720"
+Cohesion: 0.25
+Nodes (10): find_workflow_id(), main(), SmartSearch AI Research Pipeline — Test Suite ==================================, Find the SmartSearch AI Research Pipeline workflow by name., Run a workflow and collect structured results.      Returns dict with:       age, Run a single test and return pass/fail result., Print with Unicode fallback for Windows terminals., run_test() (+2 more)
+
+### Community 2721 - "Community 2721"
+Cohesion: 0.20
+Nodes (9): Debugging with AI Assistance, Exporting for Analysis, Filtering and Processing, Installation, Looking Ahead, Output Formats, Overview, Practical Workflows (+1 more)
+
+### Community 2722 - "Community 2722"
+Cohesion: 0.20
+Nodes (9): 1. ✅ DONE — migration verified (forward + downgrade, exit 0), 2. ✅ DONE — residual sweeps clean (backend om/tests/scripts = 0 persona tokens, excl hazards). Re-run:, 3. Rebuild + apply  ← FIRST REMAINING STEP (user does this), 4. Post-deploy, Decisions baked in, ✅ DONE + verified this session, Gotchas already handled (don't re-hit), ⏳ PENDING — do these next, in order (+1 more)
+
+### Community 2723 - "Community 2723"
+Cohesion: 0.22
+Nodes (6): Key components, Perplexica Architecture, API Documentation, Coding and Contribution Practices, How to Contribute to Perplexica, Setting Up Your Environment
+
+### Community 2724 - "Community 2724"
+Cohesion: 0.29
+Nodes (9): ChatMinimalTextMessage, LLM, _format_chat_history(), _format_existing_memories(), _format_user_basic_information(), process_memory_update(), Format existing memories as a numbered list (1-indexed for readability)., Format user basic information, only including fields that have values. (+1 more)
+
+### Community 2725 - "Community 2725"
+Cohesion: 0.20
+Nodes (10): FederatedConnectorSource, ConfigurationSchemaResponse, CredentialSchemaResponse, get_configuration_schema_by_source(), get_credentials_schema_by_source(), Fetch configuration schema for a specific source type (for setup/edit forms), Fetch credential schema for a specific source type (for setup forms), Validate credentials for a specific source type (+2 more)
+
+### Community 2726 - "Community 2726"
+Cohesion: 0.31
+Nodes (9): Session, StreamingResponse, UsageReportSchema, User, GenerateReportRequest, download_usage_report(), generate_usage_report(), list_usage_reports() (+1 more)
+
+### Community 2727 - "Community 2727"
+Cohesion: 0.20
+Nodes (9): Docprocessing, Docfetching, User File Processing, Heavy, Light, Monitoring, Non-Worker Apps, Overview of VertualAI Background Jobs, Primary (Coordinator and task dispatcher), Shared Module (+1 more)
+
+### Community 2728 - "Community 2728"
+Cohesion: 0.22
+Nodes (8): Contents, Core, Foreground colour (`--interactive-foreground`), Interactive, Interactive.Container, --interactive-foreground buy-in model, Style invariants, Sub-components
+
+### Community 2729 - "Community 2729"
+Cohesion: 0.22
+Nodes (8): fetch_trigger(), Control when the GenerativeModelStore runs by patching its sleep method., Test cases for GenerativeModelStore daemon., Test that GenerativeModelStore correctly manages model lifecycle through daemon, TestGenerativeModelStore, AsyncGraphQLClient, DbSessionFactory, Event
+
+### Community 2730 - "Community 2730"
+Cohesion: 0.24
+Nodes (10): Verify state before migration., Verify state after migration and backfill., Verify state after downgrade., Set up test data before migration., _setup_test_data(), _verify_downgrade_state(), _verify_post_migration_state(), _verify_pre_migration_state() (+2 more)
+
+### Community 2731 - "Community 2731"
+Cohesion: 0.20
+Nodes (9): Automated install and test with ct, Autoscaling options, Dependency updates (when subchart versions are bumped), Local testing, One time setup, Output template to file and inspect, Resourcing, Run as non-root user (+1 more)
+
+### Community 2732 - "Community 2732"
+Cohesion: 0.20
+Nodes (9): node, ProjectColumn, ProjectFilter, ProjectFilterColumn, ProjectSort, ProjectsPageQuery, ProjectsPageQuery$data, ProjectsPageQuery$variables (+1 more)
+
+### Community 2733 - "Community 2733"
+Cohesion: 0.20
+Nodes (9): **Before We Start**, **Create the Evaluator**, **Define the Evaluation Prompt**, **Define the LLM Judge**, **Learn More About Evals**, **Step 1: Make Sure You Have Data in Phoenix**, **Step 2: Define an Evaluation**, **Step 3: Run the Evaluation** (+1 more)
+
+### Community 2734 - "Community 2734"
+Cohesion: 0.20
+Nodes (9): **Before We Start**, **Define the Evaluator**, **Define the Task**, **Learn More About Datasets and Experiments**, **Step 1: Use Explanations to Identify Improvements**, **Step 2: Define an Experiment**, **Step 3: Run the Experiment on the Dataset**, **Step 4: View Experiment Results in Phoenix** (+1 more)
+
+### Community 2735 - "Community 2735"
+Cohesion: 0.20
+Nodes (9): **Before We Start**, **Create the Evaluator**, **Define the Evaluation Prompt**, **Learn More About Evals**, **Step 1: Make Sure You Have Data in Phoenix**, **Step 2: Define an Evaluation**, **Step 3: Fetch and Filter Trace Data**, **Step 4: Run the Evaluator** (+1 more)
+
+### Community 2736 - "Community 2736"
+Cohesion: 0.20
+Nodes (9): **Adapting to Different Modalities**, **ClassificationTemplate**, **Example: Intent Classification in Audio**, **Key Considerations for Input Data**, Multimodal Templates, **Performing the Evaluation**, **Running the Evaluation with** `llm_classify`, **Structure of a ClassificationTemplate** (+1 more)
+
+### Community 2737 - "Community 2737"
+Cohesion: 0.20
+Nodes (9): Code Evaluators, Code Evaluators with Multiple Parameters, Custom LLM Evaluators, Customizing Code Evaluators with `create_evaluator`, LLM Evaluators, Pre-built LLM Evaluators, Running Evaluators in Experiments, Setup (+1 more)
+
+### Community 2738 - "Community 2738"
+Cohesion: 0.20
+Nodes (10): [Advanced Querying](https://arize.com/docs/phoenix/tracing/how-to-tracing/importing-and-exporting-traces/extract-data-from-spans#running-span-queries), [Basic Span Querying](https://arize.com/docs/phoenix/tracing/how-to-tracing/importing-and-exporting-traces/extract-data-from-spans#running-span-queries), Creating Spans, Filtering by Attributes, [Method 1: Context Manager](https://arize.com/docs/phoenix/tracing/how-to-tracing/setup-tracing/custom-spans#creating-spans), [Method 2: Decorator](https://arize.com/docs/phoenix/tracing/how-to-tracing/setup-tracing/instrument-python), Selecting Specific Attributes, Span Kinds (+2 more)
+
+### Community 2739 - "Community 2739"
+Cohesion: 0.20
+Nodes (9): Evaluations, LangChain TypeScript Quickstart, Prerequisites, Project Structure, Running the Application, Setup, Traces, Troubleshooting (+1 more)
+
+### Community 2740 - "Community 2740"
+Cohesion: 0.36
+Nodes (5): Creates two projects. The first project has two traces belonging to the same, TestTraceMutationMixin, trace_ids_to_delete(), AsyncGraphQLClient, DbSessionFactory
+
+### Community 2741 - "Community 2741"
+Cohesion: 0.20
+Nodes (9): Custom Tracer Provider, Install, Method 1: Pass tracerProvider on instantiation, Method 2: Set tracerProvider after instantiation, Method 3: Pass tracerProvider to registerInstrumentations, Observe, Resources, Run OpenAI (+1 more)
+
+### Community 2742 - "Community 2742"
+Cohesion: 0.20
+Nodes (10): Branch Organization, Bugs, Code of Conduct, Code Review Conduct, Code Reviews, Contributing to Arize-Phoenix, Contributor License Agreement (CLA), Pull Request (PR) Descriptions (+2 more)
+
+### Community 2743 - "Community 2743"
+Cohesion: 0.20
+Nodes (9): Additional Evaluation Considerations, Benefits of Multi-Agent Systems, Core Evaluation Strategies Explained, **Develop Multi-Agent Specific Evaluations**, **Hierarchical Evaluation**, **Leverage Single-Agent Evaluations**, Multi-Agent Architectures, Practical Approaches to Evaluation (+1 more)
+
+### Community 2744 - "Community 2744"
+Cohesion: 0.20
+Nodes (9): Additional Evaluation Considerations, Benefits of Multi-Agent Systems, Core Evaluation Strategies Explained, **Develop Multi-Agent Specific Evaluations**, **Hierarchical Evaluation**, **Leverage Single-Agent Evaluations**, Multi-Agent Architectures, Practical Approaches to Evaluation (+1 more)
+
+### Community 2745 - "Community 2745"
+Cohesion: 0.20
+Nodes (9): Creating a Classifier, Data Mapping, Examples, Experimentation with Phoenix, Pre-Built Evaluators, Running Experiments, Usage, Community (+1 more)
+
+### Community 2746 - "Community 2746"
+Cohesion: 0.20
+Nodes (9): Building, Community, Debugging, Development, Development Mode, Environment Variables, Install, Installation (+1 more)
+
+### Community 2747 - "Community 2747"
+Cohesion: 0.20
+Nodes (10): Calling `.get_spans()` on a tracer is no longer supported. Use `px.Client()` to get the spans as a dataframe from Phoenix., Endpoint should be configured via environment variables `PHOENIX_HOST`, `PHOENIX_PORT`, or `PHOENIX_COLLECTOR_ENDPOINT`., New (v3.0.0), New (v3.0.0), New (v3.0.0), Old (v2.x), Old (v2.x), Old (v2.x) (+2 more)
+
+### Community 2748 - "Community 2748"
+Cohesion: 0.20
+Nodes (10): Enabling Authentication, Migrating to OpenInference, Migrations, PostgreSQL Connection Environment Variables, v0.x to v1.0.0, v10.0.0 to v11.0.0, v11.0.0 to v12.0.0, v4.x to v5.0.0 (+2 more)
+
+### Community 2749 - "Community 2749"
+Cohesion: 0.20
+Nodes (9): API Reference, External Links, Indices and tables, Installation, Quick Start, Core Functions, Features, Phoenix Evals Reference (+1 more)
+
+### Community 2750 - "Community 2750"
+Cohesion: 0.20
+Nodes (9): Backups, Configuration, Database Sizing, Enable Batch Processing, Enable Database Backups, Memory Sizing, Resourcing Guidelines, **Scaling Facilities** (+1 more)
+
+### Community 2751 - "Community 2751"
+Cohesion: 0.20
+Nodes (9): Advanced: OTel Primitives, Advanced: TracerProvider Options, Configuration, Endpoint Configuration, Environment Variables, Installation, Quick Start, Reference Documentation (+1 more)
+
+### Community 2752 - "Community 2752"
+Cohesion: 0.22
+Nodes (6): AccessDecision, PermissionDenied, Domain types for RBAC decisions.  Kept free of any web-framework import so the, The result of a single policy evaluation.      ``reason`` is a short, log-safe, Raised by the service when a required permission is not held.      Carries the, Enforce a decision (PEP helper). Raises on deny.
+
+### Community 2753 - "Community 2753"
+Cohesion: 0.20
+Nodes (9): Best Practices, Creating Datasets, Evaluators as experiment evaluators, Evaluators as the task (meta evaluation), Experiments: Datasets in Python, From Production Traces, Key Parameters, Retrieving Datasets (+1 more)
+
+### Community 2754 - "Community 2754"
+Cohesion: 0.20
+Nodes (9): Auto-Instrumentation (Python), Auto-Instrumentation (TypeScript), Combining Auto + Manual, Limitations, Setup, Supported Frameworks, Projects (Python), Projects (TypeScript) (+1 more)
+
+### Community 2755 - "Community 2755"
+Cohesion: 0.20
+Nodes (9): As Decorators, Combined (using_attributes), Install, Metadata, On a Single Span, Phoenix Tracing: Custom Metadata (Python), Session, Tags (+1 more)
+
+### Community 2756 - "Community 2756"
+Cohesion: 0.20
+Nodes (9): API Call Tool, Attribute Reference, Calculator Tool, Database Query Tool, Examples, Purpose, Required Attributes, Tool Execution Attributes (+1 more)
+
+### Community 2757 - "Community 2757"
+Cohesion: 0.20
+Nodes (9): Files Generated, Important Notes, Need More Details?, Quick Start: Tenant Cleanup Without Bastion, Safety First, Test Your Setup, TL;DR - The Commands You Need, What Changed? (+1 more)
+
+### Community 2758 - "Community 2758"
+Cohesion: 0.20
+Nodes (6): Test that files with None content are skipped., Test that files without filename use file_id as fallback., Test that empty input returns empty output., Tests for ChatLoadedFile to ChatFile conversion., Test conversion of ChatLoadedFile to ChatFile., TestChatFileConversion
+
+### Community 2760 - "Community 2760"
+Cohesion: 0.20
+Nodes (10): 6.1 Animate SVG Wrapper Instead of SVG Element, 6.2 CSS content-visibility for Long Lists, 6.3 Hoist Static JSX Elements, 6.4 Optimize SVG Precision, 6.5 Prevent Hydration Mismatch Without Flickering, 6.6 Suppress Expected Hydration Mismatches, 6.7 Use Activity Component for Show/Hide, 6.8 Use Explicit Conditional Rendering (+2 more)
+
+### Community 2761 - "Community 2761"
+Cohesion: 0.20
+Nodes (9): 1. Cybercrime — TGCSB / AP Cybercrime — 20/20, 2. State Police — Investigation & Station Records — 19/20, 3. Police Verification / Special Branch — 18/20, 4. Prisons & Correctional Services (e-Prisons) — 17/20, 5. CID — Economic Offences & Anti-Human-Trafficking — 16/20, 6. Fire & Emergency / SDRFS — 15/20, 7-8 (de-prioritise), GTM read (+1 more)
+
+### Community 2762 - "Community 2762"
+Cohesion: 0.31
+Nodes (9): create_chat_session(), load_chat_session(), main(), Test: Workflow Chat History Persistence ========================================, Load a chat session to verify persisted messages., Create a chat session with the given agent., Send a message via the chat API and stream the response.      Returns (user_mess, _safe_print() (+1 more)
+
+### Community 2763 - "Community 2763"
+Cohesion: 0.22
+Nodes (8): Complete Examples, Feedback, How It Works, Linking to Source Spans, Overview, Querying Spans, Requirements, Transforming Data
+
+### Community 2764 - "Community 2764"
+Cohesion: 0.22
+Nodes (8): Custom Tracer Provider, Install, Observe, Pass tracerProvider on instantiation, Resources, Run Anthropic, Set tracerProvider after instantiation, Setup
+
+### Community 2765 - "Community 2765"
+Cohesion: 0.31
+Nodes (9): GET /api/providers, Perplexica Search API (POST /api/search), Perplexica Architecture Overview, Citations Mechanism, Classification, How Perplexica Works (flow), Project Structure, Where to make changes (+1 more)
+
+### Community 2766 - "Community 2766"
+Cohesion: 0.33
+Nodes (4): AppSettingsService, Application-settings service (branding + feature toggles).  Loads/saves the ty, AppSettings, AppSettingsSchema
+
+### Community 2767 - "Community 2767"
+Cohesion: 0.39
+Nodes (8): Redis, UUID, _get_fence_key(), is_chat_session_processing(), Generate the Redis key for a chat session processing a message.      Args:, Set or clear the fence for a chat session processing a message.      If the key, Check if the chat session is processing a message.      Args:         chat_sessi, set_processing_status()
+
+### Community 2768 - "Community 2768"
+Cohesion: 0.31
+Nodes (8): ExternalAccess, Github, get_external_access_permission(), Repository, deserialize_repository(), Get the external access permission for a repository.     This functionality requ, Deserialize a SerializedRepository back into a Repository object., SerializedRepository
+
+### Community 2769 - "Community 2769"
+Cohesion: 0.25
+Nodes (9): FederatedConnector, fetch_all_federated_connectors(), fetch_all_federated_connectors_parallel(), Fetch all federated connectors with their OAuth tokens and document sets., get_user_oauth_status(), Get OAuth status for all federated connectors for the current user, add_state_to_oauth_url(), Add state parameter to an OAuth URL.      Args:         base_oauth_url: The base (+1 more)
+
+### Community 2770 - "Community 2770"
+Cohesion: 0.22
+Nodes (9): Examples, How documents are represented, How Files are handled, Other related pointers, Overview of Context Management, Product considerations, Reasons / Experiments, System Prompt (+1 more)
+
+### Community 2771 - "Community 2771"
+Cohesion: 0.22
+Nodes (8): CL1 — Residential Kitchen Fire (CLM-2025-08742), Derived totals (consistency anchors), Document packet (`CL1/documents/`), Evidence images, Per-agent file requirements (full workflow, for reference), Persona-prompt anti-stall fix (DONE), Running, TODO — Phase 2: generic true file ingestion
+
+### Community 2772 - "Community 2772"
+Cohesion: 0.22
+Nodes (8): Building from Source, Code Quality, Development, Local Deployment, Pre-loaded Images for Faster Startup, Prerequisites, Running the Service, Testing
+
+### Community 2773 - "Community 2773"
+Cohesion: 0.22
+Nodes (8): Why do evaluators accept a payload and an input\_mapping vs. kwargs?, Binding System, Callable Mappings, Input Mapping Types, Path Mapping Examples, Pydantic Input Schemas, Schema Inference, Summary
+
+### Community 2774 - "Community 2774"
+Cohesion: 0.22
+Nodes (8): Why do evaluators accept a payload and an input\_mapping vs. kwargs?&#x20;, Binding System, Callable Mappings, Input Mapping Types, Path Mapping Examples, Pydantic Input Schemas, Schema Inference, Summary
+
+### Community 2775 - "Community 2775"
+Cohesion: 0.22
+Nodes (8): 1. String Prompts, 2. Message Lists, 3. Structured Content Parts (Python only), Client-Specific Behavior, Full Example, Supported Formats, Template Variables, Using Phoenix Prompt Versions as Eval Templates (Python)
+
+### Community 2776 - "Community 2776"
+Cohesion: 0.22
+Nodes (8): Datasets, Dry Run, Evaluators, Experiments, Launch Phoenix, Python, Tasks, TypeScript
+
+### Community 2777 - "Community 2777"
+Cohesion: 0.22
+Nodes (8): 1. Install Dependencies, 2. Set Environment Variables, 3. Run the Development Server, 4. Integrate the Widget, 5. Deploy, Custom Styling and Configuration, Getting Started, VertualAI Chat Bot Widget
+
+### Community 2778 - "Community 2778"
+Cohesion: 0.22
+Nodes (8): 1. Install All Dependencies, 2. Configure Environment Variables, 3. Run the Tutorial, Documentation, Overview, Prerequisites, Setup, TypeScript Experiments Quickstart
+
+### Community 2779 - "Community 2779"
+Cohesion: 0.22
+Nodes (8): Code Eval Example, Connect to Phoenix, Download trace dataset from Phoenix, Generate evaluations, Install dependencies & Set environment variables, LLM Eval Example, Prepare trace dataset, Upload evaluations to Phoenix
+
+### Community 2780 - "Community 2780"
+Cohesion: 0.22
+Nodes (8): CreateProjectTraceRetentionPolicyInput, CreateRetentionPolicyMutation, CreateRetentionPolicyMutation$data, CreateRetentionPolicyMutation$variables, node, ProjectTraceRetentionRuleMaxCountInput, ProjectTraceRetentionRuleMaxDaysInput, ProjectTraceRetentionRuleMaxDaysOrCountInput
+
+### Community 2781 - "Community 2781"
+Cohesion: 0.25
+Nodes (7): node, TransferTracesButton_projects$data, TransferTracesButton_projects$key, node, TransferTracesButtonProjectsQuery, TransferTracesButtonProjectsQuery$data, TransferTracesButtonProjectsQuery$variables
+
+### Community 2782 - "Community 2782"
+Cohesion: 0.22
+Nodes (8): Create Dataset in Phoenix, Define your CrewAI Crew of Agents & Tasks, Define your Evaluators, Define your Experiment Task, Evaluating Agents using Google Gen AI, Key Technologies, Overview, Run your Experiment and Visualize Results in Phoenix
+
+### Community 2783 - "Community 2783"
+Cohesion: 0.22
+Nodes (8): Cross-cutting themes, One Pattern, Every Department, Recommended pilot sequencing, The nine departments (each has its own brief in `departments/`), The pattern (identical everywhere), The standard offer — one office, twelve weeks, VirtualAI for Government — Telangana & Andhra Pradesh · Executive Summary, ఒకే నమూనా, ప్రతి శాఖకు — ప్రభుత్వ మౌలిక వసతుల్లోనే
+
+### Community 2784 - "Community 2784"
+Cohesion: 0.22
+Nodes (8): Alternative: Fully Custom LLM Evaluator, Building Custom Evaluators, Classification Evals, Custom Numeric Rating LLM Evaluator, Improving your Custom Evals, Label Choices, Putting it together, Steps to create a custom evaluator:
+
+### Community 2785 - "Community 2785"
+Cohesion: 0.22
+Nodes (8): 1. String Prompts, 2. Message Lists, 3. Structured Content Parts (Python only), Client-Specific Behavior, Full Example, Supported Formats, Template Variables, Using Phoenix Prompt Versions as Eval Templates (Python)
+
+### Community 2786 - "Community 2786"
+Cohesion: 0.22
+Nodes (9): Add More Evaluations, Create a Task, Define Evaluators, Dry Run, If you want to attach more evaluations to the same experiment after the fact, you can do so with `evaluate_experiment`., Load a Dataset, Run an Experiment, Run Experiments with the SDK (+1 more)
+
+### Community 2787 - "Community 2787"
+Cohesion: 0.22
+Nodes (8): Connect with Claude Code, Connect with Claude Desktop, Connect with Cursor or VS Code, Connecting the Phoenix MCP Server, Hoping to see additional functionality?, Phoenix Docs MCP, Phoenix MCP Server, Using the Phoenix MCP Server
+
+### Community 2788 - "Community 2788"
+Cohesion: 0.22
+Nodes (9): Current Implementation (Stopgap), Future Migration (Dedicated Schema), Future Migration: Stopgap → Dedicated LDAP Schema, Migration Script, Post-Migration, Pre-Migration, Summary, Validation (+1 more)
+
+### Community 2789 - "Community 2789"
+Cohesion: 0.22
+Nodes (9): 9. TLS Port Defaulting & LDAPS Configuration, Comparison to Grafana, Docker Validation, Impact Analysis, Migration Notes, Phoenix Implementation, Problem Statement, Root Cause Analysis (+1 more)
+
+### Community 2790 - "Community 2790"
+Cohesion: 0.22
+Nodes (8): Example of Router Evaluation:, How do you evaluate an AI Agent?, How to Evaluate Agent Planning, How to Evaluate Agent Reflection, How to Evaluate Agent Skills, How to Evaluate an Agent Router, How to Evaluate an Agent's Path, Putting it all Together
+
+### Community 2791 - "Community 2791"
+Cohesion: 0.22
+Nodes (8): Dataset for experiments, Mastra + Phoenix TypeScript Quickstart, Prerequisites, Project structure, Scripts, Setup, Typical workflow, What's in this quickstart
+
+### Community 2792 - "Community 2792"
+Cohesion: 0.22
+Nodes (9): 0.5 Craft System Analysis — How It Compares, Craft Architecture at a Glance, Craft vs Chat vs Our Proposed Multi-Agent System, Execution Flow, Is Craft Agent-Based Orchestration?, Key Backend Files, Key Frontend Files, What Craft Is (+1 more)
+
+### Community 2793 - "Community 2793"
+Cohesion: 0.33
+Nodes (9): WS-A integrator hand-off (removals summary), CONTRACTS.md — cross-workstream contracts, WS-A — Purge license paywall + billing, Billing/Stripe/control-plane decoupling, Schema-per-tenant Postgres isolation (search_path + contextvars), WS-M — Multi-tenant data isolation, EE-Rewrite Progress Overview roll-up, WS-A status log (+1 more)
+
+### Community 2794 - "Community 2794"
+Cohesion: 0.28
+Nodes (9): LangChain MCP Adapters, Mcp-Session-Id header, MCP Specification (2025-11-25), Microsoft Agent Framework, Pattern A: Client-Side Session Pool, Pattern B: Server-Side State Externalization, Pattern C: Single-Call Aggregation Workaround, MCP Session Persistence Problem (+1 more)
+
+### Community 2795 - "Community 2795"
+Cohesion: 0.22
+Nodes (9): Authorization Code Flow, Flow Diagram, How PKCE Works, Key Steps, OIDC Flows, PKCE Flow, PKCE Flow Diagram, PKCE Methods (+1 more)
+
+### Community 2796 - "Community 2796"
+Cohesion: 0.22
+Nodes (9): Advanced Setup (Building from Source), Getting Started with Docker (Recommended), Installation, Lemonade Connection Errors, Local OpenAI-API-Compliant Servers, Non-Docker Installation, Ollama Connection Errors, Troubleshooting (+1 more)
+
+### Community 2797 - "Community 2797"
+Cohesion: 0.22
+Nodes (5): Contribution License Agreement (Arize AI), Phoenix CLAUDE.md (AGENTS.md pointer), Contributor Covenant v2.0, Contributing to Arize-Phoenix, Small Simple Pull Requests Principle
+
+### Community 2798 - "Community 2798"
+Cohesion: 0.22
+Nodes (9): Calling `.get_spans()` on a handler is no longer supported. Use `px.Client()` to get the spans as a dataframe from Phoenix., Endpoint should be configured via environment variables `PHOENIX_HOST`, `PHOENIX_PORT`, or `PHOENIX_COLLECTOR_ENDPOINT`., LlamaIndex Tracing, New (v3.0.0), New (v3.0.0), Old (v2.x), Old (v2.x), The standard way of instrumenting your LlamaIndex application remains the same between 2.x and 3.x: (+1 more)
+
+### Community 2799 - "Community 2799"
+Cohesion: 0.25
+Nodes (9): Contract 1 — Team model, python3-saml (OneLogin) SP library, SP-initiated SAML flow + ACS + JIT provisioning, WS-C — SAML SSO clean-room, SCIM group -> Team mapping, SCIM 2.0 (RFC 7643 + RFC 7644), WS-G — SCIM 2.0 provisioning clean-room, WS-C status log (+1 more)
+
+### Community 2800 - "Community 2800"
+Cohesion: 0.22
+Nodes (8): Annotation Fields, Annotation Types, Annotations Overview, Annotator Kinds, Examples, Optional Fields, Required Fields, Result Fields (At Least One Required)
+
+### Community 2801 - "Community 2801"
+Cohesion: 0.22
+Nodes (8): API Reference, Client Setup, Document Annotations, Python SDK Annotation Patterns, RAG Pipeline Example, Session Annotations, Span Annotations, Trace Annotations
+
+### Community 2802 - "Community 2802"
+Cohesion: 0.22
+Nodes (8): API Reference, Client Setup, Document Annotations, RAG Pipeline Example, Session Annotations, Span Annotations, Trace Annotations, TypeScript SDK Annotation Patterns
+
+### Community 2803 - "Community 2803"
+Cohesion: 0.22
+Nodes (8): Available (2.0), Evaluators: Pre-Built, Exploration Pattern, Pre-Built Evaluators, Python, TypeScript, Validation Required, When to Use
+
+### Community 2804 - "Community 2804"
+Cohesion: 0.22
+Nodes (8): Capturing Input/Output, Convenience Wrappers, Custom I/O Processing, Manual Instrumentation (TypeScript), Quick Reference, See Also, Setup, withSpan for Other Kinds
+
+### Community 2805 - "Community 2805"
+Cohesion: 0.22
+Nodes (8): 1. Failure-Focused (Highest Priority), 2. Outliers, 3. Stratified (Coverage), 4. Metric-Guided, Building a Review Queue, Observe: Sampling Strategies, Sample Size Guidelines, Strategies
+
+### Community 2806 - "Community 2806"
+Cohesion: 0.22
+Nodes (8): 1. Failure-Focused (Highest Priority), 2. Outliers, 3. Stratified (Coverage), 4. Metric-Guided, Building a Review Queue, Observe: Sampling Strategies (TypeScript), Sample Size Guidelines, Strategies
+
+### Community 2807 - "Community 2807"
+Cohesion: 0.22
+Nodes (8): Batch Processing, Data Masking (PII Protection), Error Handling, Metadata, Phoenix Tracing: Production Guide (TypeScript), Production Checklist, Shutdown Handling, Span Filtering
+
+### Community 2808 - "Community 2808"
+Cohesion: 0.22
+Nodes (8): Cost Tracking, Example: Basic LLM Call, Example: LLM with Tool Calls, Key Attributes, LLM Spans, Messages, Required Attributes, See Also
+
+### Community 2809 - "Community 2809"
+Cohesion: 0.28
+Nodes (9): Annotation, Dataset Evaluator (Test Cases), Evaluation Target, Evaluator, LLM Evaluators, Project Evaluator (Online Evals), Score, Task (+1 more)
+
+### Community 2810 - "Community 2810"
+Cohesion: 0.22
+Nodes (8): **1. Gradle**, Add Dependencies, **Configuration for Phoenix Tracing**, Observe, Prerequisites, Resources, Run Spring AI, **Setup Phoenix**
+
+### Community 2811 - "Community 2811"
+Cohesion: 0.22
+Nodes (8): Add as Tools, Build Query Engine Tools using Chroma, Company Policies Database, Create ReAct Agent, Employees Database, Notebook Walkthrough, Test Your Agent, View Traces in Phoenix
+
+### Community 2812 - "Community 2812"
+Cohesion: 0.22
+Nodes (8): Advanced, Annotate Traces, Cost Tracking, Customize Traces & Spans, Import & Export Traces, Manual Instrumentation, Querying Spans, Setup Tracing
+
+### Community 2813 - "Community 2813"
+Cohesion: 0.22
+Nodes (8): 2.1 Human Annotations in the UI, 2.2 Programmatic Annotations (User Feedback), Annotate in the UI, Create Annotation Config, Get the Span ID from Running Code, Log Feedback via Phoenix Client, Next Steps, Summary
+
+### Community 2814 - "Community 2814"
+Cohesion: 0.22
+Nodes (8): Edit Prompt and Re-Run Span, Next Steps, Save Edited Prompt as a New Prompt Version (Version 2), Save Original Prompt to Prompt Hub, Step 1: Locate Bad Spans in Traces, Step 2: Replay Span and Edit Prompt in Playground, Step 3: Load Edited Prompt Back Into Your Code, Summary
+
+### Community 2815 - "Community 2815"
+Cohesion: 0.22
+Nodes (8): Install the Prompt Learning SDK, Load Experiment for Training, Load Unoptimized Prompt, Measure New Prompt Version's Performance, Next Steps, Optimize Prompt (Version 5), Summary, What is Prompt Learning?
+
+### Community 2816 - "Community 2816"
+Cohesion: 0.22
+Nodes (8): Define Evaluators, Define Task Function, Next Steps, Run Experiment, Step 1: Load Dataset of Inputs, Step 2: Run Experiment with Our Current Prompt, Step 3: Analyze Experiment Results, Summary
+
+### Community 2817 - "Community 2817"
+Cohesion: 0.22
+Nodes (8): Building, Debugging, Development, Development Mode, Environment Variables, Install, Installation, License
+
+### Community 2818 - "Community 2818"
+Cohesion: 0.22
+Nodes (8): 8.1 Initialize App Once, Not Per Mount, 8.2 Store Event Handlers in Refs, 8.3 useEffectEvent for Stable Callback Refs, 8. Advanced Patterns, Abstract, React Best Practices, References, Table of Contents
+
+### Community 2819 - "Community 2819"
+Cohesion: 0.25
+Nodes (8): Answer generation, How citations work, How Perplexica Works, Image and video search, Research, Search API, What happens when you ask a question, Widgets
+
+### Community 2820 - "Community 2820"
+Cohesion: 0.25
+Nodes (7): **1. Gradle**, Add Dependencies, Observe, Prerequisites, Resources, Run Arconia, **Setup Phoenix Tracing**
+
+### Community 2821 - "Community 2821"
+Cohesion: 0.25
+Nodes (7): Architecture Decisions, Branch-Aware via Tree Structure, Chat History Compression, Cutoff Marker Prompt Strategy, Flow, Key Functions, Progressive Summarization
+
+### Community 2822 - "Community 2822"
+Cohesion: 0.29
+Nodes (4): Any, NOTE: enforce that pool_size and pool_max_overflow are passed in. These are, NOTE: enforce that pool_size and pool_max_overflow are passed in. These are, Context manager that initializes the engine and guarantees cleanup.
+
+### Community 2823 - "Community 2823"
+Cohesion: 0.25
+Nodes (7): BasicExpertInfo, ChannelType, ExternalAccess, WebClient, get_channel_access(), Get channel access permissions for a Slack channel.      Args:         client, # NOTE: groups are not used, since adding a group to a channel just adds all
+
+### Community 2824 - "Community 2824"
+Cohesion: 0.29
+Nodes (4): DefaultIndexingEmbedder, embedder(), mock_heartbeat(), MockHeartbeat
+
+### Community 2825 - "Community 2825"
+Cohesion: 0.25
+Nodes (7): Build, Test, and Development Commands, Coding Style & Naming Conventions, Commit & Pull Request Guidelines, Project Structure & Module Organization, Repository Guidelines, Security & Configuration Tips, Testing Guidelines
+
+### Community 2826 - "Community 2826"
+Cohesion: 0.25
+Nodes (7): **Applying Context at System Scale**, From Prompts to Protocols - Takeaways, How to Optimize Context Like Code, Prompt Engineering ≠ Context Engineering, Scaling Agents Means Scaling Context, Six Principles for Optimizing Context, What Is Context Engineering?
+
+### Community 2827 - "Community 2827"
+Cohesion: 0.25
+Nodes (7): Deep Research for Workspaces — Support Notes, Deferred follow-up (Option B — hybrid, not built), Design decision: search-scoped RAG, not context injection, Status: IMPLEMENTED (Option A — workspace-scoped search), Verification, What changed (all in `backend/om/chat/`), Why it was only a stub (not an architectural limit)
+
+### Community 2828 - "Community 2828"
+Cohesion: 0.25
+Nodes (7): dev.bat Commands, Migrating from Named Volumes, Prerequisites, Quick Start, Service Shortcuts, Volumes, Windows Development Setup
+
+### Community 2829 - "Community 2829"
+Cohesion: 0.32
+Nodes (5): RateLimiter, Lazily initialize async primitives to ensure they are created in the correct eve, AsyncCallable, GenericType, ParameterSpec
+
+### Community 2830 - "Community 2830"
+Cohesion: 0.25
+Nodes (7): Accessing First and Last Spans, Resources, Understanding Span Topology, Usage, When to Use First vs Last Spans, Working with All Captured Spans, Working with Multiple Span Types
+
+### Community 2831 - "Community 2831"
+Cohesion: 0.25
+Nodes (7): Backed by Arize AI, Ease of Self-Hosting, Feature Access, Feature Comparison, Final Thoughts, Instrumentation Approach, What is the difference between Arize Phoenix and Langfuse?
+
+### Community 2832 - "Community 2832"
+Cohesion: 0.25
+Nodes (7): Backed by Arize AI, Ecosystem Lock-In vs. Ecosystem-Agnostic, Feature Comparison, Final Thoughts, Open vs. Closed Source, Self-Hosting: Free vs. Paid, What is the difference between Arize Phoenix and LangSmith?
+
+### Community 2833 - "Community 2833"
+Cohesion: 0.25
+Nodes (7): Data Generation Scripts, Files, Getting Started, Sample Queries to Run after Data is Generated, Select Random Conversation ID, Select Spans by Conversation ID, Show Spans Table Size Stats
+
+### Community 2834 - "Community 2834"
+Cohesion: 0.25
+Nodes (7): AnnotationSource, AnnotatorKind, CreateDocumentAnnotationInput, DocumentAnnotationFormCreateMutation, DocumentAnnotationFormCreateMutation$data, DocumentAnnotationFormCreateMutation$variables, node
+
+### Community 2835 - "Community 2835"
+Cohesion: 0.25
+Nodes (7): AnnotationSource, AnnotatorKind, DocumentAnnotationFormPatchMutation, DocumentAnnotationFormPatchMutation$data, DocumentAnnotationFormPatchMutation$variables, node, PatchAnnotationInput
+
+### Community 2836 - "Community 2836"
+Cohesion: 0.25
+Nodes (7): **Before We Start**, **Learn More About Datasets and Experiments**, **Step 1: Use Explanations to Identify Improvements**, **Step 2: Define an Experiment**, **Step 3: Run the Experiment on the Dataset**, **Step 4: View Experiment Results in Phoenix**, **Update the Agent Instructions**
+
+### Community 2837 - "Community 2837"
+Cohesion: 0.25
+Nodes (8): Also in this folder, 🏥 Citizen-service, ⚖️ Judiciary, 🚔 Police / Home, 🏛️ Revenue / Collectorate, Start here, The 9 selected departments — one-line use case each, VirtualAI — Government GTM Package (Telangana & Andhra Pradesh)
+
+### Community 2838 - "Community 2838"
+Cohesion: 0.25
+Nodes (7): Before you begin:, Categorical - llm\_classify, Improving your Custom Eval, Logging Evaluations to Phoenix, Numeric - llm\_generate, Preparing your data, Snap to Rails Function
+
+### Community 2839 - "Community 2839"
+Cohesion: 0.25
+Nodes (7): Configure a Prompt, Define Evaluators for the Issues You See, Experiment Annotations and Optimization Direction, Load a Dataset, Review Failure Modes, Run an Experiment, Run Experiments in the UI
+
+### Community 2840 - "Community 2840"
+Cohesion: 0.25
+Nodes (7): Creating a custom tag, Creating a Tag, Creating and Managing Tags, Listing tags, Pulling a prompt by tag, Tag Naming Rules, Using the Client
+
+### Community 2841 - "Community 2841"
+Cohesion: 0.29
+Nodes (7): Comparing Prompts, Configuring Dataset Paths, Playground Traces, Prompt Editor, Setup, Using Datasets with Prompts, Prompt Playground
+
+### Community 2842 - "Community 2842"
+Cohesion: 0.25
+Nodes (8): Assignment Steps: From Labels to Confident Measurement 📊, Step 1: Set Up Phoenix and Generate Traces *[Option 1 starts here]*, Step 2: Label Your Data *[Option 2 starts here]*, Step 3: Split Your Labeled Data *[Option 3 starts here]*, Step 4: Develop Your LLM-as-Judge Prompt *[All options continue from here]*, Step 5: Refine & Validate Your Judge, Step 6: Measure on "New" Traces, Step 7: Report Results with judgy
+
+### Community 2843 - "Community 2843"
+Cohesion: 0.25
+Nodes (7): Add Dependencies, Configuration for Phoenix Tracing, Observe, Prerequisites, Resources, Run LangChain4j, Setup Phoenix
+
+### Community 2844 - "Community 2844"
+Cohesion: 0.25
+Nodes (7): Create a Flow, Create .env file, Go to Arize Phoenix, Go to Hosted Langflow UI, Inspect Traces, Pull Langflow Repo, Start Docker Desktop
+
+### Community 2845 - "Community 2845"
+Cohesion: 0.25
+Nodes (7): Configure Environment, Create Agents and Tools, Install, Observe, Resources, Running Your Application, Setup
+
+### Community 2846 - "Community 2846"
+Cohesion: 0.25
+Nodes (8): _build_headers_from_template(), Creates a new or edits an existing MCP server. Returns the DB model, Create or update an MCP server (no tools yet), Build headers dict from template and credentials, _upsert_mcp_server(), MCPAuthTemplate, MCPServerCreateResponse, MCPToolCreateRequest
+
+### Community 2847 - "Community 2847"
+Cohesion: 0.25
+Nodes (7): Install, Observe, Resources, Run Your Workflow, Setup, Step 1: Start the Phoenix Server, Step 2: Configure Your Workflow
+
+### Community 2848 - "Community 2848"
+Cohesion: 0.25
+Nodes (8): 1. **OIDCServer** (`src/oidc/server.ts`), 2. **TokenFactory** (`src/utils/token-factory.ts`), 3. **PKCEUtils** (`src/oidc/pkce.ts`), 4. **DatabaseClient** (`src/database/client.ts`), 5. **Logger** (`src/utils/logger.ts`), Architecture, Component Diagram, Key Components
+
+### Community 2849 - "Community 2849"
+Cohesion: 0.25
+Nodes (7): Common Issues, Install, Observe, Resources, Run OpenRouter, Setup, What Gets Traced
+
+### Community 2850 - "Community 2850"
+Cohesion: 0.25
+Nodes (7): 1. Choose a Metric, 2. Build a Golden Dataset, 3. Decide Which LLM to use For Evaluation, 4. Build the Eval Template, 5. Run Eval on your Golden Dataset and Benchmark Performance, Customize Your Own Eval Templates, Steps to Building Your Own Eval
+
+### Community 2851 - "Community 2851"
+Cohesion: 0.25
+Nodes (7): 1. Choose a Metric, 2. Build a Golden Dataset, 3. Decide Which LLM to use For Evaluation, 4. Build the Eval Template, 5. Run Eval on your Golden Dataset and Benchmark Performance, Customize Your Own Eval Templates, Steps to Building Your Own Eval
+
+### Community 2852 - "Community 2852"
+Cohesion: 0.25
+Nodes (7): 0.6.3, 0.9.0, 1.0.0, @arizeai/phoenix-evals, Major Changes, Minor Changes, Patch Changes
+
+### Community 2853 - "Community 2853"
+Cohesion: 0.25
+Nodes (7): arize-phoenix-evals, Documentation, Evaluating Dataframes, Features, Quick Start, Community, Installation
+
+### Community 2854 - "Community 2854"
+Cohesion: 0.29
+Nodes (5): Event, Forward data while inspecting for TLS indicators., Handle a single client connection with proper resource management., Remove old results to prevent memory leak, keeping last 1000., socket
+
+### Community 2855 - "Community 2855"
+Cohesion: 0.25
+Nodes (8): API & Programmatic Access, Authentication & Security, Datasets & Experiments, Evaluation, Projects & Organization, Prompt Engineering, Skills, Tracing
+
+### Community 2856 - "Community 2856"
+Cohesion: 0.25
+Nodes (7): Basic Usage with OpenAI, Install, Observe, Resources, Run Portkey, Setup, Using Portkey SDK Directly
+
+### Community 2857 - "Community 2857"
+Cohesion: 0.25
+Nodes (7): Define Tools, Experiment, Experiment, Initial Prompt, Load Dataset Into Phoenix, ReAct Prompt, Set up Dependencies and Keys
+
+### Community 2858 - "Community 2858"
+Cohesion: 0.29
+Nodes (8): ReAct Prompting, Agentic RAG, LlamaIndex ReAct Agent, Tracing Cookbooks, LangGraph, Product Recommendation Agent, OpenAI Function Calling, Structured Data Extraction
+
+### Community 2859 - "Community 2859"
+Cohesion: 0.25
+Nodes (7): Advanced Usage, Agent with System Prompts and Tools, Basic Usage, Install, Observe, Resources, Setup
+
+### Community 2860 - "Community 2860"
+Cohesion: 0.25
+Nodes (8): Agentic RAG Examples, Features, Files, Installation, Notes, Overview, Requirements, Usage
+
+### Community 2861 - "Community 2861"
+Cohesion: 0.25
+Nodes (7): Files, How to add a new resource-scoped permission, Multi-tenant readiness, RBAC — enterprise access control around Teams, Research that informed the design, Structured log events (Standard 9), The model (and why)
+
+### Community 2862 - "Community 2862"
+Cohesion: 0.25
+Nodes (7): Cleanup (after integration), Contract-sync rule, HANDOFF — how to run the workstreams (point-and-implement), Monitoring, When workstreams are done — integrate, Which files, in what order, Your entire action per workstream
+
+### Community 2863 - "Community 2863"
+Cohesion: 0.25
+Nodes (7): Every workstream must (from CONTRACTS.md standards), How to run (point-and-implement), Launch order, Read first, rewrite-plans — clean-room reimplementation of the Onyx-EE-origin code, Why, Workstreams (one plan file each)
+
+### Community 2864 - "Community 2864"
+Cohesion: 0.25
+Nodes (7): Basic Pattern, Common Patterns, Evaluators: Code Evaluators in Python, Important: Code vs LLM Evaluators, Parameter Binding, Pre-Built, Return Types
+
+### Community 2865 - "Community 2865"
+Cohesion: 0.25
+Nodes (7): Add Evaluations Later, Basic Usage, Evaluator Parameters, Experiments: Running Experiments in Python, Options, Results, Task Functions
+
+### Community 2866 - "Community 2866"
+Cohesion: 0.25
+Nodes (7): Dimension-Based Approach, Experiments: Generating Synthetic Test Data (TypeScript), Quality Control, Sample Sizes, Target Failure Modes, Two-Step Generation, When to Use
+
+### Community 2867 - "Community 2867"
+Cohesion: 0.25
+Nodes (6): CHAIN Spans, Common Attributes, Example: Nested Sub-Chain, Example: Root Chain, Purpose, Required Attributes
+
+### Community 2868 - "Community 2868"
+Cohesion: 0.25
+Nodes (7): Custom Attributes for Evals, Essential Attributes, Exporting for Evaluation, Observe: Tracing Setup, Quick Setup, Uploading Evaluations as Annotations, Verify
+
+### Community 2869 - "Community 2869"
+Cohesion: 0.25
+Nodes (7): Code, Environment Variable (Recommended), Overview, Phoenix Tracing: Projects (Python), Setup, Switching Projects (Python Notebooks Only), Use Cases
+
+### Community 2871 - "Community 2871"
+Cohesion: 0.25
+Nodes (7): Configuration, Email Viewing, How to Use, Phoenix SMTP Development Server, Quick Start, Troubleshooting, What It Does
+
+### Community 2872 - "Community 2872"
+Cohesion: 0.25
+Nodes (8): Custom Provider (DB-backed, Shared), Provider Routing vs Credentials, Resolution Order, Evaluator Test Button Validation Gate, The Policy, What We Accept, What We Reject (Goals), When to Warn (Future Enhancement)
+
+### Community 2873 - "Community 2873"
+Cohesion: 0.25
+Nodes (7): Dataset Evaluators, Evaluator Definitions, Evaluator Traces, LLM Evaluator Prompts, Product Requirements, Project Evaluators (e.g. online evals), Server Evaluators
+
+### Community 2874 - "Community 2874"
+Cohesion: 0.43
+Nodes (7): main(), mark_tenant_connectors_for_deletion(), Main function to mark all connectors for a tenant for deletion.      Args:, Thread-safe print function., Mark all connector credential pairs for deletion.      Args:         pod_name: D, run_connector_deletion(), safe_print()
+
+### Community 2875 - "Community 2875"
+Cohesion: 0.25
+Nodes (8): 1. Role Queries (Preferred), 2. Label Queries, 3. Placeholder Queries, 4. Text Queries, Query Selectors, Query Selectors: The Wrong Way, Query Variants, Writing Tests
+
+### Community 2876 - "Community 2876"
+Cohesion: 0.25
+Nodes (7): Env Setup, How It Works, How to Implement End-to-End Tracing for MCP Client-Server Applications, How to Use OpenTelemetry for MCP Tracing, Running the Example, Setup, What is MCP and Why Do You Need Distributed Tracing?
+
+### Community 2877 - "Community 2877"
+Cohesion: 0.25
+Nodes (7): Chapter 1: Your First Traces, Chapter 2: Annotations and Evaluation, Chapter 3: Sessions, Follow along with Complete Code Walkthroughs, Let's Get Started, Prerequisites, What You'll Build
+
+### Community 2878 - "Community 2878"
+Cohesion: 0.25
+Nodes (7): Code-Based Evaluator for Tool Call Accuracy, Define the Code-Based Evaluator, Define the Task Function, Next Steps, Parts of an Experiment, Run the Experiment, Why Use Experiments Instead of Regular Evaluations?
+
+### Community 2879 - "Community 2879"
+Cohesion: 0.25
+Nodes (7): **Best Practices for Judge Models**, Built-In Eval Templates in Phoenix, **Favor consistency over creativity**, **Prefer categorical judgments**, Running Evals on Phoenix Traces, Using Custom or OpenAI-Compatible Judge Models, What’s Next
+
+### Community 2880 - "Community 2880"
+Cohesion: 0.50
+Nodes (8): Context attribute propagation, @observe, @arizeai/openinference-core, traceAgent, traceChain, traceTool, Tracing Helpers, withSpan
+
+### Community 2881 - "Community 2881"
+Cohesion: 0.25
+Nodes (3): AddUserForm, FormProps, FormValues
+
+### Community 2882 - "Community 2882"
+Cohesion: 0.25
+Nodes (7): 3.1 Authenticate Server Actions Like API Routes, 3.2 Avoid Duplicate Serialization in RSC Props, 3.3 Cross-Request LRU Caching, 3.4 Minimize Serialization at RSC Boundaries, 3.5 Parallel Data Fetching with Component Composition, 3.7 Use after() for Non-Blocking Operations, 3. Server-Side Performance
+
+### Community 2883 - "Community 2883"
+Cohesion: 0.25
+Nodes (7): 1. Directorate of Prosecutions — TS (Hyderabad) & AP (Vijayawada) — 18/20, 2. High Courts — TS HC & AP HC (Registry & Case Management) — 18/20, 3. District & Sessions Courts — District Judiciary TS & AP — 17/20, 4. State & District Legal Services Authorities — TSLSA, APSLSA + DLSAs — 17/20, 5. Legal Metrology — TS & AP — 12/20, GTM read, Wave-1 Shortlist — Judiciary / Courts / Prosecution / Legal (TS & AP)
+
+### Community 2884 - "Community 2884"
+Cohesion: 0.29
+Nodes (6): CLI Authentication Configuration, CLI Commands for Prompts, Datasets, and Experiments, Configurable Email Extraction for OAuth2 Providers, Create Datasets from Traces with Span Associations, Export Annotations with Traces, Tool Selection and Tool Invocation Evaluators
+
+### Community 2885 - "Community 2885"
+Cohesion: 0.33
+Nodes (7): Tool Invocation Evaluator, Tool Selection Evaluator, Claude Opus 4.6 Model Support, Custom Providers, Dataset Evaluators, Model Configuration, 2026 Release Notes Overview
+
+### Community 2886 - "Community 2886"
+Cohesion: 0.29
+Nodes (6): CLI Commands, Debugging with AI Coding Agents, Inspect a session, List sessions, Sessions REST API, Why Sessions Matter
+
+### Community 2887 - "Community 2887"
+Cohesion: 0.29
+Nodes (6): Basic Usage, Evaluator Options, More Information:, Multiple Parameters, Running in Experiments, TypeScript createEvaluator
+
+### Community 2888 - "Community 2888"
+Cohesion: 0.29
+Nodes (6): Create the Agent Spec agent, Install, Observe, Resources, Run the agent using LangGraph, Setup
+
+### Community 2889 - "Community 2889"
+Cohesion: 0.29
+Nodes (6): Install, Key Features, Observe, Resources, Run Agno, Setup
+
+### Community 2890 - "Community 2890"
+Cohesion: 0.29
+Nodes (4): Build OAuth authorization URL, OAuthConfig, Session, UUID
+
+### Community 2891 - "Community 2891"
+Cohesion: 0.29
+Nodes (6): BasicExpertInfo, ChannelType, ExternalAccess, WebClient, get_channel_access(), Get channel access permissions for a Slack channel.     This functionality requi
+
+### Community 2892 - "Community 2892"
+Cohesion: 0.43
+Nodes (6): Embedding, InferenceChunk, Session, get_query_embedding(), get_query_embeddings(), inference_section_from_single_chunk()
+
+### Community 2893 - "Community 2893"
+Cohesion: 0.29
+Nodes (6): How to test KG end-to-end once it is REVIVED, Knowledge Graph on OpenSearch (storage-only port), Storage API surface (the only new KG code), The gating round-trip test, What a future KG revival STILL needs (not built here, absent in the reference too), What is stored on OpenSearch
+
+### Community 2894 - "Community 2894"
+Cohesion: 0.29
+Nodes (6): BaseFilters, IndexFilters, Session, User, build_index_filters(), Shared index-filter construction (Contract 2 access filters + user filters).
+
+### Community 2895 - "Community 2895"
+Cohesion: 0.38
+Nodes (6): Request, User, provision_sso_user(), JIT provisioning for SSO logins.  We deliberately reuse ``UserManager.create``, Return the existing user for ``email`` or JIT-create one.      Raises ``HTTPEx, _reject_if_not_loginable()
+
+### Community 2896 - "Community 2896"
+Cohesion: 0.38
+Nodes (5): Popen, mcp_no_auth_server(), # TODO: update mcp client tests to use constants in common_utils/constants.py, # NOTE: the tests for client should be independent of the Onyx MCP server, _wait_for_port()
+
+### Community 2897 - "Community 2897"
+Cohesion: 0.29
+Nodes (6): How Translation Works - Span Processors, Learn More, View OpenLIT Traces in Phoenix, View OpenLLMetry Traces in Phoenix, View OpenTelemetry GenAI Traces in Phoenix, Why Translation is Needed
+
+### Community 2898 - "Community 2898"
+Cohesion: 0.29
+Nodes (4): ExperimentRunAnnotations, DbSessionFactory, Key, Result
+
+### Community 2899 - "Community 2899"
+Cohesion: 0.29
+Nodes (4): ExperimentSequenceNumberDataLoader, DbSessionFactory, Key, Result
+
+### Community 2900 - "Community 2900"
+Cohesion: 0.29
+Nodes (4): ProjectByNameDataLoader, DbSessionFactory, Key, Result
+
+### Community 2901 - "Community 2901"
+Cohesion: 0.29
+Nodes (4): SpanCostSummaryByProjectSessionDataLoader, DbSessionFactory, Key, Result
+
+### Community 2902 - "Community 2902"
+Cohesion: 0.29
+Nodes (4): SpanDatasetExamplesDataLoader, DbSessionFactory, Key, Result
+
+### Community 2903 - "Community 2903"
+Cohesion: 0.29
+Nodes (4): TraceAnnotationsByTraceDataLoader, DbSessionFactory, Key, Result
+
+### Community 2904 - "Community 2904"
+Cohesion: 0.33
+Nodes (7): Dataset, How to: Datasets, Creating Datasets, Exporting Datasets, Phoenix CLI, Few-Shot Prompting, Synthetic Dataset Generation
+
+### Community 2905 - "Community 2905"
+Cohesion: 0.29
+Nodes (6): How It Works, Overview, Required Packages, Running the Demo, Setup, TypeScript Experiments and Evals with Arize Phoenix
+
+### Community 2906 - "Community 2906"
+Cohesion: 0.29
+Nodes (6): Access, Alternative: Direct Script Usage, Commands (via Tox), Phoenix Development Environment, Quick Start (via Tox), Which Command to Use?
+
+### Community 2907 - "Community 2907"
+Cohesion: 0.29
+Nodes (6): OpenTelemetryを基盤として構築, Phoenixはお客様とともに成長します, なぜフェニックスなのか？, フレームワークに依存しない, 包括的な機能セット, 完全にオープンソースでオープンに開発
+
+### Community 2908 - "Community 2908"
+Cohesion: 0.29
+Nodes (6): Phoenix 与您共同成长, 为什么选择Phoenix？, 全面的功能集, 基于OpenTelemetry, 完全开源，在开放环境中开发, 框架无关
+
+### Community 2909 - "Community 2909"
+Cohesion: 0.38
+Nodes (7): Concepts: Evals, Code Evaluator, LLM Evaluator, Support Ticket Queries Golden Dataset, Tool Call Accuracy Evaluator, Actionability Judge, LLM as a Judge
+
+### Community 2910 - "Community 2910"
+Cohesion: 0.29
+Nodes (6): Evaluator Types, Input Mapping, Next Steps, Sync vs Async, The Bind Pattern, What Is an Evaluator?
+
+### Community 2911 - "Community 2911"
+Cohesion: 0.29
+Nodes (6): node, PatchUserInput, UserRoleChangeDialogMutation, UserRoleChangeDialogMutation$data, UserRoleChangeDialogMutation$variables, UserRoleInput
+
+### Community 2912 - "Community 2912"
+Cohesion: 0.29
+Nodes (6): Data-accuracy corrections found during research (keep!), Done & saved to disk, Guardrails (unchanged), In-flight at pause (4 agents were running — check if their files exist), RESUME CHECKPOINT — Government GTM package, Resume steps (2026-08-04)
+
+### Community 2913 - "Community 2913"
+Cohesion: 0.29
+Nodes (6): Built-In Code Evaluators, Creating a Dataset Evaluator, Evaluator Traces, Input Mapping Reference, Why Use Dataset Evaluators, Workflow
+
+### Community 2914 - "Community 2914"
+Cohesion: 0.43
+Nodes (7): Golden Dataset Prompt Testing, Prompt Parameters (model, temperature, top_p), Meta-Prompt Optimization Approach, Prompt Learning, PromptLearningOptimizer (SDK), Classification Error Taxonomy, Prompt Evaluators (ground_truth + output)
+
+### Community 2915 - "Community 2915"
+Cohesion: 0.29
+Nodes (6): Adding New SVGs, Compilation of SVGs into TypeScript React Components, Files in This Directory, Overview, `scripts/convert-svg.sh`, `scripts/icon-template.js`
+
+### Community 2916 - "Community 2916"
+Cohesion: 0.29
+Nodes (7): Background LDAP Sync (Future), Configuration, Implementation Pattern, Implementation Roadmap, Overview, What It Does, When to Use
+
+### Community 2917 - "Community 2917"
+Cohesion: 0.29
+Nodes (6): Docker Tests, Integration Tests, Key Files, LDAP Testing Procedures, Running Tests, Unit Tests
+
+### Community 2918 - "Community 2918"
+Cohesion: 0.29
+Nodes (6): Install, MCP Client Example, MCP Server Example, Observe, Resources, Setup
+
+### Community 2919 - "Community 2919"
+Cohesion: 0.29
+Nodes (7): 1. "No users available", 2. "Invalid redirect_uri", 3. "Invalid client_secret", 4. "PKCE verification failed", Common Issues, Debug Logging, Troubleshooting
+
+### Community 2920 - "Community 2920"
+Cohesion: 0.29
+Nodes (7): 1. Standard OIDC (`"oidc"`), 2. PKCE Public (`"pkce-public"`), 3. PKCE Confidential (`"pkce-confidential"`), 4. All Methods (`"all"`), Authentication Methods, Configuration, Supported Clients
+
+### Community 2921 - "Community 2921"
+Cohesion: 0.29
+Nodes (6): Usage Examples, Configuring Inputs, Notes, Output, Parameters, See Also
+
+### Community 2922 - "Community 2922"
+Cohesion: 0.33
+Nodes (7): Phoenix Environments, System vs User API Keys, Phoenix Cloud, Phoenix Cloud Roles (Admin / Member), Production Deployment Configuration, Self-Hosting Phoenix, LLM Application Lifecycle (Develop / Test-Staging / Production)
+
+### Community 2923 - "Community 2923"
+Cohesion: 0.29
+Nodes (6): Build the app, Install dependencies, Phoenix Experiment Runner, Requirements, Run the app, Setup
+
+### Community 2924 - "Community 2924"
+Cohesion: 0.29
+Nodes (7): Common UI Patterns, Dialogs/Modals, Dropdown Menus, Form Inputs in Sections, Nested Menus (Submenus), Tables with Row Actions, Tabs
+
+### Community 2925 - "Community 2925"
+Cohesion: 0.29
+Nodes (6): Choose Your Deployment, Configure Your Instance, Docker, Helm, Images, Learn More
+
+### Community 2926 - "Community 2926"
+Cohesion: 0.29
+Nodes (6): Installation, Key Imports (Evals 2.0), LLM Providers, Quick Verify, Setup: Python, Validation (Optional)
+
+### Community 2927 - "Community 2927"
+Cohesion: 0.29
+Nodes (6): Configuration Details, PostgreSQL with TLS Setup, Prerequisites, Quick Start, Tips, Troubleshooting
+
+### Community 2928 - "Community 2928"
+Cohesion: 0.29
+Nodes (6): Key Differences, Migration Example, Migration Guide, See Also, Updating Score Interpretation, Why the Change?
+
+### Community 2929 - "Community 2929"
+Cohesion: 0.29
+Nodes (6): Configuring Inputs, Notes, Output, Parameters, See Also, Usage Examples
+
+### Community 2930 - "Community 2930"
+Cohesion: 0.29
+Nodes (6): Configuring Inputs, Notes, Output, Parameters, See Also, Usage Examples
+
+### Community 2931 - "Community 2931"
+Cohesion: 0.29
+Nodes (6): [Compare Prompt Versions](/docs/phoenix/prompt-engineering/tutorial/compare-prompt-versions), [Identify & Edit Prompts](/docs/phoenix/prompt-engineering/tutorial/identify-and-edit-prompts), [Optimize Prompts Automatically](/docs/phoenix/prompt-engineering/tutorial/optimize-prompts-automatically), [Test Prompts at Scale](/docs/phoenix/prompt-engineering/tutorial/test-prompts-at-scale), **Tutorial Structure**, **What You’ll Have by the End**
+
+### Community 2932 - "Community 2932"
+Cohesion: 0.29
+Nodes (6): Install, Observe, Privacy Configuration, Resources, Run Claude Agent SDK, Setup
+
+### Community 2933 - "Community 2933"
+Cohesion: 0.33
+Nodes (7): Rate-limit observability (budget API + Prometheus + logs), Token-weighted sliding-window counter (Redis Lua), WS-F — Rate limits redesign + observability, Contract 3 — Tenant context, om.tenancy.context facade (Contract-3 exports), Contract-3 tenancy re-export shim, WS-F status log
+
+### Community 2934 - "Community 2934"
+Cohesion: 0.29
+Nodes (6): Checklist, Error Analysis: Multi-Turn Conversations, Find First Upstream Failure, N-1 Testing, Simplify First, The Approach
+
+### Community 2935 - "Community 2935"
+Cohesion: 0.29
+Nodes (6): Best Practices, Custom Evaluator with asExperimentEvaluator, Evaluators: LLM Evaluators in TypeScript, Pre-Built Evaluators, Quick Start, Template Variables
+
+### Community 2936 - "Community 2936"
+Cohesion: 0.29
+Nodes (6): Decision Framework, Evaluator Lifecycle, Evaluator Requirements, Evaluators: Overview, Evaluator Lifecycle, What NOT to Automate
+
+### Community 2937 - "Community 2937"
+Cohesion: 0.29
+Nodes (6): Creating Retrieval Test Data, Evaluation Order, Evaluators: RAG Systems, Generation Evaluation, RAG Failure Taxonomy, Retrieval Evaluation (IR Metrics)
+
+### Community 2938 - "Community 2938"
+Cohesion: 0.29
+Nodes (6): Best Practices, Creating Datasets, Example Structure, Experiments: Datasets in TypeScript, From Production Traces, Retrieving Datasets
+
+### Community 2939 - "Community 2939"
+Cohesion: 0.29
+Nodes (6): Basic Usage, Best Practices, Dry Runs, Experiments: Overview, Structure, Workflow
+
+### Community 2940 - "Community 2940"
+Cohesion: 0.29
+Nodes (6): Add Evaluations Later, Basic Usage, Evaluator Parameters, Experiments: Running Experiments in TypeScript, Options, Task Functions
+
+### Community 2941 - "Community 2941"
+Cohesion: 0.29
+Nodes (6): Anti-Patterns, Don't Use Similarity for Generation, Error Analysis Before Model Change, Quantify Changes, Don't Model Shop, Error Analysis Before Model Change
+
+### Community 2942 - "Community 2942"
+Cohesion: 0.29
+Nodes (6): Context Propagation, Overview, Overview and Traces & Spans, Span Lifecycle, Trace Hierarchy, Traces and Spans
+
+### Community 2943 - "Community 2943"
+Cohesion: 0.29
+Nodes (6): Decision, Evaluators, Guardrails, Key Distinction, LLM Guardrails: Rarely, Production: Guardrails vs Evaluators
+
+### Community 2944 - "Community 2944"
+Cohesion: 0.29
+Nodes (6): Code, Environment Variable (Recommended), Overview, Phoenix Tracing: Projects (TypeScript), Setup, Use Cases
+
+### Community 2945 - "Community 2945"
+Cohesion: 0.29
+Nodes (6): Common Attributes, EVALUATOR Spans, Example: Answer Relevance, Example: Faithfulness Check, Purpose, Required Attributes
+
+### Community 2946 - "Community 2946"
+Cohesion: 0.29
+Nodes (6): Common Attributes, Example: Content Moderation, Example: PII Detection, GUARDRAIL Spans, Purpose, Required Attributes
+
+### Community 2947 - "Community 2947"
+Cohesion: 0.29
+Nodes (6): Test the custom query configuration functionality., Test that the traditional requested_objects approach still works., Test that invalid configurations are rejected., test_custom_query_config(), test_traditional_config(), test_validation()
+
+### Community 2948 - "Community 2948"
+Cohesion: 0.29
+Nodes (6): Context, Files to modify, Notes / non-goals, Task checklist, TODO: Replace external onyx GitHub link for LLM recommended-models with our own API-served JSON, Verification
+
+### Community 2949 - "Community 2949"
+Cohesion: 0.29
+Nodes (6): Build Two New Prompt Versions, Compare Prompt Versions, Edit Prompt Parameters (Version 4), Edit Prompt Template (Version 3), Next Steps, Summary
+
+### Community 2950 - "Community 2950"
+Cohesion: 0.29
+Nodes (6): Create a Golden Dataset, Define an Agent, Next Steps, Upload Dataset, What Should Your Dataset Contain?, Why Create a Dataset?
+
+### Community 2951 - "Community 2951"
+Cohesion: 0.29
+Nodes (6): Define the LLM as a Judge Evaluator, Define the Task Function, LLM as a Judge Evaluator for Overall Agent Performance, LLM as a Judge Evaluators, Next Steps, Run the Experiment
+
+### Community 2952 - "Community 2952"
+Cohesion: 0.29
+Nodes (6): Best Practices, Create the Custom Evaluator, Define a Custom Evaluator, How Custom Evaluators Work, Next Steps, Run the Evaluator on Traced Data
+
+### Community 2953 - "Community 2953"
+Cohesion: 0.29
+Nodes (6): Creating Custom Classifiers, Experimentation with Phoenix, Installation, Pre-Built Evaluators, Running Experiments, Usage
+
+### Community 2954 - "Community 2954"
+Cohesion: 0.29
+Nodes (6): Install, Observe, Privacy Configuration, Resources, Setup, Usage
+
+### Community 2955 - "Community 2955"
+Cohesion: 0.29
+Nodes (6): 1. Run Qdrant with Docker, 2. Install the Python client, 3. Basic usage with Phoenix tracing, Examples, Further Reading, Quick Start
+
+### Community 2957 - "Community 2957"
+Cohesion: 0.29
+Nodes (6): Product finding to flag (no fix without approval), Read the domain results carefully (throttle confound), Resume mechanics (scratchpad `wf_test_run/`), Status at a glance, To get clean domain numbers — re-run with intra-case pacing, Workflow Testing — Hands-off / Resume Doc
+
+### Community 2958 - "Community 2958"
+Cohesion: 0.33
+Nodes (6): Appended Messages for Playground Experiments, Side-by-Side Prompt Comparison, Appending Conversation History, Dataset Format, Example: A/B Testing System Prompts, Setting the Appended Messages Path
+
+### Community 2959 - "Community 2959"
+Cohesion: 0.33
+Nodes (5): Editable project settings, Get started, Latest OpenAI models, New playground providers, UI improvements
+
+### Community 2960 - "Community 2960"
+Cohesion: 0.33
+Nodes (5): **Acknowledgments**, **Set up**, Tracing For MCP Client Server Applications, **Walkthrough Video**, **What's New?**
+
+### Community 2961 - "Community 2961"
+Cohesion: 0.33
+Nodes (5): Evaluator Message Formats, More Information:, Provider Compatibility, Supported Formats, Template Variable Syntax
+
+### Community 2962 - "Community 2962"
+Cohesion: 0.33
+Nodes (5): Create Synthetic Customer Review Data, Define Evaluation Task as the Experiment to Run, Notebook Walkthrough <a href="#notebook-walkthrough" id="notebook-walkthrough"></a>, Run Experiment!, Upload as a Dataset in Phoenix
+
+### Community 2963 - "Community 2963"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run Bedrock Agents, Setup
+
+### Community 2964 - "Community 2964"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run Bedrock Agents, Setup
+
+### Community 2965 - "Community 2965"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run Bedrock, Setup
+
+### Community 2966 - "Community 2966"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run Bedrock, Setup
+
+### Community 2967 - "Community 2967"
+Cohesion: 0.33
+Nodes (5): Configuration, Features, Relaunching From Existing Data, Search Quality Test Script, Usage
+
+### Community 2968 - "Community 2968"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources:, Run Anthropic, Setup
+
+### Community 2969 - "Community 2969"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, Code Generation Eval Template, GPT-4 Results, How To Run the Code Generation Eval, When To Use Code Generation Eval Template
+
+### Community 2970 - "Community 2970"
+Cohesion: 0.60
+Nodes (5): test_verify_email_domain_allows_case_insensitive_match(), test_verify_email_domain_invalid_email_format(), test_verify_email_domain_rejects_non_whitelisted_domain(), verify_email_domain(), MonkeyPatch
+
+### Community 2971 - "Community 2971"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run AutoGen AgentChat, Setup
+
+### Community 2972 - "Community 2972"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources:, Run Autogen, Setup
+
+### Community 2973 - "Community 2973"
+Cohesion: 0.40
+Nodes (5): ExternalAccess, JIRA, get_project_permissions(), Permissioning / AccessControl logic for JIRA Projects + Issues., Fetch the project + issue level permissions / access-control.     This functiona
+
+### Community 2974 - "Community 2974"
+Cohesion: 0.40
+Nodes (5): ChatSession, Session, UUID, Fast full-text search on ChatSession + ChatMessage using tsvectors.      If no q, search_chat_sessions()
+
+### Community 2975 - "Community 2975"
+Cohesion: 0.33
+Nodes (5): How Hybrid queries work, How it works at a high level, On time decay and boosting, Opensearch Idiosyncrasies, Other concepts to be aware of
+
+### Community 2977 - "Community 2977"
+Cohesion: 0.47
+Nodes (5): Any, fireflies_connector(), load_test_data(), test_fireflies_connector_basic(), FirefliesConnector
+
+### Community 2978 - "Community 2978"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run BeeAI, Setup
+
+### Community 2979 - "Community 2979"
+Cohesion: 0.33
+Nodes (5): Configuration, Deployment Order, Required Parameters, Usage, VertualAI AWS ECS Fargate CloudFormation Deployment
+
+### Community 2980 - "Community 2980"
+Cohesion: 0.33
+Nodes (6): Method 1: Run All Tests in the File, Method 2: Run a Specific Test Class, Method 3: Run a Single Test, Method 4: Using an Environment File, Method 5: Direct Execution, Running the Tests
+
+### Community 2981 - "Community 2981"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run CrewAI, Setup
+
+### Community 2982 - "Community 2982"
+Cohesion: 0.33
+Nodes (5): Creating Datasets, Dataset Contents, Datasets, Golden Dataset, Types of Datasets
+
+### Community 2983 - "Community 2983"
+Cohesion: 0.40
+Nodes (6): Experiment, Arize Phoenix Overview (Japanese), OpenTelemetry, Arize Phoenix Overview (Chinese), Optimization Direction, Experiment Iteration Workflow
+
+### Community 2984 - "Community 2984"
+Cohesion: 0.33
+Nodes (5): Connect Dify and Phoenix, Get your API Key and Endpoint, Launch Phoenix, Observe, Resources
+
+### Community 2985 - "Community 2985"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run DSPy, Setup
+
+### Community 2986 - "Community 2986"
+Cohesion: 0.33
+Nodes (5): Analyze Your Evaluations, Evaluate and Log Results, Install Phoenix Evals, (Optional) Log Results to Phoenix, Prepare your dataset
+
+### Community 2987 - "Community 2987"
+Cohesion: 0.33
+Nodes (5): DeleteDatasetLabelButtonMutation, DeleteDatasetLabelButtonMutation$data, DeleteDatasetLabelButtonMutation$variables, DeleteDatasetLabelsInput, node
+
+### Community 2988 - "Community 2988"
+Cohesion: 0.33
+Nodes (5): EditLLMDatasetEvaluatorSlideover_evaluator$data, EditLLMDatasetEvaluatorSlideover_evaluator$key, EvaluatorKind, node, OptimizationDirection
+
+### Community 2989 - "Community 2989"
+Cohesion: 0.33
+Nodes (5): EditLLMDatasetEvaluatorSlideover_evaluatorQuery, EditLLMDatasetEvaluatorSlideover_evaluatorQuery$data, EditLLMDatasetEvaluatorSlideover_evaluatorQuery$variables, node, PromptTemplateFormat
+
+### Community 2990 - "Community 2990"
+Cohesion: 0.33
+Nodes (5): CreateUserApiKeyInput, GeneratePersonalAPIKeyButtonMutation, GeneratePersonalAPIKeyButtonMutation$data, GeneratePersonalAPIKeyButtonMutation$variables, node
+
+### Community 2991 - "Community 2991"
+Cohesion: 0.33
+Nodes (5): Agent Engine Deployment, Observe <a href="#observe" id="observe"></a>, Setup <a href="#setup" id="setup"></a>, Install, Resources:
+
+### Community 2992 - "Community 2992"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources:, Run Groq, Setup
+
+### Community 2993 - "Community 2993"
+Cohesion: 0.33
+Nodes (5): Capability → offline status, Honesty rules (enforced across all briefs), Real proof points to cite (already in the product), The one thing that makes "offline" true, VirtualAI — Truthful Capability Inventory (for the Government GTM)
+
+### Community 2994 - "Community 2994"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run Guardrails, Setup
+
+### Community 2995 - "Community 2995"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources:, Run Haystack, Setup
+
+### Community 2996 - "Community 2996"
+Cohesion: 0.33
+Nodes (5): Maintainers, phoenix-helm, Requirements, Source Code, Values
+
+### Community 2997 - "Community 2997"
+Cohesion: 0.33
+Nodes (5): From CSV, From Objects, From Pandas, From Spans, Synthetic Data
+
+### Community 2998 - "Community 2998"
+Cohesion: 0.33
+Nodes (5): Assigning Splits, Comparing Experiments on Splits, Configuring Splits, Creating Splits, Using splits
+
+### Community 2999 - "Community 2999"
+Cohesion: 0.33
+Nodes (5): Testing a prompt in the playground, Testing a prompt over a dataset, Testing a prompt using code, Testing in the Playground, Testing prompt variations side-by-side
+
+### Community 3000 - "Community 3000"
+Cohesion: 0.33
+Nodes (5): Create & Run an Agent, Install, Observe, Resources, Setup
+
+### Community 3001 - "Community 3001"
+Cohesion: 0.33
+Nodes (6): Basic Experiment Setup, Complete Experiment Example, [Custom Evaluators](https://arize.com/docs/phoenix/datasets-and-experiments/how-to-experiments/using-evaluators), [Getting Experiment Results via REST API](https://arize.com/docs/phoenix/sdk-api-reference/rest-api/experiments), [Running Experiments](https://arize.com/docs/phoenix/datasets-and-experiments/how-to-experiments/run-experiments), Task Function Pattern
+
+### Community 3002 - "Community 3002"
+Cohesion: 0.33
+Nodes (6): Action, Colour tables, Danger, Default, Select (selected), Select (unselected)
+
+### Community 3003 - "Community 3003"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run LangChain, Setup
+
+### Community 3004 - "Community 3004"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run LangGraph, Setup
+
+### Community 3005 - "Community 3005"
+Cohesion: 0.33
+Nodes (6): Allow Sign-Up Behavior: Grafana vs Phoenix, Appendix F: Security Deep-Dive, Contract Guarantees, Decision-by-Decision Assessment, Decision Reversibility Analysis, Overall Decision Analysis
+
+### Community 3006 - "Community 3006"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run LiteLLM, Setup
+
+### Community 3007 - "Community 3007"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run LlamaIndex, Setup
+
+### Community 3008 - "Community 3008"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run LlamaIndex Workflows, Setup
+
+### Community 3009 - "Community 3009"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run Mistral, Setup
+
+### Community 3010 - "Community 3010"
+Cohesion: 0.33
+Nodes (5): AgentViewerModal — Redesign Plan, Design Tokens Used, Key Rules, Layout, Tab Order
+
+### Community 3011 - "Community 3011"
+Cohesion: 0.40
+Nodes (6): WS-D integrator hand-off, RelayState open-redirect protection, Keyword/regex canned-answer matching + categories, ReDoS / catastrophic-backtracking safety, WS-D — Standard Answers clean-room, WS-D status log
+
+### Community 3012 - "Community 3012"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run OpenAI, Setup
+
+### Community 3013 - "Community 3013"
+Cohesion: 0.33
+Nodes (6): [13.0.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.35.0...arize-phoenix-v13.0.0) (2026-02-13), ⚠ BREAKING CHANGES, Bug Fixes, Documentation, Features, Performance Improvements
+
+### Community 3014 - "Community 3014"
+Cohesion: 0.33
+Nodes (5): 0.1.0, 0.1.1, @arizeai/phoenix-config, Minor Changes, Patch Changes
+
+### Community 3015 - "Community 3015"
+Cohesion: 0.33
+Nodes (6): ⚠ BREAKING CHANGES, Bug Fixes, Documentation, Features, Quickstart, What is evals 2.0?
+
+### Community 3016 - "Community 3016"
+Cohesion: 0.33
+Nodes (6): Example 1: Basic CRUD Test (Prompt Management), Example 2: User Management (Admin Actions), Example 3: Serial Tests with Shared State (Evaluators), Example 4: Role-Based Access Control, Example 5: Testing with Playground Integration, Phoenix Playwright Test Examples
+
+### Community 3017 - "Community 3017"
+Cohesion: 0.33
+Nodes (6): Workflow 1: Instrument and Trace an AI Application, Workflow 2: Evaluate AI Output Quality, Workflow 3: Run Experiments to Compare Versions, Workflow 4: Optimize Prompts with Playground, Workflow 5: Debug Production Issues, Workflows
+
+### Community 3018 - "Community 3018"
+Cohesion: 0.40
+Nodes (4): FastAPI, _nest_asyncio_applied(), Determines whether nest_asyncio has been applied. This is needed since     nest, # TODO: save logs to file
+
+### Community 3019 - "Community 3019"
+Cohesion: 0.33
+Nodes (4): DbSessionFactory, _Data, Data class to hold test data for projects and their trace retention policies., Fixture that creates test data including:         - One project with default tr
+
+### Community 3020 - "Community 3020"
+Cohesion: 0.33
+Nodes (4): QueryStats, Statistics for a query's performance metrics., Get median and p90 execution times., Calculate statistical measures for all queries.
+
+### Community 3021 - "Community 3021"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, GPT-4 Results, How To Run the Q\&A Eval, Q\&A Eval Template, When To Use Q\&A Eval Template
+
+### Community 3022 - "Community 3022"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, GPT-4 Result, How To Run the RAG Relevance Eval, RAG Eval Template, When To Use RAG Eval Template
+
+### Community 3023 - "Community 3023"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, GPT-4 Results, How To Run the Summarization Eval, Summarization Eval Template, When To Use Summarization Eval Template
+
+### Community 3024 - "Community 3024"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, GPT-4 Results, How To Run the Toxicity Eval, Toxicity Eval Template, When To Use Toxicity Eval Template
+
+### Community 3025 - "Community 3025"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run PromptFlow, Setup
+
+### Community 3026 - "Community 3026"
+Cohesion: 0.33
+Nodes (5): Add Tracing to your MCP Client, Add Tracing to your MCP Server, Install, Observe, Resources
+
+### Community 3027 - "Community 3027"
+Cohesion: 0.33
+Nodes (6): Clean-Room Reimplementation Discipline, Onyx-EE Clean-Room Rewrite Program, 12 mandatory engineering standards, Standard 9 — structured OpenSearch CRUD logs, Wave 0 / Wave 1 launch order, Per-workstream git worktree isolation
+
+### Community 3028 - "Community 3028"
+Cohesion: 0.33
+Nodes (5): Basic Pattern, Common Patterns, Evaluators: Code Evaluators in TypeScript, Parameter Types, With Full Results (asExperimentEvaluator)
+
+### Community 3029 - "Community 3029"
+Cohesion: 0.33
+Nodes (5): Decision Tree, Don't Model Shop, Judge Model Selection, Model Selection, When Model Change Is Warranted
+
+### Community 3030 - "Community 3030"
+Cohesion: 0.33
+Nodes (5): Highly Recommended Attributes, Input/Output Values, Required and Recommended Attributes, Required Attribute, Valid Span Kinds
+
+### Community 3031 - "Community 3031"
+Cohesion: 0.33
+Nodes (5): Limitations, Overview, Phoenix Tracing: Auto-Instrumentation (Python), Setup, Supported Frameworks
+
+### Community 3032 - "Community 3032"
+Cohesion: 0.33
+Nodes (5): CI/CD Evaluations, Feedback Loop, Production Monitoring, Production: Overview, Two Evaluation Modes
+
+### Community 3033 - "Community 3033"
+Cohesion: 0.33
+Nodes (5): Batch Processing, Data Masking (PII Protection), Metadata, Phoenix Tracing: Production Guide (Python), Span Filtering
+
+### Community 3034 - "Community 3034"
+Cohesion: 0.33
+Nodes (5): Calculate Metrics, Correct Production Estimates, Find Misclassified, Red Flags, Validating Evaluators (Python)
+
+### Community 3035 - "Community 3035"
+Cohesion: 0.33
+Nodes (5): Golden Dataset, Results & Quality Rules, See Also, Validating Evaluators (TypeScript), Validation Experiment
+
+### Community 3036 - "Community 3036"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, Code Generation Eval Template, GPT-4 Results, How To Run the Code Generation Eval, When To Use Code Generation Eval Template
+
+### Community 3037 - "Community 3037"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, GPT-4 Results, Hallucination Eval Template, How To Run the Hallucination Eval, When To Use Hallucination Eval Template
+
+### Community 3038 - "Community 3038"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, GPT-4 Results, How To Run the Q\&A Eval, Q\&A Eval Template, When To Use Q\&A Eval Template
+
+### Community 3039 - "Community 3039"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, GPT-4 Result, How To Run the RAG Relevance Eval, RAG Eval Template, When To Use RAG Eval Template
+
+### Community 3040 - "Community 3040"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, GPT-4 Results, How To Run the Summarization Eval, Summarization Eval Template, When To Use Summarization Eval Template
+
+### Community 3041 - "Community 3041"
+Cohesion: 0.33
+Nodes (5): Benchmark Results, GPT-4 Results, How To Run the Toxicity Eval, Toxicity Eval Template, When To Use Toxicity Eval Template
+
+### Community 3042 - "Community 3042"
+Cohesion: 0.33
+Nodes (5): Files, Prerequisites, Search Baseline (OpenSearch), Usage (from `backend/`), What this tests
+
+### Community 3043 - "Community 3043"
+Cohesion: 0.47
+Nodes (6): Horizontal scaling, Phoenix Self-Hosting Architecture, PostgreSQL storage backend, Single-tenant model, SQLite storage backend, PHOENIX_SQL_DATABASE_URL
+
+### Community 3044 - "Community 3044"
+Cohesion: 0.40
+Nodes (5): Environment Variables, Logging, Phoenix Self-Hosting Configuration, Ports, Server Configuration
+
+### Community 3045 - "Community 3045"
+Cohesion: 0.33
+Nodes (5): Configuring the Default Retention Policy, Deleting Traces Manually, Frequently Asked Questions, Project Retention Policies, Why doesn't my storage usage decrease after deleting traces?
+
+### Community 3046 - "Community 3046"
+Cohesion: 0.33
+Nodes (6): 1. WHAT — Routing vs Credentials, 2. WHERE — Configuration Sources, 3. HOW — Execution Mode, 4. WHEN — Operation Timing, Four Things to Keep in Mind, How the Dimensions Interact
+
+### Community 3047 - "Community 3047"
+Cohesion: 0.33
+Nodes (4): Basic, Disabled, Selected, WithIcon
+
+### Community 3048 - "Community 3048"
+Cohesion: 0.33
+Nodes (6): Mocking, Mocking Errors, Mocking fetch API, Mocking Next.js Router, Multiple API Calls, Verifying Request Body
+
+### Community 3049 - "Community 3049"
+Cohesion: 0.40
+Nodes (5): maybe_truncate(), Utility to run shell commands asynchronously with a timeout., Truncate content and append a notice if content exceeds the specified length., Run a shell command asynchronously with a timeout., run()
+
+### Community 3050 - "Community 3050"
+Cohesion: 0.33
+Nodes (5): Comparing Experiments, Create an Improved Agent, Iterating on Your Agent, Next Steps, Run Another Experiment
+
+### Community 3051 - "Community 3051"
+Cohesion: 0.33
+Nodes (6): 1.1 Defer Await Until Needed, 1.2 Dependency-Based Parallelization, 1.3 Prevent Waterfall Chains in API Routes, 1.4 Promise.all() for Independent Operations, 1.5 Strategic Suspense Boundaries, 1. Eliminating Waterfalls
+
+### Community 3052 - "Community 3052"
+Cohesion: 0.33
+Nodes (6): 2.1 Avoid Barrel File Imports, 2.2 Conditional Module Loading, 2.3 Defer Non-Critical Third-Party Libraries, 2.4 Dynamic Imports for Heavy Components, 2.5 Preload Based on User Intent, 2. Bundle Size Optimization
+
+### Community 3053 - "Community 3053"
+Cohesion: 0.33
+Nodes (5): Install, Observe, Resources, Run VertexAI, Setup
+
+### Community 3054 - "Community 3054"
+Cohesion: 0.40
+Nodes (4): Appended Messages for A/B Testing, Example Dataset Format, How to Use, Key Features
+
+### Community 3056 - "Community 3056"
+Cohesion: 0.50
+Nodes (4): FastAPI, create_mcp_fastapi_app(), MCP server with FastAPI wrapper., Create FastAPI app wrapping MCP server with auth and shared client lifecycle.
+
+### Community 3057 - "Community 3057"
+Cohesion: 0.40
+Nodes (4): Contributing, Development, Installation, VertualAI Chrome Extension
+
+### Community 3058 - "Community 3058"
+Cohesion: 0.40
+Nodes (5): Authentication Errors, Document Count Mismatches, Empty Content Errors, Tests are Skipped, Troubleshooting
+
+### Community 3059 - "Community 3059"
+Cohesion: 0.40
+Nodes (4): For OpenAI, how do I get token counts when streaming?, How to log traces, How to turn off tracing, Using a custom LangChain component
+
+### Community 3060 - "Community 3060"
+Cohesion: 0.50
+Nodes (4): Qdrant vector store, Running Evals with Cron, Setup, cron-evals requirements.txt
+
+### Community 3061 - "Community 3061"
+Cohesion: 0.40
+Nodes (4): Docker, PostgreSQL, Prerequisites, SQLite
+
+### Community 3062 - "Community 3062"
+Cohesion: 0.40
+Nodes (4): Adding Annotations, Configuring Annotations, Exporting Traces with specific Annotation Values, Viewing Annotations
+
+### Community 3063 - "Community 3063"
+Cohesion: 0.40
+Nodes (4): Connect to Phoenix, Document Evaluations, Logging Multiple Evaluation DataFrames, Span Evaluations
+
+### Community 3064 - "Community 3064"
+Cohesion: 0.40
+Nodes (4): APIKeysCardCreateSystemAPIKeyMutation, APIKeysCardCreateSystemAPIKeyMutation$data, APIKeysCardCreateSystemAPIKeyMutation$variables, node
+
+### Community 3065 - "Community 3065"
+Cohesion: 0.40
+Nodes (4): AssignExamplesToSplitMenuQuery, AssignExamplesToSplitMenuQuery$data, AssignExamplesToSplitMenuQuery$variables, node
+
+### Community 3066 - "Community 3066"
+Cohesion: 0.40
+Nodes (4): DatasetLabelConfigButtonQuery, DatasetLabelConfigButtonQuery$data, DatasetLabelConfigButtonQuery$variables, node
+
+### Community 3067 - "Community 3067"
+Cohesion: 0.40
+Nodes (4): DeleteDatasetDialogMutation, DeleteDatasetDialogMutation$data, DeleteDatasetDialogMutation$variables, node
+
+### Community 3068 - "Community 3068"
+Cohesion: 0.40
+Nodes (4): DeletePromptDialogMutation, DeletePromptDialogMutation$data, DeletePromptDialogMutation$variables, node
+
+### Community 3069 - "Community 3069"
+Cohesion: 0.40
+Nodes (4): GenerativeProvidersCardSecretsQuery, GenerativeProvidersCardSecretsQuery$data, GenerativeProvidersCardSecretsQuery$variables, node
+
+### Community 3070 - "Community 3070"
+Cohesion: 0.40
+Nodes (4): GlobalRetentionPolicyCardQuery, GlobalRetentionPolicyCardQuery$data, GlobalRetentionPolicyCardQuery$variables, node
+
+### Community 3071 - "Community 3071"
+Cohesion: 0.40
+Nodes (4): node, ProjectActionMenuDeleteMutation, ProjectActionMenuDeleteMutation$data, ProjectActionMenuDeleteMutation$variables
+
+### Community 3072 - "Community 3072"
+Cohesion: 0.40
+Nodes (4): node, PromptsLabelMenuQuery, PromptsLabelMenuQuery$data, PromptsLabelMenuQuery$variables
+
+### Community 3073 - "Community 3073"
+Cohesion: 0.40
+Nodes (4): node, TransferTracesButtonTransferMutation, TransferTracesButtonTransferMutation$data, TransferTracesButtonTransferMutation$variables
+
+### Community 3074 - "Community 3074"
+Cohesion: 0.40
+Nodes (4): Observe, Setup, Install, Resources:
+
+### Community 3075 - "Community 3075"
+Cohesion: 0.40
+Nodes (4): Exporting for Fine-Tuning, Exporting OpenAI Evals, Exporting to CSV, Exporting via CLI
+
+### Community 3076 - "Community 3076"
+Cohesion: 0.40
+Nodes (5): Advanced Usage, Concatenating, Joining a Span to Its Parent, Special Separators, Using Parent ID as Index
+
+### Community 3077 - "Community 3077"
+Cohesion: 0.40
+Nodes (4): For Docker users (Building from source), For Docker users (Using pre-built images), For non-Docker users, Update Perplexica to the latest version
+
+### Community 3078 - "Community 3078"
+Cohesion: 0.40
+Nodes (4): Install, Observe, Run Instructor, Setup
+
+### Community 3079 - "Community 3079"
+Cohesion: 0.40
+Nodes (4): Install, Resources, Setup, Support
+
+### Community 3080 - "Community 3080"
+Cohesion: 0.40
+Nodes (5): Frontend Implementation, New Component: LDAPLoginForm.tsx, Update LoginPage.tsx, Update UsersTable.tsx, Update Window Config
+
+### Community 3081 - "Community 3081"
+Cohesion: 0.40
+Nodes (5): How to Add a New Mock, Step 1: Determine if You Really Need a Mock, Step 2: Create the Mock File, Step 3: Register in jest.config.js, Step 4: Verify Tests Pass
+
+### Community 3082 - "Community 3082"
+Cohesion: 0.40
+Nodes (5): 🎯 Client Support, 🔍 Debug Features, Features, 🔐 Security Features, ✅ Spec Compliance
+
+### Community 3083 - "Community 3083"
+Cohesion: 0.40
+Nodes (4): Build, Opal, Structure, Usage
+
+### Community 3084 - "Community 3084"
+Cohesion: 0.40
+Nodes (5): [11.0.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.15.0...arize-phoenix-v11.0.0) (2025-06-25), ⚠ BREAKING CHANGES, Bug Fixes, Documentation, Features
+
+### Community 3085 - "Community 3085"
+Cohesion: 0.40
+Nodes (5): [11.8.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.7.0...arize-phoenix-v11.8.0) (2025-07-17), Bug Fixes, Documentation, Features, Reverts
+
+### Community 3086 - "Community 3086"
+Cohesion: 0.40
+Nodes (5): [13.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.0.3...arize-phoenix-v13.1.0) (2026-02-18), Bug Fixes, Documentation, Features, Performance Improvements
+
+### Community 3087 - "Community 3087"
+Cohesion: 0.40
+Nodes (5): [13.9.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.8.0...arize-phoenix-v13.9.0) (2026-03-07), Bug Fixes, Documentation, Features, Performance Improvements
+
+### Community 3088 - "Community 3088"
+Cohesion: 0.40
+Nodes (5): [2.0.0](https://github.com/Arize-ai/phoenix/compare/v1.9.0...v2.0.0) (2023-12-20), ⚠ BREAKING CHANGES, Bug Fixes, Documentation, Features
+
+### Community 3089 - "Community 3089"
+Cohesion: 0.40
+Nodes (5): [2.8.0](https://github.com/Arize-ai/phoenix/compare/v2.7.0...v2.8.0) (2024-02-02), Bug Fixes, Documentation, Features, Miscellaneous Chores
+
+### Community 3090 - "Community 3090"
+Cohesion: 0.40
+Nodes (5): [4.9.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.8.1...arize-phoenix-v4.9.0) (2024-07-10), Bug Fixes, Documentation, Features, Reverts
+
+### Community 3091 - "Community 3091"
+Cohesion: 0.40
+Nodes (5): [5.0.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.36.0...arize-phoenix-v5.0.0) (2024-09-26), ⚠ BREAKING CHANGES, Bug Fixes, Documentation, Features
+
+### Community 3092 - "Community 3092"
+Cohesion: 0.40
+Nodes (5): [7.0.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v6.2.0...arize-phoenix-v7.0.0) (2024-12-09), ⚠ BREAKING CHANGES, Bug Fixes, Documentation, Features
+
+### Community 3093 - "Community 3093"
+Cohesion: 0.40
+Nodes (5): [9.0.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.32.1...arize-phoenix-v9.0.0) (2025-05-09), ⚠ BREAKING CHANGES, Bug Fixes, Documentation, Features
+
+### Community 3094 - "Community 3094"
+Cohesion: 0.40
+Nodes (4): Overview, Output Labels, See Also, Using in Phoenix
+
+### Community 3095 - "Community 3095"
+Cohesion: 0.40
+Nodes (4): Overview, Output Labels, See Also, Using in Phoenix
+
+### Community 3096 - "Community 3096"
+Cohesion: 0.40
+Nodes (4): Overview, Output Labels, See Also, Using in Phoenix
+
+### Community 3097 - "Community 3097"
+Cohesion: 0.40
+Nodes (4): Container, Notebooks, Phoenix Cloud, Terminal
+
+### Community 3098 - "Community 3098"
+Cohesion: 0.40
+Nodes (5): [2.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v2.9.0...arize-phoenix-evals-v2.10.0) (2026-02-13), ⚠ BREAKING CHANGES, Bug Fixes, Features, Miscellaneous Chores
+
+### Community 3099 - "Community 3099"
+Cohesion: 0.40
+Nodes (5): AWS Bedrock Async Client, Azure OpenAI v1 API, DB Index for Session ID, Inferences, dimensions, embeddings, and pointcloud (UMAP), v12.x to v13.0.0
+
+### Community 3100 - "Community 3100"
+Cohesion: 0.40
+Nodes (5): Environment Variables Used by the Script, Option I. Run the script via the installed module, Option II. Run the script from the repository (and apply the up migration manually)., Python Script to Populate Database Table For Sessions, v6.x to v7.0.0
+
+### Community 3101 - "Community 3101"
+Cohesion: 0.40
+Nodes (4): Installation, LLM Providers, Quick Verify, Setup: TypeScript
+
+### Community 3102 - "Community 3102"
+Cohesion: 0.40
+Nodes (4): File Organization, Phoenix Tracing Skill, Reference, Usage
+
+### Community 3103 - "Community 3103"
+Cohesion: 0.40
+Nodes (4): Before You Call The API, First Request, Response Pattern, Where To Go Next
+
+### Community 3104 - "Community 3104"
+Cohesion: 0.40
+Nodes (4): Common Mistakes, Complete Template Pattern, Evaluators: Custom Templates, XML Tags
+
+### Community 3105 - "Community 3105"
+Cohesion: 0.40
+Nodes (4): Evaluator Types, Getting Started, How It Works, Why Use Server Evals
+
+### Community 3106 - "Community 3106"
+Cohesion: 0.40
+Nodes (4): Example Notebooks, How to track sessions with LangChain, Logging Conversations, Viewing Sessions
+
+### Community 3107 - "Community 3107"
+Cohesion: 0.40
+Nodes (5): F-string vs mustache, Mustache format, Prompt Types, System Messages, Use-cases
+
+### Community 3108 - "Community 3108"
+Cohesion: 0.50
+Nodes (4): _captured_payload(), Structured-logging tests: prove OpenSearch-style events carry the mandated fiel, test_emit_event_has_all_required_fields(), test_emit_never_raises()
+
+### Community 3109 - "Community 3109"
+Cohesion: 0.40
+Nodes (4): REMAINING (honest hand-off) — not finished this session, [REVIEW-FIX] Remaining items resolved, [REVIEW] Self-review pass — gaps found + fixed, WS-B — Team / RBAC — status log
+
+### Community 3110 - "Community 3110"
+Cohesion: 0.40
+Nodes (4): [FEATURE] In-UI "Verify configuration" (post-review follow-up), Integrator handoff, [REVIEW] Rigorous self-review pass — gaps found + fixed, WS-C — SAML SSO (clean-room) — status log
+
+### Community 3111 - "Community 3111"
+Cohesion: 0.40
+Nodes (4): Build a list of tenants to cleanup, Cleanup the tenants, Delete all documents within these tenants, How to Tenant Cleanup
+
+### Community 3112 - "Community 3112"
+Cohesion: 0.40
+Nodes (5): "Multiple elements found" Error, "Not wrapped in act()" Warning, Test Times Out, Troubleshooting, "Unable to find element" Error
+
+### Community 3113 - "Community 3113"
+Cohesion: 0.40
+Nodes (4): Evaluating the Extraction Performance, Implementing a structured extraction application, Inspecting structured extraction with Phoenix, Overview
+
+### Community 3114 - "Community 3114"
+Cohesion: 0.40
+Nodes (4): Built-In Eval Templates in Phoenix, Configure Core LLM Setup, Running Evals on Phoenix Traces, What’s Next
+
+### Community 3115 - "Community 3115"
+Cohesion: 0.40
+Nodes (5): 4.1 Deduplicate Global Event Listeners, 4.2 Use Passive Event Listeners for Scrolling Performance, 4.3 Use SWR for Automatic Deduplication, 4.4 Version and Minimize localStorage Data, 4. Client-Side Data Fetching
+
+### Community 3116 - "Community 3116"
+Cohesion: 0.40
+Nodes (4): Examples, Installation, OpenInference Vercel, Usage
+
+### Community 3117 - "Community 3117"
+Cohesion: 0.50
+Nodes (4): chatSessionIds, getCommandMenuContent(), openCommandMenu(), projectIds
+
+### Community 3118 - "Community 3118"
+Cohesion: 0.50
+Nodes (3): Improvements and Bug Fixes 🐛, OpenAI Agents Instrumentation, Walkthrough Video
+
+### Community 3119 - "Community 3119"
+Cohesion: 0.50
+Nodes (3): Python, Return Types, TypeScript
+
+### Community 3120 - "Community 3120"
+Cohesion: 0.50
+Nodes (3): **Configuration Options**, **Highlights:**, TLS Support For Phoenix Server
+
+### Community 3121 - "Community 3121"
+Cohesion: 0.50
+Nodes (3): Acknowledgements, Installation, OpenInference Google GenAI Instrumentation
+
+### Community 3122 - "Community 3122"
+Cohesion: 0.50
+Nodes (3): How to turn off tracing, Pause tracing using context manager, Uninstrument the auto-instrumentors permanently
+
+### Community 3123 - "Community 3123"
+Cohesion: 0.50
+Nodes (3): Mutations, Permission Matrix for GraphQL API, Queries
+
+### Community 3124 - "Community 3124"
+Cohesion: 0.50
+Nodes (3): Benchmark Results:, Example Human vs AI on Arize AX Docs:, How to run the Human vs AI Eval:
+
+### Community 3125 - "Community 3125"
+Cohesion: 0.50
+Nodes (3): Benchmark Results, How to run the Citation Eval, Reference Links in Retrieval Q\&A
+
+### Community 3127 - "Community 3127"
+Cohesion: 0.50
+Nodes (3): DocumentSource, # TODO: store these images somewhere better, source_to_github_img_link()
+
+### Community 3128 - "Community 3128"
+Cohesion: 0.50
+Nodes (3): WebContent, filter_web_contents_with_no_title_or_content(), Filter out content entries that have neither a title nor any extracted text.
+
+### Community 3130 - "Community 3130"
+Cohesion: 0.50
+Nodes (3): Validators specific to Service resources., Validate Service type., ServiceValidators
+
+### Community 3131 - "Community 3131"
+Cohesion: 0.50
+Nodes (3): Using LLM as a Judge in Phoenix, Additional Resources, How It Works
+
+### Community 3132 - "Community 3132"
+Cohesion: 0.50
+Nodes (3): Expanding the ESLint configuration, React Compiler, React + TypeScript + Vite
+
+### Community 3133 - "Community 3133"
+Cohesion: 0.50
+Nodes (3): Running Experiments, SDK Experiment Steps, Using Evaluators
+
+### Community 3134 - "Community 3134"
+Cohesion: 0.50
+Nodes (3): Dataset Evaluators, Datasets, Experiments
+
+### Community 3135 - "Community 3135"
+Cohesion: 0.50
+Nodes (3): Installing, Prerequisites, Upgrading and Uninstalling
+
+### Community 3136 - "Community 3136"
+Cohesion: 0.50
+Nodes (3): Creating the Agent, Evaluating the Agent, Run the Experiment
+
+### Community 3137 - "Community 3137"
+Cohesion: 0.50
+Nodes (3): Code Evaluators, Legacy Evaluators, LLM Evaluators
+
+### Community 3138 - "Community 3138"
+Cohesion: 0.50
+Nodes (3): Installation notes, Quick start, Sections
+
+### Community 3139 - "Community 3139"
+Cohesion: 0.50
+Nodes (3): Running phoenix-client Examples, Install tsx globally, Run an example
+
+### Community 3140 - "Community 3140"
+Cohesion: 0.50
+Nodes (3): Running phoenix-evals Examples, Install tsx globally, Run an example
+
+### Community 3141 - "Community 3141"
+Cohesion: 0.50
+Nodes (3): Install, Observe, Setup
+
+### Community 3142 - "Community 3142"
+Cohesion: 0.50
+Nodes (3): Dataframe Evaluation Methods (Python only), Examples, Notes:
+
+### Community 3143 - "Community 3143"
+Cohesion: 0.50
+Nodes (3): Other `Score` conversions, Returning `Score` objects directly, Using `create_evaluator`
+
+### Community 3144 - "Community 3144"
+Cohesion: 0.50
+Nodes (3): Instrumentation Methods, Organization, Quick Start
+
+### Community 3145 - "Community 3145"
+Cohesion: 0.50
+Nodes (4): Categorical Evaluation (`llm_classify`), [Evaluation Methods](https://arize.com/docs/phoenix/evaluation/how-to-evals/bring-your-own-evaluator), Evaluation with Custom Parser, Numeric Evaluation (`llm_generate`)
+
+### Community 3146 - "Community 3146"
+Cohesion: 0.50
+Nodes (3): Connect to Phoenix, Importing Traces to an Existing Phoenix Instance, Launching a new Phoenix Instance with Saved Traces
+
+### Community 3147 - "Community 3147"
+Cohesion: 0.50
+Nodes (4): 1. Set your Phoenix endpoint, 2. Set your project name, 3. Set your API key (if required), Setup
+
+### Community 3148 - "Community 3148"
+Cohesion: 0.50
+Nodes (4): Current Testing Limitations, Failure checking, Scope/focus, Test coverage
+
+### Community 3149 - "Community 3149"
+Cohesion: 0.50
+Nodes (3): Transparency by Design, What Gets Traced, Why Tracing Matters for Human Alignment
+
+### Community 3150 - "Community 3150"
+Cohesion: 0.50
+Nodes (4): Code Annotations, OpenID Connect Core 1.0, RFC 7636 (PKCE), Spec Compliance
+
+### Community 3151 - "Community 3151"
+Cohesion: 0.50
+Nodes (3): 1. Install, 2. Set up Tracing, Resources
+
+### Community 3152 - "Community 3152"
+Cohesion: 0.50
+Nodes (3): _PasswordRequirements, Password must be at least `length` characters long. Password must not contain wh, Validates the password against the requirements.          Args:             s
+
+### Community 3153 - "Community 3153"
+Cohesion: 0.50
+Nodes (4): [0.1.0](https://github.com/Arize-ai/phoenix/compare/v0.0.51...v0.1.0) (2023-11-08), Bug Fixes, Documentation, Features
+
+### Community 3154 - "Community 3154"
+Cohesion: 0.50
+Nodes (4): [10.0.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v9.6.0...arize-phoenix-v10.0.0) (2025-05-21), ⚠ BREAKING CHANGES, Bug Fixes, Features
+
+### Community 3155 - "Community 3155"
+Cohesion: 0.50
+Nodes (4): [10.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.2.2...arize-phoenix-v10.3.0) (2025-05-30), Bug Fixes, Documentation, Features
+
+### Community 3156 - "Community 3156"
+Cohesion: 0.50
+Nodes (4): [11.18.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.17.0...arize-phoenix-v11.18.0) (2025-08-01), Bug Fixes, Documentation, Features
+
+### Community 3157 - "Community 3157"
+Cohesion: 0.50
+Nodes (4): [11.19.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.18.0...arize-phoenix-v11.19.0) (2025-08-05), Bug Fixes, Documentation, Features
+
+### Community 3158 - "Community 3158"
+Cohesion: 0.50
+Nodes (4): [11.28.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.27.0...arize-phoenix-v11.28.0) (2025-08-26), Bug Fixes, Documentation, Features
+
+### Community 3159 - "Community 3159"
+Cohesion: 0.50
+Nodes (4): [11.31.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.30.0...arize-phoenix-v11.31.0) (2025-09-03), Bug Fixes, Documentation, Features
+
+### Community 3160 - "Community 3160"
+Cohesion: 0.50
+Nodes (4): [12.0.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.38.0...arize-phoenix-v12.0.0) (2025-09-29), ⚠ BREAKING CHANGES, Bug Fixes, Features
+
+### Community 3161 - "Community 3161"
+Cohesion: 0.50
+Nodes (4): [12.13.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.12.0...arize-phoenix-v12.13.0) (2025-11-12), Bug Fixes, Documentation, Features
+
+### Community 3162 - "Community 3162"
+Cohesion: 0.50
+Nodes (4): [12.25.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.24.0...arize-phoenix-v12.25.0) (2025-12-12), Bug Fixes, Documentation, Features
+
+### Community 3163 - "Community 3163"
+Cohesion: 0.50
+Nodes (4): [12.26.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.25.1...arize-phoenix-v12.26.0) (2025-12-22), Bug Fixes, Documentation, Features
+
+### Community 3164 - "Community 3164"
+Cohesion: 0.50
+Nodes (4): [12.27.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.26.0...arize-phoenix-v12.27.0) (2025-12-26), Bug Fixes, Documentation, Features
+
+### Community 3165 - "Community 3165"
+Cohesion: 0.50
+Nodes (4): [12.28.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.27.0...arize-phoenix-v12.28.0) (2026-01-06), Bug Fixes, Documentation, Features
+
+### Community 3166 - "Community 3166"
+Cohesion: 0.50
+Nodes (4): [12.29.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.28.1...arize-phoenix-v12.29.0) (2026-01-12), Bug Fixes, Documentation, Features
+
+### Community 3167 - "Community 3167"
+Cohesion: 0.50
+Nodes (4): [12.2.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.1.0...arize-phoenix-v12.2.0) (2025-10-03), Bug Fixes, Documentation, Features
+
+### Community 3168 - "Community 3168"
+Cohesion: 0.50
+Nodes (4): [12.30.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.29.0...arize-phoenix-v12.30.0) (2026-01-15), Bug Fixes, Documentation, Features
+
+### Community 3169 - "Community 3169"
+Cohesion: 0.50
+Nodes (4): [12.31.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.30.0...arize-phoenix-v12.31.0) (2026-01-21), Bug Fixes, Documentation, Features
+
+### Community 3170 - "Community 3170"
+Cohesion: 0.50
+Nodes (4): [12.32.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.31.2...arize-phoenix-v12.32.0) (2026-01-27), Bug Fixes, Documentation, Features
+
+### Community 3171 - "Community 3171"
+Cohesion: 0.50
+Nodes (4): [12.33.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.32.0...arize-phoenix-v12.33.0) (2026-01-28), Bug Fixes, Documentation, Features
+
+### Community 3172 - "Community 3172"
+Cohesion: 0.50
+Nodes (4): [12.34.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.33.1...arize-phoenix-v12.34.0) (2026-02-06), Bug Fixes, Documentation, Features
+
+### Community 3173 - "Community 3173"
+Cohesion: 0.50
+Nodes (4): [12.35.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.34.0...arize-phoenix-v12.35.0) (2026-02-09), Bug Fixes, Documentation, Features
+
+### Community 3174 - "Community 3174"
+Cohesion: 0.50
+Nodes (4): [12.7.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.6.1...arize-phoenix-v12.7.0) (2025-10-24), Bug Fixes, Documentation, Features
+
+### Community 3175 - "Community 3175"
+Cohesion: 0.50
+Nodes (4): [13.2.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.1.1...arize-phoenix-v13.2.0) (2026-02-19), Bug Fixes, Documentation, Features
+
+### Community 3176 - "Community 3176"
+Cohesion: 0.50
+Nodes (4): [13.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.3.0...arize-phoenix-v13.4.0) (2026-02-26), Bug Fixes, Documentation, Features
+
+### Community 3177 - "Community 3177"
+Cohesion: 0.50
+Nodes (4): [13.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.5.0...arize-phoenix-v13.6.0) (2026-03-02), Bug Fixes, Documentation, Features
+
+### Community 3178 - "Community 3178"
+Cohesion: 0.50
+Nodes (4): [13.8.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.7.0...arize-phoenix-v13.8.0) (2026-03-04), Bug Fixes, Documentation, Features
+
+### Community 3179 - "Community 3179"
+Cohesion: 0.50
+Nodes (4): [1.2.0](https://github.com/Arize-ai/phoenix/compare/v1.1.1...v1.2.0) (2023-11-17), Bug Fixes, Documentation, Features
+
+### Community 3180 - "Community 3180"
+Cohesion: 0.50
+Nodes (4): [1.3.0](https://github.com/Arize-ai/phoenix/compare/v1.2.1...v1.3.0) (2023-11-30), Bug Fixes, Documentation, Features
+
+### Community 3181 - "Community 3181"
+Cohesion: 0.50
+Nodes (4): [1.5.0](https://github.com/Arize-ai/phoenix/compare/v1.4.0...v1.5.0) (2023-12-06), Bug Fixes, Documentation, Features
+
+### Community 3182 - "Community 3182"
+Cohesion: 0.50
+Nodes (4): [2.10.0](https://github.com/Arize-ai/phoenix/compare/v2.9.4...v2.10.0) (2024-02-07), Bug Fixes, Documentation, Features
+
+### Community 3183 - "Community 3183"
+Cohesion: 0.50
+Nodes (4): [2.3.0](https://github.com/Arize-ai/phoenix/compare/v2.2.1...v2.3.0) (2024-01-08), Bug Fixes, Documentation, Features
+
+### Community 3184 - "Community 3184"
+Cohesion: 0.50
+Nodes (4): [2.4.0](https://github.com/Arize-ai/phoenix/compare/v2.3.0...v2.4.0) (2024-01-10), Bug Fixes, Documentation, Features
+
+### Community 3185 - "Community 3185"
+Cohesion: 0.50
+Nodes (4): [2.6.0](https://github.com/Arize-ai/phoenix/compare/v2.5.0...v2.6.0) (2024-01-23), Bug Fixes, Documentation, Features
+
+### Community 3186 - "Community 3186"
+Cohesion: 0.50
+Nodes (4): [3.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.9.0...arize-phoenix-v3.10.0) (2024-03-09), Bug Fixes, Documentation, Features
+
+### Community 3187 - "Community 3187"
+Cohesion: 0.50
+Nodes (4): [3.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.10.0...arize-phoenix-v3.11.0) (2024-03-11), Bug Fixes, Documentation, Features
+
+### Community 3188 - "Community 3188"
+Cohesion: 0.50
+Nodes (4): [3.15.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.14.2...arize-phoenix-v3.15.0) (2024-03-14), Bug Fixes, Documentation, Features
+
+### Community 3189 - "Community 3189"
+Cohesion: 0.50
+Nodes (4): [3.1.0](https://github.com/Arize-ai/phoenix/compare/v3.0.3...v3.1.0) (2024-02-15), Bug Fixes, Documentation, Features
+
+### Community 3190 - "Community 3190"
+Cohesion: 0.50
+Nodes (4): [3.23.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.22.0...arize-phoenix-v3.23.0) (2024-04-19), Bug Fixes, Documentation, Features
+
+### Community 3191 - "Community 3191"
+Cohesion: 0.50
+Nodes (4): [3.25.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.24.0...arize-phoenix-v3.25.0) (2024-05-06), Bug Fixes, Documentation, Features
+
+### Community 3192 - "Community 3192"
+Cohesion: 0.50
+Nodes (4): [3.2.1](https://github.com/Arize-ai/phoenix/compare/v3.2.0...v3.2.1) (2024-02-16), Bug Fixes, Documentation, Miscellaneous Chores
+
+### Community 3193 - "Community 3193"
+Cohesion: 0.50
+Nodes (4): [3.3.0](https://github.com/Arize-ai/phoenix/compare/phoenix-v3.2.1...phoenix-v3.3.0) (2024-02-23), Bug Fixes, Documentation, Features
+
+### Community 3194 - "Community 3194"
+Cohesion: 0.50
+Nodes (4): [3.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.3.0...arize-phoenix-v3.4.0) (2024-02-28), Bug Fixes, Documentation, Features
+
+### Community 3195 - "Community 3195"
+Cohesion: 0.50
+Nodes (4): [3.5.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.4.1...arize-phoenix-v3.5.0) (2024-03-05), Bug Fixes, Documentation, Features
+
+### Community 3196 - "Community 3196"
+Cohesion: 0.50
+Nodes (4): [4.13.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.12.0...arize-phoenix-v4.13.0) (2024-07-22), Bug Fixes, Documentation, Features
+
+### Community 3197 - "Community 3197"
+Cohesion: 0.50
+Nodes (4): [4.14.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.13.1...arize-phoenix-v4.14.0) (2024-07-23), Bug Fixes, Documentation, Features
+
+### Community 3198 - "Community 3198"
+Cohesion: 0.50
+Nodes (4): [4.15.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.14.1...arize-phoenix-v4.15.0) (2024-07-26), Bug Fixes, Documentation, Features
+
+### Community 3199 - "Community 3199"
+Cohesion: 0.50
+Nodes (4): [4.18.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.17.0...arize-phoenix-v4.18.0) (2024-08-02), Bug Fixes, Documentation, Features
+
+### Community 3200 - "Community 3200"
+Cohesion: 0.50
+Nodes (4): [4.20.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.19.0...arize-phoenix-v4.20.0) (2024-08-06), Bug Fixes, Documentation, Features
+
+### Community 3201 - "Community 3201"
+Cohesion: 0.50
+Nodes (4): [4.25.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.24.0...arize-phoenix-v4.25.0) (2024-08-21), Bug Fixes, Documentation, Features
+
+### Community 3202 - "Community 3202"
+Cohesion: 0.50
+Nodes (4): [4.29.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.28.1...arize-phoenix-v4.29.0) (2024-08-26), Bug Fixes, Documentation, Features
+
+### Community 3203 - "Community 3203"
+Cohesion: 0.50
+Nodes (4): [4.31.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.30.1...arize-phoenix-v4.31.0) (2024-08-28), Bug Fixes, Documentation, Features
+
+### Community 3204 - "Community 3204"
+Cohesion: 0.50
+Nodes (4): [4.31.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.30.2...arize-phoenix-v4.31.0) (2024-08-27), Bug Fixes, Documentation, Features
+
+### Community 3205 - "Community 3205"
+Cohesion: 0.50
+Nodes (4): [4.32.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.31.0...arize-phoenix-v4.32.0) (2024-08-29), Bug Fixes, Documentation, Features
+
+### Community 3206 - "Community 3206"
+Cohesion: 0.50
+Nodes (4): [4.33.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.32.0...arize-phoenix-v4.33.0) (2024-09-04), Bug Fixes, Documentation, Features
+
+### Community 3207 - "Community 3207"
+Cohesion: 0.50
+Nodes (4): [4.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.2.4...arize-phoenix-v4.3.0) (2024-06-07), Bug Fixes, Documentation, Features
+
+### Community 3208 - "Community 3208"
+Cohesion: 0.50
+Nodes (4): [4.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.5.0...arize-phoenix-v4.6.0) (2024-07-02), Bug Fixes, Documentation, Features
+
+### Community 3209 - "Community 3209"
+Cohesion: 0.50
+Nodes (4): [5.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.2.2...arize-phoenix-v5.3.0) (2024-10-17), Bug Fixes, Documentation, Features
+
+### Community 3210 - "Community 3210"
+Cohesion: 0.50
+Nodes (4): [5.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.3.1...arize-phoenix-v5.4.0) (2024-10-18), Bug Fixes, Documentation, Features
+
+### Community 3211 - "Community 3211"
+Cohesion: 0.50
+Nodes (4): [5.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.5.2...arize-phoenix-v5.6.0) (2024-10-29), Bug Fixes, Documentation, Features
+
+### Community 3212 - "Community 3212"
+Cohesion: 0.50
+Nodes (4): [6.0.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.12.0...arize-phoenix-v6.0.0) (2024-12-02), ⚠ BREAKING CHANGES, Bug Fixes, Features
+
+### Community 3213 - "Community 3213"
+Cohesion: 0.50
+Nodes (4): [6.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v6.0.0...arize-phoenix-v6.1.0) (2024-12-03), Bug Fixes, Documentation, Features
+
+### Community 3214 - "Community 3214"
+Cohesion: 0.50
+Nodes (4): [8.0.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.12.3...arize-phoenix-v8.0.0) (2025-02-19), Bug Fixes, Documentation, Features
+
+### Community 3215 - "Community 3215"
+Cohesion: 0.50
+Nodes (4): [8.14.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.13.2...arize-phoenix-v8.14.0) (2025-03-18), Bug Fixes, Documentation, Features
+
+### Community 3216 - "Community 3216"
+Cohesion: 0.50
+Nodes (4): [8.20.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.19.1...arize-phoenix-v8.20.0) (2025-03-28), Bug Fixes, Documentation, Features
+
+### Community 3217 - "Community 3217"
+Cohesion: 0.50
+Nodes (4): [8.23.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.22.1...arize-phoenix-v8.23.0) (2025-04-09), Bug Fixes, Documentation, Features
+
+### Community 3218 - "Community 3218"
+Cohesion: 0.50
+Nodes (4): [8.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.3.0...arize-phoenix-v8.4.0) (2025-02-26), Bug Fixes, Documentation, Features
+
+### Community 3219 - "Community 3219"
+Cohesion: 0.50
+Nodes (4): [8.9.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.8.0...arize-phoenix-v8.9.0) (2025-03-06), Bug Fixes, Documentation, Features
+
+### Community 3220 - "Community 3220"
+Cohesion: 0.50
+Nodes (4): [9.5.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v9.4.0...arize-phoenix-v9.5.0) (2025-05-17), Bug Fixes, Documentation, Features
+
+### Community 3221 - "Community 3221"
+Cohesion: 0.50
+Nodes (4): [1.22.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.21.0...arize-phoenix-client-v1.22.0) (2025-11-05), Bug Fixes, Documentation, Features
+
+### Community 3222 - "Community 3222"
+Cohesion: 0.50
+Nodes (3): Agent Demos, Featured AI Engineering Workflows, Getting started with Phoenix
+
+### Community 3223 - "Community 3223"
+Cohesion: 0.50
+Nodes (4): [0.14.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.13.2...arize-phoenix-evals-v0.14.0) (2024-07-12), Bug Fixes, Documentation, Features
+
+### Community 3224 - "Community 3224"
+Cohesion: 0.50
+Nodes (4): [0.15.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.14.1...arize-phoenix-evals-v0.15.0) (2024-08-15), Bug Fixes, Documentation, Features
+
+### Community 3225 - "Community 3225"
+Cohesion: 0.50
+Nodes (4): [0.18.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.17.5...arize-phoenix-evals-v0.18.0) (2024-12-20), Bug Fixes, Documentation, Features
+
+### Community 3226 - "Community 3226"
+Cohesion: 0.50
+Nodes (4): [0.26.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.25.0...arize-phoenix-evals-v0.26.0) (2025-08-01), Bug Fixes, Documentation, Features
+
+### Community 3227 - "Community 3227"
+Cohesion: 0.50
+Nodes (4): [0.29.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.28.1...arize-phoenix-evals-v0.29.0) (2025-08-26), Bug Fixes, Documentation, Features
+
+### Community 3228 - "Community 3228"
+Cohesion: 0.50
+Nodes (4): [2.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v2.5.0...arize-phoenix-evals-v2.6.0) (2025-11-12), Bug Fixes, Documentation, Features
+
+### Community 3229 - "Community 3229"
+Cohesion: 0.50
+Nodes (4): Migrating from legacy `phoenix.Dataset` to `phoenix.Inferences`, New, Old, v3.x to v4.0.0
+
+### Community 3230 - "Community 3230"
+Cohesion: 0.50
+Nodes (4): [0.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.3.0...arize-phoenix-otel-v0.4.0) (2024-08-23), Bug Fixes, Documentation, Features
+
+### Community 3231 - "Community 3231"
+Cohesion: 0.50
+Nodes (4): [0.7.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.6.1...arize-phoenix-otel-v0.7.0) (2025-01-22), Bug Fixes, Documentation, Features
+
+### Community 3232 - "Community 3232"
+Cohesion: 0.50
+Nodes (3): Reporting a Vulnerability, Security Policy, Supported Versions
+
+### Community 3233 - "Community 3233"
+Cohesion: 0.50
+Nodes (3): Overall Skill, Quality Checklist, Rule Files
+
+### Community 3234 - "Community 3234"
+Cohesion: 0.50
+Nodes (3): 🛠️ Develop, 🚀 Production, 🧪 Testing/Staging
+
+### Community 3235 - "Community 3235"
+Cohesion: 0.50
+Nodes (3): Function Calling Eval Template, Parameter Extraction Only, **Running an Agent Eval using the Function Calling Template**
+
+### Community 3236 - "Community 3236"
+Cohesion: 0.50
+Nodes (4): Toxicity Evaluator, TOXICITY_PROMPT_TEMPLATE, WikiToxic Benchmark Dataset, Built-in Eval Templates
+
+### Community 3237 - "Community 3237"
+Cohesion: 0.50
+Nodes (3): Getting Started, Playground, Prompt Management
+
+### Community 3238 - "Community 3238"
+Cohesion: 0.50
+Nodes (3): Explore Demo Prompts, Learn More, Prompt Engineering Features
+
+### Community 3239 - "Community 3239"
+Cohesion: 0.50
+Nodes (3): Installation, Reference Documentation, Usage
+
+### Community 3240 - "Community 3240"
+Cohesion: 0.50
+Nodes (4): LLM (provider-agnostic wrapper), Evals 2.0 Key Imports, Phoenix Python Packages, Phoenix TypeScript Packages
+
+### Community 3241 - "Community 3241"
+Cohesion: 0.50
+Nodes (4): IR Retrieval Metrics (Recall@k/Precision@k/MRR/NDCG), Debug Retrieval First, Two-Phase Evaluation, Avoid Similarity Metrics for Generation
+
+### Community 3242 - "Community 3242"
+Cohesion: 0.50
+Nodes (3): Complete Example, Flattening Convention, Flattening Rules
+
+### Community 3243 - "Community 3243"
+Cohesion: 0.50
+Nodes (4): Automatic I/O Capture (Decorators), Capturing Input/Output, Custom I/O with Additional Metadata, Manual I/O Capture (Context Manager)
+
+### Community 3244 - "Community 3244"
+Cohesion: 0.50
+Nodes (3): On a Single Span, Phoenix Tracing: Custom Metadata (TypeScript), Using Context (Propagates to All Child Spans)
+
+### Community 3245 - "Community 3245"
+Cohesion: 0.50
+Nodes (3): Benchmark Results:, Example Human vs AI on Arize Docs:, How to run the Human vs AI Eval:
+
+### Community 3246 - "Community 3246"
+Cohesion: 0.50
+Nodes (3): Benchmark Results, How to run the Citation Eval, Reference Links in Retrieval Q\&A
+
+### Community 3247 - "Community 3247"
+Cohesion: 0.50
+Nodes (3): **Function Calling Eval Template**, Parameter Extraction Only, **Running an Agent Eval using the Function Calling Template**
+
+### Community 3248 - "Community 3248"
+Cohesion: 0.50
+Nodes (4): description, required, type, Capability
+
+### Community 3250 - "Community 3250"
+Cohesion: 0.50
+Nodes (3): Contracts status, EE-Rewrite — Progress Overview, Notes
+
+### Community 3251 - "Community 3251"
+Cohesion: 0.50
+Nodes (3): [REVIEW] Rigorous self-review — gaps found + fixed, Summary, WS-E — Search / query-expansion — status log
+
+### Community 3252 - "Community 3252"
+Cohesion: 0.50
+Nodes (4): Core Concepts, setupUser() - Automatic act() Wrapping, Test Anatomy, Test Structure
+
+### Community 3253 - "Community 3253"
+Cohesion: 0.50
+Nodes (3): Connecting to a Cloud Backend, Getting Started, Testing
+
+### Community 3254 - "Community 3254"
+Cohesion: 0.67
+Nodes (3): getProviderCard(), openProviderModal(), PROVIDERS
+
+### Community 3282 - "Community 3282"
+Cohesion: 0.67
+Nodes (3): T, Merge multiple ranked result lists using weighted Reciprocal Rank Fusion (RRF)., weighted_reciprocal_rank_fusion()
+
+### Community 3284 - "Community 3284"
+Cohesion: 0.67
+Nodes (3): Common Test Patterns, Fixtures, Skipped Tests
+
+### Community 3285 - "Community 3285"
+Cohesion: 0.67
+Nodes (3): Environment Variables, Optional, Required
+
+### Community 3295 - "Community 3295"
+Cohesion: 0.67
+Nodes (3): Combine the "test" and "manager" classes, Ideas for integration testing design, Rework VespaClient
+
+### Community 3298 - "Community 3298"
+Cohesion: 1.00
+Nodes (3): ods — VertualAI devtools CLI (Go/wheel), screenshot-diff visual regression testing, VertualAI Next.js web frontend
+
+### Community 3299 - "Community 3299"
+Cohesion: 0.67
+Nodes (3): Span Replay, Prompt Hub (version control), Support Query Classifier Agent
+
+### Community 3302 - "Community 3302"
+Cohesion: 0.67
+Nodes (3): [10.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.9.2...arize-phoenix-v10.10.0) (2025-06-09), Bug Fixes, Features
+
+### Community 3303 - "Community 3303"
+Cohesion: 0.67
+Nodes (3): [10.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.10.0...arize-phoenix-v10.11.0) (2025-06-12), Bug Fixes, Features
+
+### Community 3304 - "Community 3304"
+Cohesion: 0.67
+Nodes (3): [10.12.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.11.0...arize-phoenix-v10.12.0) (2025-06-13), Bug Fixes, Features
+
+### Community 3305 - "Community 3305"
+Cohesion: 0.67
+Nodes (3): [10.13.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.12.0...arize-phoenix-v10.13.0) (2025-06-17), Bug Fixes, Features
+
+### Community 3306 - "Community 3306"
+Cohesion: 0.67
+Nodes (3): [10.14.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.13.2...arize-phoenix-v10.14.0) (2025-06-20), Bug Fixes, Features
+
+### Community 3307 - "Community 3307"
+Cohesion: 0.67
+Nodes (3): [10.15.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.14.0...arize-phoenix-v10.15.0) (2025-06-21), Bug Fixes, Features
+
+### Community 3308 - "Community 3308"
+Cohesion: 0.67
+Nodes (3): [10.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.0.4...arize-phoenix-v10.1.0) (2025-05-28), Bug Fixes, Features
+
+### Community 3309 - "Community 3309"
+Cohesion: 0.67
+Nodes (3): [10.2.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.1.0...arize-phoenix-v10.2.0) (2025-05-29), Bug Fixes, Features
+
+### Community 3310 - "Community 3310"
+Cohesion: 0.67
+Nodes (3): [10.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.5.0...arize-phoenix-v10.6.0) (2025-06-03), Bug Fixes, Features
+
+### Community 3311 - "Community 3311"
+Cohesion: 0.67
+Nodes (3): [10.7.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.6.2...arize-phoenix-v10.7.0) (2025-06-04), Bug Fixes, Features
+
+### Community 3312 - "Community 3312"
+Cohesion: 0.67
+Nodes (3): [10.7.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.7.0...arize-phoenix-v10.7.1) (2025-06-05), Bug Fixes, Documentation
+
+### Community 3313 - "Community 3313"
+Cohesion: 0.67
+Nodes (3): [10.8.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v10.7.1...arize-phoenix-v10.8.0) (2025-06-06), Bug Fixes, Features
+
+### Community 3314 - "Community 3314"
+Cohesion: 0.67
+Nodes (3): [11.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.9.0...arize-phoenix-v11.10.0) (2025-07-22), Bug Fixes, Features
+
+### Community 3315 - "Community 3315"
+Cohesion: 0.67
+Nodes (3): [11.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.10.1...arize-phoenix-v11.11.0) (2025-07-24), Bug Fixes, Features
+
+### Community 3316 - "Community 3316"
+Cohesion: 0.67
+Nodes (3): [11.12.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.11.0...arize-phoenix-v11.12.0) (2025-07-25), Bug Fixes, Features
+
+### Community 3317 - "Community 3317"
+Cohesion: 0.67
+Nodes (3): [11.14.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.13.2...arize-phoenix-v11.14.0) (2025-07-29), Bug Fixes, Features
+
+### Community 3318 - "Community 3318"
+Cohesion: 0.67
+Nodes (3): [11.17.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.16.1...arize-phoenix-v11.17.0) (2025-07-30), Bug Fixes, Features
+
+### Community 3319 - "Community 3319"
+Cohesion: 0.67
+Nodes (3): [11.20.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.19.0...arize-phoenix-v11.20.0) (2025-08-07), Bug Fixes, Features
+
+### Community 3320 - "Community 3320"
+Cohesion: 0.67
+Nodes (3): [11.21.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.20.0...arize-phoenix-v11.21.0) (2025-08-07), Bug Fixes, Features
+
+### Community 3321 - "Community 3321"
+Cohesion: 0.67
+Nodes (3): [11.21.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.21.0...arize-phoenix-v11.21.1) (2025-08-11), Bug Fixes, Documentation
+
+### Community 3322 - "Community 3322"
+Cohesion: 0.67
+Nodes (3): [11.22.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.21.1...arize-phoenix-v11.22.0) (2025-08-12), Bug Fixes, Features
+
+### Community 3323 - "Community 3323"
+Cohesion: 0.67
+Nodes (3): [11.23.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.22.1...arize-phoenix-v11.23.0) (2025-08-14), Bug Fixes, Features
+
+### Community 3324 - "Community 3324"
+Cohesion: 0.67
+Nodes (3): [11.25.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.24.1...arize-phoenix-v11.25.0) (2025-08-22), Bug Fixes, Features
+
+### Community 3325 - "Community 3325"
+Cohesion: 0.67
+Nodes (3): [11.27.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.26.0...arize-phoenix-v11.27.0) (2025-08-25), Bug Fixes, Features
+
+### Community 3326 - "Community 3326"
+Cohesion: 0.67
+Nodes (3): [11.29.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.28.0...arize-phoenix-v11.29.0) (2025-08-27), Bug Fixes, Features
+
+### Community 3327 - "Community 3327"
+Cohesion: 0.67
+Nodes (3): [11.2.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.2.1...arize-phoenix-v11.2.2) (2025-07-02), Bug Fixes, Documentation
+
+### Community 3328 - "Community 3328"
+Cohesion: 0.67
+Nodes (3): [11.30.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.29.0...arize-phoenix-v11.30.0) (2025-08-28), Bug Fixes, Features
+
+### Community 3329 - "Community 3329"
+Cohesion: 0.67
+Nodes (3): [11.33.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.32.1...arize-phoenix-v11.33.0) (2025-09-15), Bug Fixes, Features
+
+### Community 3330 - "Community 3330"
+Cohesion: 0.67
+Nodes (3): [11.35.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.34.0...arize-phoenix-v11.35.0) (2025-09-22), Bug Fixes, Features
+
+### Community 3331 - "Community 3331"
+Cohesion: 0.67
+Nodes (3): [11.36.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.35.0...arize-phoenix-v11.36.0) (2025-09-23), Bug Fixes, Features
+
+### Community 3332 - "Community 3332"
+Cohesion: 0.67
+Nodes (3): [11.37.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.36.0...arize-phoenix-v11.37.0) (2025-09-24), Bug Fixes, Features
+
+### Community 3333 - "Community 3333"
+Cohesion: 0.67
+Nodes (3): [11.38.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.37.0...arize-phoenix-v11.38.0) (2025-09-25), Bug Fixes, Features
+
+### Community 3334 - "Community 3334"
+Cohesion: 0.67
+Nodes (3): [11.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.2.2...arize-phoenix-v11.3.0) (2025-07-02), Bug Fixes, Features
+
+### Community 3335 - "Community 3335"
+Cohesion: 0.67
+Nodes (3): [11.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.3.0...arize-phoenix-v11.4.0) (2025-07-03), Bug Fixes, Features
+
+### Community 3336 - "Community 3336"
+Cohesion: 0.67
+Nodes (3): [11.5.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.4.0...arize-phoenix-v11.5.0) (2025-07-07), Bug Fixes, Features
+
+### Community 3337 - "Community 3337"
+Cohesion: 0.67
+Nodes (3): [11.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.5.0...arize-phoenix-v11.6.0) (2025-07-09), Bug Fixes, Features
+
+### Community 3338 - "Community 3338"
+Cohesion: 0.67
+Nodes (3): [11.7.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.6.2...arize-phoenix-v11.7.0) (2025-07-13), Bug Fixes, Features
+
+### Community 3339 - "Community 3339"
+Cohesion: 0.67
+Nodes (3): [11.9.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v11.8.0...arize-phoenix-v11.9.0) (2025-07-21), Bug Fixes, Features
+
+### Community 3340 - "Community 3340"
+Cohesion: 0.67
+Nodes (3): [12.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.9.0...arize-phoenix-v12.10.0) (2025-11-05), Bug Fixes, Features
+
+### Community 3341 - "Community 3341"
+Cohesion: 0.67
+Nodes (3): [12.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.10.0...arize-phoenix-v12.11.0) (2025-11-07), Bug Fixes, Features
+
+### Community 3342 - "Community 3342"
+Cohesion: 0.67
+Nodes (3): [12.17.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.16.0...arize-phoenix-v12.17.0) (2025-11-24), Bug Fixes, Features
+
+### Community 3343 - "Community 3343"
+Cohesion: 0.67
+Nodes (3): [12.18.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.17.0...arize-phoenix-v12.18.0) (2025-11-25), Bug Fixes, Features
+
+### Community 3344 - "Community 3344"
+Cohesion: 0.67
+Nodes (3): [12.19.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.18.0...arize-phoenix-v12.19.0) (2025-12-01), Bug Fixes, Features
+
+### Community 3345 - "Community 3345"
+Cohesion: 0.67
+Nodes (3): [12.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.0.0...arize-phoenix-v12.1.0) (2025-09-30), Bug Fixes, Features
+
+### Community 3346 - "Community 3346"
+Cohesion: 0.67
+Nodes (3): [12.20.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.19.0...arize-phoenix-v12.20.0) (2025-12-06), Bug Fixes, Features
+
+### Community 3347 - "Community 3347"
+Cohesion: 0.67
+Nodes (3): [12.21.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.20.0...arize-phoenix-v12.21.0) (2025-12-09), Bug Fixes, Features
+
+### Community 3348 - "Community 3348"
+Cohesion: 0.67
+Nodes (3): [12.22.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.21.0...arize-phoenix-v12.22.0) (2025-12-09), Documentation, Features
+
+### Community 3349 - "Community 3349"
+Cohesion: 0.67
+Nodes (3): [12.23.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.22.0...arize-phoenix-v12.23.0) (2025-12-10), Documentation, Features
+
+### Community 3350 - "Community 3350"
+Cohesion: 0.67
+Nodes (3): [12.24.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.23.0...arize-phoenix-v12.24.0) (2025-12-11), Documentation, Features
+
+### Community 3351 - "Community 3351"
+Cohesion: 0.67
+Nodes (3): [12.25.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.25.0...arize-phoenix-v12.25.1) (2025-12-16), Bug Fixes, Documentation
+
+### Community 3352 - "Community 3352"
+Cohesion: 0.67
+Nodes (3): [12.31.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.31.0...arize-phoenix-v12.31.1) (2026-01-22), Bug Fixes, Documentation
+
+### Community 3353 - "Community 3353"
+Cohesion: 0.67
+Nodes (3): [12.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.2.0...arize-phoenix-v12.3.0) (2025-10-06), Bug Fixes, Features
+
+### Community 3354 - "Community 3354"
+Cohesion: 0.67
+Nodes (3): [12.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.3.0...arize-phoenix-v12.4.0) (2025-10-08), Bug Fixes, Features
+
+### Community 3355 - "Community 3355"
+Cohesion: 0.67
+Nodes (3): [12.5.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.4.0...arize-phoenix-v12.5.0) (2025-10-10), Bug Fixes, Features
+
+### Community 3356 - "Community 3356"
+Cohesion: 0.67
+Nodes (3): [12.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.5.0...arize-phoenix-v12.6.0) (2025-10-13), Bug Fixes, Features
+
+### Community 3357 - "Community 3357"
+Cohesion: 0.67
+Nodes (3): [12.8.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.7.1...arize-phoenix-v12.8.0) (2025-10-27), Bug Fixes, Features
+
+### Community 3358 - "Community 3358"
+Cohesion: 0.67
+Nodes (3): [12.9.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v12.8.0...arize-phoenix-v12.9.0) (2025-10-29), Bug Fixes, Features
+
+### Community 3359 - "Community 3359"
+Cohesion: 0.67
+Nodes (3): [13.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.9.0...arize-phoenix-v13.10.0) (2026-03-08), Documentation, Features
+
+### Community 3360 - "Community 3360"
+Cohesion: 0.67
+Nodes (3): [13.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.10.0...arize-phoenix-v13.11.0) (2026-03-08), Documentation, Features
+
+### Community 3361 - "Community 3361"
+Cohesion: 0.67
+Nodes (3): [13.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.2.0...arize-phoenix-v13.3.0) (2026-02-20), Bug Fixes, Features
+
+### Community 3362 - "Community 3362"
+Cohesion: 0.67
+Nodes (3): [13.5.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.4.0...arize-phoenix-v13.5.0) (2026-02-27), Bug Fixes, Features
+
+### Community 3363 - "Community 3363"
+Cohesion: 0.67
+Nodes (3): [13.7.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v13.6.0...arize-phoenix-v13.7.0) (2026-03-02), Bug Fixes, Features
+
+### Community 3364 - "Community 3364"
+Cohesion: 0.67
+Nodes (3): [1.0.0](https://github.com/Arize-ai/phoenix/compare/v0.1.1...v1.0.0) (2023-11-10), ⚠ BREAKING CHANGES, Features
+
+### Community 3365 - "Community 3365"
+Cohesion: 0.67
+Nodes (3): [1.1.0](https://github.com/Arize-ai/phoenix/compare/v1.0.0...v1.1.0) (2023-11-14), Documentation, Features
+
+### Community 3366 - "Community 3366"
+Cohesion: 0.67
+Nodes (3): [1.6.0](https://github.com/Arize-ai/phoenix/compare/v1.5.1...v1.6.0) (2023-12-08), Documentation, Features
+
+### Community 3367 - "Community 3367"
+Cohesion: 0.67
+Nodes (3): [1.7.0](https://github.com/Arize-ai/phoenix/compare/v1.6.0...v1.7.0) (2023-12-09), Bug Fixes, Features
+
+### Community 3368 - "Community 3368"
+Cohesion: 0.67
+Nodes (3): [1.9.0](https://github.com/Arize-ai/phoenix/compare/v1.8.0...v1.9.0) (2023-12-11), Documentation, Features
+
+### Community 3369 - "Community 3369"
+Cohesion: 0.67
+Nodes (3): [2.11.0](https://github.com/Arize-ai/phoenix/compare/v2.10.0...v2.11.0) (2024-02-08), Bug Fixes, Features
+
+### Community 3370 - "Community 3370"
+Cohesion: 0.67
+Nodes (3): [2.1.0](https://github.com/Arize-ai/phoenix/compare/v2.0.0...v2.1.0) (2023-12-21), Bug Fixes, Features
+
+### Community 3371 - "Community 3371"
+Cohesion: 0.67
+Nodes (3): [2.5.0](https://github.com/Arize-ai/phoenix/compare/v2.4.1...v2.5.0) (2024-01-16), Bug Fixes, Features
+
+### Community 3372 - "Community 3372"
+Cohesion: 0.67
+Nodes (3): [2.9.1](https://github.com/Arize-ai/phoenix/compare/v2.9.0...v2.9.1) (2024-02-05), Bug Fixes, Documentation
+
+### Community 3373 - "Community 3373"
+Cohesion: 0.67
+Nodes (3): [3.0.0](https://github.com/Arize-ai/phoenix/compare/v2.11.1...v3.0.0) (2024-02-09), ⚠ BREAKING CHANGES, Features
+
+### Community 3374 - "Community 3374"
+Cohesion: 0.67
+Nodes (3): [3.12.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.11.1...arize-phoenix-v3.12.0) (2024-03-13), Bug Fixes, Features
+
+### Community 3375 - "Community 3375"
+Cohesion: 0.67
+Nodes (3): [3.14.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.13.1...arize-phoenix-v3.14.0) (2024-03-14), Bug Fixes, Features
+
+### Community 3376 - "Community 3376"
+Cohesion: 0.67
+Nodes (3): [3.15.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.15.0...arize-phoenix-v3.15.1) (2024-03-15), Bug Fixes, Documentation
+
+### Community 3377 - "Community 3377"
+Cohesion: 0.67
+Nodes (3): [3.16.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.16.0...arize-phoenix-v3.16.1) (2024-03-19), Bug Fixes, Documentation
+
+### Community 3378 - "Community 3378"
+Cohesion: 0.67
+Nodes (3): [3.16.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.16.1...arize-phoenix-v3.16.2) (2024-03-20), Bug Fixes, Documentation
+
+### Community 3379 - "Community 3379"
+Cohesion: 0.67
+Nodes (3): [3.17.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.16.3...arize-phoenix-v3.17.0) (2024-03-21), Documentation, Features
+
+### Community 3380 - "Community 3380"
+Cohesion: 0.67
+Nodes (3): [3.17.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.17.0...arize-phoenix-v3.17.1) (2024-03-24), Bug Fixes, Documentation
+
+### Community 3381 - "Community 3381"
+Cohesion: 0.67
+Nodes (3): [3.19.4](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.19.3...arize-phoenix-v3.19.4) (2024-04-04), Bug Fixes, Documentation
+
+### Community 3382 - "Community 3382"
+Cohesion: 0.67
+Nodes (3): [3.1.2](https://github.com/Arize-ai/phoenix/compare/v3.1.1...v3.1.2) (2024-02-15), Bug Fixes, Documentation
+
+### Community 3383 - "Community 3383"
+Cohesion: 0.67
+Nodes (3): [3.20.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.19.4...arize-phoenix-v3.20.0) (2024-04-10), Documentation, Features
+
+### Community 3384 - "Community 3384"
+Cohesion: 0.67
+Nodes (3): [3.24.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.23.0...arize-phoenix-v3.24.0) (2024-04-22), Bug Fixes, Features
+
+### Community 3385 - "Community 3385"
+Cohesion: 0.67
+Nodes (3): [3.2.0](https://github.com/Arize-ai/phoenix/compare/v3.1.2...v3.2.0) (2024-02-16), Bug Fixes, Features
+
+### Community 3386 - "Community 3386"
+Cohesion: 0.67
+Nodes (3): [3.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.5.0...arize-phoenix-v3.6.0) (2024-03-06), Bug Fixes, Features
+
+### Community 3387 - "Community 3387"
+Cohesion: 0.67
+Nodes (3): [3.8.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.7.0...arize-phoenix-v3.8.0) (2024-03-07), Documentation, Features
+
+### Community 3388 - "Community 3388"
+Cohesion: 0.67
+Nodes (3): [4.0.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v3.25.0...arize-phoenix-v4.0.0) (2024-05-09), Bug Fixes, Features
+
+### Community 3389 - "Community 3389"
+Cohesion: 0.67
+Nodes (3): [4.0.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.0.0...arize-phoenix-v4.0.1) (2024-05-09), Bug Fixes, Documentation
+
+### Community 3390 - "Community 3390"
+Cohesion: 0.67
+Nodes (3): [4.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.10.1...arize-phoenix-v4.11.0) (2024-07-18), Bug Fixes, Features
+
+### Community 3391 - "Community 3391"
+Cohesion: 0.67
+Nodes (3): [4.16.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.15.0...arize-phoenix-v4.16.0) (2024-07-30), Bug Fixes, Features
+
+### Community 3392 - "Community 3392"
+Cohesion: 0.67
+Nodes (3): [4.17.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.16.1...arize-phoenix-v4.17.0) (2024-08-02), Bug Fixes, Features
+
+### Community 3393 - "Community 3393"
+Cohesion: 0.67
+Nodes (3): [4.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.0.3...arize-phoenix-v4.1.0) (2024-05-17), Documentation, Features
+
+### Community 3394 - "Community 3394"
+Cohesion: 0.67
+Nodes (3): [4.1.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.1.1...arize-phoenix-v4.1.2) (2024-05-20), Bug Fixes, Documentation
+
+### Community 3395 - "Community 3395"
+Cohesion: 0.67
+Nodes (3): [4.23.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.22.1...arize-phoenix-v4.23.0) (2024-08-13), Bug Fixes, Features
+
+### Community 3396 - "Community 3396"
+Cohesion: 0.67
+Nodes (3): [4.24.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.23.0...arize-phoenix-v4.24.0) (2024-08-15), Documentation, Features
+
+### Community 3397 - "Community 3397"
+Cohesion: 0.67
+Nodes (3): [4.26.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.25.0...arize-phoenix-v4.26.0) (2024-08-21), Bug Fixes, Features
+
+### Community 3398 - "Community 3398"
+Cohesion: 0.67
+Nodes (3): [4.27.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.26.0...arize-phoenix-v4.27.0) (2024-08-22), Bug Fixes, Features
+
+### Community 3399 - "Community 3399"
+Cohesion: 0.67
+Nodes (3): [4.28.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.27.0...arize-phoenix-v4.28.0) (2024-08-23), Documentation, Features
+
+### Community 3400 - "Community 3400"
+Cohesion: 0.67
+Nodes (3): [4.2.4](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.2.3...arize-phoenix-v4.2.4) (2024-05-28), Bug Fixes, Documentation
+
+### Community 3401 - "Community 3401"
+Cohesion: 0.67
+Nodes (3): [4.33.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.33.1...arize-phoenix-v4.33.2) (2024-09-12), Bug Fixes, Documentation
+
+### Community 3402 - "Community 3402"
+Cohesion: 0.67
+Nodes (3): [4.34.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.33.2...arize-phoenix-v4.34.0) (2024-09-17), Documentation, Features
+
+### Community 3403 - "Community 3403"
+Cohesion: 0.67
+Nodes (3): [4.35.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.35.1...arize-phoenix-v4.35.2) (2024-09-20), Bug Fixes, Documentation
+
+### Community 3404 - "Community 3404"
+Cohesion: 0.67
+Nodes (3): [4.36.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.35.2...arize-phoenix-v4.36.0) (2024-09-20), Bug Fixes, Features
+
+### Community 3405 - "Community 3405"
+Cohesion: 0.67
+Nodes (3): [4.7.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.6.3...arize-phoenix-v4.7.0) (2024-07-03), Bug Fixes, Features
+
+### Community 3406 - "Community 3406"
+Cohesion: 0.67
+Nodes (3): [4.8.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v4.8.0...arize-phoenix-v4.8.1) (2024-07-09), Bug Fixes, Documentation
+
+### Community 3407 - "Community 3407"
+Cohesion: 0.67
+Nodes (3): [5.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.9.1...arize-phoenix-v5.10.0) (2024-11-20), Bug Fixes, Features
+
+### Community 3408 - "Community 3408"
+Cohesion: 0.67
+Nodes (3): [5.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.10.0...arize-phoenix-v5.11.0) (2024-11-22), Bug Fixes, Features
+
+### Community 3409 - "Community 3409"
+Cohesion: 0.67
+Nodes (3): [5.12.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.11.0...arize-phoenix-v5.12.0) (2024-11-25), Bug Fixes, Features
+
+### Community 3410 - "Community 3410"
+Cohesion: 0.67
+Nodes (3): [5.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.0.0...arize-phoenix-v5.1.0) (2024-09-27), Bug Fixes, Features
+
+### Community 3411 - "Community 3411"
+Cohesion: 0.67
+Nodes (3): [5.1.5](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.1.4...arize-phoenix-v5.1.5) (2024-10-03), Bug Fixes, Documentation
+
+### Community 3412 - "Community 3412"
+Cohesion: 0.67
+Nodes (3): [5.1.6](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.1.5...arize-phoenix-v5.1.6) (2024-10-04), Bug Fixes, Documentation
+
+### Community 3413 - "Community 3413"
+Cohesion: 0.67
+Nodes (3): [5.2.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.1.6...arize-phoenix-v5.2.0) (2024-10-05), Bug Fixes, Features
+
+### Community 3414 - "Community 3414"
+Cohesion: 0.67
+Nodes (3): [5.2.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.2.0...arize-phoenix-v5.2.1) (2024-10-08), Bug Fixes, Documentation
+
+### Community 3415 - "Community 3415"
+Cohesion: 0.67
+Nodes (3): [5.2.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.2.1...arize-phoenix-v5.2.2) (2024-10-09), Bug Fixes, Reverts
+
+### Community 3416 - "Community 3416"
+Cohesion: 0.67
+Nodes (3): [5.5.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.5.0...arize-phoenix-v5.5.1) (2024-10-19), Bug Fixes, Documentation
+
+### Community 3417 - "Community 3417"
+Cohesion: 0.67
+Nodes (3): [5.7.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.6.0...arize-phoenix-v5.7.0) (2024-11-06), Bug Fixes, Features
+
+### Community 3418 - "Community 3418"
+Cohesion: 0.67
+Nodes (3): [5.8.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.7.0...arize-phoenix-v5.8.0) (2024-11-11), Bug Fixes, Features
+
+### Community 3419 - "Community 3419"
+Cohesion: 0.67
+Nodes (3): [5.9.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v5.8.0...arize-phoenix-v5.9.0) (2024-11-18), Bug Fixes, Features
+
+### Community 3420 - "Community 3420"
+Cohesion: 0.67
+Nodes (3): [6.2.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v6.1.0...arize-phoenix-v6.2.0) (2024-12-09), Bug Fixes, Features
+
+### Community 3421 - "Community 3421"
+Cohesion: 0.67
+Nodes (3): [7.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.9.4...arize-phoenix-v7.10.0) (2025-02-04), Bug Fixes, Features
+
+### Community 3422 - "Community 3422"
+Cohesion: 0.67
+Nodes (3): [7.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.0.1...arize-phoenix-v7.1.0) (2024-12-11), Bug Fixes, Features
+
+### Community 3423 - "Community 3423"
+Cohesion: 0.67
+Nodes (3): [7.2.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.1.1...arize-phoenix-v7.2.0) (2024-12-18), Bug Fixes, Features
+
+### Community 3424 - "Community 3424"
+Cohesion: 0.67
+Nodes (3): [7.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.2.0...arize-phoenix-v7.3.0) (2024-12-21), Bug Fixes, Features
+
+### Community 3425 - "Community 3425"
+Cohesion: 0.67
+Nodes (3): [7.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.3.2...arize-phoenix-v7.4.0) (2025-01-02), Bug Fixes, Features
+
+### Community 3426 - "Community 3426"
+Cohesion: 0.67
+Nodes (3): [7.5.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.4.0...arize-phoenix-v7.5.0) (2025-01-03), Bug Fixes, Features
+
+### Community 3427 - "Community 3427"
+Cohesion: 0.67
+Nodes (3): [7.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.5.2...arize-phoenix-v7.6.0) (2025-01-09), Bug Fixes, Features
+
+### Community 3428 - "Community 3428"
+Cohesion: 0.67
+Nodes (3): [7.7.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.6.0...arize-phoenix-v7.7.0) (2025-01-14), Bug Fixes, Features
+
+### Community 3429 - "Community 3429"
+Cohesion: 0.67
+Nodes (3): [7.8.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.7.2...arize-phoenix-v7.8.0) (2025-01-17), Bug Fixes, Features
+
+### Community 3430 - "Community 3430"
+Cohesion: 0.67
+Nodes (3): [7.9.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.8.1...arize-phoenix-v7.9.0) (2025-01-21), Documentation, Features
+
+### Community 3431 - "Community 3431"
+Cohesion: 0.67
+Nodes (3): [7.9.2](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v7.9.1...arize-phoenix-v7.9.2) (2025-01-23), Bug Fixes, Documentation
+
+### Community 3432 - "Community 3432"
+Cohesion: 0.67
+Nodes (3): [8.0.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.0.0...arize-phoenix-v8.0.1) (2025-02-20), Bug Fixes, Documentation
+
+### Community 3433 - "Community 3433"
+Cohesion: 0.67
+Nodes (3): [8.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.9.0...arize-phoenix-v8.10.0) (2025-03-06), Bug Fixes, Features
+
+### Community 3434 - "Community 3434"
+Cohesion: 0.67
+Nodes (3): [8.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.10.0...arize-phoenix-v8.11.0) (2025-03-07), Bug Fixes, Features
+
+### Community 3435 - "Community 3435"
+Cohesion: 0.67
+Nodes (3): [8.12.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.11.0...arize-phoenix-v8.12.0) (2025-03-08), Bug Fixes, Features
+
+### Community 3436 - "Community 3436"
+Cohesion: 0.67
+Nodes (3): [8.13.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.12.1...arize-phoenix-v8.13.0) (2025-03-14), Bug Fixes, Features
+
+### Community 3437 - "Community 3437"
+Cohesion: 0.67
+Nodes (3): [8.15.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.14.1...arize-phoenix-v8.15.0) (2025-03-19), Bug Fixes, Features
+
+### Community 3438 - "Community 3438"
+Cohesion: 0.67
+Nodes (3): [8.17.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.16.0...arize-phoenix-v8.17.0) (2025-03-21), Bug Fixes, Features
+
+### Community 3439 - "Community 3439"
+Cohesion: 0.67
+Nodes (3): [8.19.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.18.0...arize-phoenix-v8.19.0) (2025-03-25), Bug Fixes, Features
+
+### Community 3440 - "Community 3440"
+Cohesion: 0.67
+Nodes (3): [8.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.0.1...arize-phoenix-v8.1.0) (2025-02-20), Bug Fixes, Features
+
+### Community 3441 - "Community 3441"
+Cohesion: 0.67
+Nodes (3): [8.21.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.20.0...arize-phoenix-v8.21.0) (2025-04-02), Features, Performance Improvements
+
+### Community 3442 - "Community 3442"
+Cohesion: 0.67
+Nodes (3): [8.25.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.24.2...arize-phoenix-v8.25.0) (2025-04-15), Bug Fixes, Features
+
+### Community 3443 - "Community 3443"
+Cohesion: 0.67
+Nodes (3): [8.27.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.26.3...arize-phoenix-v8.27.0) (2025-04-24), Documentation, Features
+
+### Community 3444 - "Community 3444"
+Cohesion: 0.67
+Nodes (3): [8.28.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.27.1...arize-phoenix-v8.28.0) (2025-04-28), Bug Fixes, Features
+
+### Community 3445 - "Community 3445"
+Cohesion: 0.67
+Nodes (3): [8.2.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.1.0...arize-phoenix-v8.2.0) (2025-02-21), Bug Fixes, Features
+
+### Community 3446 - "Community 3446"
+Cohesion: 0.67
+Nodes (3): [8.30.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.29.0...arize-phoenix-v8.30.0) (2025-04-30), Bug Fixes, Features
+
+### Community 3447 - "Community 3447"
+Cohesion: 0.67
+Nodes (3): [8.31.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.30.0...arize-phoenix-v8.31.0) (2025-05-01), Bug Fixes, Features
+
+### Community 3448 - "Community 3448"
+Cohesion: 0.67
+Nodes (3): [8.32.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.31.0...arize-phoenix-v8.32.0) (2025-05-06), Bug Fixes, Features
+
+### Community 3449 - "Community 3449"
+Cohesion: 0.67
+Nodes (3): [8.32.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.32.0...arize-phoenix-v8.32.1) (2025-05-08), Bug Fixes, Documentation
+
+### Community 3450 - "Community 3450"
+Cohesion: 0.67
+Nodes (3): [8.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.2.2...arize-phoenix-v8.3.0) (2025-02-24), Bug Fixes, Features
+
+### Community 3451 - "Community 3451"
+Cohesion: 0.67
+Nodes (3): [8.5.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.4.1...arize-phoenix-v8.5.0) (2025-02-27), Bug Fixes, Features
+
+### Community 3452 - "Community 3452"
+Cohesion: 0.67
+Nodes (3): [8.8.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v8.7.0...arize-phoenix-v8.8.0) (2025-03-01), Documentation, Features
+
+### Community 3453 - "Community 3453"
+Cohesion: 0.67
+Nodes (3): [9.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v9.0.1...arize-phoenix-v9.1.0) (2025-05-13), Bug Fixes, Features
+
+### Community 3454 - "Community 3454"
+Cohesion: 0.67
+Nodes (3): [9.2.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v9.1.0...arize-phoenix-v9.2.0) (2025-05-13), Documentation, Features
+
+### Community 3455 - "Community 3455"
+Cohesion: 0.67
+Nodes (3): [9.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v9.3.0...arize-phoenix-v9.4.0) (2025-05-15), Bug Fixes, Features
+
+### Community 3456 - "Community 3456"
+Cohesion: 0.67
+Nodes (3): [9.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-v9.5.0...arize-phoenix-v9.6.0) (2025-05-20), Bug Fixes, Features
+
+### Community 3457 - "Community 3457"
+Cohesion: 0.67
+Nodes (3): [0.2.0-alpha.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v0.1.0-alpha.1...arize-phoenix-client-v0.2.0-alpha.1) (2025-02-19), Bug Fixes, Features
+
+### Community 3458 - "Community 3458"
+Cohesion: 0.67
+Nodes (3): 1.0.0, Major Changes, Patch Changes
+
+### Community 3459 - "Community 3459"
+Cohesion: 0.67
+Nodes (3): [1.10.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.9.0...arize-phoenix-client-v1.10.0) (2025-06-04), Bug Fixes, Features
+
+### Community 3460 - "Community 3460"
+Cohesion: 0.67
+Nodes (3): [1.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.10.0...arize-phoenix-client-v1.11.0) (2025-06-19), Documentation, Features
+
+### Community 3461 - "Community 3461"
+Cohesion: 0.67
+Nodes (3): [1.15.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.14.2...arize-phoenix-client-v1.15.0) (2025-08-07), Bug Fixes, Features
+
+### Community 3462 - "Community 3462"
+Cohesion: 0.67
+Nodes (3): [1.15.1](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.15.0...arize-phoenix-client-v1.15.1) (2025-08-13), Bug Fixes, Documentation
+
+### Community 3463 - "Community 3463"
+Cohesion: 0.67
+Nodes (3): [1.16.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.15.3...arize-phoenix-client-v1.16.0) (2025-08-30), Documentation, Features
+
+### Community 3464 - "Community 3464"
+Cohesion: 0.67
+Nodes (3): [1.17.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.16.0...arize-phoenix-client-v1.17.0) (2025-09-03), Documentation, Features
+
+### Community 3465 - "Community 3465"
+Cohesion: 0.67
+Nodes (3): [1.20.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.19.1...arize-phoenix-client-v1.20.0) (2025-09-26), Bug Fixes, Features
+
+### Community 3466 - "Community 3466"
+Cohesion: 0.67
+Nodes (3): [1.21.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.20.0...arize-phoenix-client-v1.21.0) (2025-09-29), Documentation, Features
+
+### Community 3467 - "Community 3467"
+Cohesion: 0.67
+Nodes (3): [1.2.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.1.0...arize-phoenix-client-v1.2.0) (2025-04-03), Documentation, Features
+
+### Community 3468 - "Community 3468"
+Cohesion: 0.67
+Nodes (3): [1.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.3.0...arize-phoenix-client-v1.4.0) (2025-05-02), Documentation, Features
+
+### Community 3469 - "Community 3469"
+Cohesion: 0.67
+Nodes (3): [1.5.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.4.0...arize-phoenix-client-v1.5.0) (2025-05-09), Bug Fixes, Features
+
+### Community 3470 - "Community 3470"
+Cohesion: 0.67
+Nodes (3): [1.6.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-client-v1.5.0...arize-phoenix-client-v1.6.0) (2025-05-14), Bug Fixes, Features
+
+### Community 3471 - "Community 3471"
+Cohesion: 0.67
+Nodes (3): 2.2.0, Minor Changes, Patch Changes
+
+### Community 3472 - "Community 3472"
+Cohesion: 0.67
+Nodes (3): 3.0.0, Major Changes, Minor Changes
+
+### Community 3473 - "Community 3473"
+Cohesion: 0.67
+Nodes (3): 5.1.0, Minor Changes, Patch Changes
+
+### Community 3474 - "Community 3474"
+Cohesion: 0.67
+Nodes (3): 5.3.0, Minor Changes, Patch Changes
+
+### Community 3475 - "Community 3475"
+Cohesion: 0.67
+Nodes (3): 5.6.0, Minor Changes, Patch Changes
+
+### Community 3476 - "Community 3476"
+Cohesion: 0.67
+Nodes (3): 5.9.0, Minor Changes, Patch Changes
+
+### Community 3477 - "Community 3477"
+Cohesion: 0.67
+Nodes (3): 6.0.0, Major Changes, Patch Changes
+
+### Community 3478 - "Community 3478"
+Cohesion: 0.67
+Nodes (3): 6.1.0, Minor Changes, Patch Changes
+
+### Community 3482 - "Community 3482"
+Cohesion: 0.67
+Nodes (3): [0.0.2](https://github.com/Arize-ai/phoenix/compare/phoenix-evals-v0.0.1...phoenix-evals-v0.0.2) (2024-02-22), Bug Fixes, Features
+
+### Community 3483 - "Community 3483"
+Cohesion: 0.67
+Nodes (3): [0.0.3](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.0.2...arize-phoenix-evals-v0.0.3) (2024-02-23), Bug Fixes, Documentation
+
+### Community 3484 - "Community 3484"
+Cohesion: 0.67
+Nodes (3): [0.13.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.12.0...arize-phoenix-evals-v0.13.0) (2024-06-26), Bug Fixes, Features
+
+### Community 3485 - "Community 3485"
+Cohesion: 0.67
+Nodes (3): [0.16.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.15.1...arize-phoenix-evals-v0.16.0) (2024-09-17), Bug Fixes, Features
+
+### Community 3486 - "Community 3486"
+Cohesion: 0.67
+Nodes (3): [0.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.0.5...arize-phoenix-evals-v0.1.0) (2024-03-05), Bug Fixes, Features
+
+### Community 3487 - "Community 3487"
+Cohesion: 0.67
+Nodes (3): [0.20.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.19.0...arize-phoenix-evals-v0.20.0) (2025-02-05), Bug Fixes, Features
+
+### Community 3488 - "Community 3488"
+Cohesion: 0.67
+Nodes (3): [0.20.4](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.20.3...arize-phoenix-evals-v0.20.4) (2025-03-24), Bug Fixes, Documentation
+
+### Community 3489 - "Community 3489"
+Cohesion: 0.67
+Nodes (3): [0.21.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.20.8...arize-phoenix-evals-v0.21.0) (2025-06-21), Documentation, Features
+
+### Community 3490 - "Community 3490"
+Cohesion: 0.67
+Nodes (3): [0.25.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.24.0...arize-phoenix-evals-v0.25.0) (2025-07-30), Bug Fixes, Features
+
+### Community 3491 - "Community 3491"
+Cohesion: 0.67
+Nodes (3): [0.27.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.26.1...arize-phoenix-evals-v0.27.0) (2025-08-13), Bug Fixes, Features
+
+### Community 3492 - "Community 3492"
+Cohesion: 0.67
+Nodes (3): [0.28.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.27.0...arize-phoenix-evals-v0.28.0) (2025-08-19), Bug Fixes, Features
+
+### Community 3493 - "Community 3493"
+Cohesion: 0.67
+Nodes (3): [0.2.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v0.1.0...arize-phoenix-evals-v0.2.0) (2024-03-07), Bug Fixes, Features
+
+### Community 3494 - "Community 3494"
+Cohesion: 0.67
+Nodes (3): [2.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v2.10.0...arize-phoenix-evals-v2.11.0) (2026-02-27), Bug Fixes, Features
+
+### Community 3495 - "Community 3495"
+Cohesion: 0.67
+Nodes (3): [2.1.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v2.0.1...arize-phoenix-evals-v2.1.0) (2025-09-24), Bug Fixes, Features
+
+### Community 3496 - "Community 3496"
+Cohesion: 0.67
+Nodes (3): [2.3.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v2.2.0...arize-phoenix-evals-v2.3.0) (2025-10-01), Bug Fixes, Features
+
+### Community 3497 - "Community 3497"
+Cohesion: 0.67
+Nodes (3): [2.4.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v2.3.0...arize-phoenix-evals-v2.4.0) (2025-10-02), Documentation, Features
+
+### Community 3498 - "Community 3498"
+Cohesion: 0.67
+Nodes (3): [2.5.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v2.4.0...arize-phoenix-evals-v2.5.0) (2025-10-07), Documentation, Features
+
+### Community 3499 - "Community 3499"
+Cohesion: 0.67
+Nodes (3): [2.8.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v2.7.1...arize-phoenix-evals-v2.8.0) (2026-01-08), Bug Fixes, Features
+
+### Community 3500 - "Community 3500"
+Cohesion: 0.67
+Nodes (3): [2.9.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-evals-v2.8.0...arize-phoenix-evals-v2.9.0) (2026-02-02), Bug Fixes, Features
+
+### Community 3501 - "Community 3501"
+Cohesion: 0.67
+Nodes (3): 2.3.0, Minor Changes, Patch Changes
+
+### Community 3502 - "Community 3502"
+Cohesion: 0.67
+Nodes (3): 3.0.0, Major Changes, Patch Changes
+
+### Community 3503 - "Community 3503"
+Cohesion: 0.67
+Nodes (3): 3.1.0, Minor Changes, Patch Changes
+
+### Community 3504 - "Community 3504"
+Cohesion: 0.67
+Nodes (3): [0.11.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.10.3...arize-phoenix-otel-v0.11.0) (2025-06-18), Documentation, Features
+
+### Community 3505 - "Community 3505"
+Cohesion: 0.67
+Nodes (3): [0.13.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.12.1...arize-phoenix-otel-v0.13.0) (2025-08-14), Bug Fixes, Features
+
+### Community 3506 - "Community 3506"
+Cohesion: 0.67
+Nodes (3): [0.15.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.14.0...arize-phoenix-otel-v0.15.0) (2026-03-02), Bug Fixes, Features
+
+### Community 3507 - "Community 3507"
+Cohesion: 0.67
+Nodes (3): [0.5.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.4.1...arize-phoenix-otel-v0.5.0) (2024-09-12), Bug Fixes, Features
+
+### Community 3508 - "Community 3508"
+Cohesion: 0.67
+Nodes (3): [0.8.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.7.1...arize-phoenix-otel-v0.8.0) (2025-02-18), Documentation, Features
+
+### Community 3509 - "Community 3509"
+Cohesion: 0.67
+Nodes (3): [0.9.0](https://github.com/Arize-ai/phoenix/compare/arize-phoenix-otel-v0.8.0...arize-phoenix-otel-v0.9.0) (2025-03-22), Documentation, Features
+
+### Community 3516 - "Community 3516"
+Cohesion: 0.67
+Nodes (3): Value, anyOf, description
+
+### Community 3518 - "Community 3518"
+Cohesion: 0.67
+Nodes (3): How Versioning Works, Prompt Versioning and Tagging, Tagging
+
+### Community 3522 - "Community 3522"
+Cohesion: 0.67
+Nodes (3): MCP Client-Server Distributed Tracing, OTEL Context Propagation across MCP boundary, MCP Tracing Requirements
+
 ## Ambiguous Edges - Review These
-- `Phoenix DevOps Docker Compose Environment` → `PyPI Analytics Script`  [AMBIGUOUS]
+- `Analytics` → `Phoenix DevOps Docker Compose Environment`  [AMBIGUOUS]
   graphify-out/.graphify_chunklist_47.txt · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **8673 isolated node(s):** `extends`, `config`, `entrypoint.sh script`, `nextConfig`, `name` (+8668 more)
+- **15285 isolated node(s):** `extends`, `config`, `entrypoint.sh script`, `nextConfig`, `name` (+15280 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **432 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **856 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What is the exact relationship between `Phoenix DevOps Docker Compose Environment` and `PyPI Analytics Script`?**
+- **What is the exact relationship between `Analytics` and `Phoenix DevOps Docker Compose Environment`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `UserRole` connect `User Roles & Agent Config` to `Community 1025`, `Phoenix Auth & API Keys UI`, `Analytics & Usage Models (WS-H)`, `Community 137`, `Connector Indexing Types`, `Community 269`, `Community 145`, `Backend Agent/API Test Fixtures`, `Community 664`, `Community 154`, `Community 285`, `Community 1443`, `Community 168`, `Community 809`, `Community 810`, `Community 299`, `Community 428`, `Community 429`, `Community 814`, `Community 309`, `MCP Server Integration`, `Community 443`, `Community 61`, `Community 195`, `Community 67`, `Community 70`, `Community 72`, `Community 335`, `Community 210`, `Community 469`, `Community 1122`, `Community 229`, `Community 744`, `Community 1132`, `Community 753`, `Community 252`, `Community 382`, `Community 255`?**
-  _High betweenness centrality (0.095) - this node is a cross-community bridge._
-- **Why does `date` connect `Phoenix Auth & API Keys UI` to `User Roles & Agent Config`, `Phoenix Annotation Inputs`, `Community 229`, `Phoenix Time Format & Prefs`?**
-  _High betweenness centrality (0.072) - this node is a cross-community bridge._
-- **Why does `OpenAI` connect `Community 84` to `Community 133`, `Community 263`, `Community 531`, `Community 411`, `Community 797`, `Phoenix LLM Message Converters (JS)`, `Community 804`, `Community 681`, `Phoenix Playground LLM Clients`, `Community 300`, `Community 174`, `Community 825`, `Community 58`, `Phoenix Evaluators (JS)`, `Community 957`, `Community 833`, `Community 203`, `Community 78`, `Community 80`, `Community 600`, `Community 356`, `Community 614`, `Community 108`, `Community 368`, `Community 507`, `Community 380`, `Community 126`?**
-  _High betweenness centrality (0.057) - this node is a cross-community bridge._
-- **Are the 452 inferred relationships involving `SecondsSinceUnixEpoch` (e.g. with `AsanaConnector` and `AsanaTask`) actually correct?**
-  _`SecondsSinceUnixEpoch` has 452 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 451 inferred relationships involving `UserRole` (e.g. with `FakeRepo` and `AccessTokenDatabase`) actually correct?**
-  _`UserRole` has 451 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 370 inferred relationships involving `Span` (e.g. with `AddExamplesToDatasetInput` and `AddSpansToDatasetInput`) actually correct?**
-  _`Span` has 370 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `Middleware` connect `Community 66` to `Phoenix Playground UI`, `Phoenix Auth & API Keys UI`, `Phoenix Dataset Events`, `Community 68`, `Community 76`, `Phoenix Datasets & Dashboards`, `Phoenix Time Format & Prefs`, `Phoenix LDAP Auth Tests`?**
+  _High betweenness centrality (0.154) - this node is a cross-community bridge._
+- **Why does `DocumentSource` connect `Connectors (Airtable/Asana)` to `Community 1024`, `Analytics & Usage Models (WS-H)`, `Agent Chat Packets & Citations`, `Community 1547`, `Connector Indexing Types`, `Connector Checkpoint & Slim Docs`, `Community 533`, `Backend Agent/API Test Fixtures`, `Document External Access`, `User Roles & Agent Config`, `Document Access & Indexing`, `Community 550`, `Confluence Connector`, `Salesforce Connector`, `Community 3127`, `Google Drive Connector`, `Community 59`, `Community 1084`, `Community 1085`, `Community 62`, `Community 574`, `Community 583`, `Community 72`, `Community 83`, `Community 85`, `Community 88`, `Community 601`, `Community 604`, `Community 102`, `Community 111`, `Community 1648`, `Community 1650`, `Community 115`, `Community 118`, `Community 120`, `Community 130`, `Community 645`, `Community 135`, `Community 136`, `Community 139`, `Community 142`, `Community 144`, `Community 1691`, `Community 161`, `Community 167`, `Community 171`, `Community 684`, `Community 173`, `Community 1196`, `Community 175`, `Community 714`, `Community 1227`, `Community 1228`, `Community 204`, `Community 212`, `Community 215`, `Community 217`, `Community 218`, `Community 232`, `Community 243`, `Community 1268`, `Community 245`, `Community 257`, `Community 266`, `Community 284`, `Community 802`, `Community 805`, `Community 297`, `Community 298`, `Community 811`, `Community 301`, `Community 304`, `Community 1335`, `Community 319`, `Community 320`, `Community 342`, `Community 349`, `Community 351`, `Community 360`, `Community 877`, `Community 879`, `Community 880`, `Community 373`, `Community 889`, `Community 384`, `Community 394`, `Community 395`, `Community 403`, `Community 921`, `Community 1439`, `Community 417`, `Community 2977`, `Community 419`, `Community 938`, `Community 1452`, `Community 431`, `Community 442`, `Community 444`, `Community 468`, `Community 481`, `Community 491`, `Community 3055`, `Community 1527`?**
+  _High betweenness centrality (0.070) - this node is a cross-community bridge._
+- **Why does `HTTPException` connect `Phoenix Dataset Events` to `Community 771`, `Community 644`, `Community 774`, `Connectors (Airtable/Asana)`, `Community 137`, `Community 523`, `Community 267`, `Community 268`, `Community 145`, `Community 146`, `Community 916`, `Community 405`, `Community 662`, `Backend Agent/API Test Fixtures`, `Community 152`, `Community 2970`, `Phoenix LDAP Auth Tests`, `Community 1437`, `Community 2846`, `Community 157`, `Community 416`, `Community 161`, `Community 802`, `Community 674`, `Community 1444`, `Community 2725`, `Community 2726`, `Community 287`, `Community 296`, `Community 168`, `Community 299`, `Community 943`, `Community 432`, `Community 434`, `Community 2484`, `Community 438`, `Community 443`, `Community 445`, `Community 62`, `Community 573`, `Community 1858`, `Community 195`, `Community 66`, `Community 322`, `Community 70`, `Community 73`, `Community 844`, `Community 460`, `Community 2895`, `Community 81`, `Community 210`, `Community 82`, `Community 85`, `Community 599`, `Community 224`, `Community 485`, `Community 101`, `Community 103`, `Community 1640`, `Community 489`, `Community 1130`, `Community 111`, `Community 112`, `Community 242`, `Community 243`, `Community 252`, `Community 884`, `Community 374`, `Community 503`, `Community 120`, `Community 2684`, `Community 382`, `Community 255`?**
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
+- **Are the 1472 inferred relationships involving `DocumentSource` (e.g. with `AdminSearchRequest` and `AdminSearchResponse`) actually correct?**
+  _`DocumentSource` has 1472 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 568 inferred relationships involving `MessageType` (e.g. with `AgentTool` and `AnalyticsService`) actually correct?**
+  _`MessageType` has 568 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 454 inferred relationships involving `UserRole` (e.g. with `FakeRepo` and `AccessTokenDatabase`) actually correct?**
+  _`UserRole` has 454 INFERRED edges - model-reasoned connections that need verification._

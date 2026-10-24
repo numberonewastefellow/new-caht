@@ -17,7 +17,7 @@ from om.document_index.interfaces_new import DocumentSectionRequest
 from om.document_index.interfaces_new import IndexingMetadata
 from om.document_index.interfaces_new import MetadataUpdateRequest
 from om.indexing.models import DocMetadataAwareIndexChunk
-from shared_configs.model_server_models import Embedding
+from shared_configs.embedding_models import Embedding
 
 VECTOR_DB_DISABLED_ERROR = "Vector DB is disabled (DISABLE_VECTOR_DB=true). This operation requires a vector database."
 

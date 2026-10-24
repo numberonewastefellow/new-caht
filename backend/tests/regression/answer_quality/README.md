@@ -86,15 +86,10 @@ Edit `search_test_config.yaml` to set:
 - only_retrieve_docs
   - Set true to only retrieve documents, not LLM response
   - This is to save on API costs
-- use_cloud_gpu
-  - Set to true or false depending on if you want to use the remote gpu
-  - Only need to set this if use_cloud_gpu is true
-- model_server_ip
-  - This is the ip of the remote model server
-  - Only need to set this if use_cloud_gpu is true
-- model_server_port
-  - This is the port of the remote model server
-  - Only need to set this if use_cloud_gpu is true
+- embedding_server_url
+  - OpenAI-compatible embeddings endpoint, e.g. a remote/cloud GPU box
+    (`http://<host>:8000/v1/embeddings`). A remote GPU and a cloud GPU are the same thing here.
+  - Leave empty to start the local `embedding_server` container
 - environment_name
   - Use this if you would like to relaunch a previous test instance
   - Input the env_name of the test you'd like to re-launch

@@ -50,24 +50,6 @@ repos:
             "backend/requirements/ee.txt",
           ]
         files: ^(pyproject\.toml|uv\.lock|backend/requirements/.*\.txt)$
-      - id: uv-export
-        name: uv-export model_server.txt
-        args:
-          [
-            "--no-emit-project",
-            "--no-default-groups",
-            "--no-hashes",
-            "--extra",
-            "model_server",
-            "-o",
-            "backend/requirements/model_server.txt",
-          ]
-        files: ^(pyproject\.toml|uv\.lock|backend/requirements/.*\.txt)$
-      - id: uv-run
-        name: Check lazy imports
-        args: ["--active", "--with=onyx-devtools", "ods", "check-lazy-imports"]
-        pass_filenames: true
-        files: ^backend/(?!\.venv/|scripts/).*\.py$
       # NOTE: This takes ~6s on a single, large module which is prohibitively slow.
       # - id: uv-run
       #   name: mypy

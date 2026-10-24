@@ -43,7 +43,8 @@ The app will be available at http://localhost:3000
 | `api` | api_server |
 | `web` | web_server |
 | `background` | background |
-| `model` | inference_model_server + indexing_model_server |
+| `cortex` / `model` / `embedding` | cortex_embed_vllm (OpenAI-compatible vLLM embeddings) |
+| `rerank` | cortex_rerank_vllm (optional reranker) |
 | `nginx` | nginx |
 | `db` | relational_db (PostgreSQL) |
 | `cache` | cache (Redis) |
@@ -63,8 +64,6 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 docker run --rm -v onyx-stack_db_volume:/source -v E:/temp/vert/db:/dest alpine sh -c "cp -a /source/. /dest/"
 docker run --rm -v onyx-stack_opensearch_data:/source -v E:/temp/vert/opensearch:/dest alpine sh -c "cp -a /source/. /dest/"
 docker run --rm -v onyx-stack_minio_data:/source -v E:/temp/vert/minio_data:/dest alpine sh -c "cp -a /source/. /dest/"
-docker run --rm -v onyx-stack_model_cache_huggingface:/source -v E:/temp/vert/model_cache_huggingface:/dest alpine sh -c "cp -a /source/. /dest/"
-docker run --rm -v onyx-stack_indexing_huggingface_model_cache:/source -v E:/temp/vert/indexing_huggingface_model_cache:/dest alpine sh -c "cp -a /source/. /dest/"
 ```
 
 Then start with `dev build`.

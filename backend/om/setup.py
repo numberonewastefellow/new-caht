@@ -1,3 +1,4 @@
+import os
 import time
 
 from sqlalchemy.orm import Session
@@ -21,6 +22,8 @@ from om.db.index_attempt import cancel_indexing_attempts_past_model
 from om.db.index_attempt import expire_index_attempts
 from om.db.llm import fetch_default_llm_model
 from om.db.llm import update_default_provider
+from om.db.llm import upsert_cloud_embedding_provider
+from om.db.models import SearchSettings
 from om.db.llm import upsert_llm_provider
 from om.db.search_settings import get_active_search_settings
 from om.db.search_settings import get_current_search_settings
@@ -35,18 +38,78 @@ from om.llm.constants import LlmProviderNames
 from om.llm.well_known_providers.llm_provider_options import get_openai_model_names
 from om.natural_language_processing.search_nlp_models import EmbeddingModel
 from om.natural_language_processing.search_nlp_models import warm_up_bi_encoder
+from om.server.manage.embedding.models import CloudEmbeddingProviderCreationRequest
 from om.server.manage.llm.models import LLMProviderUpsertRequest
 from om.server.manage.llm.models import ModelConfigurationUpsertRequest
 from om.server.settings.store import load_settings
 from om.server.settings.store import store_settings
-from om.utils.gpu_utils import gpu_status_request
 from om.utils.logger import setup_logger
-from shared_configs.configs import MODEL_SERVER_HOST
-from shared_configs.configs import MODEL_SERVER_PORT
 from shared_configs.configs import MULTI_TENANT
+from shared_configs.enums import EmbeddingProvider
 
 
 logger = setup_logger()
+
+
+_LEGACY_EMBEDDING_URL = "http://embedding_server:8000/v1/embeddings"
+
+
+def _migrate_legacy_embedding_url(
+    db_session: Session, current: SearchSettings, api_url: str
+) -> None:
+    """Rewrite ONLY the old pre-Cortex URL; a URL set by hand in Admin is never touched."""
+    if current.provider_type != EmbeddingProvider.LITELLM:
+        return
+    provider = current.cloud_provider
+    if provider is None or provider.api_url != _LEGACY_EMBEDDING_URL:
+        return
+    if api_url == _LEGACY_EMBEDDING_URL:
+        return
+    provider.api_url = api_url
+    db_session.commit()
+    logger.notice(f"Embedding provider URL migrated {_LEGACY_EMBEDDING_URL} -> {api_url}")
+
+
+def ensure_openai_compatible_embedding(db_session: Session) -> None:
+    """Point the current search settings at the OpenAI-compatible embedding
+    server (vLLM / TEI) when EMBEDDING_SERVER_URL is set.
+
+    Idempotent and deliberately conservative: it only switches the current
+    settings when they still use the in-house (provider-less) model server AND
+    the served model is the same model, i.e. the existing vectors stay valid.
+    A different model requires a normal re-index and is never switched here.
+    """
+    api_url = os.environ.get("EMBEDDING_SERVER_URL")
+    if not api_url:
+        return
+
+    served_model = os.environ.get("EMBEDDING_MODEL")
+    current = get_current_search_settings(db_session)
+    if current.provider_type is not None:
+        _migrate_legacy_embedding_url(db_session, current, api_url)
+        return
+    if served_model != current.model_name:
+        logger.warning(
+            f"EMBEDDING_SERVER_URL is set but the served model '{served_model}' differs from "
+            f"the current embedding model '{current.model_name}'; not switching automatically "
+            "(a different model needs a re-index)."
+        )
+        return
+
+    upsert_cloud_embedding_provider(
+        db_session,
+        CloudEmbeddingProviderCreationRequest(
+            provider_type=EmbeddingProvider.LITELLM,
+            # The client requires a non-empty key; local servers ignore it unless configured.
+            api_key=os.environ.get("EMBEDDING_API_KEY") or "local-embedding-key",
+            api_url=api_url,
+        ),
+    )
+    current.provider_type = EmbeddingProvider.LITELLM
+    db_session.commit()
+    logger.notice(
+        f'Embedding model "{current.model_name}" now served via {api_url} (OpenAI-compatible)'
+    )
 
 
 def setup_onyx(
@@ -59,6 +122,8 @@ def setup_onyx(
     The Tenant Service calls the tenants/create endpoint which runs this.
     """
     check_and_perform_index_swap(db_session=db_session)
+
+    ensure_openai_compatible_embedding(db_session)
 
     active_search_settings = get_active_search_settings(db_session)
     search_settings = active_search_settings.primary
@@ -132,14 +197,11 @@ def setup_onyx(
                 "Could not connect to a document index within the specified timeout."
             )
 
-        logger.notice(f"Model Server: http://{MODEL_SERVER_HOST}:{MODEL_SERVER_PORT}")
         if search_settings.provider_type is None:
             # In integration tests, do not block API startup on warm-up
             warm_up_bi_encoder(
                 embedding_model=EmbeddingModel.from_db_model(
                     search_settings=search_settings,
-                    server_host=MODEL_SERVER_HOST,
-                    server_port=MODEL_SERVER_PORT,
                 ),
                 non_blocking=INTEGRATION_TESTS_MODE,
             )
@@ -255,11 +317,9 @@ def update_default_multipass_indexing(db_session: Session) -> None:
     logger.debug(f"Docs exist: {docs_exist}, Connectors exist: {connectors_exist}")
 
     if not docs_exist and not connectors_exist:
-        logger.info(
-            "No existing docs or connectors found. Checking GPU availability for multipass indexing."
-        )
-        gpu_available = gpu_status_request(indexing=True)
-        logger.info(f"GPU available: {gpu_available}")
+        # Embeddings are served by an external OpenAI-compatible server, so there is
+        # no local GPU to probe; multipass follows whether a provider is configured.
+        gpu_available = False
 
         current_settings = get_current_search_settings(db_session)
 

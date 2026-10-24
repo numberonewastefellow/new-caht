@@ -15,7 +15,6 @@ services:
       - relational_db
       - opensearch
       - cache
-      - inference_model_server
       - minio
     restart: unless-stopped
     ports:
@@ -73,8 +72,17 @@ services:
       - NORMALIZE_EMBEDDINGS=${NORMALIZE_EMBEDDINGS:-}
       - ASYM_QUERY_PREFIX=${ASYM_QUERY_PREFIX:-}
       - DISABLE_RERANK_FOR_STREAMING=${DISABLE_RERANK_FOR_STREAMING:-}
-      - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
-      - MODEL_SERVER_PORT=${MODEL_SERVER_PORT:-}
+      - EMBEDDING_SERVER_URL=${EMBEDDING_SERVER_URL:-http://cortex_embed:8000/v1/embeddings}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-nomic-ai/nomic-embed-text-v1}
+      - EMBEDDING_API_KEY=${EMBEDDING_API_KEY:-}
+      # Texts per /v1/embeddings request (backend default is 512, too big for a small GPU)
+      - EMBEDDING_BATCH_SIZE=${EMBEDDING_BATCH_SIZE:-64}
+      - RERANK_ENABLED=${RERANK_ENABLED:-false}
+      - RERANK_SERVER_URL=${RERANK_SERVER_URL:-http://cortex_rerank:8000/v1/rerank}
+      - RERANK_MODEL=${RERANK_MODEL:-BAAI/bge-reranker-v2-m3}
+      - RERANK_API_KEY=${RERANK_API_KEY:-}
+      - RERANK_TOP_N=${RERANK_TOP_N:-20}
+      - RERANK_PROTECT_TOP_K=${RERANK_PROTECT_TOP_K:-2}
       - LOG_OM_MODEL_INTERACTIONS=${LOG_OM_MODEL_INTERACTIONS:-}
       - LOG_ENDPOINT_LATENCY=${LOG_ENDPOINT_LATENCY:-}
       - LOG_POSTGRES_LATENCY=${LOG_POSTGRES_LATENCY:-}
@@ -128,8 +136,6 @@ services:
       - relational_db
       - opensearch
       - cache
-      - inference_model_server
-      - indexing_model_server
     restart: unless-stopped
     environment:
       - USE_LIGHTWEIGHT_BACKGROUND_WORKER=${USE_LIGHTWEIGHT_BACKGROUND_WORKER:-true}
@@ -174,9 +180,17 @@ services:
       - NORMALIZE_EMBEDDINGS=${NORMALIZE_EMBEDDINGS:-}
       - ASYM_QUERY_PREFIX=${ASYM_QUERY_PREFIX:-}
       - ASYM_PASSAGE_PREFIX=${ASYM_PASSAGE_PREFIX:-}
-      - MODEL_SERVER_HOST=${MODEL_SERVER_HOST:-inference_model_server}
-      - MODEL_SERVER_PORT=${MODEL_SERVER_PORT:-}
-      - INDEXING_MODEL_SERVER_HOST=${INDEXING_MODEL_SERVER_HOST:-indexing_model_server}
+      - EMBEDDING_SERVER_URL=${EMBEDDING_SERVER_URL:-http://cortex_embed:8000/v1/embeddings}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-nomic-ai/nomic-embed-text-v1}
+      - EMBEDDING_API_KEY=${EMBEDDING_API_KEY:-}
+      # Texts per /v1/embeddings request (backend default is 512, too big for a small GPU)
+      - EMBEDDING_BATCH_SIZE=${EMBEDDING_BATCH_SIZE:-64}
+      - RERANK_ENABLED=${RERANK_ENABLED:-false}
+      - RERANK_SERVER_URL=${RERANK_SERVER_URL:-http://cortex_rerank:8000/v1/rerank}
+      - RERANK_MODEL=${RERANK_MODEL:-BAAI/bge-reranker-v2-m3}
+      - RERANK_API_KEY=${RERANK_API_KEY:-}
+      - RERANK_TOP_N=${RERANK_TOP_N:-20}
+      - RERANK_PROTECT_TOP_K=${RERANK_PROTECT_TOP_K:-2}
       # Indexing Configs
       - ENABLED_CONNECTOR_TYPES=${ENABLED_CONNECTOR_TYPES:-}
       - DISABLE_INDEX_UPDATE_ON_SWAP=${DISABLE_INDEX_UPDATE_ON_SWAP:-}
@@ -319,61 +333,121 @@ services:
   #   volumes:
   #     - mcp_server_logs:/var/log/om
 
-  inference_model_server:
-    image: ${OM_MODEL_SERVER_IMAGE:-om/om-model-server:${IMAGE_TAG:-latest}}
+  # ---------------------------------------------------------------------------
+  # Cortex embeddings: generic OpenAI-compatible /v1/embeddings endpoint.
+  # Cortex (see ../../cortex) replaces the former bespoke inference/indexing model servers. Exactly ONE of
+  # the two profiles below should be active (add it to COMPOSE_PROFILES in .env);
+  # both answer on the network alias `cortex_embed` (legacy alias `embedding_server`) port 8000, so the backend
+  # never changes:
+  #   Admin > Embedding > provider "LiteLLM", API URL
+  #   http://cortex_embed:8000/v1/embeddings, model name = ${EMBEDDING_MODEL}
+  # One process serves ONE model; to host another model, copy the block with a
+  # different alias/model, or put a gateway (LiteLLM proxy / nginx) in front.
+  # ---------------------------------------------------------------------------
+  cortex_embed_vllm:
     build:
-      context: ../../backend
-      dockerfile: Dockerfile.model_server
-    command: >
-      /bin/sh -c "if [ \"${DISABLE_MODEL_SERVER:-}\" = \"True\" ] || [ \"${DISABLE_MODEL_SERVER:-}\" = \"true\" ]; then
-        echo 'Skipping service...';
-        exit 0;
-      else
-        exec uvicorn model_server.main:app --host 0.0.0.0 --port 9000;
-      fi"
-    restart: on-failure
+      context: ../../cortex
+      args:
+        - VLLM_IMAGE=${VLLM_IMAGE:-vllm/vllm-openai:latest}
+    image: om/cortex:local
+    profiles: ["vllm"]
     environment:
-      - MIN_THREADS_ML_MODELS=${MIN_THREADS_ML_MODELS:-}
-      # Set to debug to get more fine-grained logs
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-
-      # Analytics Configs
-      - SENTRY_DSN=${SENTRY_DSN:-}
+      - CORTEX_MODEL=${EMBEDDING_MODEL:-nomic-ai/nomic-embed-text-v1}
+      - CORTEX_MAX_LEN=${EMBEDDING_MAX_LEN:-2048}
+      - CORTEX_GPU_UTIL=${EMBEDDING_GPU_UTIL:-0.25}
+      - CORTEX_API_KEY=${EMBEDDING_API_KEY:-}
+      # nomic-embed-text-v1 ships custom modelling code
+      - CORTEX_TRUST_REMOTE_CODE=${EMBEDDING_TRUST_REMOTE_CODE:-true}
+      # Scheduler limits sized for a small GPU; keep >= EMBEDDING_BATCH_SIZE
+      - CORTEX_EXTRA_ARGS=${EMBEDDING_EXTRA_ARGS:---max-num-seqs 64 --max-num-batched-tokens 16384}
+      # Needed for gated models such as google/embeddinggemma-300m
+      - HF_TOKEN=${HF_TOKEN:-}
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     volumes:
-      # Not necessary, this is just to reduce download time during startup
-      - model_cache_huggingface:/app/.cache/huggingface/
+      - cortex_hf_cache:/root/.cache/huggingface
+    networks:
+      default:
+        aliases:
+          - cortex_embed
+          - embedding_server
+    restart: unless-stopped
     logging:
       driver: json-file
       options:
         max-size: "50m"
         max-file: "6"
 
-  indexing_model_server:
-    image: ${OM_MODEL_SERVER_IMAGE:-om/om-model-server:${IMAGE_TAG:-latest}}
-    build:
-      context: ../../backend
-      dockerfile: Dockerfile.model_server
+  cortex_embed_tei:
+    # Hugging Face Text Embeddings Inference. `86-` tag = Ampere (RTX 30xx);
+    # use the `cpu-` tag for CPU-only hosts, `89-` for Ada, etc.
+    image: ${TEI_IMAGE:-ghcr.io/huggingface/text-embeddings-inference:86-1.8}
+    profiles: ["tei"]
     command: >
-      /bin/sh -c "if [ \"${DISABLE_MODEL_SERVER:-}\" = \"True\" ] || [ \"${DISABLE_MODEL_SERVER:-}\" = \"true\" ]; then
-        echo 'Skipping service...';
-        exit 0;
-      else
-        exec uvicorn model_server.main:app --host 0.0.0.0 --port 9000;
-      fi"
-    restart: on-failure
+      --model-id ${EMBEDDING_MODEL:-nomic-ai/nomic-embed-text-v1}
+      --port 8000
+      --max-client-batch-size ${EMBEDDING_MAX_BATCH:-64}
     environment:
-      - INDEX_BATCH_SIZE=${INDEX_BATCH_SIZE:-}
-      - MIN_THREADS_ML_MODELS=${MIN_THREADS_ML_MODELS:-}
-      - INDEXING_ONLY=True
-      # Set to debug to get more fine-grained logs
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - CLIENT_EMBEDDING_TIMEOUT=${CLIENT_EMBEDDING_TIMEOUT:-}
-
-      # Analytics Configs
-      - SENTRY_DSN=${SENTRY_DSN:-}
+      - HF_TOKEN=${HF_TOKEN:-}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     volumes:
-      # Not necessary, this is just to reduce download time during startup
-      - indexing_huggingface_model_cache:/app/.cache/huggingface/
+      - cortex_hf_cache:/data
+    networks:
+      default:
+        aliases:
+          - cortex_embed
+          - embedding_server
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+
+  # Cortex reranker: cross-encoder served on /v1/rerank. Off by default (profile "rerank").
+  # Turn reranking on in the backend with RERANK_ENABLED=true (see cortex/README.md).
+  cortex_rerank_vllm:
+    build:
+      context: ../../cortex
+      args:
+        - VLLM_IMAGE=${VLLM_IMAGE:-vllm/vllm-openai:latest}
+    image: om/cortex:local
+    profiles: ["rerank"]
+    environment:
+      - CORTEX_MODEL=${RERANK_MODEL:-BAAI/bge-reranker-v2-m3}
+      - CORTEX_MAX_LEN=${RERANK_MAX_LEN:-1024}
+      - CORTEX_GPU_UTIL=${RERANK_GPU_UTIL:-0.30}
+      - CORTEX_API_KEY=${RERANK_API_KEY:-}
+      - CORTEX_TRUST_REMOTE_CODE=${RERANK_TRUST_REMOTE_CODE:-false}
+      - CORTEX_EXTRA_ARGS=${RERANK_EXTRA_ARGS:-}
+      - HF_TOKEN=${HF_TOKEN:-}
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - cortex_hf_cache:/root/.cache/huggingface
+    networks:
+      default:
+        aliases:
+          - cortex_rerank
+    restart: unless-stopped
     logging:
       driver: json-file
       options:
@@ -524,10 +598,9 @@ services:
     # privileged: true
 
 volumes:
+  cortex_hf_cache:
   db_volume:
   opensearch_data:
   minio_data:
 
-  model_cache_huggingface:
-  indexing_huggingface_model_cache:
   # mcp_server_logs:

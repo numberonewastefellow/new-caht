@@ -49,8 +49,6 @@ from om.indexing.models import IndexChunk
 from om.indexing.models import IndexingSetting
 from om.natural_language_processing.search_nlp_models import EmbeddingModel
 from om.utils.logger import setup_logger
-from shared_configs.configs import MODEL_SERVER_HOST
-from shared_configs.configs import MODEL_SERVER_PORT
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.configs import POSTGRES_DEFAULT_SCHEMA
 from shared_configs.contextvars import get_current_tenant_id
@@ -143,8 +141,6 @@ def run_smoke_test() -> bool:
             live_settings = get_current_search_settings(db_session)
             model = EmbeddingModel.from_db_model(
                 search_settings=live_settings,
-                server_host=MODEL_SERVER_HOST,
-                server_port=MODEL_SERVER_PORT,
             )
             content_embedding = model.encode([content], text_type=EmbedTextType.PASSAGE)[0]
             title_embedding = model.encode(

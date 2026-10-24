@@ -1,6 +1,5 @@
 import os
 from collections.abc import Iterator
-from collections.abc import Mapping
 from typing import Any
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -50,38 +49,14 @@ def ensure_default_llm_provider(db_session: Session) -> None:
 
 @pytest.fixture
 def mock_nlp_embeddings_post() -> Iterator[None]:
-    """Patch model-server embedding HTTP calls used by NLP components."""
+    """Patch embedding calls so tests don't need a running embedding server."""
 
-    def _mock_post(
-        url: str,
-        json: Mapping[str, Any] | None = None,
-        headers: Mapping[str, str] | None = None,  # noqa: ARG001
-        **kwargs: Any,  # noqa: ARG001
-    ) -> MagicMock:
-        resp = MagicMock()
-        if "encoder/bi-encoder-embed" in url:
-            num_texts = len(json.get("texts", [])) if json else 1
-            resp.status_code = 200
-            resp.json.return_value = {"embeddings": [[0.0] * 768] * num_texts}
-            resp.raise_for_status = MagicMock()
-            return resp
-        resp.status_code = 200
-        resp.json.return_value = {}
-        resp.raise_for_status = MagicMock()
-        return resp
+    def _mock_encode(texts: list[str], *args: Any, **kwargs: Any) -> list[list[float]]:  # noqa: ARG001
+        return [[0.0] * 768 for _ in texts]
 
     with patch(
-        "om.natural_language_processing.search_nlp_models.requests.post",
-        side_effect=_mock_post,
-    ):
-        yield
-
-
-@pytest.fixture
-def mock_gpu_status() -> Iterator[None]:
-    """Avoid hitting model server for GPU status checks."""
-    with patch(
-        "om.utils.gpu_utils._get_gpu_status_from_model_server", return_value=False
+        "om.natural_language_processing.search_nlp_models.EmbeddingModel.encode",
+        side_effect=_mock_encode,
     ):
         yield
 
@@ -122,7 +97,6 @@ def mock_file_store() -> Iterator[None]:
 @pytest.fixture
 def mock_external_deps(
     mock_nlp_embeddings_post: None,  # noqa: ARG001
-    mock_gpu_status: None,  # noqa: ARG001
     mock_document_index_query: None,  # noqa: ARG001
     mock_file_store: None,  # noqa: ARG001
 ) -> Iterator[None]:

@@ -105,8 +105,6 @@ from om.utils.middleware import make_randomized_onyx_request_id
 from om.utils.telemetry import mt_cloud_telemetry
 from om.utils.telemetry import optional_telemetry
 from om.utils.telemetry import RecordType
-from shared_configs.configs import INDEXING_MODEL_SERVER_HOST
-from shared_configs.configs import INDEXING_MODEL_SERVER_PORT
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import CURRENT_TENANT_ID_CONTEXTVAR
 from shared_configs.contextvars import INDEX_ATTEMPT_INFO_CONTEXTVAR
@@ -781,8 +779,6 @@ def check_for_indexing(self: Task, *, tenant_id: str) -> int | None:
                 if old_search_settings:
                     embedding_model = EmbeddingModel.from_db_model(
                         search_settings=current_search_settings,
-                        server_host=INDEXING_MODEL_SERVER_HOST,
-                        server_port=INDEXING_MODEL_SERVER_PORT,
                     )
 
                     # only warm up if search settings were changed

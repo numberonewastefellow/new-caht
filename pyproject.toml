@@ -6,7 +6,6 @@ build-backend = "setuptools.build_meta"
 name = "onyx"
 version = "0.0.0"
 requires-python = ">=3.11"
-# Shared dependencies between backend and model_server
 dependencies = [
     "aioboto3==15.1.0",
     "cohere==5.6.1",
@@ -143,7 +142,6 @@ dev = [
     "matplotlib==3.10.8",
     "mypy-extensions==1.0.0",
     "mypy==1.13.0",
-    "onyx-devtools==0.5.7",
     "openapi-generator-cli==7.17.0",
     "pandas-stubs~=2.3.3",
     "pre-commit==3.2.2",
@@ -178,20 +176,8 @@ ee = [
     "posthog==3.7.4",
 ]
 
-# Model server specific dependencies (ML packages)
-model_server = [
-    "accelerate==1.6.0",
-    "einops==0.8.1",
-    "numpy==2.4.1",
-    "safetensors==0.5.3",
-    "sentence-transformers==4.0.2",
-    "torch==2.9.1",
-    "transformers==4.53.0",
-    "sentry-sdk[fastapi,celery,starlette]==2.14.0",
-]
-
 [tool.uv.workspace]
-members = ["backend", "tools/ods"]
+members = ["backend"]
 
 [tool.basedpyright]
 include = ["backend"]

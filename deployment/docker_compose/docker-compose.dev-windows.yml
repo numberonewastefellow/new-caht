@@ -88,27 +88,26 @@ services:
     volumes:
       - E:/temp/vert/opensearch:/usr/share/opensearch/data
 
-  inference_model_server:
-    ports:
-      - "9000:9000"
-    environment:
-      - DISABLE_TELEMETRY=true
-      - SENTRY_DSN=
+  # Cortex: OpenAI-compatible embeddings/reranking (replaces the inference/indexing model servers).
+  # Model weights cache on the host, like the other dev data.
+  cortex_embed_vllm:
     volumes:
-      - E:/temp/vert/model_cache_huggingface:/app/.cache/huggingface/
-      - E:/temp/vert/inference_model_server_logs:/var/log/om
+      - E:/temp/vert/cortex_hf_cache:/root/.cache/huggingface
 
-  indexing_model_server:
+  cortex_embed_tei:
     volumes:
-      - E:/temp/vert/indexing_huggingface_model_cache:/app/.cache/huggingface/
-      - E:/temp/vert/indexing_model_server_logs:/var/log/om
+      - E:/temp/vert/cortex_hf_cache:/data
+
+  cortex_rerank_vllm:
+    volumes:
+      - E:/temp/vert/cortex_hf_cache:/root/.cache/huggingface
 
   cache:
     ports:
       - "6379:6379"
 
   minio:
-    # use different ports to avoid conflicts with model servers
+    # use different ports to avoid conflicts with other local services
     ports:
       - "9004:9000"
       - "9005:9001"

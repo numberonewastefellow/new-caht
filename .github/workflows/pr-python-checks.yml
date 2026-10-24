@@ -35,13 +35,7 @@ jobs:
           requirements: |
             backend/requirements/default.txt
             backend/requirements/dev.txt
-            backend/requirements/model_server.txt
             backend/requirements/ee.txt
-
-      - name: Generate OpenAPI schema and Python client
-        shell: bash
-        run: |
-          ods openapi all
 
       - name: Cache mypy cache
         if: ${{ vars.DISABLE_MYPY_CACHE != 'true' }}

@@ -48,8 +48,6 @@ The deployment follows this order:
    - Postgres
    - Redis
    - Vespa Engine
-   - Model Server (Indexing)
-   - Model Server (Inference)
    - Backend API Server
    - Backend Background Server
    - Web Server

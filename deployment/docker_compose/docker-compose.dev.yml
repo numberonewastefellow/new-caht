@@ -22,16 +22,12 @@ services:
     ports:
       - "5432:5432"
 
-  inference_model_server:
-    ports:
-      - "9000:9000"
-
   cache:
     ports:
       - "6379:6379"
 
   minio:
-    # use different ports to avoid conflicts with model servers
+    # use different ports to avoid conflicts with other local services
     ports:
       - "9004:9000"
       - "9005:9001"

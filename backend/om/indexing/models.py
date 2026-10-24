@@ -13,7 +13,7 @@ from om.db.enums import EmbeddingPrecision
 from om.db.enums import SwitchoverType
 from om.utils.logger import setup_logger
 from shared_configs.enums import EmbeddingProvider
-from shared_configs.model_server_models import Embedding
+from shared_configs.embedding_models import Embedding
 
 if TYPE_CHECKING:
     from om.indexing.indexing_pipeline import DocumentBatchPrepareContext

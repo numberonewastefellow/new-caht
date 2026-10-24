@@ -25,7 +25,7 @@
 ---
 
 ## GROUP A — Quick wins (low risk, no migration, no infra coordination)
-- [ ] **`pyproject.toml`** (root): `name = "onyx"` → `om`; fix `include = ["onyx*", …]` → `["om*", …]`; dep `"onyx-devtools==0.5.7"` (leave if it's a real external package name — verify). Then regenerate `backend/requirements/*.txt` (removes the 216 `# via onyx` lines automatically).
+- [ ] **`pyproject.toml`** (root): `name = "onyx"` → `om`; fix `include = ["onyx*", …]` → `["om*", …]`; dep `onyx-devtools` (REMOVED 2026-10-24 along with `tools/ods`). Then regenerate `backend/requirements/*.txt` (removes the 216 `# via onyx` lines automatically).
 - [ ] **Frontend `MinimalOnyxDocument` family** — `web/src/lib/search/interfaces.ts` (`MinimalOnyxDocument`→`MinimalOmDocument`, and `Loaded/Search/FilteredOnyxDocument`→`…OmDocument`) + ~10 importers (SearchCard, DocumentDisplay, TextViewModal, DocumentsSidebar, ChatDocumentDisplay, ExpandableContentWrapper, CompareView, ChatUI, AppInputBar, AppPage).
 - [ ] **Stale brand prose → VertualAI**: `web/src/app/admin/bots/SlackBotTable.tsx:114` ("…chatting with Danswer!"); scan other user-facing strings.
 - [ ] **`docker-bake.hcl`** image-tag drift (Bucket D) — align to `om/om-*`.

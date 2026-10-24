@@ -84,7 +84,6 @@ jobs:
 
     env:
       PYTHONPATH: ./backend
-      MODEL_SERVER_HOST: "disabled"
       DISABLE_TELEMETRY: "true"
 
     steps:

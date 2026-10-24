@@ -14,15 +14,10 @@ from typing import cast
 
 import aioboto3  # type: ignore
 import httpx
-import requests
 import voyageai  # type: ignore[import-untyped]
 from cohere import AsyncClient as CohereAsyncClient
 from cohere.core.api_error import ApiError
 from google.oauth2 import service_account
-from httpx import HTTPError
-from requests import JSONDecodeError
-from requests import RequestException
-from requests import Response
 from retry import retry
 
 from om.configs.app_configs import INDEXING_EMBEDDING_MODEL_NUM_THREADS
@@ -40,7 +35,6 @@ from om.natural_language_processing.constants import DEFAULT_VERTEX_MODEL
 from om.natural_language_processing.constants import DEFAULT_VOYAGE_MODEL
 from om.natural_language_processing.constants import EmbeddingModelTextType
 from om.natural_language_processing.exceptions import CohereBillingLimitError
-from om.natural_language_processing.exceptions import ModelServerRateLimitError
 from om.natural_language_processing.utils import get_tokenizer
 from om.natural_language_processing.utils import tokenizer_trim_content
 from om.utils.logger import setup_logger
@@ -50,21 +44,15 @@ from om.utils.timing import log_function_time
 from shared_configs.configs import API_BASED_EMBEDDING_TIMEOUT
 from shared_configs.configs import DOC_EMBEDDING_CONTEXT_SIZE
 from shared_configs.configs import INDEXING_ONLY
-from shared_configs.configs import MODEL_SERVER_HOST
-from shared_configs.configs import MODEL_SERVER_PORT
 from shared_configs.configs import OPENAI_EMBEDDING_TIMEOUT
 from shared_configs.configs import SKIP_WARM_UP
 from shared_configs.configs import VERTEXAI_EMBEDDING_LOCAL_BATCH_SIZE
+from shared_configs.embedding_models import Embedding
+from shared_configs.embedding_models import EmbedRequest
+from shared_configs.embedding_models import EmbedResponse
 from shared_configs.enums import EmbeddingProvider
 from shared_configs.enums import EmbedTextType
 from shared_configs.enums import RerankerProvider
-from shared_configs.model_server_models import Embedding
-from shared_configs.model_server_models import EmbedRequest
-from shared_configs.model_server_models import EmbedResponse
-from shared_configs.model_server_models import IntentRequest
-from shared_configs.model_server_models import IntentResponse
-from shared_configs.model_server_models import RerankRequest
-from shared_configs.model_server_models import RerankResponse
 from shared_configs.utils import batch_list
 
 logger = setup_logger()
@@ -181,20 +169,6 @@ WARM_UP_STRINGS = [
 
 def clean_model_name(model_str: str) -> str:
     return model_str.replace("/", "_").replace("-", "_").replace(".", "_")
-
-
-def build_model_server_url(
-    model_server_host: str,
-    model_server_port: int,
-) -> str:
-    model_server_url = f"{model_server_host}:{model_server_port}"
-
-    # use protocol if provided
-    if "http" in model_server_url:
-        return model_server_url
-
-    # otherwise default to http
-    return f"http://{model_server_url}"
 
 
 def is_authentication_error(error: Exception) -> bool:
@@ -635,10 +609,17 @@ async def cohere_rerank_aws(
 
 
 async def litellm_rerank(
-    query: str, docs: list[str], api_url: str, model_name: str, api_key: str | None
+    query: str,
+    docs: list[str],
+    api_url: str,
+    model_name: str,
+    api_key: str | None,
+    timeout: float = 30.0,
 ) -> list[float]:
+    """Cohere/Jina-style rerank call (also what vLLM serves on /v1/rerank).
+    Scores are returned in the order of ``docs``."""
     headers = {} if not api_key else {"Authorization": f"Bearer {api_key}"}
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=timeout) as client:
         response = await client.post(
             api_url,
             json={
@@ -656,11 +637,85 @@ async def litellm_rerank(
         ]
 
 
+class RerankingModel:
+    """Scores passages against a query with an API-hosted cross-encoder.
+
+    Providers: Cohere, Bedrock (Cohere on AWS) and LiteLLM (any Cohere/Jina-style
+    ``/rerank`` endpoint, e.g. the Cortex vLLM reranker). There is no in-house
+    model server any more, so a provider is required.
+    """
+
+    def __init__(
+        self,
+        model_name: str,
+        provider_type: RerankerProvider | None,
+        api_key: str | None,
+        api_url: str | None,
+        timeout: float = 30.0,
+    ) -> None:
+        self.model_name = model_name
+        self.provider_type = provider_type
+        self.api_key = api_key
+        self.api_url = api_url
+        self.timeout = timeout
+
+    async def _make_direct_rerank_call(
+        self, query: str, passages: list[str]
+    ) -> list[float]:
+        if self.provider_type is None:
+            raise RuntimeError(
+                "No reranking provider is configured and the legacy model server has "
+                "been removed. Use provider 'litellm' with the Cortex rerank URL."
+            )
+
+        if self.provider_type == RerankerProvider.COHERE:
+            if self.api_key is None:
+                raise ValueError("API key is required for Cohere reranking")
+            return await cohere_rerank_api(
+                query, passages, self.model_name, self.api_key
+            )
+        elif self.provider_type == RerankerProvider.BEDROCK:
+            if self.api_key is None:
+                raise ValueError("API key is required for Bedrock reranking")
+            aws_access_key_id, aws_secret_access_key, aws_region = pass_aws_key(
+                self.api_key
+            )
+            return await cohere_rerank_aws(
+                query,
+                passages,
+                self.model_name,
+                aws_region,
+                aws_access_key_id,
+                aws_secret_access_key,
+            )
+        elif self.provider_type == RerankerProvider.LITELLM:
+            if self.api_url is None:
+                raise ValueError("API URL is required for LiteLLM reranking.")
+            return await litellm_rerank(
+                query,
+                passages,
+                self.api_url,
+                self.model_name,
+                self.api_key,
+                timeout=self.timeout,
+            )
+        raise ValueError(f"Unsupported reranking provider: {self.provider_type}")
+
+    def predict(self, query: str, passages: list[str]) -> list[float]:
+        """Relevance scores aligned with ``passages`` (higher = more relevant)."""
+        loop = asyncio.new_event_loop()
+        try:
+            asyncio.set_event_loop(loop)
+            return loop.run_until_complete(
+                self._make_direct_rerank_call(query, passages)
+            )
+        finally:
+            loop.close()
+
+
 class EmbeddingModel:
     def __init__(
         self,
-        server_host: str,  # Changes depending on indexing or inference
-        server_port: int,
         model_name: str | None,
         normalize: bool,
         query_prefix: str | None,
@@ -690,16 +745,6 @@ class EmbeddingModel:
         )
         self.callback = callback
 
-        # Only build model server endpoint for local models
-        if self.provider_type is None:
-            model_server_url = build_model_server_url(server_host, server_port)
-            self.embed_server_endpoint: str | None = (
-                f"{model_server_url}/encoder/bi-encoder-embed"
-            )
-        else:
-            # API providers don't need model server endpoint
-            self.embed_server_endpoint = None
-
     async def _make_direct_api_call(
         self,
         embed_request: EmbedRequest,
@@ -714,12 +759,25 @@ class EmbeddingModel:
             logger.error("API key not provided for cloud model")
             raise RuntimeError("API key not provided for cloud model")
 
-        # Check for prefix usage with cloud models
+        # Check for prefix usage with cloud models. OpenAI-compatible self-hosted
+        # servers (LITELLM provider, e.g. vLLM/TEI serving nomic) have no notion of
+        # a text type, so for them the prefix is applied client-side instead.
         if embed_request.manual_query_prefix or embed_request.manual_passage_prefix:
-            logger.warning("Prefix provided for cloud model, which is not supported")
-            raise ValueError(
-                "Prefix string is not valid for cloud models. Cloud models take an explicit text type instead."
-            )
+            if self.provider_type == EmbeddingProvider.LITELLM:
+                prefix = (
+                    embed_request.manual_query_prefix
+                    if embed_request.text_type == EmbedTextType.QUERY
+                    else embed_request.manual_passage_prefix
+                )
+                if prefix:
+                    embed_request = embed_request.model_copy(
+                        update={"texts": [prefix + t for t in embed_request.texts]}
+                    )
+            else:
+                logger.warning("Prefix provided for cloud model, which is not supported")
+                raise ValueError(
+                    "Prefix string is not valid for cloud models. Cloud models take an explicit text type instead."
+                )
 
         if not all(embed_request.texts):
             logger.error("Empty strings provided for embedding")
@@ -767,70 +825,6 @@ class EmbeddingModel:
         )
 
         return EmbedResponse(embeddings=embeddings)
-
-    def _make_model_server_request(
-        self,
-        embed_request: EmbedRequest,
-        tenant_id: str | None = None,
-        request_id: str | None = None,
-    ) -> EmbedResponse:
-        if self.embed_server_endpoint is None:
-            raise ValueError("Model server endpoint is not configured for local models")
-
-        # Store the endpoint in a local variable to help mypy understand it's not None
-        endpoint = self.embed_server_endpoint
-
-        def _make_request() -> Response:
-            headers = {}
-            if tenant_id:
-                headers["X-Onyx-Tenant-ID"] = tenant_id
-
-            if request_id:
-                headers["X-Onyx-Request-ID"] = request_id
-
-            response = requests.post(
-                endpoint,
-                headers=headers,
-                json=embed_request.model_dump(),
-            )
-            # signify that this is a rate limit error
-            if response.status_code == 429:
-                raise ModelServerRateLimitError(response.text)
-
-            response.raise_for_status()
-            return response
-
-        final_make_request_func = _make_request
-
-        # if the text type is a passage, add some default
-        # retries + handling for rate limiting
-        if embed_request.text_type == EmbedTextType.PASSAGE:
-            final_make_request_func = retry(
-                tries=3,
-                delay=5,
-                exceptions=(RequestException, ValueError, JSONDecodeError),
-            )(final_make_request_func)
-            # use 10 second delay as per Azure suggestion
-            final_make_request_func = retry(
-                tries=10, delay=10, exceptions=ModelServerRateLimitError
-            )(final_make_request_func)
-
-        response: Response | None = None
-
-        try:
-            response = final_make_request_func()
-            return EmbedResponse(**response.json())
-        except requests.HTTPError as e:
-            if not response:
-                raise HTTPError("HTTP error occurred - response is None.") from e
-
-            try:
-                error_detail = response.json().get("detail", str(e))
-            except Exception:
-                error_detail = response.text
-            raise HTTPError(f"HTTP error occurred: {error_detail}") from e
-        except requests.RequestException as e:
-            raise HTTPError(f"Request failed: {str(e)}") from e
 
     def _batch_encode_texts(
         self,
@@ -880,22 +874,23 @@ class EmbeddingModel:
 
             start_time = time.monotonic()
 
-            # Route between direct API calls and model server calls
-            if self.provider_type is not None:
-                # For API providers, make direct API call
-                # Use thread-local event loop to prevent memory leaks from creating
-                # thousands of event loops during batch processing
-                loop = _get_or_create_event_loop()
-                response = loop.run_until_complete(
-                    self._make_direct_api_call(
-                        embed_request, tenant_id=tenant_id, request_id=request_id
-                    )
+            # All embeddings go through an OpenAI-compatible provider (e.g. the vLLM
+            # embedding_server). The in-house model server no longer exists.
+            if self.provider_type is None:
+                raise RuntimeError(
+                    "No embedding provider is configured and the legacy model server "
+                    "has been removed. Configure an OpenAI-compatible embedding provider "
+                    "(Admin > Embedding, or set EMBEDDING_SERVER_URL)."
                 )
-            else:
-                # For local models, use model server
-                response = self._make_model_server_request(
+
+            # Use thread-local event loop to prevent memory leaks from creating
+            # thousands of event loops during batch processing
+            loop = _get_or_create_event_loop()
+            response = loop.run_until_complete(
+                self._make_direct_api_call(
                     embed_request, tenant_id=tenant_id, request_id=request_id
                 )
+            )
 
             end_time = time.monotonic()
 
@@ -1008,13 +1003,9 @@ class EmbeddingModel:
     def from_db_model(
         cls,
         search_settings: SearchSettings,
-        server_host: str,  # Changes depending on indexing or inference
-        server_port: int,
         retrim_content: bool = False,
     ) -> "EmbeddingModel":
         return cls(
-            server_host=server_host,
-            server_port=server_port,
             model_name=search_settings.model_name,
             normalize=search_settings.normalize,
             query_prefix=search_settings.query_prefix,
@@ -1027,139 +1018,6 @@ class EmbeddingModel:
             deployment_name=search_settings.deployment_name,
             reduced_dimension=search_settings.reduced_dimension,
         )
-
-
-class RerankingModel:
-    def __init__(
-        self,
-        model_name: str,
-        provider_type: RerankerProvider | None,
-        api_key: str | None,
-        api_url: str | None,
-        model_server_host: str = MODEL_SERVER_HOST,
-        model_server_port: int = MODEL_SERVER_PORT,
-    ) -> None:
-        self.model_name = model_name
-        self.provider_type = provider_type
-        self.api_key = api_key
-        self.api_url = api_url
-
-        # Only build model server endpoint for local models
-        if self.provider_type is None:
-            model_server_url = build_model_server_url(
-                model_server_host, model_server_port
-            )
-            self.rerank_server_endpoint: str | None = (
-                model_server_url + "/encoder/cross-encoder-scores"
-            )
-        else:
-            # API providers don't need model server endpoint
-            self.rerank_server_endpoint = None
-
-    async def _make_direct_rerank_call(
-        self, query: str, passages: list[str]
-    ) -> list[float]:
-        """Make direct API call to cloud provider, bypassing model server."""
-        if self.provider_type is None:
-            raise ValueError("Provider type is required for direct API calls")
-
-        if self.api_key is None:
-            raise ValueError("API key is required for cloud provider")
-
-        if self.provider_type == RerankerProvider.COHERE:
-            return await cohere_rerank_api(
-                query, passages, self.model_name, self.api_key
-            )
-        elif self.provider_type == RerankerProvider.BEDROCK:
-            aws_access_key_id, aws_secret_access_key, aws_region = pass_aws_key(
-                self.api_key
-            )
-            return await cohere_rerank_aws(
-                query,
-                passages,
-                self.model_name,
-                aws_region,
-                aws_access_key_id,
-                aws_secret_access_key,
-            )
-        elif self.provider_type == RerankerProvider.LITELLM:
-            if self.api_url is None:
-                raise ValueError("API URL is required for LiteLLM reranking.")
-            return await litellm_rerank(
-                query, passages, self.api_url, self.model_name, self.api_key
-            )
-        else:
-            raise ValueError(f"Unsupported reranking provider: {self.provider_type}")
-
-    def predict(self, query: str, passages: list[str]) -> list[float]:
-        # Route between direct API calls and model server calls
-        if self.provider_type is not None:
-            # For API providers, make direct API call
-            loop = asyncio.new_event_loop()
-            try:
-                asyncio.set_event_loop(loop)
-                return loop.run_until_complete(
-                    self._make_direct_rerank_call(query, passages)
-                )
-            finally:
-                loop.close()
-        else:
-            # For local models, use model server
-            if self.rerank_server_endpoint is None:
-                raise ValueError(
-                    "Rerank server endpoint is not configured for local models"
-                )
-
-            rerank_request = RerankRequest(
-                query=query,
-                documents=passages,
-                model_name=self.model_name,
-                provider_type=self.provider_type,
-                api_key=self.api_key,
-                api_url=self.api_url,
-            )
-
-            response = requests.post(
-                self.rerank_server_endpoint, json=rerank_request.model_dump()
-            )
-            response.raise_for_status()
-
-            return RerankResponse(**response.json()).scores
-
-
-class QueryAnalysisModel:
-    def __init__(
-        self,
-        model_server_host: str = MODEL_SERVER_HOST,
-        model_server_port: int = MODEL_SERVER_PORT,
-        # Lean heavily towards not throwing out keywords
-        keyword_percent_threshold: float = 0.1,
-        # Lean towards semantic which is the default
-        semantic_percent_threshold: float = 0.4,
-    ) -> None:
-        model_server_url = build_model_server_url(model_server_host, model_server_port)
-        self.intent_server_endpoint = model_server_url + "/custom/query-analysis"
-        self.keyword_percent_threshold = keyword_percent_threshold
-        self.semantic_percent_threshold = semantic_percent_threshold
-
-    def predict(
-        self,
-        query: str,
-    ) -> tuple[bool, list[str]]:
-        intent_request = IntentRequest(
-            query=query,
-            keyword_percent_threshold=self.keyword_percent_threshold,
-            semantic_percent_threshold=self.semantic_percent_threshold,
-        )
-
-        response = requests.post(
-            self.intent_server_endpoint, json=intent_request.model_dump()
-        )
-        response.raise_for_status()
-
-        response_model = IntentResponse(**response.json())
-
-        return response_model.is_keyword, response_model.keywords
 
 
 def warm_up_retry(
@@ -1220,39 +1078,3 @@ def warm_up_bi_encoder(
     else:
         retry_encode = warm_up_retry(embedding_model.encode)
         retry_encode(texts=[warm_up_str], text_type=EmbedTextType.QUERY)
-
-
-# No longer used
-def warm_up_cross_encoder(
-    rerank_model_name: str,
-    non_blocking: bool = False,
-) -> None:
-    if SKIP_WARM_UP:
-        return
-
-    logger.debug(f"Warming up reranking model: {rerank_model_name}")
-
-    reranking_model = RerankingModel(
-        model_name=rerank_model_name,
-        provider_type=None,
-        api_url=None,
-        api_key=None,
-    )
-
-    def _warm_up() -> None:
-        try:
-            reranking_model.predict(WARM_UP_STRINGS[0], WARM_UP_STRINGS[1:])
-            logger.debug(f"Warm-up complete for reranking model: {rerank_model_name}")
-        except Exception as e:
-            logger.warning(
-                f"Warm-up request failed for reranking model {rerank_model_name}: {e}"
-            )
-
-    if non_blocking:
-        threading.Thread(target=_warm_up, daemon=True).start()
-        logger.debug(
-            f"Started non-blocking warm-up for reranking model: {rerank_model_name}"
-        )
-    else:
-        retry_rerank = warm_up_retry(reranking_model.predict)
-        retry_rerank(WARM_UP_STRINGS[0], WARM_UP_STRINGS[1:])

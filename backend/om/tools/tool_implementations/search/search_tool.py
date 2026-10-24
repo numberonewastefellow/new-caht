@@ -43,6 +43,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
 from om.chat.emitter import Emitter
+from om.configs.app_configs import RERANK_PROTECT_TOP_K
 from om.configs.chat_configs import MAX_CHUNKS_FED_TO_CHAT
 from om.configs.constants import FederatedConnectorSource
 from om.context.search.federated.slack_search import slack_retrieval
@@ -55,6 +56,7 @@ from om.context.search.models import InferenceSection
 from om.context.search.models import SearchDocsResponse
 from om.context.search.pipeline import merge_individual_chunks
 from om.context.search.pipeline import search_pipeline
+from om.context.search.rerank import rerank_chunks_with_status
 from om.context.search.utils import convert_inference_sections_to_search_docs
 from om.db.connector import check_connectors_exist
 from om.db.connector import check_federated_connectors_exist
@@ -725,6 +727,14 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
                 id_extractor=lambda chunk: f"{chunk.document_id}_{chunk.chunk_id}",
             )
 
+            # Optional cross-encoder rerank (RERANK_ENABLED) of the FUSED list, scored
+            # against the user's own question. Done after fusion on purpose: reranking
+            # each variant query first would just be re-sorted by the RRF above.
+            # Fails open (original order kept) if the reranker is unavailable.
+            top_chunks, rerank_applied = rerank_chunks_with_status(
+                override_kwargs.original_query or semantic_query or "", top_chunks
+            )
+
             # We can disregard all of the chunks that exceed the num_hits parameter since it's not valid to have
             # documents/contents from things that aren't returned to the user on the frontend
             top_sections = merge_individual_chunks(top_chunks)[
@@ -771,6 +781,20 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
                 llm=self.llm,
                 max_chunks_per_section=MAX_CHUNKS_FOR_RELEVANCE,
             )
+
+            # The LLM selector can discard the reranker's winner; keep its top-K sections.
+            if rerank_applied and RERANK_PROTECT_TOP_K > 0:
+                protected = sections_for_selection[:RERANK_PROTECT_TOP_K]
+                protected_keys = {
+                    (sec.center_chunk.document_id, sec.center_chunk.chunk_id)
+                    for sec in protected
+                }
+                selected_sections = protected + [
+                    sec
+                    for sec in selected_sections
+                    if (sec.center_chunk.document_id, sec.center_chunk.chunk_id)
+                    not in protected_keys
+                ]
 
             # End timing for LLM document selection
             document_selection_elapsed = time.time() - document_selection_start_time

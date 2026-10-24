@@ -31,6 +31,7 @@ from om.context.search.models import BaseFilters
 from om.context.search.models import ChunkIndexRequest
 from om.context.search.models import IndexFilters
 from om.context.search.models import InferenceChunk
+from om.context.search.rerank import rerank_scored_chunks
 from om.context.search.retrieval.search_runner import search_chunks
 from om.db.models import User
 from om.db.search_settings import get_current_search_settings
@@ -116,6 +117,8 @@ class SearchOrchestrator:
                 fused = self._retrieve_and_fuse(
                     query, expansion, index_filters, document_index, config
                 )
+                # Optional cross-encoder rerank (RERANK_ENABLED); fails open.
+                fused = rerank_scored_chunks(query, fused)
 
                 # 4. Merge into per-document sections -> result docs.
                 sections = merge_chunks_into_sections(fused, config.fusion.num_results)
