@@ -14,7 +14,7 @@ import { toast } from "@/hooks/useToast";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
 import { useVersionSwitch } from "@/refresh-components/VersionedPage";
-import { SvgSparkle, SvgTrash, SvgOnyxOctagon } from "@opal/icons";
+import { SvgSparkle, SvgTrash, SvgOmOctagon } from "@opal/icons";
 
 // Accent used for one-off coloring — adapts to the active accent theme.
 const ACCENT = "var(--virtualai-accent, var(--theme-primary-05))";
@@ -389,7 +389,7 @@ export default function WorkflowListPage() {
                   className="w-16 h-16 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: ACCENT_SUBTLE }}
                 >
-                  <SvgOnyxOctagon
+                  <SvgOmOctagon
                     className="w-8 h-8"
                     style={{ stroke: ACCENT }}
                   />

@@ -140,7 +140,7 @@ unattended and delivers output to a sink (chat session, notification, or webhook
   - schedule → `{ "cron": "0 9 * * 1" }`
   - webhook → generated `{ "url_token": "..." }`
   - email → `{ "address": "wf+123@..." }`
-- **Schedule:** register with the existing background scheduler (Celery beat is already used by the Onyx backend)
+- **Schedule:** register with the existing background scheduler (Celery beat is already used by the VertualAI backend)
   → enqueue a workflow execution with a synthesized `message` from the trigger payload.
 - **Webhook:** new public endpoint `POST /workflow/trigger/{url_token}` in
   `backend/om/server/features/workflow/api.py` → validate token → start the workflow with the request body as input.
@@ -250,7 +250,7 @@ starter messages → "Use this workflow" → opens in the Wizard/Visual builder 
 
 > ✅ **The agent→tool/MCP mechanism is ALREADY IMPLEMENTED.** `MULTI_AGENT_IMPLEMENTATION_PLAN.md` §5.5 states:
 > *"a workflow agent inherits ALL of its persona's tools — built-in, custom, and MCP. No special handling needed."*
-> All tool types are presented to the LLM identically as function definitions via `construct_tools()`. Onyx also
+> All tool types are presented to the LLM identically as function definitions via `construct_tools()`. VertualAI also
 > **hosts its own MCP server** (`backend/om/mcp_server/README.md`, FastMCP on port 8090), and filesystem
 > ingestion is "functionally complete" per `docs/folder-connector.md`.
 >

@@ -5,7 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import FilePickerPopover from "@/refresh-components/popovers/FilePickerPopover";
 import type { WorkspaceFile } from "../../workspaces/workspacesService";
-import { MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument } from "@/lib/search/interfaces";
 import Button from "@/refresh-components/buttons/Button";
 
 import KnowledgeFilesModal from "@/components/modals/KnowledgeFilesModal";
@@ -70,7 +70,7 @@ function WorkspaceIcon({ size = 20 }: { size?: number }) {
 export interface WorkspaceContextPanelProps {
   workspaceTokenCount?: number;
   availableContextTokens?: number;
-  setPresentingDocument?: (document: MinimalOnyxDocument) => void;
+  setPresentingDocument?: (document: MinimalOmDocument) => void;
 }
 
 export default function WorkspaceContextPanel({
@@ -114,11 +114,11 @@ export default function WorkspaceContextPanel({
     }
   }, [guidelinesExpanded, currentInstructions]);
 
-  // Convert WorkspaceFile to MinimalOnyxDocument format for viewing
+  // Convert WorkspaceFile to MinimalOmDocument format for viewing
   const handleOnView = useCallback(
     (file: WorkspaceFile) => {
       if (!setPresentingDocument) return;
-      const documentForViewer: MinimalOnyxDocument = {
+      const documentForViewer: MinimalOmDocument = {
         document_id: `workspace_file__${file.file_id}`,
         semantic_identifier: file.name,
       };

@@ -16,7 +16,7 @@ import { FilterManager, LlmManager, useFederatedConnectors } from "@/lib/hooks";
 import usePromptShortcuts from "@/hooks/usePromptShortcuts";
 import useFilter from "@/hooks/useFilter";
 import useCCPairs from "@/hooks/useCCPairs";
-import { OmDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { OmDocument, MinimalOmDocument } from "@/lib/search/interfaces";
 import { ChatState } from "@/app/app/interfaces";
 import { useForcedTools } from "@/lib/hooks/useForcedTools";
 import { useAppMode } from "@/providers/AppModeProvider";
@@ -137,7 +137,7 @@ export interface AppInputBarProps {
   filterManager: FilterManager;
   retrievalEnabled: boolean;
   deepResearchEnabled: boolean;
-  setPresentingDocument?: (document: MinimalOnyxDocument) => void;
+  setPresentingDocument?: (document: MinimalOmDocument) => void;
   toggleDeepResearch: () => void;
   disabled: boolean;
   ref?: React.Ref<AppInputBarHandle>;
@@ -219,12 +219,12 @@ const AppInputBar = React.memo(
       );
     }, [currentMessageFiles]);
 
-    // Convert WorkspaceFile to MinimalOnyxDocument format for viewing
+    // Convert WorkspaceFile to MinimalOmDocument format for viewing
     const handleFileClick = useCallback(
       (file: WorkspaceFile) => {
         if (!setPresentingDocument) return;
 
-        const documentForViewer: MinimalOnyxDocument = {
+        const documentForViewer: MinimalOmDocument = {
           document_id: `workspace_file__${file.file_id}`,
           semantic_identifier: file.name,
         };
@@ -506,7 +506,7 @@ const AppInputBar = React.memo(
       <Disabled disabled={disabled} allowClick>
         <div
           ref={containerRef}
-          id="onyx-chat-input"
+          id="om-chat-input"
           className={cn(
             "w-full flex flex-col shadow-01 bg-background-neutral-00 rounded-16 border border-border-01 virtualai-input-glow"
             // # Note (from @raunakab):
@@ -569,7 +569,7 @@ const AppInputBar = React.memo(
                   onKeyDownCapture={handleKeyDown}
                   onChange={handleInputChange}
                   ref={textAreaRef}
-                  id="onyx-chat-input-textarea"
+                  id="om-chat-input-textarea"
                   className={cn(
                     "w-full",
                     "outline-none",
@@ -669,7 +669,7 @@ const AppInputBar = React.memo(
                   prominence="tertiary"
                 />
                 <Button
-                  id="onyx-chat-input-send-button"
+                  id="om-chat-input-send-button"
                   icon={isClassifying ? SimpleLoader : SvgSearch}
                   disabled={!message || isClassifying || hasUploadingFiles}
                   onClick={() => {
@@ -903,7 +903,7 @@ const AppInputBar = React.memo(
 
                 {/* Submit button */}
                 <Button
-                  id="onyx-chat-input-send-button"
+                  id="om-chat-input-send-button"
                   icon={
                     isClassifying
                       ? SimpleLoader

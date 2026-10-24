@@ -1,4 +1,3 @@
-backend/model_server/legacy/onyx_torch_model.py
 backend/om/configs/onyxbot_configs.py
 backend/om/connectors/confluence/onyx_confluence.py
 backend/om/connectors/salesforce/onyx_salesforce.py

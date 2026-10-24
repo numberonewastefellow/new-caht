@@ -1,14 +1,14 @@
 # `om.search` — Enterprise search + LLM query expansion (WS-E)
 
 Clean-room reimplementation of the enterprise search API and its LLM
-query-expansion superset. Replaces the Onyx-EE search branches that had been
+query-expansion superset. Replaces the upstream EE search branches that had been
 merged into `secondary_llm_flows/query_expansion.py`,
 `search/process_search_query.py`, and
 `server/query_and_chat/{search_backend,query_backend}.py`.
 
 > **Clean-room provenance.** Every module here was written from the behavior spec
 > in `rewrite-plans/WS-E-search.md` + the frontend wire contract + the research
-> cited below — **not** by reading the Onyx-EE expression. The retrieval
+> cited below — **not** by reading the upstream EE expression. The retrieval
 > primitives, access API, LLM interface, and tenant primitives are the repo's
 > existing MIT/contract surfaces (see below), consumed, not reimplemented.
 

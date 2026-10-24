@@ -241,7 +241,7 @@ session.run("Add a chart to slide 3")
 
 ## Recommended Implementation: Pattern A (Client-Side Session Pool)
 
-This is the enterprise-grade approach used by LangChain, Microsoft, and the MCP specification itself. It requires changes to 4-5 files in the Onyx backend with no changes to the MCP server.
+This is the enterprise-grade approach used by LangChain, Microsoft, and the MCP specification itself. It requires changes to 4-5 files in the VertualAI backend with no changes to the MCP server.
 
 ### Why Pattern A
 

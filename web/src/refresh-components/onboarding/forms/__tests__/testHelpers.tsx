@@ -162,7 +162,7 @@ export async function waitForModalOpen(screen: any, waitFor: any) {
 /**
  * The curated list of OpenAI visible models that are returned by
  * /api/admin/llm/built-in/options. This must match OPENAI_VISIBLE_MODEL_NAMES
- * in backend/onyx/llm/llm_provider_options.py
+ * in backend/om/llm/llm_provider_options.py
  */
 export const OPENAI_DEFAULT_VISIBLE_MODELS = [
   {
@@ -206,7 +206,7 @@ export const OPENAI_DEFAULT_VISIBLE_MODELS = [
 /**
  * The curated list of Anthropic visible models that are returned by
  * /api/admin/llm/built-in/options. This must match ANTHROPIC_VISIBLE_MODEL_NAMES
- * in backend/onyx/llm/llm_provider_options.py
+ * in backend/om/llm/llm_provider_options.py
  */
 export const ANTHROPIC_DEFAULT_VISIBLE_MODELS = [
   {
@@ -232,7 +232,7 @@ export const ANTHROPIC_DEFAULT_VISIBLE_MODELS = [
 /**
  * The curated list of Vertex AI visible models that are returned by
  * /api/admin/llm/built-in/options. This must match VERTEXAI_VISIBLE_MODEL_NAMES
- * in backend/onyx/llm/llm_provider_options.py
+ * in backend/om/llm/llm_provider_options.py
  */
 export const VERTEXAI_DEFAULT_VISIBLE_MODELS = [
   {

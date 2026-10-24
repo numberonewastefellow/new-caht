@@ -1,7 +1,7 @@
 import { Tag, ValidSources } from "../types";
 import {
   Filters,
-  MinimalOnyxDocument,
+  MinimalOmDocument,
   OmDocument,
   SourceMetadata,
 } from "./interfaces";
@@ -28,7 +28,7 @@ export const buildFilters = (
 // If above fails and we have a file, update the presenting document
 export const openDocument = (
   document: OmDocument,
-  updatePresentingDocument?: (document: MinimalOnyxDocument) => void
+  updatePresentingDocument?: (document: MinimalOmDocument) => void
 ) => {
   if (document.link) {
     window.open(document.link, "_blank");

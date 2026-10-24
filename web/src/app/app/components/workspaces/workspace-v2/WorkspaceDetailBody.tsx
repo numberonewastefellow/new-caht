@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { type WorkspaceFile } from "@/app/app/workspaces/workspacesService";
-import { MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument } from "@/lib/search/interfaces";
 import type { IconProps } from "@opal/types";
 import { SEARCH_PARAM_NAMES } from "@/app/app/services/searchParams";
 import { cn, hasNonImageFiles } from "@/lib/utils";
@@ -35,7 +35,7 @@ import {
 export interface WorkspaceDetailBodyProps {
   tab: WorkspaceTab;
   setTab: (tab: WorkspaceTab) => void;
-  setPresentingDocument?: (document: MinimalOnyxDocument) => void;
+  setPresentingDocument?: (document: MinimalOmDocument) => void;
   workspaceTokenCount?: number;
   availableContextTokens?: number;
   onNewChat?: () => void;
@@ -147,7 +147,7 @@ export function FilesSection({
   setPresentingDocument,
 }: {
   variant: "preview" | "full";
-  setPresentingDocument?: (document: MinimalOnyxDocument) => void;
+  setPresentingDocument?: (document: MinimalOmDocument) => void;
 }) {
   const {
     currentWorkspaceId,

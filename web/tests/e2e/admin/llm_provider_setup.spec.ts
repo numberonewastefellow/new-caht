@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
 import { loginAs } from "@tests/e2e/utils/auth";
-import { OnyxApiClient } from "@tests/e2e/utils/onyxApiClient";
+import { OmApiClient } from "@tests/e2e/utils/omApiClient";
 
 const LLM_SETUP_URL = "/admin/configuration/llm";
 const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
@@ -109,7 +109,7 @@ test.describe("LLM Provider Setup @exclusive", () => {
   });
 
   test.afterEach(async ({ page }) => {
-    const apiClient = new OnyxApiClient(page.request);
+    const apiClient = new OmApiClient(page.request);
     const uniqueIds = Array.from(new Set(providersToCleanup));
 
     for (const providerId of uniqueIds) {
@@ -193,7 +193,7 @@ test.describe("LLM Provider Setup @exclusive", () => {
   test("admin can switch the default provider from the enabled provider list", async ({
     page,
   }) => {
-    const apiClient = new OnyxApiClient(page.request);
+    const apiClient = new OmApiClient(page.request);
     const initialDefaultProvider = (await listAdminLLMProviders(page)).find(
       (provider) => provider.is_default_provider
     );

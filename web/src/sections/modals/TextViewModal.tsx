@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument } from "@/lib/search/interfaces";
 import MinimalMarkdown from "@/components/chat/MinimalMarkdown";
 import { Button as OpalButton } from "@opal/components";
 import Modal, { BasicModalFooter } from "@/refresh-components/Modal";
@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { Section } from "@/layouts/general-layouts";
 
 export interface TextViewProps {
-  presentingDocument: MinimalOnyxDocument;
+  presentingDocument: MinimalOmDocument;
   onClose: () => void;
 }
 

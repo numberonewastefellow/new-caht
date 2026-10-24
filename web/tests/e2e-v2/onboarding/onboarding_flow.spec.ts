@@ -103,7 +103,7 @@ test.describe("Onboarding Flow @exclusive", () => {
         timeout: 15000,
       });
 
-      const chatInput = page.locator("#onyx-chat-input");
+      const chatInput = page.locator("#om-chat-input");
       await expect(chatInput).toHaveAttribute("aria-disabled", "true");
 
       await expectElementScreenshot(chatInput, {
@@ -182,11 +182,11 @@ test.describe("Onboarding Flow @exclusive", () => {
       await page.goto("/app");
       await page.waitForLoadState("networkidle");
 
-      await expect(page.locator("#onyx-chat-input")).toBeVisible({
+      await expect(page.locator("#om-chat-input")).toBeVisible({
         timeout: 15000,
       });
 
-      const chatInput = page.locator("#onyx-chat-input");
+      const chatInput = page.locator("#om-chat-input");
       await expect(chatInput).not.toHaveAttribute("aria-disabled", "true");
     });
   });
@@ -234,11 +234,11 @@ test.describe("Onboarding Flow @exclusive", () => {
     });
 
     test("chat input bar is disabled", async ({ page }) => {
-      await expect(page.locator("#onyx-chat-input")).toBeVisible({
+      await expect(page.locator("#om-chat-input")).toBeVisible({
         timeout: 15000,
       });
 
-      const chatInput = page.locator("#onyx-chat-input");
+      const chatInput = page.locator("#om-chat-input");
       await expect(chatInput).toHaveAttribute("aria-disabled", "true");
     });
 
@@ -279,11 +279,11 @@ test.describe("Onboarding Flow @exclusive", () => {
     });
 
     test("chat input bar is enabled", async ({ page }) => {
-      await expect(page.locator("#onyx-chat-input")).toBeVisible({
+      await expect(page.locator("#om-chat-input")).toBeVisible({
         timeout: 15000,
       });
 
-      const chatInput = page.locator("#onyx-chat-input");
+      const chatInput = page.locator("#om-chat-input");
       await expect(chatInput).not.toHaveAttribute("aria-disabled", "true");
     });
 

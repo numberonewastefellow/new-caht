@@ -4,7 +4,7 @@ import React, { useRef, RefObject, useMemo, useCallback, useState, Dispatch, Set
 import { Packet, StreamingCitation, StopReason } from "@/app/app/services/streamingModels";
 import { FullChatState } from "@/app/app/message/messageComponents/interfaces";
 import { FeedbackType } from "@/app/app/interfaces";
-import { MinimalOnyxDocument, OmDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument, OmDocument } from "@/lib/search/interfaces";
 import { handleCopy } from "@/app/app/message/copyingUtils";
 import { useMessageSwitching } from "@/app/app/message/messageComponents/hooks/useMessageSwitching";
 import { RendererComponent } from "@/app/app/message/messageComponents/renderMessageComponent";
@@ -74,7 +74,7 @@ const ReferencesStrip = React.memo(function ReferencesStrip({
   citations: StreamingCitation[];
   documentMap: Map<string, OmDocument>;
   allDocs: OmDocument[];
-  setPresentingDocument: Dispatch<SetStateAction<MinimalOnyxDocument | null>>;
+  setPresentingDocument: Dispatch<SetStateAction<MinimalOmDocument | null>>;
 }) {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -291,7 +291,7 @@ const AgentMessage = React.memo(function AgentMessage({
     <CodeExecutionContext.Provider value={codeExecContext}>
     <div
       className="pb-6 md:pt-6 flex flex-col gap-3 pr-1"
-      data-testid={isComplete ? "onyx-ai-message" : undefined}
+      data-testid={isComplete ? "om-ai-message" : undefined}
     >
       {/* Row 1: Two-column layout for tool steps */}
 
@@ -365,7 +365,7 @@ const AgentMessage = React.memo(function AgentMessage({
           documentMap={documentMap}
           allDocs={chatState.docs ?? []}
           setPresentingDocument={
-            (chatState.setPresentingDocument ?? (() => {})) as Dispatch<SetStateAction<MinimalOnyxDocument | null>>
+            (chatState.setPresentingDocument ?? (() => {})) as Dispatch<SetStateAction<MinimalOmDocument | null>>
           }
         />
       )}

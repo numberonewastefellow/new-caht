@@ -2,11 +2,11 @@
 
 Self-hosted, **schema-per-tenant** data isolation for Postgres, fully **decoupled from
 billing / Stripe / any external control plane**. This package is a clean-room
-reimplementation of the Onyx-EE isolation core: the isolation *mechanism* is kept, the
+reimplementation of the upstream EE isolation core: the isolation *mechanism* is kept, the
 cloud-business coupling is stripped, and a self-hosted tenant-admin experience is added.
 
 > **Contract 3** (see `rewrite-plans/CONTRACTS.md`) is owned here. Every other workstream
-> imports tenant primitives from `om.tenancy.context` — never from Onyx's originals.
+> imports tenant primitives from `om.tenancy.context` — never from the upstream originals.
 
 ---
 
@@ -123,7 +123,7 @@ imports anything from `om.server.tenants.*`.
 
 ### Removed billing coupling (kept here for history)
 
-The Onyx-EE flow reached an external control plane; **all of it is gone**:
+The upstream EE flow reached an external control plane; **all of it is gone**:
 `notify_control_plane`, `submit_to_hubspot`, Stripe, data-plane token exchange, the
 `available_tenant` pre-provision **pool** (replaced by on-demand), and control-plane
 seat/subscription gating. `get_or_provision_tenant` still accepts `referral_source` /

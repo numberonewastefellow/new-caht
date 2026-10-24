@@ -4,8 +4,8 @@ import React, { createContext, useContext, useState } from "react";
 import { LocalStorageKeys } from "@/lib/extension/constants";
 
 interface NRFPreferencesContextValue {
-  useOnyxAsNewTab: boolean;
-  setUseOnyxAsNewTab: (v: boolean) => void;
+  useOmAsNewTab: boolean;
+  setUseOmAsNewTab: (v: boolean) => void;
 }
 
 const NRFPreferencesContext = createContext<
@@ -39,7 +39,7 @@ export function NRFPreferencesProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [useOnyxAsNewTab, setUseOnyxAsNewTab] = useLocalStorageState<boolean>(
+  const [useOmAsNewTab, setUseOmAsNewTab] = useLocalStorageState<boolean>(
     LocalStorageKeys.USE_ONYX_AS_NEW_TAB,
     true
   );
@@ -47,8 +47,8 @@ export function NRFPreferencesProvider({
   return (
     <NRFPreferencesContext.Provider
       value={{
-        useOnyxAsNewTab,
-        setUseOnyxAsNewTab,
+        useOmAsNewTab,
+        setUseOmAsNewTab,
       }}
     >
       {children}

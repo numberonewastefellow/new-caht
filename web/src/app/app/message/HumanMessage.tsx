@@ -170,7 +170,7 @@ const HumanMessage = React.memo(function HumanMessage({
 
   return (
     <div
-      id="onyx-human-message"
+      id="om-human-message"
       className="group flex flex-col justify-end pt-6 pb-2 w-full -mr-6 relative"
     >
       <FileDisplay alignBubble files={files || []} />

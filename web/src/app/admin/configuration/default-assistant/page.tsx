@@ -18,7 +18,7 @@ import { Callout } from "@/components/ui/callout";
 import { ToolSnapshot, MCPServersResponse } from "@/lib/tools/interfaces";
 import InputTextArea from "@/refresh-components/inputs/InputTextArea";
 import {
-  SvgOnyxLogo,
+  SvgOmLogo,
   SvgBubbleText,
   SvgSparkle,
   SvgSearch,
@@ -432,7 +432,7 @@ function DefaultAssistantContent() {
           <Form className="h-full w-full">
             <SettingsLayouts.Root>
               <SettingsLayouts.Header
-                icon={SvgOnyxLogo}
+                icon={SvgOmLogo}
                 title="Default Assistant"
                 description="Configure the default assistant that all users see when they start a new chat. Changes apply to everyone who hasn't customized their own assistant."
                 rightChildren={

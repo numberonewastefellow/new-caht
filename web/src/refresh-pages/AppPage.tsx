@@ -22,7 +22,7 @@ import { SEARCH_PARAM_NAMES } from "@/app/app/services/searchParams";
 import { useFederatedConnectors, useFilters, useLlmManager } from "@/lib/hooks";
 import { useForcedTools } from "@/lib/hooks/useForcedTools";
 import OmInitializingLoader from "@/components/OmInitializingLoader";
-import { OmDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { OmDocument, MinimalOmDocument } from "@/lib/search/interfaces";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import Dropzone from "react-dropzone";
 import AppInputBar, { AppInputBarHandle } from "@/sections/input/AppInputBar";
@@ -246,7 +246,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   });
 
   const [presentingDocument, setPresentingDocument] =
-    useState<MinimalOnyxDocument | null>(null);
+    useState<MinimalOmDocument | null>(null);
 
   const llmManager = useLlmManager(
     currentChatSession ?? undefined,
@@ -587,7 +587,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
   }, [appFocus.isNewSession()]);
 
   const handleSearchDocumentClick = useCallback(
-    (doc: MinimalOnyxDocument) => setPresentingDocument(doc),
+    (doc: MinimalOmDocument) => setPresentingDocument(doc),
     []
   );
 

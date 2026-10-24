@@ -1,6 +1,6 @@
 "use client";
 
-import { MinimalOnyxDocument, OmDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument, OmDocument } from "@/lib/search/interfaces";
 import ChatDocumentDisplay from "@/sections/document-sidebar/ChatDocumentDisplay";
 import { removeDuplicateDocs } from "@/lib/documentUtils";
 import { Dispatch, SetStateAction, useMemo, memo } from "react";
@@ -15,7 +15,7 @@ import { SvgSearchMenu, SvgX } from "@opal/icons";
 import Separator from "@/refresh-components/Separator";
 
 // Build an OmDocument from basic file info
-const buildOnyxDocumentFromFile = (
+const buildOmDocumentFromFile = (
   id: string,
   name?: string | null,
   appendWorkspacePrefix?: boolean
@@ -83,7 +83,7 @@ interface DocumentsSidebarProps {
   closeSidebar: () => void;
   selectedDocuments: OmDocument[] | null;
   modal: boolean;
-  setPresentingDocument: Dispatch<SetStateAction<MinimalOnyxDocument | null>>;
+  setPresentingDocument: Dispatch<SetStateAction<MinimalOmDocument | null>>;
 }
 
 const DocumentsSidebar = memo(
@@ -161,7 +161,7 @@ const DocumentsSidebar = memo(
 
     return (
       <div
-        id="onyx-chat-sidebar"
+        id="om-chat-sidebar"
         className="bg-background-tint-01 overflow-y-scroll h-full w-full border-l"
       >
         <div className="flex flex-col px-3 gap-6">
@@ -214,7 +214,7 @@ const DocumentsSidebar = memo(
                     key={file.id}
                     setPresentingDocument={setPresentingDocument}
                     modal={modal}
-                    document={buildOnyxDocumentFromFile(
+                    document={buildOmDocumentFromFile(
                       file.id,
                       file.name,
                       false

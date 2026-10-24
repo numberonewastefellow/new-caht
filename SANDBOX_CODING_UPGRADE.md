@@ -19,11 +19,11 @@
 - Persistent per-chat sandbox already works: `ChatSession.sandbox_session_id`, lazy-created,
   Docker-only, reaped 30min idle / 24h. (Verified passing via `test_sandbox_persistence.py`.)
 - Pipeline: user code writes a file → executor tars `/workspace` → service diffs vs inputs →
-  `WorkspaceFile(file_id)` → `PythonTool.run` downloads → Onyx file store →
+  `WorkspaceFile(file_id)` → `PythonTool.run` downloads → VertualAI file store →
   `build_full_frontend_file_url` → emits `PythonToolFile` inside `PythonToolDelta`.
 - Frontend `web/src/app/app/message/messageComponents/timeline/renderers/code/PythonToolRenderer.tsx`
   **accumulates** stdout/stderr/files across many deltas → emitting more deltas/files needs no FE change.
-- Separate unused-for-coding substrate: Onyx Craft `Sandbox` (per-user persistent pod).
+- Separate unused-for-coding substrate: VertualAI Craft `Sandbox` (per-user persistent pod).
 
 ---
 
@@ -148,7 +148,7 @@ message to `test_sandbox_persistence.py`, assert a `.png` with a `file_id`.
 ## TRACK B — Real codebase-editing agent (largest effort)
 
 **Design decision:** reuse the Craft `Sandbox` **pod** as substrate; drive it with new first-class
-Onyx `Tool`s that call `SandboxManager` directly. **Do NOT route through opencode/ACP** (that's a
+VertualAI `Tool`s that call `SandboxManager` directly. **Do NOT route through opencode/ACP** (that's a
 competing autonomous agent, awkward to nest in a workflow). The code-interpreter microservice is the
 wrong substrate (ephemeral, `--network none`, no git, no persistent repo).
 

@@ -5,7 +5,7 @@ import { AdminPageTitle } from "@/components/admin/Title";
 import { useAdminAgents } from "@/hooks/useAdminAgents";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { ErrorCallout } from "@/components/ErrorCallout";
-import { SvgOnyxOctagon, SvgPlus } from "@opal/icons";
+import { SvgOmOctagon, SvgPlus } from "@opal/icons";
 import { useState, useEffect } from "react";
 import Pagination from "@/refresh-components/Pagination";
 import Text from "@/refresh-components/texts/Text";
@@ -94,7 +94,7 @@ function MainContent({
       ) : (
         <div className="flex flex-col items-center justify-center py-16 gap-4">
           <div className="w-16 h-16 rounded-full bg-background-neutral-02 flex items-center justify-center">
-            <SvgOnyxOctagon className="w-8 h-8 text-text-03" />
+            <SvgOmOctagon className="w-8 h-8 text-text-03" />
           </div>
           <div className="text-center">
             <Text as="p" mainContentBody className="font-medium mb-1">
@@ -140,7 +140,7 @@ export default function Page() {
 
   return (
     <>
-      <AdminPageTitle icon={SvgOnyxOctagon} title="Assistants" />
+      <AdminPageTitle icon={SvgOmOctagon} title="Assistants" />
 
       {isLoading && <ThreeDotsLoader />}
 

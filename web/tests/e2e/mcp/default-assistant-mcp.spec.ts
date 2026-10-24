@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { loginAs, apiLogin } from "@tests/e2e/utils/auth";
-import { OnyxApiClient } from "@tests/e2e/utils/onyxApiClient";
+import { OmApiClient } from "@tests/e2e/utils/omApiClient";
 import {
   startMcpApiKeyServer,
   McpServerProcess,
@@ -122,7 +122,7 @@ test.describe("Default Assistant MCP Integration", () => {
       storageState: "admin_auth.json",
     });
     const adminPage = await adminContext.newPage();
-    const adminClient = new OnyxApiClient(adminPage.request);
+    const adminClient = new OmApiClient(adminPage.request);
 
     // Ensure a public LLM provider exists
     createdProviderId = await adminClient.ensurePublicProvider();
@@ -152,7 +152,7 @@ test.describe("Default Assistant MCP Integration", () => {
       storageState: "admin_auth.json",
     });
     const adminPage = await adminContext.newPage();
-    const adminClient = new OnyxApiClient(adminPage.request);
+    const adminClient = new OmApiClient(adminPage.request);
 
     if (createdProviderId !== null) {
       await adminClient.deleteProvider(createdProviderId);
@@ -559,7 +559,7 @@ test.describe("Default Assistant MCP Integration", () => {
     const assistantId = assistantIdMatch ? assistantIdMatch[1] : null;
     expect(assistantId).not.toBeNull();
 
-    const client = new OnyxApiClient(page.request);
+    const client = new OmApiClient(page.request);
     const assistant = await client.getAssistant(Number(assistantId));
     const hasMcpTool = assistant.tools.some(
       (tool) => tool.mcp_server_id === serverId

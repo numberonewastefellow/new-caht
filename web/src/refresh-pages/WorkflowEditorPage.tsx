@@ -37,7 +37,7 @@ import {
   SvgSliders,
   SvgSparkle,
   SvgTrash,
-  SvgOnyxOctagon,
+  SvgOmOctagon,
 } from "@opal/icons";
 import { cn } from "@/lib/utils";
 
@@ -808,7 +808,7 @@ export default function WorkflowEditorPage({
                             className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
                             style={{ backgroundColor: "var(--theme-purple-01)" }}
                           >
-                            <SvgOnyxOctagon className="w-4 h-4" style={{ stroke: "var(--theme-purple-05)" }} />
+                            <SvgOmOctagon className="w-4 h-4" style={{ stroke: "var(--theme-purple-05)" }} />
                           </div>
                           <div className="flex flex-col">
                             <Text as="p" mainContentEmphasis>Agent Steps</Text>

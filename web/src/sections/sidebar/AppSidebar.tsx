@@ -62,7 +62,7 @@ import {
   SvgEditBig,
   SvgFolderPlus,
   SvgMoreHorizontal,
-  SvgOnyxOctagon,
+  SvgOmOctagon,
   SvgSearchMenu,
   SvgSparkle,
 } from "@opal/icons";
@@ -72,7 +72,7 @@ import { makeColorfulIcon } from "@/refresh-components/popovers/ActionsPopover/c
 const ColorfulNewSession = makeColorfulIcon(SvgEditBig, "sidebar_new_session");
 const ColorfulSearchChats = makeColorfulIcon(SvgSearchMenu, "sidebar_search");
 const ColorfulCraft = makeColorfulIcon(SvgDevKit, "sidebar_craft");
-const ColorfulExploreAgents = makeColorfulIcon(SvgOnyxOctagon, "sidebar_agents");
+const ColorfulExploreAgents = makeColorfulIcon(SvgOmOctagon, "sidebar_agents");
 const ColorfulMoreAgents = makeColorfulIcon(SvgMoreHorizontal, "sidebar_agents");
 const ColorfulNewWorkspace = makeColorfulIcon(SvgFolderPlus, "sidebar_workspaces");
 const ColorfulWorkspaces = makeColorfulIcon(SvgDashboard, "sidebar_workspaces");
@@ -230,13 +230,13 @@ const MemoizedAppSidebarInner = memo(
       Notification[]
     >("/api/signals", errorHandlingFetcher);
 
-    // Check if Onyx Craft is enabled via settings (backed by PostHog feature flag)
+    // Check if VertualAI Craft is enabled via settings (backed by PostHog feature flag)
     // Only explicit true enables the feature; false or undefined = disabled
-    const isOnyxCraftEnabled =
+    const isOmCraftEnabled =
       combinedSettings?.settings?.onyx_craft_enabled === true;
 
-    // Find build_mode feature announcement notification (only if Onyx Craft is enabled)
-    const buildModeNotification = isOnyxCraftEnabled
+    // Find build_mode feature announcement notification (only if VertualAI Craft is enabled)
+    const buildModeNotification = isOmCraftEnabled
       ? notifications?.find(
           (n) =>
             n.notif_type === NotificationType.FEATURE_ANNOUNCEMENT &&
@@ -259,7 +259,7 @@ const MemoizedAppSidebarInner = memo(
     const hasTenantModal = !!(newTenantInfo || invitationInfo);
     useEffect(() => {
       if (
-        isOnyxCraftEnabled &&
+        isOmCraftEnabled &&
         buildModeNotification &&
         !hasAutoTriggeredRef.current &&
         !hasTenantModal &&
@@ -270,7 +270,7 @@ const MemoizedAppSidebarInner = memo(
       }
     }, [
       buildModeNotification,
-      isOnyxCraftEnabled,
+      isOmCraftEnabled,
       hasTenantModal,
       isCraftAnimationDisabled,
     ]);
@@ -599,11 +599,11 @@ const MemoizedAppSidebarInner = memo(
         <UserAvatarPopover
           folded={folded}
           onShowBuildIntro={
-            isOnyxCraftEnabled ? handleShowBuildIntro : undefined
+            isOmCraftEnabled ? handleShowBuildIntro : undefined
           }
         />
       ),
-      [folded, handleShowBuildIntro, isOnyxCraftEnabled]
+      [folded, handleShowBuildIntro, isOmCraftEnabled]
     );
 
     return (
@@ -681,7 +681,7 @@ const MemoizedAppSidebarInner = memo(
                 {workspacesButton}
                 {workflowsButton}
                 {newWorkspaceButton}
-                {isOnyxCraftEnabled && buildButton}
+                {isOmCraftEnabled && buildButton}
               </div>
             }
           >

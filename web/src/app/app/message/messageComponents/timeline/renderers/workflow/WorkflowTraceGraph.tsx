@@ -40,7 +40,7 @@ function TraceGraphIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-// ── Trace data shape (mirrors backend onyx/workflows/trace_models.py) ────────
+// ── Trace data shape (mirrors backend om/workflows/trace_models.py) ────────
 
 type TraceNodeType =
   | "start"

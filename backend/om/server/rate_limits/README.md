@@ -1,10 +1,10 @@
 # Rate Limits (WS-F)
 
 Clean-room, multi-tenant, **observable** token-rate-limiting for chat/search. Replaces the
-Onyx-EE `token_rate_limit` enforcement **and** the cloud `tenant_usage` control-plane meter with a
+upstream EE `token_rate_limit` enforcement **and** the cloud `tenant_usage` control-plane meter with a
 single subsystem that has real budget visibility, metrics, and structured logs.
 
-> Written from a behavior spec, not from Onyx EE source (see `rewrite-plans/CONTRACTS.md`). Own
+> Written from a behavior spec, not from upstream EE source (see `rewrite-plans/CONTRACTS.md`). Own
 > module layout, own names, own control flow.
 
 ---

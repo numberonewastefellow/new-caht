@@ -1,7 +1,7 @@
 import { test, expect, Page } from "@playwright/test";
 import { loginAs } from "@tests/e2e/utils/auth";
 import { createAssistant } from "@tests/e2e/utils/assistantUtils";
-import { OnyxApiClient } from "@tests/e2e/utils/onyxApiClient";
+import { OmApiClient } from "@tests/e2e/utils/omApiClient";
 
 const DISABLE_DEFAULT_ASSISTANT_LABEL =
   'label:has-text("Disable Default Assistant") input[type="checkbox"]';
@@ -61,7 +61,7 @@ test.describe("Disable Default Assistant Setting @exclusive", () => {
   test.afterEach(async ({ page }) => {
     // Clean up any assistant created during the test
     if (createdAssistantId !== null) {
-      const client = new OnyxApiClient(page.request);
+      const client = new OmApiClient(page.request);
       await client.deleteAssistant(createdAssistantId);
       createdAssistantId = null;
     }
@@ -112,8 +112,8 @@ test.describe("Disable Default Assistant Setting @exclusive", () => {
     await newSessionButton.click();
 
     // Verify the WelcomeMessage shown is NOT from the default assistant
-    // Default assistant shows onyx-logo, custom assistants show assistant-name-display
-    await expect(page.locator('[data-testid="onyx-logo"]')).not.toBeVisible();
+    // Default assistant shows om-logo, custom assistants show assistant-name-display
+    await expect(page.locator('[data-testid="om-logo"]')).not.toBeVisible();
     await expect(
       page.locator('[data-testid="assistant-name-display"]')
     ).toBeVisible();

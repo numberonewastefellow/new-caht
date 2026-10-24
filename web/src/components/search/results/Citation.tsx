@@ -1,8 +1,8 @@
 import { ReactNode, JSX } from "react";
 import { CompactDocumentCard, CompactQuestionCard } from "../DocumentDisplay";
 import {
-  LoadedOnyxDocument,
-  MinimalOnyxDocument,
+  LoadedOmDocument,
+  MinimalOmDocument,
   OmDocument,
 } from "@/lib/search/interfaces";
 import {
@@ -20,8 +20,8 @@ import Text from "@/refresh-components/texts/Text";
 const MAX_CITATION_TEXT_LENGTH = 40;
 
 export interface DocumentCardProps {
-  document: LoadedOnyxDocument;
-  updatePresentingDocument: (document: MinimalOnyxDocument) => void;
+  document: LoadedOmDocument;
+  updatePresentingDocument: (document: MinimalOmDocument) => void;
   url?: string;
 }
 export interface QuestionCardProps {

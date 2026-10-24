@@ -5,7 +5,7 @@ export const DRAG_TYPES = {
 } as const;
 
 export const LOCAL_STORAGE_KEYS = {
-  HIDE_MOVE_CUSTOM_AGENT_MODAL: "onyx:hideMoveCustomAgentModal",
+  HIDE_MOVE_CUSTOM_AGENT_MODAL: "om:hideMoveCustomAgentModal",
 } as const;
 
 export const DEFAULT_AGENT_ID = 0;

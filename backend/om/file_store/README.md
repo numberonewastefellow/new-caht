@@ -106,8 +106,8 @@ The `FileStore` abstract base class defines the following methods:
 ## Usage Example
 
 ```python
-from onyx.file_store.file_store import get_default_file_store
-from onyx.configs.constants import FileOrigin
+from om.file_store.file_store import get_default_file_store
+from om.configs.constants import FileOrigin
 
 # Get the configured file store
 file_store = get_default_file_store(db_session)

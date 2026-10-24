@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BaseFilters,
-  MinimalOnyxDocument,
+  MinimalOmDocument,
   SourceMetadata,
 } from "@/lib/search/interfaces";
 import SearchCard from "@/sections/SearchCard";
@@ -32,7 +32,7 @@ import { toast } from "@/hooks/useToast";
 
 export interface SearchResultsProps {
   /** Callback when a document is clicked */
-  onDocumentClick: (doc: MinimalOnyxDocument) => void;
+  onDocumentClick: (doc: MinimalOmDocument) => void;
 }
 
 // ============================================================================

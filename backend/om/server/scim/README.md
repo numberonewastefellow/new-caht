@@ -1,7 +1,7 @@
 # SCIM 2.0 Provisioning (WS-G)
 
 Clean-room reimplementation of SCIM 2.0 user/group provisioning, replacing the
-Onyx-EE SCIM feature. Identity providers (Okta, Microsoft Entra ID, …) use it to
+upstream EE SCIM feature. Identity providers (Okta, Microsoft Entra ID, …) use it to
 automatically provision/deprovision users and sync groups to **Teams**
 (Contract 1). Written from the RFCs + vendor docs — never from the EE source.
 

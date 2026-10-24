@@ -44,7 +44,7 @@ import {
   SvgAlertTriangle,
 } from "@opal/icons";
 import { useAppBackground } from "@/providers/AppBackgroundProvider";
-import { MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument } from "@/lib/search/interfaces";
 import DocumentsSidebar from "@/sections/document-sidebar/DocumentsSidebar";
 import TextViewModal from "@/sections/modals/TextViewModal";
 import { agentIncludesRetrieval } from "@/app/app/services/lib";
@@ -59,7 +59,7 @@ interface NRFPageProps {
 const AVAILABLE_CONTEXT_TOKENS = Number(DEFAULT_CONTEXT_TOKENS) * 0.5;
 
 export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
-  const { setUseOnyxAsNewTab } = useNRFPreferences();
+  const { setUseOmAsNewTab } = useNRFPreferences();
 
   const searchParams = useSearchParams();
   const filterManager = useFilters();
@@ -127,7 +127,7 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
   const [message, setMessage] = useState("");
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [presentingDocument, setPresentingDocument] =
-    useState<MinimalOnyxDocument | null>(null);
+    useState<MinimalOmDocument | null>(null);
 
   // Document sidebar state (from store)
   const documentSidebarVisible = useDocumentSidebarVisible();
@@ -202,18 +202,18 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
     setSettingsOpen((prev) => !prev);
   };
 
-  // If user toggles the "Use Onyx" switch to off, prompt a modal
-  const handleUseOnyxToggle = (checked: boolean) => {
+  // If user toggles the "Use VertualAI" switch to off, prompt a modal
+  const handleUseOmToggle = (checked: boolean) => {
     if (!checked) {
       setShowTurnOffModal(true);
     } else {
-      setUseOnyxAsNewTab(true);
+      setUseOmAsNewTab(true);
       sendSetDefaultNewTabMessage(true);
     }
   };
 
   const confirmTurnOff = () => {
-    setUseOnyxAsNewTab(false);
+    setUseOmAsNewTab(false);
     setShowTurnOffModal(false);
     sendSetDefaultNewTabMessage(false);
   };
@@ -328,13 +328,13 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
     });
   }, [messageHistory, onSubmit, currentMessageFiles, deepResearchEnabled]);
 
-  const handleOpenInOnyx = () => {
+  const handleOpenInOm = () => {
     window.open(`${window.location.origin}/app`, "_blank");
   };
 
   // Handle search result document click
   const handleSearchDocumentClick = useCallback(
-    (doc: MinimalOnyxDocument) => setPresentingDocument(doc),
+    (doc: MinimalOmDocument) => setPresentingDocument(doc),
     []
   );
 
@@ -366,7 +366,7 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
           <Button
             tertiary
             rightIcon={SvgExternalLink}
-            onClick={handleOpenInOnyx}
+            onClick={handleOpenInOm}
           >
             Open in VertualAI
           </Button>
@@ -501,7 +501,7 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
           <SettingsPanel
             settingsOpen={settingsOpen}
             toggleSettings={toggleSettings}
-            handleUseOnyxToggle={handleUseOnyxToggle}
+            handleUseOmToggle={handleUseOmToggle}
           />
 
           <Modal open={showTurnOffModal} onOpenChange={setShowTurnOffModal}>

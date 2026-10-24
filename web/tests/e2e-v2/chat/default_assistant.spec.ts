@@ -100,7 +100,7 @@ test.describe("Default Assistant Tests", () => {
     }) => {
       // First verify greeting appears for default assistant
       const greetingElement = await page.waitForSelector(
-        '[data-testid="onyx-logo"]',
+        '[data-testid="om-logo"]',
         { timeout: 5000 }
       );
       expect(greetingElement).toBeTruthy();
@@ -124,16 +124,16 @@ test.describe("Default Assistant Tests", () => {
       await verifyAssistantIsChosen(page, "Custom Test Assistant");
 
       // Greeting should NOT appear for custom assistant
-      const customGreeting = await page.$('[data-testid="onyx-logo"]');
+      const customGreeting = await page.$('[data-testid="om-logo"]');
       expect(customGreeting).toBeNull();
     });
   });
 
   test.describe("Default Assistant Branding", () => {
-    test("should display Onyx logo for default assistant", async ({ page }) => {
-      // Look for Onyx logo
+    test("should display VertualAI logo for default assistant", async ({ page }) => {
+      // Look for VertualAI logo
       const logoElement = await page.waitForSelector(
-        '[data-testid="onyx-logo"]',
+        '[data-testid="om-logo"]',
         { timeout: 5000 }
       );
       expect(logoElement).toBeTruthy();
@@ -166,7 +166,7 @@ test.describe("Default Assistant Tests", () => {
       // Wait for assistant to be created and selected
       await verifyAssistantIsChosen(page, "Custom Assistant");
 
-      // Should show assistant name and icon, not Onyx logo
+      // Should show assistant name and icon, not VertualAI logo
       const assistantNameElement = await page.waitForSelector(
         '[data-testid="assistant-name-display"]',
         { timeout: 5000 }
@@ -174,8 +174,8 @@ test.describe("Default Assistant Tests", () => {
       const nameText = await assistantNameElement.textContent();
       expect(nameText).toContain("Custom Assistant");
 
-      // Onyx logo should NOT be shown
-      const logoElement = await page.$('[data-testid="onyx-logo"]');
+      // VertualAI logo should NOT be shown
+      const logoElement = await page.$('[data-testid="om-logo"]');
       expect(logoElement).toBeNull();
     });
   });
@@ -240,7 +240,7 @@ test.describe("Default Assistant Tests", () => {
     test("default assistant should be selected for new chats", async ({
       page,
     }) => {
-      // Verify the input placeholder indicates default assistant (Onyx)
+      // Verify the input placeholder indicates default assistant (VertualAI)
       await verifyDefaultAssistantIsChosen(page);
     });
 
@@ -594,10 +594,10 @@ test.describe("End-to-End Default Assistant Flow", () => {
     await page.waitForLoadState("networkidle");
 
     // Verify greeting message appears
-    await expect(page.locator('[data-testid="onyx-logo"]')).toBeVisible();
+    await expect(page.locator('[data-testid="om-logo"]')).toBeVisible();
 
-    // Verify Onyx logo is displayed
-    await expect(page.locator('[data-testid="onyx-logo"]')).toBeVisible();
+    // Verify VertualAI logo is displayed
+    await expect(page.locator('[data-testid="om-logo"]')).toBeVisible();
 
     // Send a message using the chat input
     await sendMessage(page, "Hello, can you help me?");
@@ -612,6 +612,6 @@ test.describe("End-to-End Default Assistant Flow", () => {
     await startNewChat(page);
 
     // Verify we're back to default assistant with greeting
-    await expect(page.locator('[data-testid="onyx-logo"]')).toBeVisible();
+    await expect(page.locator('[data-testid="om-logo"]')).toBeVisible();
   });
 });

@@ -214,10 +214,10 @@ export async function startMcpApiKeyServer(
 /**
  * Start the MCP Google OAuth Pass-Through test server.
  *
- * This server validates Google OAuth tokens that are passed through from Onyx.
+ * This server validates Google OAuth tokens that are passed through from VertualAI.
  * It calls Google's tokeninfo endpoint to verify the token is valid.
  *
- * For testing pass-through OAuth scenarios where Onyx forwards the user's
+ * For testing pass-through OAuth scenarios where VertualAI forwards the user's
  * Google OAuth access token to an MCP server.
  */
 export async function startMcpGoogleOAuthServer(

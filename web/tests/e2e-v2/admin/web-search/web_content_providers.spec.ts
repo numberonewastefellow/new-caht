@@ -160,20 +160,20 @@ test.describe("Web Content Provider Configuration", () => {
       );
 
       // Switch to VertualAI Web Crawler
-      const onyxCrawlerCard = await findProviderCard(page, "VertualAI Web Crawler");
-      await onyxCrawlerCard.waitFor({ state: "visible", timeout: 10000 });
+      const omCrawlerCard = await findProviderCard(page, "VertualAI Web Crawler");
+      await omCrawlerCard.waitFor({ state: "visible", timeout: 10000 });
 
-      const onyxSetDefault = onyxCrawlerCard.getByRole("button", {
+      const omSetDefault = omCrawlerCard.getByRole("button", {
         name: "Set as Default",
       });
 
-      if (await onyxSetDefault.isVisible()) {
-        await onyxSetDefault.click();
+      if (await omSetDefault.isVisible()) {
+        await omSetDefault.click();
         await page.waitForLoadState("networkidle");
       }
 
       await expect(
-        onyxCrawlerCard.getByRole("button", { name: "Current Crawler" })
+        omCrawlerCard.getByRole("button", { name: "Current Crawler" })
       ).toBeVisible({ timeout: 15000 });
 
       console.log("[web-content-test] Switched back to VertualAI Web Crawler");

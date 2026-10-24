@@ -30,7 +30,7 @@ import {
   SvgSliders,
   SvgSparkle,
   SvgTrash,
-  SvgOnyxOctagon,
+  SvgOmOctagon,
 } from "@opal/icons";
 
 function WorkflowCard({
@@ -231,7 +231,7 @@ export default function WorkflowListPageLegacy() {
                   className="w-16 h-16 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: "var(--theme-purple-01)" }}
                 >
-                  <SvgOnyxOctagon className="w-8 h-8" style={{ stroke: "var(--theme-purple-05)" }} />
+                  <SvgOmOctagon className="w-8 h-8" style={{ stroke: "var(--theme-purple-05)" }} />
                 </div>
                 <Text mainContentEmphasis>No workflows yet</Text>
                 <Text secondaryBody text03 className="text-center max-w-sm">

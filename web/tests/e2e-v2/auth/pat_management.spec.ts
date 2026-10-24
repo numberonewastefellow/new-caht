@@ -19,7 +19,7 @@ test("PAT Complete Workflow", async ({ page }, testInfo) => {
   await page.waitForLoadState("networkidle");
 
   // Click on user dropdown and open settings (same pattern as other tests)
-  await page.locator("#onyx-user-dropdown").click();
+  await page.locator("#om-user-dropdown").click();
   await page.getByText("User Settings").first().click();
 
   // Wait for settings modal to appear (first page has "Full Name" section)
@@ -145,7 +145,7 @@ test("PAT Multiple Tokens Management", async ({ page }, testInfo) => {
   await page.waitForLoadState("networkidle");
 
   // Click on user dropdown and open settings (same pattern as other tests)
-  await page.locator("#onyx-user-dropdown").click();
+  await page.locator("#om-user-dropdown").click();
   await page.getByText("User Settings").first().click();
 
   // Wait for settings modal to appear (first page has "Full Name" section)

@@ -1,6 +1,6 @@
 import { test, expect, Page, Browser } from "@playwright/test";
 import { loginAs, loginAsRandomUser } from "@tests/e2e/utils/auth";
-import { OnyxApiClient } from "@tests/e2e/utils/onyxApiClient";
+import { OmApiClient } from "@tests/e2e/utils/omApiClient";
 
 // --- Locator Helper Functions ---
 const getNameInput = (page: Page) => page.locator('input[name="name"]');
@@ -127,7 +127,7 @@ test.describe("Assistant Creation and Edit Verification", () => {
           storageState: "admin_auth.json",
         });
         const page = await context.newPage();
-        const cleanupClient = new OnyxApiClient(page.request);
+        const cleanupClient = new OmApiClient(page.request);
         await cleanupClient.deleteAssistant(userFilesAssistantId);
         await context.close();
         console.log(
@@ -202,7 +202,7 @@ test.describe("Assistant Creation and Edit Verification", () => {
         storageState: "admin_auth.json",
       });
       const page = await context.newPage();
-      const cleanupClient = new OnyxApiClient(page.request);
+      const cleanupClient = new OmApiClient(page.request);
 
       if (knowledgeAssistantId !== null) {
         await cleanupClient.deleteAssistant(knowledgeAssistantId);
@@ -228,9 +228,9 @@ test.describe("Assistant Creation and Edit Verification", () => {
       await loginAs(page, "admin");
 
       // Create a connector and document set to enable the Knowledge toggle
-      const onyxApiClient = new OnyxApiClient(page.request);
-      ccPairId = await onyxApiClient.createFileConnector("Test Connector");
-      documentSetId = await onyxApiClient.createDocumentSet(
+      const omApiClient = new OmApiClient(page.request);
+      ccPairId = await omApiClient.createFileConnector("Test Connector");
+      documentSetId = await omApiClient.createDocumentSet(
         "Test Document Set",
         [ccPairId]
       );

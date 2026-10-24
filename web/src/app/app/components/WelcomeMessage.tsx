@@ -41,7 +41,7 @@ export default function WelcomeMessage({
   if (isDefaultAgent) {
     content = (
       <motion.div
-        data-testid="onyx-logo"
+        data-testid="om-logo"
         className="flex flex-col items-center gap-3"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}

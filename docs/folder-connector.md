@@ -167,7 +167,7 @@ FOLDER_CONNECTOR_MAX_FILE_SIZE_MB = int(os.environ.get("FOLDER_CONNECTOR_MAX_FIL
 **New file**: `backend/om/connectors/file/utils.py`
 
 - Move `_process_file()` and `_create_image_section()` from `backend/om/connectors/file/connector.py`
-- Update imports in `file/connector.py` to use `from onyx.connectors.file.utils import _process_file, _create_image_section`
+- Update imports in `file/connector.py` to use `from om.connectors.file.utils import _process_file, _create_image_section`
 
 ### 4. Create Folder Connector
 
@@ -220,7 +220,7 @@ class LocalFolderConnector(LoadConnector, PollConnector, SlimConnector):
 
 ```python
 DocumentSource.FOLDER: ConnectorMapping(
-    module_path="onyx.connectors.folder.connector",
+    module_path="om.connectors.folder.connector",
     class_name="LocalFolderConnector",
 ),
 ```

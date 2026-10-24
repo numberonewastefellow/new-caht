@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument } from "@/lib/search/interfaces";
 import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import { useWorkspacePanelStore } from "@/app/app/stores/useWorkspacePanelStore";
 import IconButton from "@/refresh-components/buttons/IconButton";
@@ -21,7 +21,7 @@ type PanelTab = "history" | "files" | "instructions";
 export default function WorkspaceContextPanel({
   setPresentingDocument,
 }: {
-  setPresentingDocument?: (document: MinimalOnyxDocument) => void;
+  setPresentingDocument?: (document: MinimalOmDocument) => void;
 }) {
   const { allCurrentWorkspaceFiles } = useWorkspacesContext();
   const setOpen = useWorkspacePanelStore((s) => s.setOpen);

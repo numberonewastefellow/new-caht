@@ -7,7 +7,7 @@ import Text from "@/refresh-components/texts/Text";
 import { FileDescriptor } from "@/app/app/interfaces";
 import { cn } from "@/lib/utils";
 import TextViewModal from "@/sections/modals/TextViewModal";
-import { MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument } from "@/lib/search/interfaces";
 
 export interface ExpandableContentWrapperProps {
   fileDescriptor: FileDescriptor;
@@ -113,7 +113,7 @@ export default function ExpandableContentWrapper({
     </div>
   );
 
-  const presentingDocument: MinimalOnyxDocument = {
+  const presentingDocument: MinimalOmDocument = {
     document_id: fileDescriptor.id,
     semantic_identifier: fileDescriptor.name ?? null,
   };

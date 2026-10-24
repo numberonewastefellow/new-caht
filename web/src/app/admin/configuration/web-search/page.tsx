@@ -19,7 +19,7 @@ import {
   SvgCheckSquare,
   SvgEdit,
   SvgGlobe,
-  SvgOnyxLogo,
+  SvgOmLogo,
   SvgX,
 } from "@opal/icons";
 
@@ -1168,7 +1168,7 @@ export default function Page() {
                         alt: `${label} logo`,
                         fallback:
                           provider.provider_type === "onyx_web_crawler" ? (
-                            <SvgOnyxLogo size={16} />
+                            <SvgOmLogo size={16} />
                           ) : undefined,
                         size: 16,
                         isHighlighted: isCurrentCrawler,
@@ -1395,7 +1395,7 @@ export default function Page() {
           } logo`,
           fallback:
             selectedContentProviderType === "onyx_web_crawler" ? (
-              <SvgOnyxLogo size={24} className="text-text-05" />
+              <SvgOmLogo size={24} className="text-text-05" />
             ) : undefined,
           size: 24,
           containerSize: 28,

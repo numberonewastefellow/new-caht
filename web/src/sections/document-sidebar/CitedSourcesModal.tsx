@@ -2,7 +2,7 @@
 
 import { useState, Dispatch, SetStateAction } from "react";
 import {
-  MinimalOnyxDocument,
+  MinimalOmDocument,
   OmDocument,
 } from "@/lib/search/interfaces";
 import { SourceIcon } from "@/components/SourceIcon";
@@ -48,7 +48,7 @@ interface CitedSourcesModalProps {
   onClose: () => void;
   citedDocuments: OmDocument[];
   otherDocuments: OmDocument[];
-  setPresentingDocument: Dispatch<SetStateAction<MinimalOnyxDocument | null>>;
+  setPresentingDocument: Dispatch<SetStateAction<MinimalOmDocument | null>>;
 }
 
 function SourceCard({

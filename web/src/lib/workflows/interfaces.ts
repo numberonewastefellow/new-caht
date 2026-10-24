@@ -1,10 +1,10 @@
 /**
  * TypeScript interfaces for the multi-agent workflow system.
- * Mirrors backend Pydantic schemas in backend/onyx/workflows/models.py
+ * Mirrors backend Pydantic schemas in backend/om/workflows/models.py
  */
 
 // Condition operators — single source of truth for frontend.
-// Mirrors CONDITION_OPERATORS in backend/onyx/workflows/models.py
+// Mirrors CONDITION_OPERATORS in backend/om/workflows/models.py
 export const CONDITION_OPERATORS = [
   { value: "contains", label: "Contains" },
   { value: "not_contains", label: "Does not contain" },

@@ -87,13 +87,13 @@ const BackgroundThumbnail = ({
 export const SettingsPanel = ({
   settingsOpen,
   toggleSettings,
-  handleUseOnyxToggle,
+  handleUseOmToggle,
 }: {
   settingsOpen: boolean;
   toggleSettings: () => void;
-  handleUseOnyxToggle: (checked: boolean) => void;
+  handleUseOmToggle: (checked: boolean) => void;
 }) => {
-  const { useOnyxAsNewTab } = useNRFPreferences();
+  const { useOmAsNewTab } = useNRFPreferences();
   const { theme, setTheme } = useTheme();
   const { user, updateUserChatBackground } = useUser();
 
@@ -171,8 +171,8 @@ export const SettingsPanel = ({
             <div className="flex flex-col gap-1 bg-background-tint-01 rounded-2xl px-4">
               <SettingRow label="Use VertualAI as new tab page">
                 <Switch
-                  checked={useOnyxAsNewTab}
-                  onCheckedChange={handleUseOnyxToggle}
+                  checked={useOmAsNewTab}
+                  onCheckedChange={handleUseOmToggle}
                 />
               </SettingRow>
             </div>

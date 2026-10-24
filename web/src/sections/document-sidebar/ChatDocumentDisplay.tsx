@@ -1,5 +1,5 @@
 import { SourceIcon } from "@/components/SourceIcon";
-import { MinimalOnyxDocument, OmDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument, OmDocument } from "@/lib/search/interfaces";
 import { FiTag } from "react-icons/fi";
 import { buildDocumentSummaryDisplay } from "@/components/search/DocumentDisplay";
 import { DocumentUpdatedAtBadge } from "@/components/search/DocumentUpdatedAtBadge";
@@ -56,7 +56,7 @@ export interface ChatDocumentDisplayProps {
   document: OmDocument;
   modal?: boolean;
   isSelected: boolean;
-  setPresentingDocument: Dispatch<SetStateAction<MinimalOnyxDocument | null>>;
+  setPresentingDocument: Dispatch<SetStateAction<MinimalOmDocument | null>>;
 }
 
 export default function ChatDocumentDisplay({

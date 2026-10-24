@@ -10,7 +10,7 @@ import AgentMessage from "@/app/app/message/messageComponents/AgentMessage";
 import { Callout } from "@/components/ui/callout";
 import OmInitializingLoader from "@/components/OmInitializingLoader";
 import { Agent } from "@/app/admin/assistants/interfaces";
-import { MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument } from "@/lib/search/interfaces";
 import TextViewModal from "@/sections/modals/TextViewModal";
 import { UNNAMED_CHAT } from "@/lib/constants";
 import Text from "@/refresh-components/texts/Text";
@@ -27,7 +27,7 @@ export default function SharedChatDisplay({
   agent,
 }: SharedChatDisplayProps) {
   const [presentingDocument, setPresentingDocument] =
-    useState<MinimalOnyxDocument | null>(null);
+    useState<MinimalOmDocument | null>(null);
 
   const isMounted = useOnMount();
 

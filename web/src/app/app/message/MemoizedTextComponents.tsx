@@ -3,8 +3,8 @@ import {
   DocumentCardProps,
 } from "@/components/search/results/Citation";
 import {
-  LoadedOnyxDocument,
-  MinimalOnyxDocument,
+  LoadedOmDocument,
+  MinimalOmDocument,
   OmDocument,
 } from "@/lib/search/interfaces";
 import React, { memo, useState, JSX, useMemo, useCallback } from "react";
@@ -47,7 +47,7 @@ export const MemoizedAnchor = memo(
     docs?: OmDocument[] | null;
     userFiles?: WorkspaceFile[] | null;
     citations?: CitationMap;
-    updatePresentingDocument: (doc: MinimalOnyxDocument) => void;
+    updatePresentingDocument: (doc: MinimalOmDocument) => void;
     href?: string;
     children: React.ReactNode;
   }): JSX.Element => {

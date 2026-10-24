@@ -2,7 +2,7 @@
 
 import React, { useCallback, useMemo, useRef } from "react";
 import { Message } from "@/app/app/interfaces";
-import { OmDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { OmDocument, MinimalOmDocument } from "@/lib/search/interfaces";
 import HumanMessage from "@/app/app/message/HumanMessage";
 import { ErrorBanner } from "@/app/app/message/Resubmit";
 import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
@@ -24,7 +24,7 @@ import type { Packet } from "@/app/app/services/streamingModels";
 export interface ChatUIProps {
   liveAssistant: MinimalAgentSnapshot;
   llmManager: LlmManager;
-  setPresentingDocument: (doc: MinimalOnyxDocument | null) => void;
+  setPresentingDocument: (doc: MinimalOmDocument | null) => void;
   onMessageSelection: (nodeId: number) => void;
   stopGenerating: () => void;
   chatSessionId: string;

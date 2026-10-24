@@ -3,8 +3,8 @@ import {
   SvgFolder,
   SvgZoomIn,
   SvgThumbsUp,
-  SvgOnyxOctagon,
-  SvgOnyxLogo,
+  SvgOmOctagon,
+  SvgOmLogo,
   SvgCpu,
   SvgGlobe,
   SvgImage,
@@ -110,7 +110,7 @@ export function getAdminNavGroups(opts: {
   const agentItems: AdminNavItem[] = [
     {
       name: "AI Agents",
-      icon: SvgOnyxOctagon,
+      icon: SvgOmOctagon,
       link: "/admin/assistants",
       isAiRelated: true,
     },
@@ -158,7 +158,7 @@ export function getAdminNavGroups(opts: {
   groups.push({
     id: "agents",
     name: "Agents",
-    icon: SvgOnyxOctagon,
+    icon: SvgOmOctagon,
     color: "purple",
     items: agentItems,
   });
@@ -168,7 +168,7 @@ export function getAdminNavGroups(opts: {
     const modelItems: AdminNavItem[] = [
       {
         name: "Default Agent",
-        icon: SvgOnyxLogo,
+        icon: SvgOmLogo,
         link: "/admin/configuration/default-assistant",
         isAiRelated: true,
       },
@@ -297,7 +297,7 @@ export function getAdminNavGroups(opts: {
     const workspaceItems: AdminNavItem[] = [
       {
         name: "New Features",
-        icon: SvgOnyxOctagon,
+        icon: SvgOmOctagon,
         link: "/admin/features",
       },
       {

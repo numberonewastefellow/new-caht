@@ -4,26 +4,26 @@ import { sendMessage } from "@tests/e2e-v2/utils/chatActions";
 import { THEMES, setThemeBeforeNavigation } from "@tests/e2e-v2/utils/theme";
 import { expectElementScreenshot } from "@tests/e2e-v2/utils/visualRegression";
 
-const SHORT_USER_MESSAGE = "What is Onyx?";
+const SHORT_USER_MESSAGE = "What is VertualAI?";
 
-const LONG_USER_MESSAGE = `I've been evaluating several enterprise search and AI platforms for our organization, and I have a number of detailed questions about Onyx that I'd like to understand before we make a decision.
+const LONG_USER_MESSAGE = `I've been evaluating several enterprise search and AI platforms for our organization, and I have a number of detailed questions about VertualAI that I'd like to understand before we make a decision.
 
-First, can you explain how Onyx handles document indexing across multiple data sources? We currently use Confluence, Google Drive, Slack, and GitHub, and we need to ensure that all of these can be indexed simultaneously without performance degradation.
+First, can you explain how VertualAI handles document indexing across multiple data sources? We currently use Confluence, Google Drive, Slack, and GitHub, and we need to ensure that all of these can be indexed simultaneously without performance degradation.
 
-Second, I'm interested in understanding the security model. Specifically, how does Onyx handle document-level permissions when syncing from sources that have their own ACL systems? Does it respect the original source permissions, or does it create its own permission layer?
+Second, I'm interested in understanding the security model. Specifically, how does VertualAI handle document-level permissions when syncing from sources that have their own ACL systems? Does it respect the original source permissions, or does it create its own permission layer?
 
-Third, we have a requirement for real-time or near-real-time indexing. What is the typical latency between a document being updated in a source system and it becoming searchable in Onyx?
+Third, we have a requirement for real-time or near-real-time indexing. What is the typical latency between a document being updated in a source system and it becoming searchable in VertualAI?
 
 Finally, could you walk me through the architecture of the AI chat system? How does it decide which documents to reference when answering a question, and how does it handle cases where the retrieved documents might contain conflicting information?`;
 
 const SHORT_AI_RESPONSE =
-  "Onyx is an open-source AI-powered enterprise search platform that connects to your company's documents, apps, and people.";
+  "VertualAI is an open-source AI-powered enterprise search platform that connects to your company's documents, apps, and people.";
 
-const LONG_AI_RESPONSE = `Onyx is an open-source Gen-AI and Enterprise Search platform designed to connect to your company's documents, applications, and people. Let me address each of your questions in detail.
+const LONG_AI_RESPONSE = `VertualAI is an open-source Gen-AI and Enterprise Search platform designed to connect to your company's documents, applications, and people. Let me address each of your questions in detail.
 
 ## Document Indexing
 
-Onyx uses a **connector-based architecture** where each data source has a dedicated connector. These connectors run as background workers and can index simultaneously without interfering with each other. The supported connectors include:
+VertualAI uses a **connector-based architecture** where each data source has a dedicated connector. These connectors run as background workers and can index simultaneously without interfering with each other. The supported connectors include:
 
 - **Confluence** — Full page and space indexing with attachment support
 - **Google Drive** — File and folder indexing with shared drive support
@@ -34,10 +34,10 @@ Each connector runs on its own schedule and can be configured independently for 
 
 ## Security Model
 
-Onyx implements a **document-level permission system** that syncs with source ACLs. When documents are indexed, their permissions are preserved:
+VertualAI implements a **document-level permission system** that syncs with source ACLs. When documents are indexed, their permissions are preserved:
 
 \`\`\`
-Source Permission → Onyx ACL Sync → Query-time Filtering
+Source Permission → VertualAI ACL Sync → Query-time Filtering
 \`\`\`
 
 This means that when a user searches, they only see documents they have access to in the original source system. The permission sync runs periodically to stay up to date.
@@ -76,16 +76,16 @@ const MARKDOWN_AI_RESPONSE = `Here's a quick overview with various formatting:
 ### Code Example
 
 \`\`\`python
-from onyx import OnyxClient
+from om import OmClient
 
-client = OnyxClient(api_key="your-key")
+client = OmClient(api_key="your-key")
 results = client.search("quarterly revenue report")
 
 for doc in results:
     print(f"{doc.title}: {doc.score:.2f}")
 \`\`\`
 
-> **Note**: Onyx supports both cloud and self-hosted deployments. The self-hosted option gives you full control over your data.
+> **Note**: VertualAI supports both cloud and self-hosted deployments. The self-hosted option gives you full control over your data.
 
 Key benefits include:
 
@@ -224,7 +224,7 @@ function buildMockSearchStream(options: SearchMockOptions): string {
 async function openChat(page: Page): Promise<void> {
   await page.goto("/app");
   await page.waitForLoadState("networkidle");
-  await page.waitForSelector("#onyx-chat-input-textarea", { timeout: 15000 });
+  await page.waitForSelector("#om-chat-input-textarea", { timeout: 15000 });
 }
 
 async function mockChatEndpoint(
@@ -317,10 +317,10 @@ for (const theme of THEMES) {
 
         await sendMessage(page, SHORT_USER_MESSAGE);
 
-        const userMessage = page.locator("#onyx-human-message").first();
+        const userMessage = page.locator("#om-human-message").first();
         await expect(userMessage).toContainText(SHORT_USER_MESSAGE);
 
-        const aiMessage = page.getByTestId("onyx-ai-message").first();
+        const aiMessage = page.getByTestId("om-ai-message").first();
         await expect(aiMessage).toContainText("open-source AI-powered");
 
         await screenshotChatContainer(
@@ -337,7 +337,7 @@ for (const theme of THEMES) {
 
         await sendMessage(page, LONG_USER_MESSAGE);
 
-        const userMessage = page.locator("#onyx-human-message").first();
+        const userMessage = page.locator("#om-human-message").first();
         await expect(userMessage).toContainText("document indexing");
         await expect(userMessage).toContainText("security model");
         await expect(userMessage).toContainText("real-time or near-real-time");
@@ -357,7 +357,7 @@ for (const theme of THEMES) {
 
         await sendMessage(page, SHORT_USER_MESSAGE);
 
-        const aiMessage = page.getByTestId("onyx-ai-message").first();
+        const aiMessage = page.getByTestId("om-ai-message").first();
         await expect(aiMessage).toContainText("Document Indexing");
         await expect(aiMessage).toContainText("Security Model");
         await expect(aiMessage).toContainText("Indexing Latency");
@@ -377,10 +377,10 @@ for (const theme of THEMES) {
 
         await sendMessage(page, LONG_USER_MESSAGE);
 
-        const userMessage = page.locator("#onyx-human-message").first();
+        const userMessage = page.locator("#om-human-message").first();
         await expect(userMessage).toContainText("document indexing");
 
-        const aiMessage = page.getByTestId("onyx-ai-message").first();
+        const aiMessage = page.getByTestId("om-ai-message").first();
         await expect(aiMessage).toContainText("Retrieval-Augmented Generation");
 
         await screenshotChatContainerTopAndBottom(
@@ -397,11 +397,11 @@ for (const theme of THEMES) {
         await openChat(page);
         await mockChatEndpoint(page, MARKDOWN_AI_RESPONSE);
 
-        await sendMessage(page, "Give me an overview of Onyx features");
+        await sendMessage(page, "Give me an overview of VertualAI features");
 
-        const aiMessage = page.getByTestId("onyx-ai-message").first();
+        const aiMessage = page.getByTestId("om-ai-message").first();
         await expect(aiMessage).toContainText("Key Features");
-        await expect(aiMessage).toContainText("OnyxClient");
+        await expect(aiMessage).toContainText("OmClient");
         await expect(aiMessage).toContainText("Privacy");
 
         await screenshotChatContainer(
@@ -419,28 +419,28 @@ for (const theme of THEMES) {
 
         const responses = [
           SHORT_AI_RESPONSE,
-          "Yes, Onyx supports over 30 data source connectors including Confluence, Google Drive, Slack, GitHub, Jira, Notion, and many more.",
-          "To get started, you can deploy Onyx using Docker Compose with a single command. The setup takes about 5 minutes.",
+          "Yes, VertualAI supports over 30 data source connectors including Confluence, Google Drive, Slack, GitHub, Jira, Notion, and many more.",
+          "To get started, you can deploy VertualAI using Docker Compose with a single command. The setup takes about 5 minutes.",
         ];
 
         await mockChatEndpointSequence(page, responses);
 
         await sendMessage(page, SHORT_USER_MESSAGE);
-        await expect(page.getByTestId("onyx-ai-message").first()).toContainText(
+        await expect(page.getByTestId("om-ai-message").first()).toContainText(
           "open-source AI-powered"
         );
 
         await sendMessage(page, "What connectors does it support?");
-        await expect(page.getByTestId("onyx-ai-message")).toHaveCount(2, {
+        await expect(page.getByTestId("om-ai-message")).toHaveCount(2, {
           timeout: 30000,
         });
 
         await sendMessage(page, "How do I get started?");
-        await expect(page.getByTestId("onyx-ai-message")).toHaveCount(3, {
+        await expect(page.getByTestId("om-ai-message")).toHaveCount(3, {
           timeout: 30000,
         });
 
-        const userMessages = page.locator("#onyx-human-message");
+        const userMessages = page.locator("#om-human-message");
         await expect(userMessages).toHaveCount(3);
 
         await screenshotChatContainerTopAndBottom(
@@ -459,12 +459,12 @@ for (const theme of THEMES) {
         await mockChatEndpointSequence(page, responses);
 
         await sendMessage(page, LONG_USER_MESSAGE);
-        await expect(page.getByTestId("onyx-ai-message").first()).toContainText(
+        await expect(page.getByTestId("om-ai-message").first()).toContainText(
           "Document Indexing"
         );
 
         await sendMessage(page, SHORT_USER_MESSAGE);
-        await expect(page.getByTestId("onyx-ai-message")).toHaveCount(2, {
+        await expect(page.getByTestId("om-ai-message")).toHaveCount(2, {
           timeout: 30000,
         });
 
@@ -486,7 +486,7 @@ for (const theme of THEMES) {
         page: Page,
         namePrefix: string
       ): Promise<void> {
-        const aiMessage = page.getByTestId("onyx-ai-message").first();
+        const aiMessage = page.getByTestId("om-ai-message").first();
         const toolbar = aiMessage.getByTestId("AgentMessage/toolbar");
         await expect(toolbar).toBeVisible({ timeout: 10000 });
 
@@ -527,16 +527,16 @@ for (const theme of THEMES) {
       const WEB_SEARCH_DOCUMENTS: MockDocument[] = [
         {
           document_id: "web-doc-1",
-          semantic_identifier: "Onyx Documentation - Getting Started",
+          semantic_identifier: "VertualAI Documentation - Getting Started",
           link: "https://docs.vertualai.com/getting-started",
           source_type: "web",
           blurb:
-            "Onyx is an open-source enterprise search and AI platform. Deploy in minutes with Docker Compose.",
+            "VertualAI is an open-source enterprise search and AI platform. Deploy in minutes with Docker Compose.",
           is_internet: true,
         },
         {
           document_id: "web-doc-2",
-          semantic_identifier: "Onyx GitHub Repository",
+          semantic_identifier: "VertualAI GitHub Repository",
           link: "https://github.com/vertualai/vertualai",
           source_type: "web",
           blurb:
@@ -549,16 +549,16 @@ for (const theme of THEMES) {
           link: "https://example.com/enterprise-search-comparison",
           source_type: "web",
           blurb:
-            "Comparing top enterprise search platforms including Onyx, Glean, and Coveo.",
+            "Comparing top enterprise search platforms including VertualAI, Glean, and Coveo.",
           is_internet: true,
         },
       ];
 
-      const WEB_SEARCH_RESPONSE = `Based on my web search, here's what I found about Onyx:
+      const WEB_SEARCH_RESPONSE = `Based on my web search, here's what I found about VertualAI:
 
-Onyx is an open-source enterprise search and AI platform that can be deployed in minutes using Docker Compose [[D1]](https://docs.vertualai.com/getting-started). The project is hosted on GitHub and is MIT licensed for the community edition, with over 30 connectors available [[D2]](https://github.com/vertualai/vertualai).
+VertualAI is an open-source enterprise search and AI platform that can be deployed in minutes using Docker Compose [[D1]](https://docs.vertualai.com/getting-started). The project is hosted on GitHub and is MIT licensed for the community edition, with over 30 connectors available [[D2]](https://github.com/vertualai/vertualai).
 
-In comparisons with other enterprise search platforms, Onyx stands out for its open-source nature and self-hosted deployment option [[D3]](https://example.com/enterprise-search-comparison). Unlike proprietary alternatives, you maintain full control over your data and infrastructure.
+In comparisons with other enterprise search platforms, VertualAI stands out for its open-source nature and self-hosted deployment option [[D3]](https://example.com/enterprise-search-comparison). Unlike proprietary alternatives, you maintain full control over your data and infrastructure.
 
 Key advantages include:
 
@@ -578,7 +578,7 @@ Key advantages include:
             contentType: "text/plain",
             body: buildMockSearchStream({
               content: WEB_SEARCH_RESPONSE,
-              queries: ["Onyx enterprise search platform overview"],
+              queries: ["VertualAI enterprise search platform overview"],
               documents: WEB_SEARCH_DOCUMENTS,
               citations: {
                 1: "web-doc-1",
@@ -590,9 +590,9 @@ Key advantages include:
           });
         });
 
-        await sendMessage(page, "Search the web for information about Onyx");
+        await sendMessage(page, "Search the web for information about VertualAI");
 
-        const aiMessage = page.getByTestId("onyx-ai-message").first();
+        const aiMessage = page.getByTestId("om-ai-message").first();
         await expect(aiMessage).toContainText("open-source enterprise search");
         await expect(aiMessage).toContainText("Docker Compose");
         await expect(aiMessage).toContainText("MIT licensed");
@@ -624,7 +624,7 @@ Key advantages include:
             link: "https://drive.google.com/file/d/abc123",
             source_type: "google_drive",
             blurb:
-              "Onyx platform architecture document covering microservices, data flow, and deployment topology.",
+              "VertualAI platform architecture document covering microservices, data flow, and deployment topology.",
             is_internet: false,
           },
         ];
@@ -660,7 +660,7 @@ The platform architecture document provides additional context on how these impr
 
         await sendMessage(page, "What are our engineering priorities for Q3?");
 
-        const aiMessage = page.getByTestId("onyx-ai-message").first();
+        const aiMessage = page.getByTestId("om-ai-message").first();
         await expect(aiMessage).toContainText("Platform stability");
         await expect(aiMessage).toContainText("New integrations");
         await expect(aiMessage).toContainText("Performance");
@@ -683,7 +683,7 @@ The platform architecture document provides additional context on how these impr
 
         await sendMessage(page, SHORT_USER_MESSAGE);
 
-        const userMessage = page.locator("#onyx-human-message").first();
+        const userMessage = page.locator("#om-human-message").first();
         await userMessage.hover();
 
         const editButton = userMessage.getByTestId("HumanMessage/edit-button");
@@ -703,7 +703,7 @@ The platform architecture document provides additional context on how these impr
 
         await sendMessage(page, SHORT_USER_MESSAGE);
 
-        const aiMessage = page.getByTestId("onyx-ai-message").first();
+        const aiMessage = page.getByTestId("om-ai-message").first();
 
         const copyButton = aiMessage.getByTestId("AgentMessage/copy-button");
         const likeButton = aiMessage.getByTestId("AgentMessage/like-button");

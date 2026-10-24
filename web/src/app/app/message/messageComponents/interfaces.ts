@@ -1,7 +1,7 @@
 import { JSX } from "react";
 import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { Packet, StopReason } from "../../services/streamingModels";
-import { OmDocument, MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { OmDocument, MinimalOmDocument } from "@/lib/search/interfaces";
 import { WorkspaceFile } from "../../workspaces/workspacesService";
 import { LlmDescriptor } from "@/lib/hooks";
 import { IconType } from "react-icons";
@@ -30,7 +30,7 @@ export interface FullChatState {
   docs?: OmDocument[] | null;
   userFiles?: WorkspaceFile[];
   citations?: CitationMap;
-  setPresentingDocument?: (document: MinimalOnyxDocument) => void;
+  setPresentingDocument?: (document: MinimalOmDocument) => void;
   // Regenerate functionality
   regenerate?: (modelOverRide: LlmDescriptor) => Promise<void>;
   overriddenModel?: string;

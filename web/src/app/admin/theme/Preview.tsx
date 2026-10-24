@@ -67,16 +67,16 @@ export interface PreviewProps {
 
 function PreviewLogo({
   logoSrc,
-  forceOnyxIcon,
+  forceOmIcon,
   size,
   className,
 }: {
   logoSrc?: string;
-  forceOnyxIcon?: boolean;
+  forceOmIcon?: boolean;
   size: number;
   className?: string;
 }) {
-  return logoSrc && !forceOnyxIcon ? (
+  return logoSrc && !forceOmIcon ? (
     <img
       src={logoSrc}
       alt="Logo"
@@ -124,7 +124,7 @@ function PreviewStart({
               <PreviewLogo
                 logoSrc={logoSrc}
                 size={16}
-                forceOnyxIcon={
+                forceOmIcon={
                   logoDisplayStyle === "logo_and_name" &&
                   !applicationDisplayName
                 }

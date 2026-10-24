@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: ".vscode/.env" });
 
 // Parallel config for the rebuilt e2e suite (tests/e2e-v2), ported 1:1 from
-// tests/e2e against the post-rename codebase (Onyx*->Om*, persona->agent,
+// tests/e2e against the post-rename codebase (VertualAI*->Om*, persona->agent,
 // EE dissolution, Vespa->OpenSearch). Visual-regression steps are skipped for
 // now. Run: npx playwright test --config playwright.e2e-v2.config.ts
 export default defineConfig({

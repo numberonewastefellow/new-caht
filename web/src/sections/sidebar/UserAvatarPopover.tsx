@@ -225,7 +225,7 @@ export default function UserAvatarPopover({
     <Popover open={!!popupState} onOpenChange={handlePopoverOpen}>
       <Popover.Trigger asChild>
         <button
-          id="onyx-user-dropdown"
+          id="om-user-dropdown"
           type="button"
           title={folded ? displayName : undefined}
           className={cn(

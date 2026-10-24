@@ -1,7 +1,7 @@
 import {
   OmDocument,
   Filters,
-  SearchOnyxDocument,
+  SearchOmDocument,
   StreamStopReason,
 } from "@/lib/search/interfaces";
 import { Packet } from "./services/streamingModels";
@@ -131,7 +131,7 @@ export interface ChatSession {
 
 export interface SearchSession {
   search_session_id: string;
-  documents: SearchOnyxDocument[];
+  documents: SearchOmDocument[];
   messages: BackendMessage[];
   description: string;
 }

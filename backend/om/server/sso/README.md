@@ -1,10 +1,10 @@
 # SAML SSO (`om.server.sso`) — WS-C
 
 Clean-room SAML 2.0 Service Provider (SP) with just-in-time (JIT) user
-provisioning. Replaces the Onyx-EE SAML feature (`db/saml.py`, `server/saml.py`,
+provisioning. Replaces the upstream EE SAML feature (`db/saml.py`, `server/saml.py`,
 the `SamlAccount`/`saml` table, and the `/auth/saml/*` endpoints).
 
-> **Provenance:** written from the WS-C behavior spec, not from Onyx EE source —
+> **Provenance:** written from the WS-C behavior spec, not from upstream EE source —
 > own module layout, own names, own control flow.
 
 ---

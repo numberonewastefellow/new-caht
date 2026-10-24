@@ -101,7 +101,7 @@ export type PacketType =
   | Packet;
 
 // Origin of the message for telemetry tracking.
-// Keep in sync with backend: backend/onyx/server/query_and_chat/models.py::MessageOrigin
+// Keep in sync with backend: backend/om/server/query_and_chat/models.py::MessageOrigin
 export type MessageOrigin =
   | "webapp"
   | "chrome_extension"

@@ -52,12 +52,12 @@ export interface Quote {
 export interface QuotesInfoPacket {
   quotes: Quote[];
 }
-export interface MinimalOnyxDocument {
+export interface MinimalOmDocument {
   document_id: string;
   semantic_identifier: string | null;
 }
 
-export interface OmDocument extends MinimalOnyxDocument {
+export interface OmDocument extends MinimalOmDocument {
   link: string;
   source_type: ValidSources;
   blurb: string;
@@ -73,16 +73,16 @@ export interface OmDocument extends MinimalOnyxDocument {
   validationState?: null | "good" | "bad";
 }
 
-export interface LoadedOnyxDocument extends OmDocument {
+export interface LoadedOmDocument extends OmDocument {
   icon: React.FC<{ size?: number; className?: string }>;
 }
 
-export interface SearchOnyxDocument extends OmDocument {
+export interface SearchOmDocument extends OmDocument {
   is_relevant: boolean;
   relevance_explanation: string;
 }
 
-export interface FilteredOnyxDocument extends OmDocument {
+export interface FilteredOmDocument extends OmDocument {
   included: boolean;
 }
 export interface DocumentInfoPacket {
@@ -111,7 +111,7 @@ export interface SearchResponse {
   suggestedFlowType: FlowType | null;
   answer: string | null;
   quotes: Quote[] | null;
-  documents: SearchOnyxDocument[] | null;
+  documents: SearchOmDocument[] | null;
   selectedDocIndices: number[] | null;
   error: string | null;
   messageId: number | null;
@@ -222,7 +222,7 @@ export interface SearchFlowClassificationResponse {
 
 /**
  * Base filters for search queries
- * Matches backend/onyx/context/search/models.py BaseFilters
+ * Matches backend/om/context/search/models.py BaseFilters
  */
 export interface BaseFilters {
   source_type?: ValidSources[] | null;

@@ -137,7 +137,7 @@ if __name__ == "__main__":
 ```bash
 cd deployment/docker_compose
 
-# Start everything (Onyx + Office MCP server)
+# Start everything (VertualAI + Office MCP server)
 dev up
 
 # Or build everything from scratch
@@ -167,7 +167,7 @@ cd office-mcp-server
 # Build and start
 docker compose up -d
 
-# Connect to Onyx network (required for API server to reach it)
+# Connect to VertualAI network (required for API server to reach it)
 docker network connect onyx_default office-mcp-server
 
 # Verify it's running (should show 91 tools)
@@ -423,7 +423,7 @@ python create_workflows.py --list
 | PPT Workflow | `backend/tests/workflow_creator/workflows/29_ppt_generator.json` | 3-agent PPT workflow (Planner, Builder, Reviewer) |
 | DOCX Workflow | `backend/tests/workflow_creator/workflows/32_document_generator.json` | 3-agent DOCX/PDF workflow (Planner, Builder, Reviewer) |
 | Deployment Script | `backend/tests/workflow_creator/create_workflows.py` | Deploys workflows to VirtualAI |
-| Dev Helper | `deployment/docker_compose/dev.bat` | Build/start/stop the server alongside Onyx |
+| Dev Helper | `deployment/docker_compose/dev.bat` | Build/start/stop the server alongside VertualAI |
 
 ---
 

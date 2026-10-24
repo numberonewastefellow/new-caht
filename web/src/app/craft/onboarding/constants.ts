@@ -218,7 +218,7 @@ export enum Level {
 }
 
 // Agent mapping: work_area -> level -> AgentInfo
-// Matches backend/onyx/server/features/build/sandbox/util/agent_mapping.py
+// Matches backend/om/server/features/build/sandbox/util/agent_mapping.py
 // This is the source of truth for work areas and levels
 export const AGENT_MAPPING: Record<WorkArea, Record<Level, AgentInfo>> = {
   [WorkArea.ENGINEERING]: {

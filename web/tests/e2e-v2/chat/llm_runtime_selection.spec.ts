@@ -23,7 +23,7 @@ function uniqueName(prefix: string): string {
 async function openChat(page: Page): Promise<void> {
   await page.goto("/app");
   await page.waitForLoadState("networkidle");
-  await page.waitForSelector("#onyx-chat-input-textarea", { timeout: 15000 });
+  await page.waitForSelector("#om-chat-input-textarea", { timeout: 15000 });
 }
 
 async function loginWithCleanCookies(
@@ -243,7 +243,7 @@ test.describe("LLM Runtime Selection", () => {
 
     await page.reload();
     await page.waitForLoadState("networkidle");
-    await page.waitForSelector("#onyx-chat-input-textarea", { timeout: 15000 });
+    await page.waitForSelector("#om-chat-input-textarea", { timeout: 15000 });
 
     await verifyCurrentModel(page, selectedModelDisplay);
 
@@ -285,7 +285,7 @@ test.describe("LLM Runtime Selection", () => {
     );
     const initialModelVersion = initialPayload.llm_override?.model_version;
 
-    const aiMessage = page.locator('[data-testid="onyx-ai-message"]').first();
+    const aiMessage = page.locator('[data-testid="om-ai-message"]').first();
     await aiMessage.hover();
 
     const regenerateControl = aiMessage.getByTestId("AgentMessage/regenerate");
@@ -423,7 +423,7 @@ test.describe("LLM Runtime Selection", () => {
     // Use a new session so runtime selection is not overwritten by the previous
     // chat session's persisted model override.
     await startNewChat(page);
-    await page.waitForSelector("#onyx-chat-input-textarea", { timeout: 15000 });
+    await page.waitForSelector("#om-chat-input-textarea", { timeout: 15000 });
 
     await page.getByTestId("AppInputBar/llm-popover-trigger").click();
     await page.waitForSelector('[role="dialog"]', { state: "visible" });

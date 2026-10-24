@@ -3,7 +3,7 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "onyx"
+name = "om"
 version = "0.0.0"
 requires-python = ">=3.11"
 dependencies = [
@@ -199,4 +199,4 @@ select = [
 
 [tool.setuptools.packages.find]
 where = ["backend"]
-include = ["onyx*", "tests*"]
+include = ["om*", "tests*"]

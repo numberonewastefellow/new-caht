@@ -8,7 +8,7 @@ import Button from "@/refresh-components/buttons/Button";
 import Text from "@/refresh-components/texts/Text";
 import { LlmManager } from "@/lib/hooks";
 import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
-import { MinimalOnyxDocument } from "@/lib/search/interfaces";
+import { MinimalOmDocument } from "@/lib/search/interfaces";
 import { useChatSessionStore } from "@/app/app/stores/useChatSessionStore";
 import {
   useCompareStore,
@@ -22,7 +22,7 @@ import { SvgPlus } from "@opal/icons";
 interface CompareViewProps {
   liveAssistant: MinimalAgentSnapshot;
   llmManager: LlmManager;
-  setPresentingDocument: (doc: MinimalOnyxDocument | null) => void;
+  setPresentingDocument: (doc: MinimalOmDocument | null) => void;
   onMessageSelection: (nodeId: number) => void;
   deepResearchEnabled: boolean;
   currentMessageFiles: any[];
@@ -40,7 +40,7 @@ interface ComparePanelProps {
   sessionId: string | undefined;
   liveAssistant: MinimalAgentSnapshot;
   llmManager: LlmManager;
-  setPresentingDocument: (doc: MinimalOnyxDocument | null) => void;
+  setPresentingDocument: (doc: MinimalOmDocument | null) => void;
   onMessageSelection: (nodeId: number) => void;
   deepResearchEnabled: boolean;
   currentMessageFiles: any[];

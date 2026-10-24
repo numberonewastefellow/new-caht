@@ -8,7 +8,7 @@ import PasswordInputTypeIn from "@/refresh-components/inputs/PasswordInputTypeIn
 import Modal from "@/refresh-components/Modal";
 import Button from "@/refresh-components/buttons/Button";
 
-import { SvgArrowExchange, SvgOnyxLogo } from "@opal/icons";
+import { SvgArrowExchange, SvgOmLogo } from "@opal/icons";
 import type { IconProps } from "@opal/types";
 
 export type WebProviderSetupModalProps = {
@@ -68,7 +68,7 @@ export const WebProviderSetupModal = memo(
             <SvgArrowExchange className="size-3 text-text-04" />
           </div>
           <div className="flex items-center justify-center size-7 p-0.5 shrink-0 overflow-clip">
-            <SvgOnyxLogo size={24} className="text-text-04 shrink-0" />
+            <SvgOmLogo size={24} className="text-text-04 shrink-0" />
           </div>
         </div>
       );

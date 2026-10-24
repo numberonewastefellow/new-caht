@@ -476,7 +476,7 @@ export function SettingsForm() {
                   : "bg-red-400"
               }`}
             />
-            <span className="font-medium text-text-05">Onyx Craft (Sandbox)</span>
+            <span className="font-medium text-text-05">VertualAI Craft (Sandbox)</span>
             <span className="text-text-02">
               {settings.onyx_craft_enabled ? "Enabled" : "Disabled"}
             </span>
