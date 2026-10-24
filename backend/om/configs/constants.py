@@ -252,6 +252,10 @@ class NotificationType(str, Enum):
     RELEASE_NOTES = "release_notes"
     ASSISTANT_FILES_READY = "assistant_files_ready"
     FEATURE_ANNOUNCEMENT = "feature_announcement"
+    # Pulse (scheduled workflows)
+    PULSE_RUN_FAILED = "pulse_run_failed"
+    PULSE_NEEDS_INPUT = "pulse_needs_input"
+    PULSE_AUTO_PAUSED = "pulse_auto_paused"
 
 
 class BlobType(str, Enum):
@@ -412,6 +416,9 @@ class OmCeleryQueues:
 
     # Sandbox processing queue
     SANDBOX = "sandbox"
+
+    # Pulse: scheduled workflow runs (consumed only by the pulse_worker service)
+    PULSE = "pulse"
 
 
 class OmRedisLocks:
@@ -585,6 +592,9 @@ class OmCeleryTask:
 
     # Sandbox file sync
     SANDBOX_FILE_SYNC = "sandbox_file_sync"
+
+    # Pulse: execute one scheduled workflow run
+    PULSE_RUN_SCHEDULED_WORKFLOW = "pulse_run_scheduled_workflow"
 
 
 # this needs to correspond to the matching entry in supervisord
