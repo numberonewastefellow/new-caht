@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 
 from om.background.celery.apps.app_base import task_logger
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
-from om.configs.constants import DANSWER_REDIS_FUNCTION_LOCK_PREFIX
+from om.configs.constants import OM_REDIS_FUNCTION_LOCK_PREFIX
 from om.configs.constants import DocumentSource
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryQueues
@@ -93,7 +93,7 @@ def _try_creating_hierarchy_fetching_task(
 
     # Serialize task creation attempts
     lock: RedisLock = r.lock(
-        DANSWER_REDIS_FUNCTION_LOCK_PREFIX + f"hierarchy_fetching_{cc_pair.id}",
+        OM_REDIS_FUNCTION_LOCK_PREFIX + f"hierarchy_fetching_{cc_pair.id}",
         timeout=LOCK_TIMEOUT,
     )
 

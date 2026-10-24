@@ -359,12 +359,12 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${DANSWER_POSTGRES_DATA_DIR:-./postgres_data}
+      device: ${OM_POSTGRES_DATA_DIR:-./postgres_data}
   opensearch_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${DANSWER_OPENSEARCH_DATA_DIR:-./opensearch_data}
+      device: ${OM_OPENSEARCH_DATA_DIR:-./opensearch_data}
   log_store: # for logs that we don't want to lose on container restarts
   minio_data:

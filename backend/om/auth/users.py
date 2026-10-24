@@ -98,8 +98,8 @@ from om.configs.constants import ANONYMOUS_USER_COOKIE_NAME
 from om.configs.constants import ANONYMOUS_USER_EMAIL
 from om.configs.constants import ANONYMOUS_USER_UUID
 from om.configs.constants import AuthType
-from om.configs.constants import DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN
-from om.configs.constants import DANSWER_API_KEY_PREFIX
+from om.configs.constants import OM_API_KEY_DUMMY_EMAIL_DOMAIN
+from om.configs.constants import OM_API_KEY_USER_PREFIX
 from om.configs.constants import FASTAPI_USERS_AUTH_COOKIE_NAME
 from om.configs.constants import MilestoneRecordType
 from om.configs.constants import OmRedisLocks
@@ -153,9 +153,9 @@ def verify_auth_setting() -> None:
 
 
 def get_display_email(email: str | None, space_less: bool = False) -> str:
-    if email and email.endswith(DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN):
+    if email and email.endswith(OM_API_KEY_DUMMY_EMAIL_DOMAIN):
         name = email.split("@")[0]
-        if name == DANSWER_API_KEY_PREFIX + UNNAMED_KEY_PLACEHOLDER:
+        if name == OM_API_KEY_USER_PREFIX + UNNAMED_KEY_PLACEHOLDER:
             return "Unnamed API Key"
 
         if space_less:

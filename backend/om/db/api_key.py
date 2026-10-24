@@ -10,8 +10,8 @@ from om.auth.api_key import ApiKeyDescriptor
 from om.auth.api_key import build_displayable_api_key
 from om.auth.api_key import generate_api_key
 from om.auth.api_key import hash_api_key
-from om.configs.constants import DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN
-from om.configs.constants import DANSWER_API_KEY_PREFIX
+from om.configs.constants import OM_API_KEY_DUMMY_EMAIL_DOMAIN
+from om.configs.constants import OM_API_KEY_USER_PREFIX
 from om.configs.constants import UNNAMED_KEY_PLACEHOLDER
 from om.db.models import ApiKey
 from om.db.models import User
@@ -20,7 +20,7 @@ from shared_configs.contextvars import get_current_tenant_id
 
 
 def get_api_key_email_pattern() -> str:
-    return DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN
+    return OM_API_KEY_DUMMY_EMAIL_DOMAIN
 
 
 def is_api_key_email_address(email: str) -> bool:
@@ -79,7 +79,7 @@ def get_api_key_fake_email(
     name: str,
     unique_id: str,
 ) -> str:
-    return f"{DANSWER_API_KEY_PREFIX}{name}@{unique_id}{DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN}"
+    return f"{OM_API_KEY_USER_PREFIX}{name}@{unique_id}{OM_API_KEY_DUMMY_EMAIL_DOMAIN}"
 
 
 def insert_api_key(

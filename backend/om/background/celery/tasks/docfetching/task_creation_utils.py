@@ -6,7 +6,7 @@ from redis.lock import Lock as RedisLock
 from sqlalchemy.orm import Session
 
 from om.background.celery.apps.app_base import task_logger
-from om.configs.constants import DANSWER_REDIS_FUNCTION_LOCK_PREFIX
+from om.configs.constants import OM_REDIS_FUNCTION_LOCK_PREFIX
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryQueues
 from om.configs.constants import OmCeleryTask
@@ -40,7 +40,7 @@ def try_creating_docfetching_task(
     # we need to serialize any attempt to trigger indexing since it can be triggered
     # either via celery beat or manually (API call)
     lock: RedisLock = r.lock(
-        DANSWER_REDIS_FUNCTION_LOCK_PREFIX + "try_creating_indexing_task",
+        OM_REDIS_FUNCTION_LOCK_PREFIX + "try_creating_indexing_task",
         timeout=LOCK_TIMEOUT,
     )
 

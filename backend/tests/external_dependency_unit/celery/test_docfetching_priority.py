@@ -284,10 +284,10 @@ class TestDocfetchingTaskPriorityWithRealObjects:
         redis_client = get_redis_client(tenant_id=TEST_TENANT_ID)
 
         # Acquire the lock before calling the function
-        from om.configs.constants import DANSWER_REDIS_FUNCTION_LOCK_PREFIX
+        from om.configs.constants import OM_REDIS_FUNCTION_LOCK_PREFIX
 
         lock = redis_client.lock(
-            DANSWER_REDIS_FUNCTION_LOCK_PREFIX + "try_creating_indexing_task",
+            OM_REDIS_FUNCTION_LOCK_PREFIX + "try_creating_indexing_task",
             timeout=30,
         )
 

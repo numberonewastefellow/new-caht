@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     # Not needed if Auth is disabled
     # Or for VertualAI the API key must be replaced with session cookie
-    api_key = os.environ.get("DANSWER_API_KEY")
+    api_key = os.environ.get("OM_API_KEY")
 
     args = parser.parse_args()
     process_question(

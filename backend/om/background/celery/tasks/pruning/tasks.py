@@ -28,7 +28,7 @@ from om.configs.app_configs import JOB_TIMEOUT
 from om.configs.constants import CELERY_GENERIC_BEAT_LOCK_TIMEOUT
 from om.configs.constants import CELERY_PRUNING_LOCK_TIMEOUT
 from om.configs.constants import CELERY_TASK_WAIT_FOR_FENCE_TIMEOUT
-from om.configs.constants import DANSWER_REDIS_FUNCTION_LOCK_PREFIX
+from om.configs.constants import OM_REDIS_FUNCTION_LOCK_PREFIX
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryQueues
 from om.configs.constants import OmCeleryTask
@@ -291,7 +291,7 @@ def try_creating_prune_generator_task(
     # we need to serialize starting pruning since it can be triggered either via
     # celery beat or manually (API call)
     lock: RedisLock = r.lock(
-        DANSWER_REDIS_FUNCTION_LOCK_PREFIX + "try_creating_prune_generator_task",
+        OM_REDIS_FUNCTION_LOCK_PREFIX + "try_creating_prune_generator_task",
         timeout=LOCK_TIMEOUT,
     )
 

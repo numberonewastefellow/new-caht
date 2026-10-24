@@ -16,7 +16,7 @@ from om.auth.invited_users import remove_user_from_invited_users
 from om.auth.schemas import UserRole
 from om.configs.constants import ANONYMOUS_USER_EMAIL
 from om.configs.constants import NO_AUTH_PLACEHOLDER_USER_EMAIL
-from om.db.api_key import DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN
+from om.db.api_key import OM_API_KEY_DUMMY_EMAIL_DOMAIN
 from om.db.models import DocumentSet
 from om.db.models import DocumentSet__User
 from om.db.models import Agent
@@ -151,7 +151,7 @@ def _get_accepted_user_where_clause(
     is_active_col: KeyedColumnElement[Any] = User.__table__.c.is_active
 
     where_clause: list[ColumnElement[bool]] = [
-        expression.not_(email_col.endswith(DANSWER_API_KEY_DUMMY_EMAIL_DOMAIN)),
+        expression.not_(email_col.endswith(OM_API_KEY_DUMMY_EMAIL_DOMAIN)),
         # Exclude system users (anonymous user, no-auth placeholder)
         email_col != ANONYMOUS_USER_EMAIL,
         email_col != NO_AUTH_PLACEHOLDER_USER_EMAIL,

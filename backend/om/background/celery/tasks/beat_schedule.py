@@ -263,7 +263,7 @@ def make_cloud_generator_task(task: dict[str, Any]) -> dict[str, Any]:
 
 
 # tasks that only run in the cloud and are system wide
-# the name attribute must start with ONYX_CLOUD_CELERY_TASK_PREFIX = "cloud" to be seen
+# the name attribute must start with "cloud" to be seen
 # by the DynamicTenantScheduler as system wide task and not a per tenant task
 beat_cloud_tasks: list[dict] = [
     # cloud specific tasks

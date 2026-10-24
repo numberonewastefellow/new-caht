@@ -98,7 +98,7 @@ def manage_data_directories(env_name: str, base_path: str) -> None:
     # Use the user's home directory as the base path
     target_path = os.path.join(os.path.expanduser(base_path), env_name)
     directories = {
-        "DANSWER_POSTGRES_DATA_DIR": os.path.join(target_path, "postgres/"),
+        "OM_POSTGRES_DATA_DIR": os.path.join(target_path, "postgres/"),
     }
 
     # Create directories if they don't exist
