@@ -24,9 +24,11 @@ from dataclasses import field
 from datetime import datetime
 from datetime import timedelta
 from pathlib import Path
+from uuid import UUID
 
 from sqlalchemy.orm import Session
 
+from om.chat.chat_processing_checker import set_processing_status
 from om.configs.pulse_configs import PULSE_CLAIM_BATCH_SIZE
 from om.configs.pulse_configs import PULSE_MISFIRE_GRACE_SECONDS
 from om.configs.pulse_configs import PULSE_PENDING_RESEND_SECONDS
@@ -216,6 +218,49 @@ def _resend_stale_pending(tenant_id: str) -> int:
     return len(ids)
 
 
+def interrupt_run(
+    db_session: Session,
+    tenant_id: str,
+    *,
+    run_id: int,
+    schedule_id: int,
+    chat_session_id: UUID | None,
+    error: str,
+) -> bool:
+    """Finalise a run whose worker died: `interrupted` (never replayed), failure
+    streak + notifications, failed workflow_execution, an explanation in the chat,
+    and the chat's stale "processing" flag cleared. Returns True if this call did it."""
+    schedule = get_pulse_schedule(db_session, schedule_id)
+    if schedule is None:
+        return False
+    status = finalize_run(
+        db_session,
+        schedule,
+        run_id,
+        status=RUN_INTERRUPTED,
+        error=error,
+        from_statuses=(RUN_RUNNING,),
+    )
+    if status != RUN_INTERRUPTED:
+        return False
+    if chat_session_id is not None:
+        execution = get_latest_execution_by_chat_session(db_session, chat_session_id)
+        if execution is not None and execution.status == "running":
+            execution.status = "failed"
+            execution.error_message = "Interrupted: worker stopped"
+            db_session.commit()
+        fill_empty_assistant_message(db_session, chat_session_id, INTERRUPTED_MESSAGE)
+        # The dead worker never cleared the chat's "processing" flag (30 min TTL);
+        # clear it so the chat page doesn't show "loading" forever.
+        try:
+            set_processing_status(
+                chat_session_id, get_redis_client(tenant_id=tenant_id), False
+            )
+        except Exception:
+            logger.exception("Pulse: failed to clear chat processing flag")
+    return True
+
+
 def _reap_stale_running(tenant_id: str) -> int:
     reaped = 0
     with get_session_with_tenant(tenant_id=tenant_id) as db_session:
@@ -225,31 +270,15 @@ def _reap_stale_running(tenant_id: str) -> int:
         db_session.commit()  # release row locks; finalize_run re-checks status
 
         for run_id, schedule_id, chat_session_id in stale_info:
-            schedule = get_pulse_schedule(db_session, schedule_id)
-            if schedule is None:
-                continue
-            status = finalize_run(
+            if interrupt_run(
                 db_session,
-                schedule,
-                run_id,
-                status=RUN_INTERRUPTED,
+                tenant_id,
+                run_id=run_id,
+                schedule_id=schedule_id,
+                chat_session_id=chat_session_id,
                 error="Worker stopped responding (no heartbeat); run was not retried",
-                from_statuses=(RUN_RUNNING,),
-            )
-            if status != RUN_INTERRUPTED:
-                continue
-            reaped += 1
-            if chat_session_id is not None:
-                execution = get_latest_execution_by_chat_session(
-                    db_session, chat_session_id
-                )
-                if execution is not None and execution.status == "running":
-                    execution.status = "failed"
-                    execution.error_message = "Interrupted: worker stopped"
-                    db_session.commit()
-                fill_empty_assistant_message(
-                    db_session, chat_session_id, INTERRUPTED_MESSAGE
-                )
+            ):
+                reaped += 1
     if reaped:
         logger.warning(f"Pulse: reaped {reaped} interrupted run(s) in {tenant_id}")
     return reaped

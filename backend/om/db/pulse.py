@@ -529,22 +529,17 @@ def record_schedule_outcome(
     return failures, auto_paused
 
 
-def interrupt_runs_for_host(db_session: Session, hostname: str) -> list[int]:
-    """Mark this host's running runs interrupted (graceful worker shutdown)."""
-    result = db_session.execute(
-        update(PulseRun)
-        .where(PulseRun.status == RUN_RUNNING)
-        .where(PulseRun.worker_hostname == hostname)
-        .values(
-            status=RUN_INTERRUPTED,
-            finished_at=func.now(),
-            error="Worker shut down while the run was in progress",
+def get_running_runs_for_host(db_session: Session, hostname: str) -> list[PulseRun]:
+    """Runs this worker node still owns (used after its pool stopped)."""
+    return list(
+        db_session.execute(
+            select(PulseRun)
+            .where(PulseRun.status == RUN_RUNNING)
+            .where(PulseRun.worker_hostname == hostname)
         )
-        .returning(PulseRun.id)
+        .scalars()
+        .all()
     )
-    ids = [row[0] for row in result.all()]
-    db_session.commit()
-    return ids
 
 
 def latest_assistant_message(
@@ -559,12 +554,22 @@ def latest_assistant_message(
     ).scalar_one_or_none()
 
 
+# Text `reserve_message_id` (om/db/chat.py) stores in the assistant slot until the
+# answer is saved; a run that died never replaced it.
+RESERVED_ASSISTANT_PLACEHOLDER = (
+    "Response was terminated prior to completion, try regenerating."
+)
+
+
 def fill_empty_assistant_message(
     db_session: Session, chat_session_id: UUID, text: str
 ) -> None:
     """Give a run that died mid-flight a visible explanation in its chat."""
     message = latest_assistant_message(db_session, chat_session_id)
-    if message is not None and not (message.message or "").strip():
+    if message is None:
+        return
+    current = (message.message or "").strip()
+    if not current or current == RESERVED_ASSISTANT_PLACEHOLDER:
         message.message = text
         db_session.commit()
 
