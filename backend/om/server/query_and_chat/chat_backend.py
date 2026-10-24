@@ -149,6 +149,9 @@ def get_user_chat_sessions(
     workspace_id: int | None = None,
     only_non_workspace_chats: bool = True,
     include_failed_chats: bool = False,
+    # Pulse scheduled-run sessions live in the sidebar's "Scheduled" section;
+    # they are excluded here by default so frequent schedules don't flood "Your chats".
+    include_scheduled: bool = False,
 ) -> ChatSessionsResponse:
     user_id = user.id
 
@@ -160,6 +163,7 @@ def get_user_chat_sessions(
             workspace_id=workspace_id,
             only_non_workspace_chats=only_non_workspace_chats,
             include_failed_chats=include_failed_chats,
+            include_pulse_runs=include_scheduled,
         )
 
     except ValueError:
@@ -176,6 +180,7 @@ def get_user_chat_sessions(
                 shared_status=chat.shared_status,
                 current_alternate_model=chat.current_alternate_model,
                 current_temperature_override=chat.temperature_override,
+                pulse_schedule_id=chat.pulse_schedule_id,
             )
             for chat in chat_sessions
         ]
@@ -349,6 +354,7 @@ def get_chat_session(
         owner_name=chat_session.user.personal_name if chat_session.user else None,
         # Packets are now directly serialized as Packet Pydantic models
         packets=replay_packet_lists,
+        pulse_schedule_id=chat_session.pulse_schedule_id,
     )
 
 
