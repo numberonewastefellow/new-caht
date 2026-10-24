@@ -105,7 +105,7 @@ def get_chat_sessions_by_user(
     stmt = select(ChatSession).where(ChatSession.user_id == user_id)
 
     if not include_ombot_flows:
-        stmt = stmt.where(ChatSession.onyxbot_flow.is_(False))
+        stmt = stmt.where(ChatSession.ombot_flow.is_(False))
 
     stmt = stmt.order_by(desc(ChatSession.time_updated))
 
@@ -184,7 +184,7 @@ def create_chat_session(
     agent_id: int | None,  # Can be none if temporary agent is used
     llm_override: LLMOverride | None = None,
     prompt_override: PromptOverride | None = None,
-    onyxbot_flow: bool = False,
+    ombot_flow: bool = False,
     slack_thread_id: str | None = None,
     workspace_id: int | None = None,
 ) -> ChatSession:
@@ -194,7 +194,7 @@ def create_chat_session(
         description=description,
         llm_override=llm_override,
         prompt_override=prompt_override,
-        onyxbot_flow=onyxbot_flow,
+        ombot_flow=ombot_flow,
         slack_thread_id=slack_thread_id,
         workspace_id=workspace_id,
     )
@@ -241,7 +241,7 @@ def duplicate_chat_session_for_user_from_slack(
         llm_override=chat_session.llm_override,
         prompt_override=chat_session.prompt_override,
         # Chat is in UI now so this is false
-        onyxbot_flow=False,
+        ombot_flow=False,
         # Maybe we want this in the future to track if it was created from Slack
         slack_thread_id=None,
     )
@@ -278,7 +278,7 @@ def delete_all_chat_sessions_for_user(
 
     chat_sessions = (
         db_session.query(ChatSession)
-        .filter(ChatSession.user_id == user_id, ChatSession.onyxbot_flow.is_(False))
+        .filter(ChatSession.user_id == user_id, ChatSession.ombot_flow.is_(False))
         .all()
     )
 
@@ -287,13 +287,13 @@ def delete_all_chat_sessions_for_user(
             delete_messages_and_files_from_chat_session(chat_session.id, db_session)
         db_session.execute(
             delete(ChatSession).where(
-                ChatSession.user_id == user_id, ChatSession.onyxbot_flow.is_(False)
+                ChatSession.user_id == user_id, ChatSession.ombot_flow.is_(False)
             )
         )
     else:
         db_session.execute(
             update(ChatSession)
-            .where(ChatSession.user_id == user_id, ChatSession.onyxbot_flow.is_(False))
+            .where(ChatSession.user_id == user_id, ChatSession.ombot_flow.is_(False))
             .values(deleted=True)
         )
 

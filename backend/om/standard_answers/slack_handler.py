@@ -88,7 +88,7 @@ def _record_synthetic_chat(
             description=None,
             user_id=None,
             agent_id=slack_channel_config.agent_id,
-            onyxbot_flow=True,
+            ombot_flow=True,
             slack_thread_id=slack_thread_id,
         )
 

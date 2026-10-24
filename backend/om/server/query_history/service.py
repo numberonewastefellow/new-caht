@@ -131,7 +131,7 @@ class QueryHistoryService:
             agent_name=session.agent.name if session.agent else None,
             time_created=session.time_created,
             flow_type=(
-                SessionType.SLACK if session.onyxbot_flow else SessionType.CHAT
+                SessionType.SLACK if session.ombot_flow else SessionType.CHAT
             ),
             messages=messages,
         )
@@ -246,7 +246,7 @@ class QueryHistoryService:
             time_created=session.time_created,
             feedback=self._session_feedback(messages),
             flow_type=(
-                SessionType.SLACK if session.onyxbot_flow else SessionType.CHAT
+                SessionType.SLACK if session.ombot_flow else SessionType.CHAT
             ),
             message_count=len(
                 [m for m in messages if m.message_type != MessageType.SYSTEM]
@@ -304,7 +304,7 @@ class QueryHistoryService:
         agent_name = session.agent.name if session.agent else ""
         flow_type = (
             SessionType.SLACK.value
-            if session.onyxbot_flow
+            if session.ombot_flow
             else SessionType.CHAT.value
         )
 

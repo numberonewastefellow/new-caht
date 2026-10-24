@@ -46,7 +46,7 @@ def search_chat_sessions(
         if user_id is not None:
             stmt = stmt.where(ChatSession.user_id == user_id)
         if not include_ombot_flows:
-            stmt = stmt.where(ChatSession.onyxbot_flow.is_(False))
+            stmt = stmt.where(ChatSession.ombot_flow.is_(False))
         if not include_deleted:
             stmt = stmt.where(ChatSession.deleted.is_(False))
 
@@ -66,7 +66,7 @@ def search_chat_sessions(
     if user_id is not None:
         base_conditions.append(ChatSession.user_id == user_id)
     if not include_ombot_flows:
-        base_conditions.append(ChatSession.onyxbot_flow.is_(False))
+        base_conditions.append(ChatSession.ombot_flow.is_(False))
     if not include_deleted:
         base_conditions.append(ChatSession.deleted.is_(False))
 

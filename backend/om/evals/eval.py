@@ -331,7 +331,7 @@ def _get_multi_turn_answer_with_tools(
                 description="Multi-turn eval session",
                 user_id=user_id,
                 agent_id=DEFAULT_AGENT_ID,
-                onyxbot_flow=True,
+                ombot_flow=True,
             )
             chat_session_id = chat_session.id
 

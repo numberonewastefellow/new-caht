@@ -20,8 +20,8 @@ FROM file_record;
 -- Key/value store rows (Postgres-backed; Redis only caches these)
 SELECT count(*) AS kv_rows FROM key_value_store;
 
--- Chat sessions started from the bot (onyxbot_flow column, renamed in Phase 3)
-SELECT count(*) FILTER (WHERE onyxbot_flow) AS bot_sessions, count(*) AS sessions FROM chat_session;
+-- Chat sessions started from the bot (ombot_flow column, renamed in Phase 3)
+SELECT count(*) FILTER (WHERE ombot_flow) AS bot_sessions, count(*) AS sessions FROM chat_session;
 
 -- Anything else in text columns that embeds the brand (spot check, extend as needed)
 SELECT count(*) AS agents_mentioning_onyx FROM agent WHERE system_prompt ILIKE '%onyx%' OR description ILIKE '%onyx%';
