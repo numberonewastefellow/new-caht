@@ -49,7 +49,7 @@ from om.db.pulse import DISABLED_COMPLETED_ONCE
 from om.db.pulse import fill_empty_assistant_message
 from om.db.pulse import get_pulse_schedule
 from om.db.pulse import get_sessions_to_expire
-from om.db.pulse import get_stale_pending_runs
+from om.db.pulse import claim_stale_pending_runs
 from om.db.pulse import get_stale_running_runs
 from om.db.pulse import has_active_run
 from om.db.pulse import insert_scheduled_run
@@ -61,6 +61,7 @@ from om.db.pulse import RUN_PENDING
 from om.db.pulse import RUN_RUNNING
 from om.db.pulse import RUN_SKIPPED
 from om.db.pulse import soft_delete_sessions
+from om.db.pulse import TRIGGER_SCHEDULED
 from om.db.pulse import try_acquire_tick_lock
 from om.db.workflow import get_latest_execution_by_chat_session
 from om.pulse.dispatch import enqueue_pulse_run
@@ -68,6 +69,7 @@ from om.pulse.outcome import finalize_run
 from om.pulse.spec import spec_from_schedule
 from om.pulse.timing import decide_fire
 from om.pulse.timing import jitter_seconds
+from om.pulse.timing import max_start_delay_seconds
 from om.pulse.timing import nominal_period_seconds
 from om.redis.redis_pool import get_redis_client
 from om.utils.logger import setup_logger
@@ -129,6 +131,11 @@ def _process_schedule(
 
     fire_slot = decision.fire_slot
     if fire_slot is not None:
+        if has_active_run(db_session, schedule.id) and spec.schedule_type == "once":
+            # A one-time schedule has a single slot: keep it due (retried every tick)
+            # rather than consuming it as `skipped`; it becomes `missed` after the grace.
+            stats.deferred_capacity += 1
+            return capacity
         if has_active_run(db_session, schedule.id):
             insert_scheduled_run(
                 db_session,
@@ -177,9 +184,13 @@ def _process_schedule(
 def tick_tenant(tenant_id: str) -> TickStats:
     stats = TickStats()
     with get_session_with_tenant(tenant_id=tenant_id) as db_session:
-        if not try_acquire_tick_lock(db_session):
+        if not try_acquire_tick_lock(db_session, tenant_id):
             db_session.rollback()
             stats.locked_out = True
+            # Sweeper + reaper are safe concurrently (SKIP LOCKED + status CAS), so a
+            # replica that lost the tick lock still helps with them.
+            stats.resent = _resend_stale_pending(tenant_id)
+            stats.reaped = _reap_stale_running(tenant_id)
             return stats
 
         now = db_now(db_session)
@@ -204,10 +215,39 @@ def tick_tenant(tenant_id: str) -> TickStats:
 
 
 def _resend_stale_pending(tenant_id: str) -> int:
+    """Outbox sweeper: re-send runs whose enqueue was lost (or that still wait in the
+    queue), at most once per PULSE_PENDING_RESEND_SECONDS per run. Scheduled runs
+    that are already too late to start are recorded as `missed` instead."""
+    ids: list[int] = []
+    expired: list[tuple[int, int]] = []
     with get_session_with_tenant(tenant_id=tenant_id) as db_session:
-        cutoff = db_now(db_session) - timedelta(seconds=PULSE_PENDING_RESEND_SECONDS)
-        stale = get_stale_pending_runs(db_session, cutoff)
-        ids = [run.id for run in stale]
+        now = db_now(db_session)
+        cutoff = now - timedelta(seconds=PULSE_PENDING_RESEND_SECONDS)
+        for run in claim_stale_pending_runs(db_session, cutoff):
+            schedule = run.schedule
+            if run.trigger == TRIGGER_SCHEDULED and schedule is not None:
+                limit = max_start_delay_seconds(
+                    spec_from_schedule(schedule),
+                    misfire_grace_seconds=PULSE_MISFIRE_GRACE_SECONDS,
+                    now=now,
+                )
+                if (now - run.scheduled_for).total_seconds() > limit:
+                    expired.append((run.id, schedule.id))
+                    continue
+            ids.append(run.id)
+        db_session.commit()  # persists last_enqueued_at before sending (outbox)
+
+        for run_id, schedule_id in expired:
+            schedule = get_pulse_schedule(db_session, schedule_id)
+            if schedule is not None:
+                finalize_run(
+                    db_session,
+                    schedule,
+                    run_id,
+                    status=RUN_MISSED,
+                    skip_reason="no worker picked it up in time",
+                    from_statuses=(RUN_PENDING,),
+                )
     for run_id in ids:
         try:
             enqueue_pulse_run(run_id, tenant_id)

@@ -18,6 +18,13 @@ PULSE_CLAIM_BATCH_SIZE = _int_env("PULSE_CLAIM_BATCH_SIZE", 100)
 # Guard rails for users
 PULSE_MIN_INTERVAL_SECONDS = _int_env("PULSE_MIN_INTERVAL_SECONDS", 300)
 PULSE_MAX_SCHEDULES_PER_USER = _int_env("PULSE_MAX_SCHEDULES_PER_USER", 20)
+# Paused schedules count here too, so "create many paused + Run now" can't bypass limits
+PULSE_MAX_TOTAL_SCHEDULES_PER_USER = _int_env("PULSE_MAX_TOTAL_SCHEDULES_PER_USER", 50)
+# Run now: per-schedule cooldown and per-user cap on simultaneously pending/running runs
+PULSE_MANUAL_RUN_COOLDOWN_SECONDS = _int_env("PULSE_MANUAL_RUN_COOLDOWN_SECONDS", 30)
+PULSE_USER_MAX_ACTIVE_RUNS = _int_env("PULSE_USER_MAX_ACTIVE_RUNS", 3)
+# Hard ceiling on a single run, whatever the workflow's own timeout says
+PULSE_MAX_RUN_SECONDS = _int_env("PULSE_MAX_RUN_SECONDS", 1800)
 # Max concurrently pending/running scheduled runs per tenant (backpressure)
 PULSE_TENANT_MAX_CONCURRENT_RUNS = _int_env("PULSE_TENANT_MAX_CONCURRENT_RUNS", 8)
 

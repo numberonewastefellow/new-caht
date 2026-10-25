@@ -5147,6 +5147,10 @@ class PulseRun(Base):
         DateTime(timezone=True), nullable=True
     )
     duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # Last time the outbox sweeper re-sent this (pending) run to the queue
+    last_enqueued_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     # Host that ran it, so a shutting-down worker can interrupt its own runs
     worker_hostname: Mapped[str | None] = mapped_column(String, nullable=True)
 

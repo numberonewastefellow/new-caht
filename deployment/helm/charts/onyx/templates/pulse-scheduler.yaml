@@ -40,8 +40,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "onyx.serviceAccountName" . }}
+      automountServiceAccountToken: false
       securityContext:
-        {{- toYaml (.Values.pulse.podSecurityContext | default .Values.celery_shared.podSecurityContext) | nindent 8 }}
+        {{- toYaml .Values.pulse.podSecurityContext | nindent 8 }}
       {{- with .Values.pulse.scheduler.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ . }}
       {{- end }}
@@ -60,7 +61,7 @@ spec:
       containers:
         - name: pulse-scheduler
           securityContext:
-            {{- toYaml (.Values.pulse.securityContext | default .Values.celery_shared.securityContext) | nindent 12 }}
+            {{- toYaml .Values.pulse.securityContext | nindent 12 }}
           image: "{{ .Values.pulse.image.repository }}:{{ .Values.pulse.image.tag | default .Values.global.version }}"
           imagePullPolicy: {{ .Values.global.pullPolicy }}
           command: ["/app/scripts/pulse_entrypoint.sh"]

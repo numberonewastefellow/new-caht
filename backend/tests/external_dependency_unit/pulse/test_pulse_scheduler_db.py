@@ -274,6 +274,57 @@ def test_outbox_resends_stale_pending(
     assert run.id in [rid for rid, _ in enqueued]
 
 
+def test_outbox_resend_is_throttled_per_run(
+    db_session: Session, make_schedule, enqueued, tenant_context  # noqa: ANN001
+) -> None:
+    schedule = make_schedule(enabled=False)
+    run = create_manual_run(db_session, schedule.id)
+    run.created_at = db_now(db_session) - dt.timedelta(minutes=10)
+    db_session.commit()
+    tenant = get_current_tenant_id()
+    scheduler_mod._resend_stale_pending(tenant)
+    scheduler_mod._resend_stale_pending(tenant)  # immediately again (another replica)
+    assert [rid for rid, _ in enqueued].count(run.id) == 1
+
+
+def test_outbox_marks_too_late_scheduled_run_missed(
+    db_session: Session, make_schedule, enqueued, tenant_context  # noqa: ANN001
+) -> None:
+    schedule = make_schedule(enabled=False, interval_seconds=600)
+    old = db_now(db_session) - dt.timedelta(hours=2)
+    db_session.add(
+        PulseRun(
+            schedule_id=schedule.id,
+            scheduled_for=old,
+            trigger="scheduled",
+            status=RUN_PENDING,
+            created_at=old,
+        )
+    )
+    db_session.commit()
+    scheduler_mod._resend_stale_pending(get_current_tenant_id())
+    runs = _runs(db_session, schedule.id)
+    assert [r.status for r in runs] == [RUN_MISSED]
+    assert enqueued == []
+
+
+def test_once_schedule_waits_for_active_run_instead_of_skipping(
+    db_session: Session, make_schedule, enqueued, tenant_context  # noqa: ANN001
+) -> None:
+    now = db_now(db_session)
+    schedule = make_schedule(
+        schedule_type="once",
+        interval_seconds=None,
+        run_at=now - dt.timedelta(seconds=2),
+        next_run_at=now - dt.timedelta(seconds=2),
+    )
+    create_manual_run(db_session, schedule.id)  # active
+    scheduler_mod.tick_tenant(get_current_tenant_id())
+    db_session.refresh(schedule)
+    assert schedule.enabled is True and schedule.next_run_at is not None
+    assert all(r.status != RUN_SKIPPED for r in _runs(db_session, schedule.id))
+
+
 def test_reaper_interrupts_dead_run_and_counts_failure(
     db_session: Session, make_schedule, tenant_context  # noqa: ANN001
 ) -> None:
@@ -353,3 +404,16 @@ def test_retention_keeps_newest_and_exempts_engaged_sessions(
     assert replied.id not in to_expire  # engaged
     assert shared.id not in to_expire  # shared
     assert oldest.id in to_expire
+
+    # An unanswered "needs input" run chat is still actionable -> kept
+    db_session.add(
+        PulseRun(
+            schedule_id=schedule.id,
+            scheduled_for=base,
+            trigger="manual",
+            status="needs_input",
+            chat_session_id=oldest.id,
+        )
+    )
+    db_session.commit()
+    assert oldest.id not in set(get_sessions_to_expire(db_session, schedule))

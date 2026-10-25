@@ -36,14 +36,30 @@ slots; killing one replica → the other fired the next slots on time.
 | Scheduler down < grace (300s) | Missed slot runs late, once |
 | Scheduler down > grace | One `missed` row, then resumes at the next slot (never a backlog) |
 | Worker killed mid-run | Heartbeat stops → after `PULSE_REAP_AFTER_SECONDS` (90s) the run is `interrupted`, its workflow execution failed, its chat gets an explanation, the chat "processing" flag is cleared. Not retried. |
-| Worker shut down gracefully | Celery warm shutdown lets runs finish (`stop_grace_period: 1900s`); anything still running when the pool stops is interrupted immediately |
-| Run exceeds workflow `timeout_seconds` + `PULSE_DEADLINE_MARGIN_SECONDS` | Watchdog sets the chat stop fence → run `timed_out` (Celery soft limits don't work on thread pools) |
+| Worker shut down gracefully | Celery's thread pool waits for running runs (`stop_grace_period: 1900s`); a run cut off by SIGKILL is reaped like a crash |
+| Run exceeds `min(timeout_seconds, PULSE_MAX_RUN_SECONDS)` + margin | Watchdog sets the chat stop fence → run `timed_out` (Celery soft limits don't work on thread pools). If the engine is stuck where it never checks the fence, the watchdog finalises the run itself at deadline + 2 × margin so the schedule is never blocked |
+| Run reaped while still alive (e.g. heartbeats stalled) | The next heartbeat sees the run is no longer `running` and stops the workflow |
+| Unexpected error inside the worker | Run `failed` with a reference id (details in the worker log), never left `running` |
 | Late redelivery (e.g. Redis visibility timeout) | Worker sees the run is stale → `missed` |
 | Previous run still active | New slot recorded as `skipped` |
 | Tenant at `PULSE_TENANT_MAX_CONCURRENT_RUNS` | Slot stays due and retries next tick (becomes `missed` after the grace) |
 | Owner deactivated / workflow deleted / access revoked | Run `skipped`, schedule disabled (`access_revoked` / `workflow_deleted`) |
 | Rate-limit policy exceeded | Run `skipped` (same policy engine as chat) |
 | 5 failures in a row (`PULSE_MAX_CONSECUTIVE_FAILURES`) | Schedule auto-paused (`auto_paused_failures`) + notification |
+
+## Security model
+- Runs execute **as the schedule owner** (their document access, files and connected
+  accounts). Therefore only the owner can edit what runs, resume, duplicate or Run now.
+  Admins can list everyone's schedules (prompts and outputs hidden), pause and delete.
+- Every run re-checks the owner like an API request: active, not LIMITED, verified (when
+  required), unexpired OIDC session, access to the workflow and its wrapper agent.
+- Abuse limits: total + active schedule caps (serialised per user), min interval,
+  Run-now cooldown, per-user and per-tenant active-run caps (429), the tenant rate-limit
+  policies (chat token budgets) for both Run now and scheduled runs.
+- Helm: Pulse pods are non-privileged (`allowPrivilegeEscalation: false`, all
+  capabilities dropped) and don't mount a service-account token. Known follow-ups: the
+  image still runs as root like the backend image; step agents are not re-checked
+  individually (same as interactive workflow runs).
 
 ## Configuration (env)
 | Variable | Default | Used by |
@@ -52,6 +68,10 @@ slots; killing one replica → the other fired the next slots on time.
 | `PULSE_CLAIM_BATCH_SIZE` | 100 | scheduler |
 | `PULSE_MIN_INTERVAL_SECONDS` | 300 | api |
 | `PULSE_MAX_SCHEDULES_PER_USER` | 20 (active) | api |
+| `PULSE_MAX_TOTAL_SCHEDULES_PER_USER` | 50 (incl. paused) | api |
+| `PULSE_MANUAL_RUN_COOLDOWN_SECONDS` | 30 (Run now, per schedule) | api |
+| `PULSE_USER_MAX_ACTIVE_RUNS` | 3 (Run now, per user) | api |
+| `PULSE_MAX_RUN_SECONDS` | 1800 (hard cap per run) | worker |
 | `PULSE_TENANT_MAX_CONCURRENT_RUNS` | 8 | scheduler |
 | `PULSE_MISFIRE_GRACE_SECONDS` | 300 | scheduler, worker |
 | `PULSE_MAX_CONSECUTIVE_FAILURES` | 5 (0 = never) | worker, scheduler |

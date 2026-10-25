@@ -123,6 +123,7 @@ def upgrade() -> None:
         sa.Column("heartbeat_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("finished_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("duration_ms", sa.Integer(), nullable=True),
+        sa.Column("last_enqueued_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("worker_hostname", sa.String(), nullable=True),
         sa.Column("output_preview", sa.Text(), nullable=True),
         sa.Column("error", sa.Text(), nullable=True),

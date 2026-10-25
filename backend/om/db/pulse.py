@@ -278,6 +278,16 @@ def count_active_runs(db_session: Session) -> int:
     ).scalar_one()
 
 
+def lock_schedule_row(db_session: Session, schedule_id: int) -> None:
+    """Row-lock a schedule for the rest of the transaction (serialises run-now /
+    edits against each other and against a scheduler tick)."""
+    db_session.execute(
+        select(PulseSchedule.id)
+        .where(PulseSchedule.id == schedule_id)
+        .with_for_update()
+    )
+
+
 def create_manual_run(db_session: Session, schedule_id: int) -> PulseRun:
     run = PulseRun(
         schedule_id=schedule_id,
@@ -296,11 +306,49 @@ def create_manual_run(db_session: Session, schedule_id: int) -> PulseRun:
 # ========================
 
 
-def try_acquire_tick_lock(db_session: Session) -> bool:
-    """Per-tenant, transaction-scoped advisory lock. Released on commit/rollback."""
+def try_acquire_tick_lock(db_session: Session, tenant_id: str) -> bool:
+    """Per-tenant, transaction-scoped advisory lock. Released on commit/rollback.
+
+    Advisory locks are database-wide (tenants are schemas of one database), so the
+    tenant id is part of the key: a slow tick for one tenant never blocks another."""
     return bool(
-        db_session.execute(_TICK_LOCK_SQL, {"key": TICK_LOCK_KEY}).scalar_one()
+        db_session.execute(
+            _TICK_LOCK_SQL, {"key": f"{TICK_LOCK_KEY}:{tenant_id}"}
+        ).scalar_one()
     )
+
+
+def lock_user_schedules(db_session: Session, user_id: UUID) -> None:
+    """Serialise quota checks for one user (transaction-scoped advisory lock)."""
+    db_session.execute(
+        text("SELECT pg_advisory_xact_lock(hashtext(:key))"),
+        {"key": f"om:pulse:user:{user_id}"},
+    )
+
+
+def count_schedules_for_user(db_session: Session, user_id: UUID) -> int:
+    return db_session.execute(
+        select(func.count(PulseSchedule.id)).where(PulseSchedule.user_id == user_id)
+    ).scalar_one()
+
+
+def count_active_runs_for_user(db_session: Session, user_id: UUID) -> int:
+    return db_session.execute(
+        select(func.count(PulseRun.id))
+        .join(PulseSchedule, PulseSchedule.id == PulseRun.schedule_id)
+        .where(PulseSchedule.user_id == user_id)
+        .where(PulseRun.status.in_(ACTIVE_RUN_STATUSES))
+    ).scalar_one()
+
+
+def last_manual_run_created_at(
+    db_session: Session, schedule_id: int
+) -> datetime.datetime | None:
+    return db_session.execute(
+        select(func.max(PulseRun.created_at))
+        .where(PulseRun.schedule_id == schedule_id)
+        .where(PulseRun.trigger == TRIGGER_MANUAL)
+    ).scalar_one_or_none()
 
 
 def claim_due_schedules(
@@ -351,20 +399,34 @@ def insert_scheduled_run(
     return db_session.execute(stmt).scalar_one_or_none()
 
 
-def get_stale_pending_runs(
+def claim_stale_pending_runs(
     db_session: Session, older_than: datetime.datetime, limit: int = 200
 ) -> list[PulseRun]:
-    return list(
+    """Pending runs not (re)sent since `older_than`. Row-locked (SKIP LOCKED) and
+    stamped with last_enqueued_at in the caller's transaction, so each replica
+    re-sends a given run at most once per PULSE_PENDING_RESEND_SECONDS."""
+    runs = list(
         db_session.execute(
             select(PulseRun)
             .where(PulseRun.status == RUN_PENDING)
-            .where(PulseRun.created_at < older_than)
+            .where(
+                func.coalesce(PulseRun.last_enqueued_at, PulseRun.created_at)
+                < older_than
+            )
             .order_by(PulseRun.id)
             .limit(limit)
+            .with_for_update(skip_locked=True)
         )
         .scalars()
         .all()
     )
+    if runs:
+        db_session.execute(
+            update(PulseRun)
+            .where(PulseRun.id.in_([r.id for r in runs]))
+            .values(last_enqueued_at=func.now())
+        )
+    return runs
 
 
 def get_stale_running_runs(
@@ -417,14 +479,19 @@ def start_run(db_session: Session, run_id: int, hostname: str) -> PulseRun | Non
     return run
 
 
-def heartbeat_run(db_session: Session, run_id: int) -> None:
-    db_session.execute(
+def heartbeat_run(db_session: Session, run_id: int) -> bool:
+    """Returns False if the run is no longer `running` (reaped, finalised elsewhere,
+    or its schedule was deleted) so the worker can stop the workflow."""
+    result = db_session.execute(
         update(PulseRun)
         .where(PulseRun.id == run_id)
         .where(PulseRun.status == RUN_RUNNING)
         .values(heartbeat_at=func.now())
+        .returning(PulseRun.id)
     )
+    still_running = result.scalar_one_or_none() is not None
     db_session.commit()
+    return still_running
 
 
 def finish_run(
@@ -495,10 +562,13 @@ def record_schedule_outcome(
     Returns (consecutive_failures, auto_paused_now). Row-locked so concurrent
     finishes for the same schedule (manual + scheduled) do not lose updates.
     """
+    # populate_existing: sessions use expire_on_commit=False, so without it the locked
+    # SELECT would hand back a stale cached object instead of the row we just locked.
     schedule = db_session.execute(
         select(PulseSchedule)
         .where(PulseSchedule.id == schedule_id)
         .with_for_update()
+        .execution_options(populate_existing=True)
     ).scalar_one_or_none()
     if schedule is None:
         db_session.commit()
@@ -606,12 +676,21 @@ def get_sessions_to_expire(
         .where(ChatSession.deleted.is_(False))
         .subquery()
     )
+    waiting_for_input = (
+        select(PulseRun.id)
+        .where(PulseRun.chat_session_id == ChatSession.id)
+        .where(PulseRun.status == RUN_NEEDS_INPUT)
+        .correlate(ChatSession)
+        .exists()
+    )
     stmt = (
         select(ChatSession.id)
         .join(ranked, ranked.c.id == ChatSession.id)
         .where(ranked.c.rn > keep)
         .where(ChatSession.shared_status != ChatSessionSharedStatus.PUBLIC)
         .where(user_msg_count <= 1)
+        # an unanswered human-in-the-loop question is still actionable
+        .where(~waiting_for_input)
         .limit(limit)
     )
     return [row[0] for row in db_session.execute(stmt).all()]

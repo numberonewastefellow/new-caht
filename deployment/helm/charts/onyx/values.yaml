@@ -795,9 +795,14 @@ pulse:
   image:
     repository: om/pulse
     tag: ""  # Overrides the image tag whose default is global.version.
-  # Pod/container security contexts; when empty, celery_shared's are used.
+  # Pod/container security contexts. Pulse runs unattended LLM/tool pipelines, so it
+  # is never privileged and does NOT inherit celery_shared's privileged root context.
   podSecurityContext: {}
-  securityContext: {}
+  securityContext:
+    privileged: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
   # Extra environment variables for BOTH pulse roles (name: value).
   env: {}
   scheduler:

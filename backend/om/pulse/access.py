@@ -1,18 +1,24 @@
 """Access rules for Pulse schedules (shared by the API and the worker).
 
 A schedule may run only if:
-  * its owner still exists and is active,
+  * its owner still exists, is active, is not LIMITED, is verified (when required) and
+    has an unexpired OIDC session (same gates as `current_user` for API requests),
   * the workflow exists (not deleted), has steps, and is public or owned by the owner
     (same rule as POST /workflow/{id}/run),
   * the owner can use the workflow's wrapper agent.
 The worker re-checks this on every run, so revoking access stops a schedule.
+Step agents are not individually re-checked — identical to interactive workflow runs,
+where a workflow's steps run as part of the workflow the user may use.
 """
 
 from dataclasses import dataclass
+from datetime import datetime
+from datetime import timezone
 from uuid import UUID
 
 from sqlalchemy.orm import Session
 
+from om.auth.schemas import UserRole
 from om.db.agent import get_agent_by_id
 from om.db.models import Agent
 from om.db.models import AgentWorkflow
@@ -55,12 +61,28 @@ def get_accessible_workflow(
     return workflow
 
 
+def check_owner_can_run(user: User | None) -> User:
+    """Same gates the API applies to an interactive request (`current_user` /
+    `double_check_user`), so a headless run never outlives the owner's access."""
+    from om.auth.users import user_needs_to_be_verified
+
+    if user is None or not user.is_active:
+        raise PulseAccessError("The schedule owner is no longer active")
+    if user.role == UserRole.LIMITED:
+        raise PulseAccessError("The schedule owner's role no longer allows running workflows")
+    if user_needs_to_be_verified() and not user.is_verified:
+        raise PulseAccessError("The schedule owner is not verified")
+    if user.oidc_expiry and user.oidc_expiry < datetime.now(timezone.utc):
+        raise PulseAccessError(
+            "The schedule owner's login has expired; sign in again and resume the schedule"
+        )
+    return user
+
+
 def resolve_run_context(
     db_session: Session, *, workflow_id: int, owner_id: UUID
 ) -> ResolvedRunContext:
-    user = fetch_user_by_id(db_session, owner_id)
-    if user is None or not user.is_active:
-        raise PulseAccessError("The schedule owner is no longer active")
+    user = check_owner_can_run(fetch_user_by_id(db_session, owner_id))
 
     workflow = get_accessible_workflow(db_session, workflow_id, owner_id)
 

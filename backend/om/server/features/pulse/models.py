@@ -11,12 +11,14 @@ from om.db.models import PulseRun
 from om.db.models import PulseSchedule
 
 ScheduleTypeLiteral = Literal["cron", "interval", "once"]
+# 366 days; also keeps values inside the int4 column
+MAX_INTERVAL_SECONDS = 366 * 24 * 3600
 
 
 class ScheduleTiming(BaseModel):
     schedule_type: ScheduleTypeLiteral
     cron_expression: str | None = None
-    interval_seconds: int | None = None
+    interval_seconds: int | None = Field(default=None, ge=1, le=MAX_INTERVAL_SECONDS)
     run_at: datetime.datetime | None = None
     timezone: str = "UTC"
 
@@ -35,10 +37,10 @@ class PulseScheduleUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
     input_message: str | None = Field(default=None, min_length=1, max_length=20000)
     enabled: bool | None = None
-    retention_count: int | None = None
+    retention_count: int | None = Field(default=None, ge=1, le=100000)
     schedule_type: ScheduleTypeLiteral | None = None
     cron_expression: str | None = None
-    interval_seconds: int | None = None
+    interval_seconds: int | None = Field(default=None, ge=1, le=MAX_INTERVAL_SECONDS)
     run_at: datetime.datetime | None = None
     timezone: str | None = None
 

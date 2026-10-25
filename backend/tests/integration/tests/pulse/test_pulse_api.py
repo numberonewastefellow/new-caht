@@ -40,7 +40,12 @@ class Client:
         self.s.headers["Authorization"] = f"Bearer {key}"
 
     def get(self, path: str, **kw: object) -> requests.Response:
-        return self.s.get(BASE + path, timeout=60, **kw)  # type: ignore[arg-type]
+        try:
+            return self.s.get(BASE + path, timeout=60, **kw)  # type: ignore[arg-type]
+        except requests.exceptions.ConnectionError:
+            # uvicorn closes idle keep-alive connections after 5s; a poll that reuses
+            # one at that instant is dropped — retry once on a fresh connection
+            return self.s.get(BASE + path, timeout=60, **kw)  # type: ignore[arg-type]
 
     def post(self, path: str, json: object = None) -> requests.Response:
         return self.s.post(BASE + path, json=json, timeout=60)
@@ -195,6 +200,50 @@ def test_other_users_cannot_see_or_touch(admin: Client, basic_user: Client, sche
     assert all(x["id"] != s["id"] for x in basic_user.get("/pulse/schedules").json())
     # admins can list everyone's
     assert any(x["id"] == s["id"] for x in admin.get("/pulse/schedules?all_users=true").json())
+
+
+def test_admin_cannot_drive_another_users_schedule(
+    admin: Client, basic_user: Client
+) -> None:
+    """Runs execute as the owner, so an admin may pause/delete but not edit the
+    prompt, resume, duplicate or run another user's schedule, nor read its outputs."""
+    owned = basic_user.post(
+        "/pulse/schedules",
+        {
+            "workflow_id": WORKFLOW_ID,
+            "name": "owned-by-basic",
+            "schedule_type": "interval",
+            "interval_seconds": 3600,
+            "timezone": "UTC",
+            "input_message": "private prompt",
+            "enabled": True,
+        },
+    )
+    assert owned.status_code == 200, owned.text
+    sid = owned.json()["id"]
+    try:
+        assert admin.patch(f"/pulse/schedules/{sid}", {"input_message": "leak everything"}).status_code == 403
+        assert admin.post(f"/pulse/schedules/{sid}/run-now").status_code == 403
+        assert admin.post(f"/pulse/schedules/{sid}/duplicate").status_code == 403
+        seen = admin.get(f"/pulse/schedules/{sid}").json()
+        assert seen["input_message"] == ""  # prompt hidden from non-owners
+        assert admin.patch(f"/pulse/schedules/{sid}", {"enabled": False}).json()["enabled"] is False
+        assert admin.patch(f"/pulse/schedules/{sid}", {"enabled": True}).status_code == 403
+    finally:
+        basic_user.delete(f"/pulse/schedules/{sid}")
+
+
+def test_run_now_cooldown(admin: Client, schedules: list[int]) -> None:
+    s = _create(admin, schedules, enabled=False)
+    started = time.time()
+    first = admin.post(f"/pulse/schedules/{s['id']}/run-now")
+    assert first.status_code == 200, first.text
+    _wait_run(admin, first.json()["id"])
+    if time.time() - started > 25:
+        pytest.skip("run outlasted the 30s cooldown window")
+    # finished, but still inside the cooldown window
+    second = admin.post(f"/pulse/schedules/{s['id']}/run-now")
+    assert second.status_code == 429, second.text
 
 
 # ---------------------------------------------------------------- execution

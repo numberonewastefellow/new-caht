@@ -20,14 +20,24 @@ from om.auth.schemas import UserRole
 from om.auth.users import current_admin_user
 from om.auth.users import current_user
 from om.configs.pulse_configs import PULSE_DEFAULT_RETENTION
+from om.configs.pulse_configs import PULSE_MANUAL_RUN_COOLDOWN_SECONDS
 from om.configs.pulse_configs import PULSE_MAX_RETENTION
 from om.configs.pulse_configs import PULSE_MAX_SCHEDULES_PER_USER
+from om.configs.pulse_configs import PULSE_MAX_TOTAL_SCHEDULES_PER_USER
 from om.configs.pulse_configs import PULSE_MIN_INTERVAL_SECONDS
+from om.configs.pulse_configs import PULSE_TENANT_MAX_CONCURRENT_RUNS
+from om.configs.pulse_configs import PULSE_USER_MAX_ACTIVE_RUNS
 from om.db.engine.sql_engine import get_session
+from om.db.models import PulseRun
 from om.db.models import PulseSchedule
 from om.db.models import User
 from om.db.pulse import count_active_runs
+from om.db.pulse import count_active_runs_for_user
 from om.db.pulse import count_enabled_schedules_for_user
+from om.db.pulse import count_schedules_for_user
+from om.db.pulse import last_manual_run_created_at
+from om.db.pulse import lock_schedule_row
+from om.db.pulse import lock_user_schedules
 from om.db.pulse import count_runs_by_status_since
 from om.db.pulse import create_manual_run
 from om.db.pulse import create_pulse_schedule
@@ -67,6 +77,7 @@ from om.server.features.pulse.models import PulseScheduleResponse
 from om.server.features.pulse.models import PulseScheduleUpdate
 from om.server.features.pulse.models import PulseSidebarItem
 from om.server.features.pulse.models import PulseStatsResponse
+from om.server.rate_limits.dependencies import enforce_rate_limits
 from om.utils.logger import setup_logger
 from shared_configs.contextvars import get_current_tenant_id
 
@@ -91,6 +102,17 @@ TIMING_FIELDS = (
 
 def _is_admin(user: User) -> bool:
     return user.role == UserRole.ADMIN
+
+
+def _require_owner(schedule: PulseSchedule, user: User, action: str) -> None:
+    """Runs execute AS the owner (their documents, files and connected accounts), so
+    only the owner may change what runs or trigger a run. Admins can view (without
+    outputs), pause and delete other users' schedules."""
+    if schedule.user_id != user.id:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Only the schedule's owner can {action}. Admins can pause or delete it.",
+        )
 
 
 def _get_schedule_or_404(
@@ -124,7 +146,20 @@ def _check_retention(value: int | None) -> int:
     return value
 
 
+def _check_total_quota(db_session: Session, user: User) -> None:
+    """Cap on all schedules (paused included). Call after `lock_user_schedules`."""
+    if count_schedules_for_user(db_session, user.id) >= PULSE_MAX_TOTAL_SCHEDULES_PER_USER:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"You can have at most {PULSE_MAX_TOTAL_SCHEDULES_PER_USER} schedules. "
+                "Delete one first."
+            ),
+        )
+
+
 def _check_quota(db_session: Session, user: User) -> None:
+    """Cap on active schedules. Call after `lock_user_schedules`."""
     if count_enabled_schedules_for_user(db_session, user.id) >= PULSE_MAX_SCHEDULES_PER_USER:
         raise HTTPException(
             status_code=400,
@@ -150,8 +185,25 @@ def _initial_next_run(spec: ScheduleSpec, now: datetime) -> datetime | None:
     return next_fire_after(spec, now)
 
 
+def _redact_run(run: PulseRunResponse | None) -> PulseRunResponse | None:
+    """Outputs/errors of another user's runs are private to that user."""
+    if run is None:
+        return None
+    return run.model_copy(update={"output_preview": None, "error": None})
+
+
+def _run_response(run: PulseRun, schedule: PulseSchedule, viewer: User) -> PulseRunResponse:
+    response = PulseRunResponse.from_model(run)
+    if schedule.user_id != viewer.id:
+        return _redact_run(response)  # type: ignore[return-value]
+    return response
+
+
 def _to_responses(
-    db_session: Session, schedules: list[PulseSchedule], include_owner: bool
+    db_session: Session,
+    schedules: list[PulseSchedule],
+    include_owner: bool,
+    viewer: User,
 ) -> list[PulseScheduleResponse]:
     ids = [s.id for s in schedules]
     latest = get_latest_runs_by_schedule(db_session, ids)
@@ -163,24 +215,34 @@ def _to_responses(
         except ScheduleValidationError:
             description = "Invalid schedule"
         session_run = latest_sessions.get(s.id)
-        out.append(
-            PulseScheduleResponse.from_model(
-                s,
-                description=description,
-                last_run=latest.get(s.id),
-                latest_chat_session_id=session_run.chat_session_id
-                if session_run
-                else None,
-                include_owner=include_owner,
-            )
+        response = PulseScheduleResponse.from_model(
+            s,
+            description=description,
+            last_run=latest.get(s.id),
+            latest_chat_session_id=session_run.chat_session_id
+            if session_run
+            else None,
+            include_owner=include_owner,
         )
+        if s.user_id != viewer.id:
+            # Another user's schedule (admin view): no outputs, no prompt, no chat link
+            response = response.model_copy(
+                update={
+                    "last_run": _redact_run(response.last_run),
+                    "input_message": "",
+                    "latest_chat_session_id": None,
+                }
+            )
+        out.append(response)
     return out
 
 
 def _to_response(
     db_session: Session, schedule: PulseSchedule, user: User
 ) -> PulseScheduleResponse:
-    return _to_responses(db_session, [schedule], include_owner=_is_admin(user))[0]
+    return _to_responses(
+        db_session, [schedule], include_owner=_is_admin(user), viewer=user
+    )[0]
 
 
 # ========================
@@ -243,7 +305,7 @@ def list_schedules(
     schedules = list_pulse_schedules(db_session, user.id, include_all_users=include_all)
     if workflow_id is not None:
         schedules = [s for s in schedules if s.workflow_id == workflow_id]
-    return _to_responses(db_session, schedules, include_owner=include_all)
+    return _to_responses(db_session, schedules, include_owner=include_all, viewer=user)
 
 
 @router.post("/schedules")
@@ -264,6 +326,8 @@ def create_schedule(
         ),
         now,
     )
+    lock_user_schedules(db_session, user.id)
+    _check_total_quota(db_session, user)
     if request.enabled:
         _check_quota(db_session, user)
     schedule = create_pulse_schedule(
@@ -302,14 +366,16 @@ def update_schedule(
     db_session: Session = Depends(get_session),
 ) -> PulseScheduleResponse:
     schedule = _get_schedule_or_404(db_session, schedule_id, user)
-    # Lock the row so a concurrent scheduler tick cannot interleave with this edit
-    db_session.execute(
-        select(PulseSchedule.id)
-        .where(PulseSchedule.id == schedule.id)
-        .with_for_update()
-    )
-    db_session.refresh(schedule)
     changes = request.model_dump(exclude_unset=True)
+    if schedule.user_id != user.id:
+        # Admins may only pause another user's schedule
+        if set(changes) != {"enabled"} or changes["enabled"] is not False:
+            _require_owner(schedule, user, "edit or resume it")
+    if changes.get("enabled") is True:
+        lock_user_schedules(db_session, user.id)
+    # Lock the row so a concurrent scheduler tick cannot interleave with this edit
+    lock_schedule_row(db_session, schedule.id)
+    db_session.refresh(schedule)
     now = db_now(db_session)
 
     timing_changed = any(k in changes for k in TIMING_FIELDS)
@@ -388,7 +454,10 @@ def duplicate_schedule(
     db_session: Session = Depends(get_session),
 ) -> PulseScheduleResponse:
     source = _get_schedule_or_404(db_session, schedule_id, user)
+    _require_owner(source, user, "duplicate it")
     _check_workflow(db_session, source.workflow_id, user)
+    lock_user_schedules(db_session, user.id)
+    _check_total_quota(db_session, user)
     now = db_now(db_session)
     spec = spec_from_schedule(source)
     next_run = _initial_next_run(spec, now)
@@ -410,7 +479,7 @@ def duplicate_schedule(
     return _to_response(db_session, copy, user)
 
 
-@router.post("/schedules/{schedule_id}/run-now")
+@router.post("/schedules/{schedule_id}/run-now", dependencies=[Depends(enforce_rate_limits)])
 def run_schedule_now(
     schedule_id: int,
     user: User = Depends(current_user),
@@ -418,16 +487,34 @@ def run_schedule_now(
 ) -> PulseRunResponse:
     """Run the schedule's workflow immediately (works for paused schedules too)."""
     schedule = _get_schedule_or_404(db_session, schedule_id, user)
-    # Runs execute as the schedule owner, so check the owner's access
+    _require_owner(schedule, user, "run it")
     try:
         get_accessible_workflow(db_session, schedule.workflow_id, schedule.user_id)
     except PulseAccessError as e:
         raise HTTPException(
             status_code=404 if e.workflow_deleted else 403, detail=str(e)
         )
+    # Serialise run-now calls for this schedule (no two active runs via a race)
+    lock_schedule_row(db_session, schedule.id)
     if has_active_run(db_session, schedule.id):
         raise HTTPException(
             status_code=409, detail="A run of this schedule is already in progress"
+        )
+    now = db_now(db_session)
+    last_manual = last_manual_run_created_at(db_session, schedule.id)
+    if last_manual is not None and (now - last_manual).total_seconds() < PULSE_MANUAL_RUN_COOLDOWN_SECONDS:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Please wait {PULSE_MANUAL_RUN_COOLDOWN_SECONDS}s between manual runs",
+        )
+    if count_active_runs_for_user(db_session, user.id) >= PULSE_USER_MAX_ACTIVE_RUNS:
+        raise HTTPException(
+            status_code=429,
+            detail=f"You already have {PULSE_USER_MAX_ACTIVE_RUNS} runs in progress; try again shortly",
+        )
+    if count_active_runs(db_session) >= PULSE_TENANT_MAX_CONCURRENT_RUNS:
+        raise HTTPException(
+            status_code=429, detail="The scheduler is busy; try again shortly"
         )
     run = create_manual_run(db_session, schedule.id)
     try:
@@ -448,7 +535,7 @@ def list_schedule_runs(
 ) -> list[PulseRunResponse]:
     schedule = _get_schedule_or_404(db_session, schedule_id, user)
     runs = list_runs_for_schedule(db_session, schedule.id, limit=limit, before_id=before_id)
-    return [PulseRunResponse.from_model(r) for r in runs]
+    return [_run_response(r, schedule, user) for r in runs]
 
 
 @router.get("/runs/{run_id}")
@@ -460,8 +547,8 @@ def get_run(
     run = get_pulse_run(db_session, run_id)
     if run is None:
         raise HTTPException(status_code=404, detail="Run not found")
-    _get_schedule_or_404(db_session, run.schedule_id, user)
-    return PulseRunResponse.from_model(run)
+    schedule = _get_schedule_or_404(db_session, run.schedule_id, user)
+    return _run_response(run, schedule, user)
 
 
 # ========================
