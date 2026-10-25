@@ -19,7 +19,16 @@ COPY package.json package-lock.json ./
 COPY lib/opal/package.json ./lib/opal/
 
 # Install dependencies
-RUN npm ci
+# The registry is occasionally slow from Docker Desktop (EIDLETIMEOUT / "Exit handler never
+# called"). Retry each fetch, allow long timeouts, and keep the npm cache in a BuildKit cache
+# mount (not part of the image) so a retried build resumes instead of re-downloading everything.
+ENV NPM_CONFIG_FETCH_RETRIES=5 \
+    NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=20000 \
+    NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=120000 \
+    NPM_CONFIG_FETCH_TIMEOUT=300000 \
+    NPM_CONFIG_AUDIT=false \
+    NPM_CONFIG_FUND=false
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 # pull in source code / package.json / package-lock.json
 COPY . .

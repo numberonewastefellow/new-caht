@@ -15,6 +15,7 @@ name: this revision renames it afterwards on both fresh and existing databases.
 """
 
 from alembic import op
+from sqlalchemy import text
 
 revision = "0008_ombot_flow_rename"
 down_revision = "0007_team_enrichment"
@@ -22,7 +23,24 @@ branch_labels = None
 depends_on = None
 
 
+def _column_exists(table: str, column: str) -> bool:
+    return (
+        op.get_bind()
+        .execute(
+            text(
+                "SELECT 1 FROM information_schema.columns "
+                "WHERE table_schema = current_schema() AND table_name = :t AND column_name = :c"
+            ),
+            {"t": table, "c": column},
+        )
+        .first()
+        is not None
+    )
+
+
 def upgrade() -> None:
+    if _column_exists("chat_session", "ombot_flow"):
+        return  # baseline already created with the final name
     op.execute("ALTER TABLE chat_session RENAME COLUMN onyxbot_flow TO ombot_flow")
 
 

@@ -39,6 +39,8 @@ Wave-0/1 revisions from other workstreams.
 
 from alembic import op
 
+from sqlalchemy import text
+
 # revision identifiers, used by Alembic.
 revision = "0004_team_rename"
 down_revision = "0003_agent_rename"
@@ -226,7 +228,24 @@ def _widen_team_ids(to_type: str) -> None:
     )
 
 
+def _relation_exists(name: str) -> bool:
+    return (
+        op.get_bind()
+        .execute(
+            text(
+                "SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+                "WHERE n.nspname = current_schema() AND c.relname = :name"
+            ),
+            {"name": name},
+        )
+        .first()
+        is not None
+    )
+
+
 def upgrade() -> None:
+    if _relation_exists("team") and not _relation_exists("user_group"):
+        return  # baseline already created with the final (team) names and BIGINT ids
     old, new = _FWD
     # Order matters: rename dependent objects (columns/constraints/indexes/
     # sequences) while the tables still carry their old names, then the tables.

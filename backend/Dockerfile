@@ -72,7 +72,12 @@ ENV PATH="/root/.opencode/bin:${PATH}"
 # Remove py which is pulled in by retry, py is not needed and is a CVE
 COPY ./requirements/default.txt /tmp/requirements.txt
 COPY ./requirements/ee.txt /tmp/ee-requirements.txt
-RUN uv pip install --system --no-cache-dir --upgrade \
+# uv downloads get a longer timeout and are cached in a BuildKit cache mount (not part of the
+# image), so a build that fails on a network hiccup resumes from the cache on retry.
+# UV_LINK_MODE=copy because the cache mount and /usr/local are on different filesystems.
+ENV UV_HTTP_TIMEOUT=180 \
+    UV_LINK_MODE=copy
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install --system --upgrade \
         -r /tmp/requirements.txt \
         -r /tmp/ee-requirements.txt && \
     pip uninstall -y py && \
@@ -102,7 +107,8 @@ RUN uv pip install --system --no-cache-dir --upgrade \
         postgresql-client && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* && \
-    rm -rf ~/.cache/uv /tmp/*.txt && \
+    # ~/.cache/uv is a BuildKit cache mount (never part of the image) and cannot be removed here.
+    rm -rf /tmp/*.txt && \
     rm -f /usr/local/lib/python3.11/site-packages/tornado/test/test.key
 
 # Pre-downloading models for setups with limited egress

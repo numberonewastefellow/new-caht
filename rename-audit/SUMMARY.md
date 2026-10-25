@@ -1,6 +1,6 @@
 # onyx + danswer residue inventory (auto-generated)
 
-Total hits: **2432** in **410** files; **74** tracked paths contain the name (see path_renames.txt).
+Total hits: **2431** in **410** files; **74** tracked paths contain the name (see path_renames.txt).
 
 | Class | Category | Hits | Files |
 |---|---|---:|---:|
@@ -23,14 +23,14 @@ Total hits: **2432** in **410** files; **74** tracked paths contain the name (se
 | S | frontend-identifier | 129 | 24 |
 | S | other | 23 | 11 |
 | X | external-domain-email | 264 | 70 |
-| X | upstream-url | 62 | 21 |
+| X | upstream-url | 61 | 20 |
 | X | ci-secret | 14 | 2 |
 
 ## Hits by top-level directory
 
 | Dir | Hits |
 |---|---:|
-| backend | 1097 |
+| backend | 1096 |
 | deployment | 566 |
 | web | 155 |
 | extensions | 147 |

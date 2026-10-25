@@ -14,13 +14,17 @@ The DDL + seed SQL lives in the sibling ``0001_baseline_schema.sql`` (a
 schema-relative pg_dump of the migrated schema, with the Project->Workspace and
 UserFile->KnowledgeFile rename folded in directly — so the baseline creates the
 final ``workspace`` / ``knowledge_file`` schema and no follow-up rename
-migration is needed). It is executed via ``exec_driver_sql`` so the whole
-multi-statement script -- including ``$$``-quoted PL/pgSQL function bodies --
-runs verbatim without Python-string escaping. The DDL is schema-relative
+migration is needed). It is executed one statement at a time via
+``exec_driver_sql`` (the self-contained ``_split_statements`` below keeps the
+``$$``-quoted PL/pgSQL function bodies intact). Alembic runs through asyncpg,
+whose prepared statements accept a single command, so sending the whole script
+at once fails with "cannot insert multiple commands into a prepared statement"
+on an empty database. The DDL is schema-relative
 (unqualified object names) so it applies into whatever schema Alembic's
 ``search_path`` points at (public for single-tenant, the tenant schema for MT).
 """
 
+import re
 from pathlib import Path
 
 from alembic import op
@@ -34,15 +38,104 @@ depends_on = None
 _SQL_FILE = Path(__file__).with_suffix(".sql")
 
 
+_DOLLAR_TAG = re.compile(r"\$([A-Za-z_][A-Za-z_0-9]*)?\$")
+
+
+def _has_sql(fragment: str) -> bool:
+    """True if ``fragment`` holds more than comments and whitespace."""
+    no_block = re.sub(r"/\*.*?\*/", "", fragment, flags=re.S)
+    return bool(re.sub(r"--[^\n]*", "", no_block).strip())
+
+
+def _split_statements(script: str) -> list[str]:
+    """Split ``script`` on top-level semicolons.
+
+    Understands single-quoted strings (``''`` escapes), double-quoted identifiers, ``--`` and
+    ``/* */`` comments (nested block comments included) and dollar-quoted bodies
+    (``$$ ... $$`` / ``$tag$ ... $tag$``), so PL/pgSQL function bodies stay in one piece.
+    Statements are returned stripped, without the trailing semicolon; comment-only fragments
+    are dropped. Deliberately self-contained: a migration must not depend on application code.
+    """
+    statements: list[str] = []
+    buf: list[str] = []
+    i, n = 0, len(script)
+
+    def flush() -> None:
+        text = "".join(buf).strip()
+        buf.clear()
+        if text and _has_sql(text):
+            statements.append(text)
+
+    while i < n:
+        ch = script[i]
+        nxt = script[i + 1] if i + 1 < n else ""
+        if ch == "-" and nxt == "-":  # line comment
+            end = script.find("\n", i)
+            end = n if end == -1 else end
+            buf.append(script[i:end])
+            i = end
+        elif ch == "/" and nxt == "*":  # block comment (Postgres allows nesting)
+            depth, j = 1, i + 2
+            while j < n and depth:
+                if script.startswith("/*", j):
+                    depth, j = depth + 1, j + 2
+                elif script.startswith("*/", j):
+                    depth, j = depth - 1, j + 2
+                else:
+                    j += 1
+            buf.append(script[i:j])
+            i = j
+        elif ch == "'":  # string literal
+            j = i + 1
+            while j < n:
+                if script[j] == "'":
+                    if j + 1 < n and script[j + 1] == "'":
+                        j += 2
+                        continue
+                    break
+                j += 1
+            buf.append(script[i : j + 1])
+            i = j + 1
+        elif ch == '"':  # quoted identifier
+            j = script.find('"', i + 1)
+            j = n - 1 if j == -1 else j
+            buf.append(script[i : j + 1])
+            i = j + 1
+        elif ch == "$":  # possible dollar quote
+            m = _DOLLAR_TAG.match(script, i)
+            if m:
+                end = script.find(m.group(0), m.end())
+                end = n if end == -1 else end + len(m.group(0))
+                buf.append(script[i:end])
+                i = end
+            else:
+                buf.append(ch)
+                i += 1
+        elif ch == ";":
+            flush()
+            i += 1
+        else:
+            buf.append(ch)
+            i += 1
+    flush()
+    return statements
+
+
+def _run_script(script: str) -> None:
+    bind = op.get_bind()
+    for statement in _split_statements(script):
+        bind.exec_driver_sql(statement)
+
+
 def upgrade() -> None:
-    op.get_bind().exec_driver_sql(_SQL_FILE.read_text(encoding="utf-8"))
+    _run_script(_SQL_FILE.read_text(encoding="utf-8"))
 
 
 def downgrade() -> None:
     # Tear the schema back down to base: drop every table in the current schema
     # (CASCADE handles FKs/sequences/triggers), then the KG functions and the
     # pg_trgm extension. Leaves only ``alembic_version`` (Alembic owns that).
-    op.get_bind().exec_driver_sql(
+    _run_script(
         """
         DO $$
         DECLARE r RECORD;

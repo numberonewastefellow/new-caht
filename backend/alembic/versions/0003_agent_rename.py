@@ -21,6 +21,7 @@ NOTE: the OpenSearch persona-scope field was renamed personas->agents in code
 """
 
 from alembic import op
+from sqlalchemy import text
 
 revision = "0003_agent_rename"
 down_revision = "0002_workspace_soft_delete"
@@ -113,7 +114,24 @@ _RENAMES = [
 ]
 
 
+def _relation_exists(name: str) -> bool:
+    return (
+        op.get_bind()
+        .execute(
+            text(
+                "SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+                "WHERE n.nspname = current_schema() AND c.relname = :name"
+            ),
+            {"name": name},
+        )
+        .first()
+        is not None
+    )
+
+
 def upgrade() -> None:
+    if _relation_exists("agent") and not _relation_exists("persona"):
+        return  # baseline already created with the final (agent) names
     for forward_sql, _ in _RENAMES:
         op.execute(forward_sql)
 

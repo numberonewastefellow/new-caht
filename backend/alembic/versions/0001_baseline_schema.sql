@@ -1,4 +1,9 @@
 -- Baseline schema (squashed). Auto-generated from pg_dump of the migrated DB.
+-- Renames folded into this baseline (so a fresh install gets the final names directly):
+--   Project->Workspace, UserFile->KnowledgeFile (earlier), Persona->Agent (0003_agent_rename),
+--   UserGroup->Team incl. BIGINT ids (0004_team_rename), chat_session.onyxbot_flow->ombot_flow (0008).
+-- Regenerated from a database with rename-audit/gen_baseline_sql.py; revisions 0003/0004_team_rename/0008
+-- detect the final names and skip themselves, so existing databases are unaffected.
 -- pg_trgm is used by KG trigram indexes but pg_dump omits it; add explicitly.
 CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 
@@ -18,18 +23,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: public; Type: SCHEMA; Schema: -; Owner: -
---
-
-
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
---
-
-
 
 --
 -- Name: update_kg_entity_name(); Type: FUNCTION; Schema: public; Owner: -
@@ -117,6 +110,185 @@ CREATE TABLE accesstoken (
 
 
 --
+-- Name: agent; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    deleted boolean NOT NULL,
+    description character varying NOT NULL,
+    num_chunks integer,
+    llm_model_version_override character varying,
+    user_id uuid,
+    llm_relevance_filter boolean NOT NULL,
+    llm_filter_extraction boolean NOT NULL,
+    recency_bias character varying NOT NULL,
+    is_visible boolean NOT NULL,
+    display_priority integer,
+    starter_messages jsonb,
+    is_public boolean NOT NULL,
+    llm_model_provider_override character varying,
+    uploaded_image_id character varying,
+    chunks_above integer NOT NULL,
+    chunks_below integer NOT NULL,
+    builtin_agent boolean NOT NULL,
+    is_default_agent boolean DEFAULT false NOT NULL,
+    search_start_date timestamp with time zone,
+    system_prompt character varying(5000000),
+    task_prompt character varying(5000000),
+    datetime_aware boolean DEFAULT true NOT NULL,
+    replace_base_system_prompt boolean DEFAULT false NOT NULL,
+    icon_name character varying,
+    default_model_configuration_id integer,
+    workflow_id integer,
+    max_output_tokens integer
+);
+
+
+--
+-- Name: agent__agent_label; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent__agent_label (
+    agent_id integer NOT NULL,
+    agent_label_id integer NOT NULL
+);
+
+
+--
+-- Name: agent__document; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent__document (
+    agent_id integer NOT NULL,
+    document_id character varying NOT NULL
+);
+
+
+--
+-- Name: agent__document_set; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent__document_set (
+    agent_id integer NOT NULL,
+    document_set_id integer NOT NULL
+);
+
+
+--
+-- Name: agent__hierarchy_node; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent__hierarchy_node (
+    agent_id integer NOT NULL,
+    hierarchy_node_id integer NOT NULL
+);
+
+
+--
+-- Name: agent__knowledge_file; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent__knowledge_file (
+    agent_id integer NOT NULL,
+    knowledge_file_id uuid NOT NULL
+);
+
+
+--
+-- Name: agent__team; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent__team (
+    agent_id integer NOT NULL,
+    team_id bigint NOT NULL
+);
+
+
+--
+-- Name: agent__tool; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent__tool (
+    agent_id integer NOT NULL,
+    tool_id integer NOT NULL
+);
+
+
+--
+-- Name: agent__user; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent__user (
+    agent_id integer NOT NULL,
+    user_id uuid NOT NULL
+);
+
+
+--
+-- Name: agent__user_specific_config; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent__user_specific_config (
+    agent_id integer NOT NULL,
+    user_id uuid NOT NULL,
+    disabled_tool_ids integer[] NOT NULL
+);
+
+
+--
+-- Name: agent_label; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE agent_label (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    description character varying
+);
+
+
+--
+-- Name: agent_category_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE agent_category_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: agent_category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE agent_category_id_seq OWNED BY agent_label.id;
+
+
+--
+-- Name: agent_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE agent_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: agent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE agent_id_seq OWNED BY agent.id;
+
+
+--
 -- Name: agent_workflow; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -168,7 +340,7 @@ ALTER SEQUENCE agent_workflow_id_seq OWNED BY agent_workflow.id;
 CREATE TABLE agent_workflow_step (
     id integer NOT NULL,
     workflow_id integer NOT NULL,
-    persona_id integer,
+    agent_id integer,
     step_order integer NOT NULL,
     step_name character varying NOT NULL,
     step_description text,
@@ -258,17 +430,6 @@ CREATE TABLE artifact (
     name character varying NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: assistant__user_specific_config; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE assistant__user_specific_config (
-    assistant_id integer NOT NULL,
-    user_id uuid NOT NULL,
-    disabled_tool_ids integer[] NOT NULL
 );
 
 
@@ -443,11 +604,11 @@ CREATE TABLE chat_session (
     deleted boolean NOT NULL,
     time_updated timestamp with time zone DEFAULT now() NOT NULL,
     time_created timestamp with time zone DEFAULT now() NOT NULL,
-    persona_id integer,
+    agent_id integer,
     shared_status character varying(7) NOT NULL,
     llm_override jsonb,
     prompt_override jsonb,
-    onyxbot_flow boolean NOT NULL,
+    ombot_flow boolean NOT NULL,
     current_alternate_model character varying,
     slack_thread_id character varying,
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -568,12 +729,12 @@ CREATE TABLE credential (
 
 
 --
--- Name: credential__user_group; Type: TABLE; Schema: public; Owner: -
+-- Name: credential__team; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE credential__user_group (
+CREATE TABLE credential__team (
     credential_id integer NOT NULL,
-    user_group_id integer NOT NULL
+    team_id bigint NOT NULL
 );
 
 
@@ -622,7 +783,7 @@ CREATE TABLE discord_channel_config (
     is_private boolean DEFAULT false NOT NULL,
     thread_only_mode boolean DEFAULT false NOT NULL,
     require_bot_invocation boolean DEFAULT true NOT NULL,
-    persona_override_id integer,
+    agent_override_id integer,
     enabled boolean DEFAULT false NOT NULL
 );
 
@@ -657,7 +818,7 @@ CREATE TABLE discord_guild_config (
     guild_name character varying,
     registration_key character varying NOT NULL,
     registered_at timestamp with time zone,
-    default_persona_id integer,
+    default_agent_id integer,
     enabled boolean DEFAULT true NOT NULL
 );
 
@@ -736,7 +897,7 @@ CREATE TABLE document (
     last_modified timestamp with time zone DEFAULT now() NOT NULL,
     last_synced timestamp with time zone,
     external_user_emails character varying[],
-    external_user_group_ids character varying[],
+    external_team_ids character varying[],
     is_public boolean,
     chunk_count integer,
     kg_stage character varying,
@@ -829,22 +990,22 @@ CREATE TABLE document_set__connector_credential_pair (
 
 
 --
+-- Name: document_set__team; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE document_set__team (
+    document_set_id integer NOT NULL,
+    team_id bigint NOT NULL
+);
+
+
+--
 -- Name: document_set__user; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE document_set__user (
     document_set_id integer NOT NULL,
     user_id uuid NOT NULL
-);
-
-
---
--- Name: document_set__user_group; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE document_set__user_group (
-    document_set_id integer NOT NULL,
-    user_group_id integer NOT NULL
 );
 
 
@@ -1121,7 +1282,7 @@ CREATE TABLE hierarchy_node (
     document_id character varying,
     parent_id integer,
     external_user_emails character varying[],
-    external_user_group_ids character varying[],
+    external_team_ids character varying[],
     is_public boolean DEFAULT false NOT NULL
 );
 
@@ -1537,6 +1698,28 @@ CREATE TABLE kg_term (
 
 
 --
+-- Name: knowledge_file; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE knowledge_file (
+    user_id uuid,
+    link_url character varying,
+    token_count integer,
+    file_type character varying,
+    file_id character varying(255) NOT NULL,
+    name character varying(255) NOT NULL,
+    created_at timestamp without time zone,
+    content_type character varying,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    status character varying(10) DEFAULT 'PROCESSING'::character varying NOT NULL,
+    chunk_count integer,
+    last_accessed_at timestamp with time zone,
+    needs_workspace_sync boolean DEFAULT false NOT NULL,
+    last_workspace_sync_at timestamp with time zone
+);
+
+
+--
 -- Name: license; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1623,22 +1806,22 @@ CREATE TABLE llm_provider (
 
 
 --
--- Name: llm_provider__persona; Type: TABLE; Schema: public; Owner: -
+-- Name: llm_provider__agent; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE llm_provider__persona (
+CREATE TABLE llm_provider__agent (
     llm_provider_id integer NOT NULL,
-    persona_id integer NOT NULL
+    agent_id integer NOT NULL
 );
 
 
 --
--- Name: llm_provider__user_group; Type: TABLE; Schema: public; Owner: -
+-- Name: llm_provider__team; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE llm_provider__user_group (
+CREATE TABLE llm_provider__team (
     llm_provider_id integer NOT NULL,
-    user_group_id integer NOT NULL
+    team_id bigint NOT NULL
 );
 
 
@@ -1718,22 +1901,22 @@ CREATE TABLE mcp_server (
 
 
 --
+-- Name: mcp_server__team; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE mcp_server__team (
+    mcp_server_id integer NOT NULL,
+    team_id bigint NOT NULL
+);
+
+
+--
 -- Name: mcp_server__user; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE mcp_server__user (
     mcp_server_id integer NOT NULL,
     user_id uuid NOT NULL
-);
-
-
---
--- Name: mcp_server__user_group; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE mcp_server__user_group (
-    mcp_server_id integer NOT NULL,
-    user_group_id integer NOT NULL
 );
 
 
@@ -1953,174 +2136,6 @@ ALTER SEQUENCE oauth_user_token_id_seq OWNED BY oauth_user_token.id;
 
 
 --
--- Name: persona; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE persona (
-    id integer NOT NULL,
-    name character varying NOT NULL,
-    deleted boolean NOT NULL,
-    description character varying NOT NULL,
-    num_chunks integer,
-    llm_model_version_override character varying,
-    user_id uuid,
-    llm_relevance_filter boolean NOT NULL,
-    llm_filter_extraction boolean NOT NULL,
-    recency_bias character varying NOT NULL,
-    is_visible boolean NOT NULL,
-    display_priority integer,
-    starter_messages jsonb,
-    is_public boolean NOT NULL,
-    llm_model_provider_override character varying,
-    uploaded_image_id character varying,
-    chunks_above integer NOT NULL,
-    chunks_below integer NOT NULL,
-    builtin_persona boolean NOT NULL,
-    is_default_persona boolean DEFAULT false NOT NULL,
-    search_start_date timestamp with time zone,
-    system_prompt character varying(5000000),
-    task_prompt character varying(5000000),
-    datetime_aware boolean DEFAULT true NOT NULL,
-    replace_base_system_prompt boolean DEFAULT false NOT NULL,
-    icon_name character varying,
-    default_model_configuration_id integer,
-    workflow_id integer,
-    max_output_tokens integer
-);
-
-
---
--- Name: persona__document; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE persona__document (
-    persona_id integer NOT NULL,
-    document_id character varying NOT NULL
-);
-
-
---
--- Name: persona__document_set; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE persona__document_set (
-    persona_id integer NOT NULL,
-    document_set_id integer NOT NULL
-);
-
-
---
--- Name: persona__hierarchy_node; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE persona__hierarchy_node (
-    persona_id integer NOT NULL,
-    hierarchy_node_id integer NOT NULL
-);
-
-
---
--- Name: persona__persona_label; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE persona__persona_label (
-    persona_id integer NOT NULL,
-    persona_label_id integer NOT NULL
-);
-
-
---
--- Name: persona__tool; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE persona__tool (
-    persona_id integer NOT NULL,
-    tool_id integer NOT NULL
-);
-
-
---
--- Name: persona__user; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE persona__user (
-    persona_id integer NOT NULL,
-    user_id uuid NOT NULL
-);
-
-
---
--- Name: persona__knowledge_file; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE persona__knowledge_file (
-    persona_id integer NOT NULL,
-    knowledge_file_id uuid NOT NULL
-);
-
-
---
--- Name: persona__user_group; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE persona__user_group (
-    persona_id integer NOT NULL,
-    user_group_id integer NOT NULL
-);
-
-
---
--- Name: persona_label; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE persona_label (
-    id integer NOT NULL,
-    name character varying NOT NULL,
-    description character varying
-);
-
-
---
--- Name: persona_category_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE persona_category_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: persona_category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE persona_category_id_seq OWNED BY persona_label.id;
-
-
---
--- Name: persona_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE persona_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: persona_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE persona_id_seq OWNED BY persona.id;
-
-
---
 -- Name: personal_access_token; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2158,22 +2173,11 @@ ALTER SEQUENCE personal_access_token_id_seq OWNED BY personal_access_token.id;
 
 
 --
--- Name: workspace__knowledge_file; Type: TABLE; Schema: public; Owner: -
+-- Name: public_external_team; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE workspace__knowledge_file (
-    workspace_id integer NOT NULL,
-    knowledge_file_id uuid NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: public_external_user_group; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public_external_user_group (
-    external_user_group_id character varying NOT NULL,
+CREATE TABLE public_external_team (
+    external_team_id character varying NOT NULL,
     cc_pair_id integer NOT NULL,
     stale boolean DEFAULT false NOT NULL
 );
@@ -2233,7 +2237,7 @@ CREATE TABLE sandbox (
 CREATE TABLE scim_group_mapping (
     id integer NOT NULL,
     external_id character varying NOT NULL,
-    user_group_id integer NOT NULL,
+    team_id bigint NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -2428,7 +2432,7 @@ ALTER SEQUENCE slack_bot_id_seq OWNED BY slack_bot.id;
 CREATE TABLE slack_channel_config (
     id integer NOT NULL,
     slack_bot_id integer NOT NULL,
-    persona_id integer,
+    agent_id integer,
     channel_config jsonb NOT NULL,
     enable_auto_filters boolean DEFAULT false NOT NULL,
     is_default boolean DEFAULT false NOT NULL
@@ -2655,6 +2659,50 @@ ALTER SEQUENCE task_queue_jobs_id_seq OWNED BY task_queue_jobs.id;
 
 
 --
+-- Name: team; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE team (
+    id bigint NOT NULL,
+    name character varying NOT NULL,
+    is_up_to_date boolean NOT NULL,
+    is_up_for_deletion boolean NOT NULL,
+    time_last_modified_by_user timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: team__connector_credential_pair; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE team__connector_credential_pair (
+    team_id bigint NOT NULL,
+    cc_pair_id integer NOT NULL,
+    is_current boolean NOT NULL
+);
+
+
+--
+-- Name: team_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE team_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: team_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE team_id_seq OWNED BY team.id;
+
+
+--
 -- Name: tenant_usage; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2704,12 +2752,12 @@ CREATE TABLE token_rate_limit (
 
 
 --
--- Name: token_rate_limit__user_group; Type: TABLE; Schema: public; Owner: -
+-- Name: token_rate_limit__team; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE token_rate_limit__user_group (
+CREATE TABLE token_rate_limit__team (
     rate_limit_id integer NOT NULL,
-    user_group_id integer NOT NULL
+    team_id bigint NOT NULL
 );
 
 
@@ -2894,127 +2942,26 @@ CREATE TABLE "user" (
 
 
 --
--- Name: user__external_user_group_id; Type: TABLE; Schema: public; Owner: -
+-- Name: user__external_team_id; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE user__external_user_group_id (
+CREATE TABLE user__external_team_id (
     user_id uuid NOT NULL,
-    external_user_group_id character varying NOT NULL,
+    external_team_id character varying NOT NULL,
     cc_pair_id integer NOT NULL,
     stale boolean DEFAULT false NOT NULL
 );
 
 
 --
--- Name: user__user_group; Type: TABLE; Schema: public; Owner: -
+-- Name: user__team; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE user__user_group (
-    user_group_id integer NOT NULL,
+CREATE TABLE user__team (
+    team_id bigint NOT NULL,
     user_id uuid NOT NULL,
     is_curator boolean DEFAULT false NOT NULL
 );
-
-
---
--- Name: knowledge_file; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE knowledge_file (
-    user_id uuid,
-    link_url character varying,
-    token_count integer,
-    file_type character varying,
-    file_id character varying(255) NOT NULL,
-    name character varying(255) NOT NULL,
-    created_at timestamp without time zone,
-    content_type character varying,
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    status character varying(10) DEFAULT 'PROCESSING'::character varying NOT NULL,
-    chunk_count integer,
-    last_accessed_at timestamp with time zone,
-    needs_workspace_sync boolean DEFAULT false NOT NULL,
-    last_workspace_sync_at timestamp with time zone
-);
-
-
---
--- Name: workspace; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE workspace (
-    id integer NOT NULL,
-    user_id uuid,
-    name character varying(255),
-    description character varying(255),
-    display_priority integer,
-    created_at timestamp with time zone DEFAULT now(),
-    workspace_instructions character varying
-);
-
-
---
--- Name: workspace_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE workspace_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: workspace_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE workspace_id_seq OWNED BY workspace.id;
-
-
---
--- Name: user_group; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE user_group (
-    id integer NOT NULL,
-    name character varying NOT NULL,
-    is_up_to_date boolean NOT NULL,
-    is_up_for_deletion boolean NOT NULL,
-    time_last_modified_by_user timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: user_group__connector_credential_pair; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE user_group__connector_credential_pair (
-    user_group_id integer NOT NULL,
-    cc_pair_id integer NOT NULL,
-    is_current boolean NOT NULL
-);
-
-
---
--- Name: user_group_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE user_group_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: user_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE user_group_id_seq OWNED BY user_group.id;
 
 
 --
@@ -3056,6 +3003,66 @@ CREATE SEQUENCE workflow_execution_id_seq
 --
 
 ALTER SEQUENCE workflow_execution_id_seq OWNED BY workflow_execution.id;
+
+
+--
+-- Name: workspace; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE workspace (
+    id integer NOT NULL,
+    user_id uuid,
+    name character varying(255),
+    description character varying(255),
+    display_priority integer,
+    created_at timestamp with time zone DEFAULT now(),
+    workspace_instructions character varying
+);
+
+
+--
+-- Name: workspace__knowledge_file; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE workspace__knowledge_file (
+    workspace_id integer NOT NULL,
+    knowledge_file_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: workspace_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE workspace_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: workspace_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE workspace_id_seq OWNED BY workspace.id;
+
+
+--
+-- Name: agent id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent ALTER COLUMN id SET DEFAULT nextval('agent_id_seq'::regclass);
+
+
+--
+-- Name: agent_label id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent_label ALTER COLUMN id SET DEFAULT nextval('agent_category_id_seq'::regclass);
 
 
 --
@@ -3290,20 +3297,6 @@ ALTER TABLE ONLY oauth_user_token ALTER COLUMN id SET DEFAULT nextval('oauth_use
 
 
 --
--- Name: persona id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona ALTER COLUMN id SET DEFAULT nextval('persona_id_seq'::regclass);
-
-
---
--- Name: persona_label id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona_label ALTER COLUMN id SET DEFAULT nextval('persona_category_id_seq'::regclass);
-
-
---
 -- Name: personal_access_token id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3402,6 +3395,13 @@ ALTER TABLE ONLY task_queue_jobs ALTER COLUMN id SET DEFAULT nextval('task_queue
 
 
 --
+-- Name: team id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY team ALTER COLUMN id SET DEFAULT nextval('team_id_seq'::regclass);
+
+
+--
 -- Name: tenant_usage id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3437,10 +3437,10 @@ ALTER TABLE ONLY usage_reports ALTER COLUMN id SET DEFAULT nextval('usage_report
 
 
 --
--- Name: user_group id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: workflow_execution id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user_group ALTER COLUMN id SET DEFAULT nextval('user_group_id_seq'::regclass);
+ALTER TABLE ONLY workflow_execution ALTER COLUMN id SET DEFAULT nextval('workflow_execution_id_seq'::regclass);
 
 
 --
@@ -3448,13 +3448,6 @@ ALTER TABLE ONLY user_group ALTER COLUMN id SET DEFAULT nextval('user_group_id_s
 --
 
 ALTER TABLE ONLY workspace ALTER COLUMN id SET DEFAULT nextval('workspace_id_seq'::regclass);
-
-
---
--- Name: workflow_execution id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY workflow_execution ALTER COLUMN id SET DEFAULT nextval('workflow_execution_id_seq'::regclass);
 
 
 --
@@ -3471,6 +3464,102 @@ ALTER TABLE ONLY tag
 
 ALTER TABLE ONLY accesstoken
     ADD CONSTRAINT accesstoken_pkey PRIMARY KEY (token);
+
+
+--
+-- Name: agent__agent_label agent__agent_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__agent_label
+    ADD CONSTRAINT agent__agent_label_pkey PRIMARY KEY (agent_id, agent_label_id);
+
+
+--
+-- Name: agent__document agent__document_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__document
+    ADD CONSTRAINT agent__document_pkey PRIMARY KEY (agent_id, document_id);
+
+
+--
+-- Name: agent__document_set agent__document_set_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__document_set
+    ADD CONSTRAINT agent__document_set_pkey PRIMARY KEY (agent_id, document_set_id);
+
+
+--
+-- Name: agent__hierarchy_node agent__hierarchy_node_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__hierarchy_node
+    ADD CONSTRAINT agent__hierarchy_node_pkey PRIMARY KEY (agent_id, hierarchy_node_id);
+
+
+--
+-- Name: agent__knowledge_file agent__knowledge_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__knowledge_file
+    ADD CONSTRAINT agent__knowledge_file_pkey PRIMARY KEY (agent_id, knowledge_file_id);
+
+
+--
+-- Name: agent__team agent__team_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__team
+    ADD CONSTRAINT agent__team_pkey PRIMARY KEY (agent_id, team_id);
+
+
+--
+-- Name: agent__tool agent__tool_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__tool
+    ADD CONSTRAINT agent__tool_pkey PRIMARY KEY (agent_id, tool_id);
+
+
+--
+-- Name: agent__user agent__user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__user
+    ADD CONSTRAINT agent__user_pkey PRIMARY KEY (agent_id, user_id);
+
+
+--
+-- Name: agent__user_specific_config agent__user_specific_config_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__user_specific_config
+    ADD CONSTRAINT agent__user_specific_config_pkey PRIMARY KEY (agent_id, user_id);
+
+
+--
+-- Name: agent_label agent_category_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent_label
+    ADD CONSTRAINT agent_category_name_key UNIQUE (name);
+
+
+--
+-- Name: agent_label agent_category_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent_label
+    ADD CONSTRAINT agent_category_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: agent agent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent
+    ADD CONSTRAINT agent_pkey PRIMARY KEY (id);
 
 
 --
@@ -3519,14 +3608,6 @@ ALTER TABLE ONLY api_key
 
 ALTER TABLE ONLY artifact
     ADD CONSTRAINT artifact_pkey PRIMARY KEY (id);
-
-
---
--- Name: assistant__user_specific_config assistant__user_specific_config_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY assistant__user_specific_config
-    ADD CONSTRAINT assistant__user_specific_config_pkey PRIMARY KEY (assistant_id, user_id);
 
 
 --
@@ -3626,11 +3707,11 @@ ALTER TABLE ONLY connector
 
 
 --
--- Name: credential__user_group credential__user_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: credential__team credential__team_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY credential__user_group
-    ADD CONSTRAINT credential__user_group_pkey PRIMARY KEY (credential_id, user_group_id);
+ALTER TABLE ONLY credential__team
+    ADD CONSTRAINT credential__team_pkey PRIMARY KEY (credential_id, team_id);
 
 
 --
@@ -3730,11 +3811,11 @@ ALTER TABLE ONLY document_set__connector_credential_pair
 
 
 --
--- Name: document_set__user_group document_set__user_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: document_set__team document_set__team_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY document_set__user_group
-    ADD CONSTRAINT document_set__user_group_pkey PRIMARY KEY (document_set_id, user_group_id);
+ALTER TABLE ONLY document_set__team
+    ADD CONSTRAINT document_set__team_pkey PRIMARY KEY (document_set_id, team_id);
 
 
 --
@@ -3986,6 +4067,14 @@ ALTER TABLE ONLY kg_term
 
 
 --
+-- Name: knowledge_file knowledge_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY knowledge_file
+    ADD CONSTRAINT knowledge_file_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: license license_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4002,19 +4091,19 @@ ALTER TABLE ONLY llm_model_flow
 
 
 --
--- Name: llm_provider__persona llm_provider__persona_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: llm_provider__agent llm_provider__agent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY llm_provider__persona
-    ADD CONSTRAINT llm_provider__persona_pkey PRIMARY KEY (llm_provider_id, persona_id);
+ALTER TABLE ONLY llm_provider__agent
+    ADD CONSTRAINT llm_provider__agent_pkey PRIMARY KEY (llm_provider_id, agent_id);
 
 
 --
--- Name: llm_provider__user_group llm_provider__user_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: llm_provider__team llm_provider__team_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY llm_provider__user_group
-    ADD CONSTRAINT llm_provider__user_group_pkey PRIMARY KEY (llm_provider_id, user_group_id);
+ALTER TABLE ONLY llm_provider__team
+    ADD CONSTRAINT llm_provider__team_pkey PRIMARY KEY (llm_provider_id, team_id);
 
 
 --
@@ -4050,11 +4139,11 @@ ALTER TABLE ONLY mcp_connection_config
 
 
 --
--- Name: mcp_server__user_group mcp_server__user_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: mcp_server__team mcp_server__team_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY mcp_server__user_group
-    ADD CONSTRAINT mcp_server__user_group_pkey PRIMARY KEY (mcp_server_id, user_group_id);
+ALTER TABLE ONLY mcp_server__team
+    ADD CONSTRAINT mcp_server__team_pkey PRIMARY KEY (mcp_server_id, team_id);
 
 
 --
@@ -4138,94 +4227,6 @@ ALTER TABLE ONLY oauth_user_token
 
 
 --
--- Name: persona__document persona__document_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__document
-    ADD CONSTRAINT persona__document_pkey PRIMARY KEY (persona_id, document_id);
-
-
---
--- Name: persona__document_set persona__document_set_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__document_set
-    ADD CONSTRAINT persona__document_set_pkey PRIMARY KEY (persona_id, document_set_id);
-
-
---
--- Name: persona__hierarchy_node persona__hierarchy_node_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__hierarchy_node
-    ADD CONSTRAINT persona__hierarchy_node_pkey PRIMARY KEY (persona_id, hierarchy_node_id);
-
-
---
--- Name: persona__persona_label persona__persona_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__persona_label
-    ADD CONSTRAINT persona__persona_label_pkey PRIMARY KEY (persona_id, persona_label_id);
-
-
---
--- Name: persona__tool persona__tool_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__tool
-    ADD CONSTRAINT persona__tool_pkey PRIMARY KEY (persona_id, tool_id);
-
-
---
--- Name: persona__knowledge_file persona__knowledge_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__knowledge_file
-    ADD CONSTRAINT persona__knowledge_file_pkey PRIMARY KEY (persona_id, knowledge_file_id);
-
-
---
--- Name: persona__user_group persona__user_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__user_group
-    ADD CONSTRAINT persona__user_group_pkey PRIMARY KEY (persona_id, user_group_id);
-
-
---
--- Name: persona__user persona__user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__user
-    ADD CONSTRAINT persona__user_pkey PRIMARY KEY (persona_id, user_id);
-
-
---
--- Name: persona_label persona_category_name_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona_label
-    ADD CONSTRAINT persona_category_name_key UNIQUE (name);
-
-
---
--- Name: persona_label persona_category_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona_label
-    ADD CONSTRAINT persona_category_pkey PRIMARY KEY (id);
-
-
---
--- Name: persona persona_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona
-    ADD CONSTRAINT persona_pkey PRIMARY KEY (id);
-
-
---
 -- Name: personal_access_token personal_access_token_hashed_token_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4242,19 +4243,11 @@ ALTER TABLE ONLY personal_access_token
 
 
 --
--- Name: workspace__knowledge_file workspace__knowledge_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: public_external_team public_external_team_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY workspace__knowledge_file
-    ADD CONSTRAINT workspace__knowledge_file_pkey PRIMARY KEY (workspace_id, knowledge_file_id);
-
-
---
--- Name: public_external_user_group public_external_user_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public_external_user_group
-    ADD CONSTRAINT public_external_user_group_pkey PRIMARY KEY (external_user_group_id, cc_pair_id);
+ALTER TABLE ONLY public_external_team
+    ADD CONSTRAINT public_external_team_pkey PRIMARY KEY (external_team_id, cc_pair_id);
 
 
 --
@@ -4306,11 +4299,11 @@ ALTER TABLE ONLY scim_group_mapping
 
 
 --
--- Name: scim_group_mapping scim_group_mapping_user_group_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: scim_group_mapping scim_group_mapping_team_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_group_mapping
-    ADD CONSTRAINT scim_group_mapping_user_group_id_key UNIQUE (user_group_id);
+    ADD CONSTRAINT scim_group_mapping_team_id_key UNIQUE (team_id);
 
 
 --
@@ -4474,6 +4467,30 @@ ALTER TABLE ONLY task_queue_jobs
 
 
 --
+-- Name: team__connector_credential_pair team__connector_credential_pair_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY team__connector_credential_pair
+    ADD CONSTRAINT team__connector_credential_pair_pkey PRIMARY KEY (team_id, cc_pair_id, is_current);
+
+
+--
+-- Name: team team_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY team
+    ADD CONSTRAINT team_name_key UNIQUE (name);
+
+
+--
+-- Name: team team_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY team
+    ADD CONSTRAINT team_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: tenant_usage tenant_usage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4482,11 +4499,11 @@ ALTER TABLE ONLY tenant_usage
 
 
 --
--- Name: token_rate_limit__user_group token_rate_limit__user_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: token_rate_limit__team token_rate_limit__team_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY token_rate_limit__user_group
-    ADD CONSTRAINT token_rate_limit__user_group_pkey PRIMARY KEY (rate_limit_id, user_group_id);
+ALTER TABLE ONLY token_rate_limit__team
+    ADD CONSTRAINT token_rate_limit__team_pkey PRIMARY KEY (rate_limit_id, team_id);
 
 
 --
@@ -4626,59 +4643,19 @@ ALTER TABLE ONLY usage_reports
 
 
 --
--- Name: user__external_user_group_id user__external_user_group_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user__external_team_id user__external_team_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user__external_user_group_id
-    ADD CONSTRAINT user__external_user_group_id_pkey PRIMARY KEY (user_id, external_user_group_id, cc_pair_id);
-
-
---
--- Name: user__user_group user__user_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY user__user_group
-    ADD CONSTRAINT user__user_group_pkey PRIMARY KEY (user_group_id, user_id);
+ALTER TABLE ONLY user__external_team_id
+    ADD CONSTRAINT user__external_team_id_pkey PRIMARY KEY (user_id, external_team_id, cc_pair_id);
 
 
 --
--- Name: knowledge_file knowledge_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user__team user__team_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY knowledge_file
-    ADD CONSTRAINT knowledge_file_pkey PRIMARY KEY (id);
-
-
---
--- Name: workspace workspace_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY workspace
-    ADD CONSTRAINT workspace_pkey PRIMARY KEY (id);
-
-
---
--- Name: user_group__connector_credential_pair user_group__connector_credential_pair_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY user_group__connector_credential_pair
-    ADD CONSTRAINT user_group__connector_credential_pair_pkey PRIMARY KEY (user_group_id, cc_pair_id, is_current);
-
-
---
--- Name: user_group user_group_name_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY user_group
-    ADD CONSTRAINT user_group_name_key UNIQUE (name);
-
-
---
--- Name: user_group user_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY user_group
-    ADD CONSTRAINT user_group_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY user__team
+    ADD CONSTRAINT user__team_pkey PRIMARY KEY (team_id, user_id);
 
 
 --
@@ -4698,10 +4675,26 @@ ALTER TABLE ONLY workflow_execution
 
 
 --
--- Name: _builtin_persona_name_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: workspace__knowledge_file workspace__knowledge_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX _builtin_persona_name_idx ON persona USING btree (name) WHERE (builtin_persona = true);
+ALTER TABLE ONLY workspace__knowledge_file
+    ADD CONSTRAINT workspace__knowledge_file_pkey PRIMARY KEY (workspace_id, knowledge_file_id);
+
+
+--
+-- Name: workspace workspace_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY workspace
+    ADD CONSTRAINT workspace_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: _builtin_agent_name_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX _builtin_agent_name_idx ON agent USING btree (name) WHERE (builtin_agent = true);
 
 
 --
@@ -4765,6 +4758,20 @@ CREATE INDEX idx_workspace__knowledge_file_knowledge_file_id ON workspace__knowl
 --
 
 CREATE INDEX ix_accesstoken_created_at ON accesstoken USING btree (created_at);
+
+
+--
+-- Name: ix_agent__document_document_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_agent__document_document_id ON agent__document USING btree (document_id);
+
+
+--
+-- Name: ix_agent__hierarchy_node_hierarchy_node_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_agent__hierarchy_node_hierarchy_node_id ON agent__hierarchy_node USING btree (hierarchy_node_id);
 
 
 --
@@ -5349,24 +5356,24 @@ CREATE INDEX ix_kg_term_id_term ON kg_term USING btree (id_term);
 
 
 --
--- Name: ix_llm_provider__persona_composite; Type: INDEX; Schema: public; Owner: -
+-- Name: ix_llm_provider__agent_agent_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ix_llm_provider__persona_composite ON llm_provider__persona USING btree (persona_id, llm_provider_id);
-
-
---
--- Name: ix_llm_provider__persona_llm_provider_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX ix_llm_provider__persona_llm_provider_id ON llm_provider__persona USING btree (llm_provider_id);
+CREATE INDEX ix_llm_provider__agent_agent_id ON llm_provider__agent USING btree (agent_id);
 
 
 --
--- Name: ix_llm_provider__persona_persona_id; Type: INDEX; Schema: public; Owner: -
+-- Name: ix_llm_provider__agent_composite; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ix_llm_provider__persona_persona_id ON llm_provider__persona USING btree (persona_id);
+CREATE INDEX ix_llm_provider__agent_composite ON llm_provider__agent USING btree (agent_id, llm_provider_id);
+
+
+--
+-- Name: ix_llm_provider__agent_llm_provider_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_llm_provider__agent_llm_provider_id ON llm_provider__agent USING btree (llm_provider_id);
 
 
 --
@@ -5454,20 +5461,6 @@ CREATE INDEX ix_permission_sync_attempt_status_time ON doc_permission_sync_attem
 
 
 --
--- Name: ix_persona__document_document_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX ix_persona__document_document_id ON persona__document USING btree (document_id);
-
-
---
--- Name: ix_persona__hierarchy_node_hierarchy_node_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX ix_persona__hierarchy_node_hierarchy_node_id ON persona__hierarchy_node USING btree (hierarchy_node_id);
-
-
---
 -- Name: ix_personal_access_token_expires_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5475,24 +5468,17 @@ CREATE INDEX ix_personal_access_token_expires_at ON personal_access_token USING 
 
 
 --
--- Name: ix_workspace__knowledge_file_workspace_id_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: ix_public_external_team_cc_pair_id_stale; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ix_workspace__knowledge_file_workspace_id_created_at ON workspace__knowledge_file USING btree (workspace_id, created_at DESC);
-
-
---
--- Name: ix_public_external_user_group_cc_pair_id_stale; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX ix_public_external_user_group_cc_pair_id_stale ON public_external_user_group USING btree (cc_pair_id, stale);
+CREATE INDEX ix_public_external_team_cc_pair_id_stale ON public_external_team USING btree (cc_pair_id, stale);
 
 
 --
--- Name: ix_public_external_user_group_stale; Type: INDEX; Schema: public; Owner: -
+-- Name: ix_public_external_team_stale; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ix_public_external_user_group_stale ON public_external_user_group USING btree (stale);
+CREATE INDEX ix_public_external_team_stale ON public_external_team USING btree (stale);
 
 
 --
@@ -5594,17 +5580,17 @@ CREATE INDEX ix_tool_mcp_server_enabled ON tool USING btree (mcp_server_id, enab
 
 
 --
--- Name: ix_user__external_user_group_id_cc_pair_id_stale; Type: INDEX; Schema: public; Owner: -
+-- Name: ix_user__external_team_id_cc_pair_id_stale; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ix_user__external_user_group_id_cc_pair_id_stale ON user__external_user_group_id USING btree (cc_pair_id, stale);
+CREATE INDEX ix_user__external_team_id_cc_pair_id_stale ON user__external_team_id USING btree (cc_pair_id, stale);
 
 
 --
--- Name: ix_user__external_user_group_id_stale; Type: INDEX; Schema: public; Owner: -
+-- Name: ix_user__external_team_id_stale; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ix_user__external_user_group_id_stale ON user__external_user_group_id USING btree (stale);
+CREATE INDEX ix_user__external_team_id_stale ON user__external_team_id USING btree (stale);
 
 
 --
@@ -5612,6 +5598,13 @@ CREATE INDEX ix_user__external_user_group_id_stale ON user__external_user_group_
 --
 
 CREATE UNIQUE INDEX ix_user_email ON "user" USING btree (email);
+
+
+--
+-- Name: ix_workspace__knowledge_file_workspace_id_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_workspace__knowledge_file_workspace_id_created_at ON workspace__knowledge_file USING btree (workspace_id, created_at DESC);
 
 
 --
@@ -5651,11 +5644,171 @@ ALTER TABLE ONLY accesstoken
 
 
 --
--- Name: agent_workflow_step agent_workflow_step_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: agent__agent_label agent__agent_label_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__agent_label
+    ADD CONSTRAINT agent__agent_label_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id);
+
+
+--
+-- Name: agent__agent_label agent__agent_label_agent_label_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__agent_label
+    ADD CONSTRAINT agent__agent_label_agent_label_id_fkey FOREIGN KEY (agent_label_id) REFERENCES agent_label(id) ON DELETE CASCADE;
+
+
+--
+-- Name: agent__document agent__document_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__document
+    ADD CONSTRAINT agent__document_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id) ON DELETE CASCADE;
+
+
+--
+-- Name: agent__document agent__document_document_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__document
+    ADD CONSTRAINT agent__document_document_id_fkey FOREIGN KEY (document_id) REFERENCES document(id) ON DELETE CASCADE;
+
+
+--
+-- Name: agent__document_set agent__document_set_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__document_set
+    ADD CONSTRAINT agent__document_set_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id);
+
+
+--
+-- Name: agent__document_set agent__document_set_document_set_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__document_set
+    ADD CONSTRAINT agent__document_set_document_set_id_fkey FOREIGN KEY (document_set_id) REFERENCES document_set(id);
+
+
+--
+-- Name: agent__hierarchy_node agent__hierarchy_node_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__hierarchy_node
+    ADD CONSTRAINT agent__hierarchy_node_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id) ON DELETE CASCADE;
+
+
+--
+-- Name: agent__hierarchy_node agent__hierarchy_node_hierarchy_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__hierarchy_node
+    ADD CONSTRAINT agent__hierarchy_node_hierarchy_node_id_fkey FOREIGN KEY (hierarchy_node_id) REFERENCES hierarchy_node(id) ON DELETE CASCADE;
+
+
+--
+-- Name: agent__knowledge_file agent__knowledge_file_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__knowledge_file
+    ADD CONSTRAINT agent__knowledge_file_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id);
+
+
+--
+-- Name: agent__knowledge_file agent__knowledge_file_knowledge_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__knowledge_file
+    ADD CONSTRAINT agent__knowledge_file_knowledge_file_id_fkey FOREIGN KEY (knowledge_file_id) REFERENCES knowledge_file(id);
+
+
+--
+-- Name: agent__team agent__team_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__team
+    ADD CONSTRAINT agent__team_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id);
+
+
+--
+-- Name: agent__team agent__team_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__team
+    ADD CONSTRAINT agent__team_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id);
+
+
+--
+-- Name: agent__tool agent__tool_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__tool
+    ADD CONSTRAINT agent__tool_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id) ON DELETE CASCADE;
+
+
+--
+-- Name: agent__tool agent__tool_tool_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__tool
+    ADD CONSTRAINT agent__tool_tool_id_fkey FOREIGN KEY (tool_id) REFERENCES tool(id) ON DELETE CASCADE;
+
+
+--
+-- Name: agent__user agent__user_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__user
+    ADD CONSTRAINT agent__user_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id);
+
+
+--
+-- Name: agent agent__user_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent
+    ADD CONSTRAINT agent__user_fk FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- Name: agent__user_specific_config agent__user_specific_config_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__user_specific_config
+    ADD CONSTRAINT agent__user_specific_config_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id) ON DELETE CASCADE;
+
+
+--
+-- Name: agent__user_specific_config agent__user_specific_config_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__user_specific_config
+    ADD CONSTRAINT agent__user_specific_config_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE;
+
+
+--
+-- Name: agent__user agent__user_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent__user
+    ADD CONSTRAINT agent__user_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- Name: agent agent_workflow_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent
+    ADD CONSTRAINT agent_workflow_id_fkey FOREIGN KEY (workflow_id) REFERENCES agent_workflow(id) ON DELETE SET NULL;
+
+
+--
+-- Name: agent_workflow_step agent_workflow_step_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY agent_workflow_step
-    ADD CONSTRAINT agent_workflow_step_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id) ON DELETE CASCADE;
+    ADD CONSTRAINT agent_workflow_step_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id) ON DELETE CASCADE;
 
 
 --
@@ -5680,22 +5833,6 @@ ALTER TABLE ONLY agent_workflow
 
 ALTER TABLE ONLY artifact
     ADD CONSTRAINT artifact_session_id_fkey FOREIGN KEY (session_id) REFERENCES build_session(id) ON DELETE CASCADE;
-
-
---
--- Name: assistant__user_specific_config assistant__user_specific_config_assistant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY assistant__user_specific_config
-    ADD CONSTRAINT assistant__user_specific_config_assistant_id_fkey FOREIGN KEY (assistant_id) REFERENCES persona(id) ON DELETE CASCADE;
-
-
---
--- Name: assistant__user_specific_config assistant__user_specific_config_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY assistant__user_specific_config
-    ADD CONSTRAINT assistant__user_specific_config_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE;
 
 
 --
@@ -5811,19 +5948,19 @@ ALTER TABLE ONLY connector_credential_pair
 
 
 --
--- Name: credential__user_group credential__user_group_credential_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: credential__team credential__team_credential_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY credential__user_group
-    ADD CONSTRAINT credential__user_group_credential_id_fkey FOREIGN KEY (credential_id) REFERENCES credential(id);
+ALTER TABLE ONLY credential__team
+    ADD CONSTRAINT credential__team_credential_id_fkey FOREIGN KEY (credential_id) REFERENCES credential(id);
 
 
 --
--- Name: credential__user_group credential__user_group_user_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: credential__team credential__team_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY credential__user_group
-    ADD CONSTRAINT credential__user_group_user_group_id_fkey FOREIGN KEY (user_group_id) REFERENCES user_group(id);
+ALTER TABLE ONLY credential__team
+    ADD CONSTRAINT credential__team_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id);
 
 
 --
@@ -5835,6 +5972,14 @@ ALTER TABLE ONLY credential
 
 
 --
+-- Name: discord_channel_config discord_channel_config_agent_override_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY discord_channel_config
+    ADD CONSTRAINT discord_channel_config_agent_override_id_fkey FOREIGN KEY (agent_override_id) REFERENCES agent(id) ON DELETE SET NULL;
+
+
+--
 -- Name: discord_channel_config discord_channel_config_guild_config_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5843,19 +5988,11 @@ ALTER TABLE ONLY discord_channel_config
 
 
 --
--- Name: discord_channel_config discord_channel_config_persona_override_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY discord_channel_config
-    ADD CONSTRAINT discord_channel_config_persona_override_id_fkey FOREIGN KEY (persona_override_id) REFERENCES persona(id) ON DELETE SET NULL;
-
-
---
--- Name: discord_guild_config discord_guild_config_default_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: discord_guild_config discord_guild_config_default_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY discord_guild_config
-    ADD CONSTRAINT discord_guild_config_default_persona_id_fkey FOREIGN KEY (default_persona_id) REFERENCES persona(id) ON DELETE SET NULL;
+    ADD CONSTRAINT discord_guild_config_default_agent_id_fkey FOREIGN KEY (default_agent_id) REFERENCES agent(id) ON DELETE SET NULL;
 
 
 --
@@ -5939,27 +6076,27 @@ ALTER TABLE ONLY document_set__connector_credential_pair
 
 
 --
+-- Name: document_set__team document_set__team_document_set_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY document_set__team
+    ADD CONSTRAINT document_set__team_document_set_id_fkey FOREIGN KEY (document_set_id) REFERENCES document_set(id);
+
+
+--
+-- Name: document_set__team document_set__team_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY document_set__team
+    ADD CONSTRAINT document_set__team_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id);
+
+
+--
 -- Name: document_set__user document_set__user_document_set_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY document_set__user
     ADD CONSTRAINT document_set__user_document_set_id_fkey FOREIGN KEY (document_set_id) REFERENCES document_set(id);
-
-
---
--- Name: document_set__user_group document_set__user_group_document_set_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY document_set__user_group
-    ADD CONSTRAINT document_set__user_group_document_set_id_fkey FOREIGN KEY (document_set_id) REFERENCES document_set(id);
-
-
---
--- Name: document_set__user_group document_set__user_group_user_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY document_set__user_group
-    ADD CONSTRAINT document_set__user_group_user_group_id_fkey FOREIGN KEY (user_group_id) REFERENCES user_group(id);
 
 
 --
@@ -6027,6 +6164,14 @@ ALTER TABLE ONLY file_content
 
 
 --
+-- Name: agent fk_agent_default_model_configuration_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY agent
+    ADD CONSTRAINT fk_agent_default_model_configuration_id FOREIGN KEY (default_model_configuration_id) REFERENCES model_configuration(id) ON DELETE SET NULL;
+
+
+--
 -- Name: chat_message fk_chat_message_latest_child_message_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6043,11 +6188,11 @@ ALTER TABLE ONLY chat_message
 
 
 --
--- Name: chat_session fk_chat_session_persona_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: chat_session fk_chat_session_agent_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY chat_session
-    ADD CONSTRAINT fk_chat_session_persona_id FOREIGN KEY (persona_id) REFERENCES persona(id);
+    ADD CONSTRAINT fk_chat_session_agent_id FOREIGN KEY (agent_id) REFERENCES agent(id);
 
 
 --
@@ -6091,30 +6236,6 @@ ALTER TABLE ONLY index_attempt
 
 
 --
--- Name: persona fk_persona_default_model_configuration_id; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona
-    ADD CONSTRAINT fk_persona_default_model_configuration_id FOREIGN KEY (default_model_configuration_id) REFERENCES model_configuration(id) ON DELETE SET NULL;
-
-
---
--- Name: workspace__knowledge_file fk_workspace__knowledge_file_workspace_id; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY workspace__knowledge_file
-    ADD CONSTRAINT fk_workspace__knowledge_file_workspace_id FOREIGN KEY (workspace_id) REFERENCES workspace(id);
-
-
---
--- Name: workspace__knowledge_file fk_workspace__knowledge_file_knowledge_file_id; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY workspace__knowledge_file
-    ADD CONSTRAINT fk_workspace__knowledge_file_knowledge_file_id FOREIGN KEY (knowledge_file_id) REFERENCES knowledge_file(id);
-
-
---
 -- Name: tool_call fk_tool_call_chat_session_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6139,11 +6260,27 @@ ALTER TABLE ONLY tool_call
 
 
 --
--- Name: user__external_user_group_id fk_user__external_user_group_id_cc_pair_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user__external_team_id fk_user__external_team_id_cc_pair_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user__external_user_group_id
-    ADD CONSTRAINT fk_user__external_user_group_id_cc_pair_id FOREIGN KEY (cc_pair_id) REFERENCES connector_credential_pair(id) ON DELETE CASCADE;
+ALTER TABLE ONLY user__external_team_id
+    ADD CONSTRAINT fk_user__external_team_id_cc_pair_id FOREIGN KEY (cc_pair_id) REFERENCES connector_credential_pair(id) ON DELETE CASCADE;
+
+
+--
+-- Name: workspace__knowledge_file fk_workspace__knowledge_file_knowledge_file_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY workspace__knowledge_file
+    ADD CONSTRAINT fk_workspace__knowledge_file_knowledge_file_id FOREIGN KEY (knowledge_file_id) REFERENCES knowledge_file(id);
+
+
+--
+-- Name: workspace__knowledge_file fk_workspace__knowledge_file_workspace_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY workspace__knowledge_file
+    ADD CONSTRAINT fk_workspace__knowledge_file_workspace_id FOREIGN KEY (workspace_id) REFERENCES workspace(id);
 
 
 --
@@ -6387,35 +6524,35 @@ ALTER TABLE ONLY llm_model_flow
 
 
 --
--- Name: llm_provider__persona llm_provider__persona_llm_provider_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: llm_provider__agent llm_provider__agent_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY llm_provider__persona
-    ADD CONSTRAINT llm_provider__persona_llm_provider_id_fkey FOREIGN KEY (llm_provider_id) REFERENCES llm_provider(id) ON DELETE CASCADE;
-
-
---
--- Name: llm_provider__persona llm_provider__persona_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY llm_provider__persona
-    ADD CONSTRAINT llm_provider__persona_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id) ON DELETE CASCADE;
+ALTER TABLE ONLY llm_provider__agent
+    ADD CONSTRAINT llm_provider__agent_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id) ON DELETE CASCADE;
 
 
 --
--- Name: llm_provider__user_group llm_provider__user_group_llm_provider_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: llm_provider__agent llm_provider__agent_llm_provider_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY llm_provider__user_group
-    ADD CONSTRAINT llm_provider__user_group_llm_provider_id_fkey FOREIGN KEY (llm_provider_id) REFERENCES llm_provider(id);
+ALTER TABLE ONLY llm_provider__agent
+    ADD CONSTRAINT llm_provider__agent_llm_provider_id_fkey FOREIGN KEY (llm_provider_id) REFERENCES llm_provider(id) ON DELETE CASCADE;
 
 
 --
--- Name: llm_provider__user_group llm_provider__user_group_user_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: llm_provider__team llm_provider__team_llm_provider_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY llm_provider__user_group
-    ADD CONSTRAINT llm_provider__user_group_user_group_id_fkey FOREIGN KEY (user_group_id) REFERENCES user_group(id);
+ALTER TABLE ONLY llm_provider__team
+    ADD CONSTRAINT llm_provider__team_llm_provider_id_fkey FOREIGN KEY (llm_provider_id) REFERENCES llm_provider(id);
+
+
+--
+-- Name: llm_provider__team llm_provider__team_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY llm_provider__team
+    ADD CONSTRAINT llm_provider__team_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id);
 
 
 --
@@ -6427,19 +6564,19 @@ ALTER TABLE ONLY mcp_connection_config
 
 
 --
--- Name: mcp_server__user_group mcp_server__user_group_mcp_server_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: mcp_server__team mcp_server__team_mcp_server_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY mcp_server__user_group
-    ADD CONSTRAINT mcp_server__user_group_mcp_server_id_fkey FOREIGN KEY (mcp_server_id) REFERENCES mcp_server(id) ON DELETE CASCADE;
+ALTER TABLE ONLY mcp_server__team
+    ADD CONSTRAINT mcp_server__team_mcp_server_id_fkey FOREIGN KEY (mcp_server_id) REFERENCES mcp_server(id) ON DELETE CASCADE;
 
 
 --
--- Name: mcp_server__user_group mcp_server__user_group_user_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: mcp_server__team mcp_server__team_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY mcp_server__user_group
-    ADD CONSTRAINT mcp_server__user_group_user_group_id_fkey FOREIGN KEY (user_group_id) REFERENCES user_group(id);
+ALTER TABLE ONLY mcp_server__team
+    ADD CONSTRAINT mcp_server__team_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id);
 
 
 --
@@ -6515,150 +6652,6 @@ ALTER TABLE ONLY oauth_user_token
 
 
 --
--- Name: persona__document persona__document_document_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__document
-    ADD CONSTRAINT persona__document_document_id_fkey FOREIGN KEY (document_id) REFERENCES document(id) ON DELETE CASCADE;
-
-
---
--- Name: persona__document persona__document_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__document
-    ADD CONSTRAINT persona__document_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id) ON DELETE CASCADE;
-
-
---
--- Name: persona__document_set persona__document_set_document_set_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__document_set
-    ADD CONSTRAINT persona__document_set_document_set_id_fkey FOREIGN KEY (document_set_id) REFERENCES document_set(id);
-
-
---
--- Name: persona__document_set persona__document_set_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__document_set
-    ADD CONSTRAINT persona__document_set_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id);
-
-
---
--- Name: persona__hierarchy_node persona__hierarchy_node_hierarchy_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__hierarchy_node
-    ADD CONSTRAINT persona__hierarchy_node_hierarchy_node_id_fkey FOREIGN KEY (hierarchy_node_id) REFERENCES hierarchy_node(id) ON DELETE CASCADE;
-
-
---
--- Name: persona__hierarchy_node persona__hierarchy_node_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__hierarchy_node
-    ADD CONSTRAINT persona__hierarchy_node_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id) ON DELETE CASCADE;
-
-
---
--- Name: persona__persona_label persona__persona_label_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__persona_label
-    ADD CONSTRAINT persona__persona_label_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id);
-
-
---
--- Name: persona__persona_label persona__persona_label_persona_label_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__persona_label
-    ADD CONSTRAINT persona__persona_label_persona_label_id_fkey FOREIGN KEY (persona_label_id) REFERENCES persona_label(id) ON DELETE CASCADE;
-
-
---
--- Name: persona__tool persona__tool_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__tool
-    ADD CONSTRAINT persona__tool_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id) ON DELETE CASCADE;
-
-
---
--- Name: persona__tool persona__tool_tool_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__tool
-    ADD CONSTRAINT persona__tool_tool_id_fkey FOREIGN KEY (tool_id) REFERENCES tool(id) ON DELETE CASCADE;
-
-
---
--- Name: persona__knowledge_file persona__knowledge_file_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__knowledge_file
-    ADD CONSTRAINT persona__knowledge_file_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id);
-
-
---
--- Name: persona__knowledge_file persona__knowledge_file_knowledge_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__knowledge_file
-    ADD CONSTRAINT persona__knowledge_file_knowledge_file_id_fkey FOREIGN KEY (knowledge_file_id) REFERENCES knowledge_file(id);
-
-
---
--- Name: persona persona__user_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona
-    ADD CONSTRAINT persona__user_fk FOREIGN KEY (user_id) REFERENCES "user"(id);
-
-
---
--- Name: persona__user_group persona__user_group_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__user_group
-    ADD CONSTRAINT persona__user_group_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id);
-
-
---
--- Name: persona__user_group persona__user_group_user_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__user_group
-    ADD CONSTRAINT persona__user_group_user_group_id_fkey FOREIGN KEY (user_group_id) REFERENCES user_group(id);
-
-
---
--- Name: persona__user persona__user_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__user
-    ADD CONSTRAINT persona__user_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id);
-
-
---
--- Name: persona__user persona__user_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona__user
-    ADD CONSTRAINT persona__user_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
-
-
---
--- Name: persona persona_workflow_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY persona
-    ADD CONSTRAINT persona_workflow_id_fkey FOREIGN KEY (workflow_id) REFERENCES agent_workflow(id) ON DELETE SET NULL;
-
-
---
 -- Name: personal_access_token personal_access_token_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6667,11 +6660,11 @@ ALTER TABLE ONLY personal_access_token
 
 
 --
--- Name: public_external_user_group public_external_user_group_cc_pair_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: public_external_team public_external_team_cc_pair_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public_external_user_group
-    ADD CONSTRAINT public_external_user_group_cc_pair_id_fkey FOREIGN KEY (cc_pair_id) REFERENCES connector_credential_pair(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public_external_team
+    ADD CONSTRAINT public_external_team_cc_pair_id_fkey FOREIGN KEY (cc_pair_id) REFERENCES connector_credential_pair(id) ON DELETE CASCADE;
 
 
 --
@@ -6691,11 +6684,11 @@ ALTER TABLE ONLY sandbox
 
 
 --
--- Name: scim_group_mapping scim_group_mapping_user_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: scim_group_mapping scim_group_mapping_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_group_mapping
-    ADD CONSTRAINT scim_group_mapping_user_group_id_fkey FOREIGN KEY (user_group_id) REFERENCES user_group(id) ON DELETE CASCADE;
+    ADD CONSTRAINT scim_group_mapping_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id) ON DELETE CASCADE;
 
 
 --
@@ -6731,11 +6724,11 @@ ALTER TABLE ONLY slack_channel_config__standard_answer_category
 
 
 --
--- Name: slack_channel_config slack_channel_config_persona_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: slack_channel_config slack_channel_config_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY slack_channel_config
-    ADD CONSTRAINT slack_channel_config_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES persona(id);
+    ADD CONSTRAINT slack_channel_config_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agent(id);
 
 
 --
@@ -6771,19 +6764,35 @@ ALTER TABLE ONLY standard_answer__standard_answer_category
 
 
 --
--- Name: token_rate_limit__user_group token_rate_limit__user_group_rate_limit_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: team__connector_credential_pair team__connector_credential_pair_cc_pair_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY token_rate_limit__user_group
-    ADD CONSTRAINT token_rate_limit__user_group_rate_limit_id_fkey FOREIGN KEY (rate_limit_id) REFERENCES token_rate_limit(id);
+ALTER TABLE ONLY team__connector_credential_pair
+    ADD CONSTRAINT team__connector_credential_pair_cc_pair_id_fkey FOREIGN KEY (cc_pair_id) REFERENCES connector_credential_pair(id);
 
 
 --
--- Name: token_rate_limit__user_group token_rate_limit__user_group_user_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: team__connector_credential_pair team__connector_credential_pair_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY token_rate_limit__user_group
-    ADD CONSTRAINT token_rate_limit__user_group_user_group_id_fkey FOREIGN KEY (user_group_id) REFERENCES user_group(id);
+ALTER TABLE ONLY team__connector_credential_pair
+    ADD CONSTRAINT team__connector_credential_pair_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id);
+
+
+--
+-- Name: token_rate_limit__team token_rate_limit__team_rate_limit_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY token_rate_limit__team
+    ADD CONSTRAINT token_rate_limit__team_rate_limit_id_fkey FOREIGN KEY (rate_limit_id) REFERENCES token_rate_limit(id);
+
+
+--
+-- Name: token_rate_limit__team token_rate_limit__team_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY token_rate_limit__team
+    ADD CONSTRAINT token_rate_limit__team_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id);
 
 
 --
@@ -6843,43 +6852,19 @@ ALTER TABLE ONLY usage_reports
 
 
 --
--- Name: user__user_group user__user_group_user_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user__team user__team_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user__user_group
-    ADD CONSTRAINT user__user_group_user_group_id_fkey FOREIGN KEY (user_group_id) REFERENCES user_group(id);
-
-
---
--- Name: user__user_group user__user_group_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY user__user_group
-    ADD CONSTRAINT user__user_group_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+ALTER TABLE ONLY user__team
+    ADD CONSTRAINT user__team_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id);
 
 
 --
--- Name: workspace workspace_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user__team user__team_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY workspace
-    ADD CONSTRAINT workspace_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
-
-
---
--- Name: user_group__connector_credential_pair user_group__connector_credential_pair_cc_pair_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY user_group__connector_credential_pair
-    ADD CONSTRAINT user_group__connector_credential_pair_cc_pair_id_fkey FOREIGN KEY (cc_pair_id) REFERENCES connector_credential_pair(id);
-
-
---
--- Name: user_group__connector_credential_pair user_group__connector_credential_pair_user_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY user_group__connector_credential_pair
-    ADD CONSTRAINT user_group__connector_credential_pair_user_group_id_fkey FOREIGN KEY (user_group_id) REFERENCES user_group(id);
+ALTER TABLE ONLY user__team
+    ADD CONSTRAINT user__team_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
 
 
 --
@@ -6915,14 +6900,18 @@ ALTER TABLE ONLY workflow_execution
 
 
 --
+-- Name: workspace workspace_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY workspace
+    ADD CONSTRAINT workspace_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-
-
--- ===== SEED DATA: built-in tools + default assistant + default search settings =====
-
-INSERT INTO persona (id, name, deleted, description, num_chunks, llm_model_version_override, user_id, llm_relevance_filter, llm_filter_extraction, recency_bias, is_visible, display_priority, starter_messages, is_public, llm_model_provider_override, uploaded_image_id, chunks_above, chunks_below, builtin_persona, is_default_persona, search_start_date, system_prompt, task_prompt, datetime_aware, replace_base_system_prompt, icon_name, default_model_configuration_id, workflow_id, max_output_tokens) VALUES (0, 'Assistant', false, 'Your AI assistant with search, web browsing, and image generation capabilities.', 25, NULL, NULL, false, true, 'AUTO', true, 0, NULL, true, NULL, NULL, 0, 0, true, true, NULL, NULL, NULL, true, false, NULL, NULL, NULL, NULL);
+INSERT INTO agent (id, name, deleted, description, num_chunks, llm_model_version_override, user_id, llm_relevance_filter, llm_filter_extraction, recency_bias, is_visible, display_priority, starter_messages, is_public, llm_model_provider_override, uploaded_image_id, chunks_above, chunks_below, builtin_agent, is_default_agent, search_start_date, system_prompt, task_prompt, datetime_aware, replace_base_system_prompt, icon_name, default_model_configuration_id, workflow_id, max_output_tokens) VALUES (0, 'Assistant', false, 'Your AI assistant with search, web browsing, and image generation capabilities.', 25, NULL, NULL, false, true, 'AUTO', true, 0, NULL, true, NULL, NULL, 0, 0, true, true, NULL, NULL, NULL, true, false, NULL, NULL, NULL, NULL);
 INSERT INTO tool (id, name, description, in_code_tool_id, openapi_schema, user_id, display_name, custom_headers, passthrough_auth, mcp_server_id, mcp_input_schema, enabled, oauth_config_id) VALUES (5, 'OktaProfileTool', 'The Okta Profile Action allows the agent to fetch the current user''s information from Okta. This may include the user''s name, email, phone number, address, and other details such as their manager and direct reports.', 'OktaProfileTool', NULL, NULL, 'Okta Profile', NULL, false, NULL, NULL, true, NULL);
 INSERT INTO tool (id, name, description, in_code_tool_id, openapi_schema, user_id, display_name, custom_headers, passthrough_auth, mcp_server_id, mcp_input_schema, enabled, oauth_config_id) VALUES (3, 'web_search', 'The Web Search Action allows the agent to perform internet searches for up-to-date information.', 'WebSearchTool', NULL, NULL, 'Web Search', NULL, false, NULL, NULL, true, NULL);
 INSERT INTO tool (id, name, description, in_code_tool_id, openapi_schema, user_id, display_name, custom_headers, passthrough_auth, mcp_server_id, mcp_input_schema, enabled, oauth_config_id) VALUES (2, 'generate_image', 'The Image Generation Action allows the agent to use DALL-E 3 or GPT-IMAGE-1 to generate images. The action will be used when the user asks the agent to generate an image.', 'ImageGenerationTool', NULL, NULL, 'Image Generation', NULL, false, NULL, NULL, true, NULL);
@@ -6934,12 +6923,12 @@ INSERT INTO tool (id, name, description, in_code_tool_id, openapi_schema, user_i
 INSERT INTO tool (id, name, description, in_code_tool_id, openapi_schema, user_id, display_name, custom_headers, passthrough_auth, mcp_server_id, mcp_input_schema, enabled, oauth_config_id) VALUES (10, 'MemoryTool', 'Save memories about the user for future conversations.', 'MemoryTool', NULL, NULL, 'Add Memory', NULL, false, NULL, NULL, true, NULL);
 INSERT INTO tool (id, name, description, in_code_tool_id, openapi_schema, user_id, display_name, custom_headers, passthrough_auth, mcp_server_id, mcp_input_schema, enabled, oauth_config_id) VALUES (1, 'internal_search', 'The Search Action allows the agent to search through connected knowledge to help build an answer.', 'SearchTool', NULL, NULL, 'Knowledge Search', NULL, false, NULL, NULL, true, NULL);
 INSERT INTO tool (id, name, description, in_code_tool_id, openapi_schema, user_id, display_name, custom_headers, passthrough_auth, mcp_server_id, mcp_input_schema, enabled, oauth_config_id) VALUES (139, 'HttpRequestTool', 'Make HTTP requests to any URL. Supports GET, POST, PUT, DELETE, PATCH methods with custom headers and request body.', 'HttpRequestTool', NULL, NULL, 'HTTP Request', NULL, false, NULL, NULL, true, NULL);
-INSERT INTO persona__tool (persona_id, tool_id) VALUES (0, 1);
-INSERT INTO persona__tool (persona_id, tool_id) VALUES (0, 2);
-INSERT INTO persona__tool (persona_id, tool_id) VALUES (0, 6);
-INSERT INTO persona__tool (persona_id, tool_id) VALUES (0, 7);
+INSERT INTO agent__tool (agent_id, tool_id) VALUES (0, 1);
+INSERT INTO agent__tool (agent_id, tool_id) VALUES (0, 2);
+INSERT INTO agent__tool (agent_id, tool_id) VALUES (0, 6);
+INSERT INTO agent__tool (agent_id, tool_id) VALUES (0, 7);
 INSERT INTO search_settings (id, model_name, model_dim, "normalize", query_prefix, passage_prefix, index_name, status, provider_type, multipass_indexing, multilingual_expansion, embedding_precision, reduced_dimension, enable_contextual_rag, contextual_rag_llm_name, contextual_rag_llm_provider, switchover_type) VALUES (2, 'nomic-ai/nomic-embed-text-v1', 768, true, 'search_query: ', 'search_document: ', 'chunk_nomic_ai_nomic_embed_text_v1', 'PRESENT', NULL, false, '{}', 'FLOAT', NULL, false, NULL, NULL, 'REINDEX');
 
 SELECT setval(pg_get_serial_sequence('tool','id'), (SELECT max(id) FROM tool), true);
 SELECT setval(pg_get_serial_sequence('search_settings','id'), (SELECT max(id) FROM search_settings), true);
-SELECT setval(pg_get_serial_sequence('persona','id'), 1, false);
+SELECT setval(pg_get_serial_sequence('agent','id'), 1, false);
