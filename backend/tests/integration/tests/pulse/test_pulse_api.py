@@ -286,7 +286,8 @@ def test_auto_fire_interval_no_duplicates(admin: Client, schedules: list[int]) -
     if cfg["min_interval_seconds"] > 60:
         pytest.skip("server minimum interval > 60s")
     s = _create(admin, schedules, interval_seconds=60)
-    deadline = time.time() + 200
+    # generous: the first runs after a cold worker start can be slow
+    deadline = time.time() + 300
     runs: list[dict] = []
     while time.time() < deadline:
         runs = [r for r in admin.get(f"/pulse/schedules/{s['id']}/runs").json() if r["trigger"] == "scheduled"]
