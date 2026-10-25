@@ -165,9 +165,10 @@ export default function ActionsPopover({
   const { selectedSources, setSelectedSources } = filterManager;
   const [mcpServers, setMcpServers] = useState<MCPServer[]>([]);
 
-  // Use the OAuth hook
+  // OAuth status is only shown inside the open popover, so only fetch it then
   const { getToolAuthStatus, authenticateTool } = useToolOAuthStatus(
-    selectedAssistant.id
+    selectedAssistant.id,
+    open
   );
 
   const {

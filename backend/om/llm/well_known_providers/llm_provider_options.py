@@ -1,14 +1,23 @@
-import json
-import pathlib
+from functools import lru_cache
 
+from sqlalchemy import select
+
+from om.db.engine.sql_engine import get_session_with_current_tenant
+from om.db.enums import LLMModelFlowType
+from om.db.models import LLMModelFlow
+from om.db.models import LLMProvider
+from om.db.models import ModelConfiguration
 from om.llm.constants import LlmProviderNames
 from om.llm.constants import PROVIDER_DISPLAY_NAMES
 from om.llm.constants import WELL_KNOWN_PROVIDER_NAMES
 from om.llm.utils import get_max_input_tokens
-from om.llm.utils import model_supports_image_input
+from om.llm.utils import litellm_thinks_model_supports_image_input
 from om.llm.well_known_providers.auto_update_models import LLMRecommendations
 from om.llm.well_known_providers.auto_update_service import (
     fetch_llm_recommendations_from_github,
+)
+from om.llm.well_known_providers.auto_update_service import (
+    load_bundled_recommendations,
 )
 from om.llm.well_known_providers.constants import ANTHROPIC_PROVIDER_NAME
 from om.llm.well_known_providers.constants import AZURE_PROVIDER_NAME
@@ -42,18 +51,8 @@ def _get_provider_to_models_map() -> dict[str, list[str]]:
 
 
 def get_recommendations() -> LLMRecommendations:
-    """Get the recommendations from the GitHub config."""
-    recommendations_from_github = fetch_llm_recommendations_from_github()
-    if recommendations_from_github:
-        return recommendations_from_github
-
-    # Fall back to json bundled with code
-    json_path = pathlib.Path(__file__).parent / "recommended-models.json"
-    with open(json_path, "r") as f:
-        json_config = json.load(f)
-
-    recommendations_from_json = LLMRecommendations.model_validate(json_config)
-    return recommendations_from_json
+    """Get the recommended-models config, falling back to the bundled copy."""
+    return fetch_llm_recommendations_from_github() or load_bundled_recommendations()
 
 
 def is_obsolete_model(model_name: str, provider: str) -> bool:
@@ -210,8 +209,49 @@ def get_vertexai_model_names() -> list[str]:
     )
 
 
+@lru_cache(maxsize=4096)
+def _litellm_model_capabilities(model_name: str, provider_name: str) -> tuple[int, bool]:
+    """(max_input_tokens, supports_image_input) according to LiteLLM.
+
+    The LiteLLM model map is static for the life of the process, so this is safe
+    to memoize (and its "model not found" warnings are logged once, not per request).
+    """
+    return (
+        get_max_input_tokens(model_name, provider_name),
+        litellm_thinks_model_supports_image_input(model_name, provider_name),
+    )
+
+
+def _fetch_admin_vision_model_keys() -> set[tuple[str, str]]:
+    """(provider, model name) pairs that an admin has flagged as vision-capable.
+
+    Same DB check as `model_supports_image_input`, but one query for every model
+    instead of a session + query per model.
+    """
+    try:
+        with get_session_with_current_tenant() as db_session:
+            rows = db_session.execute(
+                select(LLMProvider.provider, ModelConfiguration.name)
+                .join(
+                    ModelConfiguration,
+                    ModelConfiguration.llm_provider_id == LLMProvider.id,
+                )
+                .join(
+                    LLMModelFlow,
+                    LLMModelFlow.model_configuration_id == ModelConfiguration.id,
+                )
+                .where(LLMModelFlow.llm_model_flow_type == LLMModelFlowType.VISION)
+            ).all()
+    except Exception as e:
+        logger.warning(f"Failed to query vision-capable models: {e}")
+        return set()
+    return {(provider, model_name) for provider, model_name in rows}
+
+
 def model_configurations_for_provider(
-    provider_name: str, llm_recommendations: LLMRecommendations
+    provider_name: str,
+    llm_recommendations: LLMRecommendations,
+    admin_vision_model_keys: set[tuple[str, str]] | None = None,
 ) -> list[ModelConfigurationView]:
     recommended_visible_models = llm_recommendations.get_visible_models(provider_name)
     recommended_visible_models_names = [m.name for m in recommended_visible_models]
@@ -232,24 +272,35 @@ def model_configurations_for_provider(
     if provider_name == VERTEXAI_PROVIDER_NAME:
         model_names = sorted(model_names, key=str.lower)
 
-    return [
-        ModelConfigurationView(
-            name=model_name,
-            is_visible=model_name in recommended_visible_models_names,
-            max_input_tokens=get_max_input_tokens(model_name, provider_name),
-            supports_image_input=model_supports_image_input(model_name, provider_name),
+    if admin_vision_model_keys is None:
+        admin_vision_model_keys = _fetch_admin_vision_model_keys()
+
+    model_configurations: list[ModelConfigurationView] = []
+    for model_name in model_names:
+        max_input_tokens, litellm_supports_image_input = _litellm_model_capabilities(
+            model_name, provider_name
         )
-        for model_name in model_names
-    ]
+        model_configurations.append(
+            ModelConfigurationView(
+                name=model_name,
+                is_visible=model_name in recommended_visible_models_names,
+                max_input_tokens=max_input_tokens,
+                supports_image_input=(provider_name, model_name)
+                in admin_vision_model_keys
+                or litellm_supports_image_input,
+            )
+        )
+    return model_configurations
 
 
 def fetch_available_well_known_llms() -> list[WellKnownLLMProviderDescriptor]:
     llm_recommendations = get_recommendations()
+    admin_vision_model_keys = _fetch_admin_vision_model_keys()
 
     well_known_llms = []
     for provider_name in WELL_KNOWN_PROVIDER_NAMES:
         model_configurations = model_configurations_for_provider(
-            provider_name, llm_recommendations
+            provider_name, llm_recommendations, admin_vision_model_keys
         )
         well_known_llms.append(
             WellKnownLLMProviderDescriptor(
@@ -312,8 +363,8 @@ def get_provider_display_name(provider_name: str) -> str:
 def fetch_default_model_for_provider(provider_name: str) -> str | None:
     """Fetch the default model for a provider.
 
-    First checks the GitHub-hosted recommended-models.json config (via fetch_github_config),
-    then falls back to hardcoded defaults if unavailable.
+    Uses the recommended-models config (remote copy if AUTO_LLM_CONFIG_URL is set,
+    otherwise the bundled one).
     """
     llm_recommendations = get_recommendations()
     default_model = llm_recommendations.get_default_model(provider_name)

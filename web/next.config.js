@@ -21,6 +21,16 @@ const nextConfig = {
   transpilePackages: ["@om/opal"],
   typedRoutes: true,
   reactCompiler: true,
+  experimental: {
+    // Import only the icons/helpers actually used instead of whole barrels.
+    // (Next already does this for some of these by default; listing them is harmless.)
+    optimizePackageImports: [
+      "lucide-react",
+      "react-icons",
+      "@phosphor-icons/react",
+      "date-fns",
+    ],
+  },
   images: {
     // Used to fetch favicons
     remotePatterns: [

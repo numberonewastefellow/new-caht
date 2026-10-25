@@ -2,7 +2,6 @@ from celery import shared_task
 from celery import Task
 
 from om.background.celery.apps.app_base import task_logger
-from om.configs.app_configs import AUTO_LLM_CONFIG_URL
 from om.configs.constants import OmCeleryTask
 from om.db.engine.sql_engine import get_session_with_current_tenant
 from om.llm.well_known_providers.auto_update_service import (
@@ -20,16 +19,9 @@ from om.llm.well_known_providers.auto_update_service import (
 def check_for_auto_llm_updates(
     self: Task, *, tenant_id: str  # noqa: ARG001
 ) -> bool | None:
-    """Periodic task to fetch LLM model updates from GitHub
-    and sync them to providers in Auto mode.
-
-    This task checks the GitHub-hosted config file and updates all
-    providers that have is_auto_mode=True.
+    """Periodic task to sync the recommended-models config (bundled, or
+    AUTO_LLM_CONFIG_URL if set) to providers that have is_auto_mode=True.
     """
-    if not AUTO_LLM_CONFIG_URL:
-        task_logger.debug("AUTO_LLM_CONFIG_URL not configured, skipping")
-        return None
-
     try:
         # Sync to database
         with get_session_with_current_tenant() as db_session:

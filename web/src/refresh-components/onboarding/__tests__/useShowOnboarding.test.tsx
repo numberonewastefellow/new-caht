@@ -17,21 +17,28 @@ const mockActions = {
   reset: jest.fn(),
 };
 
+const mockUseOnboardingState = jest.fn();
+
 jest.mock("@/refresh-components/onboarding/useOnboardingState", () => ({
-  useOnboardingState: () => ({
-    state: {
-      currentStep: OnboardingStep.Welcome,
-      stepIndex: 0,
-      totalSteps: 3,
-      data: {},
-      isButtonActive: true,
-      isLoading: false,
-    },
-    llmDescriptors: [],
-    actions: mockActions,
-    isLoading: false,
-  }),
+  useOnboardingState: (...args: unknown[]) => {
+    mockUseOnboardingState(...args);
+    return mockOnboardingStateResult;
+  },
 }));
+
+const mockOnboardingStateResult = {
+  state: {
+    currentStep: OnboardingStep.Welcome,
+    stepIndex: 0,
+    totalSteps: 3,
+    data: {},
+    isButtonActive: true,
+    isLoading: false,
+  },
+  llmDescriptors: [],
+  actions: mockActions,
+  isLoading: false,
+};
 
 function renderUseShowOnboarding(
   overrides: {
@@ -185,5 +192,15 @@ describe("useShowOnboarding", () => {
     );
     expect(result.current.onboardingActions).toBeDefined();
     expect(result.current.llmDescriptors).toEqual([]);
+  });
+
+  it("only asks for LLM descriptors once onboarding is shown", () => {
+    const { result } = renderUseShowOnboarding({ hasAnyProvider: true });
+    expect(result.current.showOnboarding).toBe(false);
+    expect(mockUseOnboardingState).toHaveBeenLastCalledWith(undefined, false);
+
+    mockUseOnboardingState.mockClear();
+    renderUseShowOnboarding({ hasAnyProvider: false, chatSessionsCount: 0 });
+    expect(mockUseOnboardingState).toHaveBeenLastCalledWith(undefined, true);
   });
 });

@@ -1,13 +1,4 @@
 "use client";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import remarkRehype from "remark-rehype";
-import rehypeHighlight from "rehype-highlight";
-import rehypeKatex from "rehype-katex";
-import rehypeSanitize from "rehype-sanitize";
-import rehypeStringify from "rehype-stringify";
 
 export function handleCopy(
   event: React.ClipboardEvent,
@@ -68,7 +59,31 @@ export function convertMarkdownTablesToTsv(content: string): string {
 }
 
 // For copying the entire content
-export function copyAll(content: string) {
+export async function copyAll(content: string) {
+  // The unified pipeline is only needed here, so load it on demand rather than
+  // pulling it into every page that renders messages.
+  const [
+    { unified },
+    { default: remarkParse },
+    { default: remarkGfm },
+    { default: remarkMath },
+    { default: remarkRehype },
+    { default: rehypeHighlight },
+    { default: rehypeKatex },
+    { default: rehypeSanitize },
+    { default: rehypeStringify },
+  ] = await Promise.all([
+    import("unified"),
+    import("remark-parse"),
+    import("remark-gfm"),
+    import("remark-math"),
+    import("remark-rehype"),
+    import("rehype-highlight"),
+    import("rehype-katex"),
+    import("rehype-sanitize"),
+    import("rehype-stringify"),
+  ]);
+
   // Convert markdown to HTML using unified ecosystem
   unified()
     .use(remarkParse)

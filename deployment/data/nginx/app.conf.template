@@ -54,6 +54,16 @@ server {
         proxy_http_version 1.1;
         proxy_buffering off;
 
+        # Compress JSON API responses (e.g. /api/agent ~950 kB -> ~150 kB).
+        # text/event-stream is deliberately NOT listed, so SSE token streams are
+        # never held back by the gzip buffer.
+        gzip on;
+        gzip_types application/json;
+        gzip_min_length 1024;
+        gzip_comp_level 5;
+        gzip_proxied any;
+        gzip_vary on;
+
         # timeout settings
         proxy_connect_timeout ${NGINX_PROXY_CONNECT_TIMEOUT}s;
         proxy_send_timeout ${NGINX_PROXY_SEND_TIMEOUT}s;

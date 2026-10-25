@@ -4,7 +4,6 @@ from typing import Any
 
 from celery.schedules import crontab
 
-from om.configs.app_configs import AUTO_LLM_CONFIG_URL
 from om.configs.app_configs import AUTO_LLM_UPDATE_INTERVAL_SECONDS
 from om.configs.app_configs import CHECK_TTL_MANAGEMENT_TASK_FREQUENCY_IN_HOURS
 from om.configs.app_configs import DISABLE_VECTOR_DB
@@ -186,19 +185,19 @@ beat_task_templates.extend(
     ]
 )
 
-# Add the Auto LLM update task if the config URL is set (has a default)
-if AUTO_LLM_CONFIG_URL:
-    beat_task_templates.append(
-        {
-            "name": "check-for-auto-llm-update",
-            "task": OmCeleryTask.CHECK_FOR_AUTO_LLM_UPDATE,
-            "schedule": timedelta(seconds=AUTO_LLM_UPDATE_INTERVAL_SECONDS),
-            "options": {
-                "priority": OmCeleryPriority.LOW,
-                "expires": BEAT_EXPIRES_DEFAULT,
-            },
-        }
-    )
+# Sync Auto mode LLM providers with the recommended-models config (bundled, or
+# AUTO_LLM_CONFIG_URL if set). A no-op unless the config's updated_at changed.
+beat_task_templates.append(
+    {
+        "name": "check-for-auto-llm-update",
+        "task": OmCeleryTask.CHECK_FOR_AUTO_LLM_UPDATE,
+        "schedule": timedelta(seconds=AUTO_LLM_UPDATE_INTERVAL_SECONDS),
+        "options": {
+            "priority": OmCeleryPriority.LOW,
+            "expires": BEAT_EXPIRES_DEFAULT,
+        },
+    }
+)
 
 # Add scheduled eval task if datasets are configured
 if SCHEDULED_EVAL_DATASET_NAMES:

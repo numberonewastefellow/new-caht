@@ -41,12 +41,8 @@ def test_model_configurations_vertex_are_sorted_by_name(
         lambda _provider_name: ["zeta-model", "alpha-model", "Beta-model"],
     )
     monkeypatch.setattr(
-        "om.llm.well_known_providers.llm_provider_options.get_max_input_tokens",
-        lambda _model_name, _provider_name: None,
-    )
-    monkeypatch.setattr(
-        "om.llm.well_known_providers.llm_provider_options.model_supports_image_input",
-        lambda _model_name, _provider_name: False,
+        "om.llm.well_known_providers.llm_provider_options._litellm_model_capabilities",
+        lambda _model_name, _provider_name: (None, False),
     )
 
     recommendations = _build_recommendations(
@@ -54,7 +50,7 @@ def test_model_configurations_vertex_are_sorted_by_name(
     )
 
     model_configurations = model_configurations_for_provider(
-        VERTEXAI_PROVIDER_NAME, recommendations
+        VERTEXAI_PROVIDER_NAME, recommendations, admin_vision_model_keys=set()
     )
 
     assert [model.name for model in model_configurations] == [
@@ -79,12 +75,8 @@ def test_model_configurations_non_vertex_preserve_provider_order(
         lambda _provider_name: ["model-b", "model-a"],
     )
     monkeypatch.setattr(
-        "om.llm.well_known_providers.llm_provider_options.get_max_input_tokens",
-        lambda _model_name, _provider_name: None,
-    )
-    monkeypatch.setattr(
-        "om.llm.well_known_providers.llm_provider_options.model_supports_image_input",
-        lambda _model_name, _provider_name: False,
+        "om.llm.well_known_providers.llm_provider_options._litellm_model_capabilities",
+        lambda _model_name, _provider_name: (None, False),
     )
 
     recommendations = _build_recommendations(
@@ -92,7 +84,7 @@ def test_model_configurations_non_vertex_preserve_provider_order(
     )
 
     model_configurations = model_configurations_for_provider(
-        OPENAI_PROVIDER_NAME, recommendations
+        OPENAI_PROVIDER_NAME, recommendations, admin_vision_model_keys=set()
     )
 
     assert [model.name for model in model_configurations] == [
@@ -100,3 +92,30 @@ def test_model_configurations_non_vertex_preserve_provider_order(
         "model-a",
         "model-c",
     ]
+
+
+def test_model_configurations_use_admin_vision_flags(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "om.llm.well_known_providers.llm_provider_options.fetch_models_for_provider",
+        lambda _provider_name: ["model-a", "model-b", "model-c"],
+    )
+    monkeypatch.setattr(
+        "om.llm.well_known_providers.llm_provider_options._litellm_model_capabilities",
+        lambda model_name, _provider_name: (1000, model_name == "model-c"),
+    )
+
+    recommendations = _build_recommendations(OPENAI_PROVIDER_NAME, ["model-a"])
+
+    model_configurations = model_configurations_for_provider(
+        OPENAI_PROVIDER_NAME,
+        recommendations,
+        admin_vision_model_keys={(OPENAI_PROVIDER_NAME, "model-b")},
+    )
+
+    assert {m.name: m.supports_image_input for m in model_configurations} == {
+        "model-a": False,
+        "model-b": True,  # flagged by an admin
+        "model-c": True,  # LiteLLM says so
+    }

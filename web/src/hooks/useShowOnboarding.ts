@@ -28,7 +28,7 @@ export function useShowOnboarding({
     actions: onboardingActions,
     llmDescriptors,
     isLoading: isLoadingOnboarding,
-  } = useOnboardingState(liveAssistant);
+  } = useOnboardingState(liveAssistant, showOnboarding);
 
   // Track which user we've already evaluated onboarding for.
   // Re-check when userId changes (logout/login, account switching without full reload).

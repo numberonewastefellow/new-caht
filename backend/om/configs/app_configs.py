@@ -936,11 +936,11 @@ try:
 except json.JSONDecodeError:
     pass
 
-# Auto LLM Configuration - fetches model configs from GitHub for providers in Auto mode
-AUTO_LLM_CONFIG_URL = os.environ.get(
-    "AUTO_LLM_CONFIG_URL",
-    "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/backend/onyx/llm/well_known_providers/recommended-models.json",
-)
+# Auto LLM Configuration - recommended-models config for providers in Auto mode.
+# Empty (default) = use the config bundled with the code
+# (om/llm/well_known_providers/recommended-models.json). Set to a URL to fetch a
+# remote copy instead.
+AUTO_LLM_CONFIG_URL = os.environ.get("AUTO_LLM_CONFIG_URL", "")
 
 # How often to check for auto LLM model updates (in seconds)
 AUTO_LLM_UPDATE_INTERVAL_SECONDS = int(

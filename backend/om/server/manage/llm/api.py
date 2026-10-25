@@ -431,7 +431,7 @@ def put_llm_provider(
             db_session=db_session,
         )
 
-        # If newly enabling Auto mode, sync models immediately from GitHub config
+        # If newly enabling Auto mode, sync models immediately from the recommendations config
         if transitioning_to_auto_mode:
             from om.db.llm import sync_auto_mode_models
 
@@ -498,7 +498,7 @@ def set_provider_as_default_vision(
 def get_auto_config(
     _: User = Depends(current_admin_user),
 ) -> dict:
-    """Get the current Auto mode configuration from GitHub.
+    """Get the current Auto mode configuration (bundled, or AUTO_LLM_CONFIG_URL if set).
 
     Returns the available models and default configurations for each
     supported provider type when using Auto mode.
@@ -507,7 +507,7 @@ def get_auto_config(
     if not config:
         raise HTTPException(
             status_code=502,
-            detail="Failed to fetch configuration from GitHub",
+            detail="Failed to fetch the LLM recommendations configuration",
         )
     return config.model_dump()
 

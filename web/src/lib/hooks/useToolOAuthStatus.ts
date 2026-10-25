@@ -9,7 +9,11 @@ export interface ToolAuthStatus {
   isTokenExpired: boolean;
 }
 
-export function useToolOAuthStatus(assistantId?: number) {
+/**
+ * @param enabled - when false, skip fetching (e.g. while the actions popover is
+ *   closed); the status is fetched when it becomes true.
+ */
+export function useToolOAuthStatus(assistantId?: number, enabled = true) {
   const [oauthTokenStatuses, setOauthTokenStatuses] = useState<
     OAuthTokenStatus[]
   >([]);
@@ -31,8 +35,9 @@ export function useToolOAuthStatus(assistantId?: number) {
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     fetchOAuthStatus();
-  }, [assistantId, fetchOAuthStatus]);
+  }, [assistantId, enabled, fetchOAuthStatus]);
 
   /**
    * Get OAuth status for a specific tool

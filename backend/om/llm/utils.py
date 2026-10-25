@@ -1,5 +1,6 @@
 import copy
 import re
+import threading
 from collections.abc import Callable
 from functools import lru_cache
 from typing import Any
@@ -331,8 +332,20 @@ def test_llm(llm: LLM) -> str | None:
     return error_msg
 
 
-@lru_cache(maxsize=1)  # the copy.deepcopy is expensive, so we cache the result
+_model_map_build_lock = threading.Lock()
+
+
 def get_model_map() -> dict:
+    if _build_model_map.cache_info().currsize == 0:
+        # lru_cache doesn't stop concurrent cold callers from each running the
+        # (multi-second) build, so make them wait for a single build instead.
+        with _model_map_build_lock:
+            return _build_model_map()
+    return _build_model_map()
+
+
+@lru_cache(maxsize=1)  # the copy.deepcopy is expensive, so we cache the result
+def _build_model_map() -> dict:
     import litellm
 
     DIVIDER = "/"

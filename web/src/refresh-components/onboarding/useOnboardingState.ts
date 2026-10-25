@@ -1,4 +1,5 @@
-import { useReducer, useCallback, useState, useEffect, useRef } from "react";
+import { useReducer, useCallback, useEffect, useRef } from "react";
+import useSWR from "swr";
 import { onboardingReducer, initialState } from "./reducer";
 import {
   OnboardingActions,
@@ -10,10 +11,22 @@ import {
 import { WellKnownLLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
 import { updateUserPersonalization } from "@/lib/userSettings";
 import { useUser } from "@/providers/UserProvider";
+import { UserRole } from "@/lib/types";
 import { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import { useLLMProviders } from "@/lib/hooks/useLLMProviders";
+import { errorHandlingFetcher } from "@/lib/fetcher";
 
-export function useOnboardingState(liveAssistant?: MinimalAgentSnapshot): {
+const LLM_DESCRIPTORS_URL = "/api/admin/llm/built-in/options";
+const NO_LLM_DESCRIPTORS: WellKnownLLMProviderDescriptor[] = [];
+
+/**
+ * @param fetchLlmDescriptors - only fetch the (admin-only) built-in LLM options
+ *   when the LLM setup onboarding is actually going to be shown.
+ */
+export function useOnboardingState(
+  liveAssistant?: MinimalAgentSnapshot,
+  fetchLlmDescriptors: boolean = true
+): {
   state: OnboardingState;
   llmDescriptors: WellKnownLLMProviderDescriptor[];
   actions: OnboardingActions;
@@ -32,31 +45,20 @@ export function useOnboardingState(liveAssistant?: MinimalAgentSnapshot): {
   );
   const hasLlmProviders = (llmProviders?.length ?? 0) > 0;
   const userName = user?.personalization?.name;
-  const [llmDescriptors, setLlmDescriptors] = useState<
-    WellKnownLLMProviderDescriptor[]
-  >([]);
+  const { data: llmDescriptorsData } = useSWR<WellKnownLLMProviderDescriptor[]>(
+    // The LLM setup step is admin-only (and so is the endpoint)
+    fetchLlmDescriptors && user?.role === UserRole.ADMIN
+      ? LLM_DESCRIPTORS_URL
+      : null,
+    errorHandlingFetcher,
+    { revalidateOnFocus: false, dedupingInterval: 60000 }
+  );
+  const llmDescriptors = Array.isArray(llmDescriptorsData)
+    ? llmDescriptorsData
+    : NO_LLM_DESCRIPTORS;
   const nameUpdateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
-
-  useEffect(() => {
-    refreshLlmProviders();
-    const fetchLlmDescriptors = async () => {
-      try {
-        const response = await fetch("/api/admin/llm/built-in/options");
-        if (!response.ok) {
-          setLlmDescriptors([]);
-          return;
-        }
-        const data = await response.json();
-        setLlmDescriptors(Array.isArray(data) ? data : []);
-      } catch (_e) {
-        setLlmDescriptors([]);
-      }
-    };
-
-    fetchLlmDescriptors();
-  }, []);
 
   // Navigate to the earliest incomplete step in the onboarding flow.
   // Step order: Welcome -> Name -> LlmSetup -> Complete

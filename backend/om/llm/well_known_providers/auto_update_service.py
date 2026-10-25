@@ -1,14 +1,22 @@
-"""Service for fetching and syncing LLM model configurations from GitHub.
+"""Service for fetching and syncing LLM model configurations.
 
 This service manages Auto mode LLM providers, where models and configuration
-are managed centrally via a GitHub-hosted JSON file. In Auto mode:
-- Model list is controlled by GitHub config
-- Model visibility is controlled by GitHub config
-- Default model is controlled by GitHub config
+are managed centrally via a recommended-models JSON config. In Auto mode:
+- Model list is controlled by the config
+- Model visibility is controlled by the config
+- Default model is controlled by the config
 - Admin only needs to provide API credentials
+
+The config is bundled with the code (`recommended-models.json`). If
+AUTO_LLM_CONFIG_URL is set, a remote copy is fetched instead (cached in-process).
 """
 
+import json
+import pathlib
+import threading
+import time
 from datetime import datetime
+from functools import lru_cache
 
 import httpx
 from sqlalchemy.orm import Session
@@ -24,6 +32,16 @@ logger = setup_logger()
 
 # Redis key for caching the last updated timestamp (per-tenant)
 _REDIS_KEY_LAST_UPDATED_AT = "auto_llm_update:last_updated_at"
+
+_BUNDLED_RECOMMENDATIONS_PATH = pathlib.Path(__file__).parent / "recommended-models.json"
+
+# In-process cache for the remote config (only used when AUTO_LLM_CONFIG_URL is set).
+# Failures are cached for a shorter time so an unreachable URL doesn't make every
+# request wait for the HTTP timeout.
+_REMOTE_CONFIG_TTL_SECONDS = 60 * 60
+_REMOTE_CONFIG_FAILURE_TTL_SECONDS = 5 * 60
+_remote_config_lock = threading.Lock()
+_remote_config_cache: tuple[float, LLMRecommendations | None] | None = None
 
 
 def _get_cached_last_updated_at() -> datetime | None:
@@ -53,18 +71,14 @@ def _set_cached_last_updated_at(updated_at: datetime) -> None:
         logger.warning(f"Failed to set cached last_updated_at in Redis: {e}")
 
 
-def fetch_llm_recommendations_from_github(
-    timeout: float = 30.0,
-) -> LLMRecommendations | None:
-    """Fetch LLM configuration from GitHub.
+@lru_cache(maxsize=1)
+def load_bundled_recommendations() -> LLMRecommendations:
+    """Load the recommended-models config bundled with the code (read once per process)."""
+    with open(_BUNDLED_RECOMMENDATIONS_PATH, "r") as f:
+        return LLMRecommendations.model_validate(json.load(f))
 
-    Returns:
-        GitHubLLMConfig if successful, None on error.
-    """
-    if not AUTO_LLM_CONFIG_URL:
-        logger.debug("AUTO_LLM_CONFIG_URL not configured, skipping fetch")
-        return None
 
+def _fetch_remote_recommendations(timeout: float) -> LLMRecommendations | None:
     try:
         with httpx.Client(timeout=timeout) as client:
             response = client.get(AUTO_LLM_CONFIG_URL)
@@ -73,20 +87,55 @@ def fetch_llm_recommendations_from_github(
             data = response.json()
             return LLMRecommendations.model_validate(data)
     except httpx.HTTPError as e:
-        logger.error(f"Failed to fetch LLM config from GitHub: {e}")
+        logger.error(f"Failed to fetch LLM config from {AUTO_LLM_CONFIG_URL}: {e}")
         return None
     except Exception as e:
         logger.error(f"Error parsing LLM config: {e}")
         return None
 
 
+def fetch_llm_recommendations_from_github(
+    timeout: float = 30.0,
+    use_cache: bool = True,
+) -> LLMRecommendations | None:
+    """Get the recommended-models config.
+
+    Without AUTO_LLM_CONFIG_URL this returns the bundled config. With it, the
+    remote copy is fetched and cached in-process for an hour; pass
+    `use_cache=False` to force a fresh fetch (the periodic sync does this).
+
+    Returns:
+        LLMRecommendations if available, None if the remote fetch failed.
+    """
+    global _remote_config_cache
+
+    if not AUTO_LLM_CONFIG_URL:
+        return load_bundled_recommendations()
+
+    with _remote_config_lock:
+        if use_cache and _remote_config_cache is not None:
+            fetched_at, cached_config = _remote_config_cache
+            ttl = (
+                _REMOTE_CONFIG_TTL_SECONDS
+                if cached_config is not None
+                else _REMOTE_CONFIG_FAILURE_TTL_SECONDS
+            )
+            if time.monotonic() - fetched_at < ttl:
+                return cached_config
+
+        # Fetch while holding the lock so concurrent callers share one request
+        config = _fetch_remote_recommendations(timeout)
+        _remote_config_cache = (time.monotonic(), config)
+        return config
+
+
 def sync_llm_models_from_github(
     db_session: Session,
     force: bool = False,
 ) -> dict[str, int]:
-    """Sync models from GitHub config to database for all Auto mode providers.
+    """Sync models from the recommended-models config to all Auto mode providers.
 
-    In Auto mode, EVERYTHING is controlled by GitHub config:
+    In Auto mode, EVERYTHING is controlled by the config:
     - Model list
     - Model visibility (is_visible)
     - Default model
@@ -108,16 +157,15 @@ def sync_llm_models_from_github(
         logger.debug("No providers in Auto mode found")
         return {}
 
-    # Fetch config from GitHub
-    config = fetch_llm_recommendations_from_github()
+    config = fetch_llm_recommendations_from_github(use_cache=False)
     if not config:
-        logger.warning("Failed to fetch GitHub config")
+        logger.warning("Failed to fetch LLM recommendations config")
         return {}
 
     # Skip if we've already processed this version (unless forced)
     last_updated_at = _get_cached_last_updated_at()
     if not force and last_updated_at and config.updated_at <= last_updated_at:
-        logger.debug("GitHub config unchanged, skipping sync")
+        logger.debug("LLM recommendations config unchanged, skipping sync")
         _set_cached_last_updated_at(config.updated_at)
         return {}
 
@@ -126,7 +174,7 @@ def sync_llm_models_from_github(
 
         if provider_type not in config.providers:
             logger.debug(
-                f"No config for provider type '{provider_type}' in GitHub config"
+                f"No config for provider type '{provider_type}' in recommendations"
             )
             continue
 

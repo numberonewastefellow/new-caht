@@ -21,10 +21,9 @@
  * 1. **SettingsProvider** - Application settings and feature flags
  * 2. **UserProvider** - Current user authentication and profile
  * 3. **AppBackgroundProvider** - App background image/URL based on user preferences
- * 4. **ProviderContextProvider** - LLM provider configuration
- * 5. **ModalProvider** - Global modal state management
- * 6. **AppSidebarProvider** - Sidebar open/closed state
- * 7. **AppModeProvider** - Search/Chat mode selection
+ * 4. **ModalProvider** - Global modal state management
+ * 5. **AppSidebarProvider** - Sidebar open/closed state
+ * 6. **AppModeProvider** - Search/Chat mode selection
  *
  * ## Usage
  *
@@ -46,7 +45,6 @@
  * @TODO(@raunakab): The providers wrapped by this component are currently
  * scattered across multiple directories:
  * - `@/providers/UserProvider`
- * - `@/components/chat/ProviderContext`
  * - `@/providers/SettingsProvider`
  * - `@/components/context/ModalContext`
  * - `@/providers/AppSidebarProvider`
@@ -59,7 +57,6 @@
 
 import { CombinedSettings } from "@/app/admin/settings/interfaces";
 import { UserProvider } from "@/providers/UserProvider";
-import { ProviderContextProvider } from "@/components/chat/ProviderContext";
 import { SettingsProvider } from "@/providers/SettingsProvider";
 import { User } from "@/lib/types";
 import { ModalProvider } from "@/components/context/ModalContext";
@@ -95,17 +92,15 @@ export default function AppProvider({
       >
         <FontPreferenceSync />
         <AppBackgroundProvider>
-          <ProviderContextProvider>
-            <ModalProvider user={user}>
-              <AppSidebarProvider folded={!!folded}>
-                <AppModeProvider>
-                  <QueryControllerProvider>
-                    <ToastProvider>{children}</ToastProvider>
-                  </QueryControllerProvider>
-                </AppModeProvider>
-              </AppSidebarProvider>
-            </ModalProvider>
-          </ProviderContextProvider>
+          <ModalProvider user={user}>
+            <AppSidebarProvider folded={!!folded}>
+              <AppModeProvider>
+                <QueryControllerProvider>
+                  <ToastProvider>{children}</ToastProvider>
+                </QueryControllerProvider>
+              </AppModeProvider>
+            </AppSidebarProvider>
+          </ModalProvider>
         </AppBackgroundProvider>
       </UserProvider>
     </SettingsProvider>

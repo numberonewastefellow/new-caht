@@ -1,6 +1,10 @@
 # TODO: Replace external onyx GitHub link for LLM recommended-models with our own API-served JSON
 
-> Status: **Planned — not started.** Do later.
+> Status: **Superseded.** `AUTO_LLM_CONFIG_URL` now defaults to empty, and
+> `fetch_llm_recommendations_from_github()` returns the bundled `recommended-models.json`
+> (read once per process). The backend no longer fetches over HTTP at all, not even from
+> its own API. Setting `AUTO_LLM_CONFIG_URL` still enables a remote copy, cached in-process for 1 h.
+> The bundled JSON was refreshed from upstream v1.18 (2026-10-19). The plan below is kept for history only.
 
 ## Context
 

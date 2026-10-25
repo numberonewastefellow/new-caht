@@ -24,6 +24,7 @@ import { useForcedTools } from "@/lib/hooks/useForcedTools";
 import OmInitializingLoader from "@/components/OmInitializingLoader";
 import { OmDocument, MinimalOmDocument } from "@/lib/search/interfaces";
 import { useSettingsContext } from "@/providers/SettingsProvider";
+import dynamic from "next/dynamic";
 import Dropzone from "react-dropzone";
 import AppInputBar, { AppInputBarHandle } from "@/sections/input/AppInputBar";
 import useChatSessions from "@/hooks/useChatSessions";
@@ -32,10 +33,7 @@ import useTags from "@/hooks/useTags";
 import { useDocumentSets } from "@/lib/hooks/useDocumentSets";
 import { useAgents } from "@/hooks/useAgents";
 import { AppPopup } from "@/app/app/components/AppPopup";
-import ExceptionTraceModal from "@/components/modals/ExceptionTraceModal";
 import { useUser } from "@/providers/UserProvider";
-import NoAssistantModal from "@/components/modals/NoAssistantModal";
-import TextViewModal from "@/sections/modals/TextViewModal";
 import Modal from "@/refresh-components/Modal";
 import { useSendMessageToParent } from "@/lib/extension/utils";
 import { SUBMIT_MESSAGE_TYPES } from "@/lib/extension/constants";
@@ -61,16 +59,12 @@ import FederatedOAuthModal from "@/components/chat/FederatedOAuthModal";
 import ChatScrollContainer, {
   ChatScrollContainerHandle,
 } from "@/sections/chat/ChatScrollContainer";
-import WorkspaceContextPanelLegacy from "@/app/app/components/workspaces/WorkspaceContextPanel";
 import { useWorkspacesContext } from "@/providers/WorkspacesContext";
 import {
   getWorkspaceTokenCount,
   getMaxSelectedDocumentTokens,
   KnowledgeFileStatus,
 } from "@/app/app/workspaces/workspacesService";
-import WorkspaceChatSessionList from "@/app/app/components/workspaces/WorkspaceChatSessionList";
-import WorkspaceDetailHeader from "@/app/app/components/workspaces/workspace-v2/WorkspaceDetailHeader";
-import WorkspaceDetailBody from "@/app/app/components/workspaces/workspace-v2/WorkspaceDetailBody";
 import { type WorkspaceTab } from "@/app/app/components/workspaces/workspace-v2/workspaceTheme";
 import { usePageVersion } from "@/hooks/usePageVersion";
 import { cn } from "@/lib/utils";
@@ -87,15 +81,51 @@ import useAppFocus from "@/hooks/useAppFocus";
 import { useQueryController } from "@/providers/QueryControllerProvider";
 import WelcomeMessage from "@/app/app/components/WelcomeMessage";
 import ChatUI from "@/sections/chat/ChatUI";
-import CompareView from "@/sections/chat/CompareView";
 import { useCompareController } from "@/hooks/useCompareController";
 import {
   useIsCompareMode,
   useCompareStore,
 } from "@/app/app/stores/useCompareStore";
-import SearchUI from "@/sections/SearchUI";
 import { motion, AnimatePresence } from "motion/react";
 import { useAppMode } from "@/providers/AppModeProvider";
+
+// Only rendered for specific states (modals, compare/search/workspace views), so
+// they're loaded on demand instead of shipping with the initial chat bundle.
+const ExceptionTraceModal = dynamic(
+  () => import("@/components/modals/ExceptionTraceModal"),
+  { ssr: false }
+);
+const NoAssistantModal = dynamic(
+  () => import("@/components/modals/NoAssistantModal"),
+  { ssr: false }
+);
+const TextViewModal = dynamic(() => import("@/sections/modals/TextViewModal"), {
+  ssr: false,
+});
+const WorkspaceContextPanelLegacy = dynamic(
+  () => import("@/app/app/components/workspaces/WorkspaceContextPanel"),
+  { ssr: false }
+);
+const WorkspaceChatSessionList = dynamic(
+  () => import("@/app/app/components/workspaces/WorkspaceChatSessionList"),
+  { ssr: false }
+);
+const WorkspaceDetailHeader = dynamic(
+  () =>
+    import(
+      "@/app/app/components/workspaces/workspace-v2/WorkspaceDetailHeader"
+    ),
+  { ssr: false }
+);
+const WorkspaceDetailBody = dynamic(
+  () =>
+    import("@/app/app/components/workspaces/workspace-v2/WorkspaceDetailBody"),
+  { ssr: false }
+);
+const CompareView = dynamic(() => import("@/sections/chat/CompareView"), {
+  ssr: false,
+});
+const SearchUI = dynamic(() => import("@/sections/SearchUI"), { ssr: false });
 
 interface FadeProps {
   show: boolean;

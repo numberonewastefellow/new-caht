@@ -4,6 +4,7 @@ import litellm
 
 from om.configs.model_configs import GEN_AI_MODEL_FALLBACK_MAX_TOKENS
 from om.llm.constants import LlmProviderNames
+from om.llm.utils import _build_model_map
 from om.llm.utils import find_model_obj
 from om.llm.utils import get_model_map
 
@@ -12,7 +13,7 @@ def test_partial_match_in_model_map() -> None:
     """
     We should handle adding/not adding the provider prefix to the model name.
     """
-    get_model_map.cache_clear()
+    _build_model_map.cache_clear()
 
     model_map = get_model_map()
 
@@ -57,7 +58,7 @@ def test_partial_match_in_model_map() -> None:
         assert key in result2
         assert result2[key] == value, "Unexpected value for key: {}".format(key)
 
-    get_model_map.cache_clear()
+    _build_model_map.cache_clear()
 
 
 def test_no_overwrite_in_model_map() -> None:
@@ -73,18 +74,18 @@ def test_no_overwrite_in_model_map() -> None:
     }
 
     with patch.object(litellm, "model_cost", mock_original_model_cost):
-        get_model_map.cache_clear()  # Clear the LRU cache to use the patched data
+        _build_model_map.cache_clear()  # Clear the LRU cache to use the patched data
 
         model_map = get_model_map()
         result = find_model_obj(model_map, LlmProviderNames.OPENAI, "gpt-4o")
         assert result is not None
         assert result["is_correct"] is True
 
-    get_model_map.cache_clear()
+    _build_model_map.cache_clear()
 
 
 def test_twelvelabs_pegasus_override_present() -> None:
-    get_model_map.cache_clear()
+    _build_model_map.cache_clear()
     try:
         model_map = get_model_map()
         model_obj = find_model_obj(
@@ -97,4 +98,4 @@ def test_twelvelabs_pegasus_override_present() -> None:
         assert model_obj["max_tokens"] == GEN_AI_MODEL_FALLBACK_MAX_TOKENS
         assert model_obj["supports_reasoning"] is False
     finally:
-        get_model_map.cache_clear()
+        _build_model_map.cache_clear()

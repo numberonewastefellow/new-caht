@@ -461,7 +461,9 @@ def fetch_existing_llm_providers(
         stmt = stmt.where(~LLMProviderModel.id.in_(image_gen_provider_ids))
 
     stmt = stmt.options(
-        selectinload(LLMProviderModel.model_configurations),
+        selectinload(LLMProviderModel.model_configurations).selectinload(
+            ModelConfiguration.llm_model_flows
+        ),
         selectinload(LLMProviderModel.groups),
         selectinload(LLMProviderModel.agents),
     )
@@ -479,7 +481,9 @@ def fetch_existing_llm_provider(
         select(LLMProviderModel)
         .where(LLMProviderModel.name == name)
         .options(
-            selectinload(LLMProviderModel.model_configurations),
+            selectinload(LLMProviderModel.model_configurations).selectinload(
+                ModelConfiguration.llm_model_flows
+            ),
             selectinload(LLMProviderModel.groups),
             selectinload(LLMProviderModel.agents),
         )

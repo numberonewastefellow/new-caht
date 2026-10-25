@@ -1,5 +1,6 @@
 import logging
 import sys
+import threading
 import traceback
 import warnings
 from collections.abc import AsyncGenerator
@@ -340,6 +341,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     # variable. Used to automate deployment for multiple environments. (Merged from the
     # former ee/om/main.py lifespan, which wrapped this one purely to append this call.)
     seed_db()
+
+    # Build the LiteLLM model map (a multi-second deepcopy) in the background so the
+    # first request that needs it doesn't pay for it.
+    from om.llm.utils import get_model_map
+
+    threading.Thread(
+        target=get_model_map, name="warm-litellm-model-map", daemon=True
+    ).start()
 
     yield
 

@@ -246,16 +246,15 @@ describe("BedrockOnboardingForm", () => {
       const accessKeyInput = screen.getByPlaceholderText(
         "AKIAIOSFODNN7EXAMPLE"
       );
-      await user.type(accessKeyInput, "AKIAIOSFODNN7EXAMPLE");
+      await user.click(accessKeyInput);
+      await user.paste("AKIAIOSFODNN7EXAMPLE");
 
       // Fill Secret Access Key
       const secretKeyInput = screen.getByPlaceholderText(
         "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
       );
-      await user.type(
-        secretKeyInput,
-        "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-      );
+      await user.click(secretKeyInput);
+      await user.paste("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
 
       // Click fetch models button - find by aria-label
       const fetchButton = screen.getByRole("button", {
@@ -270,7 +269,8 @@ describe("BedrockOnboardingForm", () => {
 
       // Fill model - use the textbox with the specific placeholder
       const modelInput = screen.getByPlaceholderText("Select a model");
-      await user.type(modelInput, "anthropic.claude-3-sonnet");
+      await user.click(modelInput);
+      await user.paste("anthropic.claude-3-sonnet");
     }
 
     test("submits with Access Key credentials", async () => {
@@ -367,12 +367,14 @@ describe("BedrockOnboardingForm", () => {
       const accessKeyInput = screen.getByPlaceholderText(
         "AKIAIOSFODNN7EXAMPLE"
       );
-      await user.type(accessKeyInput, "invalid-key");
+      await user.click(accessKeyInput);
+      await user.paste("invalid-key");
 
       const secretKeyInput = screen.getByPlaceholderText(
         "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
       );
-      await user.type(secretKeyInput, "invalid-secret");
+      await user.click(secretKeyInput);
+      await user.paste("invalid-secret");
 
       // Click fetch models button - find by aria-label
       const fetchButton = screen.getByRole("button", {
@@ -386,7 +388,8 @@ describe("BedrockOnboardingForm", () => {
       });
 
       const modelInput = screen.getByPlaceholderText("Select a model");
-      await user.type(modelInput, "anthropic.claude-3-sonnet");
+      await user.click(modelInput);
+      await user.paste("anthropic.claude-3-sonnet");
     }
 
     test("displays error message when API test fails", async () => {

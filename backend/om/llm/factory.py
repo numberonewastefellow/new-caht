@@ -19,6 +19,7 @@ from om.llm.interfaces import LLM
 from om.llm.multi_llm import LitellmLLM
 from om.llm.override_models import LLMOverride
 from om.llm.utils import get_max_input_tokens_from_llm_provider
+from om.llm.utils import litellm_thinks_model_supports_image_input
 from om.llm.utils import model_supports_image_input
 from om.llm.well_known_providers.constants import OLLAMA_API_KEY_CONFIG_KEY
 from om.natural_language_processing.utils import get_tokenizer
@@ -193,7 +194,13 @@ def get_default_llm_with_vision(
     )
 
     for model in sorted_models:
-        if model_supports_image_input(model.name, model.llm_provider.provider):
+        # flows are already loaded on `model`, so avoid model_supports_image_input
+        # here (it opens a new session + query per model)
+        if LLMModelFlowType.VISION in model.llm_model_flow_types or (
+            litellm_thinks_model_supports_image_input(
+                model.name, model.llm_provider.provider
+            )
+        ):
             return create_vision_llm(
                 provider_map[model.llm_provider_id],
                 model.name,
