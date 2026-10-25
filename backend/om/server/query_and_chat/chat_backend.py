@@ -856,6 +856,7 @@ async def search_chats(
             shared_status=session.shared_status,
             current_alternate_model=session.current_alternate_model,
             current_temperature_override=session.temperature_override,
+            pulse_schedule_id=session.pulse_schedule_id,
         )
 
         if session_date == today:

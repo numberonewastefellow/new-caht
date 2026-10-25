@@ -40,6 +40,8 @@ interface ChatSessionData {
   isLoaded: boolean;
   description?: string;
   agentId?: number;
+  /** Set when the session was created by a scheduled (Pulse) run. */
+  pulseScheduleId?: number | null;
 
   // Streaming duration tracking
   streamingStartTime?: number;
@@ -515,6 +517,7 @@ export const useChatSessionStore = create<ChatSessionStore>()((set, get) => ({
       isLoaded: true,
       description: backendSession?.description,
       agentId: backendSession?.agent_id,
+      pulseScheduleId: backendSession?.pulse_schedule_id ?? null,
     };
 
     const existingSession = get().sessions.get(sessionId);
@@ -634,6 +637,15 @@ export const useHasSentLocalUserMessage = () =>
       ? sessions.get(currentSessionId)
       : null;
     return currentSession?.hasSentLocalUserMessage || false;
+  });
+
+export const useCurrentPulseScheduleId = () =>
+  useChatSessionStore((state) => {
+    const { currentSessionId, sessions } = state;
+    const currentSession = currentSessionId
+      ? sessions.get(currentSessionId)
+      : null;
+    return currentSession?.pulseScheduleId ?? null;
   });
 
 export const useStreamingStartTime = () =>

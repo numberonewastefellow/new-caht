@@ -43,6 +43,7 @@ import {
   SvgTrash,
 } from "@opal/icons";
 import useOnMount from "@/hooks/useOnMount";
+import { ScheduledRunBadgeIcon } from "@/sections/schedules/StatusPill";
 import { useAgents, usePinnedAgents } from "@/hooks/useAgents";
 
 export interface PopoverSearchInputProps {
@@ -429,6 +430,9 @@ const ChatButton = memo(
             href={isDragging ? undefined : `/app?chatId=${chatSession.id}`}
             onClick={handleClick}
             transient={active}
+            leftIcon={
+              chatSession.pulse_schedule_id ? ScheduledRunBadgeIcon : undefined
+            }
             rightChildren={rightMenu}
             focused={renaming}
             nested={!!workspace}

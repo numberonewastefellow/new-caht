@@ -14,7 +14,8 @@ import { toast } from "@/hooks/useToast";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
 import { useVersionSwitch } from "@/refresh-components/VersionedPage";
-import { SvgSparkle, SvgTrash, SvgOmOctagon } from "@opal/icons";
+import { SvgSparkle, SvgTrash, SvgOmOctagon, SvgClock } from "@opal/icons";
+import ScheduleModal from "@/sections/schedules/ScheduleModal";
 
 // Accent used for one-off coloring — adapts to the active accent theme.
 const ACCENT = "var(--virtualai-accent, var(--theme-primary-05))";
@@ -85,11 +86,13 @@ function WorkflowCard({
   workflow,
   onEdit,
   onVisualEdit,
+  onSchedule,
   onDelete,
 }: {
   workflow: WorkflowSnapshot;
   onEdit: () => void;
   onVisualEdit: () => void;
+  onSchedule: () => void;
   onDelete: () => void;
 }) {
   const mode = modeMeta(workflow.orchestration_mode);
@@ -144,6 +147,9 @@ function WorkflowCard({
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
+          <Button secondary leftIcon={SvgClock} onClick={onSchedule}>
+            Schedule
+          </Button>
           <Button secondary onClick={onVisualEdit}>
             Visual
           </Button>
@@ -197,6 +203,9 @@ export default function WorkflowListPage() {
     useState<WorkflowSnapshot | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
+  const [scheduleWorkflowId, setScheduleWorkflowId] = useState<number | null>(
+    null
+  );
   const { setVersion } = useVersionSwitch();
 
   const stats = useMemo(
@@ -275,6 +284,13 @@ export default function WorkflowListPage() {
           </ConfirmationModalLayout>
         )}
       </deleteModal.Provider>
+
+      {scheduleWorkflowId != null && (
+        <ScheduleModal
+          initialWorkflowId={scheduleWorkflowId}
+          onClose={() => setScheduleWorkflowId(null)}
+        />
+      )}
 
       <SettingsLayouts.Root width="lg">
         {/* ── Hero ─────────────────────────────────────────────── */}
@@ -427,6 +443,7 @@ export default function WorkflowListPage() {
                   onVisualEdit={() =>
                     router.push(`/admin/workflows/visual/${workflow.id}`)
                   }
+                  onSchedule={() => setScheduleWorkflowId(workflow.id)}
                   onDelete={() => {
                     setWorkflowToDelete(workflow);
                     deleteModal.toggle(true);

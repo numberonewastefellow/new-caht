@@ -251,6 +251,8 @@ class ChatSessionSummary(BaseModel):
     shared_status: ChatSessionSharedStatus
     current_alternate_model: str | None = None
     current_temperature_override: float | None = None
+    # Set for Pulse scheduled-run sessions (clock badge in chat search)
+    pulse_schedule_id: int | None = None
 
 
 class ChatSessionGroup(BaseModel):

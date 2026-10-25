@@ -208,6 +208,7 @@ export default function useChatSessions(): UseChatSessionsOutput {
         workspace_id: workspaceId ?? null,
         current_alternate_model: "",
         current_temperature_override: null,
+        pulse_schedule_id: null,
       };
 
       pendingSessionsStore.add(pendingSession);

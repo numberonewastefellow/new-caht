@@ -14,6 +14,7 @@ export type AppFocusType =
   | "more-agents"
   | "workspaces-dashboard"
   | "workflows-gallery"
+  | "schedules"
   | "user-settings"
   | "shared-chat";
 
@@ -52,6 +53,10 @@ export class AppFocus {
     return this.value === "workflows-gallery";
   }
 
+  isSchedules(): boolean {
+    return this.value === "schedules";
+  }
+
   isUserSettings(): boolean {
     return this.value === "user-settings";
   }
@@ -69,6 +74,7 @@ export class AppFocus {
     | "more-agents"
     | "workspaces-dashboard"
     | "workflows-gallery"
+    | "schedules"
     | "user-settings" {
     return typeof this.value === "object" ? this.value.type : this.value;
   }
@@ -98,8 +104,14 @@ export default function useAppFocus(): AppFocus {
     return new AppFocus("workspaces-dashboard");
   }
 
+  // Check if we're on the schedules pages (list + detail). Exact-segment match
+  // so it can never be swallowed by (or swallow) another /app/* prefix.
+  if (pathname === "/app/schedules" || pathname.startsWith("/app/schedules/")) {
+    return new AppFocus("schedules");
+  }
+
   // Check if we're on the workflows gallery
-  if (pathname.startsWith("/app/workflows")) {
+  if (pathname === "/app/workflows" || pathname.startsWith("/app/workflows/")) {
     return new AppFocus("workflows-gallery");
   }
 

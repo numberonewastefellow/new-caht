@@ -171,5 +171,6 @@ export { default as SvgWorkflow } from "@opal/icons/workflow";
 export { default as SvgX } from "@opal/icons/x";
 export { default as SvgXCircle } from "@opal/icons/x-circle";
 export { default as SvgXOctagon } from "@opal/icons/x-octagon";
+export { default as SvgZap } from "@opal/icons/zap";
 export { default as SvgZoomIn } from "@opal/icons/zoom-in";
 export { default as SvgZoomOut } from "@opal/icons/zoom-out";

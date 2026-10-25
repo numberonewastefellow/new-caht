@@ -189,7 +189,9 @@ def _redact_run(run: PulseRunResponse | None) -> PulseRunResponse | None:
     """Outputs/errors of another user's runs are private to that user."""
     if run is None:
         return None
-    return run.model_copy(update={"output_preview": None, "error": None})
+    return run.model_copy(
+        update={"output_preview": None, "error": None, "chat_session_id": None}
+    )
 
 
 def _run_response(run: PulseRun, schedule: PulseSchedule, viewer: User) -> PulseRunResponse:
