@@ -87,6 +87,7 @@ POSTGRES_CELERY_WORKER_INDEXING_CHILD_APP_NAME = "celery_worker_indexing_child"
 POSTGRES_CELERY_WORKER_BACKGROUND_APP_NAME = "celery_worker_background"
 POSTGRES_CELERY_WORKER_HEAVY_APP_NAME = "celery_worker_heavy"
 POSTGRES_CELERY_WORKER_MONITORING_APP_NAME = "celery_worker_monitoring"
+POSTGRES_CELERY_WORKER_PULSE_APP_NAME = "celery_worker_pulse"
 POSTGRES_CELERY_WORKER_USER_FILE_PROCESSING_APP_NAME = (
     "celery_worker_user_file_processing"
 )
@@ -252,6 +253,10 @@ class NotificationType(str, Enum):
     RELEASE_NOTES = "release_notes"
     ASSISTANT_FILES_READY = "assistant_files_ready"
     FEATURE_ANNOUNCEMENT = "feature_announcement"
+    # Pulse (scheduled workflows)
+    PULSE_RUN_FAILED = "pulse_run_failed"
+    PULSE_NEEDS_INPUT = "pulse_needs_input"
+    PULSE_AUTO_PAUSED = "pulse_auto_paused"
 
 
 class BlobType(str, Enum):
@@ -412,6 +417,9 @@ class OmCeleryQueues:
 
     # Sandbox processing queue
     SANDBOX = "sandbox"
+
+    # Pulse: scheduled workflow runs (consumed only by the pulse_worker service)
+    PULSE = "pulse"
 
 
 class OmRedisLocks:
@@ -585,6 +593,9 @@ class OmCeleryTask:
 
     # Sandbox file sync
     SANDBOX_FILE_SYNC = "sandbox_file_sync"
+
+    # Pulse: execute one scheduled workflow run
+    PULSE_RUN_SCHEDULED_WORKFLOW = "pulse_run_scheduled_workflow"
 
 
 # this needs to correspond to the matching entry in supervisord

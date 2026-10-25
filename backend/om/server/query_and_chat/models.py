@@ -171,6 +171,8 @@ class ChatSessionDetails(BaseModel):
     shared_status: ChatSessionSharedStatus
     current_alternate_model: str | None = None
     current_temperature_override: float | None = None
+    # Set when the session was created by a Pulse scheduled run
+    pulse_schedule_id: int | None = None
 
     @classmethod
     def from_model(cls, model: ChatSession) -> "ChatSessionDetails":
@@ -183,6 +185,7 @@ class ChatSessionDetails(BaseModel):
             shared_status=model.shared_status,
             current_alternate_model=model.current_alternate_model,
             current_temperature_override=model.temperature_override,
+            pulse_schedule_id=model.pulse_schedule_id,
         )
 
 
@@ -227,6 +230,8 @@ class ChatSessionDetailResponse(BaseModel):
     deleted: bool = False
     owner_name: str | None = None
     packets: list[list[Packet]]
+    # Set when the session was created by a Pulse scheduled run (chat page banner)
+    pulse_schedule_id: int | None = None
 
 
 class AdminSearchRequest(BaseModel):
@@ -246,6 +251,8 @@ class ChatSessionSummary(BaseModel):
     shared_status: ChatSessionSharedStatus
     current_alternate_model: str | None = None
     current_temperature_override: float | None = None
+    # Set for Pulse scheduled-run sessions (clock badge in chat search)
+    pulse_schedule_id: int | None = None
 
 
 class ChatSessionGroup(BaseModel):

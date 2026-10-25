@@ -784,6 +784,129 @@ celery_worker_docfetching:
   tolerations: []
   affinity: {}
 
+# Pulse — scheduled workflow engine. One image (backend image + Pulse layer, built
+# from backend/Dockerfile.pulse), two roles selected by the entrypoint argument:
+#   scheduler: HA ticker loop; safe to run 2+ replicas (Postgres row locks + advisory lock)
+#   worker:    Celery worker consuming the `pulse` queue; scale horizontally
+# Pulse tunables shared with the api server (PULSE_MIN_INTERVAL_SECONDS, ...) live in
+# `configMap` below so every component sees the same values.
+pulse:
+  enabled: true
+  image:
+    repository: om/pulse
+    tag: ""  # Overrides the image tag whose default is global.version.
+  # Pod/container security contexts. Pulse runs unattended LLM/tool pipelines, so it
+  # is never privileged and does NOT inherit celery_shared's privileged root context.
+  podSecurityContext: {}
+  securityContext:
+    privileged: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+  # Extra environment variables for BOTH pulse roles (name: value).
+  env: {}
+  scheduler:
+    replicaCount: 2
+    podAnnotations: {}
+    podLabels:
+      scope: onyx-backend-pulse
+    deploymentLabels:
+      app: pulse-scheduler
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    # Extra environment variables for the scheduler only (name: value).
+    env: {}
+    terminationGracePeriodSeconds: 30
+    # Probe timings; the exec command (`pulse_entrypoint.sh healthcheck`) is set in the template.
+    # startupProbe allows up to 3m for the first scheduler tick.
+    startupProbe:
+      periodSeconds: 5
+      failureThreshold: 36
+      timeoutSeconds: 10
+    # The healthcheck fails when the heartbeat file is older than 2m.
+    livenessProbe:
+      periodSeconds: 30
+      failureThreshold: 3
+      timeoutSeconds: 10
+    volumes: []  # Additional volumes on the output Deployment definition.
+    volumeMounts: []  # Additional volumeMounts on the output Deployment definition.
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  worker:
+    replicaCount: 1
+    # Threads per worker pod (PULSE_WORKER_CONCURRENCY); also sizes the worker's DB pool.
+    concurrency: 4
+    logLevel: INFO  # PULSE_LOG_LEVEL
+    # Runs can take up to ~30 min (workflow timeout 1800s + PULSE_DEADLINE_MARGIN_SECONDS);
+    # give in-flight runs time to finish on scale-down / rollout.
+    terminationGracePeriodSeconds: 1900
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
+      # KEDA specific configurations (only used when autoscaling.engine is set to 'keda')
+      pollingInterval: 30  # seconds
+      cooldownPeriod: 300  # seconds
+      failureThreshold: 3  # number of failures before fallback
+      fallbackReplicas: 1  # replicas to maintain on failure
+      # Custom triggers for advanced KEDA configurations.
+      # Example — scale on the Redis backlog of the `pulse` queue. Celery uses priority
+      # sub-queues on Redis: runs are enqueued at MEDIUM priority, i.e. Redis list
+      # `pulse:2` (`pulse` holds priority-0 tasks only). The broker is Redis DB 15
+      # (REDIS_DB_NUMBER_CELERY). Requires a KEDA TriggerAuthentication that you create
+      # for the Redis password (e.g. from secret `onyx-redis`, key `redis_password`).
+      # customTriggers:
+      #   - type: redis
+      #     metadata:
+      #       address: <release>-master.<namespace>.svc.cluster.local:6379
+      #       listName: "pulse:2"
+      #       listLength: "4"  # target backlog per replica (~= worker.concurrency)
+      #       databaseIndex: "15"
+      #     authenticationRef:
+      #       name: pulse-redis-auth
+      customTriggers: []
+    podAnnotations: {}
+    podLabels:
+      scope: onyx-backend-pulse
+    deploymentLabels:
+      app: pulse-worker
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+    # Extra environment variables for the worker only (name: value).
+    env: {}
+    # Probe timings; the exec command (`pulse_entrypoint.sh healthcheck`) is set in the template.
+    startupProbe:
+      # allows up to 3m for Celery to signal worker_ready
+      periodSeconds: 5
+      failureThreshold: 36
+      timeoutSeconds: 10
+    readinessProbe:
+      periodSeconds: 10
+      failureThreshold: 3
+      timeoutSeconds: 10
+    livenessProbe:
+      periodSeconds: 60
+      failureThreshold: 5
+      timeoutSeconds: 10
+    volumes: []  # Additional volumes on the output Deployment definition.
+    volumeMounts: []  # Additional volumeMounts on the output Deployment definition.
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+
 ######################################################################
 #
 # End background workers section
@@ -1130,6 +1253,18 @@ configMap:
   CELERY_WORKER_LIGHT_CONCURRENCY: ""
   CELERY_WORKER_LIGHT_PREFETCH_MULTIPLIER: ""
   CELERY_WORKER_USER_FILE_PROCESSING_CONCURRENCY: ""
+  # Pulse (scheduled workflows). Shared by the api server (guard rails) and the
+  # pulse scheduler/worker. PULSE_WORKER_CONCURRENCY is set from pulse.worker.concurrency.
+  PULSE_TICK_SECONDS: "5"
+  PULSE_MIN_INTERVAL_SECONDS: "300"
+  PULSE_MAX_SCHEDULES_PER_USER: "20"
+  PULSE_TENANT_MAX_CONCURRENT_RUNS: "8"
+  PULSE_MISFIRE_GRACE_SECONDS: "300"
+  PULSE_MAX_CONSECUTIVE_FAILURES: "5"
+  PULSE_DEFAULT_RETENTION: "50"
+  PULSE_RUN_HISTORY_DAYS: "90"
+  PULSE_HEARTBEAT_SECONDS: "30"
+  PULSE_REAP_AFTER_SECONDS: "90"
   # VertualAIBot SlackBot Configs
   OM_BOT_DISABLE_DOCS_ONLY_ANSWER: ""
   OM_BOT_DISPLAY_ERROR_MSGS: ""

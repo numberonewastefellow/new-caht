@@ -101,11 +101,15 @@ def get_chat_sessions_by_user(
     workspace_id: int | None = None,
     only_non_workspace_chats: bool = False,
     include_failed_chats: bool = False,
+    include_pulse_runs: bool = True,
 ) -> list[ChatSession]:
     stmt = select(ChatSession).where(ChatSession.user_id == user_id)
 
     if not include_ombot_flows:
         stmt = stmt.where(ChatSession.ombot_flow.is_(False))
+
+    if not include_pulse_runs:
+        stmt = stmt.where(ChatSession.pulse_schedule_id.is_(None))
 
     stmt = stmt.order_by(desc(ChatSession.time_updated))
 

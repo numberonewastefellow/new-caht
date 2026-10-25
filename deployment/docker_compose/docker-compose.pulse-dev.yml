@@ -1,0 +1,84 @@
+# Pulse isolated dev/test stack.
+#
+# Runs Pulse (api + scheduler x2 + worker) from THIS checkout against an existing
+# VirtualAI stack's Postgres/Redis/OpenSearch/MinIO, but on a SEPARATE database and
+# separate Redis DB numbers, so the main stack (and its migrations) are untouched.
+# No indexing/background worker is started (it would write to the shared index).
+#
+# Prereqs:
+#   1. A running main stack on the docker network `virtualai_default`.
+#   2. A cloned database:  createdb sched_dev && pg_dump postgres | psql sched_dev
+#   3. An env file (NOT in git — contains secrets) with the main api_server env plus:
+#        POSTGRES_DB=sched_dev  REDIS_DB_NUMBER=3  REDIS_DB_NUMBER_CELERY=11
+#        REDIS_DB_NUMBER_CELERY_RESULT_BACKEND=10  PULSE_MIN_INTERVAL_SECONDS=60
+#   4. The Pulse image built on the main stack's backend image:
+#        docker tag <backend image> pulsedev/backend-base:local
+#        docker build -f backend/Dockerfile.pulse \
+#          --build-arg OM_BACKEND_IMAGE=pulsedev/backend-base:local -t om/pulse:dev backend
+#
+# Usage:
+#   PULSEDEV_ENV_FILE=/path/to/pulsedev.env \
+#     docker compose -p pulsedev -f docker-compose.pulse-dev.yml up -d
+#   API: http://localhost:8090   (migrations applied on start, to sched_dev only)
+
+x-pulse-dev-common: &pulse-dev-common
+  image: om/pulse:dev
+  env_file:
+    - path: ${PULSEDEV_ENV_FILE:?set PULSEDEV_ENV_FILE to the pulse dev env file}
+  restart: unless-stopped
+  networks:
+    - virtualai_default
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+services:
+  pulse_api:
+    <<: *pulse-dev-common
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - "alembic upgrade head && uvicorn om.main:app --host 0.0.0.0 --port 8080"
+    # The image's HEALTHCHECK probes the Pulse worker role; the API has no probe file
+    healthcheck:
+      disable: true
+    ports:
+      - "8090:8080"
+    volumes:
+      - ../../backend/om:/app/om
+      - ../../backend/ee:/app/ee
+      - ../../backend/shared_configs:/app/shared_configs
+      - ../../backend/alembic:/app/alembic
+      - ../../backend/alembic_tenants:/app/alembic_tenants
+      - E:/test_folder_data:/test_folder_data
+
+  pulse_scheduler:
+    <<: *pulse-dev-common
+    command: ["scheduler"]
+    environment:
+      - PULSE_ROLE=scheduler
+    deploy:
+      replicas: 2
+    depends_on:
+      - pulse_api
+    volumes:
+      - ../../backend/om:/app/om
+      - ../../backend/ee:/app/ee
+      - ../../backend/shared_configs:/app/shared_configs
+
+  pulse_worker:
+    <<: *pulse-dev-common
+    command: ["worker"]
+    stop_grace_period: 1900s
+    environment:
+      - PULSE_ROLE=worker
+      - PULSE_WORKER_CONCURRENCY=2
+    depends_on:
+      - pulse_api
+    volumes:
+      - ../../backend/om:/app/om
+      - ../../backend/ee:/app/ee
+      - ../../backend/shared_configs:/app/shared_configs
+      - E:/test_folder_data:/test_folder_data
+
+networks:
+  virtualai_default:
+    external: true

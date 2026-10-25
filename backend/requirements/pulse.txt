@@ -1,0 +1,6 @@
+# Pulse — scheduled workflow engine (om/pulse/).
+# Installed into the backend image (api_server computes next_run_at / schedule previews)
+# and therefore also into the thin Dockerfile.pulse image built FROM it.
+# Pulse-only runtime packages that the api_server does NOT need belong in Dockerfile.pulse.
+croniter==6.2.4
+    # cron expression parsing / next-fire computation (pulls python-dateutil, pytz: already pinned in default.txt)

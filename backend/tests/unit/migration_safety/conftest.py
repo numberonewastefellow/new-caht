@@ -264,6 +264,7 @@ VERSIONED_APP_MODULES = [
     "background.celery.versioned_apps.docprocessing",
     "background.celery.versioned_apps.docfetching",
     "background.celery.versioned_apps.user_file_processing",
+    "background.celery.versioned_apps.pulse_worker",
     "background.celery.versioned_apps.beat",
 ]
 

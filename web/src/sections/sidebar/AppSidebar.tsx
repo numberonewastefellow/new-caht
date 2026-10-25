@@ -57,6 +57,7 @@ import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import { useModalContext } from "@/components/context/ModalContext";
 import useScreenSize from "@/hooks/useScreenSize";
 import {
+  SvgClock,
   SvgDashboard,
   SvgDevKit,
   SvgEditBig,
@@ -66,7 +67,11 @@ import {
   SvgSearchMenu,
   SvgSparkle,
 } from "@opal/icons";
-import { makeColorfulIcon } from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
+import {
+  makeAccentColorfulIcon,
+  makeColorfulIcon,
+} from "@/refresh-components/popovers/ActionsPopover/colorfulIcons";
+import ScheduledSection from "@/sections/sidebar/ScheduledSection";
 
 // Colorful sidebar icons — colored rounded squares with white icons
 const ColorfulNewSession = makeColorfulIcon(SvgEditBig, "sidebar_new_session");
@@ -77,6 +82,8 @@ const ColorfulMoreAgents = makeColorfulIcon(SvgMoreHorizontal, "sidebar_agents")
 const ColorfulNewWorkspace = makeColorfulIcon(SvgFolderPlus, "sidebar_workspaces");
 const ColorfulWorkspaces = makeColorfulIcon(SvgDashboard, "sidebar_workspaces");
 const ColorfulWorkflows = makeColorfulIcon(SvgSparkle, "sidebar_agents");
+// Schedules uses the accent theme color so it adapts to Ocean/Emerald/Violet.
+const ColorfulSchedules = makeAccentColorfulIcon(SvgClock);
 import BuildModeIntroBackground from "@/app/craft/components/IntroBackground";
 import BuildModeIntroContent from "@/app/craft/components/IntroContent";
 import { CRAFT_PATH } from "@/app/craft/v1/constants";
@@ -554,6 +561,21 @@ const MemoizedAppSidebarInner = memo(
       ),
       [folded, activeSidebarTab]
     );
+    const schedulesButton = useMemo(
+      () => (
+        <div data-testid="AppSidebar/schedules">
+          <SidebarTab
+            leftIcon={ColorfulSchedules}
+            folded={folded}
+            href="/app/schedules"
+            transient={activeSidebarTab.isSchedules()}
+          >
+            Schedules
+          </SidebarTab>
+        </div>
+      ),
+      [folded, activeSidebarTab]
+    );
     const moreAgentsButton = useMemo(
       () => (
         <div data-testid="AppSidebar/more-agents">
@@ -680,6 +702,7 @@ const MemoizedAppSidebarInner = memo(
                 {searchChatsButton}
                 {workspacesButton}
                 {workflowsButton}
+                {schedulesButton}
                 {newWorkspaceButton}
                 {isOmCraftEnabled && buildButton}
               </div>
@@ -722,6 +745,9 @@ const MemoizedAppSidebarInner = memo(
                   ]}
                   onDragEnd={handleChatWorkspaceDragEnd}
                 >
+                  {/* Scheduled runs (hidden when the user has no schedules) */}
+                  <ScheduledSection />
+
                   {/* Recents */}
                   <RecentsSection chatSessions={chatSessions} />
                 </DndContext>

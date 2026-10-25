@@ -131,6 +131,87 @@ services:
     #   # Maps to the CA_CERT_PATH environment variable in the Dockerfile
     #   - ${CA_CERT_PATH:-./custom-ca.crt}:/etc/ssl/certs/custom-ca.crt:ro
 
+  # Pulse — scheduled workflow engine (see docs/scheduled-workflows/OPERATIONS.md)
+  pulse_scheduler:
+    image: om/pulse:${IMAGE_TAG:-latest}
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile.pulse
+      args:
+        - OM_BACKEND_IMAGE=om/om-backend:${IMAGE_TAG:-latest}
+    command: ["scheduler"]
+    depends_on:
+      - relational_db
+      - cache
+      - api_server
+    restart: unless-stopped
+    deploy:
+      replicas: ${PULSE_SCHEDULER_REPLICAS:-2}
+    environment:
+      - PULSE_ROLE=scheduler
+      - POSTGRES_HOST=relational_db
+      - REDIS_HOST=cache
+      - USE_IAM_AUTH=${USE_IAM_AUTH}
+      - AWS_REGION_NAME=${AWS_REGION_NAME-}
+    env_file:
+      - path: .env
+        required: false
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  pulse_worker:
+    image: om/pulse:${IMAGE_TAG:-latest}
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile.pulse
+      args:
+        - OM_BACKEND_IMAGE=om/om-backend:${IMAGE_TAG:-latest}
+    command: ["worker"]
+    depends_on:
+      - relational_db
+      - opensearch
+      - cache
+      - api_server
+    restart: unless-stopped
+    stop_grace_period: 1900s
+    environment:
+      - PULSE_ROLE=worker
+      - PULSE_WORKER_CONCURRENCY=${PULSE_WORKER_CONCURRENCY:-4}
+      - AUTH_TYPE=${AUTH_TYPE:-oidc}
+      - POSTGRES_HOST=relational_db
+      - REDIS_HOST=cache
+      - EMBEDDING_SERVER_URL=${EMBEDDING_SERVER_URL:-http://cortex_embed:8000/v1/embeddings}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-nomic-ai/nomic-embed-text-v1}
+      - EMBEDDING_API_KEY=${EMBEDDING_API_KEY:-}
+      - EMBEDDING_BATCH_SIZE=${EMBEDDING_BATCH_SIZE:-64}
+      - RERANK_ENABLED=${RERANK_ENABLED:-false}
+      - RERANK_SERVER_URL=${RERANK_SERVER_URL:-http://cortex_rerank:8000/v1/rerank}
+      - RERANK_MODEL=${RERANK_MODEL:-BAAI/bge-reranker-v2-m3}
+      - RERANK_API_KEY=${RERANK_API_KEY:-}
+      - USE_IAM_AUTH=${USE_IAM_AUTH}
+      - AWS_REGION_NAME=${AWS_REGION_NAME-}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY-}
+      - S3_ENDPOINT_URL=${S3_ENDPOINT_URL:-http://minio:9000}
+      - S3_AWS_ACCESS_KEY_ID=${S3_AWS_ACCESS_KEY_ID:-minioadmin}
+      - S3_AWS_SECRET_ACCESS_KEY=${S3_AWS_SECRET_ACCESS_KEY:-minioadmin}
+      - CODE_INTERPRETER_BASE_URL=${CODE_INTERPRETER_BASE_URL:-http://code-interpreter:8000}
+      - PERSISTENT_DOCUMENT_STORAGE_PATH=${PERSISTENT_DOCUMENT_STORAGE_PATH:-/app/file-system}
+    env_file:
+      - path: .env
+        required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - file-system:/app/file-system
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
   web_server:
     image: om/om-web-server:${IMAGE_TAG:-latest}
     build:

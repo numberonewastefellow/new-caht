@@ -10,6 +10,8 @@ export interface FilterableChat {
   id: string;
   label: string;
   time: string;
+  /** Created by a Pulse schedule (shows the scheduled-run icon) */
+  scheduled?: boolean;
 }
 
 interface UseChatSearchOptimisticOptions {
@@ -39,6 +41,7 @@ function transformApiResponse(response: ChatSearchResponse): FilterableChat[] {
         id: chat.id,
         label: chat.name || UNNAMED_CHAT,
         time: chat.time_created,
+        scheduled: Boolean(chat.pulse_schedule_id),
       });
     }
   }
@@ -83,6 +86,7 @@ export function useChatSearchOptimistic(
         id: chat.id,
         label: chat.name || UNNAMED_CHAT,
         time: chat.time_updated || chat.time_created,
+        scheduled: Boolean(chat.pulse_schedule_id),
       });
     }
 

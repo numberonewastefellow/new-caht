@@ -2373,6 +2373,14 @@ class ChatSession(Base):
         ForeignKey("workspace.id"), nullable=True
     )
 
+    # Set when this session was created by a Pulse scheduled workflow run.
+    # Such sessions are hidden from the regular "Your chats" list by default.
+    pulse_schedule_id: Mapped[int | None] = mapped_column(
+        ForeignKey("pulse_schedule.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
     workspace: Mapped["Workspace"] = relationship(
         "Workspace", back_populates="chat_sessions", foreign_keys=[workspace_id]
     )
@@ -5016,6 +5024,153 @@ class WorkflowExecution(Base):
     # Relationships
     workflow: Mapped[AgentWorkflow] = relationship("AgentWorkflow")
     user: Mapped[User | None] = relationship("User", foreign_keys=[user_id])
+
+
+# ========================
+# Pulse — Scheduled Workflow Models
+# ========================
+
+
+class PulseSchedule(Base):
+    """A schedule that runs a workflow automatically (cron / interval / once).
+
+    The row is the source of truth: `pulse_scheduler` replicas claim due rows
+    (`next_run_at <= now()`) with FOR UPDATE SKIP LOCKED and enqueue a run.
+    """
+
+    __tablename__ = "pulse_schedule"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    workflow_id: Mapped[int] = mapped_column(
+        ForeignKey("agent_workflow.id", ondelete="CASCADE"), nullable=False
+    )
+    # The owner; every run executes as this user
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+    # "cron" | "interval" | "once"
+    schedule_type: Mapped[str] = mapped_column(String, nullable=False)
+    cron_expression: Mapped[str | None] = mapped_column(String, nullable=True)
+    interval_seconds: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    run_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    # IANA timezone name, used for cron evaluation and template rendering
+    timezone: Mapped[str] = mapped_column(String, nullable=False, default="UTC")
+
+    # Message sent to the workflow; supports {{date}} {{now}} {{window_start}} {{window_end}}
+    input_message: Mapped[str] = mapped_column(Text, nullable=False)
+
+    # Scheduling state
+    next_run_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    last_run_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    last_run_status: Mapped[str | None] = mapped_column(String, nullable=True)
+    last_success_scheduled_for: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    consecutive_failures: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0
+    )
+    # Why the schedule was disabled by the system (None when paused by the user)
+    disabled_reason: Mapped[str | None] = mapped_column(String, nullable=True)
+    # How many run chat sessions to keep (older ones are soft-deleted)
+    retention_count: Mapped[int] = mapped_column(Integer, nullable=False, default=50)
+
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        Index(
+            "ix_pulse_schedule_due",
+            "next_run_at",
+            postgresql_where=text("enabled"),
+        ),
+    )
+
+    workflow: Mapped[AgentWorkflow] = relationship("AgentWorkflow")
+    user: Mapped[User] = relationship("User", foreign_keys=[user_id])
+
+
+class PulseRun(Base):
+    """One firing of a PulseSchedule (scheduled or manual)."""
+
+    __tablename__ = "pulse_run"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    schedule_id: Mapped[int] = mapped_column(
+        ForeignKey("pulse_schedule.id", ondelete="CASCADE"), nullable=False
+    )
+    # Nominal fire time (without jitter); the idempotency key for scheduled runs
+    scheduled_for: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    # "scheduled" | "manual"
+    trigger: Mapped[str] = mapped_column(String, nullable=False, default="scheduled")
+    # pending -> running -> succeeded | needs_input | failed | timed_out |
+    # cancelled | interrupted ; or skipped | missed
+    status: Mapped[str] = mapped_column(String, nullable=False, default="pending")
+
+    chat_session_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("chat_session.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    workflow_execution_id: Mapped[int | None] = mapped_column(
+        ForeignKey("workflow_execution.id", ondelete="SET NULL"), nullable=True
+    )
+
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    started_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    heartbeat_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    finished_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # Last time the outbox sweeper re-sent this (pending) run to the queue
+    last_enqueued_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    # Host that ran it, so a shutting-down worker can interrupt its own runs
+    worker_hostname: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    output_preview: Mapped[str | None] = mapped_column(Text, nullable=True)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    skip_reason: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    __table_args__ = (
+        Index(
+            "uq_pulse_run_schedule_slot",
+            "schedule_id",
+            "scheduled_for",
+            unique=True,
+            postgresql_where=text("trigger = 'scheduled'"),
+        ),
+        Index("ix_pulse_run_schedule_created", "schedule_id", "created_at"),
+        Index("ix_pulse_run_status_heartbeat", "status", "heartbeat_at"),
+    )
+
+    schedule: Mapped[PulseSchedule] = relationship("PulseSchedule")
 
 
 # ============================

@@ -16,6 +16,7 @@ import {
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import { useCurrentAgent } from "@/hooks/useAgents";
 import Text from "@/refresh-components/texts/Text";
+import { ScheduledRunBadgeIcon } from "@/sections/schedules/StatusPill";
 import {
   useChatSearchOptimistic,
   FilterableChat,
@@ -262,7 +263,7 @@ export default function ChatSearchCommandMenu({
                     <CommandMenu.Item
                       key={chat.id}
                       value={`chat-${chat.id}`}
-                      icon={SvgBubbleText}
+                      icon={chat.scheduled ? ScheduledRunBadgeIcon : SvgBubbleText}
                       rightContent={({ isHighlighted }) =>
                         isHighlighted ? (
                           <Text figureKeystroke text02>

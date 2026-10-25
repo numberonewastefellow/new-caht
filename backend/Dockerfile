@@ -72,6 +72,7 @@ ENV PATH="/root/.opencode/bin:${PATH}"
 # Remove py which is pulled in by retry, py is not needed and is a CVE
 COPY ./requirements/default.txt /tmp/requirements.txt
 COPY ./requirements/ee.txt /tmp/ee-requirements.txt
+COPY ./requirements/pulse.txt /tmp/pulse-requirements.txt
 # uv downloads get a longer timeout and are cached in a BuildKit cache mount (not part of the
 # image), so a build that fails on a network hiccup resumes from the cache on retry.
 # UV_LINK_MODE=copy because the cache mount and /usr/local are on different filesystems.
@@ -79,7 +80,8 @@ ENV UV_HTTP_TIMEOUT=180 \
     UV_LINK_MODE=copy
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install --system --upgrade \
         -r /tmp/requirements.txt \
-        -r /tmp/ee-requirements.txt && \
+        -r /tmp/ee-requirements.txt \
+        -r /tmp/pulse-requirements.txt && \
     pip uninstall -y py && \
     playwright install chromium && \
     playwright install-deps chromium && \

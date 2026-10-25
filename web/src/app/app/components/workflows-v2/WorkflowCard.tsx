@@ -6,7 +6,7 @@ import { cn, noProp } from "@/lib/utils";
 import { swatchForId } from "@/app/app/components/workspaces/workspace-v2/workspaceTheme";
 import { formatRelativeTime } from "@/app/app/components/workspaces/workspace_utils";
 import WorkflowGlyph from "./WorkflowGlyph";
-import { SvgStar, SvgPin, SvgUser } from "@opal/icons";
+import { SvgStar, SvgPin, SvgUser, SvgClock } from "@opal/icons";
 
 export interface WorkflowCardProps {
   workflow: WorkflowSnapshot;
@@ -15,6 +15,8 @@ export interface WorkflowCardProps {
   launchable: boolean;
   onOpen: () => void;
   onTogglePin: () => void;
+  /** Opens the "New schedule" modal prefilled with this workflow. */
+  onSchedule?: () => void;
 }
 
 function ModeBadge({ mode }: { mode: string }) {
@@ -38,6 +40,7 @@ const WorkflowCard = memo(function WorkflowCard({
   launchable,
   onOpen,
   onTogglePin,
+  onSchedule,
 }: WorkflowCardProps) {
   const { from, to } = swatchForId(workflow.id);
 
@@ -76,7 +79,26 @@ const WorkflowCard = memo(function WorkflowCard({
 
       <div className="relative flex items-start justify-between">
         <WorkflowGlyph id={workflow.id} size={40} />
-        <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+        <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+          {onSchedule && launchable && (
+            <span
+              role="button"
+              tabIndex={0}
+              aria-label="Schedule workflow"
+              title="Schedule"
+              onClick={noProp(onSchedule)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onSchedule();
+                }
+              }}
+              className="rounded-md p-1 text-text-03 hover:bg-background-tint-02 hover:text-text-05"
+            >
+              <SvgClock className="h-3.5 w-3.5" />
+            </span>
+          )}
           <span
             role="button"
             tabIndex={0}

@@ -7,6 +7,7 @@ import { useAppRouter } from "@/hooks/appNavigation";
 import type { WorkflowSnapshot } from "@/lib/workflows/interfaces";
 import { cn } from "@/lib/utils";
 import WorkflowCard from "@/app/app/components/workflows-v2/WorkflowCard";
+import ScheduleModal from "@/sections/schedules/ScheduleModal";
 import WorkflowGlyph from "@/app/app/components/workflows-v2/WorkflowGlyph";
 import { usePinnedWorkflows } from "@/app/app/components/workflows-v2/usePinnedWorkflows";
 import { formatRelativeTime } from "@/app/app/components/workspaces/workspace_utils";
@@ -37,6 +38,9 @@ export default function WorkflowGalleryPage() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<WorkflowFilter>("all");
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [scheduleWorkflowId, setScheduleWorkflowId] = useState<number | null>(
+    null
+  );
 
   // Once workflows have loaded, drop pins for any that were deleted.
   useEffect(() => {
@@ -94,6 +98,7 @@ export default function WorkflowGalleryPage() {
             launchable={workflowToAgent.has(w.id)}
             onOpen={() => launchWorkflow(w)}
             onTogglePin={() => togglePin(w.id)}
+            onSchedule={() => setScheduleWorkflowId(w.id)}
           />
         ))}
       </div>
@@ -153,6 +158,12 @@ export default function WorkflowGalleryPage() {
 
   return (
     <div className="mx-auto max-w-[1200px] px-8 py-10">
+      {scheduleWorkflowId != null && (
+        <ScheduleModal
+          initialWorkflowId={scheduleWorkflowId}
+          onClose={() => setScheduleWorkflowId(null)}
+        />
+      )}
       {/* Hero / search */}
       <div className="flex flex-col items-center text-center">
         <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border-01 bg-background-tint-01/60 px-3 py-1 text-[11px] text-text-03 backdrop-blur">
