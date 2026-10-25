@@ -32,6 +32,12 @@ Same image as `virtualai-api_server-1` (05fb5ec06800 / om/om-backend), network `
 `REDIS_DB_NUMBER_CELERY_RESULT_BACKEND=10` (main uses 0/15/14), API on host :8090, compose project `pulsedev`.
 
 ## ✅ STATUS: COMPLETE (2026-10-25) — awaiting user review
+**Current branch: `feature/pulse-scheduled-workflows`** = Pulse commits re-applied (cherry-pick) onto
+`main_multi_agent_stable` @ 8c0534480 (incl. main's Phase 4 renames, fresh-install baseline fix, load-speed work).
+Only conflict: backend/Dockerfile (kept main's uv cache mount + added requirements/pulse.txt). Re-verified on
+this branch: 43 unit + 29 migration-safety + 14 DB + 14 live API tests, tsgo 0 errors, 33 jest, compose configs
+valid, full backend image build OK (croniter inside), Pulse image built on it, FRESH-INSTALL migration from an
+empty DB runs 18 migrations to 0009. (Old branch `feature/scheduled-workflows` kept for reference.)
 Nothing pushed. Local commits on `feature/scheduled-workflows` only.
 To take it live (user's call): merge/rebase onto `main_multi_agent_stable` (main gained commit 1ab9358bd
 renaming constants — expect small conflicts in `om/configs/constants.py`; re-point `0009_pulse_schedules`
