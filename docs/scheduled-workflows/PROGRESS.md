@@ -21,15 +21,27 @@ Managed from UI. HA (`pulse_scheduler` ×2), scalable (`pulse_worker` ×N), easy
 | 3 | scheduler loop, constants, Celery pulse_worker app, Dockerfile.pulse, entrypoint, compose, Helm, env | ✅ DONE (499419498) |
 | 4 | runner (headless executor) + Celery task + notifications | ✅ DONE (499419498) |
 | 5 | /pulse API + chat-list filter / pulse_schedule_id | ✅ DONE (44a9e4527) |
-| 6 | Frontend per mockup | 🔄 frontend agent running (web/ only) |
-| 7 | Isolated test stack + DB/integration tests + chaos (kill replica / kill worker) | ✅ DONE (e98f2a516); demo workflow TODO |
-| 8 | Multi-agent review → fix → re-test | TODO |
-| 9 | USER_GUIDE.md, OPERATIONS.md, final PROGRESS, graphify update | TODO |
+| 6 | Frontend per mockup | ✅ DONE (4df17548c): live Playwright E2E 7/7 pass (light/dark + accents), 4 bugs fixed, 33 jest, tsgo 0 |
+| 7 | Isolated test stack + DB/integration tests + chaos + demo workflow 43 | ✅ DONE (e98f2a516, cdd28f761) |
+| 8 | Multi-agent review → fix → re-test | ✅ DONE: security + correctness + frontend reviews fixed (5caf9b736, 4df17548c); final regression 86 unit/DB/safety + 14 API green, 0 duplicate slots |
+| 9 | USER_GUIDE.md, OPERATIONS.md, final PROGRESS | ✅ DONE. `graphify update .` deferred to after merge (graph lives in the main checkout) |
 
 ## Test-stack isolation
 Same image as `virtualai-api_server-1` (05fb5ec06800 / om/om-backend), network `virtualai_default`,
 `POSTGRES_DB=sched_dev` (pg_dump clone of `postgres`), `REDIS_DB_NUMBER=3`, `REDIS_DB_NUMBER_CELERY=11`,
 `REDIS_DB_NUMBER_CELERY_RESULT_BACKEND=10` (main uses 0/15/14), API on host :8090, compose project `pulsedev`.
+
+## ✅ STATUS: COMPLETE (2026-10-25) — awaiting user review
+Nothing pushed. Local commits on `feature/scheduled-workflows` only.
+To take it live (user's call): merge/rebase onto `main_multi_agent_stable` (main gained commit 1ab9358bd
+renaming constants — expect small conflicts in `om/configs/constants.py`; re-point `0009_pulse_schedules`
+down_revision if main adds its own 0009), rebuild `api_server` image (installs requirements/pulse.txt),
+`docker compose build pulse_scheduler`, `docker compose up -d` (api applies 0009), then open /app/schedules.
+Known follow-ups: Pulse image runs as root (like backend); step agents not re-checked per run (like
+interactive); admin "all users" toggle in UI; frequency radio arrow-keys; `/admin/workflows` hydration warning
+(pre-existing?); multi-tenant cloud due-index (v1.1); repo ESLint 9 flat-config migration.
+Leftover test data lives only in throwaway DB `sched_dev` (drop it any time: `dropdb sched_dev`), containers
+`pulsedev-*` (stop: `docker compose -p pulsedev -f docker-compose.pulse-dev.yml down`), image om/pulse:dev.
 
 ## Test stack runbook (pulsedev)
 - Env file (secrets, NOT in git): `D:/tmp/pulsedev/base.env`; admin API key: `D:/tmp/pulsedev/apikey.txt` (sched_dev only).
@@ -45,6 +57,16 @@ Same image as `virtualai-api_server-1` (05fb5ec06800 / om/om-backend), network `
 - 60s interval: consecutive slots fired once each, 0 duplicate slots across 2 replicas (DB check).
 - Kill scheduler replica 1 → replica 2 fired the next slots on time; health showed 1 replica alive.
 - Kill worker mid-run → reaper marked `interrupted` in ~85s, execution failed, chat shows explanation (bug found+fixed: placeholder text + Redis processing flag).
+
+## Review outcomes (Phase 8)
+- Security review: 9 findings → fixed HIGH×3 (owner-only control of runs, Run-now/quota abuse, Helm privileged
+  pods), MEDIUM (run-time auth gates), LOW (error text, per-tenant lock, run cap, scheduler creds). Deferred +
+  documented: image runs as root (same as backend), step agents not individually re-checked (same as interactive).
+- Correctness review: 13 findings → all fixed or documented (hard stop, resend storm, fresh session after stop,
+  lost-run detection, failure wrapping, populate_existing, once+overlap, interval bound, needs_input retention).
+- Gotchas for future sessions: in Git-Bash use `MSYS_NO_PATHCONV=1` for `docker exec -w /app`, but then
+  `docker cp` needs Windows paths (`D:/tmp/...`); re-mint the API key after re-cloning sched_dev; uvicorn
+  keep-alive drops reused idle connections at 5s (test client retries once).
 
 ## Open questions for the user (from mockup review)
 1. Scheduled-run chats: only in "Scheduled" section + search (as built) or also in "Your chats" with badge?
