@@ -50,6 +50,7 @@ import {
   SvgSparkle,
 } from "@opal/icons";
 import ScheduleModal from "@/sections/schedules/ScheduleModal";
+import { defaultAskPrompt, inputModeOption } from "@/lib/schedules/inputModes";
 import ScheduleActionsMenu from "@/sections/schedules/ScheduleActionsMenu";
 import DeleteScheduleModal from "@/sections/schedules/DeleteScheduleModal";
 import Th from "@/sections/schedules/Th";
@@ -236,6 +237,73 @@ function AttentionBanner({
   );
 }
 
+/** What each run of this schedule receives (owner only). */
+function InputCard({
+  schedule,
+  onEdit,
+}: {
+  schedule: PulseSchedule;
+  onEdit: () => void;
+}) {
+  const option = inputModeOption(schedule.input_mode);
+  const items = schedule.input_items ?? [];
+  const showMessage =
+    schedule.input_mode === "fixed" ||
+    schedule.input_mode === "window" ||
+    (schedule.input_mode === "list" && schedule.input_message !== "{{item}}");
+  return (
+    <Card padding={1}>
+      <div className="flex items-start gap-3">
+        <div className="flex-1 min-w-0 flex flex-col gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Text
+              as="span"
+              secondaryAction
+              text03
+              className="uppercase tracking-wide text-[11.5px]"
+            >
+              Each run receives
+            </Text>
+            <span
+              className="inline-flex items-center h-[22px] px-2 rounded-full border text-[12px] font-medium"
+              style={{
+                backgroundColor: ACCENT_SUBTLE,
+                borderColor: ACCENT_GLOW_STRONG,
+                color: ACCENT,
+              }}
+            >
+              {option.label}
+            </span>
+          </div>
+          {schedule.input_mode === "ask" && (
+            <Text as="p" mainUiBody text04>
+              {`Asks you: “${
+                schedule.input_prompt ||
+                defaultAskPrompt(schedule.workflow_name ?? "this workflow")
+              }”`}
+            </Text>
+          )}
+          {schedule.input_mode === "list" && (
+            <Text as="p" mainUiBody text04>
+              {`${items.length} item${
+                items.length === 1 ? "" : "s"
+              } · next run uses “${schedule.next_item ?? items[0] ?? ""}”`}
+            </Text>
+          )}
+          {showMessage && (
+            <div className="text-[12.5px] font-mono text-text-04 bg-background-tint-00 border border-border-01 rounded-08 px-2.5 py-2 break-words whitespace-pre-wrap">
+              {schedule.input_message}
+            </div>
+          )}
+        </div>
+        <Button secondary onClick={onEdit}>
+          Edit
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
 function RunsTable({
   runs,
   filter,
@@ -349,7 +417,7 @@ export default function ScheduleDetailPage({
   scheduleId,
 }: ScheduleDetailPageProps) {
   const router = useRouter();
-  const { user } = useUser();
+  const { user, isAdmin } = useUser();
   const validId = Number.isFinite(scheduleId) ? scheduleId : null;
   const { schedule, isLoading, error } = useSchedule(validId);
   const { runs, isLoading: runsLoading } = useScheduleRuns(validId);
@@ -414,6 +482,10 @@ export default function ScheduleDetailPage({
   // Runs execute as the owner, so only the owner may run, edit, duplicate or
   // resume; an admin viewing someone else's schedule may only pause/delete it.
   const isOwner = !user || s.user_id === user.id;
+  // Admins can edit / pause / resume / delete anyone's schedule (ownership never
+  // changes); Run now and Duplicate stay owner-only (runs execute as the owner).
+  const canEdit = isOwner || isAdmin;
+  const updatedByOther = !!s.updated_by_email && s.updated_by_id !== s.user_id;
 
   async function toggle(enabled: boolean) {
     setBusy(true);
@@ -436,7 +508,18 @@ export default function ScheduleDetailPage({
         />
       </deleteModal.Provider>
       {editing && (
-        <ScheduleModal schedule={s} onClose={() => setEditing(false)} />
+        <ScheduleModal
+          schedule={s}
+          onClose={() => setEditing(false)}
+          allowRunNow={isOwner}
+          ownerNote={
+            isOwner
+              ? null
+              : `You are editing ${
+                  s.owner_email ?? "another user"
+                }'s schedule as an admin. It stays theirs and keeps running as them; they will be notified.`
+          }
+        />
       )}
 
       <SettingsLayouts.Root width="lg">
@@ -472,29 +555,39 @@ export default function ScheduleDetailPage({
                         ? `Created by you on ${created}`
                         : `Owned by ${s.owner_email ?? "another user"}`}
                     </span>
+                    {updatedByOther && (
+                      <>
+                        <span>·</span>
+                        <span>{`Last updated by ${
+                          s.updated_by_id === user?.id
+                            ? "you"
+                            : s.updated_by_email
+                        }`}</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
                 {isOwner && (
-                  <>
-                    <Button
-                      secondary
-                      leftIcon={SvgPlayCircle}
-                      onClick={() => runNowWithToast(s)}
-                      disabled={s.disabled_reason === "workflow_deleted"}
-                    >
-                      Run now
-                    </Button>
-                    <Button
-                      secondary
-                      leftIcon={SvgEdit}
-                      onClick={() => setEditing(true)}
-                    >
-                      Edit
-                    </Button>
-                  </>
+                  <Button
+                    secondary
+                    leftIcon={SvgPlayCircle}
+                    onClick={() => runNowWithToast(s)}
+                    disabled={s.disabled_reason === "workflow_deleted"}
+                  >
+                    Run now
+                  </Button>
+                )}
+                {canEdit && (
+                  <Button
+                    secondary
+                    leftIcon={SvgEdit}
+                    onClick={() => setEditing(true)}
+                  >
+                    Edit
+                  </Button>
                 )}
                 <label className="inline-flex items-center gap-2 h-9 px-3 rounded-08 border border-border-01 bg-background-tint-00 cursor-pointer">
                   <Switch
@@ -502,8 +595,7 @@ export default function ScheduleDetailPage({
                     disabled={
                       busy ||
                       s.disabled_reason === "workflow_deleted" ||
-                      // Admins may pause someone else's schedule, not resume it
-                      (!isOwner && !s.enabled)
+                      !canEdit
                     }
                     aria-label="Enabled"
                     onCheckedChange={toggle}
@@ -580,6 +672,10 @@ export default function ScheduleDetailPage({
                 </Text>
               )}
             </div>
+
+            {canEdit && (
+              <InputCard schedule={s} onEdit={() => setEditing(true)} />
+            )}
 
             <AttentionBanner
               schedule={s}

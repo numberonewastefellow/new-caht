@@ -21,7 +21,7 @@ import chardet
 import openpyxl
 from PIL import Image
 
-from om.configs.constants import OM_METADATA_FILENAME
+from om.configs.constants import METADATA_FILENAMES
 from om.configs.llm_configs import get_image_extraction_and_analysis_enabled
 from om.file_processing.file_types import OmFileExtensions
 from om.file_processing.file_types import OmMimeTypes
@@ -108,7 +108,7 @@ def load_files_from_zip(
             if (
                 ignore_macos_resource_fork_files
                 and is_macos_resource_fork_file(file_info.filename)
-            ) or file_info.filename == OM_METADATA_FILENAME:
+            ) or file_info.filename in METADATA_FILENAMES:
                 continue
 
             with zip_file.open(file_info.filename, "r") as subfile:
@@ -119,12 +119,14 @@ def load_files_from_zip(
 def _extract_om_metadata(line: str) -> dict | None:
     """
     Example: first line has:
-        <!-- ONYX_METADATA={"title": "..."} -->
+        <!-- OM_METADATA={"title": "..."} -->
       or
-        #ONYX_METADATA={"title":"..."}
+        #OM_METADATA={"title":"..."}
+    The legacy marker name ONYX_METADATA (from the upstream project) is still accepted because
+    users' existing documents contain it.
     """
-    html_comment_pattern = r"<!--\s*ONYX_METADATA=\{(.*?)\}\s*-->"
-    hashtag_pattern = r"#ONYX_METADATA=\{(.*?)\}"
+    html_comment_pattern = r"<!--\s*(?:OM|ONYX)_METADATA=\{(.*?)\}\s*-->"
+    hashtag_pattern = r"#(?:OM|ONYX)_METADATA=\{(.*?)\}"
 
     html_comment_match = re.search(html_comment_pattern, line)
     hashtag_match = re.search(hashtag_pattern, line)

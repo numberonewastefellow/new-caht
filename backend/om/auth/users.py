@@ -95,6 +95,7 @@ from om.configs.app_configs import USER_AUTH_SECRET
 from om.configs.app_configs import VALID_EMAIL_DOMAINS
 from om.configs.app_configs import WEB_DOMAIN
 from om.configs.constants import ANONYMOUS_USER_COOKIE_NAME
+from om.configs.constants import LEGACY_ANONYMOUS_USER_COOKIE_NAME
 from om.configs.constants import ANONYMOUS_USER_EMAIL
 from om.configs.constants import ANONYMOUS_USER_UUID
 from om.configs.constants import AuthType
@@ -722,15 +723,21 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         response: Optional[Response] = None,
     ) -> None:
         try:
-            if response and request and ANONYMOUS_USER_COOKIE_NAME in request.cookies:
-                response.delete_cookie(
+            if response and request:
+                for cookie_name in (
                     ANONYMOUS_USER_COOKIE_NAME,
-                    # Ensure cookie deletion doesn't override other cookies by setting the same path/domain
-                    path="/",
-                    domain=None,
-                    secure=WEB_DOMAIN.startswith("https"),
-                )
-                logger.debug(f"Deleted anonymous user cookie for user {user.email}")
+                    LEGACY_ANONYMOUS_USER_COOKIE_NAME,
+                ):
+                    if cookie_name not in request.cookies:
+                        continue
+                    response.delete_cookie(
+                        cookie_name,
+                        # Ensure cookie deletion doesn't override other cookies by setting the same path/domain
+                        path="/",
+                        domain=None,
+                        secure=WEB_DOMAIN.startswith("https"),
+                    )
+                    logger.debug(f"Deleted anonymous user cookie for user {user.email}")
         except Exception:
             logger.exception("Error deleting anonymous user cookie")
 

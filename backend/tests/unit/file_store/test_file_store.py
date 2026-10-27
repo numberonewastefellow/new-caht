@@ -141,7 +141,7 @@ class TestExternalStorageFileStore:
     def test_s3_key_generation_default_prefix(self) -> None:
         """Test S3 key generation with default prefix"""
         with (
-            patch("om.file_store.file_store.S3_FILE_STORE_PREFIX", "onyx-files"),
+            patch("om.file_store.file_store.S3_FILE_STORE_PREFIX", "om-files"),
             patch(
                 "om.file_store.file_store.get_current_tenant_id",
                 return_value="test-tenant",
@@ -149,7 +149,7 @@ class TestExternalStorageFileStore:
         ):
             file_store = S3BackedFileStore(bucket_name="test-bucket")
             s3_key: str = file_store._get_s3_key("test-file.txt")
-            assert s3_key == "onyx-files/test-tenant/test-file.txt"
+            assert s3_key == "om-files/test-tenant/test-file.txt"
 
     def test_s3_key_generation_custom_prefix(self) -> None:
         """Test S3 key generation with custom prefix"""
@@ -168,7 +168,7 @@ class TestExternalStorageFileStore:
 
     def test_s3_key_generation_with_different_tenant_ids(self) -> None:
         """Test S3 key generation with different tenant IDs"""
-        with patch("om.file_store.file_store.S3_FILE_STORE_PREFIX", "onyx-files"):
+        with patch("om.file_store.file_store.S3_FILE_STORE_PREFIX", "om-files"):
             file_store = S3BackedFileStore(bucket_name="test-bucket")
 
             # Test with tenant ID "tenant-1"
@@ -177,7 +177,7 @@ class TestExternalStorageFileStore:
                 return_value="tenant-1",
             ):
                 s3_key = file_store._get_s3_key("document.pdf")
-                assert s3_key == "onyx-files/tenant-1/document.pdf"
+                assert s3_key == "om-files/tenant-1/document.pdf"
 
             # Test with tenant ID "tenant-2"
             with patch(
@@ -185,7 +185,7 @@ class TestExternalStorageFileStore:
                 return_value="tenant-2",
             ):
                 s3_key = file_store._get_s3_key("document.pdf")
-                assert s3_key == "onyx-files/tenant-2/document.pdf"
+                assert s3_key == "om-files/tenant-2/document.pdf"
 
             # Test with default tenant (public)
             with patch(
@@ -193,7 +193,7 @@ class TestExternalStorageFileStore:
                 return_value="public",
             ):
                 s3_key = file_store._get_s3_key("document.pdf")
-                assert s3_key == "onyx-files/public/document.pdf"
+                assert s3_key == "om-files/public/document.pdf"
 
     @patch("boto3.client")
     def test_s3_save_file_mock(
@@ -216,7 +216,7 @@ class TestExternalStorageFileStore:
             patch(
                 "om.file_store.file_store.S3_FILE_STORE_BUCKET_NAME", "test-bucket"
             ),
-            patch("om.file_store.file_store.S3_FILE_STORE_PREFIX", "onyx-files"),
+            patch("om.file_store.file_store.S3_FILE_STORE_PREFIX", "om-files"),
             patch("om.file_store.file_store.S3_AWS_ACCESS_KEY_ID", "test-key"),
             patch("om.file_store.file_store.S3_AWS_SECRET_ACCESS_KEY", "test-secret"),
         ):
@@ -241,7 +241,7 @@ class TestExternalStorageFileStore:
                 mock_s3_client.put_object.assert_called_once()
                 call_args = mock_s3_client.put_object.call_args
                 assert call_args[1]["Bucket"] == "test-bucket"
-                assert call_args[1]["Key"] == "onyx-files/public/test-file.txt"
+                assert call_args[1]["Key"] == "om-files/public/test-file.txt"
                 assert call_args[1]["ContentType"] == "text/plain"
 
     def test_minio_client_initialization(self) -> None:

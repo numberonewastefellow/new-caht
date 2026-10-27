@@ -7,6 +7,7 @@ schedules; admins can list/manage everyone's (`?all_users=true`).
 
 from datetime import datetime
 from datetime import timedelta
+from uuid import UUID
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -57,6 +58,7 @@ from om.db.pulse import RUN_TIMED_OUT
 from om.pulse.access import get_accessible_workflow
 from om.pulse.access import PulseAccessError
 from om.pulse.dispatch import enqueue_pulse_run
+from om.pulse.notifications import notify_owner_of_admin_change
 from om.pulse.scheduler import SCHEDULER_PRESENCE_KEY_PREFIX
 from om.pulse.spec import spec_from_schedule
 from om.pulse.timing import describe
@@ -64,6 +66,11 @@ from om.pulse.timing import next_fire_after
 from om.pulse.timing import next_fires
 from om.pulse.timing import ScheduleSpec
 from om.pulse.timing import ScheduleValidationError
+from om.pulse.inputs import DEFAULT_LIST_MESSAGE
+from om.pulse.inputs import DEFAULT_WINDOW_MESSAGE
+from om.pulse.inputs import INPUT_MODES
+from om.pulse.inputs import InputValidationError
+from om.pulse.inputs import normalize_inputs
 from om.pulse.timing import TEMPLATE_VARIABLES
 from om.pulse.timing import validate_spec
 from om.redis.redis_pool import get_redis_client
@@ -86,6 +93,8 @@ logger = setup_logger()
 router = APIRouter(prefix="/pulse")
 admin_router = APIRouter(prefix="/admin/pulse")
 
+INPUT_FIELDS = ("input_mode", "input_message", "input_prompt", "input_items")
+
 TIMING_FIELDS = (
     "schedule_type",
     "cron_expression",
@@ -106,12 +115,13 @@ def _is_admin(user: User) -> bool:
 
 def _require_owner(schedule: PulseSchedule, user: User, action: str) -> None:
     """Runs execute AS the owner (their documents, files and connected accounts), so
-    only the owner may change what runs or trigger a run. Admins can view (without
-    outputs), pause and delete other users' schedules."""
+    only the owner may trigger a run or copy the schedule. Admins can view, edit,
+    pause/resume and delete any schedule — ownership never changes and the owner is
+    notified of admin changes."""
     if schedule.user_id != user.id:
         raise HTTPException(
             status_code=403,
-            detail=f"Only the schedule's owner can {action}. Admins can pause or delete it.",
+            detail=f"Only the schedule's owner can {action}. Admins can edit, pause or delete it.",
         )
 
 
@@ -132,6 +142,15 @@ def _validated_spec(spec: ScheduleSpec, now: datetime) -> ScheduleSpec:
             spec, min_interval_seconds=PULSE_MIN_INTERVAL_SECONDS, now=now
         )
     except ScheduleValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+def _validated_inputs(
+    *, mode: str, message: str | None, prompt: str | None, items: list[str] | None
+) -> tuple[str, str, str | None, list[str] | None]:
+    try:
+        return normalize_inputs(mode=mode, message=message, prompt=prompt, items=items)
+    except InputValidationError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -158,9 +177,9 @@ def _check_total_quota(db_session: Session, user: User) -> None:
         )
 
 
-def _check_quota(db_session: Session, user: User) -> None:
-    """Cap on active schedules. Call after `lock_user_schedules`."""
-    if count_enabled_schedules_for_user(db_session, user.id) >= PULSE_MAX_SCHEDULES_PER_USER:
+def _check_quota(db_session: Session, owner_id: UUID) -> None:
+    """Cap on the owner's active schedules. Call after `lock_user_schedules`."""
+    if count_enabled_schedules_for_user(db_session, owner_id) >= PULSE_MAX_SCHEDULES_PER_USER:
         raise HTTPException(
             status_code=400,
             detail=(
@@ -170,9 +189,10 @@ def _check_quota(db_session: Session, user: User) -> None:
         )
 
 
-def _check_workflow(db_session: Session, workflow_id: int, user: User) -> None:
+def _check_workflow(db_session: Session, workflow_id: int, owner_id: UUID) -> None:
+    """The workflow must be usable by the schedule's OWNER (runs execute as them)."""
     try:
-        get_accessible_workflow(db_session, workflow_id, user.id)
+        get_accessible_workflow(db_session, workflow_id, owner_id)
     except PulseAccessError as e:
         raise HTTPException(
             status_code=404 if e.workflow_deleted else 403, detail=str(e)
@@ -227,11 +247,11 @@ def _to_responses(
             include_owner=include_owner,
         )
         if s.user_id != viewer.id:
-            # Another user's schedule (admin view): no outputs, no prompt, no chat link
+            # Another user's schedule (admin view): the input settings are shown so
+            # the admin can edit them, but run outputs and run chats stay private.
             response = response.model_copy(
                 update={
                     "last_run": _redact_run(response.last_run),
-                    "input_message": "",
                     "latest_chat_session_id": None,
                 }
             )
@@ -260,6 +280,9 @@ def get_pulse_config(_: User = Depends(current_user)) -> PulseConfigResponse:
         max_retention=PULSE_MAX_RETENTION,
         default_retention=PULSE_DEFAULT_RETENTION,
         template_variables=list(TEMPLATE_VARIABLES),
+        input_modes=list(INPUT_MODES),
+        default_window_message=DEFAULT_WINDOW_MESSAGE,
+        default_list_message=DEFAULT_LIST_MESSAGE,
     )
 
 
@@ -316,7 +339,7 @@ def create_schedule(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> PulseScheduleResponse:
-    _check_workflow(db_session, request.workflow_id, user)
+    _check_workflow(db_session, request.workflow_id, user.id)
     now = db_now(db_session)
     spec = _validated_spec(
         ScheduleSpec(
@@ -328,10 +351,16 @@ def create_schedule(
         ),
         now,
     )
+    input_mode, input_message, input_prompt, input_items = _validated_inputs(
+        mode=request.input_mode,
+        message=request.input_message,
+        prompt=request.input_prompt,
+        items=request.input_items,
+    )
     lock_user_schedules(db_session, user.id)
     _check_total_quota(db_session, user)
     if request.enabled:
-        _check_quota(db_session, user)
+        _check_quota(db_session, user.id)
     schedule = create_pulse_schedule(
         db_session,
         user_id=user.id,
@@ -342,7 +371,10 @@ def create_schedule(
         interval_seconds=spec.interval_seconds,
         run_at=spec.run_at,
         timezone=spec.timezone,
-        input_message=request.input_message,
+        input_message=input_message,
+        input_mode=input_mode,
+        input_prompt=input_prompt,
+        input_items=input_items,
         enabled=request.enabled,
         retention_count=_check_retention(request.retention_count),
         next_run_at=_initial_next_run(spec, now),    )
@@ -369,12 +401,12 @@ def update_schedule(
 ) -> PulseScheduleResponse:
     schedule = _get_schedule_or_404(db_session, schedule_id, user)
     changes = request.model_dump(exclude_unset=True)
-    if schedule.user_id != user.id:
-        # Admins may only pause another user's schedule
-        if set(changes) != {"enabled"} or changes["enabled"] is not False:
-            _require_owner(schedule, user, "edit or resume it")
+    # _get_schedule_or_404 already limits this to the owner or an admin. Ownership
+    # never changes: an admin's edit keeps the creator as owner (runs stay theirs).
+    owner_id = schedule.user_id
+    edited_by_admin = owner_id != user.id
     if changes.get("enabled") is True:
-        lock_user_schedules(db_session, user.id)
+        lock_user_schedules(db_session, owner_id)
     # Lock the row so a concurrent scheduler tick cannot interleave with this edit
     lock_schedule_row(db_session, schedule.id)
     db_session.refresh(schedule)
@@ -409,15 +441,36 @@ def update_schedule(
 
     if "name" in changes and changes["name"] is not None:
         schedule.name = changes["name"].strip()
-    if "input_message" in changes and changes["input_message"] is not None:
-        schedule.input_message = changes["input_message"]
+    if any(k in changes for k in INPUT_FIELDS):
+        new_mode = changes.get("input_mode") or schedule.input_mode
+        mode_changed = new_mode != schedule.input_mode
+        mode, message, prompt, items = _validated_inputs(
+            mode=new_mode,
+            # Switching mode without a new message -> that mode's default
+            # (an old fixed request rarely fits a list/window template).
+            message=changes["input_message"]
+            if "input_message" in changes
+            else (None if mode_changed else schedule.input_message),
+            prompt=changes["input_prompt"]
+            if "input_prompt" in changes
+            else schedule.input_prompt,
+            items=changes["input_items"]
+            if "input_items" in changes
+            else schedule.input_items,
+        )
+        if items != schedule.input_items or mode != schedule.input_mode:
+            schedule.input_item_index = 0  # a new list starts from its first item
+        schedule.input_mode = mode
+        schedule.input_message = message
+        schedule.input_prompt = prompt
+        schedule.input_items = items
     if "retention_count" in changes:
         schedule.retention_count = _check_retention(changes["retention_count"])
 
     resuming = changes.get("enabled") is True and not schedule.enabled
     if resuming:
-        _check_workflow(db_session, schedule.workflow_id, user)
-        _check_quota(db_session, user)
+        _check_workflow(db_session, schedule.workflow_id, owner_id)
+        _check_quota(db_session, owner_id)
         schedule.enabled = True
         schedule.disabled_reason = None
         schedule.consecutive_failures = 0
@@ -433,8 +486,20 @@ def update_schedule(
         ):
             raise HTTPException(status_code=400, detail="This schedule has no future runs")
 
+    schedule.updated_by_id = user.id
     db_session.commit()
     db_session.refresh(schedule)
+    if edited_by_admin and changes:
+        notify_owner_of_admin_change(
+            db_session,
+            owner_id=owner_id,
+            schedule_id=schedule.id,
+            schedule_name=schedule.name,
+            admin_email=user.email,
+            action="paused"
+            if set(changes) == {"enabled"} and changes["enabled"] is False
+            else "updated",
+        )
     return _to_response(db_session, schedule, user)
 
 
@@ -446,7 +511,17 @@ def delete_schedule(
 ) -> None:
     """Deletes the schedule and its run history. Run chats stay in chat history."""
     schedule = _get_schedule_or_404(db_session, schedule_id, user)
+    owner_id, name, sid = schedule.user_id, schedule.name, schedule.id
     delete_pulse_schedule(db_session, schedule)
+    if owner_id != user.id:
+        notify_owner_of_admin_change(
+            db_session,
+            owner_id=owner_id,
+            schedule_id=sid,
+            schedule_name=name,
+            admin_email=user.email,
+            action="deleted",
+        )
 
 
 @router.post("/schedules/{schedule_id}/duplicate")
@@ -457,7 +532,7 @@ def duplicate_schedule(
 ) -> PulseScheduleResponse:
     source = _get_schedule_or_404(db_session, schedule_id, user)
     _require_owner(source, user, "duplicate it")
-    _check_workflow(db_session, source.workflow_id, user)
+    _check_workflow(db_session, source.workflow_id, user.id)
     lock_user_schedules(db_session, user.id)
     _check_total_quota(db_session, user)
     now = db_now(db_session)
@@ -475,6 +550,9 @@ def duplicate_schedule(
         run_at=source.run_at,
         timezone=source.timezone,
         input_message=source.input_message,
+        input_mode=source.input_mode,
+        input_prompt=source.input_prompt,
+        input_items=source.input_items,
         enabled=False,
         retention_count=source.retention_count,
         next_run_at=next_run,    )

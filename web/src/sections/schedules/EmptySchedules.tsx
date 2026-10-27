@@ -33,6 +33,7 @@ export const SCHEDULE_TEMPLATES: TemplateCard[] = [
     template: {
       workflowNameHint: "brief",
       frequency: { preset: "daily", time: "09:00" },
+      inputMode: "window",
       message:
         "Brief for {{date}}. Only include items newer than {{window_start}}.",
     },
@@ -47,6 +48,7 @@ export const SCHEDULE_TEMPLATES: TemplateCard[] = [
     template: {
       workflowNameHint: "triage",
       frequency: { preset: "hourly", minute: 0 },
+      inputMode: "window",
       message:
         "Triage emails received since {{window_start}}. Draft replies and flag anything urgent.",
     },
@@ -61,6 +63,7 @@ export const SCHEDULE_TEMPLATES: TemplateCard[] = [
     template: {
       workflowNameHint: "research",
       frequency: { preset: "weekly", weekdays: [1], time: "09:00" },
+      inputMode: "fixed",
       message:
         "Weekly report for the week ending {{date}}. Compare with the previous week.",
     },

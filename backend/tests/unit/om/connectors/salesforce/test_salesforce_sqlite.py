@@ -31,7 +31,7 @@ from om.connectors.salesforce.utils import MODIFIED_FIELD
 from om.connectors.salesforce.utils import USER_OBJECT_TYPE
 from om.utils.logger import setup_logger
 
-# from om.connectors.salesforce.onyx_salesforce_type import OmSalesforceType
+# from om.connectors.salesforce.om_salesforce_type import OmSalesforceType
 # from om.connectors.salesforce.salesforce_calls import get_children_of_sf_type
 
 logger = setup_logger()

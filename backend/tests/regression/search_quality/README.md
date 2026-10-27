@@ -4,14 +4,14 @@ This Python script evaluates the search and answer quality for a list of queries
 
 ## Usage
 
-1. Ensure you have the required dependencies installed and onyx running.
+1. Ensure you have the required dependencies installed and the app running.
 
 2. Ensure you have `OPENAI_API_KEY` set if you intend to do answer evaluation (enabled by default, unless you run the script with the `-s` flag). Go to the API Keys page in the admin panel, generate a basic api token, and add it to the env file as `OM_API_KEY=on_...`.
 
 3. Navigate to VertualAI repo, **search_quality** folder:
 
 ```
-cd path/to/onyx/backend/tests/regression/search_quality
+cd path/to/backend/tests/regression/search_quality
 ```
 
 4. Copy `test_queries.json.template` to `test_queries.json` and add/remove test queries in it. The fields for each query are:

@@ -125,7 +125,7 @@ def test_versions_endpoint(client: TestClient) -> None:
     # If this fails, revise latest Github release for typo or incorrect version name
     assert STABLE_VERSION_PATTERN.match(
         stable["om"]
-    ), f"Stable version {stable['onyx']} doesn't match pattern v(number).(number).(number)"
+    ), f"Stable version {stable['om']} doesn't match pattern v(number).(number).(number)"
 
     # Verify dev configuration
     dev = data["dev"]
@@ -137,7 +137,7 @@ def test_versions_endpoint(client: TestClient) -> None:
     # Verify dev version follows correct pattern (v1.2.3-beta.4)
     assert DEV_VERSION_PATTERN.match(
         dev["om"]
-    ), f"Dev version {dev['onyx']} doesn't match pattern v(number).(number).(number)-beta.(number)"
+    ), f"Dev version {dev['om']} doesn't match pattern v(number).(number).(number)-beta.(number)"
 
     # Verify migration configuration
     migration = data["migration"]

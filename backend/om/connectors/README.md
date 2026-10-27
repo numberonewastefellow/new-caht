@@ -74,7 +74,7 @@ if __name__ == "__main__":
     latest_docs = test_connector.poll_source(one_day_ago, current)
 ```
 
-> Note: Be sure to set PYTHONPATH to onyx/backend before running the above main.
+> Note: Be sure to set PYTHONPATH to the backend directory before running the above main.
 
 ### Additional Required Changes:
 

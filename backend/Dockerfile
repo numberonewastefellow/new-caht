@@ -1,8 +1,8 @@
 FROM python:3.11.7-slim-bookworm
 
-LABEL com.om.maintainer="founders@onyx.app"
-LABEL com.om.description="This image is the web/frontend container of Om. Please reach out to \
-founders@onyx.app for more information. Please visit https://github.com/onyx-dot-app/onyx"
+LABEL com.om.maintainer="founders@vertualai.com"
+LABEL com.om.description="This image is the backend (API server and background workers) container of VertualAI. \
+Please reach out to founders@vertualai.com for more information. Please visit https://github.com/vertualai/vertualai"
 
 # Build argument for Craft support (disabled by default)
 # Use --build-arg ENABLE_CRAFT=true to include Node.js and opencode CLI

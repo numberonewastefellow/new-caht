@@ -13,7 +13,7 @@ from tests.integration.common_utils.test_models import DATestUser
 
 def test_tag_creation_and_update(reset: None) -> None:  # noqa: ARG001
     # create admin user
-    admin_user: DATestUser = UserManager.create(email="admin@onyx.app")
+    admin_user: DATestUser = UserManager.create(email="admin@om-test.com")
 
     # create a minimal file connector
     cc_pair = CCPairManager.create_from_scratch(
@@ -122,7 +122,7 @@ def test_tag_creation_and_update(reset: None) -> None:  # noqa: ARG001
 
 def test_tag_sharing(reset: None) -> None:  # noqa: ARG001
     # create admin user
-    admin_user: DATestUser = UserManager.create(email="admin@onyx.app")
+    admin_user: DATestUser = UserManager.create(email="admin@om-test.com")
 
     # create a minimal file connector
     cc_pair = CCPairManager.create_from_scratch(

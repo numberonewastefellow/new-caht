@@ -478,6 +478,8 @@ def describe(spec: ScheduleSpec) -> str:
 
 _TEMPLATE_RE = re.compile(r"\{\{\s*([a-zA-Z_]+)\s*\}\}")
 TEMPLATE_VARIABLES: tuple[str, ...] = ("date", "now", "window_start", "window_end")
+# Only available in list mode
+LIST_TEMPLATE_VARIABLES: tuple[str, ...] = ("item",)
 
 
 def _fmt_local(value: dt.datetime, zone: ZoneInfo) -> str:
@@ -493,8 +495,9 @@ def render_input_message(
     now: dt.datetime,
     last_success_scheduled_for: dt.datetime | None,
     period_seconds: int | None,
+    item: str | None = None,
 ) -> str:
-    """Substitute {{date}} {{now}} {{window_start}} {{window_end}}.
+    """Substitute {{date}} {{now}} {{window_start}} {{window_end}} (+ {{item}}).
 
     window_start = the previous *successful* run's slot (so a failed run never
     leaves a gap); on the first run it falls back to one period before this slot.
@@ -521,6 +524,8 @@ def render_input_message(
         "window_start": window_start,
         "window_end": _fmt_local(scheduled_for, zone),
     }
+    if item is not None:  # list mode: the current item (inserted verbatim)
+        values["item"] = item
 
     def _sub(match: re.Match[str]) -> str:
         key = match.group(1)

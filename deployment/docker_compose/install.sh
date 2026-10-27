@@ -841,7 +841,7 @@ if [ "$RESTART_ISSUES" = true ]; then
     echo "  (cd \"${INSTALL_ROOT}/deployment\" && $COMPOSE_CMD -f docker-compose.yml logs)"
 
     echo ""
-    print_info "If the issue persists, please contact: founders@onyx.app"
+    print_info "If the issue persists, please contact: founders@vertualai.com"
     echo "Include the output of the logs command in your message."
     exit 1
 fi
@@ -916,5 +916,5 @@ echo "   • The first user created will automatically have admin privileges"
 echo ""
 print_info "Refer to the README in the ${INSTALL_ROOT} directory for more information."
 echo ""
-print_info "For help or issues, contact: founders@onyx.app"
+print_info "For help or issues, contact: founders@vertualai.com"
 echo ""

@@ -22,6 +22,7 @@ import {
   SvgActions,
   SvgDiscordMono,
   SvgSliders,
+  SvgClock,
 } from "@opal/icons";
 import SvgMcp from "@opal/icons/mcp";
 import {
@@ -136,6 +137,11 @@ export function getAdminNavGroups(opts: {
       name: "Workflows",
       icon: SvgSliders,
       link: "/admin/workflows",
+    },
+    {
+      name: "Schedules",
+      icon: SvgClock,
+      link: "/admin/schedules",
     },
     {
       name: "MCP Tools",
@@ -387,6 +393,7 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   "discord-bot": "Discord Agents",
   actions: "Tools",
   workflows: "Workflows",
+  schedules: "Schedules",
   mcp: "MCP Tools",
   "open-api": "API Tools",
   "standard-answers": "Standard Answers",

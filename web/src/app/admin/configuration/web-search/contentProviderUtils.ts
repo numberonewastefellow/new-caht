@@ -1,6 +1,6 @@
 export type WebContentProviderType =
   | "firecrawl"
-  | "onyx_web_crawler"
+  | "om_web_crawler"
   | "exa"
   | (string & {});
 
@@ -10,7 +10,7 @@ export const CONTENT_PROVIDER_DETAILS: Record<
   string,
   { label: string; subtitle: string; description: string; logoSrc?: string }
 > = {
-  onyx_web_crawler: {
+  om_web_crawler: {
     label: "VertualAI Web Crawler",
     subtitle:
       "Built-in web crawler. Works for most pages but less performant in edge cases.",
@@ -61,7 +61,7 @@ const CONTENT_PROVIDER_CAPABILITIES: Record<
   string,
   ContentProviderCapabilities
 > = {
-  onyx_web_crawler: {
+  om_web_crawler: {
     requiresApiKey: false,
     requiredConfigKeys: [],
   },
@@ -138,10 +138,10 @@ export function getCurrentContentProviderType(
   }>
 ): WebContentProviderType {
   return (
-    providers.find((p) => p.is_active && p.provider_type !== "onyx_web_crawler")
+    providers.find((p) => p.is_active && p.provider_type !== "om_web_crawler")
       ?.provider_type ??
     providers.find((p) => p.is_active)?.provider_type ??
-    "onyx_web_crawler"
+    "om_web_crawler"
   );
 }
 

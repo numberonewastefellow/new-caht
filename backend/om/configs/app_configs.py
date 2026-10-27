@@ -864,8 +864,18 @@ LOG_POSTGRES_LATENCY = os.environ.get("LOG_POSTGRES_LATENCY", "").lower() == "tr
 LOG_POSTGRES_CONN_COUNTS = (
     os.environ.get("LOG_POSTGRES_CONN_COUNTS", "").lower() == "true"
 )
-# Anonymous usage telemetry
+# Base URL of the documentation site referenced in user-facing messages (no trailing slash).
+# Unset = messages simply omit the link.
+OM_DOCS_URL = (os.environ.get("OM_DOCS_URL") or "").rstrip("/")
+
+# Where connector requests (Craft "request a connector") are emailed. Opt-in: unset = no email is sent,
+# the request is only logged.
+OM_CONNECTOR_REQUEST_EMAIL = os.environ.get("OM_CONNECTOR_REQUEST_EMAIL") or ""
+
+# Anonymous usage telemetry. Opt-in: nothing is sent unless OM_TELEMETRY_ENDPOINT points at a
+# collector you operate (and DISABLE_TELEMETRY is not "true"). There is no built-in default endpoint.
 DISABLE_TELEMETRY = os.environ.get("DISABLE_TELEMETRY", "").lower() == "true"
+OM_TELEMETRY_ENDPOINT = os.environ.get("OM_TELEMETRY_ENDPOINT") or ""
 
 #####
 # Braintrust Configuration
@@ -892,7 +902,7 @@ SCHEDULED_EVAL_DATASET_NAMES = [
 ]
 # Email address to use for search permissions during scheduled evals
 SCHEDULED_EVAL_PERMISSIONS_EMAIL = os.environ.get(
-    "SCHEDULED_EVAL_PERMISSIONS_EMAIL", "roshan@onyx.app"
+    "SCHEDULED_EVAL_PERMISSIONS_EMAIL", ""
 )
 # Braintrust project name to use for scheduled evals
 SCHEDULED_EVAL_PROJECT = os.environ.get("SCHEDULED_EVAL_PROJECT", "st-dev")
@@ -1088,9 +1098,9 @@ DB_READONLY_PASSWORD: str = urllib.parse.quote_plus(
 FILE_STORE_BACKEND = os.environ.get("FILE_STORE_BACKEND", "s3")
 
 S3_FILE_STORE_BUCKET_NAME = (
-    os.environ.get("S3_FILE_STORE_BUCKET_NAME") or "onyx-file-store-bucket"
+    os.environ.get("S3_FILE_STORE_BUCKET_NAME") or "om-file-store-bucket"
 )
-S3_FILE_STORE_PREFIX = os.environ.get("S3_FILE_STORE_PREFIX") or "onyx-files"
+S3_FILE_STORE_PREFIX = os.environ.get("S3_FILE_STORE_PREFIX") or "om-files"
 # S3_ENDPOINT_URL is for MinIO and other S3-compatible storage. Leave blank for AWS S3.
 S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL")
 S3_VERIFY_SSL = os.environ.get("S3_VERIFY_SSL", "").lower() == "true"
@@ -1244,8 +1254,3 @@ MARKETING_POSTHOG_API_KEY = os.environ.get("MARKETING_POSTHOG_API_KEY")
 
 HUBSPOT_TRACKING_URL = os.environ.get("HUBSPOT_TRACKING_URL")
 
-# Cloud data plane URL - self-hosted instances call this to reach cloud proxy endpoints
-# Used when MULTI_TENANT=false (self-hosted mode)
-CLOUD_DATA_PLANE_URL = os.environ.get(
-    "CLOUD_DATA_PLANE_URL", "https://cloud.onyx.app/api"
-)

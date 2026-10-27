@@ -62,7 +62,7 @@ def fetch_settings(
         **general_settings.model_dump(),
         notifications=settings_notifications,
         needs_reindexing=needs_reindexing,
-        onyx_craft_enabled=om_craft_enabled_for_user,
+        om_craft_enabled=om_craft_enabled_for_user,
         vector_db_enabled=not DISABLE_VECTOR_DB,
     )
 

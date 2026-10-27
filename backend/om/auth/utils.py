@@ -10,7 +10,7 @@ from om.auth.constants import API_KEY_HEADER_NAME
 from om.auth.constants import API_KEY_PREFIX
 from om.auth.constants import BEARER_PREFIX
 from om.auth.constants import DEPRECATED_API_KEY_PREFIX
-from om.auth.constants import PAT_PREFIX
+from om.auth.constants import VALID_PAT_PREFIXES
 
 
 def get_hashed_bearer_token_from_request(
@@ -23,7 +23,7 @@ def get_hashed_bearer_token_from_request(
 
     Args:
         request: The FastAPI request
-        valid_prefixes: List of valid token prefixes (e.g., ["on_", "onyx_pat_"])
+        valid_prefixes: List of valid token prefixes (e.g., ["on_", "om_pat_"])
         hash_fn: Function to hash the token (e.g., hash_api_key or hash_pat)
         allow_non_bearer: If True, accept raw tokens without "Bearer " prefix
 
@@ -104,5 +104,5 @@ def extract_tenant_from_auth_header(request: Request) -> str | None:
         Tenant ID if found, else None
     """
     return _extract_tenant_from_bearer_token(
-        request, [API_KEY_PREFIX, DEPRECATED_API_KEY_PREFIX, PAT_PREFIX]
+        request, [API_KEY_PREFIX, DEPRECATED_API_KEY_PREFIX, *VALID_PAT_PREFIXES]
     )

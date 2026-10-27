@@ -20,8 +20,8 @@ def test_send_user_email_invite() -> None:
 
     subject = f"Invitation to Join {application_name} Organization"
 
-    FROM_EMAIL = "noreply@onyx.app"
-    TO_EMAIL = "support@onyx.app"
+    FROM_EMAIL = "noreply@om-test.com"
+    TO_EMAIL = "support@om-test.com"
     text_content, html_content = build_user_email_invite(
         FROM_EMAIL, TO_EMAIL, OM_DEFAULT_APPLICATION_NAME, AuthType.CLOUD
     )

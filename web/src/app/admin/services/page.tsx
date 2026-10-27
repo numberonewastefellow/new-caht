@@ -4,6 +4,7 @@ import { AdminPageTitle } from "@/components/admin/Title";
 import CardSection from "@/components/admin/CardSection";
 import {
   SvgActivity,
+  SvgClock,
   SvgCode,
   SvgCpu,
   SvgExternalLink,
@@ -12,6 +13,7 @@ import {
   SvgHardDrive,
   SvgSearch,
   SvgServer,
+  SvgZap,
 } from "@opal/icons";
 import SvgMcp from "@opal/icons/mcp";
 import type { IconProps } from "@opal/types";
@@ -101,21 +103,30 @@ const services: ServiceCardProps[] = [
     internal: true,
   },
   {
-    name: "Vespa Search Index",
+    name: "OpenSearch Index",
     description:
-      "High-performance vector and text search engine. Handles document indexing, hybrid search (BM25 + embeddings), and real-time index updates.",
+      "Document index for all knowledge: hybrid search (BM25 + vector embeddings), chunk storage and real-time index updates.",
     icon: SvgServer,
     category: "Infrastructure",
-    port: "8081/19071",
+    port: "9200",
     internal: true,
   },
   {
-    name: "Model Servers",
+    name: "Cortex Embeddings",
     description:
-      "Inference and indexing model servers for running embedding models and reranking models. Powers semantic search and document understanding.",
+      "vLLM-based embedding service (replaces the old inference/indexing model servers). Serves OpenAI-style /v1/embeddings at cortex_embed:8000 — default model nomic-ai/nomic-embed-text-v1. Used for document indexing and semantic search.",
     icon: SvgCpu,
     category: "AI Infrastructure",
-    port: "9000/9090",
+    port: "8000",
+    internal: true,
+  },
+  {
+    name: "Cortex Rerank (optional)",
+    description:
+      "vLLM-based reranker serving Cohere-style /v1/rerank at cortex_rerank:8000 — default model BAAI/bge-reranker-v2-m3. Off by default: start the compose 'rerank' profile and set RERANK_ENABLED=true.",
+    icon: SvgCpu,
+    category: "AI Infrastructure",
+    port: "8000",
     internal: true,
   },
   {
@@ -130,11 +141,31 @@ const services: ServiceCardProps[] = [
   {
     name: "Background Worker",
     description:
-      "Processes async tasks: document indexing, connector syncing, embedding generation, scheduled jobs, and workflow execution.",
+      "Processes async tasks: document indexing, connector syncing, embedding generation, pruning, permission syncing and other periodic system jobs.",
     icon: SvgGlobe,
     category: "Core",
     port: "—",
     internal: true,
+  },
+  {
+    name: "Pulse Scheduler",
+    description:
+      "Scheduled workflows engine: decides when each schedule is due (cron / every N / once, timezone- and DST-aware) and queues its run. Runs 2+ replicas for high availability — Postgres row locks guarantee a run never fires twice.",
+    icon: SvgClock,
+    category: "Scheduling",
+    url: "/app/schedules",
+    urlLabel: "Open Schedules",
+    port: "—",
+  },
+  {
+    name: "Pulse Worker",
+    description:
+      "Executes scheduled workflow runs in the background (Celery queue \"pulse\"). Each run becomes its own chat session. Scale out by adding replicas; crashed runs are detected and marked interrupted.",
+    icon: SvgZap,
+    category: "Scheduling",
+    url: "/api/admin/pulse/health",
+    urlLabel: "Pulse health (JSON)",
+    port: "—",
   },
 ];
 
@@ -147,6 +178,7 @@ const categoryColors: Record<string, string> = {
   "AI Tools": "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300",
   Infrastructure: "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-300",
   Core: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
+  Scheduling: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
 };
 
 function ServiceCard({

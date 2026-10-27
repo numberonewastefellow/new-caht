@@ -76,7 +76,7 @@ def _process_egnyte_file(
         return None
 
     # Extract text content based on file type
-    # TODO @wenxi-onyx: convert to extract_text_and_images
+    # TODO: convert to extract_text_and_images
     if extension in OmFileExtensions.PLAIN_TEXT_EXTENSIONS:
         encoding = detect_encoding(file_content)
         file_content_raw, file_metadata = read_text_file(

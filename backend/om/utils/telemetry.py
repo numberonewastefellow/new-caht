@@ -7,6 +7,7 @@ from typing import cast
 import requests
 
 from om.configs.app_configs import DISABLE_TELEMETRY
+from om.configs.app_configs import OM_TELEMETRY_ENDPOINT
 from om.configs.constants import KV_CUSTOMER_UUID_KEY
 from om.configs.constants import KV_INSTANCE_DOMAIN_KEY
 from om.configs.constants import MilestoneRecordType
@@ -21,7 +22,6 @@ from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
 
-_DANSWER_TELEMETRY_ENDPOINT = "https://telemetry.onyx.app/anonymous_telemetry"
 _CACHED_UUID: str | None = None
 _CACHED_INSTANCE_DOMAIN: str | None = None
 
@@ -94,8 +94,8 @@ def optional_telemetry(
     user_id: str | None = None,
     tenant_id: str | None = None,  # Allows for override of tenant_id
 ) -> None:
-    if DISABLE_TELEMETRY:
-        return
+    if DISABLE_TELEMETRY or not OM_TELEMETRY_ENDPOINT:
+        return  # opt-in: no endpoint configured means nothing is ever sent
 
     tenant_id = tenant_id or get_current_tenant_id()
 
@@ -119,7 +119,7 @@ def optional_telemetry(
                 }
                 payload["instance_domain"] = _get_or_generate_instance_domain()
                 requests.post(
-                    _DANSWER_TELEMETRY_ENDPOINT,
+                    OM_TELEMETRY_ENDPOINT,
                     headers={"Content-Type": "application/json"},
                     json=payload,
                 )

@@ -5,7 +5,10 @@ set COMPOSE_CMD=docker compose -f docker-compose.yml -f docker-compose.dev-windo
 :: NOTE: OpenSearch (the document index) is not listed here; a full `dev up`
 :: starts it (it has no compose profile, so it always runs).
 set INFRA=relational_db cache cortex_embed_vllm minio code-interpreter smartsearch phoenix
-set APP=api_server background web_server nginx
+set APP=api_server background pulse_scheduler pulse_worker web_server nginx
+:: Pulse (scheduled workflows): HA scheduler (2 replicas) + run worker. Their image is
+:: built FROM the backend image, so builds always build api_server first (see :build_services).
+set PULSE=pulse_scheduler pulse_worker
 
 :: Office MCP server (PPT + DOCX + PDF) runs from a separate compose file
 set OFFICE_DIR=%~dp0..\..\office-mcp-server
@@ -34,6 +37,9 @@ if /i "!_arg!"=="minio" set SERVICES=!SERVICES! minio
 if /i "!_arg!"=="search" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="smartsearch" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="phoenix" set SERVICES=!SERVICES! phoenix
+if /i "!_arg!"=="pulse" set SERVICES=!SERVICES! pulse_scheduler pulse_worker
+if /i "!_arg!"=="scheduler" set SERVICES=!SERVICES! pulse_scheduler
+if /i "!_arg!"=="pulse-worker" set SERVICES=!SERVICES! pulse_worker
 if /i "!_arg!"=="office" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="ppt" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="docx" set SERVICES=!SERVICES! __OFFICE__
@@ -119,6 +125,8 @@ if /i "%~1"=="down-v" (
 :: ==================== BUILD ====================
 if /i "%~1"=="build" (
     if /i "%~2"=="" (
+        echo Building backend image first ^(Pulse images are built FROM it^)...
+        %COMPOSE_CMD% build api_server
         echo Building all services...
         %COMPOSE_CMD% build
         %COMPOSE_CMD% up -d --wait
@@ -131,6 +139,7 @@ if /i "%~1"=="build" (
         %COMPOSE_CMD% up -d --wait %INFRA%
     ) else if /i "%~2"=="app" (
         echo Building app services...
+        %COMPOSE_CMD% build api_server
         %COMPOSE_CMD% build %APP%
         %COMPOSE_CMD% up -d --wait %APP%
     ) else if /i "%~2"=="office" (
@@ -145,7 +154,7 @@ if /i "%~1"=="build" (
         call :handle_office_in_services build
         if defined SERVICES (
             echo Building:!SERVICES!
-            %COMPOSE_CMD% build!SERVICES!
+            call :build_services
             %COMPOSE_CMD% up -d --no-deps!SERVICES!
         )
     )
@@ -265,11 +274,32 @@ if /i "!_arg!"=="minio" set SERVICES=!SERVICES! minio
 if /i "!_arg!"=="search" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="smartsearch" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="phoenix" set SERVICES=!SERVICES! phoenix
+if /i "!_arg!"=="pulse" set SERVICES=!SERVICES! pulse_scheduler pulse_worker
+if /i "!_arg!"=="scheduler" set SERVICES=!SERVICES! pulse_scheduler
+if /i "!_arg!"=="pulse-worker" set SERVICES=!SERVICES! pulse_worker
 if /i "!_arg!"=="office" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="ppt" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="docx" set SERVICES=!SERVICES! __OFFICE__
 set /a _i+=1
 goto resolve_from_loop
+
+:: Build SERVICES with backend images (api_server/background) first, so Pulse
+:: images (FROM the backend image) never pick up a stale base when built together.
+:build_services
+set _backend=
+set _rest=
+for %%s in (!SERVICES!) do (
+    if /i "%%s"=="api_server" (
+        set _backend=!_backend! %%s
+    ) else if /i "%%s"=="background" (
+        set _backend=!_backend! %%s
+    ) else (
+        set _rest=!_rest! %%s
+    )
+)
+if defined _backend %COMPOSE_CMD% build!_backend!
+if defined _rest %COMPOSE_CMD% build!_rest!
+goto :eof
 
 :: Handle Office MCP server when mixed with other services
 :: Checks if __OFFICE__ is in SERVICES, runs Office compose separately, removes __OFFICE__ from SERVICES
@@ -386,7 +416,7 @@ echo     up log infra          Start infra with live logs
 echo     up log office         Start Office MCP server with live logs
 echo     up log api            Start api_server with live logs
 echo     up infra              Start infrastructure only (db, redis, models, minio; search engine via profile)
-echo     up app                Start app only (api, background, web, nginx)
+echo     up app                Start app only (api, background, pulse, web, nginx)
 echo     up office             Start Office MCP server only (PPT + DOCX + PDF)
 echo     up api web ...        Start specific services
 echo     down                  Stop all services (including MCP servers)
@@ -399,6 +429,8 @@ echo     build web             Build and start web_server only
 echo     build office          Build and start Office MCP server only
 echo     build web api         Build and start both web + api
 echo     build background      Build and start background worker
+echo     build pulse           Build and start Pulse (scheduler + worker) on the current backend image
+echo     build api pulse       Rebuild backend, then Pulse on top of it ^(after backend code changes^)
 echo     build model           Build and start model servers
 echo     restart               Restart all services (including MCP servers)
 echo     restart infra         Restart infrastructure only
@@ -407,6 +439,7 @@ echo     restart api           Restart api_server
 echo     restart web           Restart web_server
 echo     restart office        Restart Office MCP server
 echo     restart api web       Restart both api + web
+echo     restart pulse         Restart Pulse scheduler + worker
 echo     stop                  Stop all services (without removing)
 echo     stop app              Stop app services only
 echo     stop api              Stop api_server only
@@ -417,12 +450,14 @@ echo     logs app              Tail logs for app services
 echo     logs infra            Tail logs for infrastructure
 echo     logs api              Tail logs for api_server
 echo     logs web              Tail logs for web_server
+echo     logs pulse            Tail logs for Pulse scheduler + worker
 echo     logs office           Tail logs for Office MCP server
 echo     ps                    Show running containers (all + MCP)
 echo.
 echo   Groups:
 echo     infra      = db, redis, model servers, minio, code-interpreter, smartsearch, phoenix (search engine via COMPOSE_PROFILES)
-echo     app        = api_server, background, web_server, nginx
+echo     app        = api_server, background, pulse_scheduler, pulse_worker, web_server, nginx
+echo     pulse      = Pulse scheduled workflows: pulse_scheduler (x2, HA) + pulse_worker
 echo     search     = smartsearch (Perplexica AI web search)
 echo     phoenix    = Phoenix LLM observability (dashboard at http://localhost:3000/phoenix/)
 echo     office     = Office MCP server (PPT + DOCX + PDF generation via MCP)
@@ -431,6 +466,9 @@ echo   Service shortcuts:
 echo     api        = api_server
 echo     web        = web_server
 echo     background = background
+echo     pulse      = pulse_scheduler + pulse_worker (scheduled workflows)
+echo     scheduler  = pulse_scheduler
+echo     pulse-worker = pulse_worker
 echo     cortex     = cortex_embed_vllm (embeddings; aliases: model, embedding)
 echo     rerank     = cortex_rerank_vllm (reranker, optional)
 echo     nginx      = nginx

@@ -3,12 +3,14 @@ from om.configs.app_configs import ENABLE_OPENSEARCH_INDEXING_FOR_OM
 from om.configs.app_configs import OM_QUERY_HISTORY_TYPE
 from om.configs.app_configs import SHOW_EXTRA_CONNECTORS
 from om.configs.constants import KV_SETTINGS_KEY
+from om.configs.constants import LEGACY_KV_SETTINGS_KEY
 from om.configs.constants import OmRedisLocks
 from om.key_value_store.factory import get_kv_store
 from om.key_value_store.interface import KvKeyNotFoundError
 from om.redis.redis_pool import get_redis_client
 from om.server.settings.models import Settings
 from om.utils.logger import setup_logger
+from om.utils.special_types import JSON_ro
 from shared_configs.configs import MULTI_TENANT
 from shared_configs.contextvars import get_current_tenant_id
 
@@ -18,10 +20,26 @@ logger = setup_logger()
 SETTINGS_TTL = 30 * 24 * 60 * 60
 
 
-def load_settings() -> Settings:
+def _load_stored_settings() -> JSON_ro:
+    """Load the stored settings JSON, migrating the legacy key on first read.
+
+    Installs that saved settings before the rename have them under LEGACY_KV_SETTINGS_KEY. The
+    first read copies them to KV_SETTINGS_KEY; the legacy row is left untouched so rolling the
+    code back loses nothing.
+    """
     kv_store = get_kv_store()
     try:
-        stored_settings = kv_store.load(KV_SETTINGS_KEY)
+        return kv_store.load(KV_SETTINGS_KEY)
+    except KvKeyNotFoundError:
+        legacy = kv_store.load(LEGACY_KV_SETTINGS_KEY)  # raises KvKeyNotFoundError if absent too
+        kv_store.store(KV_SETTINGS_KEY, legacy)
+        logger.info(f"Migrated settings from legacy KV key {LEGACY_KV_SETTINGS_KEY}")
+        return legacy
+
+
+def load_settings() -> Settings:
+    try:
+        stored_settings = _load_stored_settings()
         settings = (
             Settings.model_validate(stored_settings) if stored_settings else Settings()
         )

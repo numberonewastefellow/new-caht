@@ -38,6 +38,7 @@ from om.db.pulse import finish_run
 from om.db.pulse import get_pulse_run
 from om.db.pulse import get_pulse_schedule
 from om.db.pulse import heartbeat_run
+from om.db.pulse import claim_next_item_index
 from om.db.pulse import latest_assistant_message
 from om.db.pulse import RUN_CANCELLED
 from om.db.pulse import RUN_FAILED
@@ -53,6 +54,8 @@ from om.db.pulse import TRIGGER_SCHEDULED
 from om.db.workflow import get_latest_execution_by_chat_session
 from om.pulse.access import PulseAccessError
 from om.pulse.access import resolve_run_context
+from om.pulse.inputs import default_ask_prompt
+from om.pulse.inputs import item_for_index
 from om.pulse.outcome import finalize_run
 from om.pulse.spec import spec_from_schedule
 from om.pulse.timing import ensure_utc
@@ -303,6 +306,34 @@ def _execute_pulse_run(run_id: int, tenant_id: str, hostname: str) -> str | None
         schedule_id = schedule.id
         set_run_chat_session(db_session, run_id, chat_session_id)
 
+        # "ask" mode: the input changes every run and only the user has it. Open the
+        # workflow chat and wait — no LLM call. When the user replies in that chat,
+        # the normal chat pipeline runs the workflow with their reply.
+        if schedule.input_mode == "ask":
+            prompt = schedule.input_prompt or default_ask_prompt(ctx.workflow.name)
+            return finalize_run(
+                db_session,
+                schedule,
+                run_id,
+                status=RUN_NEEDS_INPUT,
+                output_preview=prompt,
+            )
+
+        # "list" mode: take the next item (atomically, so concurrent runs never
+        # reuse or skip an item) and insert it via {{item}}.
+        item: str | None = None
+        if schedule.input_mode == "list":
+            index = claim_next_item_index(db_session, schedule.id)
+            item = item_for_index(schedule.input_items, index)
+            if item is None:
+                return finalize_run(
+                    db_session,
+                    schedule,
+                    run_id,
+                    status=RUN_FAILED,
+                    error="The schedule's item list is empty",
+                )
+
         message = render_input_message(
             schedule.input_message,
             timezone=schedule.timezone,
@@ -310,6 +341,7 @@ def _execute_pulse_run(run_id: int, tenant_id: str, hostname: str) -> str | None
             now=now,
             last_success_scheduled_for=schedule.last_success_scheduled_for,
             period_seconds=nominal_period_seconds(spec, now=now),
+            item=item,
         )
 
         # 6. watchdog

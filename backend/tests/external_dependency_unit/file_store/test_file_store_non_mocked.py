@@ -27,7 +27,7 @@ from tests.external_dependency_unit.constants import TEST_TENANT_ID
 logger = setup_logger()
 
 
-TEST_BUCKET_NAME: str = "onyx-file-store-tests"
+TEST_BUCKET_NAME: str = "om-file-store-tests"
 TEST_FILE_PREFIX: str = "test-files"
 
 

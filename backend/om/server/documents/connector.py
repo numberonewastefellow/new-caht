@@ -30,11 +30,13 @@ from om.background.celery.tasks.pruning.tasks import (
 )
 from om.background.celery.versioned_apps.client import app as client_app
 from om.configs.app_configs import EMAIL_CONFIGURED
+from om.configs.app_configs import OM_CONNECTOR_REQUEST_EMAIL
 from om.configs.app_configs import ENABLED_CONNECTOR_TYPES
 from om.configs.app_configs import MOCK_CONNECTOR_FILE_PATH
 from om.configs.constants import DocumentSource
 from om.configs.constants import FileOrigin
 from om.configs.constants import MilestoneRecordType
+from om.configs.constants import METADATA_FILENAMES
 from om.configs.constants import OM_METADATA_FILENAME
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryTask
@@ -424,11 +426,14 @@ def save_zip_metadata_to_file_store(
     zf: zipfile.ZipFile, file_store: FileStore
 ) -> str | None:
     """
-    Extract .om_metadata.json from zip and save to file store.
+    Extract .om_metadata.json (or the legacy .onyx_metadata.json) from zip and save to file store.
     Returns the file_id or None if no metadata file exists.
     """
     try:
-        metadata_file_info = zf.getinfo(OM_METADATA_FILENAME)
+        present = next((n for n in METADATA_FILENAMES if n in zf.namelist()), None)
+        if present is None:
+            raise KeyError(OM_METADATA_FILENAME)
+        metadata_file_info = zf.getinfo(present)
         with zf.open(metadata_file_info, "r") as metadata_file:
             metadata_bytes = metadata_file.read()
 
@@ -1876,7 +1881,7 @@ def submit_connector_request(
 ) -> StatusResponse:
     """
     Submit a connector request for Cloud deployments.
-    Tracks via PostHog telemetry and sends email to hello@onyx.app.
+    Tracks via PostHog telemetry and, only if OM_CONNECTOR_REQUEST_EMAIL is set, emails it there.
     """
     tenant_id = get_current_tenant_id()
     connector_name = request_data.connector_name.strip()
@@ -1903,7 +1908,7 @@ def submit_connector_request(
         )
 
     # Send email notification (if email is configured)
-    if EMAIL_CONFIGURED:
+    if EMAIL_CONFIGURED and OM_CONNECTOR_REQUEST_EMAIL:
         try:
             subject = "VertualAI Craft Connector Request"
             email_body_text = f"""A new connector request has been submitted:
@@ -1924,13 +1929,13 @@ Tenant ID: {tenant_id}
 </html>"""
 
             send_email(
-                user_email="hello@onyx.app",
+                user_email=OM_CONNECTOR_REQUEST_EMAIL,
                 subject=subject,
                 html_body=email_body_html,
                 text_body=email_body_text,
             )
             logger.info(
-                f"Connector request email sent to hello@onyx.app for connector: {connector_name}"
+                f"Connector request email sent to {OM_CONNECTOR_REQUEST_EMAIL} for connector: {connector_name}"
             )
         except Exception as e:
             # Log error but don't fail the request if email fails

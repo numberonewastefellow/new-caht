@@ -691,6 +691,7 @@
     "<root>.pulse",
     "<root>.pulse.access",
     "<root>.pulse.dispatch",
+    "<root>.pulse.inputs",
     "<root>.pulse.notifications",
     "<root>.pulse.outcome",
     "<root>.pulse.runner",

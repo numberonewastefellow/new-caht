@@ -42,7 +42,7 @@ export interface Settings {
   disable_default_assistant?: boolean;
 
   // VertualAI Craft (Build Mode) feature flag
-  onyx_craft_enabled?: boolean;
+  om_craft_enabled?: boolean;
 
   // OpenSearch migration
   opensearch_indexing_enabled?: boolean;

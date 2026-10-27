@@ -291,12 +291,12 @@ module-level primitives in `backend/om/connectors/imap/connector.py`:
 - `_fetch_email(client, email_id)` + `_convert_email_headers_and_body_into_document(...)` → parse to text
 
 The connector's own `__main__` block (lines 444-484) already demonstrates instantiating it with
-`OnyxStaticCredentialsProvider` — a ready-made PoC path.
+`OmStaticCredentialsProvider` — a ready-made PoC path.
 
 **Recipe (Approach A — reuse the connector, minimal new code):**
 
 1. **Credentials:** reuse the encrypted `Credential` table (`source=DocumentSource.IMAP`) via
-   `OnyxDBCredentialsProvider`, or `OnyxStaticCredentialsProvider` for a quick PoC.
+   `OmDBCredentialsProvider`, or `OmStaticCredentialsProvider` for a quick PoC.
 2. **New tool class** `ImapMailTool(Tool)` in `backend/om/tools/tool_implementations/mail/imap_mail_tool.py`:
    - `tool_definition()` → exposes `search_mail(query, since_days, mailbox?)` as an OpenAI function.
    - `run()` → calls the connector's `_get_mail_client` / `_fetch_email_ids_in_mailbox` / `_fetch_email`, returns

@@ -98,9 +98,13 @@ def create_pulse_schedule(
     enabled: bool,
     retention_count: int,
     next_run_at: datetime.datetime | None,
+    input_mode: str = "fixed",
+    input_prompt: str | None = None,
+    input_items: list[str] | None = None,
 ) -> PulseSchedule:
     schedule = PulseSchedule(
         user_id=user_id,
+        updated_by_id=user_id,
         workflow_id=workflow_id,
         name=name,
         schedule_type=schedule_type,
@@ -109,6 +113,10 @@ def create_pulse_schedule(
         run_at=run_at,
         timezone=timezone,
         input_message=input_message,
+        input_mode=input_mode,
+        input_prompt=input_prompt,
+        input_items=input_items,
+        input_item_index=0,
         enabled=enabled,
         retention_count=retention_count,
         next_run_at=next_run_at,
@@ -286,6 +294,19 @@ def lock_schedule_row(db_session: Session, schedule_id: int) -> None:
         .where(PulseSchedule.id == schedule_id)
         .with_for_update()
     )
+
+
+def claim_next_item_index(db_session: Session, schedule_id: int) -> int:
+    """List mode: atomically take the next item index (each run gets its own item,
+    even when runs start concurrently). Returns the index to use."""
+    used = db_session.execute(
+        update(PulseSchedule)
+        .where(PulseSchedule.id == schedule_id)
+        .values(input_item_index=PulseSchedule.input_item_index + 1)
+        .returning(PulseSchedule.input_item_index - 1)
+    ).scalar_one()
+    db_session.commit()
+    return int(used)
 
 
 def create_manual_run(db_session: Session, schedule_id: int) -> PulseRun:

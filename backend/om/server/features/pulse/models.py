@@ -9,8 +9,10 @@ from pydantic import Field
 
 from om.db.models import PulseRun
 from om.db.models import PulseSchedule
+from om.pulse.inputs import item_for_index
 
 ScheduleTypeLiteral = Literal["cron", "interval", "once"]
+InputModeLiteral = Literal["fixed", "window", "ask", "list"]
 # 366 days; also keeps values inside the int4 column
 MAX_INTERVAL_SECONDS = 366 * 24 * 3600
 
@@ -26,7 +28,11 @@ class ScheduleTiming(BaseModel):
 class PulseScheduleCreate(ScheduleTiming):
     workflow_id: int
     name: str = Field(min_length=1, max_length=200)
-    input_message: str = Field(min_length=1, max_length=20000)
+    # What each run receives (see om/pulse/inputs.py); message rules depend on the mode
+    input_mode: InputModeLiteral = "fixed"
+    input_message: str = Field(default="", max_length=20000)
+    input_prompt: str | None = Field(default=None, max_length=2000)
+    input_items: list[str] | None = None
     enabled: bool = True
     retention_count: int | None = None
 
@@ -35,7 +41,10 @@ class PulseScheduleUpdate(BaseModel):
     """Partial update. Timing fields are validated together when any is present."""
 
     name: str | None = Field(default=None, min_length=1, max_length=200)
-    input_message: str | None = Field(default=None, min_length=1, max_length=20000)
+    input_mode: InputModeLiteral | None = None
+    input_message: str | None = Field(default=None, max_length=20000)
+    input_prompt: str | None = Field(default=None, max_length=2000)
+    input_items: list[str] | None = None
     enabled: bool | None = None
     retention_count: int | None = Field(default=None, ge=1, le=100000)
     schedule_type: ScheduleTypeLiteral | None = None
@@ -97,15 +106,24 @@ class PulseScheduleResponse(BaseModel):
     name: str
     workflow_id: int
     workflow_name: str | None
+    # Creator / owner — runs execute as this user; never changes on edits
     user_id: UUID
     owner_email: str | None = None
+    # Who made the latest change (owner, or an admin)
+    updated_by_id: UUID | None = None
+    updated_by_email: str | None = None
     enabled: bool
     schedule_type: str
     cron_expression: str | None
     interval_seconds: int | None
     run_at: datetime.datetime | None
     timezone: str
+    input_mode: str
     input_message: str
+    input_prompt: str | None = None
+    input_items: list[str] | None = None
+    # list mode: the item the next run will use
+    next_item: str | None = None
     description: str
     next_run_at: datetime.datetime | None
     last_run_at: datetime.datetime | None
@@ -138,13 +156,21 @@ class PulseScheduleResponse(BaseModel):
             owner_email=(
                 schedule.user.email if include_owner and schedule.user else None
             ),
+            updated_by_id=schedule.updated_by_id,
+            updated_by_email=(
+                schedule.updated_by.email if schedule.updated_by else None
+            ),
             enabled=schedule.enabled,
             schedule_type=schedule.schedule_type,
             cron_expression=schedule.cron_expression,
             interval_seconds=schedule.interval_seconds,
             run_at=schedule.run_at,
             timezone=schedule.timezone,
+            input_mode=schedule.input_mode,
             input_message=schedule.input_message,
+            input_prompt=schedule.input_prompt,
+            input_items=schedule.input_items,
+            next_item=item_for_index(schedule.input_items, schedule.input_item_index),
             description=description,
             next_run_at=schedule.next_run_at,
             last_run_at=schedule.last_run_at,
@@ -195,3 +221,7 @@ class PulseConfigResponse(BaseModel):
     max_retention: int
     default_retention: int
     template_variables: list[str]
+    # Input modes ("What should each run receive?") and their defaults
+    input_modes: list[str]
+    default_window_message: str
+    default_list_message: str

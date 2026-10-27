@@ -238,3 +238,27 @@ Live numbers come from the probes on 2026-10-24 (`rename-audit/live_data_probes.
 
 `git grep -iE "onyx|danswer"` returns only: NOTICE/LICENSE attribution you chose to keep, the `rename-audit` history documents, and any
 value deliberately kept and listed in `DECISIONS.md` with a reason.
+
+---
+
+## Part 3: UI re-check after Phase 5 (about 10 minutes, after the changes are deployed)
+
+Phase 5 is implemented and tested on throwaway stacks but NOT deployed yet (see `rename-audit/PHASE5_LOG.md`). After it is deployed, check:
+
+| # | Where | Do | Expected |
+|---|---|---|---|
+| 1 | `/auth/login` | Log in, log out, log in again. | Works. You may be asked to log in once more after the deploy (cookie rename); that is normal. |
+| 2 | `/admin/settings` | Open it. | "VertualAI Craft (Sandbox)" row shows Enabled/Disabled as before. Toggle one harmless setting and Save, reload. It stays. |
+| 3 | `/admin/api-key` | Create a key, call `curl -H "Authorization: Bearer <key>" http://localhost:3000/api/me`. Delete the key. | 200 with JSON. Existing keys keep working. |
+| 4 | `/app/settings/accounts-access` (personal access tokens) | Create a token. | It starts with `om_pat_`. Existing `onyx_pat_` tokens (if any) still work. |
+| 5 | `/app` chat | Upload a file in chat, send a message about it, reopen the chat from history. Then open one OLD chat that had a file. | Both open. New files are stored under `om-file-store-bucket/om-files/`, old ones keep working until you run the migration script. |
+| 6 | `/admin/add-connector` -> File | Upload a zip that contains `.onyx_metadata.json` (or `.om_metadata.json`). | Accepted; the links/titles from the metadata file show on the indexed documents. |
+| 7 | `/admin/configuration/web-search` | Open it. | "VertualAI Web Crawler" entry present and selectable. |
+| 8 | Slack (only if you use the bot) | Ask the bot a question that returns sources. | Source icons show. NOTE: Slack downloads icons from your public WEB_DOMAIN; on a localhost-only install they will not appear (they could not come from GitHub-hosted upstream images forever either). |
+
+### Moving the existing 1,740 files to the new bucket/prefix (separate, supervised step)
+Only after deploy, and only if you want zero `onyx` in storage. From the api_server container (`/app`):
+1. `python scripts/migrate_file_store_names.py` (dry run: prints how many rows would move, changes nothing).
+2. `python scripts/migrate_file_store_names.py --apply` (copies, verifies size and ETag, updates rows in batches; re-runnable).
+3. Open a few old chats/files in the UI. If all is fine: `python scripts/migrate_file_store_names.py --delete-old`.
+4. The old bucket may still contain ~4,400 orphan objects that no database row uses; delete the old bucket when you are sure.

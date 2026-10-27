@@ -19,6 +19,7 @@ from slack_sdk.models.metadata import Metadata
 from slack_sdk.socket_mode import SocketModeClient
 
 from om.configs.app_configs import DISABLE_TELEMETRY
+from om.configs.app_configs import OM_TELEMETRY_ENDPOINT
 from om.configs.constants import ID_SEPARATOR
 from om.configs.constants import MessageType
 from om.configs.ombot_configs import OM_BOT_FEEDBACK_VISIBILITY
@@ -627,7 +628,7 @@ def read_slack_thread(
 
 
 def slack_usage_report(action: str, sender_id: str | None, client: WebClient) -> None:
-    if DISABLE_TELEMETRY:
+    if DISABLE_TELEMETRY or not OM_TELEMETRY_ENDPOINT:
         return
 
     om_user = None
@@ -644,7 +645,7 @@ def slack_usage_report(action: str, sender_id: str | None, client: WebClient) ->
     optional_telemetry(
         record_type=RecordType.USAGE,
         data={"action": action},
-        user_id=str(om_user.id) if om_user else "Non-Onyx-Or-No-Auth-User",
+        user_id=str(om_user.id) if om_user else "Non-Om-Or-No-Auth-User",
     )
 
 

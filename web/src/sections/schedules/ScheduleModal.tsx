@@ -10,6 +10,7 @@ import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import InputTextArea from "@/refresh-components/inputs/InputTextArea";
 import InputSelect from "@/refresh-components/inputs/InputSelect";
 import InputNumber from "@/refresh-components/inputs/InputNumber";
+import Switch from "@/refresh-components/inputs/Switch";
 import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import { toast } from "@/hooks/useToast";
 import { useWorkflows } from "@/hooks/useWorkflows";
@@ -26,10 +27,19 @@ import {
   SvgZap,
 } from "@opal/icons";
 import type {
+  InputMode,
   PulsePreviewResponse,
   PulseSchedule,
   ScheduleSpec,
 } from "@/lib/schedules/interfaces";
+import {
+  defaultAskPrompt,
+  defaultMessageFor,
+  INPUT_MODE_OPTIONS,
+  isCustomMessage,
+  parseItems,
+  validateInputs,
+} from "@/lib/schedules/inputModes";
 import {
   defaultFrequencyState,
   FrequencyState,
@@ -70,14 +80,14 @@ const VARIABLE_HELP: Record<string, string> = {
   now: "Exact run date and time",
   window_start: "When the last successful run was scheduled",
   window_end: "When this run is scheduled",
+  item: "The current item from your list",
 };
-
-const DEFAULT_MESSAGE =
-  "Run for {{date}}. Only include what changed since {{window_start}}.";
 
 /** Prefill used by the empty-state templates and entry points. */
 export interface ScheduleTemplate {
   frequency?: Partial<FrequencyState>;
+  /** What each run receives; defaults to "fixed". */
+  inputMode?: InputMode;
   message?: string;
   /** Pick the first workflow whose name contains this (case-insensitive). */
   workflowNameHint?: string;
@@ -91,6 +101,11 @@ export interface ScheduleModalProps {
   initialWorkflowId?: number | null;
   template?: ScheduleTemplate | null;
   onSaved?: (schedule: PulseSchedule) => void;
+  /** Hide "Save & run now" (admins editing another user's schedule: runs are
+   * owner-only because they execute as the owner). Default true. */
+  allowRunNow?: boolean;
+  /** Shown at the top when an admin edits someone else's schedule. */
+  ownerNote?: string | null;
 }
 
 type PreviewState =
@@ -146,6 +161,7 @@ function MessagePreview({
   intervalSeconds,
   timezone,
   knownVariables,
+  item,
 }: {
   message: string;
   firstRun: string;
@@ -153,6 +169,8 @@ function MessagePreview({
   intervalSeconds: number | null;
   timezone: string;
   knownVariables: string[];
+  /** list mode: the item the first run will use */
+  item?: string | null;
 }) {
   const periodMs = intervalSeconds
     ? intervalSeconds * 1000
@@ -173,6 +191,7 @@ function MessagePreview({
     window_start: windowStart,
     window_end: fmtVar(firstRun, timezone, true),
   };
+  if (item != null) values.item = item;
 
   const parts: React.ReactNode[] = [];
   const re = /\{\{\s*([a-zA-Z_]+)\s*\}\}/g;
@@ -254,6 +273,8 @@ export default function ScheduleModal({
   initialWorkflowId,
   template,
   onSaved,
+  allowRunNow = true,
+  ownerNote = null,
 }: ScheduleModalProps) {
   const router = useRouter();
   const isEdit = !!schedule;
@@ -266,11 +287,30 @@ export default function ScheduleModal({
   );
   const [name, setName] = useState(schedule?.name ?? "");
   const [nameDirty, setNameDirty] = useState(isEdit);
+  const initialMode: InputMode =
+    schedule?.input_mode ?? template?.inputMode ?? "fixed";
+  const [inputMode, setInputMode] = useState<InputMode>(initialMode);
   const [message, setMessage] = useState(
-    schedule?.input_message ?? template?.message ?? ""
+    schedule
+      ? schedule.input_mode === "ask"
+        ? ""
+        : schedule.input_message
+      : template?.message ?? defaultMessageFor(initialMode)
   );
   const [messageDirty, setMessageDirty] = useState(
     isEdit || !!template?.message
+  );
+  // window/list modes: "Customize message" toggle (off = the mode's default)
+  const [customize, setCustomize] = useState(() =>
+    schedule
+      ? isCustomMessage(schedule.input_mode, schedule.input_message)
+      : template?.message
+        ? isCustomMessage(initialMode, template.message)
+        : false
+  );
+  const [askPrompt, setAskPrompt] = useState(schedule?.input_prompt ?? "");
+  const [itemsText, setItemsText] = useState(
+    (schedule?.input_items ?? []).join("\n")
   );
   const [freq, setFreq] = useState<FrequencyState>(() =>
     schedule
@@ -305,12 +345,15 @@ export default function ScheduleModal({
   const maxRetention = config?.max_retention ?? 500;
   const retentionValue = retention ?? config?.default_retention ?? 50;
 
-  const starterFor = (wfId: number | null): string | null => {
-    if (wfId == null) return null;
+  const startersFor = (wfId: number | null): string[] => {
+    if (wfId == null) return [];
     const agent = agents.find((a) => a.workflow_id === wfId);
-    const starter = agent?.starter_messages?.find((s) => !!s.message?.trim());
-    return starter?.message ?? null;
+    return (agent?.starter_messages ?? [])
+      .map((s) => s.message?.trim() ?? "")
+      .filter((m) => m.length > 0);
   };
+  const starterFor = (wfId: number | null): string | null =>
+    startersFor(wfId)[0] ?? null;
 
   // Resolve the default workflow once the list is available (create mode).
   useEffect(() => {
@@ -323,12 +366,21 @@ export default function ScheduleModal({
     setWorkflowId((match ?? workflows[0]!).id);
   }, [workflowId, workflowsLoading, workflows, template?.workflowNameHint]);
 
-  // Pre-fill the message from the workflow's starter message (create mode).
+  // Pre-fill the request from the workflow's own starter message (create mode,
+  // "same request" mode only). Never a generic placeholder: if the workflow has
+  // no starter message the box stays empty and Save waits for the user.
   useEffect(() => {
-    if (messageDirty || message !== "" || workflowId == null || agentsLoading)
+    if (
+      inputMode !== "fixed" ||
+      messageDirty ||
+      message !== "" ||
+      workflowId == null ||
+      agentsLoading
+    )
       return;
-    setMessage(starterFor(workflowId) ?? DEFAULT_MESSAGE);
-  }, [workflowId, agentsLoading, messageDirty, message]);
+    const starter = starterFor(workflowId);
+    if (starter) setMessage(starter);
+  }, [workflowId, agentsLoading, messageDirty, message, inputMode]);
 
   const workflow = workflows.find((w) => w.id === workflowId) ?? null;
   const workflowName = workflow?.name ?? schedule?.workflow_name ?? "";
@@ -382,6 +434,17 @@ export default function ScheduleModal({
     timingChanged(schedule, specResult.spec);
   const previewError = preview.status === "error" ? preview.error : null;
   const tzOptions = useMemo(() => timezoneOptions(timezone), [timezone]);
+  const inputError = validateInputs(inputMode, message, itemsText);
+  const listItems = useMemo(() => parseItems(itemsText), [itemsText]);
+  const chipVariables =
+    inputMode === "list" ? [...variables, "item"] : variables;
+  // What the first run will actually send (null in ask mode)
+  const effectiveMessage =
+    inputMode === "ask"
+      ? null
+      : inputMode === "fixed" || customize
+        ? message
+        : defaultMessageFor(inputMode);
   const browserTz = browserTimeZone();
 
   function insertVariable(v: string) {
@@ -406,7 +469,77 @@ export default function ScheduleModal({
   function handleWorkflowChange(value: string) {
     const id = Number(value);
     setWorkflowId(id);
-    if (!messageDirty) setMessage(starterFor(id) ?? DEFAULT_MESSAGE);
+    if (!messageDirty && inputMode === "fixed")
+      setMessage(starterFor(id) ?? "");
+  }
+
+  function changeMode(next: InputMode) {
+    if (next === inputMode) return;
+    setInputMode(next);
+    setCustomize(false);
+    setMessageDirty(false);
+    setMessage(
+      next === "fixed" ? starterFor(workflowId) ?? "" : defaultMessageFor(next)
+    );
+  }
+
+  function toggleCustomize(on: boolean) {
+    setCustomize(on);
+    if (!on) setMessage(defaultMessageFor(inputMode));
+  }
+
+  function renderCustomizeToggle() {
+    return (
+      <label className="flex items-center gap-2 cursor-pointer w-fit">
+        <Switch checked={customize} onCheckedChange={toggleCustomize} />
+        <Text as="span" mainUiBody text04>
+          Customize message
+        </Text>
+      </label>
+    );
+  }
+
+  function renderMessageEditor(placeholder: string) {
+    return (
+      <div>
+        <InputTextArea
+          id="schedule-message"
+          ref={messageRef}
+          rows={3}
+          value={message}
+          placeholder={placeholder}
+          onFocus={() => {
+            messageTouched.current = true;
+          }}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            setMessageDirty(true);
+          }}
+          maxLength={20000}
+        />
+        <div className="flex items-center gap-1.5 flex-wrap pt-2">
+          <Text as="span" secondaryBody text03>
+            {inputMode === "fixed" ? "Optional variables:" : "Insert:"}
+          </Text>
+          {chipVariables.map((v) => (
+            <SimpleTooltip key={v} tooltip={VARIABLE_HELP[v] ?? v} side="top">
+              <button
+                type="button"
+                onClick={() => insertVariable(v)}
+                className="font-mono text-xs h-6 px-2 rounded-full border transition-colors hover:brightness-95"
+                style={{
+                  borderColor: ACCENT_GLOW_STRONG,
+                  backgroundColor: ACCENT_SUBTLE,
+                  color: ACCENT,
+                }}
+              >
+                {`{{${v}}}`}
+              </button>
+            </SimpleTooltip>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   async function save(runNow: boolean) {
@@ -414,8 +547,8 @@ export default function ScheduleModal({
       toast.error("Pick a workflow to schedule");
       return;
     }
-    if (!message.trim()) {
-      toast.error("Add the message to send to the workflow");
+    if (inputError) {
+      toast.error(inputError);
       return;
     }
     if (timingDirty && (specResult.spec === null || previewError)) {
@@ -426,6 +559,18 @@ export default function ScheduleModal({
       0,
       200
     );
+
+    const inputs = {
+      input_mode: inputMode,
+      input_message:
+        inputMode === "ask"
+          ? ""
+          : inputMode === "fixed" || customize
+            ? message
+            : defaultMessageFor(inputMode),
+      input_prompt: inputMode === "ask" ? askPrompt.trim() || null : null,
+      input_items: inputMode === "list" ? parseItems(itemsText) : null,
+    };
 
     setSaving(runNow ? "run" : "save");
     try {
@@ -444,7 +589,7 @@ export default function ScheduleModal({
       if (schedule) {
         saved = await updateSchedule(schedule.id, {
           name: finalName,
-          input_message: message,
+          ...inputs,
           retention_count: retentionValue,
           ...timing,
         });
@@ -452,7 +597,7 @@ export default function ScheduleModal({
         saved = await createSchedule({
           workflow_id: workflowId,
           name: finalName,
-          input_message: message,
+          ...inputs,
           enabled: true,
           retention_count: retentionValue,
           ...(timing as ScheduleSpec),
@@ -522,6 +667,19 @@ export default function ScheduleModal({
           <div className="w-full grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_18rem] gap-5">
             {/* ── Form ─────────────────────────────────────────── */}
             <div className="flex flex-col gap-5 min-w-0">
+              {ownerNote && (
+                <div
+                  className="rounded-08 border px-3 py-2"
+                  style={{
+                    borderColor: ACCENT_GLOW_STRONG,
+                    backgroundColor: ACCENT_SUBTLE,
+                  }}
+                >
+                  <Text as="p" secondaryBody text04>
+                    {ownerNote}
+                  </Text>
+                </div>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <FieldLabel>Workflow</FieldLabel>
@@ -589,49 +747,176 @@ export default function ScheduleModal({
               </div>
 
               <div>
-                <FieldLabel htmlFor="schedule-message">
-                  Message sent to the workflow
-                </FieldLabel>
-                <InputTextArea
-                  id="schedule-message"
-                  ref={messageRef}
-                  rows={3}
-                  value={message}
-                  onFocus={() => {
-                    messageTouched.current = true;
-                  }}
-                  onChange={(e) => {
-                    setMessage(e.target.value);
-                    setMessageDirty(true);
-                  }}
-                  maxLength={20000}
-                />
-                <div className="flex items-center gap-1.5 flex-wrap pt-2">
-                  <Text as="span" secondaryBody text03>
-                    Insert:
-                  </Text>
-                  {variables.map((v) => (
-                    <SimpleTooltip
-                      key={v}
-                      tooltip={VARIABLE_HELP[v] ?? v}
-                      side="top"
-                    >
+                <FieldLabel>What should each run receive?</FieldLabel>
+                <div role="radiogroup" className="grid gap-1.5">
+                  {INPUT_MODE_OPTIONS.map((o) => {
+                    const selected = o.mode === inputMode;
+                    return (
                       <button
+                        key={o.mode}
                         type="button"
-                        onClick={() => insertVariable(v)}
-                        className="font-mono text-xs h-6 px-2 rounded-full border transition-colors hover:brightness-95"
-                        style={{
-                          borderColor: ACCENT_GLOW_STRONG,
-                          backgroundColor: ACCENT_SUBTLE,
-                          color: ACCENT,
-                        }}
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={() => changeMode(o.mode)}
+                        className="flex items-start gap-2.5 text-left rounded-08 border px-3 py-2 transition-colors"
+                        style={
+                          selected
+                            ? {
+                                borderColor: ACCENT_GLOW_STRONG,
+                                backgroundColor: ACCENT_SUBTLE,
+                              }
+                            : { borderColor: "var(--border-01)" }
+                        }
                       >
-                        {`{{${v}}}`}
+                        <span
+                          aria-hidden
+                          className="mt-[3px] w-3.5 h-3.5 rounded-full border flex-shrink-0 flex items-center justify-center"
+                          style={{
+                            borderColor: selected ? ACCENT : "var(--border-03)",
+                          }}
+                        >
+                          {selected && (
+                            <span
+                              className="w-1.5 h-1.5 rounded-full"
+                              style={{ backgroundColor: ACCENT }}
+                            />
+                          )}
+                        </span>
+                        <span className="flex flex-col">
+                          <Text as="span" mainUiAction text05>
+                            {o.label}
+                          </Text>
+                          <Text as="span" secondaryBody text03>
+                            {o.hint}
+                          </Text>
+                        </span>
                       </button>
-                    </SimpleTooltip>
-                  ))}
+                    );
+                  })}
                 </div>
+                <Text as="p" secondaryBody text02 className="pt-1.5">
+                  Each run uses the latest version of the workflow.
+                </Text>
               </div>
+
+              {inputMode === "fixed" && (
+                <div>
+                  <FieldLabel htmlFor="schedule-message">
+                    Request sent on every run
+                  </FieldLabel>
+                  {startersFor(workflowId).length > 0 && (
+                    <div className="flex items-center gap-1.5 flex-wrap pb-2">
+                      <Text as="span" secondaryBody text03>
+                        Suggestions from this workflow:
+                      </Text>
+                      {startersFor(workflowId)
+                        .slice(0, 4)
+                        .map((st) => (
+                          <button
+                            key={st}
+                            type="button"
+                            onClick={() => {
+                              setMessage(st);
+                              setMessageDirty(true);
+                            }}
+                            title={st}
+                            className="text-xs h-6 px-2 rounded-full border max-w-[16rem] truncate hover:brightness-95"
+                            style={{
+                              borderColor: "var(--border-02)",
+                              backgroundColor: "var(--background-tint-01)",
+                            }}
+                          >
+                            {st}
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                  {renderMessageEditor(
+                    "e.g. What is the use of paracetamol? (write it exactly as you would in chat)"
+                  )}
+                </div>
+              )}
+
+              {inputMode === "window" && (
+                <div className="flex flex-col gap-2">
+                  {renderCustomizeToggle()}
+                  {customize ? (
+                    renderMessageEditor("Describe what each run should cover")
+                  ) : (
+                    <div className="text-[12.5px] font-mono text-text-04 bg-background-tint-00 border border-border-01 rounded-08 px-2.5 py-2 break-words">
+                      {defaultMessageFor("window")}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {inputMode === "ask" && (
+                <div>
+                  <FieldLabel htmlFor="schedule-ask-prompt">
+                    What should we ask you each run? (optional)
+                  </FieldLabel>
+                  <InputTextArea
+                    id="schedule-ask-prompt"
+                    rows={2}
+                    value={askPrompt}
+                    placeholder={defaultAskPrompt(
+                      workflowName || "this workflow"
+                    )}
+                    onChange={(e) => setAskPrompt(e.target.value)}
+                    maxLength={2000}
+                  />
+                  <Text as="p" secondaryBody text03 className="pt-1.5">
+                    At each run the workflow chat opens with this question and
+                    you get a notification. Your reply starts the workflow.
+                  </Text>
+                </div>
+              )}
+
+              {inputMode === "list" && (
+                <div className="flex flex-col gap-2">
+                  <div>
+                    <FieldLabel htmlFor="schedule-items">
+                      Items (one per line)
+                    </FieldLabel>
+                    <InputTextArea
+                      id="schedule-items"
+                      rows={4}
+                      value={itemsText}
+                      placeholder={"asthma\ndiabetes\nhypertension"}
+                      onChange={(e) => setItemsText(e.target.value)}
+                    />
+                    <Text as="p" secondaryBody text03 className="pt-1.5">
+                      {listItems.length === 0
+                        ? "Each run takes the next item, then starts over."
+                        : `${listItems.length} item${
+                            listItems.length === 1 ? "" : "s"
+                          } · the ${isEdit ? "next" : "first"} run uses “${
+                            (isEdit && schedule?.next_item) || listItems[0]
+                          }”`}
+                    </Text>
+                  </div>
+                  {renderCustomizeToggle()}
+                  {customize ? (
+                    renderMessageEditor(
+                      "e.g. Summarise the latest guidance on {{item}}"
+                    )
+                  ) : (
+                    <Text as="p" secondaryBody text03>
+                      Each item is sent as the message, as is.
+                    </Text>
+                  )}
+                </div>
+              )}
+
+              {inputError && (
+                <Text
+                  as="p"
+                  secondaryBody
+                  style={{ color: "var(--status-text-error-05)" }}
+                >
+                  {inputError}
+                </Text>
+              )}
 
               <div>
                 <FieldLabel>Frequency</FieldLabel>
@@ -786,10 +1071,26 @@ export default function ScheduleModal({
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <SectionLabel>First run will send</SectionLabel>
-                {preview.status === "ok" && nextRuns[0] ? (
+                <SectionLabel>
+                  {inputMode === "ask"
+                    ? "Each run will ask you"
+                    : "First run will send"}
+                </SectionLabel>
+                {inputMode === "ask" ? (
+                  <div className="text-[12.5px] leading-normal text-text-04 bg-background-tint-00 border border-border-01 rounded-08 px-2.5 py-2 break-words whitespace-pre-wrap">
+                    {askPrompt.trim() ||
+                      defaultAskPrompt(workflowName || "this workflow")}
+                  </div>
+                ) : preview.status === "ok" && nextRuns[0] ? (
                   <MessagePreview
-                    message={message}
+                    message={effectiveMessage ?? ""}
+                    item={
+                      inputMode === "list"
+                        ? (isEdit && schedule?.next_item) ||
+                          listItems[0] ||
+                          null
+                        : null
+                    }
                     firstRun={nextRuns[0]}
                     secondRun={nextRuns[1] ?? null}
                     intervalSeconds={
@@ -798,7 +1099,7 @@ export default function ScheduleModal({
                         : null
                     }
                     timezone={timezone}
-                    knownVariables={variables}
+                    knownVariables={chipVariables}
                   />
                 ) : (
                   <Text as="p" secondaryBody text02>
@@ -824,15 +1125,20 @@ export default function ScheduleModal({
             }
             submit={
               <>
+                {allowRunNow && (
+                  <Button
+                    secondary
+                    leftIcon={saving === "run" ? undefined : SvgPlayCircle}
+                    onClick={() => save(true)}
+                    disabled={saving !== null || !!inputError}
+                  >
+                    {saving === "run" ? "Starting run…" : "Save & run now"}
+                  </Button>
+                )}
                 <Button
-                  secondary
-                  leftIcon={saving === "run" ? undefined : SvgPlayCircle}
-                  onClick={() => save(true)}
-                  disabled={saving !== null}
+                  onClick={() => save(false)}
+                  disabled={saving !== null || !!inputError}
                 >
-                  {saving === "run" ? "Starting run…" : "Save & run now"}
-                </Button>
-                <Button onClick={() => save(false)} disabled={saving !== null}>
                   {saving === "save"
                     ? "Saving…"
                     : isEdit

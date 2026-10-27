@@ -21,7 +21,7 @@ from pydantic import ValidationError
 from requests.exceptions import RequestException
 from retry import retry
 
-# add onyx/backend to path (since this isn't done automatically when running as a script)
+# add backend to path (since this isn't done automatically when running as a script)
 current_dir = Path(__file__).parent
 om_dir = current_dir.parent.parent.parent.parent
 sys.path.append(str(om_dir / "backend"))
@@ -613,14 +613,14 @@ def run_search_eval(
             "Please add it to the root .vscode/.env file."
         )
 
-    # check onyx api key is set (auth is always required)
+    # check api key is set (auth is always required)
     if not os.environ.get("OM_API_KEY"):
         raise RuntimeError(
             "OM_API_KEY is required. "
             "Please create one in the admin panel and add it to the root .vscode/.env file."
         )
 
-    # check onyx is running
+    # check the app is running
     try:
         response = requests.get(
             f"{config.api_url}/heartbeat", timeout=config.request_timeout

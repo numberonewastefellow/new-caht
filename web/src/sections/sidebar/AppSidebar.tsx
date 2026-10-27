@@ -240,7 +240,7 @@ const MemoizedAppSidebarInner = memo(
     // Check if VertualAI Craft is enabled via settings (backed by PostHog feature flag)
     // Only explicit true enables the feature; false or undefined = disabled
     const isOmCraftEnabled =
-      combinedSettings?.settings?.onyx_craft_enabled === true;
+      combinedSettings?.settings?.om_craft_enabled === true;
 
     // Find build_mode feature announcement notification (only if VertualAI Craft is enabled)
     const buildModeNotification = isOmCraftEnabled

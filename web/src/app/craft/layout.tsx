@@ -27,7 +27,7 @@ export default async function Layout({ children }: LayoutProps) {
   // Check if VertualAI Craft is enabled via feature flag
   // Only explicit true enables the feature; false or undefined = disabled
   const settings = await fetchSettingsSS();
-  if (settings?.settings?.onyx_craft_enabled !== true) {
+  if (settings?.settings?.om_craft_enabled !== true) {
     redirect("/app" as Route);
   }
 

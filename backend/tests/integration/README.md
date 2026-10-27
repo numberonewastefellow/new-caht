@@ -21,14 +21,14 @@ The task automatically generates the Python client needed for integration tests.
 
 If the client generation fails, try running this command manually:
 ```sh
-openapi-generator generate -i backend/generated/openapi.json -g python -o backend/generated/om_openapi_client --package-name onyx_openapi_client --skip-validate-spec --openapi-normalizer "SIMPLIFY_ONEOF_ANYOF=true,SET_OAS3_NULLABLE=true"
+openapi-generator generate -i backend/generated/openapi.json -g python -o backend/generated/om_openapi_client --package-name om_openapi_client --skip-validate-spec --openapi-normalizer "SIMPLIFY_ONEOF_ANYOF=true,SET_OAS3_NULLABLE=true"
 ```
 
-1. Launch onyx (using Docker or running with a debugger), ensuring the API server is running on port 8080.
-   - If you'd like to set environment variables, you can do so by creating a `.env` file in the onyx/backend/tests/integration/ directory.
+1. Launch VertualAI (using Docker or running with a debugger), ensuring the API server is running on port 8080.
+   - If you'd like to set environment variables, you can do so by creating a `.env` file in the backend/tests/integration/ directory.
    - VertualAI MUST be launched with AUTH_TYPE=basic
    - Tests that use `mock_llm_response` (e.g. llm workflow tool call tests) also require `INTEGRATION_TESTS_MODE=true` on the API server process.
-2. Navigate to `onyx/backend`.
+2. Navigate to `backend`.
 3. Run the following command in the terminal:
    ```sh
    python -m dotenv -f .env run -- pytest -s tests/integration/tests/
@@ -48,7 +48,7 @@ navigate to `backend/tests/integration/mock_services` and run
 docker compose -f docker-compose.mock-it-services.yml -p mock-it-services-stack up -d
 ```
 You will have to modify the networks section of the docker-compose file to `<your stack name>_default` if you brought up the standard
-onyx services with a name different from the default `onyx`.
+services with a name different from the default project name.
 
 ## Guidelines for Writing Integration Tests
 

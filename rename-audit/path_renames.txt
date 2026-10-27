@@ -1,4 +1,4 @@
-backend/tests/integration/tests/indexing/file_connector/test_files/.onyx_metadata.json
+TODO_manual_ui_check_and_onyx_phase5.md
 backend/tests/route_rename/snapshots/before/get_onyxbot_analytics.json
 deployment/aws_ecs_fargate/cloudformation/onyx_acm_template.yaml
 deployment/aws_ecs_fargate/cloudformation/onyx_cluster_template.yaml
@@ -51,6 +51,10 @@ deployment/helm/charts/onyx/templates/lets-encrypt.yaml
 deployment/helm/charts/onyx/templates/mcp-server-deployment.yaml
 deployment/helm/charts/onyx/templates/mcp-server-service.yaml
 deployment/helm/charts/onyx/templates/nginx-conf.yaml
+deployment/helm/charts/onyx/templates/pulse-scheduler.yaml
+deployment/helm/charts/onyx/templates/pulse-worker-hpa.yaml
+deployment/helm/charts/onyx/templates/pulse-worker-scaledobject.yaml
+deployment/helm/charts/onyx/templates/pulse-worker.yaml
 deployment/helm/charts/onyx/templates/serviceaccount.yaml
 deployment/helm/charts/onyx/templates/slackbot.yaml
 deployment/helm/charts/onyx/templates/tests/test-connection.yaml

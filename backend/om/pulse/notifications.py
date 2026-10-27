@@ -6,6 +6,10 @@ most one open "failed" notification per streak, one "needs input" per run, and o
 "auto-paused" per pause event. Successful runs never notify.
 """
 
+from datetime import datetime
+from datetime import timezone
+from uuid import UUID
+
 from sqlalchemy.orm import Session
 
 from om.configs.constants import NotificationType
@@ -81,4 +85,34 @@ def notify_auto_paused(
         )
     except Exception:
         logger.exception("Pulse: failed to create auto-paused notification")
+        db_session.rollback()
+
+
+def notify_owner_of_admin_change(
+    db_session: Session,
+    *,
+    owner_id: UUID,
+    schedule_id: int,
+    schedule_name: str,
+    admin_email: str,
+    action: str,
+) -> None:
+    """An admin edited or deleted someone else's schedule: tell the owner (audit)."""
+    try:
+        create_notification(
+            user_id=owner_id,
+            notif_type=NotificationType.PULSE_SCHEDULE_CHANGED_BY_ADMIN,
+            db_session=db_session,
+            title=f"Your schedule “{schedule_name}” was {action} by an admin",
+            description=f"{admin_email} {action} it. It still runs as you.",
+            # unique per change so repeated edits each notify
+            additional_data={
+                "pulse_schedule_id": schedule_id,
+                "action": action,
+                "admin": admin_email,
+                "at": datetime.now(timezone.utc).isoformat(),
+            },
+        )
+    except Exception:
+        logger.exception("Pulse: failed to notify owner of admin change")
         db_session.rollback()

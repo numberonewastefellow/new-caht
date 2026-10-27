@@ -29,6 +29,8 @@ import { useForcedTools } from "@/lib/hooks/useForcedTools";
 import { WorkspaceFile } from "@/app/app/workspaces/workspacesService";
 import { getSessionWorkspaceTokenCount } from "@/app/app/workspaces/workspacesService";
 import { getWorkspaceFilesForSession } from "@/app/app/workspaces/workspacesService";
+import { PULSE_RUN_FINISHED_EVENT } from "@/lib/schedules/api";
+import type { PulseRunFinishedDetail } from "@/lib/schedules/api";
 import { AppInputBarHandle } from "@/sections/input/AppInputBar";
 
 interface UseChatSessionControllerProps {
@@ -320,6 +322,43 @@ export default function useChatSessionController({
     searchParams?.get(SEARCH_PARAM_NAMES.AGENT_ID),
     // Note: We're intentionally not including all dependencies to avoid infinite loops
     // This effect should only run when existingChatSessionId or agent ID changes
+  ]);
+
+  // Pulse: scheduled runs execute in the background; when the run of the open
+  // chat finishes (signalled by ScheduledRunBanner) reload its messages in place.
+  useEffect(() => {
+    function onRunFinished(e: Event) {
+      const id = (e as CustomEvent<PulseRunFinishedDetail>).detail
+        ?.chatSessionId;
+      if (!id || id !== existingChatSessionId) return;
+      void (async () => {
+        const res = await fetch(`/api/converse/get-chat-session/${id}`);
+        if (!res.ok) return;
+        const chatSession = (await res.json()) as BackendChatSession;
+        const messageMap = processRawChatHistory(
+          chatSession.messages,
+          chatSession.packets
+        );
+        const history = getLatestMessageChain(messageMap);
+        // Clear first so the message components remount: the renderer caches
+        // processed packets per message, and the reserved placeholder shown while
+        // the run was in progress would otherwise be merged with the answer.
+        updateSessionAndMessageTree(chatSession.chat_session_id, new Map());
+        requestAnimationFrame(() => {
+          updateSessionAndMessageTree(chatSession.chat_session_id, messageMap);
+          updateCurrentSelectedNodeForDocDisplay(
+            history[history.length - 1]?.nodeId ?? null
+          );
+        });
+      })();
+    }
+    window.addEventListener(PULSE_RUN_FINISHED_EVENT, onRunFinished);
+    return () =>
+      window.removeEventListener(PULSE_RUN_FINISHED_EVENT, onRunFinished);
+  }, [
+    existingChatSessionId,
+    updateSessionAndMessageTree,
+    updateCurrentSelectedNodeForDocDisplay,
   ]);
 
   const onMessageSelection = useCallback(

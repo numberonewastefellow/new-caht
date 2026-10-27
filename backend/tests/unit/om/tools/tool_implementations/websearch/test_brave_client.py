@@ -62,7 +62,7 @@ def test_search_maps_brave_response(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(brave_module.requests, "get", _mock_get)
 
-    results = client.search("onyx")
+    results = client.search("vertualai")
 
     assert len(results) == 1
     assert results[0].title == "Result 1"
@@ -81,7 +81,7 @@ def test_search_caps_count_to_brave_max(monkeypatch: pytest.MonkeyPatch) -> None
 
     monkeypatch.setattr(brave_module.requests, "get", _mock_get)
 
-    client.search("onyx")
+    client.search("vertualai")
 
     assert captured_count == "20"
 
@@ -105,7 +105,7 @@ def test_search_includes_optional_params(monkeypatch: pytest.MonkeyPatch) -> Non
 
     monkeypatch.setattr(brave_module.requests, "get", _mock_get)
 
-    client.search("onyx")
+    client.search("vertualai")
 
     assert captured_params is not None
     assert captured_params["country"] == "US"
@@ -129,7 +129,7 @@ def test_search_raises_descriptive_error_on_http_failure(
     monkeypatch.setattr(brave_module.requests, "get", _mock_get)
 
     with pytest.raises(ValueError, match="status 401"):
-        client.search("onyx")
+        client.search("vertualai")
 
 
 def test_search_does_not_retry_non_retryable_http_errors(
@@ -149,7 +149,7 @@ def test_search_does_not_retry_non_retryable_http_errors(
     monkeypatch.setattr(brave_module.requests, "get", _mock_get)
 
     with pytest.raises(ValueError, match="status 401"):
-        client.search("onyx")
+        client.search("vertualai")
     assert calls == 1
 
 

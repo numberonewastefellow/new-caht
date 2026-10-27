@@ -5044,9 +5044,14 @@ class PulseSchedule(Base):
     workflow_id: Mapped[int] = mapped_column(
         ForeignKey("agent_workflow.id", ondelete="CASCADE"), nullable=False
     )
-    # The owner; every run executes as this user
+    # The owner / creator; every run executes as this user. Never changes, even
+    # when an admin edits the schedule.
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    # Who made the latest change (the owner, or an admin editing it)
+    updated_by_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("user.id", ondelete="SET NULL"), nullable=True
     )
     name: Mapped[str] = mapped_column(String, nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
@@ -5061,8 +5066,16 @@ class PulseSchedule(Base):
     # IANA timezone name, used for cron evaluation and template rendering
     timezone: Mapped[str] = mapped_column(String, nullable=False, default="UTC")
 
+    # What each run receives: "fixed" | "window" | "ask" | "list" (see om/pulse/inputs.py)
+    input_mode: Mapped[str] = mapped_column(String, nullable=False, default="fixed")
     # Message sent to the workflow; supports {{date}} {{now}} {{window_start}} {{window_end}}
+    # (+ {{item}} in list mode). Unused in ask mode.
     input_message: Mapped[str] = mapped_column(Text, nullable=False)
+    # ask mode: what the run asks the user for
+    input_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # list mode: items cycled one per run, and the index of the next one
+    input_items: Mapped[list[str] | None] = mapped_column(PGJSONB, nullable=True)
+    input_item_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     # Scheduling state
     next_run_at: Mapped[datetime.datetime | None] = mapped_column(
@@ -5103,6 +5116,7 @@ class PulseSchedule(Base):
 
     workflow: Mapped[AgentWorkflow] = relationship("AgentWorkflow")
     user: Mapped[User] = relationship("User", foreign_keys=[user_id])
+    updated_by: Mapped[User | None] = relationship("User", foreign_keys=[updated_by_id])
 
 
 class PulseRun(Base):

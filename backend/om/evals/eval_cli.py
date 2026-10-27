@@ -141,7 +141,7 @@ def run_remote(
     Tool forcing and assertions are configured per-test in the dataset.
 
     Args:
-        base_url: Base URL of the remote server (e.g., "https://test.onyx.app")
+        base_url: Base URL of the remote server (e.g., "https://om.example.com")
         api_key: API key for authentication
         remote_dataset_name: Name of remote Braintrust dataset
         search_permissions_email: Email address to use for the evaluation.
@@ -201,8 +201,8 @@ def main() -> None:
     parser.add_argument(
         "--base-url",
         type=str,
-        default="https://test.onyx.app",
-        help="Base URL of the remote server (default: https://test.onyx.app)",
+        default="http://localhost:8080",
+        help="Base URL of the remote server (default: http://localhost:8080)",
     )
 
     parser.add_argument(

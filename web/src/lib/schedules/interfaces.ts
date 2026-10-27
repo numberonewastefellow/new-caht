@@ -43,20 +43,34 @@ export interface PulseRun {
   skip_reason: string | null;
 }
 
+/** What each run receives (see lib/schedules/inputModes.ts). */
+export type InputMode = "fixed" | "window" | "ask" | "list";
+
 export interface PulseSchedule {
   id: number;
   name: string;
   workflow_id: number;
   workflow_name: string | null;
+  /** Creator / owner — runs execute as this user; never changes on edits. */
   user_id: string;
   owner_email: string | null;
+  /** Who made the latest change (the owner, or an admin). */
+  updated_by_id: string | null;
+  updated_by_email: string | null;
   enabled: boolean;
   schedule_type: ScheduleType;
   cron_expression: string | null;
   interval_seconds: number | null;
   run_at: string | null;
   timezone: string;
+  input_mode: InputMode;
   input_message: string;
+  /** ask mode: what each run asks the user for (null = default prompt) */
+  input_prompt: string | null;
+  /** list mode: items cycled one per run */
+  input_items: string[] | null;
+  /** list mode: the item the next run will use */
+  next_item: string | null;
   /** Human-readable rule, e.g. "Every weekday at 09:00". */
   description: string;
   next_run_at: string | null;
@@ -84,7 +98,10 @@ export interface ScheduleSpec {
 export interface PulseScheduleCreate extends ScheduleSpec {
   workflow_id: number;
   name: string;
+  input_mode: InputMode;
   input_message: string;
+  input_prompt?: string | null;
+  input_items?: string[] | null;
   enabled: boolean;
   retention_count?: number | null;
 }
@@ -108,6 +125,9 @@ export interface PulseConfig {
   max_retention: number;
   default_retention: number;
   template_variables: string[];
+  input_modes?: InputMode[];
+  default_window_message?: string;
+  default_list_message?: string;
 }
 
 export interface PulseSidebarItem {

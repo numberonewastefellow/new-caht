@@ -84,9 +84,9 @@ def check_craft_enabled() -> bool:
         return False
 
     settings = resp.json()
-    enabled = settings.get("onyx_craft_enabled", False)
+    enabled = settings.get("om_craft_enabled", False)
     if not enabled:
-        print("[ERROR] Craft is NOT enabled (settings.onyx_craft_enabled = false)")
+        print("[ERROR] Craft is NOT enabled (settings.om_craft_enabled = false)")
         print("        Set ENABLE_CRAFT=true in .env and rebuild api_server.")
         return False
 

@@ -59,7 +59,7 @@ Then it cycles through its tasks as scheduled by Celery Beat:
 | `kombu_message_cleanup_task` | periodic | Cleans orphaned Kombu messages from DB (Kombu being the messaging framework used by Celery) |
 | `celery_beat_heartbeat` | 1m | Heartbeat for Beat watchdog |
 
-Watchdog is a separate Python process managed by supervisord which runs alongside celery workers. It checks the ONYX_CELERY_BEAT_HEARTBEAT_KEY in
+Watchdog is a separate Python process managed by supervisord which runs alongside celery workers. It checks the OM_CELERY_BEAT_HEARTBEAT_KEY in
 Redis to ensure Celery Beat is not dead. Beat schedules the celery_beat_heartbeat for Primary to touch the key and share that it's still alive.
 See supervisord.conf for watchdog config.
 

@@ -163,7 +163,7 @@ def _cleanup_thread_local(func: Callable) -> Callable:
 WARM_UP_STRINGS = [
     "VertualAI is amazing!",
     "Check out our easy deployment guide at",
-    "https://docs.onyx.app/deployment/getting_started/quickstart",
+    "https://example.com/deployment/getting_started/quickstart",
 ]
 
 

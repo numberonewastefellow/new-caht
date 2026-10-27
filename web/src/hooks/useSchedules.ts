@@ -1,6 +1,7 @@
 "use client";
 
-import useSWR from "swr";
+import { useState } from "react";
+import useSWR, { type SWRConfiguration } from "swr";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import {
   PULSE_CONFIG_URL,
@@ -28,6 +29,29 @@ function anyActive(statuses: (string | null | undefined)[]) {
   );
 }
 
+/**
+ * useSWR whose polling interval follows the data ("fast while a run is active").
+ *
+ * NOT `refreshInterval: (latest) => …`: the React Compiler memoizes that inline
+ * function, SWR evaluates it once at mount (no data yet -> 0) and never re-arms the
+ * timer, so polling silently never starts. Keeping the interval in state (updated
+ * in onSuccess) gives SWR a changing number, which re-arms the timer.
+ */
+function usePolledSWR<T>(
+  key: string | null,
+  isActive: (data: T) => boolean,
+  activeMs: number,
+  idleMs: number,
+  config: SWRConfiguration<T> = {}
+) {
+  const [intervalMs, setIntervalMs] = useState(idleMs);
+  return useSWR<T>(key, errorHandlingFetcher, {
+    ...config,
+    refreshInterval: intervalMs,
+    onSuccess: (data) => setIntervalMs(isActive(data) ? activeMs : idleMs),
+  });
+}
+
 export interface UseSchedulesParams {
   allUsers?: boolean;
   workflowId?: number | null;
@@ -43,17 +67,13 @@ export function useSchedules(params: UseSchedulesParams = {}) {
     ? `${PULSE_SCHEDULES_URL}?${qs.toString()}`
     : PULSE_SCHEDULES_URL;
 
-  const { data, error, isLoading, mutate } = useSWR<PulseSchedule[]>(
+  // Poll faster while any schedule has a run in flight.
+  const { data, error, isLoading, mutate } = usePolledSWR<PulseSchedule[]>(
     url,
-    errorHandlingFetcher,
-    {
-      revalidateOnFocus: true,
-      // Poll faster while any schedule has a run in flight.
-      refreshInterval: (latest) =>
-        latest && anyActive(latest.map((s) => s.last_run?.status))
-          ? ACTIVE_POLL_MS
-          : IDLE_POLL_MS,
-    }
+    (latest) => anyActive(latest.map((s) => s.last_run?.status)),
+    ACTIVE_POLL_MS,
+    IDLE_POLL_MS,
+    { revalidateOnFocus: true }
   );
 
   return {
@@ -66,14 +86,12 @@ export function useSchedules(params: UseSchedulesParams = {}) {
 
 /** One schedule by id. */
 export function useSchedule(id: number | null | undefined) {
-  const { data, error, isLoading, mutate } = useSWR<PulseSchedule>(
+  const { data, error, isLoading, mutate } = usePolledSWR<PulseSchedule>(
     id != null ? scheduleUrl(id) : null,
-    errorHandlingFetcher,
-    {
-      revalidateOnFocus: true,
-      refreshInterval: (latest) =>
-        latest && anyActive([latest.last_run?.status]) ? ACTIVE_POLL_MS : 0,
-    }
+    (latest) => anyActive([latest.last_run?.status]),
+    ACTIVE_POLL_MS,
+    0,
+    { revalidateOnFocus: true }
   );
 
   return {
@@ -86,14 +104,12 @@ export function useSchedule(id: number | null | undefined) {
 
 /** Run history for a schedule (newest first); polls while a run is active. */
 export function useScheduleRuns(id: number | null | undefined, limit = 50) {
-  const { data, error, isLoading, mutate } = useSWR<PulseRun[]>(
+  const { data, error, isLoading, mutate } = usePolledSWR<PulseRun[]>(
     id != null ? scheduleRunsUrl(id, limit) : null,
-    errorHandlingFetcher,
-    {
-      revalidateOnFocus: true,
-      refreshInterval: (latest) =>
-        latest && anyActive(latest.map((r) => r.status)) ? ACTIVE_POLL_MS : 0,
-    }
+    (latest) => anyActive(latest.map((r) => r.status)),
+    ACTIVE_POLL_MS,
+    0,
+    { revalidateOnFocus: true }
   );
 
   return {
@@ -106,17 +122,12 @@ export function useScheduleRuns(id: number | null | undefined, limit = 50) {
 
 /** Rows for the chat sidebar's "Scheduled" section. */
 export function usePulseSidebar() {
-  const { data, error, isLoading, mutate } = useSWR<PulseSidebarItem[]>(
+  const { data, error, isLoading, mutate } = usePolledSWR<PulseSidebarItem[]>(
     PULSE_SIDEBAR_URL,
-    errorHandlingFetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 15000,
-      refreshInterval: (latest) =>
-        latest && anyActive(latest.map((r) => r.last_run_status))
-          ? ACTIVE_POLL_MS * 2
-          : IDLE_POLL_MS,
-    }
+    (latest) => anyActive(latest.map((r) => r.last_run_status)),
+    ACTIVE_POLL_MS * 2,
+    IDLE_POLL_MS,
+    { revalidateOnFocus: false, dedupingInterval: 15000 }
   );
 
   return {

@@ -15,7 +15,7 @@ from om.utils.special_types import JSON_ro
 logger = setup_logger()
 
 
-REDIS_KEY_PREFIX = "onyx_kv_store:"
+REDIS_KEY_PREFIX = "om_kv_store:"
 KV_REDIS_KEY_EXPIRATION = 60 * 60 * 24  # 1 Day
 
 

@@ -30,17 +30,21 @@ PUBLIC_API_TAGS: list[str | Enum] = ["public"]
 FASTAPI_USERS_AUTH_COOKIE_NAME = (
     "fastapiusersauth"  # Currently a constant, but logic allows for configuration
 )
-TENANT_ID_COOKIE_NAME = "onyx_tid"  # tenant id - for workaround cases
-ANONYMOUS_USER_COOKIE_NAME = "onyx_anonymous_user"
+# Browser cookies. The legacy names (from the upstream project) are still READ so sessions that
+# predate the rename keep working; only the om names are ever set.
+TENANT_ID_COOKIE_NAME = "om_tid"  # tenant id - for workaround cases
+ANONYMOUS_USER_COOKIE_NAME = "om_anonymous_user"
+LEGACY_TENANT_ID_COOKIE_NAME = "onyx_tid"
+LEGACY_ANONYMOUS_USER_COOKIE_NAME = "onyx_anonymous_user"
 
 # ID used in UserInfo API responses for anonymous users (not a UUID, just a string identifier)
 ANONYMOUS_USER_INFO_ID = "__anonymous_user__"
 # Placeholder user for migrating no-auth data to first registered user
 NO_AUTH_PLACEHOLDER_USER_UUID = "00000000-0000-0000-0000-000000000001"
-NO_AUTH_PLACEHOLDER_USER_EMAIL = "no-auth-placeholder@onyx.app"
+NO_AUTH_PLACEHOLDER_USER_EMAIL = "no-auth-placeholder@omapikey.ai"
 # Real anonymous user in DB for anonymous access feature
 ANONYMOUS_USER_UUID = "00000000-0000-0000-0000-000000000002"
-ANONYMOUS_USER_EMAIL = "anonymous@onyx.app"
+ANONYMOUS_USER_EMAIL = "anonymous@omapikey.ai"
 
 # For chunking/processing chunks
 RETURN_SEPARATOR = "\n\r\n"
@@ -48,8 +52,13 @@ SECTION_SEPARATOR = "\n\n"
 # For combining attributes, doesn't have to be unique/perfect to work
 INDEX_SEPARATOR = "==="
 
-# For File Connector Metadata override file
+# For File Connector Metadata override file.
+# ``.onyx_metadata.json`` is the name users' existing zips contain (it comes from the upstream
+# project). We cannot rewrite those archives, so it is accepted as a legacy alias on read and
+# never written; new files always use OM_METADATA_FILENAME.
 OM_METADATA_FILENAME = ".om_metadata.json"
+LEGACY_METADATA_FILENAMES = (".onyx_metadata.json",)
+METADATA_FILENAMES = (OM_METADATA_FILENAME, *LEGACY_METADATA_FILENAMES)
 
 # Messages
 DISABLED_GEN_AI_MSG = (
@@ -97,7 +106,9 @@ POSTGRES_UNKNOWN_APP_NAME = "unknown"
 SSL_CERT_FILE = "bundle.pem"
 # API Keys
 OM_API_KEY_USER_PREFIX = "API_KEY__"
-OM_API_KEY_DUMMY_EMAIL_DOMAIN = "onyxapikey.ai"
+# Synthetic (never mailed) identities. The domain must pass email validation (special-use TLDs
+# such as .invalid are rejected when users are serialized), so it is a normal-looking TLD.
+OM_API_KEY_DUMMY_EMAIL_DOMAIN = "omapikey.ai"
 UNNAMED_KEY_PLACEHOLDER = "Unnamed"
 DISCORD_SERVICE_API_KEY_NAME = "discord-bot-service"
 
@@ -114,10 +125,11 @@ KV_GMAIL_SERVICE_ACCOUNT_KEY = "gmail_service_account_key"
 KV_GOOGLE_DRIVE_CRED_KEY = "google_drive_app_credential"
 KV_GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY = "google_drive_service_account_key"
 KV_GEN_AI_KEY_CHECK_TIME = "genai_api_key_last_check_time"
-KV_SETTINGS_KEY = "onyx_settings"
+KV_SETTINGS_KEY = "om_settings"
+# Key used before the rename; read once as a fallback and copied to KV_SETTINGS_KEY (never written).
+LEGACY_KV_SETTINGS_KEY = "onyx_settings"
 KV_CUSTOMER_UUID_KEY = "customer_uuid"
 KV_INSTANCE_DOMAIN_KEY = "instance_domain"
-KV_ENTERPRISE_SETTINGS_KEY = "onyx_enterprise_settings"
 KV_CUSTOM_ANALYTICS_SCRIPT_KEY = "__custom_analytics_script__"
 KV_KG_CONFIG_KEY = "kg_config"
 
@@ -162,7 +174,7 @@ CELERY_USER_FILE_PROJECT_SYNC_LOCK_TIMEOUT = 5 * 60  # 5 minutes (in seconds)
 
 CELERY_SANDBOX_FILE_SYNC_LOCK_TIMEOUT = 5 * 60  # 5 minutes (in seconds)
 
-OM_REDIS_FUNCTION_LOCK_PREFIX = "da_function_lock:"
+OM_REDIS_FUNCTION_LOCK_PREFIX = "om_function_lock:"
 
 TMP_DRALPHA_AGENT_NAME = "KG Beta"
 
@@ -257,6 +269,7 @@ class NotificationType(str, Enum):
     PULSE_RUN_FAILED = "pulse_run_failed"
     PULSE_NEEDS_INPUT = "pulse_needs_input"
     PULSE_AUTO_PAUSED = "pulse_auto_paused"
+    PULSE_SCHEDULE_CHANGED_BY_ADMIN = "pulse_schedule_changed_by_admin"
 
 
 class BlobType(str, Enum):
@@ -599,7 +612,7 @@ class OmCeleryTask:
 
 
 # this needs to correspond to the matching entry in supervisord
-OM_CELERY_BEAT_HEARTBEAT_KEY = "onyx:celery:beat:heartbeat"
+OM_CELERY_BEAT_HEARTBEAT_KEY = "om:celery:beat:heartbeat"
 
 REDIS_SOCKET_KEEPALIVE_OPTIONS = {}
 REDIS_SOCKET_KEEPALIVE_OPTIONS[socket.TCP_KEEPINTVL] = 15

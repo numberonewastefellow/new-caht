@@ -26,7 +26,7 @@ Chat question → web_search tool (finds URLs) → open_url tool → WebContentP
 | `backend/om/tools/tool_implementations/web_search/providers.py` | Updated imports: `OmWebCrawler` → `VirtualAIWebCrawler` |
 | `backend/om/server/features/web_search/api.py` | Updated imports: `OmWebCrawler` → `VirtualAIWebCrawler` |
 | `backend/om/file_processing/html_utils.py` | Added `extract_published_date()` helper |
-| `backend/shared_configs/enums.py` | `WebContentProviderType` unchanged — still uses `ONYX_WEB_CRAWLER` enum value |
+| `backend/shared_configs/enums.py` | `WebContentProviderType` value is `om_web_crawler` |
 
 ## VirtualAIWebCrawler Design
 
@@ -64,7 +64,7 @@ class VirtualAIWebCrawler(WebContentProvider):
 
 Three places instantiate the crawler (all updated to VirtualAIWebCrawler):
 
-1. `build_content_provider_from_config()` line ~151 — when `ONYX_WEB_CRAWLER` type selected
+1. `build_content_provider_from_config()` line ~151 — when `OM_WEB_CRAWLER` type selected
 2. `get_default_content_provider()` line ~202 — fallback when no provider configured
 3. In `api.py` `_get_active_content_provider()` line ~106 — API endpoint fallback
 
@@ -99,6 +99,6 @@ No new env vars. Existing ones apply:
 
 ## Enum Note
 
-`shared_configs/enums.py` `WebContentProviderType.ONYX_WEB_CRAWLER = "onyx_web_crawler"` is NOT changed.
+`shared_configs/enums.py` `WebContentProviderType.OM_WEB_CRAWLER = "om_web_crawler"` is NOT changed.
 The enum value stays the same — only the underlying class implementation changes.
 This means the database, frontend, and API all continue working without any migration.

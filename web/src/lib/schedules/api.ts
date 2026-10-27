@@ -148,3 +148,13 @@ export function refreshPulse() {
   // Single-argument form: revalidate only, keep the cached data meanwhile.
   return mutate((key) => typeof key === "string" && key.startsWith(PULSE_BASE));
 }
+
+/**
+ * A scheduled run executes in the background, not as a stream into the open chat
+ * tab. ScheduledRunBanner dispatches this window event when it sees the run finish;
+ * useChatSessionController then reloads that chat's messages.
+ */
+export const PULSE_RUN_FINISHED_EVENT = "pulse:run-finished";
+export interface PulseRunFinishedDetail {
+  chatSessionId: string;
+}

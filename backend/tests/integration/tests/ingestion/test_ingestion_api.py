@@ -14,7 +14,7 @@ def test_ingestion_api_crud(
     reset: None, document_index_client: DocumentIndexClient  # noqa: ARG001
 ) -> None:
     """Test create, list, and delete via the ingestion API."""
-    admin_user: DATestUser = UserManager.create(email="admin@onyx.app")
+    admin_user: DATestUser = UserManager.create(email="admin@om-test.com")
     cc_pair = CCPairManager.create_from_scratch(
         name="Ingestion-API-Test",
         source=DocumentSource.FILE,

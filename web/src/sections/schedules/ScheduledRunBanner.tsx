@@ -3,7 +3,10 @@
 import Link from "next/link";
 import type { Route } from "next";
 import { useSchedule, useScheduleRuns } from "@/hooks/useSchedules";
-import { scheduleHref } from "@/lib/schedules/api";
+import { PULSE_RUN_FINISHED_EVENT, scheduleHref } from "@/lib/schedules/api";
+import type { PulseRunFinishedDetail } from "@/lib/schedules/api";
+import { useEffect, useRef } from "react";
+import { defaultAskPrompt } from "@/lib/schedules/inputModes";
 import { formatDurationMs, formatRunTime } from "@/lib/schedules/format";
 import { SvgArrowRight, SvgClock } from "@opal/icons";
 import {
@@ -35,6 +38,34 @@ export default function ScheduledRunBanner({
     ? runs.find((r) => r.chat_session_id === chatSessionId)
     : undefined;
   const deleted = !!error && !schedule;
+
+  // Reload the open chat when its run finishes (it ran in the background).
+  const status = run?.status;
+  const lastStatus = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (!chatSessionId || !status) return;
+    const prev = lastStatus.current;
+    lastStatus.current = status;
+    const active = (s?: string) => s === "pending" || s === "running";
+    const justFinished =
+      (prev !== undefined && active(prev) && !active(status)) ||
+      // the run finished just before this page loaded its messages
+      (prev === undefined &&
+        !active(status) &&
+        !!run?.finished_at &&
+        Date.now() - new Date(run.finished_at).getTime() < 60_000);
+    if (!justFinished) return;
+    const announce = () =>
+      window.dispatchEvent(
+        new CustomEvent<PulseRunFinishedDetail>(PULSE_RUN_FINISHED_EVENT, {
+          detail: { chatSessionId },
+        })
+      );
+    // On first load the chat's own initial fetch may still be in flight (and
+    // child effects run before the page's listener is registered): wait a bit.
+    const timer = window.setTimeout(announce, prev === undefined ? 2000 : 0);
+    return () => window.clearTimeout(timer);
+  }, [status, chatSessionId, run?.finished_at]);
   const suffix =
     run?.duration_ms != null ? formatDurationMs(run.duration_ms) : undefined;
 
@@ -79,6 +110,23 @@ export default function ScheduledRunBanner({
         </div>
         {run && <RunStatusPill status={run.status} suffix={suffix} />}
       </div>
+      {schedule?.input_mode === "ask" && run?.status === "needs_input" && (
+        <div
+          className="mt-1.5 rounded-12 border px-3.5 py-2 text-[13.5px] text-text-04"
+          style={{ borderColor: ACCENT_GLOW_STRONG }}
+        >
+          <span className="font-semibold text-text-05">This run asks: </span>
+          {`“${
+            run.output_preview ||
+            schedule.input_prompt ||
+            defaultAskPrompt(schedule.workflow_name ?? "this workflow")
+          }”`}
+          <span className="text-text-03">
+            {" "}
+            · Reply below to run the workflow with your input.
+          </span>
+        </div>
+      )}
     </div>
   );
 }

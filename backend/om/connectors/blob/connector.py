@@ -174,7 +174,7 @@ class BlobStorageConnector(LoadConnector, PollConnector):
                     sts_client = boto3.client("sts")
                     assumed_role_object = sts_client.assume_role(
                         RoleArn=role_arn,
-                        RoleSessionName=f"onyx_blob_storage_{int(time.time())}",
+                        RoleSessionName=f"om_blob_storage_{int(time.time())}",
                     )
                     creds = assumed_role_object["Credentials"]
                     return {

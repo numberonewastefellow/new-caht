@@ -1,60 +1,41 @@
+from om.configs.app_configs import WEB_DOMAIN
 from om.configs.constants import DocumentSource
 
+# Slack fetches these images over the public internet, so they are served by our own web app
+# (static files under web/public, plus web/public/slackbot/) instead of a third-party GitHub repo.
+# WEB_DOMAIN must therefore be reachable from Slack for the icons to show.
+_DEFAULT_ICON = "slackbot/File.png"
 
-def source_to_github_img_link(source: DocumentSource) -> str | None:
-    # TODO: store these images somewhere better
-    if source == DocumentSource.WEB.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/backend/slackbot_images/Web.png"
-    if source == DocumentSource.FILE.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/backend/slackbot_images/File.png"
-    if source == DocumentSource.GOOGLE_SITES.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/GoogleSites.png"
-    if source == DocumentSource.SLACK.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Slack.png"
-    if source == DocumentSource.GMAIL.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Gmail.png"
-    if source == DocumentSource.GOOGLE_DRIVE.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/GoogleDrive.png"
-    if source == DocumentSource.GITHUB.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Github.png"
-    if source == DocumentSource.GITLAB.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Gitlab.png"
-    if source == DocumentSource.CONFLUENCE.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/backend/slackbot_images/Confluence.png"
-    if source == DocumentSource.JIRA.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/backend/slackbot_images/Jira.png"
-    if source == DocumentSource.NOTION.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Notion.png"
-    if source == DocumentSource.ZENDESK.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/backend/slackbot_images/Zendesk.png"
-    if source == DocumentSource.GONG.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Gong.png"
-    if source == DocumentSource.LINEAR.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Linear.png"
-    if source == DocumentSource.PRODUCTBOARD.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Productboard.webp"
-    if source == DocumentSource.SLAB.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/SlabLogo.png"
-    if source == DocumentSource.ZULIP.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Zulip.png"
-    if source == DocumentSource.GURU.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/backend/slackbot_images/Guru.png"
-    if source == DocumentSource.HUBSPOT.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/HubSpot.png"
-    if source == DocumentSource.DOCUMENT360.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Document360.png"
-    if source == DocumentSource.BOOKSTACK.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Bookstack.png"
-    if source == DocumentSource.OUTLINE.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Outline.png"
-    if source == DocumentSource.LOOPIO.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Loopio.png"
-    if source == DocumentSource.SHAREPOINT.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/web/public/Sharepoint.png"
-    if source == DocumentSource.REQUESTTRACKER.value:
-        # just use file icon for now
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/backend/slackbot_images/File.png"
-    if source == DocumentSource.INGESTION_API.value:
-        return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/backend/slackbot_images/File.png"
+_SOURCE_ICONS: dict[str, str] = {
+    DocumentSource.WEB.value: "slackbot/Web.png",
+    DocumentSource.FILE.value: "slackbot/File.png",
+    DocumentSource.GOOGLE_SITES.value: "GoogleSites.png",
+    DocumentSource.SLACK.value: "Slack.png",
+    DocumentSource.GMAIL.value: "Gmail.png",
+    DocumentSource.GOOGLE_DRIVE.value: "GoogleDrive.png",
+    DocumentSource.GITHUB.value: "Github.png",
+    DocumentSource.GITLAB.value: "Gitlab.png",
+    DocumentSource.CONFLUENCE.value: "slackbot/Confluence.png",
+    DocumentSource.JIRA.value: "slackbot/Jira.png",
+    DocumentSource.NOTION.value: "Notion.png",
+    DocumentSource.ZENDESK.value: "slackbot/Zendesk.png",
+    DocumentSource.GONG.value: "Gong.png",
+    DocumentSource.LINEAR.value: "Linear.png",
+    DocumentSource.PRODUCTBOARD.value: "Productboard.png",
+    DocumentSource.SLAB.value: "SlabLogo.png",
+    DocumentSource.ZULIP.value: "Zulip.png",
+    DocumentSource.GURU.value: "slackbot/Guru.png",
+    DocumentSource.HUBSPOT.value: "HubSpot.png",
+    DocumentSource.DOCUMENT360.value: "Document360.png",
+    DocumentSource.BOOKSTACK.value: "Bookstack.png",
+    DocumentSource.OUTLINE.value: "Outline.png",
+    DocumentSource.LOOPIO.value: "Loopio.png",
+    DocumentSource.SHAREPOINT.value: "Sharepoint.png",
+    DocumentSource.REQUESTTRACKER.value: "slackbot/File.png",
+    DocumentSource.INGESTION_API.value: "slackbot/File.png",
+}
 
-    return "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/backend/slackbot_images/File.png"
+
+def source_to_img_link(source: DocumentSource | str) -> str:
+    key = source.value if isinstance(source, DocumentSource) else source
+    return f"{WEB_DOMAIN.rstrip('/')}/{_SOURCE_ICONS.get(key, _DEFAULT_ICON)}"

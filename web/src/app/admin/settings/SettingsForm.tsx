@@ -471,18 +471,18 @@ export function SettingsForm() {
           <div className="flex items-center gap-2 text-sm">
             <span
               className={`inline-block w-2 h-2 rounded-full ${
-                settings.onyx_craft_enabled
+                settings.om_craft_enabled
                   ? "bg-green-500"
                   : "bg-red-400"
               }`}
             />
             <span className="font-medium text-text-05">VertualAI Craft (Sandbox)</span>
             <span className="text-text-02">
-              {settings.onyx_craft_enabled ? "Enabled" : "Disabled"}
+              {settings.om_craft_enabled ? "Enabled" : "Disabled"}
             </span>
           </div>
           <p className="text-xs text-text-02 ml-4">
-            {settings.onyx_craft_enabled
+            {settings.om_craft_enabled
               ? "AI-powered app builder is active. Access it via the \"Craft\" button in the sidebar or at /craft/v1."
               : "Set ENABLE_CRAFT=true in your .env file and rebuild the backend image to enable. See SANDBOX_AND_CODE_EXECUTION.md for details."}
           </p>

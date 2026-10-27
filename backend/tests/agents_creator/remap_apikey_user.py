@@ -4,7 +4,7 @@ Remap an API key's synthetic user to a real user account.
 
 After running this, all operations performed with the API key will be
 attributed to the real user (e.g. v@v.com) instead of the synthetic
-API_KEY__xxx@onyxapikey.ai user.
+API_KEY__xxx@omapikey.ai user.
 
 Usage:
     python remap_apikey_user.py                     # defaults to v@v.com
@@ -175,7 +175,7 @@ def main():
             print("  Available users:")
             cur.execute(
                 "SELECT email, role FROM \"user\" "
-                "WHERE email NOT LIKE '%%onyxapikey.ai' "
+                "WHERE email NOT LIKE '%%omapikey.ai' "
                 "ORDER BY email"
             )
             for row in cur.fetchall():
@@ -209,7 +209,7 @@ def main():
         # ── Step 8: Optionally clean up orphaned synthetic user ──────────
         if args.cleanup and synthetic_user:
             # Only delete if it's actually a synthetic API key user
-            if "onyxapikey.ai" in synthetic_user["email"]:
+            if "omapikey.ai" in synthetic_user["email"]:
                 cur.execute(
                     "DELETE FROM \"user\" WHERE id = %s",
                     (old_user_id,),

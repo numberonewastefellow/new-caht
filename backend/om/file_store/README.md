@@ -45,8 +45,8 @@ All configuration is handled via environment variables. The system requires S3-c
 ### AWS S3
 
 ```bash
-S3_FILE_STORE_BUCKET_NAME=your-bucket-name  # Defaults to 'onyx-file-store-bucket'
-S3_FILE_STORE_PREFIX=onyx-files  # Optional, defaults to 'onyx-files'
+S3_FILE_STORE_BUCKET_NAME=your-bucket-name  # Defaults to 'om-file-store-bucket'
+S3_FILE_STORE_PREFIX=om-files  # Optional, defaults to 'om-files'
 
 # AWS credentials (use one of these methods):
 # 1. Environment variables

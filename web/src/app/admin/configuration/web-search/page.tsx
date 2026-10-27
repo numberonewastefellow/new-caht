@@ -339,11 +339,11 @@ export default function Page() {
       const existing = byType.get(providerType);
       if (existing) return existing;
 
-      if (providerType === "onyx_web_crawler") {
+      if (providerType === "om_web_crawler") {
         return {
           id: -1,
           name: "VertualAI Web Crawler",
-          provider_type: "onyx_web_crawler",
+          provider_type: "om_web_crawler",
           is_active: true,
           config: null,
           has_api_key: true,
@@ -578,7 +578,7 @@ export default function Page() {
     setContentActivationError(null);
 
     try {
-      if (provider.provider_type === "onyx_web_crawler") {
+      if (provider.provider_type === "om_web_crawler") {
         const response = await fetch(
           "/api/admin/web-search/content-providers/reset-default",
           {
@@ -666,10 +666,10 @@ export default function Page() {
     setContentActivationError(null);
 
     try {
-      // For onyx_web_crawler (virtual provider with id -1), use reset-default
+      // For om_web_crawler (virtual provider with id -1), use reset-default
       // For real providers, use the deactivate endpoint
       const endpoint =
-        providerType === "onyx_web_crawler" || providerId < 0
+        providerType === "om_web_crawler" || providerId < 0
           ? "/api/admin/web-search/content-providers/reset-default"
           : `/api/admin/web-search/content-providers/${providerId}/deactivate`;
 
@@ -781,7 +781,7 @@ export default function Page() {
       storedBaseUrl !== contentProviderValues.config;
 
     // Reuse shared connect flow for key-based providers (firecrawl + similar).
-    // Note: onyx_web_crawler doesn't go through this modal.
+    // Note: om_web_crawler doesn't go through this modal.
     dispatchContentModal({ type: "SET_PHASE", phase: "saving" });
     dispatchContentModal({ type: "CLEAR_MESSAGE" });
 
@@ -1114,7 +1114,7 @@ export default function Page() {
 
                   const canActivate =
                     providerId > 0 ||
-                    provider.provider_type === "onyx_web_crawler" ||
+                    provider.provider_type === "om_web_crawler" ||
                     isConfigured;
 
                   return {
@@ -1167,7 +1167,7 @@ export default function Page() {
                             ?.logoSrc,
                         alt: `${label} logo`,
                         fallback:
-                          provider.provider_type === "onyx_web_crawler" ? (
+                          provider.provider_type === "om_web_crawler" ? (
                             <SvgOmLogo size={16} />
                           ) : undefined,
                         size: 16,
@@ -1183,7 +1183,7 @@ export default function Page() {
                       </div>
                     </div>
                     <div className="flex items-center justify-end gap-2">
-                      {provider.provider_type !== "onyx_web_crawler" &&
+                      {provider.provider_type !== "om_web_crawler" &&
                         isConfigured && (
                           <OpalButton
                             icon={SvgEdit}
@@ -1394,7 +1394,7 @@ export default function Page() {
             contentProviderLabel || selectedContentProviderType || "provider"
           } logo`,
           fallback:
-            selectedContentProviderType === "onyx_web_crawler" ? (
+            selectedContentProviderType === "om_web_crawler" ? (
               <SvgOmLogo size={24} className="text-text-05" />
             ) : undefined,
           size: 24,

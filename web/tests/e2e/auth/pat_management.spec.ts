@@ -58,12 +58,12 @@ test("PAT Complete Workflow", async ({ page }, testInfo) => {
 
   const tokenDisplay = page
     .locator("code")
-    .filter({ hasText: "onyx_pat_" })
+    .filter({ hasText: "om_pat_" })
     .first();
   await tokenDisplay.waitFor({ state: "visible", timeout: 5000 });
 
   const tokenValue = await tokenDisplay.textContent();
-  expect(tokenValue).toContain("onyx_pat_");
+  expect(tokenValue).toContain("om_pat_");
 
   // Grant clipboard permissions before copying
   await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
@@ -194,7 +194,7 @@ test("PAT Multiple Tokens Management", async ({ page }, testInfo) => {
     // Wait for token to be created (code block with token appears)
     await page
       .locator("code")
-      .filter({ hasText: "onyx_pat_" })
+      .filter({ hasText: "om_pat_" })
       .first()
       .waitFor({ state: "visible", timeout: 5000 });
 

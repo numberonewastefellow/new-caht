@@ -40,6 +40,7 @@ import ScheduleActionsMenu from "@/sections/schedules/ScheduleActionsMenu";
 import Th from "@/sections/schedules/Th";
 import DeleteScheduleModal from "@/sections/schedules/DeleteScheduleModal";
 import EmptySchedules from "@/sections/schedules/EmptySchedules";
+import { inputModeOption, inputSummary } from "@/lib/schedules/inputModes";
 import {
   ACCENT,
   AccentIconTile,
@@ -446,6 +447,25 @@ export default function SchedulesPage() {
                                 </Text>
                               )}
                             </div>
+                            {/* What each run sends — empty for other users' schedules */}
+                            {(s.input_message || s.input_mode !== "fixed") &&
+                              !s.owner_email && (
+                                <div
+                                  className="pt-0.5 min-w-0 max-w-[26rem]"
+                                  title={inputSummary(s)}
+                                >
+                                  <Text
+                                    as="span"
+                                    secondaryBody
+                                    text02
+                                    className="truncate block"
+                                  >
+                                    {`${
+                                      inputModeOption(s.input_mode).badge
+                                    }: ${inputSummary(s)}`}
+                                  </Text>
+                                </div>
+                              )}
                           </TableCell>
                           <TableCell className="py-3">
                             <Text as="p" mainUiBody text04 className="truncate">

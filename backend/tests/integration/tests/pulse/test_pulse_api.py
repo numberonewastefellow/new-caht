@@ -86,6 +86,7 @@ def _create(client: Client, created: list[int], **overrides: object) -> dict:
         "schedule_type": "interval",
         "interval_seconds": 3600,
         "timezone": "UTC",
+        "input_mode": "fixed",
         "input_message": "Reply with one short sentence. Date: {{date}}.",
         "enabled": True,
     }
@@ -202,35 +203,101 @@ def test_other_users_cannot_see_or_touch(admin: Client, basic_user: Client, sche
     assert any(x["id"] == s["id"] for x in admin.get("/pulse/schedules?all_users=true").json())
 
 
-def test_admin_cannot_drive_another_users_schedule(
-    admin: Client, basic_user: Client
-) -> None:
-    """Runs execute as the owner, so an admin may pause/delete but not edit the
-    prompt, resume, duplicate or run another user's schedule, nor read its outputs."""
-    owned = basic_user.post(
+def _make_basic_user(admin: Client) -> Client:
+    r = admin.post(
+        "/admin/api-key", {"name": f"pulse-basic-{uuid.uuid4().hex[:6]}", "role": "basic"}
+    )
+    assert r.ok, r.text
+    return Client(r.json()["api_key"])
+
+
+def _basic_schedule(client: Client, name: str, message: str = "private prompt") -> dict:
+    r = client.post(
         "/pulse/schedules",
         {
             "workflow_id": WORKFLOW_ID,
-            "name": "owned-by-basic",
+            "name": name,
             "schedule_type": "interval",
             "interval_seconds": 3600,
             "timezone": "UTC",
-            "input_message": "private prompt",
+            "input_mode": "fixed",
+            "input_message": message,
             "enabled": True,
         },
     )
-    assert owned.status_code == 200, owned.text
-    sid = owned.json()["id"]
+    assert r.status_code == 200, r.text
+    return r.json()
+
+
+def test_user_a_and_user_b_cannot_see_each_others_schedules(admin: Client) -> None:
+    """Pulse user A's schedules are invisible to user B (and vice versa)."""
+    a, b = _make_basic_user(admin), _make_basic_user(admin)
+    sa = _basic_schedule(a, "owned-by-A")
+    sb = _basic_schedule(b, "owned-by-B")
     try:
-        assert admin.patch(f"/pulse/schedules/{sid}", {"input_message": "leak everything"}).status_code == 403
-        assert admin.post(f"/pulse/schedules/{sid}/run-now").status_code == 403
-        assert admin.post(f"/pulse/schedules/{sid}/duplicate").status_code == 403
-        seen = admin.get(f"/pulse/schedules/{sid}").json()
-        assert seen["input_message"] == ""  # prompt hidden from non-owners
-        assert admin.patch(f"/pulse/schedules/{sid}", {"enabled": False}).json()["enabled"] is False
-        assert admin.patch(f"/pulse/schedules/{sid}", {"enabled": True}).status_code == 403
+        assert {x["id"] for x in a.get("/pulse/schedules").json()} == {sa["id"]}
+        assert {x["id"] for x in b.get("/pulse/schedules").json()} == {sb["id"]}
+        # all_users is ignored for non-admins
+        assert {x["id"] for x in b.get("/pulse/schedules?all_users=true").json()} == {sb["id"]}
+        for path in (f"/pulse/schedules/{sa['id']}", f"/pulse/schedules/{sa['id']}/runs"):
+            assert b.get(path).status_code == 404
+        assert b.patch(f"/pulse/schedules/{sa['id']}", {"name": "x"}).status_code == 404
+        assert b.post(f"/pulse/schedules/{sa['id']}/run-now").status_code == 404
+        assert b.delete(f"/pulse/schedules/{sa['id']}").status_code == 404
+        assert all(x["schedule_id"] != sa["id"] for x in b.get("/pulse/sidebar").json())
     finally:
-        basic_user.delete(f"/pulse/schedules/{sid}")
+        a.delete(f"/pulse/schedules/{sa['id']}")
+        b.delete(f"/pulse/schedules/{sb['id']}")
+
+
+def test_admin_sees_and_edits_any_schedule_owner_unchanged(admin: Client) -> None:
+    """Admin edits keep the creator as owner (runs stay theirs, they keep access);
+    updated_by records the admin and the owner is notified. Run now stays owner-only."""
+    a = _make_basic_user(admin)
+    sa = _basic_schedule(a, "owned-by-A", "original prompt")
+    owner_id = sa["user_id"]
+    try:
+        assert sa["updated_by_id"] == owner_id  # creator is the first updater
+        listed = {x["id"]: x for x in admin.get("/pulse/schedules?all_users=true").json()}
+        assert sa["id"] in listed and listed[sa["id"]]["owner_email"]
+        assert listed[sa["id"]]["input_message"] == "original prompt"  # admin can see inputs
+
+        r = admin.patch(
+            f"/pulse/schedules/{sa['id']}",
+            {"name": "renamed by admin", "input_message": "what is the use of paracetamol?"},
+        )
+        assert r.status_code == 200, r.text
+        edited = r.json()
+        assert edited["user_id"] == owner_id  # ownership unchanged
+        assert edited["updated_by_id"] != owner_id and edited["updated_by_email"]
+
+        # the owner still has full access and sees the admin's change
+        mine = a.get(f"/pulse/schedules/{sa['id']}").json()
+        assert mine["name"] == "renamed by admin"
+        assert mine["input_message"] == "what is the use of paracetamol?"
+        assert mine["updated_by_id"] == edited["updated_by_id"]
+        assert a.patch(f"/pulse/schedules/{sa['id']}", {"name": "owner renamed"}).status_code == 200
+        assert a.get(f"/pulse/schedules/{sa['id']}").json()["updated_by_id"] == owner_id
+
+        # admin can pause and resume; Run now / duplicate stay owner-only
+        assert admin.patch(f"/pulse/schedules/{sa['id']}", {"enabled": False}).json()["enabled"] is False
+        assert admin.patch(f"/pulse/schedules/{sa['id']}", {"enabled": True}).json()["enabled"] is True
+        assert admin.post(f"/pulse/schedules/{sa['id']}/run-now").status_code == 403
+        assert admin.post(f"/pulse/schedules/{sa['id']}/duplicate").status_code == 403
+
+        # the owner was notified about the admin's changes
+        notes = a.get("/signals").json()
+        assert any(
+            n.get("notif_type") == "pulse_schedule_changed_by_admin"
+            and (n.get("additional_data") or {}).get("pulse_schedule_id") == sa["id"]
+            for n in notes
+        ), notes
+
+        # admin delete works and the owner loses it
+        assert admin.delete(f"/pulse/schedules/{sa['id']}").ok
+        assert a.get(f"/pulse/schedules/{sa['id']}").status_code == 404
+    finally:
+        a.delete(f"/pulse/schedules/{sa['id']}")
 
 
 def test_run_now_cooldown(admin: Client, schedules: list[int]) -> None:
@@ -312,3 +379,102 @@ def test_health_reports_replicas(admin: Client) -> None:
     h = admin.get("/admin/pulse/health").json()
     assert h["scheduler_replicas_alive"] >= 1
     assert h["scheduler_lag_seconds"] is not None and h["scheduler_lag_seconds"] < 60
+
+
+# ---------------------------------------------------------------- input modes
+
+
+def _user_messages(client: Client, chat_session_id: str) -> list[str]:
+    detail = client.get(f"/converse/get-chat-session/{chat_session_id}").json()
+    return [m["message"] for m in detail["messages"] if m["message_type"] == "user"]
+
+
+def test_input_mode_validation(admin: Client, schedules: list[int]) -> None:
+    base = {
+        "workflow_id": WORKFLOW_ID,
+        "name": "modes",
+        "schedule_type": "interval",
+        "interval_seconds": 3600,
+        "timezone": "UTC",
+        "enabled": False,
+    }
+    # fixed: a real request is required (no silent default any more)
+    r = admin.post("/pulse/schedules", {**base, "input_mode": "fixed", "input_message": "  "})
+    assert r.status_code == 400 and "request" in r.text
+    # list: items + {{item}} required
+    assert admin.post("/pulse/schedules", {**base, "input_mode": "list", "input_items": []}).status_code == 400
+    assert (
+        admin.post(
+            "/pulse/schedules",
+            {**base, "input_mode": "list", "input_items": ["a"], "input_message": "no placeholder"},
+        ).status_code
+        == 400
+    )
+    # window: empty -> default template; ask: optional prompt stored
+    w = _create(admin, schedules, **{**base, "input_mode": "window", "input_message": ""})
+    assert w["input_mode"] == "window" and "{{window_start}}" in w["input_message"]
+    a = _create(admin, schedules, **{**base, "input_mode": "ask", "input_prompt": "Paste today's notes"})
+    assert a["input_mode"] == "ask" and a["input_prompt"] == "Paste today's notes"
+    cfg = admin.get("/pulse/config").json()
+    assert set(cfg["input_modes"]) == {"fixed", "window", "ask", "list"}
+
+
+def test_fixed_mode_sends_exact_request(admin: Client, schedules: list[int]) -> None:
+    question = "what is the use of paracetamol?"
+    s = _create(admin, schedules, enabled=False, input_mode="fixed", input_message=question)
+    run = _wait_run(admin, admin.post(f"/pulse/schedules/{s['id']}/run-now").json()["id"])
+    assert run["status"] == "succeeded", run
+    assert _user_messages(admin, run["chat_session_id"]) == [question]
+    assert run["output_preview"]
+
+
+def test_list_mode_runs_items_in_order(admin: Client, schedules: list[int]) -> None:
+    s = _create(
+        admin,
+        schedules,
+        enabled=False,
+        input_mode="list",
+        input_items=["asthma", "diabetes"],
+        input_message="In one sentence: what is {{item}}?",
+    )
+    assert s["next_item"] == "asthma"
+    first = _wait_run(admin, admin.post(f"/pulse/schedules/{s['id']}/run-now").json()["id"])
+    assert _user_messages(admin, first["chat_session_id"]) == ["In one sentence: what is asthma?"]
+    assert admin.get(f"/pulse/schedules/{s['id']}").json()["next_item"] == "diabetes"
+    time.sleep(31)  # run-now cooldown
+    second = _wait_run(admin, admin.post(f"/pulse/schedules/{s['id']}/run-now").json()["id"])
+    assert _user_messages(admin, second["chat_session_id"]) == ["In one sentence: what is diabetes?"]
+
+
+def test_ask_mode_waits_for_user_then_runs(admin: Client, schedules: list[int]) -> None:
+    s = _create(
+        admin, schedules, enabled=False, input_mode="ask", input_prompt="Ask your question"
+    )
+    run = _wait_run(admin, admin.post(f"/pulse/schedules/{s['id']}/run-now").json()["id"], timeout=60)
+    assert run["status"] == "needs_input", run
+    assert run["output_preview"] == "Ask your question"
+    cs = run["chat_session_id"]
+    assert cs and _user_messages(admin, cs) == []  # nothing was sent to the LLM
+    # the user's reply in that chat runs the workflow
+    r = admin.post(
+        "/converse/send-chat-message",
+        {"message": "what is the use of paracetamol?", "chat_session_id": cs, "stream": False},
+    )
+    assert r.ok, r.text
+    detail = admin.get(f"/converse/get-chat-session/{cs}").json()
+    answers = [m["message"] for m in detail["messages"] if m["message_type"] == "assistant"]
+    assert answers and answers[-1].strip()
+
+
+def test_switching_mode_resets_list_cursor(admin: Client, schedules: list[int]) -> None:
+    s = _create(
+        admin, schedules, enabled=False, input_mode="list", input_items=["a", "b"], input_message="{{item}}"
+    )
+    s2 = admin.patch(
+        f"/pulse/schedules/{s['id']}", {"input_mode": "fixed", "input_message": "hello"}
+    ).json()
+    assert s2["input_mode"] == "fixed" and s2["input_items"] is None
+    s3 = admin.patch(
+        f"/pulse/schedules/{s['id']}", {"input_mode": "list", "input_items": ["x", "y"]}
+    ).json()
+    assert s3["next_item"] == "x" and s3["input_message"] == "{{item}}"

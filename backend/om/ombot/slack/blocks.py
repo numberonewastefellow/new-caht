@@ -34,7 +34,7 @@ from om.ombot.slack.constants import KEEP_TO_YOURSELF_ACTION_ID
 from om.ombot.slack.constants import LIKE_BLOCK_ACTION_ID
 from om.ombot.slack.constants import SHOW_EVERYONE_ACTION_ID
 from om.ombot.slack.formatting import format_slack_message
-from om.ombot.slack.icons import source_to_github_img_link
+from om.ombot.slack.icons import source_to_img_link
 from om.ombot.slack.models import ActionValuesEphemeralMessage
 from om.ombot.slack.models import ActionValuesEphemeralMessageChannelConfig
 from om.ombot.slack.models import ActionValuesEphemeralMessageMessageInfo
@@ -348,7 +348,7 @@ def _build_sources_blocks(
         )
 
         document_title = _clean_markdown_link_text(doc_sem_id)
-        img_link = source_to_github_img_link(d.source_type)
+        img_link = source_to_img_link(d.source_type)
 
         section_blocks.append(
             ContextBlock(

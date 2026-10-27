@@ -417,3 +417,45 @@ def test_retention_keeps_newest_and_exempts_engaged_sessions(
     )
     db_session.commit()
     assert oldest.id not in set(get_sessions_to_expire(db_session, schedule))
+
+
+# ---------------------------------------------------------------- input modes
+
+
+def test_list_mode_item_cursor_is_atomic(
+    db_session: Session, make_schedule, tenant_context  # noqa: ANN001
+) -> None:
+    """Concurrent runs of a list-mode schedule each take a different item."""
+    from om.db.pulse import claim_next_item_index
+    from om.pulse.inputs import item_for_index
+
+    items = ["asthma", "diabetes", "hypertension"]
+    schedule = make_schedule(
+        enabled=False, input_mode="list", input_message="{{item}}", input_items=items
+    )
+    taken: list[int] = []
+    lock = threading.Lock()
+    barrier = threading.Barrier(5)
+
+    def take() -> None:
+        with get_session_with_current_tenant() as s:
+            barrier.wait()
+            idx = claim_next_item_index(s, schedule.id)
+            with lock:
+                taken.append(idx)
+
+    threads = [threading.Thread(target=take) for _ in range(5)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(timeout=30)
+    assert sorted(taken) == [0, 1, 2, 3, 4]
+    assert [item_for_index(items, i) for i in sorted(taken)] == [
+        "asthma",
+        "diabetes",
+        "hypertension",
+        "asthma",
+        "diabetes",
+    ]
+    db_session.refresh(schedule)
+    assert schedule.input_item_index == 5

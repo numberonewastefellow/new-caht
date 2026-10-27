@@ -187,7 +187,7 @@ class S3BackedFileStore(FileStore):
         self._aws_secret_access_key = aws_secret_access_key
         self._aws_region_name = aws_region_name or "us-east-2"
         self._s3_endpoint_url = s3_endpoint_url
-        self._s3_prefix = s3_prefix or "onyx-files"
+        self._s3_prefix = s3_prefix or "om-files"
         self._s3_verify_ssl = s3_verify_ssl
 
     def _get_s3_client(self) -> S3Client:

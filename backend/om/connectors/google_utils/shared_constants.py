@@ -1,5 +1,6 @@
 from enum import Enum as PyEnum
 
+from om.configs.app_configs import OM_DOCS_URL
 from om.configs.constants import DocumentSource
 
 # NOTE: do not need https://www.googleapis.com/auth/documents.readonly
@@ -44,10 +45,13 @@ USER_FIELDS = "nextPageToken, users(primaryEmail)"
 MISSING_SCOPES_ERROR_STR = "client not authorized for any of the scopes requested"
 
 # Documentation and error messages
-SCOPE_DOC_URL = "https://docs.onyx.app/admins/connectors/official/google_drive/overview"
+SCOPE_DOC_URL = (
+    f"{OM_DOCS_URL}/admins/connectors/official/google_drive/overview" if OM_DOCS_URL else ""
+)
 OM_SCOPE_INSTRUCTIONS = (
-    "You have upgraded VertualAi without updating the Google Auth scopes. "
-    f"Please refer to the documentation to learn how to update the scopes: {SCOPE_DOC_URL}"
+    "You have upgraded VertualAI without updating the Google Auth scopes. "
+    "Please refer to the documentation to learn how to update the scopes"
+    + (f": {SCOPE_DOC_URL}" if SCOPE_DOC_URL else ".")
 )
 
 

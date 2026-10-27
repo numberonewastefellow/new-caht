@@ -115,7 +115,7 @@ dev.bat up
 
 ### Craft page redirects to /app
 
-- The craft layout checks `settings.onyx_craft_enabled` server-side
+- The craft layout checks `settings.om_craft_enabled` server-side
 - This means `ENABLE_CRAFT=true` must be set on the `api_server` container
 - Restart `api_server` after changing the env var
 
@@ -166,6 +166,6 @@ Browser
 | `backend/scripts/setup_craft_templates.sh` | Template setup (npm install, venv, demo data) |
 | `backend/om/server/features/build/configs.py` | All sandbox configuration variables |
 | `backend/om/server/features/build/sandbox/local/local_sandbox_manager.py` | Local sandbox implementation |
-| `backend/om/server/features/build/utils.py` | Feature flag logic (`is_onyx_craft_enabled`) |
+| `backend/om/server/features/build/utils.py` | Feature flag logic (`is_om_craft_enabled`) |
 | `web/src/sections/sidebar/AppSidebar.tsx` | Sidebar Craft button (line 653) |
 | `web/src/app/craft/` | Craft frontend (React/TypeScript) |

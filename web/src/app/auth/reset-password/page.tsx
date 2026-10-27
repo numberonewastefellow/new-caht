@@ -14,6 +14,7 @@ import { Spinner } from "@/components/Spinner";
 import { redirect, useSearchParams } from "next/navigation";
 import {
   NEXT_PUBLIC_FORGOT_PASSWORD_ENABLED,
+  LEGACY_TENANT_ID_COOKIE_NAME,
   TENANT_ID_COOKIE_NAME,
 } from "@/lib/constants";
 import Cookies from "js-cookie";
@@ -22,7 +23,9 @@ const ResetPasswordPage: React.FC = () => {
   const [isWorking, setIsWorking] = useState(false);
   const searchParams = useSearchParams();
   const token = searchParams?.get("token");
-  const tenantId = searchParams?.get(TENANT_ID_COOKIE_NAME);
+  const tenantId =
+    searchParams?.get(TENANT_ID_COOKIE_NAME) ??
+    searchParams?.get(LEGACY_TENANT_ID_COOKIE_NAME);
   // Keep search param same name as cookie for simplicity
 
   useEffect(() => {

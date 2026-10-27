@@ -20,7 +20,7 @@ Always use absolute imports with the `@tests/e2e/` prefix — never relative pat
 
 ```typescript
 import { loginAs } from "@tests/e2e/utils/auth";
-import { OnyxApiClient } from "@tests/e2e/utils/onyxApiClient";
+import { OmApiClient } from "@tests/e2e/utils/omApiClient";
 import { TEST_ADMIN_CREDENTIALS } from "@tests/e2e/constants";
 ```
 
@@ -105,11 +105,11 @@ If the test requires admin privileges *and* modifies visible state, use `"admin2
 
 `loginAsRandomUser` exists for the rare case where the test requires a brand-new user (e.g. onboarding flows). Avoid it elsewhere — it produces non-deterministic usernames that complicate screenshots.
 
-**API resource setup** — only when tests need to create backend resources (image gen configs, web search providers, MCP servers). Use `beforeAll`/`afterAll` with `OnyxApiClient` to create and clean up. See `chat/default_assistant.spec.ts` or `mcp/mcp_oauth_flow.spec.ts` for examples. This is uncommon (~4 of 37 test files).
+**API resource setup** — only when tests need to create backend resources (image gen configs, web search providers, MCP servers). Use `beforeAll`/`afterAll` with `OmApiClient` to create and clean up. See `chat/default_assistant.spec.ts` or `mcp/mcp_oauth_flow.spec.ts` for examples. This is uncommon (~4 of 37 test files).
 
 ## Key Utilities
 
-### `OnyxApiClient` (`@tests/e2e/utils/onyxApiClient`)
+### `OmApiClient` (`@tests/e2e/utils/omApiClient`)
 
 Backend API client for test setup/teardown. Key methods:
 
@@ -188,7 +188,7 @@ Use locators in this priority order:
 4. **CSS selectors** — last resort, only when above won't work
    ```typescript
    page.locator('input[name="name"]')
-   page.locator("#onyx-chat-input-textarea")
+   page.locator("#om-chat-input-textarea")
    ```
 
 **Never use** `page.locator` with complex CSS/XPath when a built-in locator works.
@@ -199,13 +199,13 @@ Use web-first assertions — they auto-retry until the condition is met:
 
 ```typescript
 // Visibility
-await expect(page.getByTestId("onyx-logo")).toBeVisible({ timeout: 5000 });
+await expect(page.getByTestId("om-logo")).toBeVisible({ timeout: 5000 });
 
 // Text content
 await expect(page.getByTestId("assistant-name-display")).toHaveText("My Assistant");
 
 // Count
-await expect(page.locator('[data-testid="onyx-ai-message"]')).toHaveCount(2, { timeout: 30000 });
+await expect(page.locator('[data-testid="om-ai-message"]')).toHaveCount(2, { timeout: 30000 });
 
 // URL
 await expect(page).toHaveURL(/chatId=/);
@@ -237,7 +237,7 @@ await page.waitForResponse(resp => resp.url().includes("/api/chat") && resp.stat
 ## Best Practices
 
 1. **Descriptive test names** — clearly state expected behavior: `"should display greeting message when opening new chat"`
-2. **API-first setup** — use `OnyxApiClient` for backend state; reserve UI interactions for the behavior under test
+2. **API-first setup** — use `OmApiClient` for backend state; reserve UI interactions for the behavior under test
 3. **User isolation** — tests that modify visible app state (sidebar, chat history) should run as the worker-specific user via `loginAsWorkerUser(page, testInfo.workerIndex)` (not admin) and clean up resources in `afterAll`. Each parallel worker gets its own user, preventing cross-contamination. Reserve `loginAsRandomUser` for flows that require a brand-new user (e.g. onboarding)
 4. **DRY helpers** — extract reusable logic into `utils/` with JSDoc comments
 5. **No hardcoded waits** — use `waitFor`, `waitForLoadState`, or web-first assertions
