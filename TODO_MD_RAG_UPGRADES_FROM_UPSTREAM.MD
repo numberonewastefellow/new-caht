@@ -1,8 +1,13 @@
-# TODO — RAG Upgrades from Upstream Onyx
+# TODO — RAG Upgrades from Upstream
 
 **Date:** 2026-10-29
-**Compared against:** upstream Onyx at `D:\llm\danswer07022026_original\onyx` (HEAD `73e0ae3c31`)
+**Compared against:** upstream HEAD `73e0ae3c31`
 **Our fork:** `backend/om/` on `main_multi_agent_stable`
+**See also:** `TODO_MD_UPSTREAM_PORT_CONNECTORS_AND_FEATURES.MD`, for connectors and features, and the naming rules.
+
+> **Naming rules.** Never use the upstream product name in this repo. Upstream paths are written **with our names** (for example `UP:om/utils/process_isolation.py`). We have **no EE tree**: enterprise behaviour is reimplemented clean-room inside our own `backend/om/...` folders.
+>
+> **Process.** Port one item at a time, using the per-feature workflow in `TODO_MD_UPSTREAM_PORT_CONNECTORS_AND_FEATURES.MD` §1.5. Before any code, each item needs its own `TODO_MD_PORT_<FEATURE>.MD` covering the DB migration in our table and column names, the model mapping, and the UI rebuilt to our design system, plus user approval.
 
 ## Summary
 
@@ -40,10 +45,14 @@ Neither system scores recency or document boost, so thumbs-up/down feedback has 
 | 11 | P3 | Durable chat responses + prompt-cache tuning | L | [ ] |
 | 12 | P3 | Extra web search providers (Tavily, Firecrawl) | S | [ ] |
 | 13 | P3 | OCR for scanned PDFs | M | [ ] |
+| 14 | P1 | Search-scope + answer-completeness prompt change (upstream v4.9.0) | S | [ ] |
+| 15 | P1 | Our own RAG eval benchmark | M | [ ] |
 
 ---
 
 ### 1. [P1] pdfium PDF extraction — APPROVED
+
+> This section is the per-feature plan for pdfium. It needs no DB migration and no UI change.
 
 **Why.** `read_pdf_file` (`backend/om/file_processing/extract_file_text.py:188`) uses pure-Python **pypdf 6.6.2**, which causes four problems:
 - It is slow on large PDFs.
@@ -55,7 +64,7 @@ Neither system scores recency or document boost, so thumbs-up/down feedback has 
 
 **Plan.**
 - [ ] Add `pypdfium2==5.9.0` to `pyproject.toml` (next to `pypdf==6.6.2`) and `backend/requirements/default.txt`. Keep pypdf, which is still needed for metadata, decryption checks, image extraction, the fallback and `password_validation.py`.
-- [ ] Port upstream `onyx/utils/process_isolation.py` (87 lines) and `onyx/utils/isolated_runner.py` (43 lines) to `backend/om/utils/`. This gives `run_in_isolated_process`, `IsolatedProcessError`, `IsolatedProcessCrashed` and `IsolatedProcessTimeout`. It must use `subprocess`, not `multiprocessing`, because Celery workers are daemons.
+- [ ] Port `UP:om/utils/process_isolation.py` (87 lines) and `UP:om/utils/isolated_runner.py` (43 lines) to `backend/om/utils/`. The runner module path is `om.utils.isolated_runner`. This gives `run_in_isolated_process`, `IsolatedProcessError`, `IsolatedProcessCrashed` and `IsolatedProcessTimeout`. It must use `subprocess`, not `multiprocessing`, because Celery workers are daemons.
 - [ ] Add `PDF_TEXT_EXTRACTION_TIMEOUT_SECONDS` (env, default 120) to `backend/om/configs/app_configs.py`.
 - [ ] In `extract_file_text.py`:
   - add `_extract_pdf_text_pdfium(file_bytes, password)`, which gets a textpage per page, closes native handles and joins pages with `TEXT_SECTION_SEPARATOR`;
@@ -91,7 +100,7 @@ Neither system scores recency or document boost, so thumbs-up/down feedback has 
 - No chunk summarises the sheet, so questions like "total by district" or "how many rows" can't be answered from a few retrieved chunks.
 - One large sheet produces hundreds of chunks, flooding the index and pushing other documents out of the top results.
 
-**What upstream does.** `onyx/indexing/chunking/tabular_section_chunker/` (`TabularChunker`, `workbook_chunks.py`) caps each workbook at a fixed number of chunks:
+**What upstream does.** `UP:om/indexing/chunking/tabular_section_chunker/` (target: `backend/om/indexing/chunking/tabular_section_chunker/`) (`TabularChunker`, `workbook_chunks.py`) caps each workbook at a fixed number of chunks:
 - One **overview** block: the sheets, their sizes and columns, and the text of text-only sheets such as a Readme.
 - **All rows** of small sheets.
 - For large sheets, a **profile**: column roles, ID ranges, totals, breakdowns by category and by month, frequent values and sample rows. Large sheets with the same columns share one profile.
@@ -206,6 +215,27 @@ The full data stays in the file. The chunks make the file findable, and the LLM 
   - Tesseract or PaddleOCR (Telugu support needed);
   - the Unstructured API (already optional).
 - [ ] Use OCR only when the extracted text is empty or below a threshold.
+
+---
+
+### 14. [P1] Search-scope and answer-completeness prompt change (upstream v4.9.0, October 2026)
+
+Upstream changed two things after our fork:
+- Search no longer narrows to a connected source just because the question names that source.
+- On search-backed turns, the model is asked to address every part of the question and to carry over the exact figures its sources give.
+
+Upstream reports this raised answer completeness on its internal RAG benchmark.
+
+- [ ] Port from `UP:om/tools/tool_implementations/search/` and the chat prompts into `backend/om/tools/tool_implementations/search/` and `backend/om/prompts/`.
+
+---
+
+### 15. [P1] Our own RAG eval benchmark
+
+Upstream's "best RAG" claim is based on an **internal** benchmark with no public numbers, so it says nothing about our system.
+
+- [ ] Build a gov-department eval set (Telugu, Hindi and English questions over real department documents, including spreadsheets and PDFs) on `backend/om/evals/` + Braintrust.
+- [ ] Measure before and after each port (pdfium, tabular chunker, Granite, reranker, #14).
 
 ---
 
