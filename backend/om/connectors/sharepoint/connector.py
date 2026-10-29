@@ -156,8 +156,8 @@ class SiteDescriptor(BaseModel):
     """Data class for storing SharePoint site information.
 
     Args:
-        url: The base site URL (e.g. https://danswerai.sharepoint.com/sites/sharepoint-tests
-             or https://danswerai.sharepoint.com/teams/team-name)
+        url: The base site URL (e.g. https://example.sharepoint.com/sites/sharepoint-tests
+             or https://example.sharepoint.com/teams/team-name)
         drive_name: The name of the drive to access (e.g. "Shared Documents", "Other Library")
                    If None, all drives will be accessed.
         folder_path: The folder path within the drive to access (e.g. "test/nested with spaces")

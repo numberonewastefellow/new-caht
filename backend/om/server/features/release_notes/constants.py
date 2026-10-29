@@ -1,13 +1,13 @@
 """Constants for release notes functionality."""
 
-# GitHub source
-GITHUB_RAW_BASE_URL = (
-    "https://raw.githubusercontent.com/onyx-dot-app/documentation/main"
-)
-GITHUB_CHANGELOG_RAW_URL = f"{GITHUB_RAW_BASE_URL}/changelog.mdx"
+import os
+
+# Raw changelog (mdx) to fetch release notes from. Empty (default) disables
+# the feature: no outbound request is made and no notifications are created.
+RELEASE_NOTES_CHANGELOG_URL = os.environ.get("OM_RELEASE_NOTES_CHANGELOG_URL", "")
 
 # Base URL for changelog documentation (used for notification links)
-DOCS_CHANGELOG_BASE_URL = "https://docs.onyx.app/changelog"
+DOCS_CHANGELOG_BASE_URL = os.environ.get("OM_DOCS_CHANGELOG_URL", "")
 
 FETCH_TIMEOUT = 60.0
 

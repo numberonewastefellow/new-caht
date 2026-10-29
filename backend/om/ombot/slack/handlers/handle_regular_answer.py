@@ -168,7 +168,7 @@ def handle_regular_answer(
     slack_context_str = build_slack_context_str(history_messages, channel_name)
 
     if not message_ts_to_respond_to and not is_slash_command:
-        # if the message is not "/onyx" command, then it should have a message ts to respond to
+        # if the message is not "/om" command, then it should have a message ts to respond to
         raise RuntimeError(
             "No message timestamp to respond to in `handle_message`. This should never happen."
         )
@@ -342,7 +342,7 @@ def handle_regular_answer(
 
         # For DM (ephemeral message), we need to create a thread via a normal message so the user can see
         # the ephemeral message. This also will give the user a notification which ephemeral message does not.
-        # if there is no message_ts_to_respond_to, and we have made it this far, then this is a /onyx message
+        # if there is no message_ts_to_respond_to, and we have made it this far, then this is a /om message
         # so we shouldn't send_team_member_message
         if (
             target_receiver_ids

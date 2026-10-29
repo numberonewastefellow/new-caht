@@ -586,7 +586,7 @@ class NotionConnector(LoadConnector, PollConnector):
                     logger.warning(
                         f"Skipping 'ai_block' ('{result_block_id}') for base block '{base_block_id}': "
                         f"Notion API does not currently support reading AI blocks (as of 24/02/09) "
-                        f"(discussion: https://github.com/onyx-dot-app/onyx/issues/1053)"
+                        f"(see the Notion connector notes)"
                     )
                     continue
 
@@ -594,7 +594,7 @@ class NotionConnector(LoadConnector, PollConnector):
                     logger.warning(
                         f"Skipping unsupported block type '{result_type}' "
                         f"('{result_block_id}') for base block '{base_block_id}': "
-                        f"(discussion: https://github.com/onyx-dot-app/onyx/issues/1230)"
+                        f"(see the Notion connector notes)"
                     )
                     continue
 
@@ -602,7 +602,7 @@ class NotionConnector(LoadConnector, PollConnector):
                     logger.warning(
                         f"Skipping 'external_object_instance_page' ('{result_block_id}') for base block '{base_block_id}': "
                         f"Notion API does not currently support reading external blocks (as of 24/07/03) "
-                        f"(discussion: https://github.com/onyx-dot-app/onyx/issues/1761)"
+                        f"(see the Notion connector notes)"
                     )
                     continue
 

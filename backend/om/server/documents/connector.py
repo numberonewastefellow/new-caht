@@ -36,7 +36,6 @@ from om.configs.app_configs import MOCK_CONNECTOR_FILE_PATH
 from om.configs.constants import DocumentSource
 from om.configs.constants import FileOrigin
 from om.configs.constants import MilestoneRecordType
-from om.configs.constants import METADATA_FILENAMES
 from om.configs.constants import OM_METADATA_FILENAME
 from om.configs.constants import OmCeleryPriority
 from om.configs.constants import OmCeleryTask
@@ -426,14 +425,11 @@ def save_zip_metadata_to_file_store(
     zf: zipfile.ZipFile, file_store: FileStore
 ) -> str | None:
     """
-    Extract .om_metadata.json (or the legacy .onyx_metadata.json) from zip and save to file store.
+    Extract .om_metadata.json from zip and save to file store.
     Returns the file_id or None if no metadata file exists.
     """
     try:
-        present = next((n for n in METADATA_FILENAMES if n in zf.namelist()), None)
-        if present is None:
-            raise KeyError(OM_METADATA_FILENAME)
-        metadata_file_info = zf.getinfo(present)
+        metadata_file_info = zf.getinfo(OM_METADATA_FILENAME)
         with zf.open(metadata_file_info, "r") as metadata_file:
             metadata_bytes = metadata_file.read()
 

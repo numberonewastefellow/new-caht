@@ -59,10 +59,10 @@ def cleanup_content_for_chunks(
         # necessarily the same data that is prepended to the content; that comes
         # from title_prefix.
         # This was added in
-        # https://github.com/onyx-dot-app/onyx/commit/e90c66c1b61c5b7da949652d703f7c906863e6e4#diff-2a2a29d5929de75cdaea77867a397934d9f8b785ce40a861c0d704033e3663ab,
+        # upstream change#diff-2a2a29d5929de75cdaea77867a397934d9f8b785ce40a861c0d704033e3663ab,
         # see postprocessing.py. At that time the content enrichment logic was
         # also added in that commit, see
-        # https://github.com/onyx-dot-app/onyx/commit/e90c66c1b61c5b7da949652d703f7c906863e6e4#diff-d807718aa263a15c1d991a4ab063c360c8419eaad210b4ba70e1e9f47d2aa6d2R77
+        # upstream change#diff-d807718aa263a15c1d991a4ab063c360c8419eaad210b4ba70e1e9f47d2aa6d2R77
         # chunker.py.
         if not chunk.title or not chunk.content:
             return chunk.content

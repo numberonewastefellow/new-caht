@@ -220,7 +220,9 @@ else
 fi
 
 # GitHub repo base URL - using main branch
-GITHUB_RAW_URL="https://raw.githubusercontent.com/onyx-dot-app/onyx/main/deployment/docker_compose"
+# Where the compose files are downloaded from. Override OM_RAW_BASE to use a fork or a pinned tag.
+OM_RAW_BASE="${OM_RAW_BASE:-https://raw.githubusercontent.com/numberonewastefellow/new-caht/main_multi_agent_stable}"
+GITHUB_RAW_URL="$OM_RAW_BASE/deployment/docker_compose"
 
 # Check system requirements
 print_step "Verifying Docker installation"
@@ -457,7 +459,7 @@ else
 fi
 
 # Download nginx config files
-NGINX_BASE_URL="https://raw.githubusercontent.com/onyx-dot-app/onyx/main/deployment/data/nginx"
+NGINX_BASE_URL="$OM_RAW_BASE/deployment/data/nginx"
 
 # Download app.conf.template
 NGINX_CONFIG="${INSTALL_ROOT}/data/nginx/app.conf.template"

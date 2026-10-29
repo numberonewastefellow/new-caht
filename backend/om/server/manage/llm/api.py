@@ -1032,7 +1032,7 @@ def _get_openrouter_models_response(api_base: str, api_key: str) -> dict:
     headers = {
         "Authorization": f"Bearer {api_key}",
         # Optional headers recommended by OpenRouter for attribution
-        "HTTP-Referer": "https://onyx.app",
+        "HTTP-Referer": "https://virtualai.com",
         "X-Title": "VertualAI",
     }
     try:

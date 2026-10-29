@@ -4,14 +4,14 @@
 #
 # Usage:
 #   kubectl apply -f test-job.yaml
-#   kubectl logs -f job/sandbox-test -n onyx-sandboxes
-#   kubectl delete job sandbox-test -n onyx-sandboxes
+#   kubectl logs -f job/sandbox-test -n om-sandboxes
+#   kubectl delete job sandbox-test -n om-sandboxes
 
 apiVersion: v1
 kind: Pod
 metadata:
   name: sandbox-test
-  namespace: onyx-sandboxes
+  namespace: om-sandboxes
 spec:
   serviceAccountName: sandbox-runner  # Needs permissions to create/delete pods
   containers:
@@ -23,7 +23,7 @@ spec:
     - name: SANDBOX_BACKEND
       value: "kubernetes"
     - name: SANDBOX_NAMESPACE
-      value: "onyx-sandboxes"
+      value: "om-sandboxes"
     # Add any other required env vars (API keys, DB connection, etc.)
     # - name: OPENAI_API_KEY
     #   valueFrom:

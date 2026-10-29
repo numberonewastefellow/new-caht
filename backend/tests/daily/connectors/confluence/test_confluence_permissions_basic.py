@@ -20,7 +20,7 @@ from tests.daily.connectors.utils import load_all_from_connector
 @pytest.fixture
 def confluence_connector() -> ConfluenceConnector:
     connector = ConfluenceConnector(
-        wiki_base="https://danswerai.atlassian.net",
+        wiki_base="https://virtualai.atlassian.net",
         is_cloud=True,
     )
 
@@ -114,7 +114,7 @@ def test_confluence_connector_restriction_handling(
     # Mock the nested connector attribute and its config
     mock_cc_pair.connector = MagicMock()
     mock_cc_pair.connector.connector_specific_config = {
-        "wiki_base": "https://danswerai.atlassian.net",
+        "wiki_base": "https://virtualai.atlassian.net",
         "is_cloud": True,
         "space": test_space_key,
     }
@@ -141,24 +141,24 @@ def test_confluence_connector_restriction_handling(
 
     # if no restriction is applied, the groups should give access, so no need
     # for more emails outside of the owner
-    non_restricted_emails = {"chris@onyx.app"}
+    non_restricted_emails = {"chris@virtualai.com"}
     non_restricted_teams = {
-        "confluence-admins-danswerai",
+        "confluence-admins-virtualai",
         "org-admins",
         "atlassian-addons-admin",
-        "confluence-users-danswerai",
+        "confluence-users-virtualai",
     }
 
     # if restriction is applied, only should be visible to shared users / groups
-    restricted_emails = {"chris@onyx.app", "hagen@danswer.ai", "oauth@onyx.app"}
-    restricted_teams = {"confluence-admins-danswerai"}
+    restricted_emails = {"chris@virtualai.com", "hagen@virtualai.com", "oauth@virtualai.com"}
+    restricted_teams = {"confluence-admins-virtualai"}
 
-    extra_restricted_emails = {"chris@onyx.app", "oauth@onyx.app"}
+    extra_restricted_emails = {"chris@virtualai.com", "oauth@virtualai.com"}
     extra_restricted_teams: set[str] = set()
 
-    # note that this is only allowed since yuhong@onyx.app is a member of the
-    # confluence-admins-danswerai group
-    special_restricted_emails = {"chris@onyx.app", "yuhong@onyx.app", "oauth@onyx.app"}
+    # note that this is only allowed since yuhong@virtualai.com is a member of the
+    # confluence-admins-virtualai group
+    special_restricted_emails = {"chris@virtualai.com", "yuhong@virtualai.com", "oauth@virtualai.com"}
     special_restricted_teams: set[str] = set()
 
     # Check Root+Page+2 is public

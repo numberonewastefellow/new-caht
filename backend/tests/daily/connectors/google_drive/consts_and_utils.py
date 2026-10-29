@@ -309,10 +309,10 @@ PADDING_DRIVE_URLS = [
     "0ABu8fYjvA21dUk9PVA",
 ]
 
-ADMIN_EMAIL = "admin@onyx-test.com"
-TEST_USER_1_EMAIL = "test_user_1@onyx-test.com"
-TEST_USER_2_EMAIL = "test_user_2@onyx-test.com"
-TEST_USER_3_EMAIL = "test_user_3@onyx-test.com"
+ADMIN_EMAIL = "admin@virtualai.com"
+TEST_USER_1_EMAIL = "test_user_1@virtualai.com"
+TEST_USER_2_EMAIL = "test_user_2@virtualai.com"
+TEST_USER_3_EMAIL = "test_user_3@virtualai.com"
 
 # Expected permissions for perm sync drives
 # Maps drive ID -> set of user emails with access
@@ -396,7 +396,7 @@ EXPECTED_PILL_FOLDER = _node(
     PILL_FOLDER_ID, "pill_folder", HierarchyNodeType.FOLDER, ADMIN_MY_DRIVE_ID
 )
 EXPECTED_EXTERNAL_SHARED_FOLDER = _node(
-    EXTERNAL_SHARED_FOLDER_ID, "Onyx-test", HierarchyNodeType.FOLDER
+    EXTERNAL_SHARED_FOLDER_ID, "VertualAI-test", HierarchyNodeType.FOLDER
 )
 
 # Comprehensive mapping of ALL known hierarchy nodes.

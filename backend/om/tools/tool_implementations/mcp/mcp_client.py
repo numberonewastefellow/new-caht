@@ -30,6 +30,7 @@ from collections.abc import Callable
 from enum import Enum
 from typing import Any
 from typing import Dict
+from typing import NamedTuple
 from typing import TypeVar
 
 from mcp import ClientSession
@@ -52,6 +53,25 @@ logger = setup_logger()
 T = TypeVar("T", covariant=True)
 
 MCPClientFunction = Callable[[ClientSession], Awaitable[T]]
+
+
+class MCPToolCallResult(NamedTuple):
+    """Outcome of a `tools/call`, keeping the tool-execution error flag intact.
+
+    MCP reports tool failures in-band: a successful JSON-RPC response whose
+    result carries `isError: true` and the error message as ordinary content
+    (protocol-level failures raise instead). Flattening the content to a bare
+    string therefore loses the only signal that the call failed, which is why
+    callers get both parts here -- mirroring `CallToolResult.IsError` in the
+    official SDKs.
+
+    `text` stays exactly what it was before this type existed, so it can be
+    handed to the model unchanged: the spec requires clients to pass tool
+    execution errors to the model so it can self-correct and retry.
+    """
+
+    text: str
+    is_error: bool
 
 
 class MCPMessageType(str, Enum):
@@ -285,7 +305,7 @@ class MCPSessionManager:
         connection_headers: dict[str, str] | None = None,
         transport: MCPTransport = MCPTransport.STREAMABLE_HTTP,
         auth: OAuthClientProvider | None = None,
-    ) -> str:
+    ) -> MCPToolCallResult:
         """Call a tool using a persistent session. Creates the session if needed."""
         session = self.get_or_create(
             scope_id, server_url, connection_headers, transport, auth
@@ -301,7 +321,7 @@ class MCPSessionManager:
         if entry is None:
             raise RuntimeError(f"MCP session vanished for {key}")
 
-        async def _call() -> str:
+        async def _call() -> MCPToolCallResult:
             result = await session.call_tool(tool_name, arguments)
             return process_mcp_result(result)
 
@@ -444,8 +464,12 @@ async def _call_mcp_client_function_async(
     return await run_client_function()
 
 
-def process_mcp_result(call_tool_result: CallToolResult) -> str:
-    """Flatten MCP CallToolResult->text (prefers text content blocks)."""
+def process_mcp_result(call_tool_result: CallToolResult) -> MCPToolCallResult:
+    """Flatten MCP CallToolResult->text (prefers text content blocks).
+
+    Returns the flattened text alongside `isError`, so a tool-execution
+    failure is not mistaken for a success by callers or logs.
+    """
     # TODO: use structured_content if available
     parts = []
     for content_block in call_tool_result.content:
@@ -461,11 +485,14 @@ def process_mcp_result(call_tool_result: CallToolResult) -> str:
             )
         # TODO: handle other content block types
 
-    return "\n\n".join(p for p in parts if p) or str(call_tool_result.structuredContent)
+    text = "\n\n".join(p for p in parts if p) or str(call_tool_result.structuredContent)
+    return MCPToolCallResult(text=text, is_error=bool(call_tool_result.isError))
 
 
-def _call_mcp_tool(tool_name: str, arguments: dict[str, Any]) -> MCPClientFunction[str]:
-    async def call_tool(session: ClientSession) -> str:
+def _call_mcp_tool(
+    tool_name: str, arguments: dict[str, Any]
+) -> MCPClientFunction[MCPToolCallResult]:
+    async def call_tool(session: ClientSession) -> MCPToolCallResult:
         await session.initialize()
         result = await session.call_tool(tool_name, arguments)
         return process_mcp_result(result)
@@ -481,7 +508,7 @@ def call_mcp_tool(
     transport: MCPTransport = MCPTransport.STREAMABLE_HTTP,
     auth: OAuthClientProvider | None = None,
     session_scope_id: str | None = None,
-) -> str:
+) -> MCPToolCallResult:
     """Call a specific tool on the MCP server.
 
     If session_scope_id is provided, uses a persistent session from the

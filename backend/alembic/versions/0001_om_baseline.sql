@@ -1,9 +1,7 @@
 -- Baseline schema (squashed). Auto-generated from pg_dump of the migrated DB.
--- Renames folded into this baseline (so a fresh install gets the final names directly):
---   Project->Workspace, UserFile->KnowledgeFile (earlier), Persona->Agent (0003_agent_rename),
---   UserGroup->Team incl. BIGINT ids (0004_team_rename), chat_session.onyxbot_flow->ombot_flow (0008).
--- Regenerated from a database with rename-audit/gen_baseline_sql.py; revisions 0003/0004_team_rename/0008
--- detect the final names and skip themselves, so existing databases are unaffected.
+-- Squashed om baseline: generated from a database migrated to the final schema with
+-- rename-audit/gen_baseline_sql.py. It holds the final object names, the Pulse tables and
+-- the seed rows; there is no earlier history to replay.
 -- pg_trgm is used by KG trigram indexes but pg_dump omits it; add explicitly.
 CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 
@@ -383,6 +381,39 @@ ALTER SEQUENCE agent_workflow_step_id_seq OWNED BY agent_workflow_step.id;
 
 
 --
+-- Name: analytics_rollup; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE analytics_rollup (
+    id integer NOT NULL,
+    window_start date NOT NULL,
+    metric character varying NOT NULL,
+    value double precision DEFAULT 0 NOT NULL,
+    computed_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: analytics_rollup_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE analytics_rollup_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: analytics_rollup_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE analytics_rollup_id_seq OWNED BY analytics_rollup.id;
+
+
+--
 -- Name: api_key; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -416,6 +447,52 @@ CREATE SEQUENCE api_key_id_seq
 --
 
 ALTER SEQUENCE api_key_id_seq OWNED BY api_key.id;
+
+
+--
+-- Name: app_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE app_settings (
+    id integer NOT NULL,
+    application_name character varying,
+    use_custom_logo boolean DEFAULT false NOT NULL,
+    use_custom_logotype boolean DEFAULT false NOT NULL,
+    logo_display_style character varying,
+    custom_nav_items jsonb,
+    two_lines_for_chat_header boolean,
+    custom_lower_disclaimer_content text,
+    custom_header_content text,
+    custom_popup_header text,
+    custom_popup_content text,
+    enable_consent_screen boolean,
+    consent_screen_prompt text,
+    show_first_visit_notice boolean,
+    custom_greeting_message text,
+    feature_flags jsonb,
+    custom_analytics_script text,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: app_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE app_settings_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: app_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE app_settings_id_seq OWNED BY app_settings.id;
 
 
 --
@@ -615,7 +692,8 @@ CREATE TABLE chat_session (
     temperature_override double precision,
     description_tsv tsvector GENERATED ALWAYS AS (to_tsvector('english'::regconfig, COALESCE(description, ''::text))) STORED,
     workspace_id integer,
-    sandbox_session_id character varying
+    sandbox_session_id character varying,
+    pulse_schedule_id integer
 );
 
 
@@ -1720,38 +1798,6 @@ CREATE TABLE knowledge_file (
 
 
 --
--- Name: license; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE license (
-    id integer NOT NULL,
-    license_data text NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: license_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE license_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: license_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE license_id_seq OWNED BY license.id;
-
-
---
 -- Name: llm_model_flow; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2184,23 +2230,35 @@ CREATE TABLE public_external_team (
 
 
 --
--- Name: saml; Type: TABLE; Schema: public; Owner: -
+-- Name: pulse_run; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE saml (
+CREATE TABLE pulse_run (
     id integer NOT NULL,
-    user_id uuid NOT NULL,
-    encrypted_cookie text NOT NULL,
-    expires_at timestamp with time zone,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    schedule_id integer NOT NULL,
+    scheduled_for timestamp with time zone NOT NULL,
+    trigger character varying DEFAULT 'scheduled'::character varying NOT NULL,
+    status character varying DEFAULT 'pending'::character varying NOT NULL,
+    chat_session_id uuid,
+    workflow_execution_id integer,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    started_at timestamp with time zone,
+    heartbeat_at timestamp with time zone,
+    finished_at timestamp with time zone,
+    duration_ms integer,
+    last_enqueued_at timestamp with time zone,
+    worker_hostname character varying,
+    output_preview text,
+    error text,
+    skip_reason character varying
 );
 
 
 --
--- Name: saml_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: pulse_run_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE saml_id_seq
+CREATE SEQUENCE pulse_run_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -2210,10 +2268,134 @@ CREATE SEQUENCE saml_id_seq
 
 
 --
--- Name: saml_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: pulse_run_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE saml_id_seq OWNED BY saml.id;
+ALTER SEQUENCE pulse_run_id_seq OWNED BY pulse_run.id;
+
+
+--
+-- Name: pulse_schedule; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE pulse_schedule (
+    id integer NOT NULL,
+    workflow_id integer NOT NULL,
+    user_id uuid NOT NULL,
+    name character varying NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    schedule_type character varying NOT NULL,
+    cron_expression character varying,
+    interval_seconds integer,
+    run_at timestamp with time zone,
+    timezone character varying DEFAULT 'UTC'::character varying NOT NULL,
+    input_message text NOT NULL,
+    next_run_at timestamp with time zone,
+    last_run_at timestamp with time zone,
+    last_run_status character varying,
+    last_success_scheduled_for timestamp with time zone,
+    consecutive_failures integer DEFAULT 0 NOT NULL,
+    disabled_reason character varying,
+    retention_count integer DEFAULT 50 NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    input_mode character varying DEFAULT 'fixed'::character varying NOT NULL,
+    input_prompt text,
+    input_items jsonb,
+    input_item_index integer DEFAULT 0 NOT NULL,
+    updated_by_id uuid
+);
+
+
+--
+-- Name: pulse_schedule_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE pulse_schedule_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pulse_schedule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE pulse_schedule_id_seq OWNED BY pulse_schedule.id;
+
+
+--
+-- Name: rate_limit_policy; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE rate_limit_policy (
+    id bigint NOT NULL,
+    scope character varying NOT NULL,
+    user_id uuid,
+    team_id bigint,
+    token_budget bigint NOT NULL,
+    period_hours integer NOT NULL,
+    algorithm character varying DEFAULT 'sliding_window'::character varying NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: rate_limit_policy_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE rate_limit_policy_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rate_limit_policy_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE rate_limit_policy_id_seq OWNED BY rate_limit_policy.id;
+
+
+--
+-- Name: rate_limit_usage; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE rate_limit_usage (
+    id bigint NOT NULL,
+    scope character varying NOT NULL,
+    subject_key character varying NOT NULL,
+    bucket_start timestamp with time zone NOT NULL,
+    tokens_used bigint DEFAULT '0'::bigint NOT NULL,
+    allowed_count integer DEFAULT 0 NOT NULL,
+    throttled_count integer DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: rate_limit_usage_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE rate_limit_usage_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rate_limit_usage_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE rate_limit_usage_id_seq OWNED BY rate_limit_usage.id;
 
 
 --
@@ -2231,10 +2413,10 @@ CREATE TABLE sandbox (
 
 
 --
--- Name: scim_group_mapping; Type: TABLE; Schema: public; Owner: -
+-- Name: scim_team_mapping; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE scim_group_mapping (
+CREATE TABLE scim_team_mapping (
     id integer NOT NULL,
     external_id character varying NOT NULL,
     team_id bigint NOT NULL,
@@ -2244,10 +2426,10 @@ CREATE TABLE scim_group_mapping (
 
 
 --
--- Name: scim_group_mapping_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: scim_team_mapping_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE scim_group_mapping_id_seq
+CREATE SEQUENCE scim_team_mapping_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -2257,10 +2439,10 @@ CREATE SEQUENCE scim_group_mapping_id_seq
 
 
 --
--- Name: scim_group_mapping_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: scim_team_mapping_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE scim_group_mapping_id_seq OWNED BY scim_group_mapping.id;
+ALTER SEQUENCE scim_team_mapping_id_seq OWNED BY scim_team_mapping.id;
 
 
 --
@@ -2272,7 +2454,7 @@ CREATE TABLE scim_token (
     name character varying NOT NULL,
     hashed_token character varying(64) NOT NULL,
     token_display character varying NOT NULL,
-    created_by_id uuid NOT NULL,
+    created_by uuid NOT NULL,
     is_active boolean DEFAULT true NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     last_used_at timestamp with time zone
@@ -2376,6 +2558,50 @@ CREATE SEQUENCE search_doc_id_seq
 --
 
 ALTER SEQUENCE search_doc_id_seq OWNED BY search_doc.id;
+
+
+--
+-- Name: search_expansion_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE search_expansion_settings (
+    id integer NOT NULL,
+    singleton boolean DEFAULT true NOT NULL,
+    enable_expansion boolean DEFAULT true NOT NULL,
+    enable_keyword_expansion boolean DEFAULT true NOT NULL,
+    enable_semantic_rephrase boolean DEFAULT true NOT NULL,
+    enable_keyword_history_expansion boolean DEFAULT true NOT NULL,
+    max_variants integer DEFAULT 3 NOT NULL,
+    num_results integer DEFAULT 25 NOT NULL,
+    num_retrieved_per_query integer DEFAULT 30 NOT NULL,
+    rrf_k integer DEFAULT 60 NOT NULL,
+    original_query_weight double precision DEFAULT 2.0 NOT NULL,
+    semantic_variant_weight double precision DEFAULT 1.0 NOT NULL,
+    keyword_variant_weight double precision DEFAULT 1.0 NOT NULL,
+    enable_llm_section_selection boolean DEFAULT false NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: search_expansion_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE search_expansion_settings_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: search_expansion_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE search_expansion_settings_id_seq OWNED BY search_expansion_settings.id;
 
 
 --
@@ -2483,6 +2709,87 @@ CREATE TABLE snapshot (
 
 
 --
+-- Name: sso_saml_config; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE sso_saml_config (
+    id integer NOT NULL,
+    enabled boolean DEFAULT false NOT NULL,
+    idp_entity_id text DEFAULT ''::text NOT NULL,
+    idp_sso_url text DEFAULT ''::text NOT NULL,
+    idp_slo_url text,
+    idp_x509_cert text DEFAULT ''::text NOT NULL,
+    sp_entity_id text DEFAULT ''::text NOT NULL,
+    sp_acs_url text DEFAULT ''::text NOT NULL,
+    sp_slo_url text,
+    sp_x509_cert text,
+    sp_private_key bytea,
+    want_assertions_signed boolean DEFAULT true NOT NULL,
+    want_messages_signed boolean DEFAULT false NOT NULL,
+    want_name_id_encrypted boolean DEFAULT false NOT NULL,
+    authn_requests_signed boolean DEFAULT false NOT NULL,
+    email_attribute_keys jsonb,
+    first_name_attribute_key text,
+    last_name_attribute_key text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: sso_saml_config_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE sso_saml_config_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sso_saml_config_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE sso_saml_config_id_seq OWNED BY sso_saml_config.id;
+
+
+--
+-- Name: sso_saml_session; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE sso_saml_session (
+    id integer NOT NULL,
+    user_id uuid NOT NULL,
+    encrypted_cookie text NOT NULL,
+    expires_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: sso_saml_session_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE sso_saml_session_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sso_saml_session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE sso_saml_session_id_seq OWNED BY sso_saml_session.id;
+
+
+--
 -- Name: standard_answer; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2534,6 +2841,40 @@ CREATE SEQUENCE standard_answer_category_id_seq
 --
 
 ALTER SEQUENCE standard_answer_category_id_seq OWNED BY standard_answer_category.id;
+
+
+--
+-- Name: standard_answer_config; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE standard_answer_config (
+    id integer NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    max_matches_per_message integer DEFAULT 3 NOT NULL,
+    match_input_char_limit integer DEFAULT 8000 NOT NULL,
+    time_created timestamp with time zone DEFAULT now() NOT NULL,
+    time_updated timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: standard_answer_config_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE standard_answer_config_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: standard_answer_config_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE standard_answer_config_id_seq OWNED BY standard_answer_config.id;
 
 
 --
@@ -2667,7 +3008,13 @@ CREATE TABLE team (
     name character varying NOT NULL,
     is_up_to_date boolean NOT NULL,
     is_up_for_deletion boolean NOT NULL,
-    time_last_modified_by_user timestamp with time zone DEFAULT now() NOT NULL
+    time_last_modified_by_user timestamp with time zone DEFAULT now() NOT NULL,
+    description text,
+    is_public boolean DEFAULT false NOT NULL,
+    tags jsonb,
+    owner_id uuid,
+    default_member_role character varying DEFAULT 'MEMBER'::character varying NOT NULL,
+    allow_guest_access boolean DEFAULT false NOT NULL
 );
 
 
@@ -2700,85 +3047,6 @@ CREATE SEQUENCE team_id_seq
 --
 
 ALTER SEQUENCE team_id_seq OWNED BY team.id;
-
-
---
--- Name: tenant_usage; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE tenant_usage (
-    id integer NOT NULL,
-    window_start timestamp with time zone NOT NULL,
-    llm_cost_cents double precision DEFAULT '0'::double precision NOT NULL,
-    chunks_indexed integer DEFAULT 0 NOT NULL,
-    api_calls integer DEFAULT 0 NOT NULL,
-    non_streaming_api_calls integer DEFAULT 0 NOT NULL,
-    updated_at timestamp with time zone DEFAULT now()
-);
-
-
---
--- Name: tenant_usage_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE tenant_usage_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: tenant_usage_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE tenant_usage_id_seq OWNED BY tenant_usage.id;
-
-
---
--- Name: token_rate_limit; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE token_rate_limit (
-    id integer NOT NULL,
-    enabled boolean NOT NULL,
-    token_budget integer NOT NULL,
-    period_hours integer NOT NULL,
-    scope character varying(10) NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: token_rate_limit__team; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE token_rate_limit__team (
-    rate_limit_id integer NOT NULL,
-    team_id bigint NOT NULL
-);
-
-
---
--- Name: token_rate_limit_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE token_rate_limit_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: token_rate_limit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE token_rate_limit_id_seq OWNED BY token_rate_limit.id;
 
 
 --
@@ -2874,24 +3142,25 @@ ALTER SEQUENCE tool_id_seq OWNED BY tool.id;
 
 
 --
--- Name: usage_reports; Type: TABLE; Schema: public; Owner: -
+-- Name: usage_report; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE usage_reports (
+CREATE TABLE usage_report (
     id integer NOT NULL,
     report_name character varying NOT NULL,
+    file_id character varying NOT NULL,
     requestor_user_id uuid,
-    time_created timestamp with time zone DEFAULT now() NOT NULL,
     period_from timestamp with time zone,
-    period_to timestamp with time zone
+    period_to timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
 --
--- Name: usage_reports_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: usage_report_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE usage_reports_id_seq
+CREATE SEQUENCE usage_report_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -2901,10 +3170,10 @@ CREATE SEQUENCE usage_reports_id_seq
 
 
 --
--- Name: usage_reports_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: usage_report_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE usage_reports_id_seq OWNED BY usage_reports.id;
+ALTER SEQUENCE usage_report_id_seq OWNED BY usage_report.id;
 
 
 --
@@ -2960,7 +3229,21 @@ CREATE TABLE user__external_team_id (
 CREATE TABLE user__team (
     team_id bigint NOT NULL,
     user_id uuid NOT NULL,
-    is_curator boolean DEFAULT false NOT NULL
+    is_curator boolean DEFAULT false NOT NULL,
+    role character varying DEFAULT 'MEMBER'::character varying NOT NULL,
+    joined_at timestamp with time zone DEFAULT now(),
+    source character varying DEFAULT 'MANUAL'::character varying NOT NULL
+);
+
+
+--
+-- Name: user_tenant_mapping; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE user_tenant_mapping (
+    email character varying NOT NULL,
+    tenant_id character varying NOT NULL,
+    active boolean DEFAULT true NOT NULL
 );
 
 
@@ -3016,7 +3299,8 @@ CREATE TABLE workspace (
     description character varying(255),
     display_priority integer,
     created_at timestamp with time zone DEFAULT now(),
-    workspace_instructions character varying
+    workspace_instructions character varying,
+    deleted boolean DEFAULT false NOT NULL
 );
 
 
@@ -3080,10 +3364,24 @@ ALTER TABLE ONLY agent_workflow_step ALTER COLUMN id SET DEFAULT nextval('agent_
 
 
 --
+-- Name: analytics_rollup id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY analytics_rollup ALTER COLUMN id SET DEFAULT nextval('analytics_rollup_id_seq'::regclass);
+
+
+--
 -- Name: api_key id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY api_key ALTER COLUMN id SET DEFAULT nextval('api_key_id_seq'::regclass);
+
+
+--
+-- Name: app_settings id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY app_settings ALTER COLUMN id SET DEFAULT nextval('app_settings_id_seq'::regclass);
 
 
 --
@@ -3227,13 +3525,6 @@ ALTER TABLE ONLY internet_search_provider ALTER COLUMN id SET DEFAULT nextval('i
 
 
 --
--- Name: license id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY license ALTER COLUMN id SET DEFAULT nextval('license_id_seq'::regclass);
-
-
---
 -- Name: llm_model_flow id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3304,17 +3595,38 @@ ALTER TABLE ONLY personal_access_token ALTER COLUMN id SET DEFAULT nextval('pers
 
 
 --
--- Name: saml id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pulse_run id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY saml ALTER COLUMN id SET DEFAULT nextval('saml_id_seq'::regclass);
+ALTER TABLE ONLY pulse_run ALTER COLUMN id SET DEFAULT nextval('pulse_run_id_seq'::regclass);
 
 
 --
--- Name: scim_group_mapping id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pulse_schedule id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY scim_group_mapping ALTER COLUMN id SET DEFAULT nextval('scim_group_mapping_id_seq'::regclass);
+ALTER TABLE ONLY pulse_schedule ALTER COLUMN id SET DEFAULT nextval('pulse_schedule_id_seq'::regclass);
+
+
+--
+-- Name: rate_limit_policy id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rate_limit_policy ALTER COLUMN id SET DEFAULT nextval('rate_limit_policy_id_seq'::regclass);
+
+
+--
+-- Name: rate_limit_usage id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rate_limit_usage ALTER COLUMN id SET DEFAULT nextval('rate_limit_usage_id_seq'::regclass);
+
+
+--
+-- Name: scim_team_mapping id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_team_mapping ALTER COLUMN id SET DEFAULT nextval('scim_team_mapping_id_seq'::regclass);
 
 
 --
@@ -3339,6 +3651,13 @@ ALTER TABLE ONLY search_doc ALTER COLUMN id SET DEFAULT nextval('search_doc_id_s
 
 
 --
+-- Name: search_expansion_settings id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY search_expansion_settings ALTER COLUMN id SET DEFAULT nextval('search_expansion_settings_id_seq'::regclass);
+
+
+--
 -- Name: search_settings id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3360,6 +3679,20 @@ ALTER TABLE ONLY slack_channel_config ALTER COLUMN id SET DEFAULT nextval('slack
 
 
 --
+-- Name: sso_saml_config id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY sso_saml_config ALTER COLUMN id SET DEFAULT nextval('sso_saml_config_id_seq'::regclass);
+
+
+--
+-- Name: sso_saml_session id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY sso_saml_session ALTER COLUMN id SET DEFAULT nextval('sso_saml_session_id_seq'::regclass);
+
+
+--
 -- Name: standard_answer id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3371,6 +3704,13 @@ ALTER TABLE ONLY standard_answer ALTER COLUMN id SET DEFAULT nextval('standard_a
 --
 
 ALTER TABLE ONLY standard_answer_category ALTER COLUMN id SET DEFAULT nextval('standard_answer_category_id_seq'::regclass);
+
+
+--
+-- Name: standard_answer_config id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY standard_answer_config ALTER COLUMN id SET DEFAULT nextval('standard_answer_config_id_seq'::regclass);
 
 
 --
@@ -3402,20 +3742,6 @@ ALTER TABLE ONLY team ALTER COLUMN id SET DEFAULT nextval('team_id_seq'::regclas
 
 
 --
--- Name: tenant_usage id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY tenant_usage ALTER COLUMN id SET DEFAULT nextval('tenant_usage_id_seq'::regclass);
-
-
---
--- Name: token_rate_limit id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY token_rate_limit ALTER COLUMN id SET DEFAULT nextval('token_rate_limit_id_seq'::regclass);
-
-
---
 -- Name: tool id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3430,10 +3756,10 @@ ALTER TABLE ONLY tool_call ALTER COLUMN id SET DEFAULT nextval('tool_call_id_seq
 
 
 --
--- Name: usage_reports id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: usage_report id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY usage_reports ALTER COLUMN id SET DEFAULT nextval('usage_reports_id_seq'::regclass);
+ALTER TABLE ONLY usage_report ALTER COLUMN id SET DEFAULT nextval('usage_report_id_seq'::regclass);
 
 
 --
@@ -3579,6 +3905,14 @@ ALTER TABLE ONLY agent_workflow_step
 
 
 --
+-- Name: analytics_rollup analytics_rollup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY analytics_rollup
+    ADD CONSTRAINT analytics_rollup_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: api_key api_key_api_key_display_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3600,6 +3934,14 @@ ALTER TABLE ONLY api_key
 
 ALTER TABLE ONLY api_key
     ADD CONSTRAINT api_key_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: app_settings app_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY app_settings
+    ADD CONSTRAINT app_settings_pkey PRIMARY KEY (id);
 
 
 --
@@ -4075,14 +4417,6 @@ ALTER TABLE ONLY knowledge_file
 
 
 --
--- Name: license license_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY license
-    ADD CONSTRAINT license_pkey PRIMARY KEY (id);
-
-
---
 -- Name: llm_model_flow llm_model_flow_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4251,27 +4585,35 @@ ALTER TABLE ONLY public_external_team
 
 
 --
--- Name: saml saml_encrypted_cookie_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pulse_run pulse_run_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY saml
-    ADD CONSTRAINT saml_encrypted_cookie_key UNIQUE (encrypted_cookie);
-
-
---
--- Name: saml saml_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY saml
-    ADD CONSTRAINT saml_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY pulse_run
+    ADD CONSTRAINT pulse_run_pkey PRIMARY KEY (id);
 
 
 --
--- Name: saml saml_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pulse_schedule pulse_schedule_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY saml
-    ADD CONSTRAINT saml_user_id_key UNIQUE (user_id);
+ALTER TABLE ONLY pulse_schedule
+    ADD CONSTRAINT pulse_schedule_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rate_limit_policy rate_limit_policy_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rate_limit_policy
+    ADD CONSTRAINT rate_limit_policy_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rate_limit_usage rate_limit_usage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rate_limit_usage
+    ADD CONSTRAINT rate_limit_usage_pkey PRIMARY KEY (id);
 
 
 --
@@ -4291,27 +4633,11 @@ ALTER TABLE ONLY sandbox
 
 
 --
--- Name: scim_group_mapping scim_group_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: scim_team_mapping scim_team_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY scim_group_mapping
-    ADD CONSTRAINT scim_group_mapping_pkey PRIMARY KEY (id);
-
-
---
--- Name: scim_group_mapping scim_group_mapping_team_id_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_group_mapping
-    ADD CONSTRAINT scim_group_mapping_team_id_key UNIQUE (team_id);
-
-
---
--- Name: scim_token scim_token_hashed_token_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_token
-    ADD CONSTRAINT scim_token_hashed_token_key UNIQUE (hashed_token);
+ALTER TABLE ONLY scim_team_mapping
+    ADD CONSTRAINT scim_team_mapping_pkey PRIMARY KEY (id);
 
 
 --
@@ -4331,19 +4657,19 @@ ALTER TABLE ONLY scim_user_mapping
 
 
 --
--- Name: scim_user_mapping scim_user_mapping_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_user_mapping
-    ADD CONSTRAINT scim_user_mapping_user_id_key UNIQUE (user_id);
-
-
---
 -- Name: search_doc search_doc_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY search_doc
     ADD CONSTRAINT search_doc_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: search_expansion_settings search_expansion_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY search_expansion_settings
+    ADD CONSTRAINT search_expansion_settings_pkey PRIMARY KEY (id);
 
 
 --
@@ -4403,6 +4729,38 @@ ALTER TABLE ONLY snapshot
 
 
 --
+-- Name: sso_saml_config sso_saml_config_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY sso_saml_config
+    ADD CONSTRAINT sso_saml_config_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sso_saml_session sso_saml_session_encrypted_cookie_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY sso_saml_session
+    ADD CONSTRAINT sso_saml_session_encrypted_cookie_key UNIQUE (encrypted_cookie);
+
+
+--
+-- Name: sso_saml_session sso_saml_session_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY sso_saml_session
+    ADD CONSTRAINT sso_saml_session_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sso_saml_session sso_saml_session_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY sso_saml_session
+    ADD CONSTRAINT sso_saml_session_user_id_key UNIQUE (user_id);
+
+
+--
 -- Name: standard_answer__standard_answer_category standard_answer__standard_answer_category_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4424,6 +4782,14 @@ ALTER TABLE ONLY standard_answer_category
 
 ALTER TABLE ONLY standard_answer_category
     ADD CONSTRAINT standard_answer_category_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: standard_answer_config standard_answer_config_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY standard_answer_config
+    ADD CONSTRAINT standard_answer_config_pkey PRIMARY KEY (id);
 
 
 --
@@ -4491,30 +4857,6 @@ ALTER TABLE ONLY team
 
 
 --
--- Name: tenant_usage tenant_usage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY tenant_usage
-    ADD CONSTRAINT tenant_usage_pkey PRIMARY KEY (id);
-
-
---
--- Name: token_rate_limit__team token_rate_limit__team_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY token_rate_limit__team
-    ADD CONSTRAINT token_rate_limit__team_pkey PRIMARY KEY (rate_limit_id, team_id);
-
-
---
--- Name: token_rate_limit token_rate_limit_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY token_rate_limit
-    ADD CONSTRAINT token_rate_limit_pkey PRIMARY KEY (id);
-
-
---
 -- Name: tool_call__search_doc tool_call__search_doc_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4536,6 +4878,14 @@ ALTER TABLE ONLY tool_call
 
 ALTER TABLE ONLY tool
     ADD CONSTRAINT tool_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: analytics_rollup uq_analytics_rollup_day_metric; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY analytics_rollup
+    ADD CONSTRAINT uq_analytics_rollup_day_metric UNIQUE (window_start, metric);
 
 
 --
@@ -4619,11 +4969,75 @@ ALTER TABLE ONLY oauth_user_token
 
 
 --
--- Name: tenant_usage uq_tenant_usage_window; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: rate_limit_policy uq_rate_limit_policy_scope_subject_window; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY tenant_usage
-    ADD CONSTRAINT uq_tenant_usage_window UNIQUE (window_start);
+ALTER TABLE ONLY rate_limit_policy
+    ADD CONSTRAINT uq_rate_limit_policy_scope_subject_window UNIQUE (scope, user_id, team_id, period_hours);
+
+
+--
+-- Name: rate_limit_usage uq_rate_limit_usage_scope_subject_bucket; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rate_limit_usage
+    ADD CONSTRAINT uq_rate_limit_usage_scope_subject_bucket UNIQUE (scope, subject_key, bucket_start);
+
+
+--
+-- Name: scim_team_mapping uq_scim_team_mapping_external_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_team_mapping
+    ADD CONSTRAINT uq_scim_team_mapping_external_id UNIQUE (external_id);
+
+
+--
+-- Name: scim_team_mapping uq_scim_team_mapping_team_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_team_mapping
+    ADD CONSTRAINT uq_scim_team_mapping_team_id UNIQUE (team_id);
+
+
+--
+-- Name: scim_token uq_scim_token_hashed_token; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_token
+    ADD CONSTRAINT uq_scim_token_hashed_token UNIQUE (hashed_token);
+
+
+--
+-- Name: scim_user_mapping uq_scim_user_mapping_external_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_user_mapping
+    ADD CONSTRAINT uq_scim_user_mapping_external_id UNIQUE (external_id);
+
+
+--
+-- Name: scim_user_mapping uq_scim_user_mapping_user_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_user_mapping
+    ADD CONSTRAINT uq_scim_user_mapping_user_id UNIQUE (user_id);
+
+
+--
+-- Name: search_expansion_settings uq_search_expansion_settings_singleton; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY search_expansion_settings
+    ADD CONSTRAINT uq_search_expansion_settings_singleton UNIQUE (singleton);
+
+
+--
+-- Name: usage_report uq_usage_report_report_name; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY usage_report
+    ADD CONSTRAINT uq_usage_report_report_name UNIQUE (report_name);
 
 
 --
@@ -4635,11 +5049,11 @@ ALTER TABLE ONLY agent_workflow_step
 
 
 --
--- Name: usage_reports usage_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: usage_report usage_report_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY usage_reports
-    ADD CONSTRAINT usage_reports_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY usage_report
+    ADD CONSTRAINT usage_report_pkey PRIMARY KEY (id);
 
 
 --
@@ -4664,6 +5078,14 @@ ALTER TABLE ONLY user__team
 
 ALTER TABLE ONLY "user"
     ADD CONSTRAINT user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_tenant_mapping user_tenant_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY user_tenant_mapping
+    ADD CONSTRAINT user_tenant_mapping_pkey PRIMARY KEY (email, tenant_id);
 
 
 --
@@ -4740,13 +5162,6 @@ CREATE INDEX idx_kg_entity_normalization_trigrams ON kg_entity USING gin (name_t
 
 
 --
--- Name: idx_license_singleton; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX idx_license_singleton ON license USING btree ((true));
-
-
---
 -- Name: idx_workspace__knowledge_file_knowledge_file_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4772,6 +5187,13 @@ CREATE INDEX ix_agent__document_document_id ON agent__document USING btree (docu
 --
 
 CREATE INDEX ix_agent__hierarchy_node_hierarchy_node_id ON agent__hierarchy_node USING btree (hierarchy_node_id);
+
+
+--
+-- Name: ix_analytics_rollup_window_start; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_analytics_rollup_window_start ON analytics_rollup USING btree (window_start);
 
 
 --
@@ -4807,6 +5229,48 @@ CREATE INDEX ix_build_session_status ON build_session USING btree (status);
 --
 
 CREATE INDEX ix_build_session_user_created ON build_session USING btree (user_id, created_at DESC);
+
+
+--
+-- Name: ix_chat_feedback_chat_message_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_chat_feedback_chat_message_id ON chat_feedback USING btree (chat_message_id);
+
+
+--
+-- Name: ix_chat_message_chat_session_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_chat_message_chat_session_id ON chat_message USING btree (chat_session_id);
+
+
+--
+-- Name: ix_chat_message_msgtype_time_sent; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_chat_message_msgtype_time_sent ON chat_message USING btree (message_type, time_sent);
+
+
+--
+-- Name: ix_chat_session_agent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_chat_session_agent_id ON chat_session USING btree (agent_id);
+
+
+--
+-- Name: ix_chat_session_pulse_schedule_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_chat_session_pulse_schedule_id ON chat_session USING btree (pulse_schedule_id);
+
+
+--
+-- Name: ix_chat_session_time_created; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_chat_session_time_created ON chat_session USING btree (time_created);
 
 
 --
@@ -5482,6 +5946,69 @@ CREATE INDEX ix_public_external_team_stale ON public_external_team USING btree (
 
 
 --
+-- Name: ix_pulse_run_chat_session_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_pulse_run_chat_session_id ON pulse_run USING btree (chat_session_id);
+
+
+--
+-- Name: ix_pulse_run_schedule_created; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_pulse_run_schedule_created ON pulse_run USING btree (schedule_id, created_at);
+
+
+--
+-- Name: ix_pulse_run_status_heartbeat; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_pulse_run_status_heartbeat ON pulse_run USING btree (status, heartbeat_at);
+
+
+--
+-- Name: ix_pulse_schedule_due; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_pulse_schedule_due ON pulse_schedule USING btree (next_run_at) WHERE enabled;
+
+
+--
+-- Name: ix_pulse_schedule_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_pulse_schedule_user_id ON pulse_schedule USING btree (user_id);
+
+
+--
+-- Name: ix_rate_limit_policy_scope; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_rate_limit_policy_scope ON rate_limit_policy USING btree (scope);
+
+
+--
+-- Name: ix_rate_limit_policy_team_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_rate_limit_policy_team_id ON rate_limit_policy USING btree (team_id);
+
+
+--
+-- Name: ix_rate_limit_policy_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_rate_limit_policy_user_id ON rate_limit_policy USING btree (user_id);
+
+
+--
+-- Name: ix_rate_limit_usage_scope_bucket; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_rate_limit_usage_scope_bucket ON rate_limit_usage USING btree (scope, bucket_start);
+
+
+--
 -- Name: ix_sandbox_container_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5493,20 +6020,6 @@ CREATE INDEX ix_sandbox_container_id ON sandbox USING btree (container_id);
 --
 
 CREATE INDEX ix_sandbox_status ON sandbox USING btree (status);
-
-
---
--- Name: ix_scim_group_mapping_external_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX ix_scim_group_mapping_external_id ON scim_group_mapping USING btree (external_id);
-
-
---
--- Name: ix_scim_user_mapping_external_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX ix_scim_user_mapping_external_id ON scim_user_mapping USING btree (external_id);
 
 
 --
@@ -5566,17 +6079,17 @@ CREATE INDEX ix_sync_record_entity_id_sync_type_sync_status ON sync_record USING
 
 
 --
--- Name: ix_tenant_usage_window_start; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX ix_tenant_usage_window_start ON tenant_usage USING btree (window_start);
-
-
---
 -- Name: ix_tool_mcp_server_enabled; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_tool_mcp_server_enabled ON tool USING btree (mcp_server_id, enabled);
+
+
+--
+-- Name: ix_usage_report_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_usage_report_created_at ON usage_report USING btree (created_at);
 
 
 --
@@ -5601,6 +6114,20 @@ CREATE UNIQUE INDEX ix_user_email ON "user" USING btree (email);
 
 
 --
+-- Name: ix_user_tenant_mapping_email_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_user_tenant_mapping_email_active ON user_tenant_mapping USING btree (email) WHERE active;
+
+
+--
+-- Name: ix_user_tenant_mapping_tenant_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_user_tenant_mapping_tenant_id ON user_tenant_mapping USING btree (tenant_id);
+
+
+--
 -- Name: ix_workspace__knowledge_file_workspace_id_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5619,6 +6146,13 @@ CREATE UNIQUE INDEX uq_hierarchy_node_one_source_per_type ON hierarchy_node USIN
 --
 
 CREATE UNIQUE INDEX uq_inputprompt_prompt_public ON inputprompt USING btree (prompt) WHERE (user_id IS NULL);
+
+
+--
+-- Name: uq_pulse_run_schedule_slot; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX uq_pulse_run_schedule_slot ON pulse_run USING btree (schedule_id, scheduled_for) WHERE ((trigger)::text = 'scheduled'::text);
 
 
 --
@@ -5913,6 +6447,14 @@ ALTER TABLE ONLY chat_message
 
 ALTER TABLE ONLY chat_message
     ADD CONSTRAINT chat_message_last_summarized_message_id_fkey FOREIGN KEY (last_summarized_message_id) REFERENCES chat_message(id) ON DELETE SET NULL;
+
+
+--
+-- Name: chat_session chat_session_pulse_schedule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY chat_session
+    ADD CONSTRAINT chat_session_pulse_schedule_id_fkey FOREIGN KEY (pulse_schedule_id) REFERENCES pulse_schedule(id) ON DELETE SET NULL;
 
 
 --
@@ -6668,11 +7210,67 @@ ALTER TABLE ONLY public_external_team
 
 
 --
--- Name: saml saml_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: pulse_run pulse_run_chat_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY saml
-    ADD CONSTRAINT saml_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+ALTER TABLE ONLY pulse_run
+    ADD CONSTRAINT pulse_run_chat_session_id_fkey FOREIGN KEY (chat_session_id) REFERENCES chat_session(id) ON DELETE SET NULL;
+
+
+--
+-- Name: pulse_run pulse_run_schedule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY pulse_run
+    ADD CONSTRAINT pulse_run_schedule_id_fkey FOREIGN KEY (schedule_id) REFERENCES pulse_schedule(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pulse_run pulse_run_workflow_execution_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY pulse_run
+    ADD CONSTRAINT pulse_run_workflow_execution_id_fkey FOREIGN KEY (workflow_execution_id) REFERENCES workflow_execution(id) ON DELETE SET NULL;
+
+
+--
+-- Name: pulse_schedule pulse_schedule_updated_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY pulse_schedule
+    ADD CONSTRAINT pulse_schedule_updated_by_id_fkey FOREIGN KEY (updated_by_id) REFERENCES "user"(id) ON DELETE SET NULL;
+
+
+--
+-- Name: pulse_schedule pulse_schedule_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY pulse_schedule
+    ADD CONSTRAINT pulse_schedule_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pulse_schedule pulse_schedule_workflow_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY pulse_schedule
+    ADD CONSTRAINT pulse_schedule_workflow_id_fkey FOREIGN KEY (workflow_id) REFERENCES agent_workflow(id) ON DELETE CASCADE;
+
+
+--
+-- Name: rate_limit_policy rate_limit_policy_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rate_limit_policy
+    ADD CONSTRAINT rate_limit_policy_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id) ON DELETE CASCADE;
+
+
+--
+-- Name: rate_limit_policy rate_limit_policy_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rate_limit_policy
+    ADD CONSTRAINT rate_limit_policy_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE;
 
 
 --
@@ -6684,19 +7282,19 @@ ALTER TABLE ONLY sandbox
 
 
 --
--- Name: scim_group_mapping scim_group_mapping_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: scim_team_mapping scim_team_mapping_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY scim_group_mapping
-    ADD CONSTRAINT scim_group_mapping_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id) ON DELETE CASCADE;
+ALTER TABLE ONLY scim_team_mapping
+    ADD CONSTRAINT scim_team_mapping_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id) ON DELETE CASCADE;
 
 
 --
--- Name: scim_token scim_token_created_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: scim_token scim_token_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_token
-    ADD CONSTRAINT scim_token_created_by_id_fkey FOREIGN KEY (created_by_id) REFERENCES "user"(id) ON DELETE CASCADE;
+    ADD CONSTRAINT scim_token_created_by_fkey FOREIGN KEY (created_by) REFERENCES "user"(id) ON DELETE CASCADE;
 
 
 --
@@ -6748,6 +7346,14 @@ ALTER TABLE ONLY snapshot
 
 
 --
+-- Name: sso_saml_session sso_saml_session_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY sso_saml_session
+    ADD CONSTRAINT sso_saml_session_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE;
+
+
+--
 -- Name: standard_answer__standard_answer_category standard_answer__standard_answ_standard_answer_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6780,19 +7386,11 @@ ALTER TABLE ONLY team__connector_credential_pair
 
 
 --
--- Name: token_rate_limit__team token_rate_limit__team_rate_limit_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: team team_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY token_rate_limit__team
-    ADD CONSTRAINT token_rate_limit__team_rate_limit_id_fkey FOREIGN KEY (rate_limit_id) REFERENCES token_rate_limit(id);
-
-
---
--- Name: token_rate_limit__team token_rate_limit__team_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY token_rate_limit__team
-    ADD CONSTRAINT token_rate_limit__team_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(id);
+ALTER TABLE ONLY team
+    ADD CONSTRAINT team_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES "user"(id) ON DELETE SET NULL;
 
 
 --
@@ -6836,19 +7434,11 @@ ALTER TABLE ONLY tool
 
 
 --
--- Name: usage_reports usage_reports_report_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: usage_report usage_report_requestor_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY usage_reports
-    ADD CONSTRAINT usage_reports_report_name_fkey FOREIGN KEY (report_name) REFERENCES file_record(file_id);
-
-
---
--- Name: usage_reports usage_reports_requestor_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY usage_reports
-    ADD CONSTRAINT usage_reports_requestor_user_id_fkey FOREIGN KEY (requestor_user_id) REFERENCES "user"(id);
+ALTER TABLE ONLY usage_report
+    ADD CONSTRAINT usage_report_requestor_user_id_fkey FOREIGN KEY (requestor_user_id) REFERENCES "user"(id) ON DELETE SET NULL;
 
 
 --

@@ -63,7 +63,7 @@ dev.bat up
 | **What it does** | Provides an isolated environment where an AI agent builds web apps, documents, and presentations using your connected data |
 | **URL** | `/craft/v1` |
 | **Backend mode** | `SANDBOX_BACKEND=local` (default, uses filesystem directories - no Kubernetes needed) |
-| **Sandbox location** | `/tmp/onyx-sandboxes/` inside the `api_server` container |
+| **Sandbox location** | `/tmp/om-sandboxes/` inside the `api_server` container |
 | **Preview delivery** | Proxied through the API at `/api/build/sessions/{id}/webapp` (no extra ports needed) |
 | **Templates** | Baked into the image at build time via `scripts/setup_craft_templates.sh` |
 
@@ -81,7 +81,7 @@ dev.bat up
 |----------|---------|-------------|
 | `ENABLE_CRAFT` | `false` | Master toggle (build-time + runtime) |
 | `SANDBOX_BACKEND` | `local` | `local` for Docker Desktop, `kubernetes` for production |
-| `SANDBOX_BASE_PATH` | `/tmp/onyx-sandboxes` | Where sandbox directories are created |
+| `SANDBOX_BASE_PATH` | `/tmp/om-sandboxes` | Where sandbox directories are created |
 | `SANDBOX_IDLE_TIMEOUT_SECONDS` | `3600` | Auto-cleanup idle sandboxes after this many seconds |
 | `SANDBOX_MAX_CONCURRENT_PER_ORG` | `10` | Max concurrent sandboxes per organization |
 
@@ -110,7 +110,7 @@ dev.bat up
 
 - Ensure `ENABLE_CRAFT=true` is set as **both** a build arg and runtime env var
 - The image must be rebuilt (`--no-cache`) after changing this
-- If you use PostHog, the feature flag `onyx-craft-enabled` must be enabled for the user
+- If you use PostHog, the feature flag `om-craft-enabled` (name configurable with `OM_CRAFT_ENABLED_FLAG`) must be enabled for the user
 - Without PostHog (self-hosted default), the `ENABLE_CRAFT` env var is used directly
 
 ### Craft page redirects to /app
@@ -143,7 +143,7 @@ Browser
   |    └─ POST /api/build/sessions/{id}/messages  → api_server
   |         |
   |         └─ LocalSandboxManager
-  |              ├─ /tmp/onyx-sandboxes/{sandbox_id}/sessions/{session_id}/
+  |              ├─ /tmp/om-sandboxes/{sandbox_id}/sessions/{session_id}/
   |              ├─ opencode agent (stdin/stdout, ACP protocol)
   |              └─ Next.js dev server (proxied via /api/build/sessions/{id}/webapp)
   |

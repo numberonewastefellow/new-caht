@@ -36,8 +36,6 @@ from starlette.types import Send
 from om.auth.users import decode_anonymous_user_jwt_token
 from om.auth.utils import extract_tenant_from_auth_header
 from om.configs.constants import ANONYMOUS_USER_COOKIE_NAME
-from om.configs.constants import LEGACY_ANONYMOUS_USER_COOKIE_NAME
-from om.configs.constants import LEGACY_TENANT_ID_COOKIE_NAME
 from om.configs.constants import TENANT_ID_COOKIE_NAME
 from om.db.engine.sql_engine import is_valid_schema_name
 from om.redis.redis_pool import retrieve_auth_token_data_from_redis
@@ -99,9 +97,7 @@ async def resolve_tenant_id(request: Request) -> str:
 
     # 3. Anonymous access — only honoured when the operator has explicitly enabled it.
     if ALLOW_ANONYMOUS_TENANT_ACCESS:
-        anon_cookie = request.cookies.get(
-            ANONYMOUS_USER_COOKIE_NAME
-        ) or request.cookies.get(LEGACY_ANONYMOUS_USER_COOKIE_NAME)
+        anon_cookie = request.cookies.get(ANONYMOUS_USER_COOKIE_NAME)
         if anon_cookie:
             try:
                 payload = decode_anonymous_user_jwt_token(anon_cookie)
@@ -113,9 +109,7 @@ async def resolve_tenant_id(request: Request) -> str:
                     return _validated(str(anon_tenant))
 
     # 4. Explicit tenant cookie (front-end workaround for flows without a session token).
-    cookie_tenant = request.cookies.get(TENANT_ID_COOKIE_NAME) or request.cookies.get(
-        LEGACY_TENANT_ID_COOKIE_NAME
-    )
+    cookie_tenant = request.cookies.get(TENANT_ID_COOKIE_NAME)
     if cookie_tenant:
         return _validated(cookie_tenant)
 

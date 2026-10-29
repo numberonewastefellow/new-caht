@@ -174,7 +174,7 @@ NOTE: Always make sure everything is strictly typed (both in Python and Typescri
 
 ```
 backend/
-├── onyx/
+├── om/
 │   ├── auth/                    # Authentication & authorization
 │   ├── chat/                    # Chat functionality & LLM interactions
 │   ├── connectors/              # Data source connectors

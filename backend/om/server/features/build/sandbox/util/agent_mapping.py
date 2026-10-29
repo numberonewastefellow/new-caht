@@ -22,61 +22,61 @@ AGENT_MAPPING: dict[str, dict[str, AgentInfo]] = {
     "engineering": {
         "ic": {
             "name": "Jiwon Kang",
-            "email": "jiwon_kang@netherite-extraction.onyx.app",
+            "email": "jiwon_kang@netherite-extraction.virtualai.com",
         },
         "manager": {
             "name": "Javier Morales",
-            "email": "javier_morales@netherite-extraction.onyx.app",
+            "email": "javier_morales@netherite-extraction.virtualai.com",
         },
     },
     "sales": {
         "ic": {
             "name": "Megan Foster",
-            "email": "megan_foster@netherite-extraction.onyx.app",
+            "email": "megan_foster@netherite-extraction.virtualai.com",
         },
         "manager": {
             "name": "Valeria Cruz",
-            "email": "valeria_cruz@netherite-extraction.onyx.app",
+            "email": "valeria_cruz@netherite-extraction.virtualai.com",
         },
     },
     "product": {
         "ic": {
             "name": "Michael Anderson",
-            "email": "michael_anderson@netherite-extraction.onyx.app",
+            "email": "michael_anderson@netherite-extraction.virtualai.com",
         },
         "manager": {
             "name": "David Liu",
-            "email": "david_liu@netherite-extraction.onyx.app",
+            "email": "david_liu@netherite-extraction.virtualai.com",
         },
     },
     "marketing": {
         "ic": {
             "name": "Rahul Patel",
-            "email": "rahul_patel@netherite-extraction.onyx.app",
+            "email": "rahul_patel@netherite-extraction.virtualai.com",
         },
         "manager": {
             "name": "Olivia Reed",
-            "email": "olivia_reed@netherite-extraction.onyx.app",
+            "email": "olivia_reed@netherite-extraction.virtualai.com",
         },
     },
     "executives": {
         "ic": {
             "name": "Sarah Mitchell",
-            "email": "sarah_mitchell@netherite-extraction.onyx.app",
+            "email": "sarah_mitchell@netherite-extraction.virtualai.com",
         },
         "manager": {
             "name": "Sarah Mitchell",
-            "email": "sarah_mitchell@netherite-extraction.onyx.app",
+            "email": "sarah_mitchell@netherite-extraction.virtualai.com",
         },
     },
     "other": {
         "manager": {
             "name": "Ralf Schroeder",
-            "email": "ralf_schroeder@netherite-extraction.onyx.app",
+            "email": "ralf_schroeder@netherite-extraction.virtualai.com",
         },
         "ic": {
             "name": "John Carpenter",
-            "email": "john_carpenter@netherite-extraction.onyx.app",
+            "email": "john_carpenter@netherite-extraction.virtualai.com",
         },
     },
 }
@@ -84,55 +84,55 @@ AGENT_MAPPING: dict[str, dict[str, AgentInfo]] = {
 # Organization structure - maps managers to their direct reports
 ORGANIZATION_STRUCTURE: dict[str, dict[str, list[str]]] = {
     "engineering": {
-        "javier_morales@netherite-extraction.onyx.app": [
-            "tyler_jenkins@netherite-extraction.onyx.app",
-            "jiwon_kang@netherite-extraction.onyx.app",
-            "brooke_spencer@netherite-extraction.onyx.app",
-            "andre_robinson@netherite-extraction.onyx.app",
+        "javier_morales@netherite-extraction.virtualai.com": [
+            "tyler_jenkins@netherite-extraction.virtualai.com",
+            "jiwon_kang@netherite-extraction.virtualai.com",
+            "brooke_spencer@netherite-extraction.virtualai.com",
+            "andre_robinson@netherite-extraction.virtualai.com",
         ],
-        "isabella_torres@netherite-extraction.onyx.app": [
-            "ryan_murphy@netherite-extraction.onyx.app",
-            "jason_morris@netherite-extraction.onyx.app",
-            "kevin_sullivan@netherite-extraction.onyx.app",
+        "isabella_torres@netherite-extraction.virtualai.com": [
+            "ryan_murphy@netherite-extraction.virtualai.com",
+            "jason_morris@netherite-extraction.virtualai.com",
+            "kevin_sullivan@netherite-extraction.virtualai.com",
         ],
     },
     "sales": {
-        "valeria_cruz@netherite-extraction.onyx.app": [
-            "megan_foster@netherite-extraction.onyx.app",
-            "mina_park@netherite-extraction.onyx.app",
-            "james_choi@netherite-extraction.onyx.app",
-            "camila_vega@netherite-extraction.onyx.app",
+        "valeria_cruz@netherite-extraction.virtualai.com": [
+            "megan_foster@netherite-extraction.virtualai.com",
+            "mina_park@netherite-extraction.virtualai.com",
+            "james_choi@netherite-extraction.virtualai.com",
+            "camila_vega@netherite-extraction.virtualai.com",
         ],
-        "layla_farah@netherite-extraction.onyx.app": [
-            "arjun_mehta@netherite-extraction.onyx.app",
-            "sneha_reddy@netherite-extraction.onyx.app",
-            "irene_shen@netherite-extraction.onyx.app",
+        "layla_farah@netherite-extraction.virtualai.com": [
+            "arjun_mehta@netherite-extraction.virtualai.com",
+            "sneha_reddy@netherite-extraction.virtualai.com",
+            "irene_shen@netherite-extraction.virtualai.com",
         ],
     },
     "product": {
-        "david_liu@netherite-extraction.onyx.app": [
-            "michael_anderson@netherite-extraction.onyx.app",
-            "kenji_watanabe@netherite-extraction.onyx.app",
-            "sofia_ramirez@netherite-extraction.onyx.app",
+        "david_liu@netherite-extraction.virtualai.com": [
+            "michael_anderson@netherite-extraction.virtualai.com",
+            "kenji_watanabe@netherite-extraction.virtualai.com",
+            "sofia_ramirez@netherite-extraction.virtualai.com",
         ],
     },
     "marketing": {
-        "olivia_reed@netherite-extraction.onyx.app": [
-            "rahul_patel@netherite-extraction.onyx.app",
-            "yuna_lee@netherite-extraction.onyx.app",
-            "peter_yamamoto@netherite-extraction.onyx.app",
+        "olivia_reed@netherite-extraction.virtualai.com": [
+            "rahul_patel@netherite-extraction.virtualai.com",
+            "yuna_lee@netherite-extraction.virtualai.com",
+            "peter_yamamoto@netherite-extraction.virtualai.com",
         ],
     },
     "executives": {
-        "sarah_mitchell@netherite-extraction.onyx.app": [
-            "daniel_hughes@netherite-extraction.onyx.app",
-            "amanda_brooks@netherite-extraction.onyx.app",
-            "ananya_gupta@netherite-extraction.onyx.app",
+        "sarah_mitchell@netherite-extraction.virtualai.com": [
+            "daniel_hughes@netherite-extraction.virtualai.com",
+            "amanda_brooks@netherite-extraction.virtualai.com",
+            "ananya_gupta@netherite-extraction.virtualai.com",
         ],
     },
     "other": {
-        "ralf_schroeder@netherite-extraction.onyx.app": [
-            "john_carpenter@netherite-extraction.onyx.app",
+        "ralf_schroeder@netherite-extraction.virtualai.com": [
+            "john_carpenter@netherite-extraction.virtualai.com",
         ],
     },
 }

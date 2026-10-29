@@ -33,12 +33,12 @@ from om.connectors.slack.models import MessageType
             {"text": "bot+app", "bot_id": "B1", "app_id": "A1", "ts": "1.0"},
             SlackMessageFilterReason.BOT,
         ),
-        # DanswerBot Testing is explicitly allowed through
+        # OmBot Testing is explicitly allowed through
         (
             {
-                "text": "danswer test",
+                "text": "om test",
                 "bot_id": "B999",
-                "bot_profile": {"name": "DanswerBot Testing"},
+                "bot_profile": {"name": "OmBot Testing"},
                 "ts": "1.0",
             },
             None,
@@ -69,7 +69,7 @@ from om.connectors.slack.models import MessageType
         "bot_id_message",
         "app_id_message",
         "bot_and_app_id",
-        "danswerbot_testing_allowed",
+        "ombot_testing_allowed",
         "channel_join",
         "channel_leave",
         "pinned_item",

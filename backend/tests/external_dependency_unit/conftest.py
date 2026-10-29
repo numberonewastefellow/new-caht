@@ -85,3 +85,14 @@ def initialize_file_store() -> Generator[None, None, None]:
     """
     get_default_file_store().initialize()
     yield
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    from pathlib import Path
+
+    from tests.connector_accounts import skip_unprovisioned
+
+    # Only the connector tests talk to third-party accounts.
+    skip_unprovisioned(
+        items, Path(__file__).parent / "connectors", "backend/tests/daily/ACCOUNTS.md"
+    )

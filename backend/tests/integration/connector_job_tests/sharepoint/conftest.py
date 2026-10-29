@@ -41,10 +41,10 @@ def sharepoint_test_env_setup() -> Generator[SharepointTestEnvSetupTuple]:
         "PERM_SYNC_SHAREPOINT_CERTIFICATE_PASSWORD"
     )
     sp_directory_id = os.environ.get("PERM_SYNC_SHAREPOINT_DIRECTORY_ID")
-    sharepoint_sites = "https://danswerai.sharepoint.com/sites/Permisisonsync"
-    admin_email = "admin@onyx.app"
-    user1_email = "subash@onyx.app"
-    user2_email = "raunak@onyx.app"
+    sharepoint_sites = "https://virtualai.sharepoint.com/sites/Permisisonsync"
+    admin_email = "admin@virtualai.com"
+    user1_email = "subash@virtualai.com"
+    user2_email = "raunak@virtualai.com"
 
     if not sp_private_key or not sp_certificate_password or not sp_directory_id:
         pytest.skip("Skipping test because required environment variables are not set")

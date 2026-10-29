@@ -168,7 +168,7 @@ cd office-mcp-server
 docker compose up -d
 
 # Connect to VertualAI network (required for API server to reach it)
-docker network connect onyx_default office-mcp-server
+docker network connect virtualai_default office-mcp-server
 
 # Verify it's running (should show 91 tools)
 docker exec office-mcp-server python -c "
@@ -433,7 +433,7 @@ python create_workflows.py --list
 |-------|-----|
 | MCP server won't start | Check `dev logs office` or `docker compose logs`. Ensure port 8100 is free. |
 | Tool discovery returns 0 tools | Ensure the MCP server is running. Test: `curl -X POST http://localhost:8100/mcp -H "Accept: application/json, text/event-stream" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}},"id":1}'` |
-| API server can't reach MCP server | Run `docker network connect onyx_default office-mcp-server` or use `dev up` which does this automatically |
+| API server can't reach MCP server | Run `docker network connect virtualai_default office-mcp-server` or use `dev up` which does this automatically |
 | "421 Misdirected Request" | DNS rebinding protection issue. The server disables this by default — rebuild with `dev build office` |
 | Tool calls return 404 | The MCP server URL must include `/mcp` path. Check that the registered URL is `http://office-mcp-server:8100/mcp` (not just port 8100) |
 | PDF conversion fails | LibreOffice must be installed in the container. Check: `docker exec office-mcp-server libreoffice --version`. Rebuild if missing: `dev build office` |

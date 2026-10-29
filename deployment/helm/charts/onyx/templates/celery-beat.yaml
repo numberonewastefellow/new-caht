@@ -87,7 +87,7 @@ spec:
                 - >
                     python om/background/celery/celery_k8s_probe.py
                     --probe readiness
-                    --filename /tmp/onyx_k8s_beat_readiness.txt
+                    --filename /tmp/om_k8s_beat_readiness.txt
           livenessProbe:
             {{ .Values.celery_shared.livenessProbe | toYaml | nindent 12}}
             exec:
@@ -97,7 +97,7 @@ spec:
                 - >
                     python om/background/celery/celery_k8s_probe.py
                     --probe liveness
-                    --filename /tmp/onyx_k8s_beat_liveness.txt
+                    --filename /tmp/om_k8s_beat_liveness.txt
       {{- with .Values.celery_beat.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}

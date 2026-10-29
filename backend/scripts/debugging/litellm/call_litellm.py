@@ -32,7 +32,7 @@ API_VERSION = "2025-03-01-preview"  # For Azure, must be 2025-03-01-preview
 MESSAGES = [
     {"role": "user", "content": "hi"},
     {"role": "assistant", "content": "Hello! How can I help you today?"},
-    {"role": "user", "content": "what is onyx? search internally and the web"},
+    {"role": "user", "content": "what is virtualai? search internally and the web"},
 ]
 
 stream = litellm.completion(

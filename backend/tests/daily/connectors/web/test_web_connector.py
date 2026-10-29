@@ -1,3 +1,4 @@
+import os
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
@@ -81,12 +82,17 @@ def test_web_connector_bot_protection() -> None:
     assert MERCURY_EXPECTED_QUOTE in doc.sections[0].text
 
 
+@pytest.mark.skipif(
+    not os.environ.get("OM_TEST_WEBSITE"),
+    reason="needs a site of yours that redirects the bare domain to www: set OM_TEST_WEBSITE "
+    "(for example https://virtualai.com), see backend/tests/daily/ACCOUNTS.md",
+)
 def test_web_connector_recursive_www_redirect() -> None:
-    # Check that https://onyx.app can be recursed if re-directed to www.onyx.app
+    # Check that the bare domain can be recursed if it re-directs to www.<domain>
     # Run in thread pool to avoid conflict with pytest-asyncio's event loop
     def _run_connector() -> list[Document]:
         connector = WebConnector(
-            base_url="https://onyx.app",
+            base_url=os.environ["OM_TEST_WEBSITE"],
             web_connector_type=WEB_CONNECTOR_VALID_SETTINGS.RECURSIVE.value,
         )
         return [

@@ -440,7 +440,7 @@ class SelectionAnalysis:
         """Extract the content returns by the VertualAI API
 
         Args:
-            contents (dict): The onyx response content
+            contents (dict): The VertualAI response content
 
         Returns:
             dict: Data regarding the selected sources document

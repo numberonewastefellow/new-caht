@@ -51,7 +51,7 @@ ACP_PROTOCOL_VERSION = 1
 
 # Default client info
 DEFAULT_CLIENT_INFO = {
-    "name": "onyx-sandbox",
+    "name": "om-sandbox",
     "title": "VertualAI Sandbox Agent Client",
     "version": "1.0.0",
 }

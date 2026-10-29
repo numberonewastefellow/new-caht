@@ -22,7 +22,7 @@ from om.utils.web_content import title_from_url
 logger = setup_logger()
 
 DEFAULT_TIMEOUT_SECONDS = 15
-DEFAULT_USER_AGENT = "OmWebCrawler/1.0 (+https://www.onyx.app)"
+DEFAULT_USER_AGENT = "OmWebCrawler/1.0 (+https://virtualai.com)"
 DEFAULT_MAX_PDF_SIZE_BYTES = 50 * 1024 * 1024  # 50 MB
 DEFAULT_MAX_HTML_SIZE_BYTES = 20 * 1024 * 1024  # 20 MB
 

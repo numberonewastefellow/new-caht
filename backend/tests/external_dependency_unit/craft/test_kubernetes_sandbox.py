@@ -3,7 +3,7 @@
 This test requires:
 - A running Kubernetes cluster (kind, minikube, or real cluster)
 - The SANDBOX_BACKEND=kubernetes environment variable
-- The sandbox namespace to exist (default: onyx-sandboxes)
+- The sandbox namespace to exist (default: om-sandboxes)
 - Service accounts for sandbox (sandbox-runner, sandbox-file-sync)
 
 Run with:

@@ -586,7 +586,7 @@ done
             # This causes "exec /bin/sh: argument list too long" errors.
             enable_service_links=False,
             # Node selection for sandbox nodes
-            node_selector={"onyx.app/workload": "sandbox"},
+            node_selector={"om.app/workload": "sandbox"},
             tolerations=[
                 client.V1Toleration(
                     key="workload",
@@ -616,9 +616,9 @@ done
                 namespace=self._namespace,
                 labels={
                     "app.kubernetes.io/component": "sandbox",
-                    "app.kubernetes.io/managed-by": "onyx",
-                    "onyx.app/sandbox-id": sandbox_id,
-                    "onyx.app/tenant-id": tenant_id,
+                    "app.kubernetes.io/managed-by": "om",
+                    "om.app/sandbox-id": sandbox_id,
+                    "om.app/tenant-id": tenant_id,
                 },
             ),
             spec=pod_spec,
@@ -663,14 +663,14 @@ done
                 namespace=self._namespace,
                 labels={
                     "app.kubernetes.io/component": "sandbox",
-                    "app.kubernetes.io/managed-by": "onyx",
-                    "onyx.app/sandbox-id": sandbox_id_str,
-                    "onyx.app/tenant-id": tenant_id_str,
+                    "app.kubernetes.io/managed-by": "om",
+                    "om.app/sandbox-id": sandbox_id_str,
+                    "om.app/tenant-id": tenant_id_str,
                 },
             ),
             spec=client.V1ServiceSpec(
                 type="ClusterIP",
-                selector={"onyx.app/sandbox-id": sandbox_id_str},
+                selector={"om.app/sandbox-id": sandbox_id_str},
                 ports=ports,
             ),
         )

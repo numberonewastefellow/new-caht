@@ -106,7 +106,7 @@ if os.environ.get("POSTGRES_CONTROL_HOST"):
 if not control_db_url and os.environ.get("POSTGRES_HOST"):
     host = os.environ.get("POSTGRES_HOST")
     port = os.environ.get("POSTGRES_PORT", "5432")
-    db = os.environ.get("POSTGRES_DB", "danswer")
+    db = os.environ.get("POSTGRES_DB", "postgres")
     user = os.environ.get("POSTGRES_USER", "postgres")
     password = os.environ.get("POSTGRES_PASSWORD", "")
     if password:

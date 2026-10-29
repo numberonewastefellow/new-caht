@@ -6,7 +6,7 @@ import pytest
 
 @pytest.fixture
 def jira_connector_config() -> dict[str, Any]:
-    jira_base_url = os.environ.get("JIRA_BASE_URL", "https://danswerai.atlassian.net")
+    jira_base_url = os.environ.get("JIRA_BASE_URL", "https://virtualai.atlassian.net")
 
     return {
         "jira_base_url": jira_base_url,
@@ -17,7 +17,7 @@ def jira_connector_config() -> dict[str, Any]:
 
 @pytest.fixture
 def jira_credential_json() -> dict[str, Any]:
-    user_email = os.environ.get("JIRA_ADMIN_USER_EMAIL", "chris@onyx.app")
+    user_email = os.environ.get("JIRA_ADMIN_USER_EMAIL", "chris@virtualai.com")
     api_token = os.environ.get("JIRA_ADMIN_API_TOKEN")
 
     assert user_email, "JIRA_ADMIN_USER_EMAIL environment variable is required"

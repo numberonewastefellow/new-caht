@@ -22,13 +22,11 @@ export const MCP_INTERNAL_URL =
 export const SERVER_SIDE_ONLY__AUTH_TYPE = (process.env.AUTH_TYPE ||
   AuthType.BASIC) as AuthType;
 
-export const NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED =
-  process.env.NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED?.toLowerCase() ===
+export const NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_OM_POWERED =
+  process.env.NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_OM_POWERED?.toLowerCase() ===
   "true";
 
 export const TENANT_ID_COOKIE_NAME = "om_tid";
-// Cookie name used before the rename: still read, never set.
-export const LEGACY_TENANT_ID_COOKIE_NAME = "onyx_tid";
 
 export const GMAIL_AUTH_IS_ADMIN_COOKIE_NAME = "gmail_auth_is_admin";
 

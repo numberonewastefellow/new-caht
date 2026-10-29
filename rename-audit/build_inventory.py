@@ -13,6 +13,7 @@ Usage:  python rename-audit/build_inventory.py
 import csv
 import re
 import subprocess
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -20,7 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = Path(__file__).resolve().parent
 
 # `(?<!stan)` skips StandardAnswer ("stanDARD ANSWER" contains "danswer").
-PATTERN = re.compile(r"(?<!stan)(onyx|danswer)", re.IGNORECASE)
+PATTERN = re.compile(r"(onyx|(?<![A-Za-z])danswer)", re.IGNORECASE)
 
 SKIP_PREFIXES = (
     "graphify-out/",
@@ -78,12 +79,59 @@ def classify(path: str, line: str) -> tuple[str, str]:
     return "S", "other"
 
 
+# --check: anything outside this list fails. Phase 6/7 items stay listed until their plans run.
+ALLOWED_FILES = {
+    "NOTICE.md",
+    "README.md",
+    "backend/scripts/migrate_file_store_names.py",  # one-off; deleted after the live run
+    "AGENT_RENAME_STATUS.md",
+    "PERSONA_RENAME_HANDOFF.md",
+    "SANDBOX_CODING_UPGRADE.md",
+    "TODO_manual_ui_check_and_onyx_phase5.md",
+    "TODO_replace_recommended_models_link.md",
+    "TODO_MD_VESPA_VS_OPENSEARCH_MIGRATION_COMPARISON.MD",
+    "TODO_MD_INDEX_REINDEX_IMPLEMENTATION_PLAN.MD",
+    "AGENTS.md",  # upstream attribution + pointer to DO_NOT_RENAME.md
+    "LICENSE",
+    "web/src/lib/extension/constants.ts",  # Phase 7: extension storage keys
+    "web/src/components/context/NRFPreferencesContext.tsx",
+    "backend/tests/workflow_creator/workflows/28_drug_development.json",  # fictional sponsor name
+    # tests that assert the OLD names are rejected / that the one-off script maps them
+    "backend/tests/unit/om/auth/test_pat_prefixes.py",
+    "backend/tests/unit/om/tenancy/test_tenant_cookies.py",
+    "backend/tests/unit/om/file_processing/test_metadata_names.py",
+    "backend/tests/unit/om/utils/test_optional_outbound.py",
+    "backend/tests/unit/scripts/test_migrate_file_store_names.py",
+    "backend/tests/daily/connectors/salesforce/test_salesforce_data.json",  # recorded third-party data
+}
+ALLOWED_PREFIXES = (
+    "deployment/",  # Phase 6
+    "widget/",
+    "extensions/",
+    "desktop/",  # Phase 7
+    ".github/",  # Phase 7 (CI secrets)
+    "backend/tests/unit/migration_safety/",  # guard tests name the old packages on purpose
+    "backend/tests/route_rename/",  # recorded "before" snapshots
+    "rewrite-plans/",  # historical clean-room plans, name the upstream product on purpose
+    "docs/scheduled-workflows/",
+    "examples/widget/",  # Phase 7
+)
+# Lines that are fine anywhere: the checkout directory name and the required upstream notice.
+ALLOWED_LINE = re.compile(r"danswer20022026|Onyx / Danswer project|NOTICE\.md")
+ALLOWED_CATEGORIES = {("X", "ci-secret"), ("P", "client-identity"), ("P", "deploy-resource-name"), ("P", "compose-volume-or-project")}
+
+
+def is_allowed(path: str, cls: str, cat: str, text: str = "") -> bool:
+    return ALLOWED_LINE.search(text) is not None or path in ALLOWED_FILES or path.startswith(ALLOWED_PREFIXES) or (cls, cat) in ALLOWED_CATEGORIES
+
+
 def tracked_files() -> list[str]:
     out = subprocess.run(["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, check=True).stdout
     return [p for p in out.decode("utf-8", "replace").split("\0") if p]
 
 
 def main() -> None:
+    check = "--check" in sys.argv
     rows: list[tuple[str, int, str, str, str]] = []
     path_hits: list[str] = []
     for rel in tracked_files():
@@ -131,6 +179,12 @@ def main() -> None:
     lines += [f"| {d} | {n} |" for d, n in by_top.most_common(20)]
     (OUT / "SUMMARY.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
+    if check:
+        bad = [r for r in rows if not is_allowed(r[0], r[2], r[3], r[4])]
+        for f, n, _c, cat, text in bad[:300]:
+            print(f"NOT ALLOWED {f}:{n} [{cat}] {text[:100]}")
+        print(f"--check: {len(bad)} hit(s) outside the allowlist")
+        sys.exit(1 if bad else 0)
 
 
 if __name__ == "__main__":

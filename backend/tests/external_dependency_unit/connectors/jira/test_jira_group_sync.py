@@ -18,73 +18,73 @@ from tests.daily.connectors.confluence.models import ExternalUserGroupSet
 # Search up "ENV vars for local and Github tests", and find the Jira relevant key-value pairs.
 # Required env vars: JIRA_USER_EMAIL, JIRA_API_TOKEN
 
-# Expected groups from the danswerai.atlassian.net Jira instance
+# Expected groups from the virtualai.atlassian.net Jira instance
 # Note: These groups are shared with Confluence since they're both Atlassian products
 # App accounts (bots, integrations) are filtered out
 _EXPECTED_JIRA_GROUPS = [
     ExternalUserGroupSet(
         id="Yuhong Only No Chris Allowed",
-        user_emails={"yuhong@onyx.app"},
+        user_emails={"yuhong@virtualai.com"},
         gives_anyone_access=False,
     ),
     ExternalUserGroupSet(
-        id="confluence-admins-danswerai",
-        user_emails={"chris@onyx.app", "yuhong@onyx.app"},
+        id="confluence-admins-virtualai",
+        user_emails={"chris@virtualai.com", "yuhong@virtualai.com"},
         gives_anyone_access=False,
     ),
     ExternalUserGroupSet(
-        id="confluence-user-access-admins-danswerai",
-        user_emails={"hagen@danswer.ai"},
+        id="confluence-user-access-admins-virtualai",
+        user_emails={"hagen@virtualai.com"},
         gives_anyone_access=False,
     ),
     ExternalUserGroupSet(
-        id="confluence-users-danswerai",
+        id="confluence-users-virtualai",
         user_emails={
-            "chris@onyx.app",
-            "founders@onyx.app",
-            "hagen@danswer.ai",
-            "pablo@onyx.app",
-            "yuhong@onyx.app",
+            "chris@virtualai.com",
+            "founders@virtualai.com",
+            "hagen@virtualai.com",
+            "pablo@virtualai.com",
+            "yuhong@virtualai.com",
         },
         gives_anyone_access=False,
     ),
     ExternalUserGroupSet(
-        id="jira-admins-danswerai",
-        user_emails={"founders@onyx.app", "hagen@danswer.ai", "pablo@onyx.app"},
+        id="jira-admins-virtualai",
+        user_emails={"founders@virtualai.com", "hagen@virtualai.com", "pablo@virtualai.com"},
         gives_anyone_access=False,
     ),
     ExternalUserGroupSet(
-        id="jira-user-access-admins-danswerai",
-        user_emails={"hagen@danswer.ai"},
+        id="jira-user-access-admins-virtualai",
+        user_emails={"hagen@virtualai.com"},
         gives_anyone_access=False,
     ),
     ExternalUserGroupSet(
-        id="jira-users-danswerai",
+        id="jira-users-virtualai",
         user_emails={
-            "chris@onyx.app",
-            "founders@onyx.app",
-            "hagen@danswer.ai",
-            "pablo@onyx.app",
+            "chris@virtualai.com",
+            "founders@virtualai.com",
+            "hagen@virtualai.com",
+            "pablo@virtualai.com",
         },
         gives_anyone_access=False,
     ),
     ExternalUserGroupSet(
         id="org-admins",
         user_emails={
-            "chris@onyx.app",
-            "founders@onyx.app",
-            "yuhong@onyx.app",
+            "chris@virtualai.com",
+            "founders@virtualai.com",
+            "yuhong@virtualai.com",
         },
         gives_anyone_access=False,
     ),
     ExternalUserGroupSet(
-        id="bitbucket-admins-onyxai",
-        user_emails={"founders@onyx.app"},  # no Oauth, we skip "app" account in jira
+        id="bitbucket-admins-virtualai",
+        user_emails={"founders@virtualai.com"},  # no Oauth, we skip "app" account in jira
         gives_anyone_access=False,
     ),
     ExternalUserGroupSet(
-        id="bitbucket-users-onyxai",
-        user_emails={"founders@onyx.app"},  # no Oauth, we skip "app" account in jira
+        id="bitbucket-users-virtualai",
+        user_emails={"founders@virtualai.com"},  # no Oauth, we skip "app" account in jira
         gives_anyone_access=False,
     ),
 ]

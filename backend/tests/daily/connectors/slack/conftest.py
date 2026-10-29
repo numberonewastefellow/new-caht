@@ -11,6 +11,8 @@ from om.connectors.slack.connector import SlackConnector
 from shared_configs.contextvars import get_current_tenant_id
 
 
+REQUIRES_ANY_ENV = ["SLACK_BOT_TOKEN", "OM_BOT_SLACK_BOT_TOKEN"]  # see tests/connector_accounts.py
+
 @pytest.fixture
 def mock_slack_client() -> MagicMock:
     mock = MagicMock(spec=WebClient)

@@ -1,4 +1,4 @@
-"""Regenerate backend/alembic/versions/0001_baseline_schema.sql with the renames folded in.
+"""Regenerate backend/alembic/versions/0001_om_baseline.sql (the squashed baseline) from a fully migrated database.
 
 The baseline must create the FINAL object names (agent, team, ombot_flow, ...) so a fresh install
 needs no rename step. It is generated from a database, never edited by hand (revision 0004 also
@@ -27,18 +27,16 @@ import importlib.util  # noqa: E402
 # Reuse the exact splitter the baseline migration itself uses (load the migration file by path).
 _spec = importlib.util.spec_from_file_location(
     "baseline_migration",
-    Path(__file__).resolve().parent.parent / "backend" / "alembic" / "versions" / "0001_baseline_schema.py",
+    Path(__file__).resolve().parent.parent / "backend" / "alembic" / "versions" / "0001_om_baseline.py",
 )
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
 split_sql_statements = _mod._split_statements
 
 CHANGELOG = (
-    "-- Renames folded into this baseline (so a fresh install gets the final names directly):\n"
-    "--   Project->Workspace, UserFile->KnowledgeFile (earlier), Persona->Agent (0003_agent_rename),\n"
-    "--   UserGroup->Team incl. BIGINT ids (0004_team_rename), chat_session.onyxbot_flow->ombot_flow (0008).\n"
-    "-- Regenerated from a database with rename-audit/gen_baseline_sql.py; revisions 0003/0004_team_rename/0008\n"
-    "-- detect the final names and skip themselves, so existing databases are unaffected.\n"
+    "-- Squashed om baseline: generated from a database migrated to the final schema with\n"
+    "-- rename-audit/gen_baseline_sql.py. It holds the final object names, the Pulse tables and\n"
+    "-- the seed rows; there is no earlier history to replay.\n"
 )
 
 
@@ -47,14 +45,12 @@ def main(old_path: str, schema_path: str, seed_path: str, out_path: str) -> None
     schema = Path(schema_path).read_text(encoding="utf-8")
     seed = Path(seed_path).read_text(encoding="utf-8")
 
-    # Header: everything in the old file before the (empty) schema sections.
-    marker = "--\n-- Name: public; Type: SCHEMA"
-    header = old[: old.index(marker)].rstrip("\n") + "\n"
-    header = header.replace(
-        "-- pg_trgm is used by KG trigram indexes",
-        CHANGELOG + "-- pg_trgm is used by KG trigram indexes",
-        1,
-    )
+    # Header: first line + changelog + everything from the pg_trgm line up to the first real object.
+    first = old.split("\n", 1)[0]
+    fn = "--\n-- Name: update_kg_entity_name(); Type: FUNCTION"
+    keep_from = old.index("-- pg_trgm is used by KG trigram indexes")
+    header = first + "\n" + CHANGELOG + old[keep_from : old.index(fn)].rstrip("\n") + "\n"
+
 
     # Body: from the first real object (the KG trigger function) to the end of the schema dump.
     start = schema.index("--\n-- Name: update_kg_entity_name(); Type: FUNCTION")

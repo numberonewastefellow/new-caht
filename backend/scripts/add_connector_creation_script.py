@@ -5,7 +5,7 @@ import requests
 
 API_SERVER_URL = "http://localhost:3000"  # Adjust this to your VertualAI server URL
 HEADERS = {"Content-Type": "application/json"}
-API_KEY = "onyx-api-key"  # API key here, if auth is enabled
+API_KEY = "om-api-key"  # API key here, if auth is enabled
 
 
 def create_connector(

@@ -1,5 +1,6 @@
 """Utility functions for Build Mode feature announcements and file validation."""
 
+import os
 import re
 from pathlib import Path
 
@@ -264,9 +265,10 @@ def validate_file(
 # Build Mode Feature Announcements
 # =============================================================================
 
-# PostHog feature flag key for enabling VertualAI Craft (cloud rollout control)
+# PostHog feature flag key for enabling VertualAI Craft (cloud rollout control). Only consulted when
+# PostHog is configured; the name is configurable so it can match the flag in your PostHog project.
 # Flag logic: True = enabled, False/null/not found = disabled
-OM_CRAFT_ENABLED_FLAG = "onyx-craft-enabled"
+OM_CRAFT_ENABLED_FLAG = os.environ.get("OM_CRAFT_ENABLED_FLAG") or "om-craft-enabled"
 
 # PostHog feature flag key for controlling whether a user has usage limits
 # Flag logic: True = user has usage limits (rate limits apply), False/null/not found = no limits (unlimited usage)
@@ -280,7 +282,7 @@ def is_om_craft_enabled(user: User) -> bool:
     """
     Check if VertualAI Craft (Build Mode) is enabled for the user.
 
-    Flag logic for "onyx-craft-enabled":
+    Flag logic for OM_CRAFT_ENABLED_FLAG ("om-craft-enabled" by default):
     - Flag = True → enabled (VertualAI Craft is available)
     - Flag = False → disabled (VertualAI Craft is not available)
     - Flag = null/not found → disabled (VertualAI Craft is not available)

@@ -1,4 +1,4 @@
-# How Search Works — VertualAI/Danswer (Vespa) — Detailed Reference
+# How Search Works — VertualAI (Vespa) — Detailed Reference
 
 A single, example-driven explanation of the whole search flow: **keyword (BM25)**,
 **semantic (vector/similarity)**, **hybrid**, the **Vespa ranking profiles**, the engine
@@ -59,7 +59,7 @@ and `title` fields. In the YQL the lexical clause is
 
 - Functions in ranking: `bm25(content)`, `bm25(title)`.
 - A **pure-keyword** profile exists: `admin_search` → `bm25(content) + 5*bm25(title)`
-  (title-heavy; used by the admin doc explorer). See danswer_chunk.sd.jinja:368.
+  (title-heavy; used by the admin doc explorer). See the chunk schema template:368.
 
 **Example.** Query `"JCPOA terms"` against the Iran article scores high on BM25 because the
 exact tokens appear in the text; a football chunk scores ~0 (no token overlap).
@@ -109,7 +109,7 @@ inside both profiles. The two profiles differ **only in first-phase** (see 1.5).
 
 This is Vespa's own two-stage ranking — it is what people loosely call the engine "rerank",
 and it is **always on** (there is no cross-encoder; that was removed — see §3). Formulas are
-the exact expressions from `danswer_chunk.sd.jinja`.
+the exact expressions from `the chunk schema template`.
 
 **First-phase** (cheap, run on all matches to pick the top `rerank-count: 1000`):
 - semantic profile: `tcr*closeness(title_embedding) + (1-tcr)*closeness(embeddings)`

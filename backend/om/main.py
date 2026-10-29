@@ -313,8 +313,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     # Initialize tracing if credentials are provided
     setup_tracing()
 
-    # fill up Postgres connection pools
-    await warm_up_connections()
+    # fill up Postgres connection pools. Only warm up to the pool size: overflow
+    # connections are closed on return anyway, and with several API workers
+    # warming more than that would just spike connections at boot.
+    warm_up_count = min(20, POSTGRES_API_SERVER_POOL_SIZE)
+    await warm_up_connections(
+        sync_connections_to_warm_up=warm_up_count,
+        async_connections_to_warm_up=warm_up_count,
+    )
 
     if not MULTI_TENANT:
         # We cache this at the beginning so there is no delay in the first telemetry

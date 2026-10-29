@@ -683,7 +683,7 @@ class ConnectorCredentialPair(Base):
 
     # source type (defined in the connector's `source` field)
     # E.g. for google_drive perm sync:
-    # {"customer_id": "123567", "company_domain": "@onyx.app"}
+    # {"customer_id": "123567", "company_domain": "@virtualai.com"}
     auto_sync_options: Mapped[dict[str, Any] | None] = mapped_column(
         postgresql.JSONB(), nullable=True
     )

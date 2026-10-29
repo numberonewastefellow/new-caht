@@ -54,3 +54,11 @@ def client() -> Generator[TestClient, None, None]:
 
     # Clean up dependency overrides
     app.dependency_overrides.clear()
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    from pathlib import Path
+
+    from tests.connector_accounts import skip_unprovisioned
+
+    skip_unprovisioned(items, Path(__file__).parent, "backend/tests/daily/ACCOUNTS.md")

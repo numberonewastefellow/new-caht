@@ -87,7 +87,7 @@ export default function AdminSchedulesPage() {
   return (
     <>
       <AdminPageTitle
-        title="Schedules"
+        title="Pulse (Schedules)"
         icon={SvgClock}
         description="All users' scheduled workflows (Pulse). You can edit, pause, resume and delete any schedule. It stays its creator's: runs keep executing as them, they keep access, and they are notified of your changes."
       />

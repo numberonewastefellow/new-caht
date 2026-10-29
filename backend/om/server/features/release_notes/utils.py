@@ -14,7 +14,7 @@ from om.db.release_notes import create_release_notifications_for_versions
 from om.redis.redis_pool import get_shared_redis_client
 from om.server.features.release_notes.constants import AUTO_REFRESH_THRESHOLD_SECONDS
 from om.server.features.release_notes.constants import FETCH_TIMEOUT
-from om.server.features.release_notes.constants import GITHUB_CHANGELOG_RAW_URL
+from om.server.features.release_notes.constants import RELEASE_NOTES_CHANGELOG_URL
 from om.server.features.release_notes.constants import REDIS_CACHE_TTL
 from om.server.features.release_notes.constants import REDIS_KEY_ETAG
 from om.server.features.release_notes.constants import REDIS_KEY_FETCHED_AT
@@ -193,6 +193,9 @@ def ensure_release_notes_fresh_and_notify(db_session: Session) -> None:
     Since all users will trigger this via notification fetch,
     uses Redis lock to prevent concurrent GitHub requests when cache is stale.
     """
+    if not RELEASE_NOTES_CHANGELOG_URL:
+        return
+
     if not is_cache_stale():
         return
 
@@ -220,7 +223,7 @@ def ensure_release_notes_fresh_and_notify(db_session: Session) -> None:
 
         try:
             response = httpx.get(
-                GITHUB_CHANGELOG_RAW_URL,
+                RELEASE_NOTES_CHANGELOG_URL,
                 headers=headers,
                 timeout=FETCH_TIMEOUT,
                 follow_redirects=True,

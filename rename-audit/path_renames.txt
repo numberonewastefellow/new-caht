@@ -73,6 +73,3 @@ deployment/terraform/modules/aws/onyx/variables.tf
 deployment/terraform/modules/aws/onyx/versions.tf
 extensions/chrome/src/pages/onyx_home.html
 extensions/chrome/src/pages/onyx_home.js
-web/src/app/admin/standard-answers/StandardAnswerForm.tsx
-web/src/components/standardAnswers/StandardAnswerCategoryDropdown.tsx
-web/src/components/standardAnswers/getStandardAnswerCategories.tsx

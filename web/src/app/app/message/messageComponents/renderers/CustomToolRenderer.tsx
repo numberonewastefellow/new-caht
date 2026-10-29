@@ -1,5 +1,10 @@
 import React, { useEffect, useMemo } from "react";
-import { FiExternalLink, FiDownload, FiTool } from "react-icons/fi";
+import {
+  FiExternalLink,
+  FiDownload,
+  FiTool,
+  FiAlertCircle,
+} from "react-icons/fi";
 import {
   PacketType,
   CustomToolPacket,
@@ -27,6 +32,10 @@ function constructCustomToolState(packets: CustomToolPacket[]) {
   const responseType = latestDelta?.response_type || null;
   const data = latestDelta?.data;
   const fileIds = latestDelta?.file_ids || null;
+  // MCP reports tool failures in-band: the call returns normally and the
+  // payload is flagged instead. Without this the UI renders a rejected call
+  // exactly like a successful one.
+  const isError = Boolean((data as Record<string, unknown> | null)?.is_error);
 
   const isRunning = Boolean(toolStart && !toolEnd);
   const isComplete = Boolean(toolStart && toolEnd);
@@ -38,6 +47,7 @@ function constructCustomToolState(packets: CustomToolPacket[]) {
     fileIds,
     isRunning,
     isComplete,
+    isError,
   };
 }
 
@@ -47,8 +57,15 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
   renderType,
   children,
 }) => {
-  const { toolName, responseType, data, fileIds, isRunning, isComplete } =
-    constructCustomToolState(packets);
+  const {
+    toolName,
+    responseType,
+    data,
+    fileIds,
+    isRunning,
+    isComplete,
+    isError,
+  } = constructCustomToolState(packets);
 
   useEffect(() => {
     if (isComplete) {
@@ -58,15 +75,16 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
 
   const status = useMemo(() => {
     if (isComplete) {
+      if (isError) return `${toolName} failed`;
       if (responseType === "image") return `${toolName} returned images`;
       if (responseType === "csv") return `${toolName} returned a file`;
       return `${toolName} completed`;
     }
     if (isRunning) return `${toolName} running...`;
     return null;
-  }, [toolName, responseType, isComplete, isRunning]);
+  }, [toolName, responseType, isComplete, isRunning, isError]);
 
-  const icon = FiTool;
+  const icon = isError ? FiAlertCircle : FiTool;
 
   if (renderType === RenderType.COMPACT) {
     return children([
@@ -144,7 +162,13 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
 
           {/* JSON/Text responses */}
           {data !== undefined && data !== null && (
-            <div className="text-xs bg-gray-50 dark:bg-gray-800 p-3 rounded border max-h-96 overflow-y-auto font-mono whitespace-pre-wrap break-all">
+            <div
+              className={`text-xs p-3 rounded border max-h-96 overflow-y-auto font-mono whitespace-pre-wrap break-all ${
+                isError
+                  ? "bg-status-error-01 border-status-error-03 text-status-error-05"
+                  : "bg-gray-50 dark:bg-gray-800"
+              }`}
+            >
               {typeof data === "string" ? data : JSON.stringify(data, null, 2)}
             </div>
           )}

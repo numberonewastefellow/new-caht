@@ -7,7 +7,7 @@ from enum import Enum
 
 OM_DEFAULT_APPLICATION_NAME = "VertualAI"
 OM_DISCORD_URL = "https://discord.gg/4NA5SbzrWb"
-OM_UTM_SOURCE = "onyx_app"
+OM_UTM_SOURCE = "om_app"
 SLACK_USER_TOKEN_PREFIX = "xoxp-"
 SLACK_BOT_TOKEN_PREFIX = "xoxb-"
 OM_EMAILABLE_LOGO_MAX_DIM = 512
@@ -30,12 +30,8 @@ PUBLIC_API_TAGS: list[str | Enum] = ["public"]
 FASTAPI_USERS_AUTH_COOKIE_NAME = (
     "fastapiusersauth"  # Currently a constant, but logic allows for configuration
 )
-# Browser cookies. The legacy names (from the upstream project) are still READ so sessions that
-# predate the rename keep working; only the om names are ever set.
 TENANT_ID_COOKIE_NAME = "om_tid"  # tenant id - for workaround cases
 ANONYMOUS_USER_COOKIE_NAME = "om_anonymous_user"
-LEGACY_TENANT_ID_COOKIE_NAME = "onyx_tid"
-LEGACY_ANONYMOUS_USER_COOKIE_NAME = "onyx_anonymous_user"
 
 # ID used in UserInfo API responses for anonymous users (not a UUID, just a string identifier)
 ANONYMOUS_USER_INFO_ID = "__anonymous_user__"
@@ -52,13 +48,8 @@ SECTION_SEPARATOR = "\n\n"
 # For combining attributes, doesn't have to be unique/perfect to work
 INDEX_SEPARATOR = "==="
 
-# For File Connector Metadata override file.
-# ``.onyx_metadata.json`` is the name users' existing zips contain (it comes from the upstream
-# project). We cannot rewrite those archives, so it is accepted as a legacy alias on read and
-# never written; new files always use OM_METADATA_FILENAME.
+# For File Connector Metadata override file
 OM_METADATA_FILENAME = ".om_metadata.json"
-LEGACY_METADATA_FILENAMES = (".onyx_metadata.json",)
-METADATA_FILENAMES = (OM_METADATA_FILENAME, *LEGACY_METADATA_FILENAMES)
 
 # Messages
 DISABLED_GEN_AI_MSG = (
@@ -126,8 +117,6 @@ KV_GOOGLE_DRIVE_CRED_KEY = "google_drive_app_credential"
 KV_GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY = "google_drive_service_account_key"
 KV_GEN_AI_KEY_CHECK_TIME = "genai_api_key_last_check_time"
 KV_SETTINGS_KEY = "om_settings"
-# Key used before the rename; read once as a fallback and copied to KV_SETTINGS_KEY (never written).
-LEGACY_KV_SETTINGS_KEY = "onyx_settings"
 KV_CUSTOMER_UUID_KEY = "customer_uuid"
 KV_INSTANCE_DOMAIN_KEY = "instance_domain"
 KV_CUSTOM_ANALYTICS_SCRIPT_KEY = "__custom_analytics_script__"
@@ -389,7 +378,7 @@ class MilestoneRecordType(str, Enum):
     USER_MESSAGE_SENT = "user_message_sent"
     MULTIPLE_ASSISTANTS = "multiple_assistants"
     CREATED_ASSISTANT = "created_assistant"
-    CREATED_OM_BOT = "created_onyx_bot"
+    CREATED_OM_BOT = "created_om_bot"
     REQUESTED_CONNECTOR = "requested_connector"
 
 

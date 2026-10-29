@@ -86,7 +86,7 @@ async def search_indexed_documents(
             "query": query,
             "message": (
                 "No document sources are indexed yet. Add connectors or upload data "
-                "through VertualAI before calling onyx_search_documents."
+                "through VertualAI before calling search_indexed_documents."
             ),
         }
 

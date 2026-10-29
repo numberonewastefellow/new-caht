@@ -69,7 +69,7 @@ These places have **hardcoded lists or maps** that must be updated:
 | --- | --- | --- |
 | `DocumentSourceDescription` dict | `backend/om/configs/constants.py` | Add `DocumentSource.FOLDER: "local folder — recursive file indexing from filesystem directories"` |
 | `isLoadState()` function | `web/src/lib/connectors/connectors.tsx` | Do NOT add `"folder"` — folder uses PollConnector (not load-only) |
-| `_SOURCE_TO_SYNC_CONFIG` (EE) | `backend/ee/onyx/external_permissions/sync_params.py` | Add `DocumentSource.FOLDER` entry with `folder_doc_sync` function |
+| `_SOURCE_TO_SYNC_CONFIG` (EE) | `backend/om/external_permissions/sync_params.py` | Add `DocumentSource.FOLDER` entry with `folder_doc_sync` function |
 | `validAutoSyncSources` array | `web/src/lib/types.ts` | Add `ValidSources.Folder` to enable SYNC option in UI |
 
 ---
@@ -205,7 +205,7 @@ class LocalFolderConnector(LoadConnector, PollConnector, SlimConnector):
 
 - **Directory walking**: `os.walk()` with `pathlib.Path` for cross-platform
 - **Path security**: Validate against `FOLDER_CONNECTOR_ALLOWED_DIRECTORIES` via `os.path.realpath()`
-- **File filtering**: Extension check vs `OnyxFileExtensions.ALL_ALLOWED_EXTENSIONS`, `exclude_patterns` via `fnmatch`, size limit
+- **File filtering**: Extension check vs `OmFileExtensions.ALL_ALLOWED_EXTENSIONS`, `exclude_patterns` via `fnmatch`, size limit
 - **mtime filtering**: `os.path.getmtime()` for incremental polling
 - **Parallel extraction**: `run_functions_tuples_in_parallel()` from `backend/om/utils/threadpool_concurrency.py` with `max_workers=FOLDER_CONNECTOR_MAX_WORKERS`
 - **Document ID**: `f"FOLDER_CONNECTOR__{sha256(abs_path)}"` for stable IDs
@@ -239,7 +239,7 @@ def folder_doc_sync(
     """Re-read OS file permissions for docs and yield updated ACLs."""
 ```
 
-**File to modify**: `backend/ee/onyx/external_permissions/sync_params.py`
+**File to modify**: `backend/om/external_permissions/sync_params.py`
 
 ```python
 DocumentSource.FOLDER: SyncConfig(
@@ -256,7 +256,7 @@ DocumentSource.FOLDER: SyncConfig(
 
 - `backend/om/connectors/blob/connector.py` — `BlobStorageConnector` (Load + Poll with mtime)
 - `backend/om/connectors/google_drive/connector.py` — Permission syncing with `include_permissions` flag
-- `backend/ee/onyx/external_permissions/sync_params.py` — SyncConfig registration pattern
+- `backend/om/external_permissions/sync_params.py` — SyncConfig registration pattern
 
 ---
 
@@ -346,7 +346,7 @@ folder: null,  // dummy credential (same as file connector)
 | **Modify** | `backend/om/configs/constants.py` | Add `FOLDER` enum + `DocumentSourceDescription` + tenant context |
 | **Modify** | `backend/om/configs/app_configs.py` | Add 3 env vars |
 | **Modify** | `backend/om/connectors/registry.py` | Add FOLDER mapping |
-| **Modify** | `backend/ee/onyx/external_permissions/sync_params.py` | Add FOLDER to `_SOURCE_TO_SYNC_CONFIG` |
+| **Modify** | `backend/om/external_permissions/sync_params.py` | Add FOLDER to `_SOURCE_TO_SYNC_CONFIG` |
 | **Modify** | `web/src/lib/types.ts` | Add `Folder` to `ValidSources` + `validAutoSyncSources` |
 | **Modify** | `web/src/lib/sources.ts` | Add folder source metadata |
 | **Modify** | `web/src/lib/connectors/connectors.tsx` | Add folder form config |

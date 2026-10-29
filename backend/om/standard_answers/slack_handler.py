@@ -69,7 +69,7 @@ def _record_synthetic_chat(
 ) -> None:
     """Persist a user→assistant chat pair for the thread and link the posted answers.
 
-    Reuses the thread's existing onyxbot chat session when present so a thread maps
+    Reuses the thread's existing ombot chat session when present so a thread maps
     to a single session; the assistant message's ``standard_answers`` link is what a
     later message in the same thread reads to skip already-served answers.
     """

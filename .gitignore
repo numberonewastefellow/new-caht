@@ -19,13 +19,13 @@
 
 # testing
 /web/test-results/
-backend/onyx/agent_search/main/test_data.json
+backend/om/agent_search/main/test_data.json
 backend/tests/regression/answer_quality/test_data.json
 backend/tests/regression/search_quality/eval-*
 backend/tests/regression/search_quality/search_eval_config.yaml
 backend/tests/regression/search_quality/*.json
-backend/onyx/evals/data/
-backend/onyx/evals/one_off/*.json
+backend/om/evals/data/
+backend/om/evals/one_off/*.json
 *.log
 *.csv
 

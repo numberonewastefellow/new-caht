@@ -95,7 +95,6 @@ from om.configs.app_configs import USER_AUTH_SECRET
 from om.configs.app_configs import VALID_EMAIL_DOMAINS
 from om.configs.app_configs import WEB_DOMAIN
 from om.configs.constants import ANONYMOUS_USER_COOKIE_NAME
-from om.configs.constants import LEGACY_ANONYMOUS_USER_COOKIE_NAME
 from om.configs.constants import ANONYMOUS_USER_EMAIL
 from om.configs.constants import ANONYMOUS_USER_UUID
 from om.configs.constants import AuthType
@@ -723,21 +722,15 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         response: Optional[Response] = None,
     ) -> None:
         try:
-            if response and request:
-                for cookie_name in (
+            if response and request and ANONYMOUS_USER_COOKIE_NAME in request.cookies:
+                response.delete_cookie(
                     ANONYMOUS_USER_COOKIE_NAME,
-                    LEGACY_ANONYMOUS_USER_COOKIE_NAME,
-                ):
-                    if cookie_name not in request.cookies:
-                        continue
-                    response.delete_cookie(
-                        cookie_name,
-                        # Ensure cookie deletion doesn't override other cookies by setting the same path/domain
-                        path="/",
-                        domain=None,
-                        secure=WEB_DOMAIN.startswith("https"),
-                    )
-                    logger.debug(f"Deleted anonymous user cookie for user {user.email}")
+                    # Ensure cookie deletion doesn't override other cookies by setting the same path/domain
+                    path="/",
+                    domain=None,
+                    secure=WEB_DOMAIN.startswith("https"),
+                )
+                logger.debug(f"Deleted anonymous user cookie for user {user.email}")
         except Exception:
             logger.exception("Error deleting anonymous user cookie")
 
@@ -790,7 +783,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             # to also be semantically correct.
             properties = {
                 "email": user.email,
-                "onyx_cloud_user_id": str(user.id),
+                "om_cloud_user_id": str(user.id),
                 "tenant_id": str(tenant_id) if tenant_id else None,
                 "role": user.role.value,
                 "is_first_user": user_count == 1,

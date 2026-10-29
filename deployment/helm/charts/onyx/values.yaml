@@ -170,7 +170,7 @@ nginx:
     # The ingress-nginx subchart doesn't auto-detect our custom ConfigMap changes.
     # Workaround: Helm upgrade will restart if the following annotation value changes.
     podAnnotations:
-      onyx.app/nginx-config-version: "1"
+      om.app/nginx-config-version: "1"
 
     # Propagate DOMAIN into nginx so server_name continues to use the same env var
     extraEnvs:
@@ -299,7 +299,7 @@ api:
     app: api-server
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend
+    scope: om-backend
 
   containerPorts:
     server: 8080
@@ -419,7 +419,7 @@ celery_beat:
   logLevel: INFO
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend-celery
+    scope: om-backend-celery
   deploymentLabels:
     app: celery-beat
   resources:
@@ -453,7 +453,7 @@ celery_worker_heavy:
     customTriggers: []
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend-celery
+    scope: om-backend-celery
   deploymentLabels:
     app: celery-worker-heavy
   resources:
@@ -487,7 +487,7 @@ celery_worker_docprocessing:
     customTriggers: []
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend-celery
+    scope: om-backend-celery
   deploymentLabels:
     app: celery-worker-docprocessing
   resources:
@@ -521,7 +521,7 @@ celery_worker_light:
     customTriggers: []
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend-celery
+    scope: om-backend-celery
   deploymentLabels:
     app: celery-worker-light
   resources:
@@ -555,7 +555,7 @@ celery_worker_monitoring:
     customTriggers: []
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend-celery
+    scope: om-backend-celery
   deploymentLabels:
     app: celery-worker-monitoring
   resources:
@@ -589,7 +589,7 @@ celery_worker_primary:
     customTriggers: []
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend-celery
+    scope: om-backend-celery
   deploymentLabels:
     app: celery-worker-primary
   resources:
@@ -623,7 +623,7 @@ celery_worker_user_file_processing:
     customTriggers: []
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend-celery
+    scope: om-backend-celery
   deploymentLabels:
     app: celery-worker-user-file-processing
   resources:
@@ -656,7 +656,7 @@ discordbot:
     tag: ""  # Overrides the image tag whose default is the chart appVersion.
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend
+    scope: om-backend
   deploymentLabels:
     app: discord-bot
   podSecurityContext:
@@ -684,7 +684,7 @@ slackbot:
     tag: ""  # Overrides the image tag whose default is the chart appVersion.
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend
+    scope: om-backend
   deploymentLabels:
     app: slack-bot
   podSecurityContext:
@@ -715,7 +715,7 @@ mcpServer:
   corsOrigins: ""
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend
+    scope: om-backend
   deploymentLabels:
     app: mcp-server
   containerPorts:
@@ -768,7 +768,7 @@ celery_worker_docfetching:
     customTriggers: []
   podAnnotations: {}
   podLabels:
-    scope: onyx-backend-celery
+    scope: om-backend-celery
   deploymentLabels:
     app: celery-worker-docfetching
   resources:
@@ -809,7 +809,7 @@ pulse:
     replicaCount: 2
     podAnnotations: {}
     podLabels:
-      scope: onyx-backend-pulse
+      scope: om-backend-pulse
     deploymentLabels:
       app: pulse-scheduler
     resources:
@@ -875,7 +875,7 @@ pulse:
       customTriggers: []
     podAnnotations: {}
     podLabels:
-      scope: onyx-backend-pulse
+      scope: om-backend-pulse
     deploymentLabels:
       app: pulse-worker
     resources:

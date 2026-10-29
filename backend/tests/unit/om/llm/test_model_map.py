@@ -63,7 +63,7 @@ def test_partial_match_in_model_map() -> None:
 
 def test_no_overwrite_in_model_map() -> None:
     """Make sure we use the original entry if it exists."""
-    # Create a mock model_cost dict with multiple entries for "onyx-llm"
+    # Create a mock model_cost dict with multiple entries for "om-llm"
     mock_original_model_cost = {
         "gpt-4o": {
             "is_correct": True,

@@ -27,7 +27,7 @@ def add_om_tenant_id_middleware(
     ) -> Response:
         """Captures and sets the context var for the tenant."""
 
-        om_tenant_id = request.headers.get("X-Onyx-Tenant-ID")
+        om_tenant_id = request.headers.get("X-Om-Tenant-ID")
         if om_tenant_id:
             CURRENT_TENANT_ID_CONTEXTVAR.set(om_tenant_id)
         return await call_next(request)
@@ -48,7 +48,7 @@ def add_om_request_id_middleware(
         Total length is 12 chars.
         """
 
-        om_request_id = request.headers.get("X-Onyx-Request-ID")
+        om_request_id = request.headers.get("X-Om-Request-ID")
         if not om_request_id:
             om_request_id = make_randomized_om_request_id(prefix)
 
@@ -106,8 +106,8 @@ def add_endpoint_context_middleware(app: FastAPI) -> None:
     """Set CURRENT_ENDPOINT_CONTEXTVAR so Prometheus pool metrics can
     attribute DB connections to the endpoint that checked them out.
 
-    Used by ``onyx_db_connections_held_by_endpoint`` and
-    ``onyx_db_connection_hold_seconds`` in the pool event listeners.
+    Used by ``om_db_connections_held_by_endpoint`` and
+    ``om_db_connection_hold_seconds`` in the pool event listeners.
 
     Resolves request paths to route templates (e.g. /api/chat/{chat_id}
     instead of /api/chat/abc-123) to keep metric label cardinality low.

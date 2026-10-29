@@ -85,7 +85,7 @@ def github_test_env_setup(
     # Get user emails from environment (with fallbacks)
     admin_email = os.environ.get("ONYX_GITHUB_ADMIN_EMAIL", "admin@example.com")
     test_user_1_email = os.environ.get(
-        "ONYX_GITHUB_TEST_USER_1_EMAIL", "subash@onyx.app"
+        "ONYX_GITHUB_TEST_USER_1_EMAIL", "subash@virtualai.com"
     )
     test_user_2_email = os.environ.get(
         "ONYX_GITHUB_TEST_USER_2_EMAIL", "msubash203@gmail.com"

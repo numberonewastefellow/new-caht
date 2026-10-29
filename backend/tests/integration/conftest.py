@@ -235,3 +235,15 @@ def pytest_runtest_logfinish(
     nodeid: str, location: tuple[str, int | None, str]  # noqa: ARG001
 ) -> None:
     print(f"\nTest end: {nodeid}")
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    from pathlib import Path
+
+    from tests.connector_accounts import skip_unprovisioned
+
+    skip_unprovisioned(
+        items,
+        Path(__file__).parent / "connector_job_tests",
+        "backend/tests/daily/ACCOUNTS.md",
+    )

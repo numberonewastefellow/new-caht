@@ -84,7 +84,7 @@ def blob_connector(request: pytest.FixtureRequest) -> BlobStorageConnector:
     return_value=None,
 )
 @pytest.mark.parametrize(
-    "blob_connector", [(BlobType.S3, "onyx-connector-tests")], indirect=True
+    "blob_connector", [(BlobType.S3, "virtualai-connector-tests")], indirect=True
 )
 def test_blob_s3_connector(
     mock_get_api_key: MagicMock, blob_connector: BlobStorageConnector  # noqa: ARG001
@@ -204,7 +204,7 @@ def test_blob_r2_connector(
 )
 @pytest.mark.parametrize(
     "blob_connector",
-    [(BlobType.R2, "onyx-daily-connector-tests", {"european_residency": True})],
+    [(BlobType.R2, "virtualai-daily-connector-tests", {"european_residency": True})],
     indirect=True,
 )
 def test_blob_r2_eu_residency_connector(
@@ -228,7 +228,7 @@ def test_blob_r2_eu_residency_connector(
     return_value=None,
 )
 @pytest.mark.parametrize(
-    "blob_connector", [(BlobType.GOOGLE_CLOUD_STORAGE, "onyx-test-1")], indirect=True
+    "blob_connector", [(BlobType.GOOGLE_CLOUD_STORAGE, "virtualai-test-1")], indirect=True
 )
 def test_blob_gcs_connector(
     mock_get_api_key: MagicMock, blob_connector: BlobStorageConnector  # noqa: ARG001

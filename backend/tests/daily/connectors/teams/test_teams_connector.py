@@ -14,7 +14,7 @@ from tests.daily.connectors.utils import load_all_from_connector
 TEAMS_THREAD = [
     # Posted in "Public Channel"
     TeamsThread(
-        thread="This is the first message in Onyx-Testing ...This is a reply!This is a second reply.Third.4th.5",
+        thread="This is the first message in VertualAI-Testing ...This is a reply!This is a second reply.Third.4th.5",
         external_access=ExternalAccess(
             external_user_emails=set(),
             external_team_ids=set(),
@@ -41,7 +41,7 @@ TEAMS_THREAD = [
     TeamsThread(
         thread="This is a test post. Raunak should not be able to see this!",
         external_access=ExternalAccess(
-            external_user_emails=set(["test@danswerai.onmicrosoft.com"]),
+            external_user_emails=set(["test@virtualai.onmicrosoft.com"]),
             external_team_ids=set(),
             is_public=False,
         ),
@@ -52,7 +52,7 @@ TEAMS_THREAD = [
         "Hello, world! I am just a member in this chat, but not an owner.",
         external_access=ExternalAccess(
             external_user_emails=set(
-                ["test@danswerai.onmicrosoft.com", "raunak@onyx.app"]
+                ["test@virtualai.onmicrosoft.com", "raunak@virtualai.com"]
             ),
             external_team_ids=set(),
             is_public=False,
@@ -64,7 +64,7 @@ TEAMS_THREAD = [
         "Hello, world! I am an owner of this chat. The power!",
         external_access=ExternalAccess(
             external_user_emails=set(
-                ["test@danswerai.onmicrosoft.com", "raunak@onyx.app"]
+                ["test@virtualai.onmicrosoft.com", "raunak@virtualai.com"]
             ),
             external_team_ids=set(),
             is_public=False,
@@ -90,7 +90,7 @@ def teams_credentials() -> dict[str, str]:
 def teams_connector(
     teams_credentials: dict[str, str],
 ) -> TeamsConnector:
-    teams_connector = TeamsConnector(teams=["Onyx-Testing"])
+    teams_connector = TeamsConnector(teams=["VertualAI-Testing"])
     teams_connector.load_credentials(teams_credentials)
     return teams_connector
 

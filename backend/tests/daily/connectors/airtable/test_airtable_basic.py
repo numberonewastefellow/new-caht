@@ -227,8 +227,8 @@ def test_airtable_connector_basic(
             created_time="2024-12-24T21:02:49.000Z",
             status_last_changed="2024-12-24T21:02:49.000Z",
             days_since_status_change=0,
-            assignee="Chris Weaver (chris@onyx.app)",
-            submitted_by="Chris Weaver (chris@onyx.app)",
+            assignee="Chris Weaver (chris@virtualai.com)",
+            submitted_by="Chris Weaver (chris@virtualai.com)",
             all_fields_as_metadata=False,
             view_id=BASE_VIEW_ID,
         ),
@@ -242,8 +242,8 @@ def test_airtable_connector_basic(
             created_time="2024-12-24T21:02:49.000Z",
             status_last_changed="2024-12-24T21:02:49.000Z",
             days_since_status_change=0,
-            assignee="Chris Weaver (chris@onyx.app)",
-            submitted_by="Chris Weaver (chris@onyx.app)",
+            assignee="Chris Weaver (chris@virtualai.com)",
+            submitted_by="Chris Weaver (chris@virtualai.com)",
             attachments=[
                 (
                     "Test.pdf:\ntesting!!!",
@@ -294,8 +294,8 @@ def test_airtable_connector_url(
             created_time="2024-12-24T21:02:49.000Z",
             status_last_changed="2024-12-24T21:02:49.000Z",
             days_since_status_change=0,
-            assignee="Chris Weaver (chris@onyx.app)",
-            submitted_by="Chris Weaver (chris@onyx.app)",
+            assignee="Chris Weaver (chris@virtualai.com)",
+            submitted_by="Chris Weaver (chris@virtualai.com)",
             all_fields_as_metadata=False,
             view_id=BASE_VIEW_ID,
         ),
@@ -309,8 +309,8 @@ def test_airtable_connector_url(
             created_time="2024-12-24T21:02:49.000Z",
             status_last_changed="2024-12-24T21:02:49.000Z",
             days_since_status_change=0,
-            assignee="Chris Weaver (chris@onyx.app)",
-            submitted_by="Chris Weaver (chris@onyx.app)",
+            assignee="Chris Weaver (chris@virtualai.com)",
+            submitted_by="Chris Weaver (chris@virtualai.com)",
             attachments=[
                 (
                     "Test.pdf:\ntesting!!!",
@@ -435,8 +435,8 @@ def test_airtable_connector_all_metadata(
             created_time="2024-12-24T21:02:49.000Z",
             status_last_changed="2024-12-24T21:02:49.000Z",
             days_since_status_change=0,
-            assignee="Chris Weaver (chris@onyx.app)",
-            submitted_by="Chris Weaver (chris@onyx.app)",
+            assignee="Chris Weaver (chris@virtualai.com)",
+            submitted_by="Chris Weaver (chris@virtualai.com)",
             attachments=[
                 (
                     "Test.pdf:\ntesting!!!",
@@ -492,8 +492,8 @@ def test_airtable_connector_with_share_and_view(
             created_time="2024-12-24T21:02:49.000Z",
             status_last_changed="2024-12-24T21:02:49.000Z",
             days_since_status_change=0,
-            assignee="Chris Weaver (chris@onyx.app)",
-            submitted_by="Chris Weaver (chris@onyx.app)",
+            assignee="Chris Weaver (chris@virtualai.com)",
+            submitted_by="Chris Weaver (chris@virtualai.com)",
             all_fields_as_metadata=False,
             share_id=SHARE_ID,
             view_id=BASE_VIEW_ID,
@@ -508,8 +508,8 @@ def test_airtable_connector_with_share_and_view(
             created_time="2024-12-24T21:02:49.000Z",
             status_last_changed="2024-12-24T21:02:49.000Z",
             days_since_status_change=0,
-            assignee="Chris Weaver (chris@onyx.app)",
-            submitted_by="Chris Weaver (chris@onyx.app)",
+            assignee="Chris Weaver (chris@virtualai.com)",
+            submitted_by="Chris Weaver (chris@virtualai.com)",
             attachments=[
                 (
                     "Test.pdf:\ntesting!!!",

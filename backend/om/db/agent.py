@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from datetime import datetime
 from enum import Enum
+from typing import Any
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -12,6 +13,7 @@ from sqlalchemy import Select
 from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.orm import aliased
+from sqlalchemy.orm import defer
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm import Session
 
@@ -28,6 +30,7 @@ from om.db.document_access import get_accessible_documents_by_ids
 from om.db.models import ConnectorCredentialPair
 from om.db.models import Document
 from om.db.models import DocumentSet
+from om.db.models import FederatedConnector__DocumentSet
 from om.db.models import HierarchyNode
 from om.db.models import Agent
 from om.db.models import Agent__User
@@ -45,6 +48,8 @@ from om.server.features.agent.models import MinimalAgentSnapshot
 from om.server.features.agent.models import AgentSharedNotificationData
 from om.server.features.agent.models import AgentSnapshot
 from om.server.features.agent.models import AgentUpsertRequest
+from om.server.features.document_set.models import DocumentSetSummary
+from om.server.features.tool.models import ToolSnapshot
 from om.server.features.tool.tool_visibility import should_expose_tool_to_fe
 from om.utils.logger import setup_logger
 
@@ -407,6 +412,47 @@ def _build_agent_filters(
     return stmt
 
 
+def _minimal_agent_snapshot_load_options() -> list[Any]:
+    """Eager loads for everything MinimalAgentSnapshot.from_model reads (so there
+    are no per-row lazy loads), minus the prompt columns it never uses."""
+    agent_document_sets = selectinload(Agent.document_sets)
+    return [
+        defer(Agent.system_prompt),
+        defer(Agent.task_prompt),
+        selectinload(Agent.tools).selectinload(Tool.oauth_config),
+        selectinload(Agent.labels),
+        agent_document_sets.selectinload(
+            DocumentSet.connector_credential_pairs
+        ).selectinload(ConnectorCredentialPair.connector),
+        agent_document_sets.selectinload(DocumentSet.users),
+        agent_document_sets.selectinload(DocumentSet.groups),
+        agent_document_sets.selectinload(DocumentSet.federated_connectors).selectinload(
+            FederatedConnector__DocumentSet.federated_connector
+        ),
+        selectinload(Agent.hierarchy_nodes),
+        selectinload(Agent.attached_documents).selectinload(
+            Document.parent_hierarchy_node
+        ),
+        selectinload(Agent.user),
+    ]
+
+
+def _build_minimal_agent_snapshots(
+    agents: Sequence[Agent],
+) -> list[MinimalAgentSnapshot]:
+    # Agents share tools and document sets, so convert each one only once
+    tool_snapshot_cache: dict[int, ToolSnapshot] = {}
+    doc_set_summary_cache: dict[int, DocumentSetSummary] = {}
+    return [
+        MinimalAgentSnapshot.from_model(
+            agent,
+            tool_snapshot_cache=tool_snapshot_cache,
+            doc_set_summary_cache=doc_set_summary_cache,
+        )
+        for agent in agents
+    ]
+
+
 def get_minimal_agent_snapshots_for_user(
     user: User,
     db_session: Session,
@@ -420,20 +466,9 @@ def get_minimal_agent_snapshots_for_user(
     stmt = _build_agent_filters(
         stmt, include_default, include_slack_bot_agents, include_deleted
     )
-    stmt = stmt.options(
-        selectinload(Agent.tools),
-        selectinload(Agent.labels),
-        selectinload(Agent.document_sets)
-        .selectinload(DocumentSet.connector_credential_pairs)
-        .selectinload(ConnectorCredentialPair.connector),
-        selectinload(Agent.hierarchy_nodes),
-        selectinload(Agent.attached_documents).selectinload(
-            Document.parent_hierarchy_node
-        ),
-        selectinload(Agent.user),
-    )
+    stmt = stmt.options(*_minimal_agent_snapshot_load_options())
     results = db_session.scalars(stmt).all()
-    return [MinimalAgentSnapshot.from_model(agent) for agent in results]
+    return _build_minimal_agent_snapshots(results)
 
 
 def get_agent_snapshots_for_user(
@@ -548,23 +583,10 @@ def get_minimal_agent_snapshots_paginated(
         include_deleted,
         search_query=search_query,
     )
-    # Do eager loading of columns we know MinimalAgentSnapshot.from_model will
-    # need.
-    stmt = stmt.options(
-        selectinload(Agent.tools),
-        selectinload(Agent.hierarchy_nodes),
-        selectinload(Agent.attached_documents).selectinload(
-            Document.parent_hierarchy_node
-        ),
-        selectinload(Agent.labels),
-        selectinload(Agent.document_sets)
-        .selectinload(DocumentSet.connector_credential_pairs)
-        .selectinload(ConnectorCredentialPair.connector),
-        selectinload(Agent.user),
-    )
+    stmt = stmt.options(*_minimal_agent_snapshot_load_options())
 
     results = db_session.scalars(stmt).all()
-    return [MinimalAgentSnapshot.from_model(agent) for agent in results]
+    return _build_minimal_agent_snapshots(results)
 
 
 def get_agent_snapshots_paginated(

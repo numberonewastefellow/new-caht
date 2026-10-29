@@ -88,7 +88,7 @@ function SchedulesHero({
             <AccentIconTile icon={SvgClock} />
             <div className="flex flex-col min-w-0">
               <Text as="p" headingH1 className="virtualai-gradient-text">
-                Schedules
+                Pulse (Schedules)
               </Text>
               <div className="flex items-center gap-1 flex-wrap">
                 <Text as="span" secondaryBody text03>

@@ -1,4 +1,4 @@
-<!-- ONYX_METADATA={"link": "https://github.com/vertualai/vertualai/blob/main/backend/om/connectors/README.md"} -->
+<!-- OM_METADATA={"link": "https://github.com/vertualai/vertualai/blob/main/backend/om/connectors/README.md"} -->
 
 # Writing a new VertualAI Connector
 

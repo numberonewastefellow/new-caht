@@ -10,7 +10,7 @@ from om.auth.constants import API_KEY_HEADER_NAME
 from om.auth.constants import API_KEY_PREFIX
 from om.auth.constants import BEARER_PREFIX
 from om.auth.constants import DEPRECATED_API_KEY_PREFIX
-from om.auth.constants import VALID_PAT_PREFIXES
+from om.auth.constants import PAT_PREFIX
 
 
 def get_hashed_bearer_token_from_request(
@@ -104,5 +104,5 @@ def extract_tenant_from_auth_header(request: Request) -> str | None:
         Tenant ID if found, else None
     """
     return _extract_tenant_from_bearer_token(
-        request, [API_KEY_PREFIX, DEPRECATED_API_KEY_PREFIX, *VALID_PAT_PREFIXES]
+        request, [API_KEY_PREFIX, DEPRECATED_API_KEY_PREFIX, PAT_PREFIX]
     )

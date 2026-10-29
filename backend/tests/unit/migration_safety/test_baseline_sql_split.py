@@ -1,7 +1,7 @@
 """The baseline migration sends its SQL file to Postgres one statement at a time.
 
 Alembic runs through asyncpg, whose prepared statements accept a single command, so
-``0001_baseline_schema`` carries its own splitter (migrations must not import application code).
+``0001_om_baseline`` carries its own splitter (migrations must not import application code).
 These tests load that file by path and pin the splitter's behaviour, including a lossless
 round trip of the real baseline script.
 """
@@ -12,12 +12,12 @@ from pathlib import Path
 from types import ModuleType
 
 VERSIONS = Path(__file__).resolve().parents[3] / "alembic" / "versions"
-BASELINE_SQL = VERSIONS / "0001_baseline_schema.sql"
+BASELINE_SQL = VERSIONS / "0001_om_baseline.sql"
 
 
 def _load_baseline_migration() -> ModuleType:
     spec = importlib.util.spec_from_file_location(
-        "baseline_migration_under_test", VERSIONS / "0001_baseline_schema.py"
+        "baseline_migration_under_test", VERSIONS / "0001_om_baseline.py"
     )
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)

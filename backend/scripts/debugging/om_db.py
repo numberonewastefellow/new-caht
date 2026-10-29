@@ -139,7 +139,7 @@ def main() -> None:
     parser.add_argument("--password", help="Database password", required=True)
     parser.add_argument("--host", help="Database host", default="localhost")
     parser.add_argument("--port", help="Database port", default=5432)
-    parser.add_argument("--db", help="Database default db name", default="danswer")
+    parser.add_argument("--db", help="Database default db name", default="postgres")
 
     parser.add_argument("--report", help="Generate the given report")
 
@@ -157,7 +157,7 @@ def main() -> None:
 
     connection_string = build_connection_string(
         db_api=SYNC_DB_API,
-        app_name="onyx_db_sync",
+        app_name="om_db_sync",
         use_iam_auth=USE_IAM_AUTH,
         user=args.username,
         password=args.password,

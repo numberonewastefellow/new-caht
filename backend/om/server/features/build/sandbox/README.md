@@ -181,7 +181,7 @@ OUTPUTS_TEMPLATE_PATH=/templates/outputs   # Default: /templates/outputs
 VENV_TEMPLATE_PATH=/templates/venv        # Default: /templates/venv
 
 # Sandbox base path (local mode)
-SANDBOX_BASE_PATH=/tmp/onyx-sandboxes     # Default: /tmp/onyx-sandboxes
+SANDBOX_BASE_PATH=/tmp/om-sandboxes     # Default: /tmp/om-sandboxes
 
 # OpenCode configuration
 OPENCODE_DISABLED_TOOLS=question          # Comma-separated list, default: question
@@ -191,13 +191,13 @@ OPENCODE_DISABLED_TOOLS=question          # Comma-separated list, default: quest
 
 ```bash
 # Kubernetes namespace
-SANDBOX_NAMESPACE=onyx-sandboxes          # Default: onyx-sandboxes
+SANDBOX_NAMESPACE=om-sandboxes          # Default: om-sandboxes
 
 # Container image
 SANDBOX_CONTAINER_IMAGE=vertualai/sandbox:latest
 
 # S3 bucket for snapshots and files
-SANDBOX_S3_BUCKET=onyx-sandbox-files      # Default: onyx-sandbox-files
+SANDBOX_S3_BUCKET=om-sandbox-files      # Default: om-sandbox-files
 
 # Service accounts
 SANDBOX_SERVICE_ACCOUNT_NAME=sandbox-runner          # No AWS access
@@ -257,9 +257,9 @@ curl -X POST http://localhost:3000/api/build/session/{session_id}/message \
 
 **Solutions**:
 
-- Check pod logs: `kubectl logs -n onyx-sandboxes sandbox-{sandbox-id}`
-- Check init container: `kubectl logs -n onyx-sandboxes sandbox-{sandbox-id} -c file-sync`
-- Verify init container completed: `kubectl describe pod -n onyx-sandboxes sandbox-{sandbox-id}`
+- Check pod logs: `kubectl logs -n om-sandboxes sandbox-{sandbox-id}`
+- Check init container: `kubectl logs -n om-sandboxes sandbox-{sandbox-id} -c file-sync`
+- Verify init container completed: `kubectl describe pod -n om-sandboxes sandbox-{sandbox-id}`
 - Check S3 bucket access: Ensure init container service account has IRSA configured
 
 ### Next.js Server Won't Start
@@ -269,9 +269,9 @@ curl -X POST http://localhost:3000/api/build/session/{session_id}/message \
 **Solutions**:
 
 - **Local mode**: Check if port is already in use
-- **Docker/K8s**: Check container logs: `kubectl logs -n onyx-sandboxes sandbox-{sandbox-id}`
+- **Docker/K8s**: Check container logs: `kubectl logs -n om-sandboxes sandbox-{sandbox-id}`
 - Verify npm install succeeded (check entrypoint.sh logs)
-- Check that web template was copied: `kubectl exec -n onyx-sandboxes sandbox-{sandbox-id} -- ls /workspace/outputs/web`
+- Check that web template was copied: `kubectl exec -n om-sandboxes sandbox-{sandbox-id} -- ls /workspace/outputs/web`
 
 ### Templates Not Found (Local Mode)
 
@@ -295,12 +295,12 @@ python3 -m venv /templates/venv
 **Solution**: Either use sudo when creating symlinks, or use custom paths:
 
 ```bash
-export OUTPUTS_TEMPLATE_PATH=$HOME/.onyx/templates/outputs
-export VENV_TEMPLATE_PATH=$HOME/.onyx/templates/venv
+export OUTPUTS_TEMPLATE_PATH=$HOME/.om/templates/outputs
+export VENV_TEMPLATE_PATH=$HOME/.om/templates/venv
 
 # Then symlink to your home directory
-mkdir -p $HOME/.onyx/templates/outputs
-ln -s $(pwd)/backend/om/server/features/build/templates/outputs/web $HOME/.onyx/templates/outputs/web
+mkdir -p $HOME/.om/templates/outputs
+ln -s $(pwd)/backend/om/server/features/build/templates/outputs/web $HOME/.om/templates/outputs/web
 ```
 
 ## Security Considerations

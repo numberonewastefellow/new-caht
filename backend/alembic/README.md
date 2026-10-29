@@ -1,4 +1,4 @@
-<!-- ONYX_METADATA={"link": "https://github.com/vertualai/vertualai/blob/main/backend/alembic/README.md"} -->
+<!-- OM_METADATA={"link": "https://github.com/vertualai/vertualai/blob/main/backend/alembic/README.md"} -->
 
 # Alembic DB Migrations
 
@@ -7,7 +7,7 @@ VertualAI migrations use a generic single-database configuration with an async d
 
 ## To generate new migrations:
 
-From onyx/backend, run:
+From the backend directory, run:
 `alembic revision -m <DESCRIPTION_OF_MIGRATION>`
 
 Note: you cannot use the `--autogenerate` flag as the automatic schema parsing does not work.

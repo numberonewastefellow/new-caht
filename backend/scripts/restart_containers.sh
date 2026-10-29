@@ -3,8 +3,8 @@ set -e
 
 cleanup() {
   echo "Error occurred. Cleaning up..."
-  docker stop onyx_postgres onyx_vespa om_redis onyx_minio 2>/dev/null || true
-  docker rm onyx_postgres onyx_vespa om_redis onyx_minio 2>/dev/null || true
+  docker stop om_postgres om_vespa om_redis om_minio 2>/dev/null || true
+  docker rm om_postgres om_vespa om_redis om_minio 2>/dev/null || true
 }
 
 # Trap errors and output a message, then cleanup
@@ -20,23 +20,23 @@ MINIO_VOLUME=${4:-""}  # Default is empty if not provided
 
 # Stop and remove the existing containers
 echo "Stopping and removing existing containers..."
-docker stop onyx_postgres onyx_vespa om_redis onyx_minio 2>/dev/null || true
-docker rm onyx_postgres onyx_vespa om_redis onyx_minio 2>/dev/null || true
+docker stop om_postgres om_vespa om_redis om_minio 2>/dev/null || true
+docker rm om_postgres om_vespa om_redis om_minio 2>/dev/null || true
 
 # Start the PostgreSQL container with optional volume
 echo "Starting PostgreSQL container..."
 if [[ -n "$POSTGRES_VOLUME" ]]; then
-    docker run -p 5432:5432 --name onyx_postgres -e POSTGRES_PASSWORD=password -d -v $POSTGRES_VOLUME:/var/lib/postgresql/data postgres -c max_connections=250
+    docker run -p 5432:5432 --name om_postgres -e POSTGRES_PASSWORD=password -d -v $POSTGRES_VOLUME:/var/lib/postgresql/data postgres -c max_connections=250
 else
-    docker run -p 5432:5432 --name onyx_postgres -e POSTGRES_PASSWORD=password -d postgres -c max_connections=250
+    docker run -p 5432:5432 --name om_postgres -e POSTGRES_PASSWORD=password -d postgres -c max_connections=250
 fi
 
 # Start the Vespa container with optional volume
 echo "Starting Vespa container..."
 if [[ -n "$VESPA_VOLUME" ]]; then
-    docker run --detach --name onyx_vespa --hostname vespa-container --publish 8081:8081 --publish 19071:19071 -v $VESPA_VOLUME:/opt/vespa/var vespaengine/vespa:8
+    docker run --detach --name om_vespa --hostname vespa-container --publish 8081:8081 --publish 19071:19071 -v $VESPA_VOLUME:/opt/vespa/var vespaengine/vespa:8
 else
-    docker run --detach --name onyx_vespa --hostname vespa-container --publish 8081:8081 --publish 19071:19071 vespaengine/vespa:8
+    docker run --detach --name om_vespa --hostname vespa-container --publish 8081:8081 --publish 19071:19071 vespaengine/vespa:8
 fi
 
 # Start the Redis container with optional volume
@@ -50,9 +50,9 @@ fi
 # Start the MinIO container with optional volume
 echo "Starting MinIO container..."
 if [[ -n "$MINIO_VOLUME" ]]; then
-    docker run --detach --name onyx_minio --publish 9004:9000 --publish 9005:9001 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin -v $MINIO_VOLUME:/data minio/minio server /data --console-address ":9001"
+    docker run --detach --name om_minio --publish 9004:9000 --publish 9005:9001 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin -v $MINIO_VOLUME:/data minio/minio server /data --console-address ":9001"
 else
-    docker run --detach --name onyx_minio --publish 9004:9000 --publish 9005:9001 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio server /data --console-address ":9001"
+    docker run --detach --name om_minio --publish 9004:9000 --publish 9005:9001 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio server /data --console-address ":9001"
 fi
 
 # Ensure alembic runs in the correct directory (backend/)

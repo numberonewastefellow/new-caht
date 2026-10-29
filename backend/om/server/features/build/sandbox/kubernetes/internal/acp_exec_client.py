@@ -11,7 +11,7 @@ opencode's flat file session storage.
 Usage:
     client = ACPExecClient(
         pod_name="sandbox-abc123",
-        namespace="onyx-sandboxes",
+        namespace="om-sandboxes",
     )
     client.start(cwd="/workspace")
     session_id = client.resume_or_create_session(cwd="/workspace/sessions/abc")
@@ -59,7 +59,7 @@ ACP_PROTOCOL_VERSION = 1
 
 # Default client info
 DEFAULT_CLIENT_INFO = {
-    "name": "onyx-sandbox-k8s-exec",
+    "name": "om-sandbox-k8s-exec",
     "title": "VertualAI Sandbox Agent Client (K8s Exec)",
     "version": "1.0.0",
 }

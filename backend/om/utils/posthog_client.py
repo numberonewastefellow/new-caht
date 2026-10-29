@@ -60,9 +60,9 @@ def capture_and_sync_with_alternate_posthog(
         logger.error(f"Error capturing marketing posthog event: {e}")
 
     try:
-        if cloud_user_id := props.get("onyx_cloud_user_id"):
+        if cloud_user_id := props.get("om_cloud_user_id"):
             cloud_props = props.copy()
-            cloud_props.pop("onyx_cloud_user_id", None)
+            cloud_props.pop("om_cloud_user_id", None)
 
             posthog.identify(
                 distinct_id=cloud_user_id,
@@ -75,7 +75,7 @@ def capture_and_sync_with_alternate_posthog(
 def get_marketing_posthog_cookie_name() -> str | None:
     if not MARKETING_POSTHOG_API_KEY:
         return None
-    return f"onyx_custom_ph_{MARKETING_POSTHOG_API_KEY}_posthog"
+    return f"om_custom_ph_{MARKETING_POSTHOG_API_KEY}_posthog"
 
 
 def parse_marketing_cookie(cookie_value: str) -> dict[str, Any] | None:

@@ -371,7 +371,7 @@ No other files need changes. No DB migration. No frontend changes.
    - Round 1: PAUSE (agent asks for more — dates provided but missing travelers/budget)
    - Round 2: PAUSE (agent asks for remaining — missing budget/interests)
    - Round 3: COMPLETE (all details collected, workflow runs all 6 agents)
-4. **Check logs**: `docker logs onyx-api_server-1 | grep -i "\[Workflow\]"` — verify RESUME and direct agent re-call
+4. **Check logs**: `docker logs virtualai-api_server-1 | grep -i "\[Workflow\]"` — verify RESUME and direct agent re-call
 5. **Backward compatibility**: Run existing Travel Planner (ID=14, no `can_request_input`) — should work identically
 
 ---

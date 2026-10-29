@@ -2,7 +2,7 @@
 # Run Kubernetes sandbox integration tests
 #
 # This script:
-# 1. Builds the onyx-backend Docker image
+# 1. Builds the om-backend Docker image
 # 2. Loads it into the kind cluster
 # 3. Deletes/recreates the test pod
 # 4. Waits for the pod to be ready
@@ -19,7 +19,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../../../../../.." && pwd)"
-NAMESPACE="onyx-sandboxes"
+NAMESPACE="om-sandboxes"
 POD_NAME="sandbox-test"
 IMAGE_NAME="om/om-backend:latest"
 TEST_FILE="om/server/features/build/sandbox/kubernetes/test_kubernetes_sandbox.py"
@@ -48,14 +48,14 @@ else
     echo "Warning: .vscode/.env not found, running without additional env vars"
 fi
 
-echo "=== Building onyx-backend Docker image ==="
+echo "=== Building om-backend Docker image ==="
 cd "$PROJECT_ROOT/backend"
 docker build -t "$IMAGE_NAME" -f Dockerfile .
 
 rm "$PROJECT_ROOT/backend/$TEST_FILE"
 
 echo "=== Loading image into kind cluster ==="
-kind load docker-image "$IMAGE_NAME" --name onyx 2>/dev/null || \
+kind load docker-image "$IMAGE_NAME" --name om 2>/dev/null || \
     kind load docker-image "$IMAGE_NAME" 2>/dev/null || \
     echo "Warning: Could not load into kind. If using minikube, run: minikube image load $IMAGE_NAME"
 

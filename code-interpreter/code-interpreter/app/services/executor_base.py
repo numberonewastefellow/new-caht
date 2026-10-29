@@ -61,15 +61,15 @@ if len(tree.body) > 0:
 # It is registered BEFORE user code (not appended) so it still fires if the cell
 # raises — atexit runs on interpreter shutdown, including after an unhandled
 # exception. It is a no-op unless matplotlib.pyplot was actually imported, and it
-# never imports pyplot itself. Names are ``_onyx_``-prefixed to avoid clobbering
+# never imports pyplot itself. Names are ``_om_``-prefixed to avoid clobbering
 # user globals (safe here: the ephemeral process is single-use and thrown away).
 FIGURE_CAPTURE_PROLOGUE = """\
-import atexit as _onyx_atexit
-import sys as _onyx_sys
+import atexit as _om_atexit
+import sys as _om_sys
 
 
-def _onyx_capture_open_figures():
-    plt = _onyx_sys.modules.get("matplotlib.pyplot")
+def _om_capture_open_figures():
+    plt = _om_sys.modules.get("matplotlib.pyplot")
     if plt is None:
         return
     try:
@@ -87,7 +87,7 @@ def _onyx_capture_open_figures():
             continue
 
 
-_onyx_atexit.register(_onyx_capture_open_figures)
+_om_atexit.register(_om_capture_open_figures)
 """
 
 

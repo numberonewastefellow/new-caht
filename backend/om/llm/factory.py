@@ -45,7 +45,7 @@ def _build_provider_extra_headers(
     # Passing these will put VertualAi on the OpenRouter leaderboard
     elif provider == LlmProviderNames.OPENROUTER:
         return {
-            "HTTP-Referer": "https://onyx.app",
+            "HTTP-Referer": "https://virtualai.com",
             "X-Title": "VertualAI",
         }
 

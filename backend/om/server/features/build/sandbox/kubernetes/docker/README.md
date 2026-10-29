@@ -18,21 +18,24 @@ docker/
 
 ## Building the Image
 
+Shortcut: `./build_sandbox_image.sh` (add `--push` and `OM_REGISTRY=<registry>` to publish). The backend
+default is `om/sandbox:v0.1.5`; set `SANDBOX_CONTAINER_IMAGE` to the image you pushed.
+
 The sandbox image must be built for **amd64** architecture since our Kubernetes cluster runs on x86_64 nodes.
 
 ### Build for amd64 only (fastest)
 
 ```bash
 cd backend/om/server/features/build/sandbox/kubernetes/docker
-docker build --platform linux/amd64 -t vertualai/sandbox:v0.1.x .
-docker push vertualai/sandbox:v0.1.x
+docker build --platform linux/amd64 -t om/sandbox:v0.1.x .
+docker push om/sandbox:v0.1.x
 ```
 
 ### Build multi-arch (recommended for flexibility)
 
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 \
-  -t vertualai/sandbox:v0.1.x \
+  -t om/sandbox:v0.1.x \
   --push .
 ```
 
@@ -41,16 +44,16 @@ docker buildx build --platform linux/amd64,linux/arm64 \
 After pushing a versioned tag, update `latest`:
 
 ```bash
-docker tag vertualai/sandbox:v0.1.x vertualai/sandbox:latest
-docker push vertualai/sandbox:latest
+docker tag om/sandbox:v0.1.x om/sandbox:latest
+docker push om/sandbox:latest
 ```
 
 Or with buildx:
 
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 \
-  -t vertualai/sandbox:v0.1.x \
-  -t vertualai/sandbox:latest \
+  -t om/sandbox:v0.1.x \
+  -t om/sandbox:latest \
   --push .
 ```
 
@@ -58,9 +61,9 @@ docker buildx build --platform linux/amd64,linux/arm64 \
 
 1. **Build and push** the new image (see above)
 
-2. **Update the ConfigMap** in `cloud-deployment-yamls/danswer/configmap/env-configmap.yaml`:
+2. **Update the ConfigMap** in `cloud-deployment-yamls/om/configmap/env-configmap.yaml`:
    ```yaml
-   SANDBOX_CONTAINER_IMAGE: "vertualai/sandbox:v0.1.x"
+   SANDBOX_CONTAINER_IMAGE: "om/sandbox:v0.1.x"
    ```
 
 3. **Apply the ConfigMap**:
@@ -70,12 +73,12 @@ docker buildx build --platform linux/amd64,linux/arm64 \
 
 4. **Restart the API server** to pick up the new config:
    ```bash
-   kubectl rollout restart deployment/api-server -n danswer
+   kubectl rollout restart deployment/api-server -n om
    ```
 
 5. **Delete existing sandbox pods** (they will be recreated with the new image):
    ```bash
-   kubectl delete pods -n onyx-sandboxes -l app.kubernetes.io/component=sandbox
+   kubectl delete pods -n om-sandboxes -l app.kubernetes.io/component=sandbox
    ```
 
 ## What's Baked Into the Image
@@ -114,11 +117,11 @@ When a session is created, the following structure is set up in the pod:
 ### Verify image exists on Docker Hub
 
 ```bash
-curl -s "https://hub.docker.com/v2/repositories/vertualai/sandbox/tags" | jq '.results[].name'
+curl -s "https://hub.docker.com/v2/repositories/om/sandbox/tags" | jq '.results[].name'
 ```
 
 ### Check what image a pod is using
 
 ```bash
-kubectl get pod <pod-name> -n onyx-sandboxes -o jsonpath='{.spec.containers[?(@.name=="sandbox")].image}'
+kubectl get pod <pod-name> -n om-sandboxes -o jsonpath='{.spec.containers[?(@.name=="sandbox")].image}'
 ```

@@ -570,7 +570,7 @@ const MemoizedAppSidebarInner = memo(
             href="/app/schedules"
             transient={activeSidebarTab.isSchedules()}
           >
-            Schedules
+            Pulse (Schedules)
           </SidebarTab>
         </div>
       ),

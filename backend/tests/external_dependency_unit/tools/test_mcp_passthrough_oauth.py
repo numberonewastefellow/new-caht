@@ -25,6 +25,7 @@ from om.context.search.enums import RecencyBiasSetting
 from om.db.enums import MCPAuthenticationPerformer
 from om.db.enums import MCPAuthenticationType
 from om.db.enums import MCPTransport
+from om.tools.tool_implementations.mcp.mcp_client import MCPToolCallResult
 from om.db.mcp import create_mcp_server__no_commit
 from om.db.models import OAuthAccount
 from om.db.models import Agent
@@ -378,9 +379,12 @@ class TestMCPPassThroughOAuth:
             kwargs: dict[str, Any],  # noqa: ARG001
             connection_headers: dict[str, str],
             transport: MCPTransport,  # noqa: ARG001
-        ) -> dict[str, Any]:
+            session_scope_id: str | None = None,  # noqa: ARG001
+        ) -> MCPToolCallResult:
             captured_headers.update(connection_headers)
-            return mocked_response
+            # call_mcp_tool returns the flattened text plus the MCP
+            # tool-execution error flag; this call represents a success.
+            return MCPToolCallResult(text=mocked_response, is_error=False)
 
         with patch(
             "om.tools.tool_implementations.mcp.mcp_tool.call_mcp_tool",

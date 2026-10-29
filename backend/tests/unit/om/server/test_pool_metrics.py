@@ -41,10 +41,10 @@ def test_pool_state_collector_reports_pool_stats() -> None:
         for sample in family.samples:
             metrics[f"{sample.name}:{sample.labels['engine']}"] = sample.value
 
-    assert metrics["onyx_db_pool_checked_out:sync"] == 5
-    assert metrics["onyx_db_pool_checked_in:sync"] == 35
-    assert metrics["onyx_db_pool_overflow:sync"] == 2
-    assert metrics["onyx_db_pool_size:sync"] == 40
+    assert metrics["om_db_pool_checked_out:sync"] == 5
+    assert metrics["om_db_pool_checked_in:sync"] == 35
+    assert metrics["om_db_pool_overflow:sync"] == 2
+    assert metrics["om_db_pool_size:sync"] == 40
 
 
 def test_pool_state_collector_handles_multiple_engines() -> None:

@@ -267,5 +267,5 @@ finally:
 | API Client | `backend/om/ombot/discord/api_client.py` |
 | Discord Client | `backend/om/ombot/discord/client.py` |
 | API Key DB Operations | `backend/om/db/discord_bot.py` |
-| Cache Manager Tests | `backend/tests/unit/onyx/ombot/discord/test_cache_manager.py` |
-| API Client Tests | `backend/tests/unit/onyx/ombot/discord/test_api_client.py` |
+| Cache Manager Tests | `backend/tests/unit/om/ombot/discord/test_cache_manager.py` |
+| API Client Tests | `backend/tests/unit/om/ombot/discord/test_api_client.py` |

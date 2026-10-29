@@ -217,5 +217,5 @@ Store credentials as encrypted secrets in your CI/CD platform.
 ## Additional Resources
 
 - [Coda API Documentation](https://coda.io/developers/apis/v1)
-- [VertualAI Connector Documentation](../../../../onyx/connectors/README.md)
+- [VertualAI Connector Documentation](../../../../backend/om/connectors/README.md)
 - [pytest Documentation](https://docs.pytest.org/)

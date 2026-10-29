@@ -23,15 +23,15 @@ Use `prometheus_client` types directly at module level:
 from prometheus_client import Counter
 
 _my_counter = Counter(
-    "onyx_my_counter_total",          # Always prefix with onyx_
+    "om_my_counter_total",          # Always prefix with om_
     "Human-readable description",
     ["label_a", "label_b"],           # Keep label cardinality low
 )
 ```
 
 **Naming conventions:**
-- Prefix all metric names with `onyx_`
-- Counters: `_total` suffix (e.g. `onyx_api_slow_requests_total`)
+- Prefix all metric names with `om_`
+- Counters: `_total` suffix (e.g. `om_api_slow_requests_total`)
 - Histograms: `_seconds` or `_bytes` suffix for durations/sizes
 - Gauges: no special suffix
 
@@ -51,7 +51,7 @@ def my_metric_callback(info: Info) -> None:
 
 ```python
 # metrics/prometheus_setup.py
-from onyx.server.metrics.my_metric import my_metric_callback
+from om.server.metrics.my_metric import my_metric_callback
 
 # Inside setup_prometheus_metrics():
 instrumentator.add(my_metric_callback)
@@ -70,18 +70,18 @@ def setup_my_metrics(resource: SomeResource) -> None:
 
 ```python
 # metrics/prometheus_setup.py — inside setup_prometheus_metrics()
-from onyx.server.metrics.my_metric import setup_my_metrics
+from om.server.metrics.my_metric import setup_my_metrics
 
 def setup_prometheus_metrics(app, engines=None) -> None:
     setup_my_metrics(resource)  # Add your call here
     ...
 ```
 
-All metrics initialization is funneled through the single `setup_prometheus_metrics()` call in `onyx/main.py:lifespan()`. Do not add separate setup calls to `main.py`.
+All metrics initialization is funneled through the single `setup_prometheus_metrics()` call in `om/main.py:lifespan()`. Do not add separate setup calls to `main.py`.
 
 ### 5. Write tests
 
-Add tests in `backend/tests/unit/onyx/server/`. Use `unittest.mock.patch` to mock the prometheus objects — don't increment real global counters in tests.
+Add tests in `backend/tests/unit/om/server/`. Use `unittest.mock.patch` to mock the prometheus objects — don't increment real global counters in tests.
 
 ### 6. Document the metric
 
@@ -93,7 +93,7 @@ After deploying, add panels to the relevant Grafana dashboard:
 
 1. Open Grafana and navigate to the VertualAI dashboard (or create a new one)
 2. Add a new panel — choose the appropriate visualization:
-   - **Counters** → use `rate()` in a time series panel (e.g. `rate(onyx_my_counter_total[5m])`)
+   - **Counters** → use `rate()` in a time series panel (e.g. `rate(om_my_counter_total[5m])`)
    - **Histograms** → use `histogram_quantile()` for percentiles, or `_sum/_count` for averages
    - **Gauges** → display directly as a stat or gauge panel
 3. Add meaningful thresholds and alerts where appropriate
@@ -116,11 +116,11 @@ These metrics are exposed at `GET /metrics` on the API server.
 | `http_response_size_bytes` | Summary | `handler` | Outgoing response content length |
 | `http_requests_inprogress` | Gauge | `method`, `handler` | Currently in-flight requests |
 
-### Custom (via `onyx.server.metrics`)
+### Custom (via `om.server.metrics`)
 
 | Metric | Type | Labels | Description |
 |--------|------|--------|-------------|
-| `onyx_api_slow_requests_total` | Counter | `method`, `handler`, `status` | Requests exceeding `SLOW_REQUEST_THRESHOLD_SECONDS` (default 1s) |
+| `om_api_slow_requests_total` | Counter | `method`, `handler`, `status` | Requests exceeding `SLOW_REQUEST_THRESHOLD_SECONDS` (default 1s) |
 
 ### Configuration
 
@@ -137,33 +137,33 @@ These metrics are exposed at `GET /metrics` on the API server.
 
 ## Database Pool Metrics
 
-These metrics provide visibility into SQLAlchemy connection pool state across all three engines (`sync`, `async`, `readonly`). Collected via `onyx.server.metrics.postgres_connection_pool`.
+These metrics provide visibility into SQLAlchemy connection pool state across all three engines (`sync`, `async`, `readonly`). Collected via `om.server.metrics.postgres_connection_pool`.
 
 ### Pool State (via custom Prometheus collector — snapshot on each scrape)
 
 | Metric | Type | Labels | Description |
 |--------|------|--------|-------------|
-| `onyx_db_pool_checked_out` | Gauge | `engine` | Currently checked-out connections |
-| `onyx_db_pool_checked_in` | Gauge | `engine` | Idle connections available in the pool |
-| `onyx_db_pool_overflow` | Gauge | `engine` | Current overflow connections beyond `pool_size` |
-| `onyx_db_pool_size` | Gauge | `engine` | Configured pool size (constant) |
+| `om_db_pool_checked_out` | Gauge | `engine` | Currently checked-out connections |
+| `om_db_pool_checked_in` | Gauge | `engine` | Idle connections available in the pool |
+| `om_db_pool_overflow` | Gauge | `engine` | Current overflow connections beyond `pool_size` |
+| `om_db_pool_size` | Gauge | `engine` | Configured pool size (constant) |
 
 ### Pool Lifecycle (via SQLAlchemy pool event listeners)
 
 | Metric | Type | Labels | Description |
 |--------|------|--------|-------------|
-| `onyx_db_pool_checkout_total` | Counter | `engine` | Total connection checkouts from the pool |
-| `onyx_db_pool_checkin_total` | Counter | `engine` | Total connection checkins to the pool |
-| `onyx_db_pool_connections_created_total` | Counter | `engine` | Total new database connections created |
-| `onyx_db_pool_invalidations_total` | Counter | `engine` | Total connection invalidations |
-| `onyx_db_pool_checkout_timeout_total` | Counter | `engine` | Total connection checkout timeouts |
+| `om_db_pool_checkout_total` | Counter | `engine` | Total connection checkouts from the pool |
+| `om_db_pool_checkin_total` | Counter | `engine` | Total connection checkins to the pool |
+| `om_db_pool_connections_created_total` | Counter | `engine` | Total new database connections created |
+| `om_db_pool_invalidations_total` | Counter | `engine` | Total connection invalidations |
+| `om_db_pool_checkout_timeout_total` | Counter | `engine` | Total connection checkout timeouts |
 
 ### Per-Endpoint Attribution (via pool events + endpoint context middleware)
 
 | Metric | Type | Labels | Description |
 |--------|------|--------|-------------|
-| `onyx_db_connections_held_by_endpoint` | Gauge | `handler`, `engine` | DB connections currently held, by endpoint |
-| `onyx_db_connection_hold_seconds` | Histogram | `handler`, `engine` | Duration a DB connection is held by an endpoint |
+| `om_db_connections_held_by_endpoint` | Gauge | `handler`, `engine` | DB connections currently held, by endpoint |
+| `om_db_connection_hold_seconds` | Histogram | `handler`, `engine` | Duration a DB connection is held by an endpoint |
 
 Engine label values: `sync` (main read-write), `async` (async sessions), `readonly` (read-only user).
 
@@ -203,7 +203,7 @@ sum by (handler) (rate(http_requests_total{status=~"5.."}[5m]))
 
 ```promql
 # Slow requests per minute by handler
-sum by (handler) (rate(onyx_api_slow_requests_total[5m])) * 60
+sum by (handler) (rate(om_api_slow_requests_total[5m])) * 60
 ```
 
 ### Latency trending up?
@@ -227,7 +227,7 @@ sum(rate(http_requests_total[5m]))
 ```promql
 # Sync pool utilization: checked-out / (pool_size + max_overflow)
 # NOTE: Replace 10 with your actual POSTGRES_API_SERVER_POOL_OVERFLOW value.
-onyx_db_pool_checked_out{engine="sync"} / (onyx_db_pool_size{engine="sync"} + 10) * 100
+om_db_pool_checked_out{engine="sync"} / (om_db_pool_size{engine="sync"} + 10) * 100
 ```
 
 ### Pool approaching exhaustion?
@@ -235,26 +235,26 @@ onyx_db_pool_checked_out{engine="sync"} / (onyx_db_pool_size{engine="sync"} + 10
 ```promql
 # Alert when checked-out connections exceed 80% of pool capacity
 # NOTE: Replace 10 with your actual POSTGRES_API_SERVER_POOL_OVERFLOW value.
-onyx_db_pool_checked_out{engine="sync"} > 0.8 * (onyx_db_pool_size{engine="sync"} + 10)
+om_db_pool_checked_out{engine="sync"} > 0.8 * (om_db_pool_size{engine="sync"} + 10)
 ```
 
 ### Which endpoints are hogging DB connections?
 
 ```promql
 # Top 10 endpoints by connections currently held
-topk(10, onyx_db_connections_held_by_endpoint{engine="sync"})
+topk(10, om_db_connections_held_by_endpoint{engine="sync"})
 ```
 
 ### Which endpoints hold connections the longest?
 
 ```promql
 # P99 connection hold time by endpoint
-histogram_quantile(0.99, sum by (handler, le) (rate(onyx_db_connection_hold_seconds_bucket{engine="sync"}[5m])))
+histogram_quantile(0.99, sum by (handler, le) (rate(om_db_connection_hold_seconds_bucket{engine="sync"}[5m])))
 ```
 
 ### Connection checkout/checkin rate
 
 ```promql
 # Checkouts per second by engine
-sum by (engine) (rate(onyx_db_pool_checkout_total[5m]))
+sum by (engine) (rate(om_db_pool_checkout_total[5m]))
 ```

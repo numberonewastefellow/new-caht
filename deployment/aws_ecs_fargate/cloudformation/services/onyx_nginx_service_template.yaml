@@ -39,11 +39,11 @@ Parameters:
     Default: 1
   GitHubConfigUrl:
     Type: String
-    Default: "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/deployment/data/nginx/app.conf.template"
+    Default: "https://raw.githubusercontent.com/numberonewastefellow/new-caht/main_multi_agent_stable/deployment/data/nginx/app.conf.template"
     Description: "URL to the nginx configuration file on GitHub"
   GitHubRunScriptUrl:
     Type: String
-    Default: "https://raw.githubusercontent.com/onyx-dot-app/onyx/main/deployment/data/nginx/run-nginx.sh"
+    Default: "https://raw.githubusercontent.com/numberonewastefellow/new-caht/main_multi_agent_stable/deployment/data/nginx/run-nginx.sh"
     Description: "URL to the nginx run script on GitHub"
 
 Conditions:

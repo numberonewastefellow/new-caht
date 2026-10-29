@@ -9,9 +9,9 @@ keywords:
   - python
   - fastapi
   - sandbox
-home: https://github.com/onyx-dot-app/python-sandbox
+home: https://github.com/vertualai/vertualai
 sources:
-  - https://github.com/onyx-dot-app/python-sandbox
+  - https://github.com/vertualai/vertualai
 maintainers:
-  - name: Onyx
-    email: hello@onyx.app
+  - name: VertualAI
+    email: founders@virtualai.com

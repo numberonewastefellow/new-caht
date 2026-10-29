@@ -52,7 +52,7 @@ endpoint, so propagation to the route handler is guaranteed, and the token is re
 1. **API key / PAT** — tenant is parsed from the bearer token (`<prefix><tenant>.<rand>`).
 2. **Session auth token** — the login token in Redis carries `tenant_id`.
 3. **Anonymous-user cookie** — *only* when `ALLOW_ANONYMOUS_TENANT_ACCESS=true`.
-4. **Explicit tenant cookie** (`onyx_tid`) — front-end workaround for token-less flows.
+4. **Explicit tenant cookie** (`om_tid`) — front-end workaround for token-less flows.
 5. **Default schema** — nothing identified a tenant; holds no per-tenant data, so
    tenant-scoped endpoints reject the request downstream (`get_session` 401s in MT mode).
 

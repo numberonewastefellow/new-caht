@@ -25,6 +25,10 @@ from om.utils.logger import setup_logger
 
 logger = setup_logger()
 
+# Tool error text is attacker-influenced and can be long; log a bounded
+# preview rather than the whole payload.
+ERROR_LOG_PREVIEW_CHARS = 500
+
 # ---------------------------------------------------------------------------
 # MCP file download → MinIO helpers
 # ---------------------------------------------------------------------------
@@ -377,7 +381,7 @@ class MCPTool(Tool[None]):
                     llm_facing_response=llm_facing_response,
                 )
 
-            tool_result = call_mcp_tool(
+            mcp_result = call_mcp_tool(
                 self.mcp_server.server_url,
                 self._name,
                 llm_kwargs,
@@ -386,7 +390,19 @@ class MCPTool(Tool[None]):
                 session_scope_id=self._session_scope_id,
             )
 
-            logger.info(f"MCP tool '{self._name}' executed successfully")
+            # MCP reports tool-execution failures in-band (a successful
+            # response carrying isError=True), so a call that the server
+            # rejected must not be logged as a success. The error text is still
+            # passed to the model unchanged below -- the spec requires clients
+            # to surface tool errors so the model can self-correct and retry.
+            tool_result, tool_call_failed = mcp_result
+            if tool_call_failed:
+                logger.warning(
+                    f"MCP tool '{self._name}' reported an error: "
+                    f"{tool_result[:ERROR_LOG_PREVIEW_CHARS]}"
+                )
+            else:
+                logger.info(f"MCP tool '{self._name}' executed successfully")
 
             # Track any filenames mentioned in the result for post-step capture.
             # Actual download happens at step end via collect_pending_files().
@@ -397,9 +413,19 @@ class MCPTool(Tool[None]):
                 self._session_scope_id,
             )
 
-            # Format the tool result for response
+            # Format the tool result for response. The model-facing payload is
+            # deliberately left untouched on failure: the raw error text is what
+            # lets the model self-correct and retry, and changing its shape would
+            # alter that behaviour.
             tool_result_dict: dict[str, Any] = {"tool_result": tool_result}
             llm_facing_response = json.dumps(tool_result_dict)
+
+            # The display payload additionally carries the error flag so the UI
+            # and the execution trace can tell a failed call from a successful
+            # one instead of rendering both identically.
+            display_result_dict: dict[str, Any] = dict(tool_result_dict)
+            if tool_call_failed:
+                display_result_dict["is_error"] = True
 
             # Emit CustomToolDelta packet
             self.emitter.emit(
@@ -408,7 +434,7 @@ class MCPTool(Tool[None]):
                     obj=CustomToolDelta(
                         tool_name=self._name,
                         response_type="json",
-                        data=tool_result_dict,
+                        data=display_result_dict,
                     ),
                 )
             )
@@ -417,7 +443,7 @@ class MCPTool(Tool[None]):
                 rich_response=CustomToolCallSummary(
                     tool_name=self._name,
                     response_type="json",
-                    tool_result=tool_result_dict,
+                    tool_result=display_result_dict,
                 ),
                 llm_facing_response=llm_facing_response,
             )

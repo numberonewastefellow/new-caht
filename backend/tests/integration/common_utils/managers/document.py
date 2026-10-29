@@ -116,7 +116,7 @@ class DocumentManager:
             document = _generate_dummy_document(document_id, cc_pair.id)
             documents.append(document)
             response = requests.post(
-                f"{API_SERVER_URL}/onyx-api/ingestion",
+                f"{API_SERVER_URL}/om-api/ingestion",
                 json=document,
                 headers=api_key.headers if api_key else GENERAL_HEADERS,
             )
@@ -151,7 +151,7 @@ class DocumentManager:
             extra_metadata=metadata,
         )
         response = requests.post(
-            f"{API_SERVER_URL}/onyx-api/ingestion",
+            f"{API_SERVER_URL}/om-api/ingestion",
             json=document,
             headers=api_key.headers if api_key else GENERAL_HEADERS,
         )
@@ -275,7 +275,7 @@ class IngestionManager(DocumentManager):
         api_key: DATestAPIKey | None = None,
     ) -> list[dict]:
         response = requests.get(
-            f"{API_SERVER_URL}/onyx-api/ingestion",
+            f"{API_SERVER_URL}/om-api/ingestion",
             headers=api_key.headers if api_key else GENERAL_HEADERS,
         )
         response.raise_for_status()
@@ -287,7 +287,7 @@ class IngestionManager(DocumentManager):
         api_key: DATestAPIKey | None = None,
     ) -> None:
         response = requests.delete(
-            f"{API_SERVER_URL}/onyx-api/ingestion/{document_id}",
+            f"{API_SERVER_URL}/om-api/ingestion/{document_id}",
             headers=api_key.headers if api_key else GENERAL_HEADERS,
         )
         response.raise_for_status()

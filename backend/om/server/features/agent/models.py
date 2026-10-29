@@ -1,4 +1,6 @@
+from collections.abc import Callable
 from datetime import datetime
+from typing import TypeVar
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -11,7 +13,9 @@ from om.db.models import Document
 from om.db.models import HierarchyNode
 from om.db.models import Agent
 from om.db.models import AgentLabel
+from om.db.models import DocumentSet
 from om.db.models import StarterMessage
+from om.db.models import Tool
 from om.server.features.document_set.models import DocumentSetSummary
 from om.server.features.tool.models import ToolSnapshot
 from om.server.features.tool.tool_visibility import should_expose_tool_to_fe
@@ -145,6 +149,23 @@ class AgentUpsertRequest(BaseModel):
     datetime_aware: bool
 
 
+_ModelT = TypeVar("_ModelT", Tool, DocumentSet)
+_SnapshotT = TypeVar("_SnapshotT", ToolSnapshot, DocumentSetSummary)
+
+
+def _cached_snapshot(
+    model: _ModelT,
+    build: Callable[[_ModelT], _SnapshotT],
+    cache: dict[int, _SnapshotT] | None,
+) -> _SnapshotT:
+    if cache is None:
+        return build(model)
+    snapshot = cache.get(model.id)
+    if snapshot is None:
+        snapshot = cache[model.id] = build(model)
+    return snapshot
+
+
 class MinimalAgentSnapshot(BaseModel):
     """Minimal agent model optimized for ChatPage.tsx - only includes fields actually used"""
 
@@ -191,7 +212,14 @@ class MinimalAgentSnapshot(BaseModel):
     workflow_id: int | None = None
 
     @classmethod
-    def from_model(cls, agent: Agent) -> "MinimalAgentSnapshot":
+    def from_model(
+        cls,
+        agent: Agent,
+        tool_snapshot_cache: dict[int, ToolSnapshot] | None = None,
+        doc_set_summary_cache: dict[int, DocumentSetSummary] | None = None,
+    ) -> "MinimalAgentSnapshot":
+        """Pass the same cache dicts when building many snapshots (e.g. the agent
+        list) so each shared tool / document set is converted once, not per agent."""
         # Collect unique sources from document sets, hierarchy nodes, and attached documents
         sources: set[DocumentSource] = set()
 
@@ -215,7 +243,7 @@ class MinimalAgentSnapshot(BaseModel):
             name=agent.name,
             description=agent.description,
             tools=[
-                ToolSnapshot.from_model(tool)
+                _cached_snapshot(tool, ToolSnapshot.from_model, tool_snapshot_cache)
                 for tool in agent.tools
                 if should_expose_tool_to_fe(tool)
             ],
@@ -223,7 +251,9 @@ class MinimalAgentSnapshot(BaseModel):
             llm_relevance_filter=agent.llm_relevance_filter,
             llm_filter_extraction=agent.llm_filter_extraction,
             document_sets=[
-                DocumentSetSummary.from_model(document_set)
+                _cached_snapshot(
+                    document_set, DocumentSetSummary.from_model, doc_set_summary_cache
+                )
                 for document_set in agent.document_sets
             ],
             hierarchy_node_count=len(agent.hierarchy_nodes),

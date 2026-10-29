@@ -9,7 +9,7 @@ services:
     command: >
       /bin/sh -c "alembic upgrade head &&
       echo \"Starting VertualAI Api Server\" &&
-      uvicorn om.main:app --host 0.0.0.0 --port 8080"
+      uvicorn om.main:app --host 0.0.0.0 --port 8080 --workers ${API_SERVER_WORKERS:-4}"
     depends_on:
       - relational_db
       - opensearch
@@ -23,6 +23,11 @@ services:
     environment:
       - AUTH_TYPE=disabled
       - POSTGRES_HOST=relational_db
+      # Per-worker DB pools (the API runs API_SERVER_WORKERS processes, each with its own pools)
+      - POSTGRES_API_SERVER_POOL_SIZE=${POSTGRES_API_SERVER_POOL_SIZE:-10}
+      - POSTGRES_API_SERVER_POOL_OVERFLOW=${POSTGRES_API_SERVER_POOL_OVERFLOW:-10}
+      - POSTGRES_API_SERVER_READ_ONLY_POOL_SIZE=${POSTGRES_API_SERVER_READ_ONLY_POOL_SIZE:-5}
+      - POSTGRES_API_SERVER_READ_ONLY_POOL_OVERFLOW=${POSTGRES_API_SERVER_READ_ONLY_POOL_OVERFLOW:-5}
       - REDIS_HOST=cache
       - EMBEDDING_SERVER_URL=${EMBEDDING_SERVER_URL:-http://cortex_embed:8000/v1/embeddings}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-nomic-ai/nomic-embed-text-v1}
@@ -104,7 +109,7 @@ services:
 
         # Enterprise Edition only
         - NEXT_PUBLIC_THEME=${NEXT_PUBLIC_THEME:-}
-        - NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED=${NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED:-true}
+        - NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_OM_POWERED=${NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_OM_POWERED:-true}
     depends_on:
       - api_server
     restart: unless-stopped
@@ -239,7 +244,7 @@ services:
   relational_db:
     image: postgres:15.2-alpine
     shm_size: 1g
-    command: -c 'max_connections=250'
+    command: -c 'max_connections=400'
     restart: unless-stopped
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}

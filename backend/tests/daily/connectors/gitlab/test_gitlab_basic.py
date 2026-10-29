@@ -11,8 +11,8 @@ from om.connectors.models import HierarchyNode
 @pytest.fixture
 def gitlab_connector() -> GitlabConnector:
     connector = GitlabConnector(
-        project_owner="onyx2895818",
-        project_name="onyx",
+        project_owner="virtualai-test",
+        project_name="virtualai",
         include_mrs=True,
         include_issues=True,
         include_code_files=True,  # Include code files in the test
@@ -105,7 +105,7 @@ def test_gitlab_connector_basic(gitlab_connector: GitlabConnector) -> None:
             # ID is a git hash (e.g., 'd177...'), Link is the blob URL
             assert doc.id != section.link
             assert section.link.endswith("/README.md")
-            assert "# onyx" in section.text  # Check for a known part of the content
+            assert "# virtualai" in section.text  # Check for a known part of the content
             # Code files might not have primary owners assigned this way
             # assert len(doc.primary_owners) == 0
             validated_code_file = True

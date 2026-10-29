@@ -6,7 +6,7 @@ import Image from "next/image";
 import {
   LOGO_FOLDED_SIZE_PX,
   LOGO_UNFOLDED_SIZE_PX,
-  NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED,
+  NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_OM_POWERED,
 } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import Text from "@/refresh-components/texts/Text";
@@ -67,7 +67,7 @@ export default function Logo({ folded, size, className }: LogoProps) {
             </div>
           )}
         </div>
-        {!NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED && !folded && (
+        {!NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_OM_POWERED && !folded && (
           <Text
             secondaryBody
             text03

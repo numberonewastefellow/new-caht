@@ -11,6 +11,9 @@ from tests.daily.connectors.utils import (
     load_all_from_connector,
 )
 
+# Hard requirements read via os.environ.get + assert below (see tests/connector_accounts.py)
+REQUIRES_ENV = ["IMAP_HOST", "IMAP_USERNAME", "IMAP_PASSWORD"]
+
 
 @pytest.fixture
 def imap_connector() -> ImapConnector:
@@ -50,12 +53,12 @@ def imap_connector() -> ImapConnector:
         [
             EmailDoc(
                 subject="Testing",
-                recipients=set(["admin@onyx-test.com", "raunak@onyx.app"]),
+                recipients=set(["admin@virtualai.com", "raunak@virtualai.com"]),
                 body="Hello, testing.",
             ),
             EmailDoc(
                 subject="Hello world",
-                recipients=set(["admin@onyx-test.com", "r@rabh.io", "raunak@onyx.app"]),
+                recipients=set(["admin@virtualai.com", "r@rabh.io", "raunak@virtualai.com"]),
                 body='Hello world, this is an email that contains multiple "To" recipients.',
             ),
         ]

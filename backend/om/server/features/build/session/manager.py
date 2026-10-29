@@ -443,7 +443,7 @@ class SessionManager:
             )
         else:
             # Fallback for local development without persistent storage
-            user_file_system_path = "/tmp/onyx-files"
+            user_file_system_path = "/tmp/om-files"
 
         # Ensure the user's document directory exists (if local)
         if SANDBOX_BACKEND == SandboxBackend.LOCAL:

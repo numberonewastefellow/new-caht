@@ -94,7 +94,7 @@ def test_ingestion_post_returns_501(
     reset: None, admin_user: DATestUser  # noqa: ARG001
 ) -> None:
     resp = requests.post(
-        f"{API_SERVER_URL}/onyx-api/ingestion",
+        f"{API_SERVER_URL}/om-api/ingestion",
         json={"document": {}},
         headers=_headers(admin_user),
     )
@@ -105,7 +105,7 @@ def test_ingestion_delete_returns_501(
     reset: None, admin_user: DATestUser  # noqa: ARG001
 ) -> None:
     resp = requests.delete(
-        f"{API_SERVER_URL}/onyx-api/ingestion/fake-doc-id",
+        f"{API_SERVER_URL}/om-api/ingestion/fake-doc-id",
         headers=_headers(admin_user),
     )
     assert resp.status_code == 501

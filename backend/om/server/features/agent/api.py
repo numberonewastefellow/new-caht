@@ -4,8 +4,10 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi import Query
+from fastapi import Response
 from fastapi import UploadFile
 from pydantic import BaseModel
+from pydantic import TypeAdapter
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -446,13 +448,16 @@ def delete_agent(
     )
 
 
-@basic_router.get("")
+_MINIMAL_AGENT_LIST_ADAPTER = TypeAdapter(list[MinimalAgentSnapshot])
+
+
+@basic_router.get("", response_model=list[MinimalAgentSnapshot])
 def list_agents(
     user: User = Depends(current_chat_accessible_user),
     db_session: Session = Depends(get_session),
     include_deleted: bool = False,
     agent_ids: list[int] = Query(None),
-) -> list[MinimalAgentSnapshot]:
+) -> Response:
     agents = get_minimal_agent_snapshots_for_user(
         user=user,
         include_deleted=include_deleted,
@@ -463,7 +468,12 @@ def list_agents(
     if agent_ids:
         agents = [p for p in agents if p.id in agent_ids]
 
-    return agents
+    # The snapshots are already validated; serialize them directly instead of
+    # letting FastAPI re-validate and re-encode a large list.
+    return Response(
+        content=_MINIMAL_AGENT_LIST_ADAPTER.dump_json(agents),
+        media_type="application/json",
+    )
 
 
 @agents_router.get("", tags=PUBLIC_API_TAGS)

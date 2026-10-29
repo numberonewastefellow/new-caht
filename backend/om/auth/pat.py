@@ -11,7 +11,6 @@ from fastapi import Request
 
 from om.auth.constants import PAT_LENGTH
 from om.auth.constants import PAT_PREFIX
-from om.auth.constants import VALID_PAT_PREFIXES
 from om.auth.utils import get_hashed_bearer_token_from_request
 from shared_configs.configs import MULTI_TENANT
 
@@ -34,9 +33,8 @@ def build_displayable_pat(token: str) -> str:
 
     Example: om_pat_abc1****xyz9
     """
-    # Show the prefix (whichever valid prefix the token carries) + 4 random chars, and the last 4 chars
-    prefix = next((p for p in VALID_PAT_PREFIXES if token.startswith(p)), PAT_PREFIX)
-    return f"{token[: len(prefix) + 4]}****{token[-4:]}"
+    # Show the prefix + 4 random chars, and the last 4 chars
+    return f"{token[: len(PAT_PREFIX) + 4]}****{token[-4:]}"
 
 
 def get_hashed_pat_from_request(request: Request) -> str | None:
@@ -46,7 +44,7 @@ def get_hashed_pat_from_request(request: Request) -> str | None:
     """
     return get_hashed_bearer_token_from_request(
         request,
-        valid_prefixes=VALID_PAT_PREFIXES,
+        valid_prefixes=[PAT_PREFIX],
         hash_fn=hash_pat,
         allow_non_bearer=False,  # PATs require Bearer prefix
     )

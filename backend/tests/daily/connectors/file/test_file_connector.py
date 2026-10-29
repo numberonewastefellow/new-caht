@@ -42,8 +42,8 @@ def test_single_text_file_with_metadata(
     mock_filestore_record: MagicMock,
 ) -> None:
     file_content = io.BytesIO(
-        b'#ONYX_METADATA={"link": "https://onyx.app", "file_display_name":"my display name", "tag_of_your_choice": "test-tag", \
-          "primary_owners": ["wenxi@onyx.app"], "secondary_owners": ["founders@onyx.app"], \
+        b'#OM_METADATA={"link": "https://virtualai.com", "file_display_name":"my display name", "tag_of_your_choice": "test-tag", \
+          "primary_owners": ["wenxi@virtualai.com"], "secondary_owners": ["founders@virtualai.com"], \
           "doc_updated_at": "2001-01-01T00:00:00Z"}\n'
         b"Test answer is 12345"
     )
@@ -69,10 +69,10 @@ def test_single_text_file_with_metadata(
     assert not isinstance(doc, HierarchyNode)
 
     assert doc.sections[0].text == "Test answer is 12345"
-    assert doc.sections[0].link == "https://onyx.app"
+    assert doc.sections[0].link == "https://virtualai.com"
     assert doc.semantic_identifier == "my display name"
-    assert doc.primary_owners[0].display_name == "wenxi@onyx.app"  # type: ignore
-    assert doc.secondary_owners[0].display_name == "founders@onyx.app"  # type: ignore
+    assert doc.primary_owners[0].display_name == "wenxi@virtualai.com"  # type: ignore
+    assert doc.secondary_owners[0].display_name == "founders@virtualai.com"  # type: ignore
     assert doc.doc_updated_at == datetime(2001, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
 
 
@@ -97,17 +97,17 @@ def test_two_text_files_with_zip_metadata(
         "file1.txt": {
             "filename": "file1.txt",
             "file_display_name": "display 1",
-            "link": "https://onyx.app/1",
-            "primary_owners": ["alice@onyx.app"],
-            "secondary_owners": ["bob@onyx.app"],
+            "link": "https://virtualai.com/1",
+            "primary_owners": ["alice@virtualai.com"],
+            "secondary_owners": ["bob@virtualai.com"],
             "doc_updated_at": "2022-02-02T00:00:00Z",
         },
         "file2.txt": {
             "filename": "file2.txt",
             "file_display_name": "display 2",
-            "link": "https://onyx.app/2",
-            "primary_owners": ["carol@onyx.app"],
-            "secondary_owners": ["dave@onyx.app"],
+            "link": "https://virtualai.com/2",
+            "primary_owners": ["carol@virtualai.com"],
+            "secondary_owners": ["dave@virtualai.com"],
             "doc_updated_at": "2023-03-03T00:00:00Z",
         },
     }
@@ -131,14 +131,14 @@ def test_two_text_files_with_zip_metadata(
     assert not isinstance(doc2, HierarchyNode)
 
     assert doc1.sections[0].text == "File 1 content"
-    assert doc1.sections[0].link == "https://onyx.app/1"
+    assert doc1.sections[0].link == "https://virtualai.com/1"
     assert doc1.semantic_identifier == "display 1"
-    assert doc1.primary_owners[0].display_name == "alice@onyx.app"  # type: ignore
-    assert doc1.secondary_owners[0].display_name == "bob@onyx.app"  # type: ignore
+    assert doc1.primary_owners[0].display_name == "alice@virtualai.com"  # type: ignore
+    assert doc1.secondary_owners[0].display_name == "bob@virtualai.com"  # type: ignore
     assert doc1.doc_updated_at == datetime(2022, 2, 2, 0, 0, 0, tzinfo=timezone.utc)
     assert doc2.sections[0].text == "File 2 content"
-    assert doc2.sections[0].link == "https://onyx.app/2"
+    assert doc2.sections[0].link == "https://virtualai.com/2"
     assert doc2.semantic_identifier == "display 2"
-    assert doc2.primary_owners[0].display_name == "carol@onyx.app"  # type: ignore
-    assert doc2.secondary_owners[0].display_name == "dave@onyx.app"  # type: ignore
+    assert doc2.primary_owners[0].display_name == "carol@virtualai.com"  # type: ignore
+    assert doc2.secondary_owners[0].display_name == "dave@virtualai.com"  # type: ignore
     assert doc2.doc_updated_at == datetime(2023, 3, 3, 0, 0, 0, tzinfo=timezone.utc)

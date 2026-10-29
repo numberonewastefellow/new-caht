@@ -91,7 +91,7 @@ def get_chat_sessions_by_slack_thread_id(
 
 
 # Retrieves chat sessions by user
-# Chat sessions do not include onyxbot flows
+# Chat sessions do not include ombot flows
 def get_chat_sessions_by_user(
     user_id: UUID | None,
     deleted: bool | None,

@@ -62,11 +62,11 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 ```json
 {
   "mcpServers": {
-    "onyx": {
-      "url": "https://[YOUR_ONYX_DOMAIN]:8090/",
+    "virtualai": {
+      "url": "https://[YOUR_VIRTUALAI_DOMAIN]:8090/",
       "transport": "http",
       "headers": {
-        "Authorization": "Bearer YOUR_ONYX_TOKEN_HERE"
+        "Authorization": "Bearer YOUR_VIRTUALAI_TOKEN_HERE"
       }
     }
   }

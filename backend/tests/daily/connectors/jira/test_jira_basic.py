@@ -12,7 +12,7 @@ from tests.daily.connectors.utils import load_all_from_connector
 
 def _make_connector(scoped_token: bool = False) -> JiraConnector:
     connector = JiraConnector(
-        jira_base_url="https://danswerai.atlassian.net",
+        jira_base_url="https://virtualai.atlassian.net",
         project_key="AS",
         comment_email_blacklist=[],
         scoped_token=scoped_token,
@@ -43,7 +43,7 @@ def jira_connector_scoped() -> JiraConnector:
 @pytest.fixture
 def jira_connector_with_jql() -> JiraConnector:
     connector = JiraConnector(
-        jira_base_url="https://danswerai.atlassian.net",
+        jira_base_url="https://virtualai.atlassian.net",
         jql_query="project = 'AS' AND issuetype = Story",
         comment_email_blacklist=[],
     )
@@ -99,7 +99,7 @@ def _test_jira_connector_basic(jira_connector: JiraConnector) -> None:
     assert epic is not None
 
     # Check task
-    assert story.id == "https://danswerai.atlassian.net/browse/AS-3"
+    assert story.id == "https://virtualai.atlassian.net/browse/AS-3"
     assert story.semantic_identifier == "AS-3: Magic Answers"
     assert story.source == DocumentSource.JIRA
     assert story.metadata == {
@@ -111,8 +111,8 @@ def _test_jira_connector_basic(jira_connector: JiraConnector) -> None:
         "assignee": "Chris Weaver",
         "issuetype": "Story",
         "created": "2025-04-16T16:44:06.716-0700",
-        "reporter_email": "chris@onyx.app",
-        "assignee_email": "chris@onyx.app",
+        "reporter_email": "chris@virtualai.com",
+        "assignee_email": "chris@virtualai.com",
         "project_name": "DailyConnectorTestProject",
         "project": "AS",
         "parent": "AS-4",
@@ -130,10 +130,10 @@ def _test_jira_connector_basic(jira_connector: JiraConnector) -> None:
         section.text
         == "This is a critical request for super-human answer quality in VertualAI! We need magic!\n"
     )
-    assert section.link == "https://danswerai.atlassian.net/browse/AS-3"
+    assert section.link == "https://virtualai.atlassian.net/browse/AS-3"
 
     # Check epic
-    assert epic.id == "https://danswerai.atlassian.net/browse/AS-4"
+    assert epic.id == "https://virtualai.atlassian.net/browse/AS-4"
     assert epic.semantic_identifier == "AS-4: EPIC"
     assert epic.source == DocumentSource.JIRA
     assert epic.metadata == {
@@ -143,8 +143,8 @@ def _test_jira_connector_basic(jira_connector: JiraConnector) -> None:
         "assignee": "Chris Weaver",
         "issuetype": "Epic",
         "created": "2025-04-16T16:55:53.068-0700",
-        "reporter_email": "founders@onyx.app",
-        "assignee_email": "chris@onyx.app",
+        "reporter_email": "founders@virtualai.com",
+        "assignee_email": "chris@virtualai.com",
         "project_name": "DailyConnectorTestProject",
         "project": "AS",
         "key": "AS-4",
@@ -158,7 +158,7 @@ def _test_jira_connector_basic(jira_connector: JiraConnector) -> None:
     assert len(epic.sections) == 1
     section = epic.sections[0]
     assert section.text == "example_text\n"
-    assert section.link == "https://danswerai.atlassian.net/browse/AS-4"
+    assert section.link == "https://virtualai.atlassian.net/browse/AS-4"
 
 
 @patch(
@@ -188,6 +188,6 @@ def test_jira_connector_with_jql(
 
     # Verify it's the expected Story
     story = docs[0]
-    assert story.id == "https://danswerai.atlassian.net/browse/AS-3"
+    assert story.id == "https://virtualai.atlassian.net/browse/AS-3"
     assert story.semantic_identifier == "AS-3: Magic Answers"
     assert story.metadata["issuetype"] == "Story"
