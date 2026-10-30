@@ -833,6 +833,8 @@ pypdf==6.6.2
     # via
     #   om
     #   unstructured-client
+pypdfium2==5.9.0
+    # via om
 pyperclip==1.11.0
     # via fastmcp
 pyreadline3==3.5.4 ; sys_platform == 'win32'

@@ -21,6 +21,7 @@ import chardet
 import openpyxl
 from PIL import Image
 
+from om.configs.app_configs import PDF_TEXT_EXTRACTION_TIMEOUT_SECONDS
 from om.configs.constants import OM_METADATA_FILENAME
 from om.configs.llm_configs import get_image_extraction_and_analysis_enabled
 from om.file_processing.file_types import OmFileExtensions
@@ -28,9 +29,12 @@ from om.file_processing.file_types import OmMimeTypes
 from om.file_processing.file_types import PRESENTATION_MIME_TYPE
 from om.file_processing.file_types import WORD_PROCESSING_MIME_TYPE
 from om.file_processing.html_utils import parse_html_page_basic
+from om.file_processing.pdfium_text import extract_pdf_text_pdfium
 from om.file_processing.unstructured import get_unstructured_api_key
 from om.file_processing.unstructured import unstructured_to_text
 from om.utils.logger import setup_logger
+from om.utils.process_isolation import IsolatedProcessError
+from om.utils.process_isolation import run_in_isolated_process
 
 if TYPE_CHECKING:
     from markitdown import MarkItDown
@@ -176,13 +180,43 @@ def read_text_file(
     return file_content_raw, metadata
 
 
-def pdf_to_text(file: IO[Any], pdf_pass: str | None = None) -> str:
+def pdf_to_text(
+    file: IO[Any], pdf_pass: str | None = None, isolate_pdfium: bool = True
+) -> str:
     """
     Extract text from a PDF. For embedded images, a more complex approach is needed.
     This is a minimal approach returning text only.
     """
-    text, _, _ = read_pdf_file(file, pdf_pass)
+    text, _, _ = read_pdf_file(file, pdf_pass, isolate_pdfium=isolate_pdfium)
     return text
+
+
+def _extract_pdf_text(
+    file_bytes: bytes,
+    password: str | None,
+    pdf_reader: Any,
+    isolate_pdfium: bool,
+) -> str:
+    """PDFium text, falling back to pypdf if PDFium errors, crashes or hangs."""
+    from pypdfium2 import PdfiumError
+
+    try:
+        if isolate_pdfium:
+            # PDFium can hard-abort or hang on a malformed PDF (uncatchable
+            # in-process), so it runs in a throwaway child process.
+            return run_in_isolated_process(
+                extract_pdf_text_pdfium,
+                file_bytes,
+                password,
+                TEXT_SECTION_SEPARATOR,
+                timeout=PDF_TEXT_EXTRACTION_TIMEOUT_SECONDS,
+            )
+        return extract_pdf_text_pdfium(file_bytes, password, TEXT_SECTION_SEPARATOR)
+    except (PdfiumError, IsolatedProcessError) as e:
+        logger.warning("PDFium text extraction failed (%s); falling back to pypdf", e)
+        return TEXT_SECTION_SEPARATOR.join(
+            page.extract_text() for page in pdf_reader.pages
+        )
 
 
 def read_pdf_file(
@@ -190,9 +224,14 @@ def read_pdf_file(
     pdf_pass: str | None = None,
     extract_images: bool = False,
     image_callback: Callable[[bytes, str], None] | None = None,
+    isolate_pdfium: bool = True,
 ) -> tuple[str, dict[str, Any], Sequence[tuple[bytes, str]]]:
     """
     Returns the text, basic PDF metadata, and optionally extracted images.
+
+    ``isolate_pdfium=False`` is for a caller that is itself a child process
+    under a deadline: a child of a child is orphaned when the outer one is
+    killed, so PDFium then runs in the caller's process instead.
     """
     from pypdf import PdfReader
     from pypdf.errors import PdfStreamError
@@ -200,20 +239,33 @@ def read_pdf_file(
     metadata: dict[str, Any] = {}
     extracted_images: list[tuple[bytes, str]] = []
     try:
-        pdf_reader = PdfReader(file)
+        # Read once: PDFium and the pypdf metadata/image reader share these bytes.
+        # pypdf always read the stream from byte 0, so keep that for callers that
+        # sniffed the header first.
+        if file.seekable():
+            file.seek(0)
+        file_bytes = file.read()
+        pdf_reader = PdfReader(io.BytesIO(file_bytes))
 
-        if pdf_reader.is_encrypted and pdf_pass is not None:
+        decrypt_password: str | None = None
+        if pdf_reader.is_encrypted:
+            # Try the given password, then an empty one: owner-password-only PDFs
+            # (edit/print restrictions, no open password) decrypt with "".
             decrypt_success = False
-            try:
-                decrypt_success = pdf_reader.decrypt(pdf_pass) != 0
-            except Exception:
-                logger.error("Unable to decrypt pdf")
+            for password in [p for p in (pdf_pass, "") if p is not None]:
+                try:
+                    if pdf_reader.decrypt(password) != 0:
+                        decrypt_success = True
+                        decrypt_password = password
+                        break
+                except Exception:
+                    pass
 
             if not decrypt_success:
+                logger.warning(
+                    "Encrypted PDF could not be decrypted, returning empty text."
+                )
                 return "", metadata, []
-        elif pdf_reader.is_encrypted:
-            logger.warning("No Password for an encrypted PDF, returning empty text.")
-            return "", metadata, []
 
         # Basic PDF metadata
         if pdf_reader.metadata is not None:
@@ -226,8 +278,8 @@ def read_pdf_file(
                 ):
                     metadata[clean_key] = ", ".join(value)
 
-        text = TEXT_SECTION_SEPARATOR.join(
-            page.extract_text() for page in pdf_reader.pages
+        text = _extract_pdf_text(
+            file_bytes, decrypt_password, pdf_reader, isolate_pdfium
         )
 
         if extract_images:

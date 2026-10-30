@@ -32,7 +32,7 @@ Neither system scores recency or document boost, so thumbs-up/down feedback has 
 
 | # | Pri | Item | Effort | Status |
 |---|-----|------|--------|--------|
-| 1 | P1 | pdfium PDF extraction | S | [ ] Approved, not started |
+| 1 | P1 | pdfium PDF extraction | S | [~] Code + local tests done, awaiting Docker verify. Tracker: `TODO_MD_PORT_PDFIUM.MD` |
 | 2 | P1 | Multilingual embedding (Granite) via Cortex | M | [ ] |
 | 3 | P1 | Tabular chunker | L | [ ] |
 | 4 | P1 | Enable reranker by default | S | [ ] |

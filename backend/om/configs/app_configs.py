@@ -751,6 +751,12 @@ ENABLE_MULTIPASS_INDEXING = (
 # Enable contextual retrieval
 ENABLE_CONTEXTUAL_RAG = os.environ.get("ENABLE_CONTEXTUAL_RAG", "").lower() == "true"
 
+# PDF text extraction runs PDFium in a child process (a malformed PDF can make it
+# hard-abort or hang); after this many seconds the child is killed and pypdf is used.
+PDF_TEXT_EXTRACTION_TIMEOUT_SECONDS = float(
+    os.environ.get("PDF_TEXT_EXTRACTION_TIMEOUT_SECONDS") or 120
+)
+
 DEFAULT_CONTEXTUAL_RAG_LLM_NAME = "gpt-4o-mini"
 DEFAULT_CONTEXTUAL_RAG_LLM_PROVIDER = "DevEnvPresetOpenAI"
 # Finer grained chunking for more detail retention

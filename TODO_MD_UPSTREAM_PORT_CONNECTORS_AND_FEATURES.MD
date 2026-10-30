@@ -111,17 +111,28 @@ Template:
    - Workflow-related features must update **both** the Wizard editor and the Visual Builder.
 5. **Enterprise parts**
    - Write a behaviour spec first, then reimplement clean-room inside our existing `om/` folder (`rewrite-plans/CONTRACTS.md`).
-6. **Tests**
+6. **Reuse first**
+   - Before writing anything new, search for an existing helper (e.g. `om/utils/process_isolation.py` for crash-prone native parsers).
+   - Put new generic logic in a shared module, not inside one feature. Note in the doc what is reusable.
+7. **Existing features touched (regression scope)**
+   - List every caller and feature that uses the changed code (grep the callers), with how each one is tested.
+   - Add regression tests through the public entry points those features use.
+   - List intended behaviour changes and the manual in-app checks the user should run.
+8. **Tests**
    - Unit and integration tests under `backend/tests/...`, plus web type-checks.
-7. **Gates**
+   - Note pre-existing, unrelated failures separately.
+9. **Gates**
    - `python -I rename-audit/build_inventory.py --check`
    - `pytest backend/tests/unit/migration_safety`
    - `backend/tests/route_rename`
    - `npx tsc --noEmit`
-8. **Rollout**
-   - The user reviews and rebuilds Docker. No commit unless asked.
-9. **Status checklist**
-   - Track progress here and tick the matching item in this backlog.
+10. **Rollout**
+    - The user reviews and rebuilds Docker. No commit unless asked.
+11. **Progress tracker (mandatory, keep it current)**
+    - A dated checklist of every step. **Tick each step the moment it's done**, so a new session can resume from the first unchecked item.
+    - Put a "Status:" line at the top of the doc, and mirror the status in this backlog's table.
+
+Reference example: `TODO_MD_PORT_PDFIUM.MD`.
 
 ---
 
