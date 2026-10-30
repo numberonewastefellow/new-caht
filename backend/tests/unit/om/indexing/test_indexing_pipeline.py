@@ -11,6 +11,8 @@ from om.configs.app_configs import MAX_DOCUMENT_CHARS
 from om.connectors.models import Document
 from om.connectors.models import DocumentSource
 from om.connectors.models import ImageSection
+from om.connectors.models import Section
+from om.connectors.models import TableSection
 from om.connectors.models import TextSection
 from om.indexing.chunker import Chunker
 from om.indexing.embedder import DefaultIndexingEmbedder
@@ -221,3 +223,110 @@ def test_contextual_rag(
             count += 1
         assert chunk.doc_summary == doc_summary
         assert chunk.chunk_context == chunk_context
+
+
+# --- table sections (spreadsheets / CSV files) ---
+
+
+def _table_document(text: str = "a,b\n1,2", title: str | None = None) -> Document:
+    return Document(
+        id="table_doc",
+        title=title,
+        semantic_identifier="register.xlsx",
+        sections=[
+            TextSection(text="intro", link="t"),
+            TableSection(text=text, link=None, sheet_name="Sheet1"),
+        ],
+        source=DocumentSource.FILE,
+        metadata={},
+    )
+
+
+def test_process_image_sections_keeps_table_without_llm() -> None:
+    document = _table_document()
+    with patch(
+        "om.indexing.indexing_pipeline.get_image_extraction_and_analysis_enabled",
+        return_value=False,
+    ):
+        (indexing_doc,) = process_image_sections([document])
+    processed = indexing_doc.processed_sections
+    assert type(processed[0]) is Section
+    assert isinstance(processed[1], TableSection)
+    assert processed[1].text == "a,b\n1,2"
+    assert processed[1].sheet_name == "Sheet1"
+
+
+def test_process_image_sections_keeps_table_with_llm() -> None:
+    document = _table_document()
+    with (
+        patch(
+            "om.indexing.indexing_pipeline.get_image_extraction_and_analysis_enabled",
+            return_value=True,
+        ),
+        patch(
+            "om.indexing.indexing_pipeline.get_default_llm_with_vision",
+            return_value=Mock(),
+        ),
+    ):
+        (indexing_doc,) = process_image_sections([document])
+    processed = indexing_doc.processed_sections
+    assert len(processed) == 2
+    assert type(processed[0]) is Section
+    assert isinstance(processed[1], TableSection)
+    assert processed[1].sheet_name == "Sheet1"
+
+
+def test_filter_documents_table_only_content_is_kept() -> None:
+    document = Document(
+        id="t",
+        title="",
+        semantic_identifier="register.csv",
+        sections=[TableSection(text="a,b\n1,2", link=None)],
+        source=DocumentSource.FILE,
+        metadata={},
+    )
+    assert filter_documents([document]) == [document]
+
+
+def test_filter_documents_table_empty_with_empty_title_is_skipped() -> None:
+    document = Document(
+        id="t",
+        title="",
+        semantic_identifier="register.csv",
+        sections=[TableSection(text="  ", link=None)],
+        source=DocumentSource.FILE,
+        metadata={},
+    )
+    assert filter_documents([document]) == []
+
+
+def test_filter_documents_table_counts_toward_max_chars() -> None:
+    document = _table_document(text="x" * (MAX_DOCUMENT_CHARS + 1))
+    assert filter_documents([document]) == []
+
+
+def test_table_document_end_to_end(embedder: DefaultIndexingEmbedder) -> None:
+    rows = ["case_id,district,amount"] + [
+        f"GRV-{i:05d},District {i % 5},{i}" for i in range(2000)
+    ]
+    document = _table_document(text="\n".join(rows), title="Register")
+    documents = filter_documents([document])
+    with patch(
+        "om.indexing.indexing_pipeline.get_image_extraction_and_analysis_enabled",
+        return_value=False,
+    ):
+        indexing_documents = process_image_sections(documents)
+    chunker = Chunker(tokenizer=embedder.embedding_model.tokenizer)
+    chunks = chunker.chunk(indexing_documents)
+    assert chunks[0].content == "intro"
+    table_chunks = chunks[1:]
+    assert 1 <= len(table_chunks) <= 24
+    assert table_chunks[0].content.startswith("Spreadsheet register.xlsx")
+    assert "Sheet Sheet1: 2000 rows" in table_chunks[0].content
+
+    def _fake_encode(texts: list[str], **_kwargs: Any) -> list[list[float]]:
+        return [[0.0] * 4 for _ in texts]
+
+    with patch.object(embedder.embedding_model, "encode", side_effect=_fake_encode):
+        embedded = embedder.embed_chunks(chunks)
+    assert len(embedded) == len(chunks)

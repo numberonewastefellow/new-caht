@@ -7,6 +7,8 @@ import { VertexAIForm } from "./VertexAIForm";
 import { OpenRouterForm } from "./OpenRouterForm";
 import { CustomForm } from "./CustomForm";
 import { BedrockForm } from "./BedrockForm";
+import { LMStudioForm } from "./LMStudioForm";
+import { OpenAICompatibleForm } from "./OpenAICompatibleForm";
 import { ComponentType } from "react";
 
 export function detectIfRealOpenAIProvider(provider: LLMProviderView) {
@@ -37,6 +39,10 @@ export function getFormComponentForProvider(
       return BedrockForm;
     case LLMProviderName.OPENROUTER:
       return OpenRouterForm;
+    case LLMProviderName.LM_STUDIO:
+      return LMStudioForm;
+    case LLMProviderName.OPENAI_COMPATIBLE:
+      return OpenAICompatibleForm;
     default:
       return CustomForm;
   }
@@ -63,6 +69,10 @@ export const getFormForExistingProvider = (provider: LLMProviderView) => {
       return <BedrockForm existingLlmProvider={provider} />;
     case LLMProviderName.OPENROUTER:
       return <OpenRouterForm existingLlmProvider={provider} />;
+    case LLMProviderName.LM_STUDIO:
+      return <LMStudioForm existingLlmProvider={provider} />;
+    case LLMProviderName.OPENAI_COMPATIBLE:
+      return <OpenAICompatibleForm existingLlmProvider={provider} />;
     default:
       return <CustomForm existingLlmProvider={provider} />;
   }

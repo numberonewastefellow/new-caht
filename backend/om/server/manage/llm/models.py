@@ -359,6 +359,10 @@ class BedrockFinalModelResponse(BaseModel):
 class OllamaModelsRequest(BaseModel):
     api_base: str
     provider_name: str | None = None  # Optional: to save models to existing provider
+    # Optional key for an Ollama behind an auth proxy / Ollama Cloud (sent as Bearer)
+    api_key: str | None = None
+    # False = the form sent back a masked key; use the stored one (same api_base only)
+    api_key_changed: bool = True
 
 
 class OllamaFinalModelResponse(BaseModel):
@@ -381,6 +385,55 @@ class OllamaModelDetails(BaseModel):
     def supports_image_input(self) -> bool:
         """Check if this model supports image input"""
         return "vision" in self.capabilities
+
+    # Modelfile parameters, newline-delimited "<key> <value>" pairs
+    parameters: str | None = None
+
+    def num_ctx(self) -> int | None:
+        """`num_ctx` from the Modelfile parameters (the context the server
+        actually runs with), or None when absent / not a positive int."""
+        for line in (self.parameters or "").splitlines():
+            parts = line.split(maxsplit=1)
+            if len(parts) == 2 and parts[0] == "num_ctx":
+                try:
+                    value = int(parts[1].strip().strip('"'))
+                except ValueError:
+                    return None
+                return value if value > 0 else None
+        return None
+
+
+# Local OpenAI-style servers (LM Studio, OpenAI-compatible) dynamic models fetch
+class LMStudioModelsRequest(BaseModel):
+    api_base: str
+    api_key: str | None = None
+    # False = the form sent back a masked key; use the stored one (same api_base only)
+    api_key_changed: bool = True
+    provider_name: str | None = None  # Optional: to save models to existing provider
+
+
+class LMStudioFinalModelResponse(BaseModel):
+    name: str  # LM Studio model key
+    display_name: str
+    max_input_tokens: int | None
+    supports_image_input: bool
+    supports_reasoning: bool  # display only, not persisted
+
+
+class OpenAICompatibleModelsRequest(BaseModel):
+    api_base: str
+    api_key: str | None = None
+    # False = the form sent back a masked key; use the stored one (same api_base only)
+    api_key_changed: bool = True
+    provider_name: str | None = None  # Optional: to save models to existing provider
+
+
+class OpenAICompatibleFinalModelResponse(BaseModel):
+    name: str  # Model id from /v1/models
+    display_name: str
+    max_input_tokens: int | None
+    supports_image_input: bool
+    supports_reasoning: bool  # display only, not persisted
 
 
 # OpenRouter dynamic models fetch

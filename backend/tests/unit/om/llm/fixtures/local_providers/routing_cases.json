@@ -1,0 +1,72 @@
+[
+  {
+    "id": "lm_studio_no_key",
+    "provider": "lm_studio",
+    "model": "qwen3-8b",
+    "api_base": "http://host.docker.internal:1234",
+    "expect": {
+      "model": "lm_studio/qwen3-8b",
+      "base_url": "http://host.docker.internal:1234/v1",
+      "api_key": "",
+      "custom_llm_provider": null
+    }
+  },
+  {
+    "id": "lm_studio_custom_config_key",
+    "provider": "lm_studio",
+    "model": "qwen3-8b",
+    "api_base": "http://host.docker.internal:1234/v1",
+    "custom_config": {
+      "LM_STUDIO_API_KEY": "lms-key"
+    },
+    "expect": {
+      "model": "lm_studio/qwen3-8b",
+      "base_url": "http://host.docker.internal:1234/v1",
+      "api_key": "lms-key",
+      "custom_llm_provider": null
+    }
+  },
+  {
+    "id": "openai_compatible_no_key",
+    "provider": "openai_compatible",
+    "model": "llama-3.1-8b",
+    "api_base": "http://host.docker.internal:8000",
+    "expect": {
+      "model": "openai/llama-3.1-8b",
+      "base_url": "http://host.docker.internal:8000/v1",
+      "api_key": "not-needed",
+      "custom_llm_provider": "openai"
+    }
+  },
+  {
+    "id": "openai_compatible_with_key",
+    "provider": "openai_compatible",
+    "model": "llama-3.1-8b",
+    "api_base": "http://h:8000/v1",
+    "api_key": "srv-key",
+    "expect": {
+      "model": "openai/llama-3.1-8b",
+      "base_url": "http://h:8000/v1",
+      "api_key": "srv-key",
+      "custom_llm_provider": "openai"
+    }
+  },
+  {
+    "id": "ollama_unchanged",
+    "provider": "ollama_chat",
+    "model": "llama3.1:8b",
+    "api_base": "http://host.docker.internal:11434",
+    "custom_config": {
+      "OLLAMA_API_KEY": "olk"
+    },
+    "expect": {
+      "model": "ollama_chat/llama3.1:8b",
+      "base_url": "http://host.docker.internal:11434",
+      "api_key": "olk",
+      "custom_llm_provider": null,
+      "extra_headers": {
+        "Authorization": "Bearer olk"
+      }
+    }
+  }
+]

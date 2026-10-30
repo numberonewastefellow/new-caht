@@ -1,0 +1,2 @@
+# Benchmark dataset files are checksummed in manifest.json: store and check out byte-for-byte.
+backend/tests/rag_benchmark/datasets/** -text -diff

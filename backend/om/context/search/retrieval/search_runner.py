@@ -71,6 +71,9 @@ def _embed_and_search(
         query_type=query_type,
         filters=query_request.filters,
         num_to_retrieve=query_request.limit or NUM_RETURNED_HITS,
+        # --- hybrid-rescore (lane L3) --- per-agent freshness decay factor;
+        # ignored unless OPENSEARCH_HYBRID_RESCORE_ENABLED.
+        recency_bias_multiplier=query_request.recency_bias_multiplier,
     )
 
     return top_chunks

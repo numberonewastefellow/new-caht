@@ -4,15 +4,22 @@ from datetime import timezone
 from typing import Any
 from typing import IO
 
+from om.configs.app_configs import TABLE_CHUNKING_ENABLED
 from om.configs.constants import DocumentSource
 from om.configs.constants import FileOrigin
 from om.connectors.cross_connector_utils.miscellaneous_utils import (
     process_om_metadata,
 )
+from om.connectors.cross_connector_utils.table_file_sections import (
+    extract_table_file,
+)
+from om.connectors.cross_connector_utils.table_file_sections import is_table_file
 from om.connectors.models import Document
 from om.connectors.models import ImageSection
+from om.connectors.models import TableSection
 from om.connectors.models import TextSection
 from om.file_processing.extract_file_text import extract_text_and_images
+from om.file_processing.extract_file_text import ExtractionResult
 from om.file_processing.extract_file_text import get_file_ext
 from om.file_processing.file_types import OmFileExtensions
 from om.file_processing.image_utils import store_image_and_create_section
@@ -149,16 +156,35 @@ def _process_file(
             logger.error(f"Failed to process image file {file_name}: {e}")
             return []
 
-    # 2) Otherwise: text-based approach. Possibly with embedded images.
-    file.seek(0)
+    # 2) Spreadsheets and CSV files: one TableSection per sheet. Anything that
+    #    fails here falls back to the text-based approach below.
+    table_sections: list[TableSection] = []
+    if TABLE_CHUNKING_ENABLED and is_table_file(file_name):
+        try:
+            table_extraction = extract_table_file(file, file_name)
+        except Exception as e:
+            logger.warning(
+                f"Failed to read '{file_name}' as a table, indexing it as text: {e}"
+            )
+        else:
+            table_sections = table_extraction.sections
+            extraction_result = ExtractionResult(
+                text_content="",
+                embedded_images=[],
+                metadata=table_extraction.metadata,
+            )
 
-    # Extract text and images from the file
-    extraction_result = extract_text_and_images(
-        file=file,
-        file_name=file_name,
-        pdf_pass=pdf_pass,
-        content_type=file_type,
-    )
+    # 3) Otherwise: text-based approach. Possibly with embedded images.
+    if not table_sections:
+        file.seek(0)
+
+        # Extract text and images from the file
+        extraction_result = extract_text_and_images(
+            file=file,
+            file_name=file_name,
+            pdf_pass=pdf_pass,
+            content_type=file_type,
+        )
 
     # Each file may have file-specific OM_METADATA
     # If so, we should add it to any metadata processed so far
@@ -182,9 +208,13 @@ def _process_file(
         title = om_metadata.title or om_metadata.file_display_name or title
         link = om_metadata.link or link
 
-    # Build sections: first the text as a single Section
-    sections: list[TextSection | ImageSection] = []
-    if extraction_result.text_content.strip():
+    # Build sections: the sheets of a table file, or the text as a single Section
+    sections: list[TextSection | ImageSection | TableSection] = []
+    if table_sections:
+        for table_section in table_sections:
+            table_section.link = link
+        sections.extend(table_sections)
+    elif extraction_result.text_content.strip():
         logger.debug(f"Creating TextSection for {file_name} with link: {link}")
         sections.append(
             TextSection(link=link, text=extraction_result.text_content.strip())

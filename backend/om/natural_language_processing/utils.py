@@ -214,3 +214,43 @@ def tokenizer_trim_chunks(
             new_chunk.content = new_content
             new_chunks[ind] = new_chunk
     return new_chunks
+
+
+# Longest text handed to the tokenizer in one call; very long inputs are
+# encoded in windows so tiktoken does not overflow its stack.
+_ENCODE_WINDOW_CHARS = 500_000
+
+
+def count_tokens_safely(
+    text: str, tokenizer: BaseTokenizer, token_limit: int | None = None
+) -> int:
+    """Token count of ``text``, encoded in windows when it is very long.
+
+    With ``token_limit`` set, counting stops once the count passes it; the
+    returned value then exceeds the limit but may be below the true count.
+    """
+    if len(text) <= _ENCODE_WINDOW_CHARS:
+        return len(tokenizer.encode(text))
+    total = 0
+    for start in range(0, len(text), _ENCODE_WINDOW_CHARS):
+        total += len(tokenizer.encode(text[start : start + _ENCODE_WINDOW_CHARS]))
+        if token_limit is not None and total > token_limit:
+            return total
+    return total
+
+
+def split_by_token_limit(
+    text: str, tokenizer: BaseTokenizer, max_tokens: int
+) -> list[str]:
+    """Pieces of ``text`` of at most ``max_tokens`` tokens each, cut at token
+    boundaries. Best effort: a piece can re-tokenize to a few tokens more, and
+    a cut inside a multi-byte character decodes to a replacement character."""
+    if not text:
+        return []
+    token_ids: list[int] = []
+    for start in range(0, len(text), _ENCODE_WINDOW_CHARS):
+        token_ids.extend(tokenizer.encode(text[start : start + _ENCODE_WINDOW_CHARS]))
+    return [
+        tokenizer.decode(token_ids[start : start + max_tokens])
+        for start in range(0, len(token_ids), max_tokens)
+    ]

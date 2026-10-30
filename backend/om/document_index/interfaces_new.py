@@ -380,6 +380,8 @@ class HybridCapable(abc.ABC):
         # TODO(andrei): Make this more strict w.r.t. acl, temporary for now.
         filters: IndexFilters,
         num_to_retrieve: int,
+        # --- hybrid-rescore (lane L3) --- per-agent freshness decay factor.
+        recency_bias_multiplier: float = 1.0,
     ) -> list[InferenceChunk]:
         """Runs hybrid search and returns a list of inference chunks.
 
@@ -395,6 +397,9 @@ class HybridCapable(abc.ABC):
             filters: Filters for things like permissions, source type, time,
                 etc.
             num_to_retrieve: Number of highest matching chunks to return.
+            recency_bias_multiplier: Scales the freshness decay of the optional
+                hybrid rescore (0 = no decay, 1 = base, 2 = favor recent).
+                Ignored unless OPENSEARCH_HYBRID_RESCORE_ENABLED.
 
         Returns:
             Score-ranked (highest first) list of highest matching chunks.

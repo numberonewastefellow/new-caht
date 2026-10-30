@@ -32,21 +32,22 @@ Neither system scores recency or document boost, so thumbs-up/down feedback has 
 
 | # | Pri | Item | Effort | Status |
 |---|-----|------|--------|--------|
-| 1 | P1 | pdfium PDF extraction | S | [~] Code + local tests done, awaiting Docker verify. Tracker: `TODO_MD_PORT_PDFIUM.MD` |
+| 1 | P1 | pdfium PDF extraction | S | [x] Committed `2fa6ebfc3` (Docker check by user). Tracker: `TODO_MD_PORT_PDFIUM.MD` |
 | 2 | P1 | Multilingual embedding (Granite) via Cortex | M | [ ] |
-| 3 | P1 | Tabular chunker | L | [ ] |
+| 3 | P1 | Tabular chunker | L | [~] Built + cross-verified, in review branch `upgrade/batch1-review`. Tracker: `TODO_MD_PORT_TABULAR_CHUNKER.MD` |
 | 4 | P1 | Enable reranker by default | S | [ ] |
 | 5 | P2 | Permission hardening | L | [ ] |
-| 6 | P2 | Separate model for evidence selection | S | [ ] |
-| 7 | P2 | Recency + document-boost scoring | M | [ ] |
+| 6 | P2 | Separate model for evidence selection | S | [~] Built with #14, in review branch. Tracker: `TODO_MD_PORT_SEARCH_PROMPTS.MD` |
+| 7 | P2 | Recency + document-boost scoring | M | [~] Built + cross-verified (switch default OFF), in review branch. Tracker: `TODO_MD_PORT_RECENCY_BOOST.MD` |
 | 8 | P3 | Contextual RAG toggle without re-index | M | [ ] |
 | 9 | P3 | Vector quantization / drop title vector | M | [ ] |
 | 10 | P3 | Zero-downtime reindex port | XL | [ ] |
 | 11 | P3 | Durable chat responses + prompt-cache tuning | L | [ ] |
 | 12 | P3 | Extra web search providers (Tavily, Firecrawl) | S | [ ] |
 | 13 | P3 | OCR for scanned PDFs | M | [ ] |
-| 14 | P1 | Search-scope + answer-completeness prompt change (upstream v4.9.0) | S | [ ] |
-| 15 | P1 | Our own RAG eval benchmark | M | [ ] |
+| 14 | P1 | Search-scope + answer-completeness prompt change (upstream v4.9.0) | S | [~] Built + cross-verified, in review branch. Tracker: `TODO_MD_PORT_SEARCH_PROMPTS.MD` |
+| 15 | P1 | Our own RAG eval benchmark | M | [~] Tool + `gov_v1` dataset built, in review branch; baseline run pending. Tracker: `TODO_MD_PORT_RAG_EVAL.MD` |
+| 16 | P1 | Telugu/Hindi PDF text is garbled (both pypdf and pdfium) | M | [ ] Found 2026-10-30 |
 
 ---
 
@@ -236,6 +237,30 @@ Upstream's "best RAG" claim is based on an **internal** benchmark with no public
 
 - [ ] Build a gov-department eval set (Telugu, Hindi and English questions over real department documents, including spreadsheets and PDFs) on `backend/om/evals/` + Braintrust.
 - [ ] Measure before and after each port (pdfium, tabular chunker, Granite, reranker, #14).
+
+---
+
+### 16. [P1] Telugu and Hindi PDF text extraction is garbled (found 2026-10-30)
+
+**Measured** on the synthetic `gov_v1` benchmark PDFs, which were exported from Word with the Nirmala UI font. The figure is the share of extracted words that exist in the source text:
+
+| Script | pypdf | pdfium |
+|---|---|---|
+| Telugu | 21–24% | 21–25% |
+| Hindi | 46–47% | 38–40% |
+
+Digits survive.
+
+**Cause.** Indic scripts reorder and combine glyphs (conjuncts, vowel signs). Text-layer extraction returns the glyphs in visual order, or uses wrong ToUnicode maps, so the logical words can't be rebuilt. This is not a regression from pdfium, but pdfium is slightly worse on Hindi.
+
+**Why P1.** Government documents are often Telugu or Hindi PDFs. Their chunks embed garbage, so search can't find them by keyword or by meaning.
+
+**Options:**
+- [ ] Render the page and OCR it (Tesseract `tel`/`hin`, or PaddleOCR) when the Indic text looks implausible. This shares the trigger logic with #13.
+- [ ] A vision LLM transcribes the page images. The image-summarization path already exists.
+- [ ] Try another extractor: pdfminer.six layout mode, or PyMuPDF (check its licence first: AGPL).
+- [ ] Add a "garbled script" detector (share of words not in a dictionary or n-gram model) to decide when to fall back.
+- [ ] Measure the effect with the L4 benchmark: Telugu/Hindi PDF questions, before and after.
 
 ---
 

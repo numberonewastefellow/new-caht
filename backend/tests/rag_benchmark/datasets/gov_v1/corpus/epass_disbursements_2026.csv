@@ -1,0 +1,151 @@
+disbursement_ref,student,district,scheme,amount_credited_rs,credited_on
+EPSB-MBN-00001,Bhavani Kumar,Mahabubnagar,Post-Matric,32700,2025-06-21
+EPSB-NLG-00002,Mahesh Devi,Nalgonda,Post-Matric,30300,2026-02-08
+EPSB-RRD-00003,Deepa Kumar,Ranga Reddy,Post-Matric,5200,2026-02-28
+EPSB-WGL-00004,Deepa Prasad,Warangal,Post-Matric,7200,2025-06-04
+EPSB-NLG-00005,Venkatesh Naidu,Nalgonda,Fee Reimbursement,57200,2025-10-04
+EPSB-NLG-00006,Suresh Naidu,Nalgonda,Post-Matric,26800,2025-11-18
+EPSB-MDL-00007,Sujatha Yadav,Medchal-Malkajgiri,Pre-Matric,24500,2025-05-23
+EPSB-NZB-00008,Srinivas Murthy,Nizamabad,Fee Reimbursement,24500,2025-08-23
+EPSB-ADB-00009,Raju Kumar,Adilabad,Pre-Matric,25000,2025-10-16
+EPSB-WGL-00010,Naresh Prasad,Warangal,Post-Matric,19900,2026-03-18
+EPSB-KMM-00011,Raju Kumar,Khammam,Pre-Matric,32700,2025-05-03
+EPSB-WGL-00012,Bhavani Naik,Warangal,Pre-Matric,37600,2025-04-17
+EPSB-MDL-00013,Prakash Murthy,Medchal-Malkajgiri,Post-Matric,34600,2025-04-16
+EPSB-NLG-00014,Madhavi Murthy,Nalgonda,Post-Matric,27600,2025-04-02
+EPSB-KMM-00015,Lakshmi Kumar,Khammam,Fee Reimbursement,37300,2025-07-05
+EPSB-RRD-00016,Srinivas Yadav,Ranga Reddy,Pre-Matric,11200,2025-07-02
+EPSB-MBN-00017,Sujatha Chary,Mahabubnagar,Post-Matric,55900,2025-06-24
+EPSB-KMM-00018,Kiran Naidu,Khammam,Post-Matric,30600,2026-01-26
+EPSB-ADB-00019,Prakash Devi,Adilabad,Post-Matric,13600,2025-12-05
+EPSB-KRM-00020,Mahesh Varma,Karimnagar,Fee Reimbursement,16100,2025-10-06
+EPSB-ADB-00021,Sai Rao,Adilabad,Post-Matric,40000,2026-03-04
+EPSB-MDL-00022,Radha Naik,Medchal-Malkajgiri,Post-Matric,15200,2025-09-18
+EPSB-WGL-00023,Radha Naidu,Warangal,Fee Reimbursement,36300,2025-09-21
+EPSB-WGL-00024,Shobha Prasad,Warangal,Fee Reimbursement,20500,2025-10-19
+EPSB-WGL-00025,Jyothi Kumar,Warangal,Fee Reimbursement,11300,2025-05-24
+EPSB-NLG-00026,Kiran Naik,Nalgonda,Post-Matric,18900,2026-02-10
+EPSB-RRD-00027,Vijay Devi,Ranga Reddy,Post-Matric,49900,2026-03-08
+EPSB-MBN-00028,Bhavani Naik,Mahabubnagar,Pre-Matric,10500,2025-07-27
+EPSB-ADB-00029,Anil Rao,Adilabad,Fee Reimbursement,31300,2025-07-09
+EPSB-KMM-00030,Bhavani Naidu,Khammam,Post-Matric,56900,2025-04-27
+EPSB-KMM-00031,Lakshmi Prasad,Khammam,Fee Reimbursement,7800,2026-01-26
+EPSB-MDL-00032,Bhavani Rao,Medchal-Malkajgiri,Post-Matric,44100,2025-06-10
+EPSB-KRM-00033,Raju Goud,Karimnagar,Fee Reimbursement,18800,2026-02-14
+EPSB-KRM-00034,Kiran Naidu,Karimnagar,Pre-Matric,50300,2025-10-11
+EPSB-RRD-00035,Swathi Naik,Ranga Reddy,Post-Matric,36400,2025-05-30
+EPSB-KMM-00036,Shobha Naidu,Khammam,Pre-Matric,50200,2025-05-14
+EPSB-NZB-00037,Harish Achari,Nizamabad,Pre-Matric,31600,2025-07-12
+EPSB-NLG-00038,Sai Kumar,Nalgonda,Fee Reimbursement,41400,2025-10-03
+EPSB-MDL-00039,Raju Chary,Medchal-Malkajgiri,Pre-Matric,53300,2025-04-03
+EPSB-MBN-00040,Jyothi Naik,Mahabubnagar,Pre-Matric,6100,2026-02-28
+EPSB-KRM-00041,Madhavi Achari,Karimnagar,Pre-Matric,36500,2025-04-16
+EPSB-ADB-00042,Lakshmi Devi,Adilabad,Fee Reimbursement,19600,2025-10-13
+EPSB-NLG-00043,Vijay Patel,Nalgonda,Pre-Matric,37600,2025-12-06
+EPSB-ADB-00044,Sujatha Chary,Adilabad,Fee Reimbursement,41500,2025-09-14
+EPSB-NLG-00045,Anil Naik,Nalgonda,Post-Matric,19500,2025-05-15
+EPSB-MBN-00046,Harish Rao,Mahabubnagar,Post-Matric,36600,2025-04-30
+EPSB-MDL-00047,Harish Prasad,Medchal-Malkajgiri,Pre-Matric,18000,2025-08-28
+EPSB-ADB-00048,Naresh Chary,Adilabad,Fee Reimbursement,20400,2025-09-07
+EPSB-NZB-00049,Bhavani Babu,Nizamabad,Fee Reimbursement,27600,2026-03-14
+EPSB-ADB-00050,Sai Murthy,Adilabad,Fee Reimbursement,40300,2025-11-05
+EPSB-WGL-00051,Ramesh Yadav,Warangal,Pre-Matric,8500,2025-05-16
+EPSB-WGL-00052,Srinivas Naik,Warangal,Fee Reimbursement,17800,2025-09-25
+EPSB-NLG-00053,Ravi Yadav,Nalgonda,Pre-Matric,3200,2026-02-28
+EPSB-KRM-00054,Ramesh Patel,Karimnagar,Pre-Matric,26200,2026-02-27
+EPSB-NZB-00055,Suresh Kumar,Nizamabad,Pre-Matric,10500,2025-06-12
+EPSB-MBN-00056,Sarala Naidu,Mahabubnagar,Fee Reimbursement,3100,2025-04-22
+EPSB-RRD-00057,Harish Varma,Ranga Reddy,Pre-Matric,35100,2025-06-14
+EPSB-HYD-00058,Ravi Chary,Hyderabad,Post-Matric,57200,2025-12-17
+EPSB-WGL-00059,Ramesh Yadav,Warangal,Fee Reimbursement,52200,2025-05-07
+EPSB-MBN-00060,Kiran Varma,Mahabubnagar,Fee Reimbursement,12700,2025-08-18
+EPSB-ADB-00061,Shobha Devi,Adilabad,Pre-Matric,9600,2025-04-13
+EPSB-NLG-00062,Suresh Varma,Nalgonda,Post-Matric,41300,2025-08-01
+EPSB-ADB-00063,Srinivas Murthy,Adilabad,Pre-Matric,24500,2025-06-06
+EPSB-WGL-00064,Naresh Naik,Warangal,Post-Matric,50600,2025-09-06
+EPSB-RRD-00065,Ramesh Murthy,Ranga Reddy,Pre-Matric,22200,2025-08-10
+EPSB-ADB-00066,Suresh Rao,Adilabad,Post-Matric,42900,2025-12-06
+EPSB-HYD-00067,Jyothi Devi,Hyderabad,Fee Reimbursement,27100,2025-07-19
+EPSB-MBN-00068,Ravi Prasad,Mahabubnagar,Post-Matric,15200,2026-01-13
+EPSB-HYD-00069,Gopal Kumar,Hyderabad,Fee Reimbursement,31500,2025-12-08
+EPSB-RRD-00070,Vijay Chary,Ranga Reddy,Post-Matric,27800,2025-05-10
+EPSB-HYD-00071,Sarala Chary,Hyderabad,Fee Reimbursement,22800,2025-06-04
+EPSB-HYD-00072,Ravi Patel,Hyderabad,Fee Reimbursement,15200,2025-11-09
+EPSB-MDL-00073,Raju Goud,Medchal-Malkajgiri,Pre-Matric,6100,2026-01-19
+EPSB-NZB-00074,Ramesh Chary,Nizamabad,Pre-Matric,4500,2025-09-02
+EPSB-MBN-00075,Shobha Chary,Mahabubnagar,Fee Reimbursement,57600,2025-05-07
+EPSB-NLG-00076,Usha Kumar,Nalgonda,Pre-Matric,32400,2025-06-15
+EPSB-MBN-00077,Padma Kumar,Mahabubnagar,Fee Reimbursement,22100,2025-04-17
+EPSB-HYD-00078,Deepa Achari,Hyderabad,Pre-Matric,5600,2026-03-20
+EPSB-KRM-00079,Shobha Devi,Karimnagar,Pre-Matric,6800,2025-08-26
+EPSB-ADB-00080,Ramesh Yadav,Adilabad,Post-Matric,39800,2026-03-27
+EPSB-NLG-00081,Kavitha Babu,Nalgonda,Fee Reimbursement,11600,2026-03-01
+EPSB-NZB-00082,Swathi Devi,Nizamabad,Fee Reimbursement,46200,2025-07-11
+EPSB-MDL-00083,Sai Prasad,Medchal-Malkajgiri,Post-Matric,30300,2026-01-11
+EPSB-ADB-00084,Suresh Naidu,Adilabad,Pre-Matric,44200,2026-01-25
+EPSB-WGL-00085,Suresh Reddy,Warangal,Post-Matric,21900,2026-03-02
+EPSB-MDL-00086,Raju Babu,Medchal-Malkajgiri,Fee Reimbursement,55100,2025-05-15
+EPSB-MBN-00087,Lakshmi Chary,Mahabubnagar,Fee Reimbursement,39500,2025-11-08
+EPSB-KRM-00088,Suresh Rao,Karimnagar,Fee Reimbursement,53000,2025-04-17
+EPSB-NLG-00089,Mahesh Naidu,Nalgonda,Fee Reimbursement,49800,2025-09-26
+EPSB-KMM-00090,Kiran Varma,Khammam,Fee Reimbursement,37200,2025-05-30
+EPSB-HYD-00091,Kiran Reddy,Hyderabad,Fee Reimbursement,7500,2025-09-01
+EPSB-HYD-00092,Raju Patel,Hyderabad,Pre-Matric,51700,2025-11-03
+EPSB-NLG-00093,Venkatesh Goud,Nalgonda,Fee Reimbursement,13900,2026-02-22
+EPSB-NLG-00094,Bhavani Kumar,Nalgonda,Fee Reimbursement,8600,2025-12-08
+EPSB-NLG-00095,Mahesh Chary,Nalgonda,Pre-Matric,29100,2026-03-04
+EPSB-ADB-00096,Vijay Naik,Adilabad,Fee Reimbursement,51400,2026-03-24
+EPSB-WGL-00097,Shobha Yadav,Warangal,Pre-Matric,5000,2025-04-11
+EPSB-RRD-00098,Bhavani Prasad,Ranga Reddy,Post-Matric,6200,2025-07-06
+EPSB-NZB-00099,Suresh Babu,Nizamabad,Pre-Matric,29100,2025-07-07
+EPSB-NLG-00100,Ravi Prasad,Nalgonda,Post-Matric,19200,2025-05-02
+EPSB-KRM-00101,Deepa Yadav,Karimnagar,Fee Reimbursement,26100,2025-11-26
+EPSB-HYD-00102,Kiran Goud,Hyderabad,Pre-Matric,48400,2026-02-16
+EPSB-KRM-00103,Naresh Varma,Karimnagar,Pre-Matric,21200,2026-01-07
+EPSB-ADB-00104,Radha Devi,Adilabad,Fee Reimbursement,35600,2025-10-21
+EPSB-KRM-00105,Mahesh Murthy,Karimnagar,Fee Reimbursement,5400,2025-06-04
+EPSB-NZB-00106,Madhavi Goud,Nizamabad,Post-Matric,19100,2025-10-01
+EPSB-KRM-00107,Madhavi Reddy,Karimnagar,Post-Matric,27300,2025-09-20
+EPSB-ADB-00108,Jyothi Achari,Adilabad,Pre-Matric,15100,2025-04-05
+EPSB-NLG-00109,Gopal Varma,Nalgonda,Fee Reimbursement,3500,2026-01-09
+EPSB-ADB-00110,Venkatesh Yadav,Adilabad,Fee Reimbursement,7800,2025-07-16
+EPSB-KMM-00111,Shobha Chary,Khammam,Fee Reimbursement,55400,2025-07-21
+EPSB-KRM-00112,Ravi Naik,Karimnagar,Post-Matric,21700,2026-01-12
+EPSB-KRM-00113,Venkatesh Prasad,Karimnagar,Post-Matric,44200,2025-09-05
+EPSB-KRM-00114,Kiran Prasad,Karimnagar,Post-Matric,40000,2026-02-17
+EPSB-NZB-00115,Vijay Chary,Nizamabad,Post-Matric,17700,2025-09-25
+EPSB-WGL-00116,Radha Yadav,Warangal,Post-Matric,38900,2025-04-28
+EPSB-KRM-00117,Padma Devi,Karimnagar,Pre-Matric,31100,2026-01-25
+EPSB-RRD-00118,Bhavani Reddy,Ranga Reddy,Post-Matric,3700,2026-02-15
+EPSB-KRM-00119,Sarala Rao,Karimnagar,Fee Reimbursement,16300,2026-01-24
+EPSB-RRD-00120,Venkatesh Kumar,Ranga Reddy,Fee Reimbursement,23300,2025-07-09
+EPSB-WGL-00121,Raju Yadav,Warangal,Post-Matric,50700,2025-12-05
+EPSB-MBN-00122,Srinivas Rao,Mahabubnagar,Post-Matric,30700,2025-04-25
+EPSB-KMM-00123,Vijay Murthy,Khammam,Pre-Matric,33400,2026-03-17
+EPSB-ADB-00124,Prakash Reddy,Adilabad,Post-Matric,44200,2025-11-21
+EPSB-NZB-00125,Raju Patel,Nizamabad,Pre-Matric,54700,2025-11-27
+EPSB-MDL-00126,Raju Reddy,Medchal-Malkajgiri,Pre-Matric,9600,2025-05-30
+EPSB-KRM-00127,Shobha Varma,Karimnagar,Post-Matric,10400,2025-07-24
+EPSB-ADB-00128,Madhavi Kumar,Adilabad,Post-Matric,9800,2025-04-19
+EPSB-HYD-00129,Lakshmi Devi,Hyderabad,Post-Matric,41400,2025-10-17
+EPSB-MDL-00130,Harish Kumar,Medchal-Malkajgiri,Fee Reimbursement,13300,2025-12-05
+EPSB-WGL-00131,Raju Naik,Warangal,Fee Reimbursement,5300,2025-07-10
+EPSB-NZB-00132,Prakash Devi,Nizamabad,Post-Matric,34700,2025-09-10
+EPSB-NLG-00133,Venkatesh Sharma,Nalgonda,Fee Reimbursement,24800,2025-08-02
+EPSB-RRD-00134,Kavitha Kumar,Ranga Reddy,Post-Matric,23100,2026-03-10
+EPSB-NLG-00135,Swathi Rao,Nalgonda,Post-Matric,12600,2025-07-14
+EPSB-MDL-00136,Suresh Murthy,Medchal-Malkajgiri,Pre-Matric,25400,2025-05-25
+EPSB-MDL-00137,Deepa Babu,Medchal-Malkajgiri,Fee Reimbursement,36700,2025-10-23
+EPSB-MDL-00138,Naresh Kumar,Medchal-Malkajgiri,Pre-Matric,42600,2025-12-05
+EPSB-NZB-00139,Anil Devi,Nizamabad,Pre-Matric,18800,2025-04-15
+EPSB-KMM-00140,Bhavani Babu,Khammam,Pre-Matric,55800,2025-09-13
+EPSB-NZB-00141,Sarala Reddy,Nizamabad,Fee Reimbursement,4900,2025-07-08
+EPSB-NZB-00142,Vijay Kumar,Nizamabad,Post-Matric,47600,2025-06-16
+EPSB-KRM-00143,Harish Yadav,Karimnagar,Fee Reimbursement,26100,2025-04-29
+EPSB-WGL-00144,Sarala Naidu,Warangal,Fee Reimbursement,52400,2025-12-23
+EPSB-NZB-00145,Kavitha Rao,Nizamabad,Pre-Matric,3200,2025-08-28
+EPSB-KRM-00146,Suresh Chary,Karimnagar,Post-Matric,24000,2025-11-07
+EPSB-MBN-00147,Mahesh Naidu,Mahabubnagar,Fee Reimbursement,24500,2026-01-02
+EPSB-NLG-00148,Suresh Varma,Nalgonda,Post-Matric,32200,2025-10-02
+EPSB-HYD-00149,Bhavani Chary,Hyderabad,Fee Reimbursement,37100,2025-08-12
+EPSB-HYD-00150,Rekha Kumar,Hyderabad,Fee Reimbursement,35300,2026-02-21

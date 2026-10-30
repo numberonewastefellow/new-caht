@@ -22,6 +22,8 @@ class LlmProviderNames(str, Enum):
     OPENROUTER = "openrouter"
     AZURE = "azure"
     OLLAMA_CHAT = "ollama_chat"
+    LM_STUDIO = "lm_studio"
+    OPENAI_COMPATIBLE = "openai_compatible"
     MISTRAL = "mistral"
     LITELLM_PROXY = "litellm_proxy"
 
@@ -41,6 +43,9 @@ WELL_KNOWN_PROVIDER_NAMES = [
     LlmProviderNames.OPENROUTER,
     LlmProviderNames.AZURE,
     LlmProviderNames.OLLAMA_CHAT,
+    # LM_STUDIO / OPENAI_COMPATIBLE are intentionally NOT listed: this list feeds
+    # `/admin/llm/built-in/options`, which drives the first-run onboarding cards.
+    # Local servers are configured from the admin LLM page only.
 ]
 
 
@@ -56,6 +61,8 @@ PROVIDER_DISPLAY_NAMES: dict[str, str] = {
     LlmProviderNames.AZURE: "Azure",
     "ollama": "Ollama",
     LlmProviderNames.OLLAMA_CHAT: "Ollama",
+    LlmProviderNames.LM_STUDIO: "LM Studio",
+    LlmProviderNames.OPENAI_COMPATIBLE: "OpenAI-Compatible",
     "groq": "Groq",
     "anyscale": "Anyscale",
     "deepseek": "DeepSeek",
@@ -103,6 +110,8 @@ AGGREGATOR_PROVIDERS: set[str] = {
     LlmProviderNames.BEDROCK_CONVERSE,
     LlmProviderNames.OPENROUTER,
     LlmProviderNames.OLLAMA_CHAT,
+    LlmProviderNames.LM_STUDIO,
+    LlmProviderNames.OPENAI_COMPATIBLE,
     LlmProviderNames.VERTEX_AI,
     LlmProviderNames.AZURE,
 }

@@ -1,0 +1,13 @@
+{
+  "models": [
+    {
+      "name": "llama3.1:8b"
+    },
+    {
+      "name": "llava:7b"
+    },
+    {
+      "name": "nomic-embed-text:latest"
+    }
+  ]
+}

@@ -176,8 +176,9 @@ def get_normalization_pipeline_name_and_config() -> tuple[str, dict[str, Any]]:
 class DocumentQuery:
     """
     TODO(andrei): Implement multi-phase search strategies.
-    TODO(andrei): Implement document boost.
-    TODO(andrei): Implement document age.
+
+    NOTE: Document boost and document age are applied after the query, on the
+    normalized hybrid scores (see hybrid_rescore.py and README.md).
     """
 
     @staticmethod

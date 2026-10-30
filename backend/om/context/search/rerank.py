@@ -19,6 +19,7 @@ from om.configs.app_configs import RERANK_SERVER_URL
 from om.configs.app_configs import RERANK_TIMEOUT_SECONDS
 from om.configs.app_configs import RERANK_TOP_N
 from om.context.search.models import InferenceChunk
+from om.document_index.opensearch.hybrid_rescore import rescore_cross_encoder_scores
 from om.natural_language_processing.search_nlp_models import RerankingModel
 from om.utils.logger import setup_logger
 from shared_configs.enums import RerankerProvider
@@ -70,6 +71,10 @@ def rerank_chunks_with_status(
             raise ValueError(
                 f"reranker returned {len(scores)} scores for {len(head)} chunks"
             )
+        # --- hybrid-rescore (lane L3) --- apply the feedback-boost / freshness
+        # factors to the cross-encoder scores too; unchanged unless
+        # OPENSEARCH_HYBRID_RESCORE_ENABLED.
+        scores = rescore_cross_encoder_scores(head, scores)
         # sorted() is stable, so equal scores keep their retrieval order
         order = sorted(range(len(head)), key=lambda i: scores[i], reverse=True)
         reranked = [head[i] for i in order]

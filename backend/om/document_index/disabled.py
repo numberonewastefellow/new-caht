@@ -74,6 +74,7 @@ class DisabledDocumentIndex(DocumentIndex):
         query_type: QueryType,  # noqa: ARG002
         filters: IndexFilters,  # noqa: ARG002
         num_to_retrieve: int,  # noqa: ARG002
+        recency_bias_multiplier: float = 1.0,  # noqa: ARG002
     ) -> list[InferenceChunk]:
         raise RuntimeError(VECTOR_DB_DISABLED_ERROR)
 

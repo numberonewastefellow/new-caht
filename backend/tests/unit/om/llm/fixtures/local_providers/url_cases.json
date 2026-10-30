@@ -1,0 +1,59 @@
+{
+  "normalize_openai_v1_base": [
+    [
+      "http://h:8000",
+      "http://h:8000/v1"
+    ],
+    [
+      "http://h:8000/",
+      "http://h:8000/v1"
+    ],
+    [
+      "http://h:8000/v1",
+      "http://h:8000/v1"
+    ],
+    [
+      "http://h:8000/v1/",
+      "http://h:8000/v1"
+    ],
+    [
+      "  http://h:1234  ",
+      "http://h:1234/v1"
+    ],
+    [
+      "http://h/proxy/v1",
+      "http://h/proxy/v1"
+    ]
+  ],
+  "strip_openai_v1_suffix": [
+    [
+      "http://h:1234/v1",
+      "http://h:1234"
+    ],
+    [
+      "http://h:1234/",
+      "http://h:1234"
+    ]
+  ],
+  "lm_studio_empty_base_error": "API base URL is required",
+  "openai_compatible_list_url": [
+    [
+      "http://h:8000",
+      "http://h:8000/v1/models"
+    ],
+    [
+      "http://h:8000/v1",
+      "http://h:8000/v1/models"
+    ]
+  ],
+  "lm_studio_list_url": [
+    [
+      "http://h:1234",
+      "http://h:1234/api/v1/models"
+    ],
+    [
+      "http://h:1234/v1",
+      "http://h:1234/api/v1/models"
+    ]
+  ]
+}

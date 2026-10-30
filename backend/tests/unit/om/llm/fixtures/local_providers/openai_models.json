@@ -1,0 +1,22 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "llama-3.1-8b",
+      "object": "model"
+    },
+    {
+      "id": "text-embedding-3-small",
+      "object": "model"
+    },
+    {
+      "id": "whisper-1",
+      "object": "model"
+    },
+    {
+      "id": "qwen2.5-vl",
+      "object": "model",
+      "context_length": 32768
+    }
+  ]
+}

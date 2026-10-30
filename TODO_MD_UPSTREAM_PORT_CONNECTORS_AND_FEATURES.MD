@@ -131,6 +131,14 @@ Template:
 11. **Progress tracker (mandatory, keep it current)**
     - A dated checklist of every step. **Tick each step the moment it's done**, so a new session can resume from the first unchecked item.
     - Put a "Status:" line at the top of the doc, and mirror the status in this backlog's table.
+12. **Naming and structure (ours). Upstream code is reference only** (user rule, 2026-10-30)
+    - Folders, files, classes, functions, methods, constants, env/config names, routes and React components all get **our own meaningful names**, following our existing conventions. Never mirror upstream identifiers just because upstream used them.
+    - Put files in our existing folders when a fitting one exists.
+    - Add a table to the doc: upstream reference concept → our folder / file / identifier, with a one-line reason.
+13. **Post-implementation cross-verification (mandatory)**
+    - After implementing, run a **behavioural diff against the upstream reference**: the same inputs through the reference logic and through ours, then compare outputs and edge cases.
+    - Run it with side-by-side fixtures or scripts kept outside the repo. Never import upstream code into our tree.
+    - Record the results, and any intended differences, in the progress tracker.
 
 Reference example: `TODO_MD_PORT_PDFIUM.MD`.
 

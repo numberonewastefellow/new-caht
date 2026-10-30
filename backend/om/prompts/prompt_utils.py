@@ -3,12 +3,14 @@ from typing import cast
 
 from langchain_core.messages import BaseMessage
 
+from om.configs.app_configs import ENABLE_COMPLETE_ANSWER_PROMPTS
 from om.configs.constants import DocumentSource
 from om.prompts.chat_prompts import ADDITIONAL_INFO
 from om.prompts.chat_prompts import CITATION_GUIDANCE_REPLACEMENT_PAT
 from om.prompts.chat_prompts import COMPANY_DESCRIPTION_BLOCK
 from om.prompts.chat_prompts import COMPANY_NAME_BLOCK
 from om.prompts.chat_prompts import DATETIME_REPLACEMENT_PAT
+from om.prompts.chat_prompts import MULTI_PART_ANSWER_GUIDANCE
 from om.prompts.chat_prompts import REMINDER_TAG_REPLACEMENT_PAT
 from om.prompts.chat_prompts import REQUIRE_CITATION_GUIDANCE
 from om.prompts.constants import CODE_BLOCK_PAT
@@ -60,6 +62,24 @@ def replace_current_datetime_tag(
     return prompt_str
 
 
+def complete_answer_prompts_enabled() -> bool:
+    """Single switch for COMPLETE_ANSWER_REMINDER + MULTI_PART_ANSWER_GUIDANCE."""
+    return ENABLE_COMPLETE_ANSWER_PROMPTS
+
+
+def build_citation_guidance_block(existing_prompt: str = "") -> str:
+    """Guidance added to the system prompt on search-backed turns: the citation
+    rules, then (behind the flag) the multi-part answer guidance. The multi-part
+    block is skipped if `existing_prompt` already contains it."""
+    block = REQUIRE_CITATION_GUIDANCE
+    if (
+        complete_answer_prompts_enabled()
+        and MULTI_PART_ANSWER_GUIDANCE not in existing_prompt
+    ):
+        block += MULTI_PART_ANSWER_GUIDANCE
+    return block
+
+
 def replace_citation_guidance_tag(
     prompt_str: str,
     *,
@@ -84,8 +104,10 @@ def replace_citation_guidance_tag(
         ) and REQUIRE_CITATION_GUIDANCE not in prompt_str
         return prompt_str, should_append
 
+    # Unlike the fallback (append) path, the placeholder path used to drop the
+    # multi-part guidance; both paths now insert the same block.
     citation_guidance = (
-        REQUIRE_CITATION_GUIDANCE
+        build_citation_guidance_block(prompt_str)
         if should_cite_documents or include_all_guidance
         else ""
     )

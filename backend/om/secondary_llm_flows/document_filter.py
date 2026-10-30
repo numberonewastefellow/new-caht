@@ -1,6 +1,7 @@
 import json
 import re
 
+from om.configs.app_configs import EVIDENCE_SELECTION_LLM_TIMEOUT_S
 from om.context.search.models import ContextExpansionType
 from om.context.search.models import InferenceChunk
 from om.context.search.models import InferenceSection
@@ -132,6 +133,8 @@ def classify_section_relevance(
             response = llm.invoke(
                 prompt=prompt_msg,
                 reasoning_effort=ReasoningEffort.OFF,
+                # Bounded so a stalled provider falls back to the default fast
+                timeout_override=EVIDENCE_SELECTION_LLM_TIMEOUT_S,
             )
             record_llm_response(span_generation, response)
             llm_response = response.choice.message.content
@@ -279,7 +282,10 @@ def select_sections_for_expansion(
             llm=llm, flow="select_sections_for_expansion", input_messages=[prompt_text]
         ) as span_generation:
             response = llm.invoke(
-                prompt=[prompt_text], reasoning_effort=ReasoningEffort.OFF
+                prompt=[prompt_text],
+                reasoning_effort=ReasoningEffort.OFF,
+                # Bounded so a stalled provider falls back to the retrieved order fast
+                timeout_override=EVIDENCE_SELECTION_LLM_TIMEOUT_S,
             )
             record_llm_response(span_generation, response)
             llm_response = response.choice.message.content

@@ -22,7 +22,9 @@ from om.llm.well_known_providers.auto_update_service import (
 from om.llm.well_known_providers.constants import ANTHROPIC_PROVIDER_NAME
 from om.llm.well_known_providers.constants import AZURE_PROVIDER_NAME
 from om.llm.well_known_providers.constants import BEDROCK_PROVIDER_NAME
+from om.llm.well_known_providers.constants import LM_STUDIO_PROVIDER_NAME
 from om.llm.well_known_providers.constants import OLLAMA_PROVIDER_NAME
+from om.llm.well_known_providers.constants import OPENAI_COMPATIBLE_PROVIDER_NAME
 from om.llm.well_known_providers.constants import OPENAI_PROVIDER_NAME
 from om.llm.well_known_providers.constants import OPENROUTER_PROVIDER_NAME
 from om.llm.well_known_providers.constants import VERTEXAI_PROVIDER_NAME
@@ -36,7 +38,8 @@ logger = setup_logger()
 def _get_provider_to_models_map() -> dict[str, list[str]]:
     """Lazy-load provider model mappings to avoid importing litellm at module level.
 
-    Dynamic providers (Bedrock, Ollama, OpenRouter) return empty lists here
+    Dynamic providers (Bedrock, Ollama, OpenRouter, LM Studio,
+    OpenAI-compatible) return empty lists here
     because their models are fetched directly from the source API, which is
     more up-to-date than LiteLLM's static lists.
     """
@@ -47,6 +50,8 @@ def _get_provider_to_models_map() -> dict[str, list[str]]:
         VERTEXAI_PROVIDER_NAME: get_vertexai_model_names(),
         OLLAMA_PROVIDER_NAME: [],  # Dynamic - fetched from Ollama API
         OPENROUTER_PROVIDER_NAME: [],  # Dynamic - fetched from OpenRouter API
+        LM_STUDIO_PROVIDER_NAME: [],  # Dynamic - fetched from LM Studio API
+        OPENAI_COMPATIBLE_PROVIDER_NAME: [],  # Dynamic - fetched from /v1/models
     }
 
 
@@ -210,7 +215,9 @@ def get_vertexai_model_names() -> list[str]:
 
 
 @lru_cache(maxsize=4096)
-def _litellm_model_capabilities(model_name: str, provider_name: str) -> tuple[int, bool]:
+def _litellm_model_capabilities(
+    model_name: str, provider_name: str
+) -> tuple[int, bool]:
     """(max_input_tokens, supports_image_input) according to LiteLLM.
 
     The LiteLLM model map is static for the life of the process, so this is safe
@@ -351,6 +358,8 @@ def get_provider_display_name(provider_name: str) -> str:
         BEDROCK_PROVIDER_NAME: "Amazon Bedrock",
         VERTEXAI_PROVIDER_NAME: "Google Vertex AI",
         OPENROUTER_PROVIDER_NAME: "OpenRouter",
+        LM_STUDIO_PROVIDER_NAME: "LM Studio",
+        OPENAI_COMPATIBLE_PROVIDER_NAME: "OpenAI-Compatible",
     }
 
     if provider_name in _OM_PROVIDER_DISPLAY_NAMES:

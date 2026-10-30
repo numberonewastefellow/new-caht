@@ -3,6 +3,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 from typing import cast
+from typing import Literal
 
 from pydantic import BaseModel
 from pydantic import Field
@@ -32,6 +33,19 @@ class ConnectorMissingCredentialError(PermissionError):
         )
 
 
+class SectionKind(str, Enum):
+    """Tells the Section subclasses apart after a JSON round-trip.
+
+    Documents are dumped to JSON (batch storage) and validated back. Without a
+    distinct literal per subclass, a dumped TableSection would re-validate as a
+    TextSection and silently fall back to plain text chunking.
+    """
+
+    TEXT = "text"
+    IMAGE = "image"
+    TABLE = "table"
+
+
 class Section(BaseModel):
     """Base section class with common attributes"""
 
@@ -43,6 +57,7 @@ class Section(BaseModel):
 class TextSection(Section):
     """Section containing text content"""
 
+    kind: Literal[SectionKind.TEXT] = SectionKind.TEXT
     text: str
 
     def __sizeof__(self) -> int:
@@ -52,10 +67,33 @@ class TextSection(Section):
 class ImageSection(Section):
     """Section containing an image reference"""
 
+    kind: Literal[SectionKind.IMAGE] = SectionKind.IMAGE
     image_file_id: str
 
     def __sizeof__(self) -> int:
         return sys.getsizeof(self.image_file_id) + sys.getsizeof(self.link)
+
+
+class TableSection(Section):
+    """One sheet of a spreadsheet, or a whole CSV/TSV file, as CSV text.
+
+    All TableSections of one file share the same ``link`` (``None`` included);
+    the chunker groups them by it and chunks the file as a whole. The file name
+    comes from the document's ``semantic_identifier``.
+    """
+
+    kind: Literal[SectionKind.TABLE] = SectionKind.TABLE
+    # CSV text (excel dialect) of this sheet or file, kept inline.
+    text: str
+    # Sheet name for spreadsheets; None for a csv/tsv file.
+    sheet_name: str | None = None
+
+    def __sizeof__(self) -> int:
+        return (
+            sys.getsizeof(self.text)
+            + sys.getsizeof(self.link)
+            + sys.getsizeof(self.sheet_name)
+        )
 
 
 class BasicExpertInfo(BaseModel):
@@ -160,7 +198,7 @@ class DocumentBase(BaseModel):
     """Used for VertualAI ingestion api, the ID is inferred before use if not provided"""
 
     id: str | None = None
-    sections: list[TextSection | ImageSection]
+    sections: list[TextSection | ImageSection | TableSection]
     source: DocumentSource | None = None
     semantic_identifier: str  # displayed in the UI as the main identifier for the doc
     # TODO(andrei): Ideally we could improve this to where each value is just a
@@ -364,7 +402,8 @@ class IndexingDocument(Document):
             section_len = sum(
                 (
                     len(section.text)
-                    if isinstance(section, TextSection) and section.text is not None
+                    if isinstance(section, (TextSection, TableSection))
+                    and section.text is not None
                     else 0
                 )
                 for section in self.sections

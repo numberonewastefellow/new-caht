@@ -1,0 +1,151 @@
+opinion_no,prosecutor,district,offence_category,days_to_opinion,issued_on
+DOPB-HYD-00001,Deepa Devi,Hyderabad,Economic Offence,7,2026-03-08
+DOPB-WGL-00002,Kavitha Yadav,Warangal,Bodily Offence,10,2025-06-21
+DOPB-ADB-00003,Naresh Sharma,Adilabad,Bodily Offence,28,2025-08-10
+DOPB-MDL-00004,Bhavani Yadav,Medchal-Malkajgiri,Bodily Offence,16,2025-09-14
+DOPB-ADB-00005,Suresh Murthy,Adilabad,Property Offence,23,2026-03-20
+DOPB-HYD-00006,Jyothi Chary,Hyderabad,Cyber Offence,20,2025-08-08
+DOPB-MBN-00007,Radha Sharma,Mahabubnagar,Bodily Offence,20,2025-10-19
+DOPB-RRD-00008,Mahesh Yadav,Ranga Reddy,NDPS,12,2026-03-16
+DOPB-NLG-00009,Sujatha Prasad,Nalgonda,Cyber Offence,30,2025-05-23
+DOPB-HYD-00010,Sujatha Devi,Hyderabad,Economic Offence,19,2025-07-04
+DOPB-NZB-00011,Padma Goud,Nizamabad,Economic Offence,16,2026-03-09
+DOPB-ADB-00012,Ramesh Reddy,Adilabad,Property Offence,15,2025-07-25
+DOPB-NZB-00013,Anitha Kumar,Nizamabad,Cyber Offence,12,2026-01-11
+DOPB-HYD-00014,Mahesh Patel,Hyderabad,Property Offence,12,2026-02-26
+DOPB-MDL-00015,Deepa Patel,Medchal-Malkajgiri,Bodily Offence,10,2025-09-21
+DOPB-NZB-00016,Harish Reddy,Nizamabad,Bodily Offence,18,2025-06-24
+DOPB-NZB-00017,Sarala Naidu,Nizamabad,Bodily Offence,8,2025-05-14
+DOPB-NLG-00018,Vijay Patel,Nalgonda,Property Offence,4,2025-09-21
+DOPB-KMM-00019,Ramesh Prasad,Khammam,Bodily Offence,27,2026-01-12
+DOPB-KMM-00020,Deepa Yadav,Khammam,Bodily Offence,8,2025-11-10
+DOPB-NZB-00021,Raju Yadav,Nizamabad,Economic Offence,3,2025-12-08
+DOPB-KRM-00022,Radha Chary,Karimnagar,NDPS,23,2025-06-17
+DOPB-KRM-00023,Deepa Patel,Karimnagar,Property Offence,27,2025-08-05
+DOPB-NZB-00024,Anil Naik,Nizamabad,Cyber Offence,16,2026-01-19
+DOPB-MBN-00025,Sujatha Babu,Mahabubnagar,Property Offence,9,2025-12-29
+DOPB-KRM-00026,Swathi Prasad,Karimnagar,Cyber Offence,22,2025-08-31
+DOPB-ADB-00027,Anitha Sharma,Adilabad,Property Offence,10,2025-08-31
+DOPB-KRM-00028,Sujatha Naidu,Karimnagar,Economic Offence,29,2025-10-03
+DOPB-HYD-00029,Mahesh Yadav,Hyderabad,Economic Offence,24,2026-03-11
+DOPB-KRM-00030,Padma Murthy,Karimnagar,Economic Offence,5,2025-04-15
+DOPB-NLG-00031,Srinivas Goud,Nalgonda,NDPS,5,2025-07-24
+DOPB-NLG-00032,Prakash Babu,Nalgonda,Bodily Offence,14,2025-08-24
+DOPB-WGL-00033,Venkatesh Rao,Warangal,NDPS,26,2025-09-19
+DOPB-ADB-00034,Rekha Murthy,Adilabad,NDPS,29,2025-12-10
+DOPB-KMM-00035,Srinivas Goud,Khammam,Bodily Offence,8,2026-03-01
+DOPB-WGL-00036,Mahesh Murthy,Warangal,Property Offence,29,2026-01-19
+DOPB-MBN-00037,Jyothi Rao,Mahabubnagar,Cyber Offence,23,2025-06-13
+DOPB-NLG-00038,Gopal Babu,Nalgonda,Cyber Offence,19,2026-01-25
+DOPB-WGL-00039,Raju Chary,Warangal,Bodily Offence,10,2025-12-21
+DOPB-NZB-00040,Ravi Prasad,Nizamabad,NDPS,29,2025-08-10
+DOPB-RRD-00041,Madhavi Varma,Ranga Reddy,Cyber Offence,28,2025-11-08
+DOPB-NZB-00042,Anil Babu,Nizamabad,Cyber Offence,21,2025-12-02
+DOPB-NZB-00043,Harish Reddy,Nizamabad,NDPS,28,2025-08-12
+DOPB-RRD-00044,Padma Sharma,Ranga Reddy,Cyber Offence,24,2026-03-15
+DOPB-ADB-00045,Ravi Achari,Adilabad,Bodily Offence,6,2025-04-28
+DOPB-KMM-00046,Lakshmi Murthy,Khammam,NDPS,22,2025-11-16
+DOPB-RRD-00047,Kavitha Babu,Ranga Reddy,Bodily Offence,4,2025-05-20
+DOPB-MDL-00048,Padma Varma,Medchal-Malkajgiri,Property Offence,29,2026-01-07
+DOPB-NLG-00049,Anil Prasad,Nalgonda,Cyber Offence,30,2025-12-27
+DOPB-HYD-00050,Suresh Achari,Hyderabad,Bodily Offence,9,2026-03-22
+DOPB-KRM-00051,Anil Yadav,Karimnagar,Property Offence,17,2025-12-28
+DOPB-MBN-00052,Anil Rao,Mahabubnagar,Economic Offence,15,2025-12-20
+DOPB-ADB-00053,Rekha Sharma,Adilabad,Property Offence,19,2025-06-15
+DOPB-MBN-00054,Rekha Yadav,Mahabubnagar,Property Offence,7,2026-01-13
+DOPB-ADB-00055,Srinivas Goud,Adilabad,NDPS,11,2025-08-06
+DOPB-WGL-00056,Ravi Sharma,Warangal,Economic Offence,3,2025-04-22
+DOPB-NLG-00057,Shobha Rao,Nalgonda,Bodily Offence,16,2026-02-11
+DOPB-WGL-00058,Harish Naidu,Warangal,Cyber Offence,5,2025-11-29
+DOPB-MDL-00059,Deepa Murthy,Medchal-Malkajgiri,Bodily Offence,22,2025-07-24
+DOPB-WGL-00060,Harish Sharma,Warangal,Property Offence,25,2025-04-15
+DOPB-HYD-00061,Sarala Babu,Hyderabad,Cyber Offence,6,2025-08-04
+DOPB-KMM-00062,Radha Chary,Khammam,Cyber Offence,12,2025-09-10
+DOPB-RRD-00063,Padma Kumar,Ranga Reddy,NDPS,16,2025-12-20
+DOPB-NZB-00064,Deepa Yadav,Nizamabad,NDPS,24,2025-04-04
+DOPB-KRM-00065,Kavitha Babu,Karimnagar,Property Offence,2,2025-05-24
+DOPB-KRM-00066,Usha Achari,Karimnagar,Property Offence,17,2025-07-17
+DOPB-WGL-00067,Kiran Yadav,Warangal,Cyber Offence,23,2025-07-25
+DOPB-RRD-00068,Madhavi Kumar,Ranga Reddy,Bodily Offence,9,2025-10-14
+DOPB-KMM-00069,Venkatesh Chary,Khammam,Property Offence,27,2025-07-26
+DOPB-NLG-00070,Kavitha Sharma,Nalgonda,Cyber Offence,23,2026-01-07
+DOPB-ADB-00071,Sujatha Devi,Adilabad,Property Offence,23,2025-12-14
+DOPB-NZB-00072,Radha Chary,Nizamabad,Bodily Offence,22,2025-08-14
+DOPB-NLG-00073,Srinivas Naik,Nalgonda,Bodily Offence,23,2025-07-02
+DOPB-KRM-00074,Sai Patel,Karimnagar,Economic Offence,5,2025-05-04
+DOPB-KRM-00075,Gopal Naidu,Karimnagar,NDPS,7,2026-01-16
+DOPB-HYD-00076,Venkatesh Chary,Hyderabad,Property Offence,16,2025-06-07
+DOPB-WGL-00077,Lakshmi Naidu,Warangal,Economic Offence,12,2025-05-14
+DOPB-KRM-00078,Kiran Naik,Karimnagar,Property Offence,14,2025-04-27
+DOPB-RRD-00079,Sarala Sharma,Ranga Reddy,Economic Offence,22,2025-08-27
+DOPB-KMM-00080,Kiran Chary,Khammam,Economic Offence,16,2026-03-01
+DOPB-KRM-00081,Shobha Murthy,Karimnagar,Cyber Offence,30,2025-09-05
+DOPB-MBN-00082,Prakash Naidu,Mahabubnagar,Bodily Offence,21,2025-11-01
+DOPB-KRM-00083,Sarala Achari,Karimnagar,Bodily Offence,27,2026-03-02
+DOPB-MBN-00084,Anil Reddy,Mahabubnagar,Bodily Offence,24,2025-05-14
+DOPB-RRD-00085,Bhavani Reddy,Ranga Reddy,Economic Offence,5,2025-04-23
+DOPB-KMM-00086,Sujatha Goud,Khammam,NDPS,21,2025-09-15
+DOPB-MBN-00087,Raju Yadav,Mahabubnagar,Bodily Offence,28,2025-10-28
+DOPB-KRM-00088,Kavitha Goud,Karimnagar,Cyber Offence,21,2026-01-11
+DOPB-KMM-00089,Srinivas Varma,Khammam,Economic Offence,23,2025-07-16
+DOPB-NZB-00090,Prakash Achari,Nizamabad,Property Offence,9,2026-03-11
+DOPB-KRM-00091,Kiran Chary,Karimnagar,Bodily Offence,13,2025-11-05
+DOPB-HYD-00092,Kiran Naik,Hyderabad,Property Offence,24,2025-06-30
+DOPB-MBN-00093,Jyothi Chary,Mahabubnagar,Bodily Offence,29,2026-02-12
+DOPB-RRD-00094,Ramesh Chary,Ranga Reddy,Property Offence,5,2025-08-26
+DOPB-KMM-00095,Vijay Naik,Khammam,Economic Offence,12,2025-07-07
+DOPB-ADB-00096,Bhavani Prasad,Adilabad,Bodily Offence,23,2025-07-16
+DOPB-RRD-00097,Harish Rao,Ranga Reddy,Cyber Offence,22,2026-02-25
+DOPB-MBN-00098,Swathi Goud,Mahabubnagar,Bodily Offence,26,2025-06-20
+DOPB-KMM-00099,Jyothi Sharma,Khammam,Cyber Offence,2,2025-11-30
+DOPB-HYD-00100,Ramesh Sharma,Hyderabad,NDPS,13,2025-04-12
+DOPB-NZB-00101,Kiran Sharma,Nizamabad,Bodily Offence,3,2025-09-24
+DOPB-KMM-00102,Deepa Naik,Khammam,NDPS,11,2025-04-16
+DOPB-NZB-00103,Deepa Babu,Nizamabad,Bodily Offence,28,2026-02-08
+DOPB-KRM-00104,Sarala Devi,Karimnagar,NDPS,9,2025-08-26
+DOPB-RRD-00105,Kiran Goud,Ranga Reddy,Economic Offence,15,2025-07-28
+DOPB-HYD-00106,Shobha Varma,Hyderabad,NDPS,24,2026-02-03
+DOPB-KRM-00107,Madhavi Prasad,Karimnagar,Bodily Offence,21,2025-08-24
+DOPB-NLG-00108,Suresh Kumar,Nalgonda,Bodily Offence,5,2026-01-24
+DOPB-WGL-00109,Naresh Goud,Warangal,Property Offence,27,2025-07-30
+DOPB-MBN-00110,Mahesh Patel,Mahabubnagar,Cyber Offence,13,2026-01-28
+DOPB-HYD-00111,Venkatesh Naidu,Hyderabad,Economic Offence,30,2025-08-01
+DOPB-MBN-00112,Deepa Reddy,Mahabubnagar,Property Offence,22,2025-08-18
+DOPB-ADB-00113,Sarala Babu,Adilabad,Bodily Offence,4,2026-03-15
+DOPB-WGL-00114,Madhavi Varma,Warangal,Economic Offence,3,2025-07-09
+DOPB-RRD-00115,Usha Yadav,Ranga Reddy,Economic Offence,3,2025-08-27
+DOPB-NZB-00116,Harish Achari,Nizamabad,Economic Offence,30,2025-04-24
+DOPB-MBN-00117,Mahesh Patel,Mahabubnagar,Cyber Offence,9,2025-04-10
+DOPB-WGL-00118,Lakshmi Kumar,Warangal,Economic Offence,10,2026-03-05
+DOPB-HYD-00119,Jyothi Achari,Hyderabad,Economic Offence,8,2026-02-16
+DOPB-ADB-00120,Anil Sharma,Adilabad,Property Offence,9,2025-06-11
+DOPB-KMM-00121,Ravi Achari,Khammam,Property Offence,24,2026-01-28
+DOPB-HYD-00122,Sarala Patel,Hyderabad,Economic Offence,8,2026-03-14
+DOPB-WGL-00123,Kavitha Reddy,Warangal,Property Offence,22,2026-03-07
+DOPB-RRD-00124,Radha Varma,Ranga Reddy,Cyber Offence,6,2025-10-31
+DOPB-MDL-00125,Bhavani Kumar,Medchal-Malkajgiri,Economic Offence,4,2026-01-21
+DOPB-HYD-00126,Sai Chary,Hyderabad,Bodily Offence,3,2025-08-27
+DOPB-KMM-00127,Usha Achari,Khammam,Bodily Offence,8,2026-03-28
+DOPB-NLG-00128,Deepa Naidu,Nalgonda,Bodily Offence,25,2025-04-05
+DOPB-RRD-00129,Jyothi Patel,Ranga Reddy,Cyber Offence,29,2025-05-01
+DOPB-NLG-00130,Prakash Naik,Nalgonda,Economic Offence,4,2025-07-01
+DOPB-KRM-00131,Kavitha Chary,Karimnagar,Economic Offence,10,2025-07-02
+DOPB-HYD-00132,Sai Varma,Hyderabad,NDPS,26,2025-07-03
+DOPB-KMM-00133,Usha Yadav,Khammam,Bodily Offence,9,2025-10-15
+DOPB-KRM-00134,Srinivas Devi,Karimnagar,Property Offence,26,2025-11-07
+DOPB-MBN-00135,Venkatesh Varma,Mahabubnagar,Cyber Offence,25,2026-02-27
+DOPB-MBN-00136,Kavitha Babu,Mahabubnagar,Cyber Offence,4,2025-06-09
+DOPB-NLG-00137,Sai Prasad,Nalgonda,Cyber Offence,22,2026-02-16
+DOPB-KRM-00138,Kavitha Murthy,Karimnagar,NDPS,18,2026-02-18
+DOPB-NZB-00139,Madhavi Rao,Nizamabad,Cyber Offence,11,2025-04-04
+DOPB-WGL-00140,Swathi Naik,Warangal,Cyber Offence,14,2025-09-01
+DOPB-WGL-00141,Venkatesh Yadav,Warangal,Property Offence,8,2025-05-18
+DOPB-WGL-00142,Venkatesh Naidu,Warangal,Economic Offence,26,2025-12-18
+DOPB-MBN-00143,Kavitha Murthy,Mahabubnagar,Property Offence,25,2025-04-01
+DOPB-NLG-00144,Madhavi Babu,Nalgonda,Cyber Offence,19,2026-01-09
+DOPB-MDL-00145,Venkatesh Chary,Medchal-Malkajgiri,Cyber Offence,25,2026-01-30
+DOPB-NLG-00146,Madhavi Rao,Nalgonda,Property Offence,12,2025-11-13
+DOPB-RRD-00147,Mahesh Achari,Ranga Reddy,NDPS,7,2025-09-02
+DOPB-WGL-00148,Lakshmi Reddy,Warangal,Bodily Offence,18,2025-12-05
+DOPB-HYD-00149,Bhavani Goud,Hyderabad,Bodily Offence,2,2025-04-12
+DOPB-ADB-00150,Raju Naidu,Adilabad,Economic Offence,5,2025-07-30

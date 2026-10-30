@@ -23,6 +23,8 @@ DYNAMIC_LLM_PROVIDERS = frozenset(
         LlmProviderNames.OPENROUTER,
         LlmProviderNames.BEDROCK,
         LlmProviderNames.OLLAMA_CHAT,
+        LlmProviderNames.LM_STUDIO,
+        LlmProviderNames.OPENAI_COMPATIBLE,
     }
 )
 
@@ -248,6 +250,27 @@ def is_reasoning_model(model_id: str, display_name: str) -> bool:
     """
     combined = f"{model_id} {display_name}".lower()
     return any(pattern in combined for pattern in REASONING_MODEL_PATTERNS)
+
+
+def parse_lm_studio_capability(value: object) -> bool:
+    """Read one entry of LM Studio's `capabilities` object as a boolean.
+
+    LM Studio reports a capability either as a plain boolean or as an options
+    object such as `{"allowed_options": ["off", "on"], "default": "off"}`.
+    An options object counts as supported unless its only option is "off".
+    """
+    if value is None:
+        return False
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, dict):
+        options = value.get("allowed_options")
+        if isinstance(options, list):
+            return any(str(option).strip().lower() != "off" for option in options)
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() not in {"", "off", "false", "none", "no"}
+    return bool(value)
 
 
 def extract_base_model_name(model: str) -> str | None:

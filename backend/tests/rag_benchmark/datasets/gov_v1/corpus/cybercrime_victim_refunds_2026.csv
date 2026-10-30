@@ -1,0 +1,151 @@
+refund_order_no,victim,district,channel,refund_amount_rs,refunded_on
+CYBB-NLG-00001,Harish Reddy,Nalgonda,Social Media,189110,2025-10-18
+CYBB-HYD-00002,Naresh Babu,Hyderabad,UPI,390160,2025-04-06
+CYBB-KRM-00003,Suresh Rao,Karimnagar,Email,68360,2026-03-10
+CYBB-MDL-00004,Deepa Patel,Medchal-Malkajgiri,UPI,332780,2025-08-11
+CYBB-RRD-00005,Sai Sharma,Ranga Reddy,Fake Website,170590,2025-08-24
+CYBB-HYD-00006,Jyothi Reddy,Hyderabad,SMS Link,242460,2025-08-08
+CYBB-KMM-00007,Kavitha Reddy,Khammam,UPI,547500,2025-12-14
+CYBB-HYD-00008,Kavitha Babu,Hyderabad,SMS Link,238540,2026-03-17
+CYBB-RRD-00009,Venkatesh Yadav,Ranga Reddy,SMS Link,458410,2025-08-30
+CYBB-KRM-00010,Shobha Sharma,Karimnagar,Phone Call,578780,2025-06-28
+CYBB-WGL-00011,Harish Chary,Warangal,Email,357970,2025-08-30
+CYBB-ADB-00012,Ravi Devi,Adilabad,UPI,76490,2026-01-17
+CYBB-NZB-00013,Deepa Patel,Nizamabad,Fake Website,99260,2025-07-31
+CYBB-MBN-00014,Suresh Sharma,Mahabubnagar,Phone Call,287070,2025-09-17
+CYBB-NZB-00015,Ramesh Achari,Nizamabad,Social Media,301650,2025-12-16
+CYBB-ADB-00016,Madhavi Babu,Adilabad,Email,29850,2025-08-19
+CYBB-KRM-00017,Sujatha Patel,Karimnagar,UPI,380820,2026-03-04
+CYBB-KMM-00018,Raju Varma,Khammam,UPI,507760,2025-10-17
+CYBB-RRD-00019,Gopal Babu,Ranga Reddy,Fake Website,202590,2025-07-13
+CYBB-HYD-00020,Prakash Achari,Hyderabad,Email,480040,2025-07-06
+CYBB-KRM-00021,Harish Naik,Karimnagar,Email,340690,2025-05-17
+CYBB-KMM-00022,Raju Murthy,Khammam,Email,105300,2025-04-24
+CYBB-ADB-00023,Sarala Kumar,Adilabad,Social Media,128500,2025-11-08
+CYBB-NLG-00024,Vijay Sharma,Nalgonda,Phone Call,24520,2025-09-03
+CYBB-ADB-00025,Sai Chary,Adilabad,Social Media,506750,2025-11-06
+CYBB-NZB-00026,Sujatha Yadav,Nizamabad,Social Media,378680,2025-07-27
+CYBB-NZB-00027,Rekha Varma,Nizamabad,SMS Link,287050,2025-06-18
+CYBB-KMM-00028,Gopal Naik,Khammam,Email,387940,2026-02-07
+CYBB-MBN-00029,Raju Kumar,Mahabubnagar,Phone Call,22160,2025-08-16
+CYBB-KRM-00030,Naresh Goud,Karimnagar,Social Media,269300,2025-05-05
+CYBB-RRD-00031,Lakshmi Kumar,Ranga Reddy,Social Media,250620,2025-10-12
+CYBB-RRD-00032,Kiran Babu,Ranga Reddy,Phone Call,404270,2025-10-30
+CYBB-HYD-00033,Usha Sharma,Hyderabad,Phone Call,316160,2025-11-15
+CYBB-HYD-00034,Padma Sharma,Hyderabad,UPI,148390,2025-05-26
+CYBB-WGL-00035,Suresh Goud,Warangal,Email,55570,2025-08-13
+CYBB-KMM-00036,Naresh Prasad,Khammam,Phone Call,230510,2025-10-02
+CYBB-KMM-00037,Kiran Achari,Khammam,Fake Website,51410,2025-10-12
+CYBB-MDL-00038,Padma Achari,Medchal-Malkajgiri,UPI,238560,2025-09-09
+CYBB-ADB-00039,Swathi Achari,Adilabad,Email,577150,2026-03-19
+CYBB-MBN-00040,Kiran Goud,Mahabubnagar,UPI,598620,2025-08-24
+CYBB-NZB-00041,Lakshmi Murthy,Nizamabad,Social Media,279650,2025-09-29
+CYBB-ADB-00042,Radha Sharma,Adilabad,Email,442600,2025-06-10
+CYBB-RRD-00043,Kavitha Naik,Ranga Reddy,UPI,314570,2025-06-09
+CYBB-MBN-00044,Anil Patel,Mahabubnagar,Social Media,355450,2025-12-14
+CYBB-NZB-00045,Srinivas Murthy,Nizamabad,Email,255040,2025-07-16
+CYBB-MBN-00046,Anitha Naidu,Mahabubnagar,Fake Website,476860,2026-01-21
+CYBB-NLG-00047,Anil Varma,Nalgonda,Phone Call,441890,2025-12-09
+CYBB-MDL-00048,Raju Patel,Medchal-Malkajgiri,UPI,97940,2026-03-04
+CYBB-KMM-00049,Swathi Reddy,Khammam,Social Media,306300,2025-12-27
+CYBB-KMM-00050,Rekha Chary,Khammam,Phone Call,418280,2025-05-14
+CYBB-HYD-00051,Suresh Kumar,Hyderabad,UPI,171620,2025-05-18
+CYBB-NLG-00052,Gopal Patel,Nalgonda,UPI,168860,2025-10-16
+CYBB-KMM-00053,Shobha Goud,Khammam,Fake Website,312410,2025-05-08
+CYBB-NLG-00054,Sarala Sharma,Nalgonda,Fake Website,177150,2025-09-17
+CYBB-ADB-00055,Vijay Naik,Adilabad,Phone Call,551530,2025-05-03
+CYBB-MBN-00056,Lakshmi Varma,Mahabubnagar,Social Media,563820,2026-01-28
+CYBB-NLG-00057,Usha Goud,Nalgonda,UPI,408560,2025-11-09
+CYBB-WGL-00058,Ramesh Chary,Warangal,Phone Call,64090,2026-02-12
+CYBB-ADB-00059,Kiran Goud,Adilabad,Email,209910,2026-02-06
+CYBB-NZB-00060,Shobha Kumar,Nizamabad,Social Media,510480,2025-09-24
+CYBB-MDL-00061,Gopal Patel,Medchal-Malkajgiri,Fake Website,41460,2025-07-01
+CYBB-ADB-00062,Rekha Murthy,Adilabad,Email,553500,2026-02-21
+CYBB-WGL-00063,Padma Goud,Warangal,UPI,363430,2026-01-15
+CYBB-RRD-00064,Deepa Devi,Ranga Reddy,SMS Link,68100,2026-03-19
+CYBB-RRD-00065,Sarala Rao,Ranga Reddy,SMS Link,467480,2026-03-01
+CYBB-HYD-00066,Bhavani Prasad,Hyderabad,SMS Link,455390,2025-09-11
+CYBB-HYD-00067,Deepa Achari,Hyderabad,Fake Website,575120,2026-03-18
+CYBB-HYD-00068,Bhavani Devi,Hyderabad,SMS Link,364380,2025-07-14
+CYBB-HYD-00069,Sai Patel,Hyderabad,SMS Link,141170,2026-01-20
+CYBB-HYD-00070,Anil Rao,Hyderabad,Social Media,207930,2026-01-22
+CYBB-MDL-00071,Ramesh Reddy,Medchal-Malkajgiri,Social Media,390950,2025-10-26
+CYBB-NLG-00072,Venkatesh Reddy,Nalgonda,SMS Link,37600,2025-10-16
+CYBB-NLG-00073,Bhavani Babu,Nalgonda,Email,87610,2025-04-22
+CYBB-ADB-00074,Kiran Goud,Adilabad,UPI,469410,2026-03-27
+CYBB-KMM-00075,Sai Reddy,Khammam,Email,74650,2025-08-22
+CYBB-NLG-00076,Radha Murthy,Nalgonda,Phone Call,397840,2025-10-24
+CYBB-NLG-00077,Ramesh Prasad,Nalgonda,Social Media,72540,2026-02-24
+CYBB-HYD-00078,Sujatha Achari,Hyderabad,SMS Link,472560,2026-02-16
+CYBB-KRM-00079,Venkatesh Sharma,Karimnagar,Fake Website,502050,2026-03-04
+CYBB-ADB-00080,Mahesh Reddy,Adilabad,SMS Link,266880,2025-05-14
+CYBB-NLG-00081,Srinivas Rao,Nalgonda,Social Media,258170,2025-05-12
+CYBB-NZB-00082,Bhavani Sharma,Nizamabad,Social Media,342660,2025-09-26
+CYBB-NLG-00083,Gopal Babu,Nalgonda,SMS Link,532140,2025-06-03
+CYBB-ADB-00084,Usha Varma,Adilabad,UPI,62360,2025-09-12
+CYBB-MDL-00085,Gopal Patel,Medchal-Malkajgiri,Email,544490,2025-04-25
+CYBB-NZB-00086,Sujatha Goud,Nizamabad,Fake Website,134410,2025-06-17
+CYBB-ADB-00087,Jyothi Babu,Adilabad,Email,385080,2026-03-04
+CYBB-MBN-00088,Srinivas Sharma,Mahabubnagar,Email,399080,2025-09-05
+CYBB-WGL-00089,Shobha Patel,Warangal,Social Media,50990,2025-12-21
+CYBB-NZB-00090,Gopal Babu,Nizamabad,Phone Call,318750,2025-07-08
+CYBB-NZB-00091,Usha Reddy,Nizamabad,UPI,599120,2025-05-20
+CYBB-NLG-00092,Suresh Devi,Nalgonda,UPI,348780,2026-01-27
+CYBB-NLG-00093,Sai Rao,Nalgonda,Phone Call,307750,2025-09-17
+CYBB-KMM-00094,Suresh Devi,Khammam,Fake Website,573560,2025-08-14
+CYBB-HYD-00095,Bhavani Sharma,Hyderabad,Phone Call,156150,2025-04-18
+CYBB-ADB-00096,Ravi Patel,Adilabad,Social Media,469940,2026-01-13
+CYBB-NZB-00097,Suresh Murthy,Nizamabad,Email,152280,2025-06-11
+CYBB-ADB-00098,Venkatesh Reddy,Adilabad,Phone Call,597320,2025-05-22
+CYBB-NZB-00099,Raju Sharma,Nizamabad,Email,322750,2025-06-04
+CYBB-RRD-00100,Harish Chary,Ranga Reddy,Email,471940,2025-04-28
+CYBB-WGL-00101,Vijay Devi,Warangal,SMS Link,134230,2025-07-25
+CYBB-HYD-00102,Sarala Sharma,Hyderabad,SMS Link,502980,2025-08-08
+CYBB-WGL-00103,Ravi Achari,Warangal,Fake Website,501210,2025-06-13
+CYBB-MDL-00104,Shobha Naidu,Medchal-Malkajgiri,Social Media,219420,2025-11-23
+CYBB-RRD-00105,Swathi Murthy,Ranga Reddy,UPI,261550,2025-10-24
+CYBB-MBN-00106,Deepa Yadav,Mahabubnagar,Phone Call,315950,2026-01-23
+CYBB-WGL-00107,Swathi Yadav,Warangal,Email,331060,2025-06-09
+CYBB-KRM-00108,Rekha Babu,Karimnagar,Fake Website,457910,2025-11-16
+CYBB-WGL-00109,Usha Murthy,Warangal,UPI,22430,2025-07-22
+CYBB-RRD-00110,Gopal Prasad,Ranga Reddy,Email,367520,2025-05-11
+CYBB-HYD-00111,Mahesh Kumar,Hyderabad,Fake Website,62700,2025-08-27
+CYBB-NLG-00112,Swathi Yadav,Nalgonda,Social Media,109120,2025-09-24
+CYBB-KMM-00113,Sai Murthy,Khammam,Email,592910,2025-09-06
+CYBB-NLG-00114,Swathi Sharma,Nalgonda,Email,169150,2025-07-05
+CYBB-MBN-00115,Swathi Murthy,Mahabubnagar,Fake Website,234820,2025-08-25
+CYBB-MBN-00116,Suresh Yadav,Mahabubnagar,UPI,317090,2026-03-27
+CYBB-MDL-00117,Lakshmi Sharma,Medchal-Malkajgiri,Phone Call,500620,2026-02-09
+CYBB-NLG-00118,Deepa Goud,Nalgonda,SMS Link,172880,2026-01-30
+CYBB-MDL-00119,Kavitha Prasad,Medchal-Malkajgiri,UPI,411030,2025-12-31
+CYBB-ADB-00120,Vijay Naik,Adilabad,Email,540700,2025-07-27
+CYBB-MBN-00121,Shobha Chary,Mahabubnagar,Phone Call,135170,2026-03-03
+CYBB-HYD-00122,Sarala Rao,Hyderabad,Fake Website,384220,2025-10-07
+CYBB-KMM-00123,Kiran Naidu,Khammam,Fake Website,84860,2025-09-02
+CYBB-ADB-00124,Radha Chary,Adilabad,Phone Call,234140,2025-11-06
+CYBB-ADB-00125,Mahesh Patel,Adilabad,SMS Link,175090,2025-07-09
+CYBB-NLG-00126,Prakash Chary,Nalgonda,Email,89850,2025-07-29
+CYBB-HYD-00127,Mahesh Yadav,Hyderabad,Phone Call,142420,2025-08-12
+CYBB-WGL-00128,Prakash Varma,Warangal,SMS Link,92510,2025-06-27
+CYBB-RRD-00129,Jyothi Yadav,Ranga Reddy,Social Media,400760,2026-02-15
+CYBB-NZB-00130,Venkatesh Goud,Nizamabad,Social Media,329740,2025-11-29
+CYBB-MDL-00131,Padma Rao,Medchal-Malkajgiri,Fake Website,531530,2025-05-30
+CYBB-NLG-00132,Bhavani Devi,Nalgonda,SMS Link,151280,2025-11-15
+CYBB-KRM-00133,Suresh Babu,Karimnagar,Phone Call,104590,2025-09-19
+CYBB-HYD-00134,Deepa Murthy,Hyderabad,Social Media,235630,2025-05-17
+CYBB-NZB-00135,Ravi Prasad,Nizamabad,Phone Call,165650,2025-07-05
+CYBB-NZB-00136,Padma Murthy,Nizamabad,UPI,464680,2026-01-23
+CYBB-WGL-00137,Ramesh Devi,Warangal,Phone Call,380660,2025-08-13
+CYBB-MDL-00138,Sujatha Babu,Medchal-Malkajgiri,SMS Link,17980,2025-06-12
+CYBB-NLG-00139,Swathi Goud,Nalgonda,Fake Website,216810,2025-05-30
+CYBB-WGL-00140,Sujatha Rao,Warangal,Fake Website,28540,2025-04-04
+CYBB-KMM-00141,Anitha Murthy,Khammam,SMS Link,18660,2026-01-07
+CYBB-HYD-00142,Radha Goud,Hyderabad,UPI,562970,2025-10-06
+CYBB-NLG-00143,Sarala Patel,Nalgonda,Social Media,444480,2026-01-25
+CYBB-RRD-00144,Ramesh Reddy,Ranga Reddy,Social Media,194110,2025-11-09
+CYBB-MBN-00145,Harish Naik,Mahabubnagar,UPI,365010,2025-11-10
+CYBB-NLG-00146,Venkatesh Varma,Nalgonda,SMS Link,168830,2025-08-25
+CYBB-MDL-00147,Radha Kumar,Medchal-Malkajgiri,SMS Link,280910,2025-06-27
+CYBB-HYD-00148,Ravi Achari,Hyderabad,Fake Website,225350,2025-06-02
+CYBB-MBN-00149,Kavitha Kumar,Mahabubnagar,Social Media,47530,2025-07-30
+CYBB-KRM-00150,Kavitha Varma,Karimnagar,UPI,177740,2025-05-26

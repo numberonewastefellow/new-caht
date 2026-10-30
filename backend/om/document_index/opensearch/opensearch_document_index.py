@@ -1,5 +1,7 @@
 import json
 from collections.abc import Iterable
+from datetime import datetime
+from datetime import timezone
 from typing import Any
 
 from opensearchpy.helpers.errors import BulkIndexError
@@ -34,7 +36,16 @@ from om.document_index.opensearch.client import OpenSearchClient
 from om.document_index.opensearch.client import OpenSearchIndexClient
 from om.document_index.opensearch.client import SearchHit
 from om.document_index.opensearch.cluster_settings import OPENSEARCH_CLUSTER_SETTINGS
+from om.document_index.opensearch.hybrid_rescore import get_rescore_fetch_size
+from om.document_index.opensearch.hybrid_rescore import load_hybrid_rescore_settings
+from om.document_index.opensearch.hybrid_rescore import rescore_hybrid_chunks
 from om.document_index.opensearch.constants import DEFAULT_MAX_CHUNK_SIZE
+from om.document_index.opensearch.constants import (
+    DEFAULT_NUM_HYBRID_SUBQUERY_CANDIDATES,
+)
+from om.document_index.opensearch.constants import (
+    DEFAULT_OPENSEARCH_MAX_RESULT_WINDOW,
+)
 from om.document_index.opensearch.constants import OpenSearchSearchType
 from om.document_index.opensearch.schema import ACCESS_CONTROL_LIST_FIELD_NAME
 from om.document_index.opensearch.schema import CHUNK_TEXT_FIELD_NAME
@@ -883,6 +894,7 @@ class OpenSearchDocumentIndex(DocumentIndex):
         query_type: QueryType,  # noqa: ARG002
         filters: IndexFilters,
         num_to_retrieve: int,
+        recency_bias_multiplier: float = 1.0,
     ) -> list[InferenceChunk]:
         # TODO(andrei): There is some duplicated logic in this function with
         # others in this file.
@@ -891,6 +903,20 @@ class OpenSearchDocumentIndex(DocumentIndex):
             num_to_retrieve,
             self._index_name,
         )
+        # Feedback-boost / freshness rescore after normalization (see
+        # hybrid_rescore.py). When off, nothing below changes: same query size,
+        # same order, same scores.
+        rescore_settings = load_hybrid_rescore_settings(recency_bias_multiplier)
+        num_hits = num_to_retrieve
+        if rescore_settings.any_factor_enabled:
+            num_hits = get_rescore_fetch_size(
+                num_to_retrieve,
+                rescore_settings.overfetch_factor,
+                cap=min(
+                    DEFAULT_NUM_HYBRID_SUBQUERY_CANDIDATES,
+                    DEFAULT_OPENSEARCH_MAX_RESULT_WINDOW,
+                ),
+            )
         # TODO(andrei): This could be better, the caller should just make this
         # decision when passing in the query param. See the above comment in the
         # function signature.
@@ -898,7 +924,7 @@ class OpenSearchDocumentIndex(DocumentIndex):
         query_body = DocumentQuery.get_hybrid_search_query(
             query_text=final_query,
             query_vector=query_embedding,
-            num_hits=num_to_retrieve,
+            num_hits=num_hits,
             tenant_state=self._tenant_state,
             # NOTE: Index filters includes metadata tags which were filtered
             # for invalid unicode at indexing time. In theory it would be
@@ -927,6 +953,13 @@ class OpenSearchDocumentIndex(DocumentIndex):
         inference_chunks: list[InferenceChunk] = cleanup_content_for_chunks(
             inference_chunks_uncleaned
         )
+
+        if rescore_settings.any_factor_enabled:
+            inference_chunks = rescore_hybrid_chunks(
+                inference_chunks,
+                now=datetime.now(timezone.utc),
+                settings=rescore_settings,
+            )[:num_to_retrieve]
 
         return inference_chunks
 
@@ -1165,6 +1198,7 @@ class OpenSearchIndexPair(DocumentIndex):
         query_type: QueryType,
         filters: IndexFilters,
         num_to_retrieve: int,
+        recency_bias_multiplier: float = 1.0,
     ) -> list[InferenceChunk]:
         return self._primary.hybrid_retrieval(
             query,
@@ -1173,6 +1207,7 @@ class OpenSearchIndexPair(DocumentIndex):
             query_type,
             filters,
             num_to_retrieve,
+            recency_bias_multiplier=recency_bias_multiplier,
         )
 
     def keyword_retrieval(

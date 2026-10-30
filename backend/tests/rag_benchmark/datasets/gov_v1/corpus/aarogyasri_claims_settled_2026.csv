@@ -1,0 +1,151 @@
+claim_no,beneficiary,district,specialty,settled_amount_rs,settled_on
+ARGB-ADB-00001,Lakshmi Goud,Adilabad,Orthopaedics,23300,2026-01-19
+ARGB-KRM-00002,Usha Varma,Karimnagar,Paediatrics,143000,2025-11-16
+ARGB-WGL-00003,Swathi Sharma,Warangal,Orthopaedics,8100,2025-10-31
+ARGB-HYD-00004,Deepa Devi,Hyderabad,Oncology,142900,2025-11-29
+ARGB-KRM-00005,Lakshmi Babu,Karimnagar,Nephrology,215100,2026-02-25
+ARGB-ADB-00006,Sujatha Murthy,Adilabad,Oncology,63600,2025-09-30
+ARGB-RRD-00007,Rekha Goud,Ranga Reddy,Neurosurgery,141000,2025-09-13
+ARGB-HYD-00008,Padma Achari,Hyderabad,Orthopaedics,237700,2025-07-01
+ARGB-MBN-00009,Sai Prasad,Mahabubnagar,Oncology,49300,2025-07-31
+ARGB-KRM-00010,Deepa Reddy,Karimnagar,Nephrology,229000,2025-12-03
+ARGB-MDL-00011,Swathi Naik,Medchal-Malkajgiri,Nephrology,25200,2026-02-13
+ARGB-NZB-00012,Lakshmi Naik,Nizamabad,Nephrology,109900,2025-11-27
+ARGB-ADB-00013,Lakshmi Naidu,Adilabad,Orthopaedics,71800,2025-04-02
+ARGB-MBN-00014,Kavitha Naik,Mahabubnagar,Paediatrics,41900,2025-06-10
+ARGB-NZB-00015,Kiran Reddy,Nizamabad,Cardiology,112300,2025-12-16
+ARGB-MDL-00016,Suresh Naik,Medchal-Malkajgiri,Neurosurgery,193500,2025-05-20
+ARGB-RRD-00017,Usha Reddy,Ranga Reddy,Paediatrics,129000,2025-06-11
+ARGB-KRM-00018,Srinivas Murthy,Karimnagar,Oncology,118600,2026-02-06
+ARGB-MDL-00019,Gopal Chary,Medchal-Malkajgiri,Nephrology,124300,2025-06-11
+ARGB-MBN-00020,Venkatesh Naidu,Mahabubnagar,Oncology,62200,2025-11-14
+ARGB-HYD-00021,Srinivas Chary,Hyderabad,Neurosurgery,40800,2025-06-18
+ARGB-WGL-00022,Lakshmi Varma,Warangal,Oncology,167900,2025-09-21
+ARGB-KRM-00023,Anil Babu,Karimnagar,Nephrology,28300,2025-09-24
+ARGB-KRM-00024,Anil Murthy,Karimnagar,Orthopaedics,52700,2026-03-29
+ARGB-KRM-00025,Swathi Naidu,Karimnagar,Orthopaedics,174600,2026-02-04
+ARGB-MBN-00026,Madhavi Kumar,Mahabubnagar,Nephrology,203400,2025-11-09
+ARGB-WGL-00027,Jyothi Goud,Warangal,Orthopaedics,200600,2026-03-25
+ARGB-MDL-00028,Mahesh Rao,Medchal-Malkajgiri,Orthopaedics,166700,2025-08-24
+ARGB-KMM-00029,Raju Prasad,Khammam,Nephrology,83000,2025-07-05
+ARGB-RRD-00030,Sarala Chary,Ranga Reddy,Cardiology,204000,2025-11-04
+ARGB-NLG-00031,Shobha Murthy,Nalgonda,Orthopaedics,210900,2025-04-13
+ARGB-MDL-00032,Vijay Varma,Medchal-Malkajgiri,Cardiology,156700,2025-11-05
+ARGB-MBN-00033,Usha Murthy,Mahabubnagar,Neurosurgery,162300,2025-04-21
+ARGB-KRM-00034,Anil Rao,Karimnagar,Neurosurgery,149700,2025-07-16
+ARGB-MBN-00035,Deepa Naidu,Mahabubnagar,Cardiology,75100,2026-01-14
+ARGB-WGL-00036,Vijay Murthy,Warangal,Paediatrics,127600,2025-05-08
+ARGB-ADB-00037,Raju Yadav,Adilabad,Oncology,93300,2025-11-14
+ARGB-KRM-00038,Naresh Sharma,Karimnagar,Orthopaedics,94000,2026-03-14
+ARGB-NZB-00039,Suresh Rao,Nizamabad,Nephrology,106400,2025-09-22
+ARGB-NLG-00040,Jyothi Murthy,Nalgonda,Orthopaedics,41400,2025-08-24
+ARGB-WGL-00041,Lakshmi Goud,Warangal,Nephrology,235100,2025-08-15
+ARGB-WGL-00042,Kavitha Naidu,Warangal,Cardiology,75800,2025-12-13
+ARGB-KMM-00043,Suresh Reddy,Khammam,Neurosurgery,180700,2026-03-09
+ARGB-NZB-00044,Sarala Achari,Nizamabad,Cardiology,201100,2025-08-13
+ARGB-MDL-00045,Madhavi Prasad,Medchal-Malkajgiri,Neurosurgery,74300,2026-02-26
+ARGB-HYD-00046,Venkatesh Murthy,Hyderabad,Cardiology,232300,2025-04-28
+ARGB-ADB-00047,Padma Rao,Adilabad,Neurosurgery,117000,2026-01-22
+ARGB-ADB-00048,Radha Varma,Adilabad,Neurosurgery,58600,2026-02-11
+ARGB-KRM-00049,Usha Sharma,Karimnagar,Neurosurgery,17400,2026-03-25
+ARGB-RRD-00050,Madhavi Varma,Ranga Reddy,Orthopaedics,123000,2025-09-12
+ARGB-HYD-00051,Venkatesh Naidu,Hyderabad,Oncology,185300,2026-01-11
+ARGB-RRD-00052,Sai Prasad,Ranga Reddy,Neurosurgery,231000,2025-12-17
+ARGB-NZB-00053,Usha Kumar,Nizamabad,Oncology,76100,2025-04-10
+ARGB-MDL-00054,Deepa Patel,Medchal-Malkajgiri,Nephrology,110000,2025-05-24
+ARGB-WGL-00055,Bhavani Devi,Warangal,Orthopaedics,197300,2026-01-12
+ARGB-RRD-00056,Vijay Reddy,Ranga Reddy,Orthopaedics,236800,2025-10-06
+ARGB-NLG-00057,Deepa Naidu,Nalgonda,Paediatrics,162300,2025-07-27
+ARGB-HYD-00058,Mahesh Murthy,Hyderabad,Nephrology,224100,2025-11-01
+ARGB-WGL-00059,Shobha Prasad,Warangal,Paediatrics,131300,2026-03-09
+ARGB-ADB-00060,Usha Babu,Adilabad,Neurosurgery,149300,2025-06-27
+ARGB-KRM-00061,Sarala Prasad,Karimnagar,Oncology,166200,2025-04-10
+ARGB-HYD-00062,Padma Sharma,Hyderabad,Paediatrics,114900,2025-04-02
+ARGB-NZB-00063,Kavitha Murthy,Nizamabad,Paediatrics,178100,2025-08-30
+ARGB-MBN-00064,Anitha Babu,Mahabubnagar,Oncology,103500,2025-08-18
+ARGB-KRM-00065,Raju Naidu,Karimnagar,Oncology,190000,2025-08-03
+ARGB-KRM-00066,Gopal Naik,Karimnagar,Cardiology,172300,2025-06-10
+ARGB-HYD-00067,Venkatesh Patel,Hyderabad,Orthopaedics,89800,2025-10-13
+ARGB-HYD-00068,Shobha Yadav,Hyderabad,Cardiology,210700,2026-01-04
+ARGB-HYD-00069,Sujatha Sharma,Hyderabad,Cardiology,60900,2025-05-12
+ARGB-KRM-00070,Venkatesh Yadav,Karimnagar,Orthopaedics,37300,2025-12-29
+ARGB-ADB-00071,Anitha Rao,Adilabad,Oncology,24600,2026-03-11
+ARGB-HYD-00072,Gopal Devi,Hyderabad,Nephrology,238800,2025-10-14
+ARGB-HYD-00073,Swathi Goud,Hyderabad,Orthopaedics,158900,2025-05-02
+ARGB-HYD-00074,Sarala Rao,Hyderabad,Paediatrics,177000,2025-05-25
+ARGB-NZB-00075,Venkatesh Murthy,Nizamabad,Cardiology,100300,2025-09-18
+ARGB-KMM-00076,Lakshmi Achari,Khammam,Paediatrics,21200,2025-05-19
+ARGB-KMM-00077,Sarala Babu,Khammam,Paediatrics,180300,2026-01-13
+ARGB-RRD-00078,Radha Goud,Ranga Reddy,Cardiology,142000,2026-03-13
+ARGB-KMM-00079,Deepa Kumar,Khammam,Nephrology,217300,2025-09-28
+ARGB-HYD-00080,Mahesh Yadav,Hyderabad,Paediatrics,221500,2025-09-14
+ARGB-RRD-00081,Ramesh Chary,Ranga Reddy,Neurosurgery,111300,2025-06-15
+ARGB-ADB-00082,Ramesh Varma,Adilabad,Oncology,115700,2025-12-12
+ARGB-MBN-00083,Usha Babu,Mahabubnagar,Neurosurgery,26100,2025-10-20
+ARGB-HYD-00084,Suresh Murthy,Hyderabad,Oncology,125400,2025-09-11
+ARGB-NZB-00085,Suresh Murthy,Nizamabad,Orthopaedics,31600,2025-08-02
+ARGB-NZB-00086,Vijay Kumar,Nizamabad,Paediatrics,237000,2025-05-08
+ARGB-WGL-00087,Prakash Varma,Warangal,Oncology,184900,2026-01-01
+ARGB-MBN-00088,Sai Sharma,Mahabubnagar,Paediatrics,169500,2025-06-29
+ARGB-NZB-00089,Swathi Yadav,Nizamabad,Oncology,211600,2026-02-06
+ARGB-NZB-00090,Jyothi Patel,Nizamabad,Cardiology,47900,2026-03-08
+ARGB-HYD-00091,Radha Babu,Hyderabad,Cardiology,49500,2025-07-30
+ARGB-HYD-00092,Ramesh Rao,Hyderabad,Paediatrics,234600,2026-03-04
+ARGB-KMM-00093,Sai Goud,Khammam,Nephrology,188000,2025-09-10
+ARGB-RRD-00094,Anitha Goud,Ranga Reddy,Oncology,102500,2025-08-15
+ARGB-NLG-00095,Shobha Reddy,Nalgonda,Paediatrics,99100,2025-05-04
+ARGB-MBN-00096,Suresh Reddy,Mahabubnagar,Orthopaedics,92500,2026-03-04
+ARGB-RRD-00097,Ravi Varma,Ranga Reddy,Nephrology,176600,2025-11-13
+ARGB-NZB-00098,Kiran Prasad,Nizamabad,Oncology,72000,2025-12-30
+ARGB-HYD-00099,Sarala Naik,Hyderabad,Oncology,174800,2026-03-11
+ARGB-HYD-00100,Kiran Chary,Hyderabad,Neurosurgery,110100,2025-09-30
+ARGB-NZB-00101,Lakshmi Goud,Nizamabad,Oncology,117500,2025-06-15
+ARGB-HYD-00102,Raju Naidu,Hyderabad,Nephrology,12700,2025-07-13
+ARGB-ADB-00103,Jyothi Goud,Adilabad,Cardiology,90600,2025-08-11
+ARGB-WGL-00104,Radha Yadav,Warangal,Cardiology,16000,2025-12-06
+ARGB-NLG-00105,Bhavani Reddy,Nalgonda,Paediatrics,72900,2025-09-05
+ARGB-NLG-00106,Prakash Goud,Nalgonda,Nephrology,39200,2025-10-19
+ARGB-RRD-00107,Suresh Varma,Ranga Reddy,Paediatrics,233100,2025-04-30
+ARGB-RRD-00108,Deepa Reddy,Ranga Reddy,Oncology,193000,2025-06-03
+ARGB-WGL-00109,Sai Babu,Warangal,Orthopaedics,85400,2025-06-17
+ARGB-MDL-00110,Sujatha Prasad,Medchal-Malkajgiri,Nephrology,182400,2025-12-15
+ARGB-MDL-00111,Sai Patel,Medchal-Malkajgiri,Nephrology,126500,2025-08-27
+ARGB-HYD-00112,Ravi Babu,Hyderabad,Paediatrics,163500,2025-10-05
+ARGB-RRD-00113,Prakash Sharma,Ranga Reddy,Neurosurgery,213200,2025-07-22
+ARGB-MBN-00114,Vijay Goud,Mahabubnagar,Oncology,51800,2025-10-26
+ARGB-NLG-00115,Kiran Patel,Nalgonda,Oncology,196300,2026-02-25
+ARGB-MDL-00116,Mahesh Chary,Medchal-Malkajgiri,Neurosurgery,209600,2025-04-05
+ARGB-HYD-00117,Naresh Kumar,Hyderabad,Orthopaedics,149800,2026-01-19
+ARGB-HYD-00118,Harish Babu,Hyderabad,Orthopaedics,158600,2025-05-10
+ARGB-MDL-00119,Srinivas Babu,Medchal-Malkajgiri,Oncology,78400,2025-09-10
+ARGB-KMM-00120,Deepa Sharma,Khammam,Cardiology,212900,2025-09-25
+ARGB-RRD-00121,Swathi Naik,Ranga Reddy,Cardiology,143100,2026-03-07
+ARGB-RRD-00122,Lakshmi Goud,Ranga Reddy,Nephrology,46300,2025-12-31
+ARGB-WGL-00123,Bhavani Reddy,Warangal,Cardiology,60800,2025-05-12
+ARGB-MDL-00124,Ravi Patel,Medchal-Malkajgiri,Oncology,129900,2025-04-25
+ARGB-NZB-00125,Prakash Patel,Nizamabad,Orthopaedics,135400,2025-10-23
+ARGB-MBN-00126,Suresh Patel,Mahabubnagar,Nephrology,183900,2026-01-14
+ARGB-MDL-00127,Vijay Babu,Medchal-Malkajgiri,Nephrology,141300,2025-06-21
+ARGB-MDL-00128,Kavitha Patel,Medchal-Malkajgiri,Orthopaedics,118300,2025-11-11
+ARGB-MBN-00129,Padma Prasad,Mahabubnagar,Nephrology,46400,2025-07-03
+ARGB-HYD-00130,Lakshmi Achari,Hyderabad,Neurosurgery,11300,2026-03-03
+ARGB-KMM-00131,Vijay Sharma,Khammam,Paediatrics,87900,2026-01-05
+ARGB-RRD-00132,Sujatha Goud,Ranga Reddy,Orthopaedics,147600,2026-01-10
+ARGB-KRM-00133,Kavitha Murthy,Karimnagar,Neurosurgery,211500,2025-06-02
+ARGB-NZB-00134,Kavitha Varma,Nizamabad,Neurosurgery,84200,2025-05-09
+ARGB-ADB-00135,Sai Naidu,Adilabad,Nephrology,85700,2025-10-09
+ARGB-KRM-00136,Gopal Reddy,Karimnagar,Paediatrics,237700,2025-05-14
+ARGB-ADB-00137,Gopal Achari,Adilabad,Paediatrics,64200,2025-11-24
+ARGB-HYD-00138,Sarala Naidu,Hyderabad,Neurosurgery,130900,2026-01-22
+ARGB-WGL-00139,Anil Varma,Warangal,Paediatrics,214500,2025-04-23
+ARGB-MDL-00140,Raju Devi,Medchal-Malkajgiri,Oncology,173400,2025-06-12
+ARGB-NLG-00141,Sujatha Rao,Nalgonda,Paediatrics,104800,2025-09-13
+ARGB-NLG-00142,Harish Patel,Nalgonda,Cardiology,178500,2025-05-19
+ARGB-KMM-00143,Kiran Rao,Khammam,Oncology,144700,2026-01-05
+ARGB-NLG-00144,Kiran Murthy,Nalgonda,Paediatrics,150000,2025-12-05
+ARGB-KMM-00145,Kavitha Achari,Khammam,Oncology,105500,2026-03-09
+ARGB-HYD-00146,Deepa Sharma,Hyderabad,Orthopaedics,116500,2025-09-26
+ARGB-KMM-00147,Anitha Achari,Khammam,Cardiology,30300,2025-05-11
+ARGB-NZB-00148,Mahesh Kumar,Nizamabad,Paediatrics,102100,2025-05-14
+ARGB-WGL-00149,Kavitha Patel,Warangal,Orthopaedics,13200,2026-01-27
+ARGB-ADB-00150,Shobha Achari,Adilabad,Orthopaedics,229700,2025-07-18

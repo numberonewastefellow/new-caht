@@ -5,6 +5,7 @@ from om.server.manage.llm.utils import generate_ollama_display_name
 from om.server.manage.llm.utils import infer_vision_support
 from om.server.manage.llm.utils import is_reasoning_model
 from om.server.manage.llm.utils import is_valid_bedrock_model
+from om.server.manage.llm.utils import parse_lm_studio_capability
 from om.server.manage.llm.utils import strip_openrouter_vendor_prefix
 
 
@@ -209,3 +210,34 @@ class TestIsReasoningModel:
             is_reasoning_model("anthropic/claude-3-5-sonnet", "Claude 3.5 Sonnet")
             is False
         )
+
+
+class TestParseLMStudioCapability:
+    """Tests for LM Studio `capabilities` entry parsing."""
+
+    def test_plain_booleans(self) -> None:
+        assert parse_lm_studio_capability(True) is True
+        assert parse_lm_studio_capability(False) is False
+
+    def test_missing(self) -> None:
+        assert parse_lm_studio_capability(None) is False
+
+    def test_options_object_with_on(self) -> None:
+        assert (
+            parse_lm_studio_capability(
+                {"allowed_options": ["off", "low", "high"], "default": "off"}
+            )
+            is True
+        )
+
+    def test_options_object_off_only(self) -> None:
+        assert parse_lm_studio_capability({"allowed_options": ["off"]}) is False
+        assert parse_lm_studio_capability({"allowed_options": ["OFF "]}) is False
+
+    def test_options_object_without_list_counts_as_supported(self) -> None:
+        assert parse_lm_studio_capability({"default": "on"}) is True
+
+    def test_strings(self) -> None:
+        assert parse_lm_studio_capability("on") is True
+        assert parse_lm_studio_capability("off") is False
+        assert parse_lm_studio_capability("") is False
