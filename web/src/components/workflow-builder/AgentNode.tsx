@@ -2,9 +2,11 @@
 
 import React, { memo, useCallback, useState } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
+import { StepNodeBadges } from "./NodeBadges";
 import type { AgentNodeData } from "./types";
 
 function AgentNodeComponent({
+  id,
   data,
   selected,
 }: NodeProps & { data: AgentNodeData }) {
@@ -50,7 +52,7 @@ function AgentNodeComponent({
           )}
         </div>
         <div className="wfb-agent-name-col">
-          <div className="wfb-agent-name" title={data.agent_name}>
+          <div className="wfb-agent-name" title={data.agent_name ?? undefined}>
             {data.agent_name}
           </div>
           {data.step_name && data.step_name !== data.agent_name && (
@@ -170,6 +172,8 @@ function AgentNodeComponent({
           </div>
         </div>
       </div>
+
+      <StepNodeBadges nodeId={id} data={data} />
 
       {/* Handles */}
       <Handle

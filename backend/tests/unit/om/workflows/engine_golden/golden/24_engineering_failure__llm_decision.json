@@ -1,0 +1,4799 @@
+{
+ "scenario": "24_engineering_failure__llm_decision",
+ "description": "Template 24_engineering_failure.json in llm_decision mode; the fake orchestrator calls every step's agent once in step_order, then answers.",
+ "covers": [
+  "template",
+  "llm_decision"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Engineering Failure Analysis",
+    "mode": "llm_decision",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Incident Triage Engineer",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Materials Engineer",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "materials_assessment",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Stress/Structural Analyst",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "stress_assessment",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Corrosion Specialist",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "corrosion_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Welding/Joining Engineer",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "welding_assessment",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Quality Systems Auditor",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "quality_assessment",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Thermal/Fluids Engineer",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "thermal_assessment",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Electrical/Electronics Engineer",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "electrical_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "Root Cause Analyst",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "root_cause_analysis",
+      "flags": []
+     },
+     {
+      "id": 110,
+      "order": 9,
+      "name": "Corrective Action Writer",
+      "type": "agent",
+      "agent_id": 1010,
+      "output_key": "corrective_action_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Incident Triage Engineer."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Incident Triage Engineer",
+     "agent_name": "WF Incident Triage Engineer",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Incident Triage Engineer",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Incident Triage Engineer",
+     "agent_name": "WF Incident Triage Engineer",
+     "questions": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 5,
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Incident Triage Engineer",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Incident Triage Engineer",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ]
+      ],
+      "cycle_count": 1,
+      "agent_call_counts": {
+       "delegate_to_wf_incident_triage_engineer": 1
+      },
+      "turn_index": 3,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Engineering Failure Analysis",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "llm_decision",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Incident Triage Engineer.",
+      "reason": "Next I will delegate to Incident Triage Engineer.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Incident Triage Engineer",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Incident Triage Engineer.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Incident Triage Engineer."
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Engineering Failure Analysis",
+    "mode": "llm_decision",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Incident Triage Engineer",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Materials Engineer",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "materials_assessment",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Stress/Structural Analyst",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "stress_assessment",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Corrosion Specialist",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "corrosion_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Welding/Joining Engineer",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "welding_assessment",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Quality Systems Auditor",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "quality_assessment",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Thermal/Fluids Engineer",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "thermal_assessment",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Electrical/Electronics Engineer",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "electrical_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "Root Cause Analyst",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "root_cause_analysis",
+      "flags": []
+     },
+     {
+      "id": 110,
+      "order": 9,
+      "name": "Corrective Action Writer",
+      "type": "agent",
+      "agent_id": 1010,
+      "output_key": "corrective_action_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Incident Triage Engineer",
+     "agent_name": "WF Incident Triage Engineer",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Incident Triage Engineer",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Materials Engineer",
+     "agent_name": "WF Materials Engineer",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "Thinking about Materials Engineer"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Materials Engineer"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "materials_assessment result for: Ste",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "p 'Materials Engineer': work on: Prep",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_102_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/materials_assessment.docx",
+        "filename": "materials_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_102_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Materials Engineer",
+     "output_key": "materials_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Stress/Structural Analyst."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Stress/Structural Analyst",
+     "agent_name": "WF Stress Structural Analyst",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "Thinking about Stress/Structural Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Stress/Structural Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "stress_assessment result for: Step ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "'Stress/Structural Analyst': work o",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_103_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/stress_assessment.docx",
+        "filename": "stress_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_103_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Stress Structural Analyst",
+     "output_key": "stress_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "step_name": "Corrosion Specialist",
+     "agent_name": "WF Corrosion Specialist",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Corrosion Specialist"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_104_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/corrosion_assessment.docx",
+        "filename": "corrosion_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_104_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Corrosion Specialist",
+     "output_key": "corrosion_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Welding/Joining Engineer."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      15,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "step_name": "Welding/Joining Engineer",
+     "agent_name": "WF Welding Joining Engineer",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "content": "Thinking about Welding/Joining Engineer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "content": "welding_assessment result for: Step",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "content": " 'Welding/Joining Engineer': work on",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "content": "welding_assessment result for: Step 'Welding/Joining Engineer': work on",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Welding Joining Engineer",
+     "output_key": "welding_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      17,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "step_name": "Quality Systems Auditor",
+     "agent_name": "WF Quality Systems Auditor",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "content": "Thinking about Quality Systems Auditor"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "content": "quality_assessment result for: Step",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "content": " 'Quality Systems Auditor': work on:",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "content": "quality_assessment result for: Step 'Quality Systems Auditor': work on:",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Quality Systems Auditor",
+     "output_key": "quality_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      19,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Thermal/Fluids Engineer."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      20,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "step_name": "Thermal/Fluids Engineer",
+     "agent_name": "WF Thermal Fluids Engineer",
+     "step_order": 6,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "content": "Thinking about Thermal/Fluids Engineer"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      23,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      23,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Thermal/Fluids Engineer"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      23,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "content": "thermal_assessment result for: Step",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "content": " 'Thermal/Fluids Engineer': work on:",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_107_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/thermal_assessment.docx",
+        "filename": "thermal_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_107_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      22,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "content": "thermal_assessment result for: Step 'Thermal/Fluids Engineer': work on:",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Thermal Fluids Engineer",
+     "output_key": "thermal_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      22,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      25,
+      0,
+      null
+     ],
+     "step_name": "Electrical/Electronics Engineer",
+     "agent_name": "WF Electrical Electronics Engineer",
+     "step_order": 7,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      26,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      26,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Electrical/Electronics Engineer"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      26,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      25,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      25,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_108_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/electrical_assessment.docx",
+        "filename": "electrical_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_108_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      25,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      25,
+      0,
+      null
+     ],
+     "content": "electrical_assessment result for: Step 'Electrical/Electronics Engineer': ",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      25,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Electrical Electronics Engineer",
+     "output_key": "electrical_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      25,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      27,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Root Cause Analyst."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      27,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      29,
+      0,
+      null
+     ],
+     "step_name": "Root Cause Analyst",
+     "agent_name": "WF Root Cause Analyst",
+     "step_order": 8,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      29,
+      0,
+      null
+     ],
+     "content": "Thinking about Root Cause Analyst"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      29,
+      0,
+      null
+     ],
+     "content": "root_cause_analysis result for: Step",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      29,
+      0,
+      null
+     ],
+     "content": " 'Root Cause Analyst': work on: Prep",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      29,
+      0,
+      null
+     ],
+     "content": "root_cause_analysis result for: Step 'Root Cause Analyst': work on: Prep",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      29,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Root Cause Analyst",
+     "output_key": "root_cause_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      29,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      31,
+      0,
+      null
+     ],
+     "step_name": "Corrective Action Writer",
+     "agent_name": "WF Corrective Action Writer",
+     "step_order": 9,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      31,
+      0,
+      null
+     ],
+     "content": "Thinking about Corrective Action Writer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      31,
+      0,
+      null
+     ],
+     "content": "corrective_action_report result for: S",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      31,
+      0,
+      null
+     ],
+     "content": "tep 'Corrective Action Writer': work on",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      31,
+      0,
+      null
+     ],
+     "content": "corrective_action_report result for: Step 'Corrective Action Writer': work on",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      31,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Corrective Action Writer",
+     "output_key": "corrective_action_report"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      31,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      32,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      32,
+      0,
+      null
+     ],
+     "content": "corrective_action_report result for: Step 'Corrective Action Writer': work on"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      32,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      33,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      33,
+      0,
+      null
+     ],
+     "content": "Final synthesis: all specialists were consulted."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      33,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      35,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 32,
+     "content": "corrective_action_report result for: Step 'Corrective Action Writer': work on",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 33,
+     "content": "Final synthesis: all specialists were consulted.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Final synthesis: all specialists were consulted.",
+   "agent_calls": [
+    {
+     "step_name": "Incident Triage Engineer",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Incident Triage Engineer",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "TASK:\nStep 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Materials Engineer",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "materials_assessment",
+     "agent": "WF Materials Engineer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Stress/Structural Analyst",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "stress_assessment",
+     "agent": "WF Stress Structural Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "task": "Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Corrosion Specialist",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "corrosion_assessment",
+     "agent": "WF Corrosion Specialist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "task": "Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Welding/Joining Engineer",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "welding_assessment",
+     "agent": "WF Welding Joining Engineer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "task": "Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Quality Systems Auditor",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "quality_assessment",
+     "agent": "WF Quality Systems Auditor",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "task": "Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Thermal/Fluids Engineer",
+     "step_id": 107,
+     "step_order": 6,
+     "output_key": "thermal_assessment",
+     "agent": "WF Thermal Fluids Engineer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "task": "Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Electrical/Electronics Engineer",
+     "step_id": 108,
+     "step_order": 7,
+     "output_key": "electrical_assessment",
+     "agent": "WF Electrical Electronics Engineer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      25,
+      0,
+      null
+     ],
+     "task": "Step 'Electrical/Electronics Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Root Cause Analyst",
+     "step_id": 109,
+     "step_order": 8,
+     "output_key": "root_cause_analysis",
+     "agent": "WF Root Cause Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      29,
+      0,
+      null
+     ],
+     "task": "Step 'Root Cause Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Corrective Action Writer",
+     "step_id": 110,
+     "step_order": 9,
+     "output_key": "corrective_action_report",
+     "agent": "WF Corrective Action Writer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      31,
+      0,
+      null
+     ],
+     "task": "Step 'Corrective Action Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      18,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_quality_systems_auditor\", \"arguments\": {\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      24,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_quality_systems_auditor\", \"arguments\": {\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_thermal_fluids_engineer\", \"arguments\": {\"task\": \"Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      27,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_quality_systems_auditor\", \"arguments\": {\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_thermal_fluids_engineer\", \"arguments\": {\"task\": \"Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_electrical_electronics_engineer\", \"arguments\": {\"task\": \"Step 'Elec...<len=241 sha1=922fd9a003a3>"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      30,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_quality_systems_auditor\", \"arguments\": {\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_thermal_fluids_engineer\", \"arguments\": {\"task\": \"Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_electrical_electronics_engineer\", \"arguments\": {\"task\": \"Step 'Elec...<len=241 sha1=922fd9a003a3>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_root_cause_analyst\", \"arguments\": {\"task\": \"Step 'Root Cause Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      33,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_incident_triage_engineer",
+      "delegate_to_wf_materials_engineer",
+      "delegate_to_wf_stress_structural_analyst",
+      "delegate_to_wf_corrosion_specialist",
+      "delegate_to_wf_welding_joining_engineer",
+      "delegate_to_wf_quality_systems_auditor",
+      "delegate_to_wf_thermal_fluids_engineer",
+      "delegate_to_wf_electrical_electronics_engineer",
+      "delegate_to_wf_root_cause_analyst",
+      "delegate_to_wf_corrective_action_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=7211 sha1=316ed2197d2c>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_quality_systems_auditor\", \"arguments\": {\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_thermal_fluids_engineer\", \"arguments\": {\"task\": \"Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_electrical_electronics_engineer\", \"arguments\": {\"task\": \"Step 'Elec...<len=241 sha1=922fd9a003a3>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_root_cause_analyst\", \"arguments\": {\"task\": \"Step 'Root Cause Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_10_0\", \"name\": \"delegate_to_wf_corrective_action_writer\", \"arguments\": {\"task\": \"Step 'Corrective Action Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+       "materials_assessment": "materials_assessment result for: Step 'Materials Engineer': work on: Prep"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Materials Engineer\", \"agent_output\": \"materials_assessment result for: Step 'Materials Engineer': wor...<len=279 sha1=7d2e1797a347>"
+       ]
+      ],
+      "cycle_count": 2,
+      "agent_call_counts": {
+       "delegate_to_wf_incident_triage_engineer": 1,
+       "delegate_to_wf_materials_engineer": 1
+      },
+      "turn_index": 7,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+       "materials_assessment": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+       "stress_assessment": "stress_assessment result for: Step 'Stress/Structural Analyst': work o"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Materials Engineer\", \"agent_output\": \"materials_assessment result for: Step 'Materials Engineer': wor...<len=279 sha1=7d2e1797a347>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Stress Structural Analyst\", \"agent_output\": \"stress_assessment result for: Step 'Stress/Structural An...<len=277 sha1=d0fe257ba0f5>"
+       ]
+      ],
+      "cycle_count": 3,
+      "agent_call_counts": {
+       "delegate_to_wf_incident_triage_engineer": 1,
+       "delegate_to_wf_materials_engineer": 1,
+       "delegate_to_wf_stress_structural_analyst": 1
+      },
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+       "materials_assessment": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+       "stress_assessment": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+       "corrosion_assessment": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Materials Engineer\", \"agent_output\": \"materials_assessment result for: Step 'Materials Engineer': wor...<len=279 sha1=7d2e1797a347>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Stress Structural Analyst\", \"agent_output\": \"stress_assessment result for: Step 'Stress/Structural An...<len=277 sha1=d0fe257ba0f5>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Corrosion Specialist\", \"agent_output\": \"corrosion_assessment result for: Step 'Corrosion Specialist':...<len=281 sha1=c75086919850>"
+       ]
+      ],
+      "cycle_count": 4,
+      "agent_call_counts": {
+       "delegate_to_wf_incident_triage_engineer": 1,
+       "delegate_to_wf_materials_engineer": 1,
+       "delegate_to_wf_stress_structural_analyst": 1,
+       "delegate_to_wf_corrosion_specialist": 1
+      },
+      "turn_index": 14,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+       "materials_assessment": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+       "stress_assessment": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+       "corrosion_assessment": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr",
+       "welding_assessment": "welding_assessment result for: Step 'Welding/Joining Engineer': work on"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Materials Engineer\", \"agent_output\": \"materials_assessment result for: Step 'Materials Engineer': wor...<len=279 sha1=7d2e1797a347>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Stress Structural Analyst\", \"agent_output\": \"stress_assessment result for: Step 'Stress/Structural An...<len=277 sha1=d0fe257ba0f5>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Corrosion Specialist\", \"agent_output\": \"corrosion_assessment result for: Step 'Corrosion Specialist':...<len=281 sha1=c75086919850>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Welding Joining Engineer\", \"agent_output\": \"welding_assessment result for: Step 'Welding/Joining Engineer': work on\"}"
+       ]
+      ],
+      "cycle_count": 5,
+      "agent_call_counts": {
+       "delegate_to_wf_incident_triage_engineer": 1,
+       "delegate_to_wf_materials_engineer": 1,
+       "delegate_to_wf_stress_structural_analyst": 1,
+       "delegate_to_wf_corrosion_specialist": 1,
+       "delegate_to_wf_welding_joining_engineer": 1
+      },
+      "turn_index": 17,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+       "materials_assessment": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+       "stress_assessment": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+       "corrosion_assessment": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr",
+       "welding_assessment": "welding_assessment result for: Step 'Welding/Joining Engineer': work on",
+       "quality_assessment": "quality_assessment result for: Step 'Quality Systems Auditor': work on:"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Materials Engineer\", \"agent_output\": \"materials_assessment result for: Step 'Materials Engineer': wor...<len=279 sha1=7d2e1797a347>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Stress Structural Analyst\", \"agent_output\": \"stress_assessment result for: Step 'Stress/Structural An...<len=277 sha1=d0fe257ba0f5>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Corrosion Specialist\", \"agent_output\": \"corrosion_assessment result for: Step 'Corrosion Specialist':...<len=281 sha1=c75086919850>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Welding Joining Engineer\", \"agent_output\": \"welding_assessment result for: Step 'Welding/Joining Engineer': work on\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_quality_systems_auditor\", \"arguments\": {\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Quality Systems Auditor\", \"agent_output\": \"quality_assessment result for: Step 'Quality Systems Auditor': work on:\"}"
+       ]
+      ],
+      "cycle_count": 6,
+      "agent_call_counts": {
+       "delegate_to_wf_incident_triage_engineer": 1,
+       "delegate_to_wf_materials_engineer": 1,
+       "delegate_to_wf_stress_structural_analyst": 1,
+       "delegate_to_wf_corrosion_specialist": 1,
+       "delegate_to_wf_welding_joining_engineer": 1,
+       "delegate_to_wf_quality_systems_auditor": 1
+      },
+      "turn_index": 19,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+       "materials_assessment": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+       "stress_assessment": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+       "corrosion_assessment": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr",
+       "welding_assessment": "welding_assessment result for: Step 'Welding/Joining Engineer': work on",
+       "quality_assessment": "quality_assessment result for: Step 'Quality Systems Auditor': work on:",
+       "thermal_assessment": "thermal_assessment result for: Step 'Thermal/Fluids Engineer': work on:"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Materials Engineer\", \"agent_output\": \"materials_assessment result for: Step 'Materials Engineer': wor...<len=279 sha1=7d2e1797a347>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Stress Structural Analyst\", \"agent_output\": \"stress_assessment result for: Step 'Stress/Structural An...<len=277 sha1=d0fe257ba0f5>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Corrosion Specialist\", \"agent_output\": \"corrosion_assessment result for: Step 'Corrosion Specialist':...<len=281 sha1=c75086919850>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Welding Joining Engineer\", \"agent_output\": \"welding_assessment result for: Step 'Welding/Joining Engineer': work on\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_quality_systems_auditor\", \"arguments\": {\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Quality Systems Auditor\", \"agent_output\": \"quality_assessment result for: Step 'Quality Systems Auditor': work on:\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_thermal_fluids_engineer\", \"arguments\": {\"task\": \"Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Thermal Fluids Engineer\", \"agent_output\": \"thermal_assessment result for: Step 'Thermal/Fluids Engine...<len=278 sha1=a2c8bb64b35d>"
+       ]
+      ],
+      "cycle_count": 7,
+      "agent_call_counts": {
+       "delegate_to_wf_incident_triage_engineer": 1,
+       "delegate_to_wf_materials_engineer": 1,
+       "delegate_to_wf_stress_structural_analyst": 1,
+       "delegate_to_wf_corrosion_specialist": 1,
+       "delegate_to_wf_welding_joining_engineer": 1,
+       "delegate_to_wf_quality_systems_auditor": 1,
+       "delegate_to_wf_thermal_fluids_engineer": 1
+      },
+      "turn_index": 23,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+       "materials_assessment": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+       "stress_assessment": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+       "corrosion_assessment": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr",
+       "welding_assessment": "welding_assessment result for: Step 'Welding/Joining Engineer': work on",
+       "quality_assessment": "quality_assessment result for: Step 'Quality Systems Auditor': work on:",
+       "thermal_assessment": "thermal_assessment result for: Step 'Thermal/Fluids Engineer': work on:",
+       "electrical_assessment": "electrical_assessment result for: Step 'Electrical/Electronics Engineer': "
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Materials Engineer\", \"agent_output\": \"materials_assessment result for: Step 'Materials Engineer': wor...<len=279 sha1=7d2e1797a347>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Stress Structural Analyst\", \"agent_output\": \"stress_assessment result for: Step 'Stress/Structural An...<len=277 sha1=d0fe257ba0f5>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Corrosion Specialist\", \"agent_output\": \"corrosion_assessment result for: Step 'Corrosion Specialist':...<len=281 sha1=c75086919850>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Welding Joining Engineer\", \"agent_output\": \"welding_assessment result for: Step 'Welding/Joining Engineer': work on\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_quality_systems_auditor\", \"arguments\": {\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Quality Systems Auditor\", \"agent_output\": \"quality_assessment result for: Step 'Quality Systems Auditor': work on:\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_thermal_fluids_engineer\", \"arguments\": {\"task\": \"Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Thermal Fluids Engineer\", \"agent_output\": \"thermal_assessment result for: Step 'Thermal/Fluids Engine...<len=278 sha1=a2c8bb64b35d>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_electrical_electronics_engineer\", \"arguments\": {\"task\": \"Step 'Elec...<len=241 sha1=922fd9a003a3>"
+       ],
+       [
+        "tool_call_response",
+        20,
+        "{\"agent_name\": \"WF Electrical Electronics Engineer\", \"agent_output\": \"electrical_assessment result for: Step 'Electrical...<len=295 sha1=f5dcf800bcbc>"
+       ]
+      ],
+      "cycle_count": 8,
+      "agent_call_counts": {
+       "delegate_to_wf_incident_triage_engineer": 1,
+       "delegate_to_wf_materials_engineer": 1,
+       "delegate_to_wf_stress_structural_analyst": 1,
+       "delegate_to_wf_corrosion_specialist": 1,
+       "delegate_to_wf_welding_joining_engineer": 1,
+       "delegate_to_wf_quality_systems_auditor": 1,
+       "delegate_to_wf_thermal_fluids_engineer": 1,
+       "delegate_to_wf_electrical_electronics_engineer": 1
+      },
+      "turn_index": 26,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+       "materials_assessment": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+       "stress_assessment": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+       "corrosion_assessment": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr",
+       "welding_assessment": "welding_assessment result for: Step 'Welding/Joining Engineer': work on",
+       "quality_assessment": "quality_assessment result for: Step 'Quality Systems Auditor': work on:",
+       "thermal_assessment": "thermal_assessment result for: Step 'Thermal/Fluids Engineer': work on:",
+       "electrical_assessment": "electrical_assessment result for: Step 'Electrical/Electronics Engineer': ",
+       "root_cause_analysis": "root_cause_analysis result for: Step 'Root Cause Analyst': work on: Prep"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Materials Engineer\", \"agent_output\": \"materials_assessment result for: Step 'Materials Engineer': wor...<len=279 sha1=7d2e1797a347>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Stress Structural Analyst\", \"agent_output\": \"stress_assessment result for: Step 'Stress/Structural An...<len=277 sha1=d0fe257ba0f5>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Corrosion Specialist\", \"agent_output\": \"corrosion_assessment result for: Step 'Corrosion Specialist':...<len=281 sha1=c75086919850>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Welding Joining Engineer\", \"agent_output\": \"welding_assessment result for: Step 'Welding/Joining Engineer': work on\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_quality_systems_auditor\", \"arguments\": {\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Quality Systems Auditor\", \"agent_output\": \"quality_assessment result for: Step 'Quality Systems Auditor': work on:\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_thermal_fluids_engineer\", \"arguments\": {\"task\": \"Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Thermal Fluids Engineer\", \"agent_output\": \"thermal_assessment result for: Step 'Thermal/Fluids Engine...<len=278 sha1=a2c8bb64b35d>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_electrical_electronics_engineer\", \"arguments\": {\"task\": \"Step 'Elec...<len=241 sha1=922fd9a003a3>"
+       ],
+       [
+        "tool_call_response",
+        20,
+        "{\"agent_name\": \"WF Electrical Electronics Engineer\", \"agent_output\": \"electrical_assessment result for: Step 'Electrical...<len=295 sha1=f5dcf800bcbc>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_root_cause_analyst\", \"arguments\": {\"task\": \"Step 'Root Cause Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Root Cause Analyst\", \"agent_output\": \"root_cause_analysis result for: Step 'Root Cause Analyst': work on: Prep\"}"
+       ]
+      ],
+      "cycle_count": 9,
+      "agent_call_counts": {
+       "delegate_to_wf_incident_triage_engineer": 1,
+       "delegate_to_wf_materials_engineer": 1,
+       "delegate_to_wf_stress_structural_analyst": 1,
+       "delegate_to_wf_corrosion_specialist": 1,
+       "delegate_to_wf_welding_joining_engineer": 1,
+       "delegate_to_wf_quality_systems_auditor": 1,
+       "delegate_to_wf_thermal_fluids_engineer": 1,
+       "delegate_to_wf_electrical_electronics_engineer": 1,
+       "delegate_to_wf_root_cause_analyst": 1
+      },
+      "turn_index": 29,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+       "materials_assessment": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+       "stress_assessment": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+       "corrosion_assessment": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr",
+       "welding_assessment": "welding_assessment result for: Step 'Welding/Joining Engineer': work on",
+       "quality_assessment": "quality_assessment result for: Step 'Quality Systems Auditor': work on:",
+       "thermal_assessment": "thermal_assessment result for: Step 'Thermal/Fluids Engineer': work on:",
+       "electrical_assessment": "electrical_assessment result for: Step 'Electrical/Electronics Engineer': ",
+       "root_cause_analysis": "root_cause_analysis result for: Step 'Root Cause Analyst': work on: Prep",
+       "corrective_action_report": "corrective_action_report result for: Step 'Corrective Action Writer': work on"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109,
+       110
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_incident_triage_engineer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=681 sha1=c3ca87ff307f>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_materials_engineer\", \"arguments\": {\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Materials Engineer\", \"agent_output\": \"materials_assessment result for: Step 'Materials Engineer': wor...<len=279 sha1=7d2e1797a347>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_stress_structural_analyst\", \"arguments\": {\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Stress Structural Analyst\", \"agent_output\": \"stress_assessment result for: Step 'Stress/Structural An...<len=277 sha1=d0fe257ba0f5>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_corrosion_specialist\", \"arguments\": {\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Corrosion Specialist\", \"agent_output\": \"corrosion_assessment result for: Step 'Corrosion Specialist':...<len=281 sha1=c75086919850>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_welding_joining_engineer\", \"arguments\": {\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Welding Joining Engineer\", \"agent_output\": \"welding_assessment result for: Step 'Welding/Joining Engineer': work on\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_quality_systems_auditor\", \"arguments\": {\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Quality Systems Auditor\", \"agent_output\": \"quality_assessment result for: Step 'Quality Systems Auditor': work on:\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_thermal_fluids_engineer\", \"arguments\": {\"task\": \"Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Thermal Fluids Engineer\", \"agent_output\": \"thermal_assessment result for: Step 'Thermal/Fluids Engine...<len=278 sha1=a2c8bb64b35d>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_electrical_electronics_engineer\", \"arguments\": {\"task\": \"Step 'Elec...<len=241 sha1=922fd9a003a3>"
+       ],
+       [
+        "tool_call_response",
+        20,
+        "{\"agent_name\": \"WF Electrical Electronics Engineer\", \"agent_output\": \"electrical_assessment result for: Step 'Electrical...<len=295 sha1=f5dcf800bcbc>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_root_cause_analyst\", \"arguments\": {\"task\": \"Step 'Root Cause Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Root Cause Analyst\", \"agent_output\": \"root_cause_analysis result for: Step 'Root Cause Analyst': work on: Prep\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_10_0\", \"name\": \"delegate_to_wf_corrective_action_writer\", \"arguments\": {\"task\": \"Step 'Corrective Action Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Corrective Action Writer\", \"agent_output\": \"corrective_action_report result for: Step 'Corrective Action Writer': work on\"}"
+       ]
+      ],
+      "cycle_count": 10,
+      "agent_call_counts": {
+       "delegate_to_wf_incident_triage_engineer": 1,
+       "delegate_to_wf_materials_engineer": 1,
+       "delegate_to_wf_stress_structural_analyst": 1,
+       "delegate_to_wf_corrosion_specialist": 1,
+       "delegate_to_wf_welding_joining_engineer": 1,
+       "delegate_to_wf_quality_systems_auditor": 1,
+       "delegate_to_wf_thermal_fluids_engineer": 1,
+       "delegate_to_wf_electrical_electronics_engineer": 1,
+       "delegate_to_wf_root_cause_analyst": 1,
+       "delegate_to_wf_corrective_action_writer": 1
+      },
+      "turn_index": 31,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "triage_assessment": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+    "materials_assessment": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+    "stress_assessment": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+    "corrosion_assessment": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr",
+    "welding_assessment": "welding_assessment result for: Step 'Welding/Joining Engineer': work on",
+    "quality_assessment": "quality_assessment result for: Step 'Quality Systems Auditor': work on:",
+    "thermal_assessment": "thermal_assessment result for: Step 'Thermal/Fluids Engineer': work on:",
+    "electrical_assessment": "electrical_assessment result for: Step 'Electrical/Electronics Engineer': ",
+    "root_cause_analysis": "root_cause_analysis result for: Step 'Root Cause Analyst': work on: Prep",
+    "corrective_action_report": "corrective_action_report result for: Step 'Corrective Action Writer': work on"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed",
+      "agent_10:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed",
+      "agent_10:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed",
+      "agent_10:completed",
+      "orch_10_10:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed",
+      "agent_10:completed",
+      "orch_10_10:completed",
+      "agent_11:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed",
+      "agent_10:completed",
+      "orch_10_10:completed",
+      "agent_11:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed",
+      "agent_10:completed",
+      "orch_10_10:completed",
+      "agent_11:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Engineering Failure Analysis",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "llm_decision",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 323,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Incident Triage Engineer.",
+      "reason": "Next I will delegate to Incident Triage Engineer.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Incident Triage Engineer",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Incident Triage Engineer.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Agent: WF Incident Triage Engineer",
+      "status": "completed",
+      "input": "TASK:\nStep 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 0,
+      "duration_ms": "<ms>",
+      "tokens": 91,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_2_2",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Agent: WF Materials Engineer",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_3_3",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Stress/Structural Analyst.",
+      "reason": "Next I will delegate to Stress/Structural Analyst.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Agent: WF Stress Structural Analyst",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+      "reason": "Next I will delegate to Stress/Structural Analyst.",
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 25,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_4_4",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Agent: WF Corrosion Specialist",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_5_5",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Welding/Joining Engineer.",
+      "reason": "Next I will delegate to Welding/Joining Engineer.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Agent: WF Welding Joining Engineer",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "welding_assessment result for: Step 'Welding/Joining Engineer': work on",
+      "reason": "Next I will delegate to Welding/Joining Engineer.",
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 25,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_6_6",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Agent: WF Quality Systems Auditor",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "quality_assessment result for: Step 'Quality Systems Auditor': work on:",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_7_7",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Thermal/Fluids Engineer.",
+      "reason": "Next I will delegate to Thermal/Fluids Engineer.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_8",
+      "type": "agent",
+      "name": "Agent: WF Thermal Fluids Engineer",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "thermal_assessment result for: Step 'Thermal/Fluids Engineer': work on:",
+      "reason": "Next I will delegate to Thermal/Fluids Engineer.",
+      "step_id": 107,
+      "agent_id": 1007,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 25,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_8_8",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_9",
+      "type": "agent",
+      "name": "Agent: WF Electrical Electronics Engineer",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Electrical/Electronics Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "electrical_assessment result for: Step 'Electrical/Electronics Engineer': ",
+      "reason": null,
+      "step_id": 108,
+      "agent_id": 1008,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 23,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_9_9",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Root Cause Analyst.",
+      "reason": "Next I will delegate to Root Cause Analyst.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_10",
+      "type": "agent",
+      "name": "Agent: WF Root Cause Analyst",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Root Cause Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "root_cause_analysis result for: Step 'Root Cause Analyst': work on: Prep",
+      "reason": "Next I will delegate to Root Cause Analyst.",
+      "step_id": 109,
+      "agent_id": 1009,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 28,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_10_10",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_11",
+      "type": "agent",
+      "name": "Agent: WF Corrective Action Writer",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Corrective Action Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "corrective_action_report result for: Step 'Corrective Action Writer': work on",
+      "reason": null,
+      "step_id": 110,
+      "agent_id": 1010,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "Final synthesis: all specialists were consulted.",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Incident Triage Engineer."
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "orch_2_2",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_2_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "orch_3_3",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_3_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": "Next I will delegate to Stress/Structural Analyst."
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "orch_4_4",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_4_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "orch_5_5",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_5_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": "Next I will delegate to Welding/Joining Engineer."
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "orch_6_6",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_6_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "orch_7_7",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_7_7",
+      "to_id": "agent_8",
+      "type": "delegation",
+      "label": "Next I will delegate to Thermal/Fluids Engineer."
+     },
+     {
+      "from_id": "agent_8",
+      "to_id": "orch_8_8",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_8_8",
+      "to_id": "agent_9",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_9",
+      "to_id": "orch_9_9",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_9_9",
+      "to_id": "agent_10",
+      "type": "delegation",
+      "label": "Next I will delegate to Root Cause Analyst."
+     },
+     {
+      "from_id": "agent_10",
+      "to_id": "orch_10_10",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_10_10",
+      "to_id": "agent_11",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_11",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 323,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Agent: WF Incident Triage Engineer",
+       "input_text": "TASK:\nStep 'Incident Triage Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. ",
+       "output_text": "triage_assessment result for: TASK:\nStep 'Incident Triage Engineer': w",
+       "duration_ms": "<ms>",
+       "tokens_used": 91
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Agent: WF Materials Engineer",
+       "input_text": "{\"task\": \"Step 'Materials Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "materials_assessment result for: Step 'Materials Engineer': work on: Prep",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Agent: WF Stress Structural Analyst",
+       "input_text": "{\"task\": \"Step 'Stress/Structural Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "stress_assessment result for: Step 'Stress/Structural Analyst': work o",
+       "duration_ms": "<ms>",
+       "tokens_used": 25
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Agent: WF Corrosion Specialist",
+       "input_text": "{\"task\": \"Step 'Corrosion Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "corrosion_assessment result for: Step 'Corrosion Specialist': work on: Pr",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Agent: WF Welding Joining Engineer",
+       "input_text": "{\"task\": \"Step 'Welding/Joining Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "welding_assessment result for: Step 'Welding/Joining Engineer': work on",
+       "duration_ms": "<ms>",
+       "tokens_used": 25
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Agent: WF Quality Systems Auditor",
+       "input_text": "{\"task\": \"Step 'Quality Systems Auditor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "quality_assessment result for: Step 'Quality Systems Auditor': work on:",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      },
+      {
+       "step_id": 107,
+       "agent_id": 1007,
+       "step_name": "Agent: WF Thermal Fluids Engineer",
+       "input_text": "{\"task\": \"Step 'Thermal/Fluids Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "thermal_assessment result for: Step 'Thermal/Fluids Engineer': work on:",
+       "duration_ms": "<ms>",
+       "tokens_used": 25
+      },
+      {
+       "step_id": 108,
+       "agent_id": 1008,
+       "step_name": "Agent: WF Electrical Electronics Engineer",
+       "input_text": "{\"task\": \"Step 'Electrical/Electronics Engineer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "electrical_assessment result for: Step 'Electrical/Electronics Engineer': ",
+       "duration_ms": "<ms>",
+       "tokens_used": 23
+      },
+      {
+       "step_id": 109,
+       "agent_id": 1009,
+       "step_name": "Agent: WF Root Cause Analyst",
+       "input_text": "{\"task\": \"Step 'Root Cause Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "root_cause_analysis result for: Step 'Root Cause Analyst': work on: Prep",
+       "duration_ms": "<ms>",
+       "tokens_used": 28
+      },
+      {
+       "step_id": 110,
+       "agent_id": 1010,
+       "step_name": "Agent: WF Corrective Action Writer",
+       "input_text": "{\"task\": \"Step 'Corrective Action Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "corrective_action_report result for: Step 'Corrective Action Writer': work on",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

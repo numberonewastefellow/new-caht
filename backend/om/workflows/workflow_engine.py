@@ -11,7 +11,6 @@ import time
 from collections.abc import Callable
 from collections.abc import Generator
 from queue import Empty
-from typing import Any
 from uuid import UUID
 
 from sqlalchemy.orm import Session
@@ -22,6 +21,7 @@ from om.chat.emitter import Emitter
 from om.chat.llm_loop import construct_message_history
 from om.chat.llm_step import run_llm_step
 from om.chat.models import ChatMessageSimple
+from om.configs.app_configs import WORKFLOW_ENGINE_V2
 from om.configs.constants import MessageType
 from om.db.models import AgentWorkflow
 from om.db.models import AgentWorkflowStep
@@ -52,17 +52,22 @@ from om.server.query_and_chat.streaming_models import SectionEnd
 from om.server.query_and_chat.streaming_models import WorkflowOrchestratorThinking
 from om.server.query_and_chat.streaming_models import WorkflowStepDelta
 from om.server.query_and_chat.streaming_models import WorkflowStepEnd
-from om.server.query_and_chat.streaming_models import WorkflowStepReasoningDelta
 from om.server.query_and_chat.streaming_models import WorkflowPauseForInput
 from om.server.query_and_chat.streaming_models import WorkflowStepStart
 from om.tools.tool_implementations.agent_tool import AgentTool
 from om.tools.models import ChatFile
-from om.tools.models import ToolResponse
 from om.utils.logger import setup_logger
-from om.utils.threadpool_concurrency import run_in_background
-from om.utils.threadpool_concurrency import wait_on_background
+from om.workflows.agent_streaming import AGENT_SUPPRESS_TYPES as _AGENT_SUPPRESS_TYPES
+from om.workflows.agent_streaming import stream_agent_packets as _stream_agent_packets
+from om.workflows.agent_streaming import StreamingAgentResult as _StreamingAgentResult
+from om.workflows.hitl import agent_requests_input as _agent_requests_input
+from om.workflows.hitl import build_clarification_task as _build_clarification_task
+from om.workflows.hitl import strip_needs_input_prefix as _strip_needs_input_prefix
+from om.workflows.inputs import apply_input_mapping as _apply_input_mapping
+from om.workflows.inputs import collect_workflow_files as _collect_workflow_files
 from om.workflows.models import WorkflowCheckpoint
 from om.workflows.models import WorkflowContext
+from om.workflows.sequential import run_workflow_sequential_v2
 from om.workflows.step_runners.conditional_router import evaluate_condition
 
 logger = setup_logger()
@@ -87,117 +92,6 @@ def _summarize_for_orchestrator(agent_name: str, output: str) -> str:
         f"[{agent_name}: {len(words)} words, showing first "
         f"{_ORCHESTRATOR_CONTEXT_MAX_WORDS}]\n{truncated}..."
     )
-
-
-# Packet types emitted by run_llm_step that the workflow engine may need to
-# suppress to avoid duplicate content in the frontend.
-_ANSWER_SUPPRESS_TYPES = frozenset({
-    "message_start", "message_delta", "message_end",
-})
-_REASONING_SUPPRESS_TYPES = frozenset({
-    "reasoning_start", "reasoning_delta", "reasoning_done",
-})
-# For sub-agent streaming: suppress both answer text (engine yields its own
-# WorkflowStepDelta) and reasoning (would collide with WorkflowStepStart group).
-_AGENT_SUPPRESS_TYPES = _ANSWER_SUPPRESS_TYPES | _REASONING_SUPPRESS_TYPES
-
-
-# ========================
-# Detect agent clarification requests
-# ========================
-
-# Deterministic signal: if the agent output starts with this prefix,
-# the engine treats it as an explicit pause request. The prefix is
-# stripped before showing the questions to the user.
-_NEEDS_INPUT_PREFIX = "[NEEDS_INPUT]"
-
-_INPUT_SIGNAL_PATTERNS = [
-    "what", "which", "how many", "when", "where",
-    "could you", "can you", "please provide", "please specify",
-    "i need", "i'll need", "more information", "more details",
-]
-
-
-def _agent_requests_input(output: str) -> bool:
-    """Detect whether the agent is asking the user for information.
-
-    Three detection modes (checked for steps with can_request_input=True):
-    1. Deterministic positive: output starts with "[NEEDS_INPUT]" prefix.
-    2. Deterministic negative: output contains "STATUS: COMPLETE" — agent
-       explicitly signals it has enough info, so never pause.
-    3. Heuristic fallback: at least one line contains BOTH a "?" AND a
-       signal pattern. Per-line scoping avoids false positives where a
-       signal word (e.g. "what") appears in a template field on one line
-       and "?" appears in echoed code on a completely different line.
-
-    Only checked for steps with can_request_input=True.
-    """
-    stripped = output.strip()
-
-    # Mode 1: explicit structured signal — agent is asking for input
-    if stripped.upper().startswith(_NEEDS_INPUT_PREFIX):
-        return True
-
-    # Mode 2: negative signal — agent says it's done, don't pause
-    if "STATUS: COMPLETE" in stripped.upper():
-        return False
-
-    # Mode 3: heuristic — require "?" and signal pattern on the SAME line
-    for line in stripped.split("\n"):
-        lower_line = line.lower()
-        if "?" not in lower_line:
-            continue
-        if any(p in lower_line for p in _INPUT_SIGNAL_PATTERNS):
-            return True
-    return False
-
-
-def _strip_needs_input_prefix(output: str) -> str:
-    """Strip the [NEEDS_INPUT] prefix if present, returning clean question text."""
-    stripped = output.strip()
-    if stripped.upper().startswith(_NEEDS_INPUT_PREFIX):
-        return stripped[len(_NEEDS_INPUT_PREFIX):].strip()
-    return stripped
-
-
-# Maximum clarification rounds before truncating older entries
-_MAX_CLARIFICATION_ROUNDS = 5
-
-
-def _build_clarification_task(
-    original_task: str,
-    clarification_conversation: list[dict[str, str]],
-) -> str:
-    """Build a structured prompt for an agent resuming from clarification.
-
-    Enterprise pattern (LangGraph/CrewAI): the agent is re-run with accumulated
-    context rather than relying on the orchestrator LLM to re-delegate.
-
-    The agent sees: TASK + CLARIFICATION HISTORY + INSTRUCTIONS.
-    """
-    parts = [f"TASK:\n{original_task}"]
-
-    if clarification_conversation:
-        # Truncate to last N rounds if conversation is very long
-        conv = clarification_conversation
-        if len(conv) > _MAX_CLARIFICATION_ROUNDS * 2:
-            conv = conv[-(_MAX_CLARIFICATION_ROUNDS * 2):]
-
-        conv_lines = []
-        for entry in conv:
-            if entry.get("role") == "agent":
-                conv_lines.append(f"You previously asked:\n{entry['content']}")
-            elif entry.get("role") == "user":
-                conv_lines.append(f"The user responded:\n{entry['content']}")
-        parts.append("CLARIFICATION HISTORY:\n" + "\n\n".join(conv_lines))
-
-    parts.append(
-        "INSTRUCTIONS: You now have the user's responses above. "
-        "If you have all the information you need, produce your complete "
-        "final output. If you still need more details, ask your follow-up "
-        "questions."
-    )
-    return "\n\n".join(parts)
 
 
 def _serialize_history(history: list[ChatMessageSimple]) -> list[dict]:
@@ -264,138 +158,6 @@ def _max_turn_index(packets: list[Packet], current_max: int) -> int:
         if hasattr(pkt, "placement") and pkt.placement.turn_index > current_max:
             current_max = pkt.placement.turn_index
     return current_max
-
-
-class _StreamingAgentResult:
-    """Mutable container to capture ToolResponse + max turn_index from streaming."""
-
-    def __init__(self, start_turn_index: int) -> None:
-        self.response: ToolResponse | None = None
-        self.exception: Exception | None = None
-        self.max_turn_index: int = start_turn_index
-        self.cancelled: bool = False
-
-
-def _stream_agent_packets(
-    agent_tool: AgentTool,
-    placement: Placement,
-    emitter: Emitter,
-    result: _StreamingAgentResult,
-    is_connected: Callable[[], bool] | None = None,
-    suppress_types: frozenset[str] | None = _AGENT_SUPPRESS_TYPES,
-    stream_answer_as_step: bool = True,
-    stream_reasoning_as_step: bool = True,
-    **agent_kwargs: Any,
-) -> Generator[Packet, None, None]:
-    """Run agent in a background thread, yielding emitter packets in real-time.
-
-    This mirrors the pattern from run_chat_loop_with_state_containers: the
-    agent runs in a background thread emitting packets to emitter.bus, while
-    the main (generator) thread polls the bus every 50ms and yields each
-    packet immediately to the SSE endpoint for real-time streaming.
-
-    Sub-agent answer tokens (``message_delta``) and reasoning tokens
-    (``reasoning_delta``) are *translated* — not simply dropped — into
-    ``WorkflowStepDelta`` / ``WorkflowStepReasoningDelta`` packets tagged to the
-    step's ``placement``, so the step's prose and thinking stream live under the
-    step group. The caller then emits the authoritative ``agent_output`` as a
-    final ``WorkflowStepDelta(replace=True)`` to reconcile. Set
-    ``stream_answer_as_step`` / ``stream_reasoning_as_step`` False to suppress
-    (legacy block-per-agent behavior).
-
-    The ToolResponse and max_turn_index are stored in `result` for the caller.
-    If is_connected returns False, sets result.cancelled and returns early.
-    """
-
-    def _run_agent() -> None:
-        try:
-            result.response = agent_tool.run(placement, None, **agent_kwargs)
-        except Exception as e:
-            result.exception = e
-
-    def _process(pkt: Packet) -> Generator[Packet, None, None]:
-        """Translate/suppress one sub-agent packet; yield what should stream."""
-        otype = pkt.obj.type
-        # Answer tokens → live step prose chunk (append). message_start/end carry
-        # no step text and are dropped.
-        if otype in _ANSWER_SUPPRESS_TYPES:
-            if stream_answer_as_step and otype == "message_delta":
-                text = getattr(pkt.obj, "content", "") or ""
-                if text:
-                    yield Packet(
-                        placement=placement,
-                        obj=WorkflowStepDelta(content=text),
-                    )
-            return
-        # Reasoning tokens → live collapsible "thinking" chunk under the step.
-        if otype in _REASONING_SUPPRESS_TYPES:
-            if stream_reasoning_as_step and otype == "reasoning_delta":
-                rtext = getattr(pkt.obj, "reasoning", "") or ""
-                if rtext:
-                    yield Packet(
-                        placement=placement,
-                        obj=WorkflowStepReasoningDelta(content=rtext),
-                    )
-            return
-        # Any other suppressed type is dropped; everything else (tool packets,
-        # citations, etc.) passes through with its own placement, tracking
-        # max_turn_index so the next step doesn't collide.
-        if suppress_types and otype in suppress_types:
-            return
-        if pkt.placement.turn_index > result.max_turn_index:
-            result.max_turn_index = pkt.placement.turn_index
-        yield pkt
-
-    thread = run_in_background(_run_agent)
-
-    cancelled = False
-    last_cancel_check = time.monotonic()
-
-    # Poll emitter bus in real-time while agent runs in background
-    while True:
-        try:
-            pkt = emitter.bus.get(timeout=0.05)
-        except Empty:
-            # Queue empty — check if thread has finished
-            if not thread.is_alive():
-                break
-            # Check stop signal during idle polling
-            if is_connected is not None and not is_connected():
-                logger.info("Workflow agent cancelled by user")
-                cancelled = True
-                break
-            last_cancel_check = time.monotonic()
-            continue
-
-        yield from _process(pkt)
-
-        # Check stop signal periodically even when packets are flowing,
-        # matching the pattern from chat_state.py (lines 253-264).
-        current_time = time.monotonic()
-        if current_time - last_cancel_check >= 0.1:
-            if is_connected is not None and not is_connected():
-                logger.info("Workflow agent cancelled by user during streaming")
-                cancelled = True
-                break
-            last_cancel_check = current_time
-
-    if cancelled:
-        # Don't wait for the background thread — exit fast like chat_state.py
-        result.cancelled = True
-        return
-
-    # Drain any packets that arrived between the last get() and thread exit
-    while True:
-        try:
-            pkt = emitter.bus.get_nowait()
-        except Empty:
-            break
-        yield from _process(pkt)
-
-    # Propagate any exception from the agent thread
-    wait_on_background(thread)
-    if result.exception:
-        raise result.exception
 
 
 def _get_orchestrator_llm(
@@ -542,79 +304,6 @@ RULES:
 {custom_prompt}"""
 
 
-def _apply_input_mapping(
-    mapping: dict[str, Any] | None,
-    context: WorkflowContext,
-) -> str:
-    """Apply input mapping to resolve context references into a task string."""
-    if not mapping:
-        # Default: pass user input + all previous outputs
-        parts = [f"User request: {context.user_input}"]
-        for key, output in context.step_outputs.items():
-            parts.append(f"\nOutput from '{key}':\n{output}")
-
-        # Inject structured file metadata from previous steps so downstream
-        # agents know exact filenames and paths without relying on text parsing.
-        step_files = context.shared_data.get("step_files", {})
-        if step_files:
-            file_lines: list[str] = []
-            for step_key, file_info in step_files.items():
-                for f in file_info.get("files", []):
-                    file_lines.append(
-                        f"- {f['filename']} "
-                        f"(path: {f['file_path']}, from step '{step_key}')"
-                    )
-            if file_lines:
-                parts.append(
-                    "\nFiles created by previous steps:\n"
-                    + "\n".join(file_lines)
-                )
-
-        return "\n".join(parts)
-
-    result_parts = []
-    for key, template in mapping.items():
-        if isinstance(template, str):
-            # Replace $user_input with actual user input
-            resolved = template.replace("$user_input", context.user_input)
-            # Replace step output references — support both $key.output and $key
-            # Do longer pattern first to avoid partial matches
-            for output_key, output in context.step_outputs.items():
-                resolved = resolved.replace(f"${output_key}.output", output)
-            for output_key, output in context.step_outputs.items():
-                resolved = resolved.replace(f"${output_key}", output)
-            result_parts.append(f"{key}: {resolved}")
-        else:
-            result_parts.append(f"{key}: {template}")
-    return "\n".join(result_parts)
-
-
-def _collect_workflow_files(
-    step_files: dict[str, Any],
-) -> tuple[list[str], list[str]]:
-    """Aggregate deliverable files across steps, de-duplicated by filename.
-
-    Each agent step captures and re-saves any office file it touches under a
-    fresh file_id (see collect_pending_files), with no cross-step de-dup. When
-    several steps touch the same document (e.g. a builder creates it and a
-    reviewer edits it), the same filename ends up saved multiple times. Here we
-    keep only the most recently saved version per filename (last writer wins).
-
-    step_files is dict-ordered by execution order, and within each step
-    file_ids[i] corresponds to files[i] (built in lockstep by
-    collect_pending_files), so iterating + overwriting yields the latest id.
-
-    Returns (file_ids, file_names) aligned by index.
-    """
-    latest_by_name: dict[str, str] = {}
-    for _step_key, file_info in step_files.items():
-        file_ids = file_info.get("file_ids", [])
-        files = file_info.get("files", [])
-        for fid, f in zip(file_ids, files):
-            latest_by_name[f["filename"]] = fid
-    return list(latest_by_name.values()), list(latest_by_name.keys())
-
-
 def run_workflow_sequential(
     workflow: AgentWorkflow,
     user_message: str,
@@ -632,6 +321,10 @@ def run_workflow_sequential(
 
     Each step's output becomes the next step's input.
     Supports pause/resume via checkpoints (human-in-the-loop).
+
+    Legacy engine, used only when WORKFLOW_ENGINE_V2 is off; the default is
+    the node-registry coordinator in om/workflows/sequential.py. Kept for one
+    release as a fallback, then removed.
     """
     steps = sorted(workflow.steps, key=lambda s: s.step_order)
     completed_step_ids: set[int] = set()
@@ -2745,7 +2438,12 @@ def run_workflow(
     workflow_start = time.monotonic()
 
     if mode == "sequential":
-        yield from run_workflow_sequential(
+        run_sequential = (
+            run_workflow_sequential_v2
+            if WORKFLOW_ENGINE_V2
+            else run_workflow_sequential
+        )
+        yield from run_sequential(
             workflow, user_message, emitter, db_session, user,
             is_connected=is_connected,
             chat_session_id=chat_session_id,

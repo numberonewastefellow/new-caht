@@ -1,0 +1,2830 @@
+{
+ "scenario": "26_insurance_claims",
+ "description": "Template 26_insurance_claims.json forced into sequential mode.",
+ "covers": [
+  "template",
+  "sequential"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Insurance Claims Investigation",
+    "mode": "sequential",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Claims Triage Adjuster",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Property Damage Assessor",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "property_damage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Auto Accident Reconstructionist",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "accident_reconstruction",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Medical Claims Reviewer",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "medical_claims_review",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Fraud Investigator",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "fraud_investigation",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Weather/Catastrophe Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "weather_cat_analysis",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Subrogation Specialist",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "subrogation_assessment",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Policy Coverage Analyst",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "coverage_determination",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "Settlement Report Writer",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "settlement_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Claims Triage Adjuster",
+     "agent_name": "WF Claims Triage Adjuster",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Claims Triage Adjuster",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Claims Triage Adjuster",
+     "agent_name": "WF Claims Triage Adjuster",
+     "questions": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 2,
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Claims Triage Adjuster",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Claims Triage Adjuster",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Insurance Claims Investigation",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Claims Triage Adjuster",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Insurance Claims Investigation",
+    "mode": "sequential",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Claims Triage Adjuster",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Property Damage Assessor",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "property_damage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Auto Accident Reconstructionist",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "accident_reconstruction",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Medical Claims Reviewer",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "medical_claims_review",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Fraud Investigator",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "fraud_investigation",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Weather/Catastrophe Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "weather_cat_analysis",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Subrogation Specialist",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "subrogation_assessment",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Policy Coverage Analyst",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "coverage_determination",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "Settlement Report Writer",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "settlement_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Claims Triage Adjuster",
+     "agent_name": "WF Claims Triage Adjuster",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Claims Triage Adjuster",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Property Damage Assessor",
+     "agent_name": "WF Property Damage Assessor",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Property Damage Assessor"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_102_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/property_damage_assessment.docx",
+        "filename": "property_damage_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_102_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "property_damage_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Property Damage Assessor",
+     "output_key": "property_damage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Auto Accident Reconstructionist",
+     "agent_name": "WF Auto Accident Reconstructionist",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about Auto Accident Reconstructionist"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Auto Accident Reconstructionist"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "accident_reconstruction result for: Us",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "er request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_103_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/accident_reconstruction.docx",
+        "filename": "accident_reconstruction.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_103_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "accident_reconstruction result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Auto Accident Reconstructionist",
+     "output_key": "accident_reconstruction"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Medical Claims Reviewer",
+     "agent_name": "WF Medical Claims Reviewer",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "medical_claims_review result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Medical Claims Reviewer",
+     "output_key": "medical_claims_review"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Fraud Investigator",
+     "agent_name": "WF Fraud Investigator",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "Thinking about Fraud Investigator"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Fraud Investigator"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "fraud_investigation result for: User",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": " request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_105_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/fraud_investigation.docx",
+        "filename": "fraud_investigation.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_105_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "fraud_investigation result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Fraud Investigator",
+     "output_key": "fraud_investigation"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "step_name": "Weather/Catastrophe Analyst",
+     "agent_name": "WF Weather Catastrophe Analyst",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "Thinking about Weather/Catastrophe Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Weather/Catastrophe Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      9,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "weather_cat_analysis result for: Use",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "r request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_106_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/weather_cat_analysis.docx",
+        "filename": "weather_cat_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_106_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "weather_cat_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "step_name": "Weather/Catastrophe Analyst",
+     "output_key": "weather_cat_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Subrogation Specialist",
+     "agent_name": "WF Subrogation Specialist",
+     "step_order": 6,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "Thinking about Subrogation Specialist"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "subrogation_assessment result for: Us",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "er request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "subrogation_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Subrogation Specialist",
+     "output_key": "subrogation_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "step_name": "Policy Coverage Analyst",
+     "agent_name": "WF Policy Coverage Analyst",
+     "step_order": 7,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "coverage_determination result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "step_name": "Policy Coverage Analyst",
+     "output_key": "coverage_determination"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "Settlement Report Writer",
+     "agent_name": "WF Settlement Report Writer",
+     "step_order": 8,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Thinking about Settlement Report Writer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "settlement_report result for: User ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "settlement_report result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "Settlement Report Writer",
+     "output_key": "settlement_report"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "settlement_report result for: User request: Prepare a complete assessm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "",
+     "file_ids": [
+      "file_102_0_0",
+      "file_103_0_0",
+      "file_105_0_0",
+      "file_106_0_0"
+     ],
+     "file_names": [
+      "property_damage_assessment.docx",
+      "accident_reconstruction.docx",
+      "fraud_investigation.docx",
+      "weather_cat_analysis.docx"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      15,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 13,
+     "content": "settlement_report result for: User request: Prepare a complete assessm",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 14,
+     "content": "",
+     "file_ids": [
+      "file_102_0_0",
+      "file_103_0_0",
+      "file_105_0_0",
+      "file_106_0_0"
+     ],
+     "file_names": [
+      "property_damage_assessment.docx",
+      "accident_reconstruction.docx",
+      "fraud_investigation.docx",
+      "weather_cat_analysis.docx"
+     ]
+    }
+   ],
+   "final_answer": "",
+   "agent_calls": [
+    {
+     "step_name": "Claims Triage Adjuster",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Claims Triage Adjuster",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Property Damage Assessor",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "property_damage_assessment",
+     "agent": "WF Property Damage Assessor",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Auto Accident Reconstructionist",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "accident_reconstruction",
+     "agent": "WF Auto Accident Reconstructionist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Medical Claims Reviewer",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "medical_claims_review",
+     "agent": "WF Medical Claims Reviewer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Fraud Investigator",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "fraud_investigation",
+     "agent": "WF Fraud Investigator",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Weather/Catastrophe Analyst",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "weather_cat_analysis",
+     "agent": "WF Weather Catastrophe Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review result for: User request: Prepare a complete assessm\n\nOutput from 'fraud_investigation':\nfraud_investigation result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')\n- fraud_investigation.docx (path: /app/output/fraud_investigation.docx, from step 'fraud_investigation')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Subrogation Specialist",
+     "step_id": 107,
+     "step_order": 6,
+     "output_key": "subrogation_assessment",
+     "agent": "WF Subrogation Specialist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review result for: User request: Prepare a complete assessm\n\nOutput from 'fraud_investigation':\nfraud_investigation result for: User request: Prepare a complete assessm\n\nOutput from 'weather_cat_analysis':\nweather_cat_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')\n- fraud_investigation.docx (path: /app/output/fraud_investigation.docx, from step 'fraud_investigation')\n- weather_cat_analysis.docx (path: /app/output/weather_cat_analysis.docx, from step 'weather_cat_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Policy Coverage Analyst",
+     "step_id": 108,
+     "step_order": 7,
+     "output_key": "coverage_determination",
+     "agent": "WF Policy Coverage Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review result for: User request: Prepare a complete assessm\n\nOutput from 'fraud_investigation':\nfraud_investigation result for: User request: Prepare a complete assessm\n\nOutput from 'weather_cat_analysis':\nweather_cat_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'subrogation_assessment':\nsubrogation_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')\n- fraud_investigation.docx (path: /app/output/fraud_investigation.docx, from step 'fraud_investigation')\n- weather_cat_analysis.docx (path: /app/output/weather_cat_analysis.docx, from step 'weather_cat_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Settlement Report Writer",
+     "step_id": 109,
+     "step_order": 8,
+     "output_key": "settlement_report",
+     "agent": "WF Settlement Report Writer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review result for: User request: Prepare a complete assessm\n\nOutput from 'fraud_investigation':\nfraud_investigation result for: User request: Prepare a complete assessm\n\nOutput from 'weather_cat_analysis':\nweather_cat_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'subrogation_assessment':\nsubrogation_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'coverage_determination':\ncoverage_determination result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')\n- fraud_investigation.docx (path: /app/output/fraud_investigation.docx, from step 'fraud_investigation')\n- weather_cat_analysis.docx (path: /app/output/weather_cat_analysis.docx, from step 'weather_cat_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "property_damage_assessment": "property_damage_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "property_damage_assessment": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/property_damage_assessment.docx",
+           "filename": "property_damage_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "property_damage_assessment": "property_damage_assessment result for: User request: Prepare a complete assessm",
+       "accident_reconstruction": "accident_reconstruction result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "property_damage_assessment": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/property_damage_assessment.docx",
+           "filename": "property_damage_assessment.docx"
+          }
+         ]
+        },
+        "accident_reconstruction": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/accident_reconstruction.docx",
+           "filename": "accident_reconstruction.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "property_damage_assessment": "property_damage_assessment result for: User request: Prepare a complete assessm",
+       "accident_reconstruction": "accident_reconstruction result for: User request: Prepare a complete assessm",
+       "medical_claims_review": "medical_claims_review result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "property_damage_assessment": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/property_damage_assessment.docx",
+           "filename": "property_damage_assessment.docx"
+          }
+         ]
+        },
+        "accident_reconstruction": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/accident_reconstruction.docx",
+           "filename": "accident_reconstruction.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 5,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "property_damage_assessment": "property_damage_assessment result for: User request: Prepare a complete assessm",
+       "accident_reconstruction": "accident_reconstruction result for: User request: Prepare a complete assessm",
+       "medical_claims_review": "medical_claims_review result for: User request: Prepare a complete assessm",
+       "fraud_investigation": "fraud_investigation result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "property_damage_assessment": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/property_damage_assessment.docx",
+           "filename": "property_damage_assessment.docx"
+          }
+         ]
+        },
+        "accident_reconstruction": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/accident_reconstruction.docx",
+           "filename": "accident_reconstruction.docx"
+          }
+         ]
+        },
+        "fraud_investigation": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/fraud_investigation.docx",
+           "filename": "fraud_investigation.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 7,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "property_damage_assessment": "property_damage_assessment result for: User request: Prepare a complete assessm",
+       "accident_reconstruction": "accident_reconstruction result for: User request: Prepare a complete assessm",
+       "medical_claims_review": "medical_claims_review result for: User request: Prepare a complete assessm",
+       "fraud_investigation": "fraud_investigation result for: User request: Prepare a complete assessm",
+       "weather_cat_analysis": "weather_cat_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "property_damage_assessment": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/property_damage_assessment.docx",
+           "filename": "property_damage_assessment.docx"
+          }
+         ]
+        },
+        "accident_reconstruction": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/accident_reconstruction.docx",
+           "filename": "accident_reconstruction.docx"
+          }
+         ]
+        },
+        "fraud_investigation": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/fraud_investigation.docx",
+           "filename": "fraud_investigation.docx"
+          }
+         ]
+        },
+        "weather_cat_analysis": {
+         "file_ids": [
+          "file_106_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/weather_cat_analysis.docx",
+           "filename": "weather_cat_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 9,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "property_damage_assessment": "property_damage_assessment result for: User request: Prepare a complete assessm",
+       "accident_reconstruction": "accident_reconstruction result for: User request: Prepare a complete assessm",
+       "medical_claims_review": "medical_claims_review result for: User request: Prepare a complete assessm",
+       "fraud_investigation": "fraud_investigation result for: User request: Prepare a complete assessm",
+       "weather_cat_analysis": "weather_cat_analysis result for: User request: Prepare a complete assessm",
+       "subrogation_assessment": "subrogation_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "property_damage_assessment": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/property_damage_assessment.docx",
+           "filename": "property_damage_assessment.docx"
+          }
+         ]
+        },
+        "accident_reconstruction": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/accident_reconstruction.docx",
+           "filename": "accident_reconstruction.docx"
+          }
+         ]
+        },
+        "fraud_investigation": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/fraud_investigation.docx",
+           "filename": "fraud_investigation.docx"
+          }
+         ]
+        },
+        "weather_cat_analysis": {
+         "file_ids": [
+          "file_106_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/weather_cat_analysis.docx",
+           "filename": "weather_cat_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 10,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "property_damage_assessment": "property_damage_assessment result for: User request: Prepare a complete assessm",
+       "accident_reconstruction": "accident_reconstruction result for: User request: Prepare a complete assessm",
+       "medical_claims_review": "medical_claims_review result for: User request: Prepare a complete assessm",
+       "fraud_investigation": "fraud_investigation result for: User request: Prepare a complete assessm",
+       "weather_cat_analysis": "weather_cat_analysis result for: User request: Prepare a complete assessm",
+       "subrogation_assessment": "subrogation_assessment result for: User request: Prepare a complete assessm",
+       "coverage_determination": "coverage_determination result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "property_damage_assessment": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/property_damage_assessment.docx",
+           "filename": "property_damage_assessment.docx"
+          }
+         ]
+        },
+        "accident_reconstruction": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/accident_reconstruction.docx",
+           "filename": "accident_reconstruction.docx"
+          }
+         ]
+        },
+        "fraud_investigation": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/fraud_investigation.docx",
+           "filename": "fraud_investigation.docx"
+          }
+         ]
+        },
+        "weather_cat_analysis": {
+         "file_ids": [
+          "file_106_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/weather_cat_analysis.docx",
+           "filename": "weather_cat_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "property_damage_assessment": "property_damage_assessment result for: User request: Prepare a complete assessm",
+       "accident_reconstruction": "accident_reconstruction result for: User request: Prepare a complete assessm",
+       "medical_claims_review": "medical_claims_review result for: User request: Prepare a complete assessm",
+       "fraud_investigation": "fraud_investigation result for: User request: Prepare a complete assessm",
+       "weather_cat_analysis": "weather_cat_analysis result for: User request: Prepare a complete assessm",
+       "subrogation_assessment": "subrogation_assessment result for: User request: Prepare a complete assessm",
+       "coverage_determination": "coverage_determination result for: User request: Prepare a complete assessm",
+       "settlement_report": "settlement_report result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "property_damage_assessment": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/property_damage_assessment.docx",
+           "filename": "property_damage_assessment.docx"
+          }
+         ]
+        },
+        "accident_reconstruction": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/accident_reconstruction.docx",
+           "filename": "accident_reconstruction.docx"
+          }
+         ]
+        },
+        "fraud_investigation": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/fraud_investigation.docx",
+           "filename": "fraud_investigation.docx"
+          }
+         ]
+        },
+        "weather_cat_analysis": {
+         "file_ids": [
+          "file_106_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/weather_cat_analysis.docx",
+           "filename": "weather_cat_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 12,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+    "property_damage_assessment": "property_damage_assessment result for: User request: Prepare a complete assessm",
+    "accident_reconstruction": "accident_reconstruction result for: User request: Prepare a complete assessm",
+    "medical_claims_review": "medical_claims_review result for: User request: Prepare a complete assessm",
+    "fraud_investigation": "fraud_investigation result for: User request: Prepare a complete assessm",
+    "weather_cat_analysis": "weather_cat_analysis result for: User request: Prepare a complete assessm",
+    "subrogation_assessment": "subrogation_assessment result for: User request: Prepare a complete assessm",
+    "coverage_determination": "coverage_determination result for: User request: Prepare a complete assessm",
+    "settlement_report": "settlement_report result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Insurance Claims Investigation",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 879,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Claims Triage Adjuster",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Claims Triage Adjuster",
+      "status": "completed",
+      "input": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 88,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Property Damage Assessor",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+      "output": "property_damage_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 35,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Auto Accident Reconstructionist",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')",
+      "output": "accident_reconstruction result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 59,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Medical Claims Reviewer",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')",
+      "output": "medical_claims_review result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 78,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Fraud Investigator",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')",
+      "output": "fraud_investigation result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 90,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Weather/Catastrophe Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review result for: User request: Prepare a complete assessm\n\nOutput from 'fraud_investigation':\nfraud_investigation result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')\n- fraud_investigation.docx (path: /app/output/fraud_investigation.docx, from step 'fraud_investigation')",
+      "output": "weather_cat_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 109,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_8",
+      "type": "agent",
+      "name": "Subrogation Specialist",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review result for: User request: Prepare a complete assessm\n\nOutput from 'fraud_investigation':\nfraud_investigation result for: User request: Prepare a complete assessm\n\nOutput from 'weather_cat_analysis':\nweather_cat_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')\n- fraud_investigation.docx (path: /app/output/fraud_investigation.docx, from step 'fraud_investigation')\n- weather_cat_analysis.docx (path: /app/output/weather_cat_analysis.docx, from step 'weather_cat_analysis')",
+      "output": "subrogation_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 107,
+      "agent_id": 1007,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 128,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_9",
+      "type": "agent",
+      "name": "Policy Coverage Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review result for: User request: Prepare a complete assessm\n\nOutput from 'fraud_investigation':\nfraud_investigation result for: User request: Prepare a complete assessm\n\nOutput from 'weather_cat_analysis':\nweather_cat_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'subrogation_assessment':\nsubrogation_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')\n- fraud_investigation.docx (path: /app/output/fraud_investigation.docx, from step 'fraud_investigation')\n- weather_cat_analysis.docx (path: /app/output/weather_cat_analysis.docx, from step 'weather_cat_analysis')",
+      "output": "coverage_determination result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 108,
+      "agent_id": 1008,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 140,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_10",
+      "type": "agent",
+      "name": "Settlement Report Writer",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review result for: User request: Prepare a complete assessm\n\nOutput from 'fraud_investigation':\nfraud_investigation result for: User request: Prepare a complete assessm\n\nOutput from 'weather_cat_analysis':\nweather_cat_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'subrogation_assessment':\nsubrogation_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'coverage_determination':\ncoverage_determination result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')\n- accident_reconstruction.docx (path: /app/output/accident_reconstruction.docx, from step 'accident_reconstruction')\n- fraud_investigation.docx (path: /app/output/fraud_investigation.docx, from step 'fraud_investigation')\n- weather_cat_analysis.docx (path: /app/output/weather_cat_analysis.docx, from step 'weather_cat_analysis')",
+      "output": "settlement_report result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 109,
+      "agent_id": 1009,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 152,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "settlement_report result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "agent_8",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_8",
+      "to_id": "agent_9",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_9",
+      "to_id": "agent_10",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_10",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 879,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Claims Triage Adjuster",
+       "input_text": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more detai",
+       "output_text": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "duration_ms": "<ms>",
+       "tokens_used": 88
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Property Damage Assessor",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "output_text": "property_damage_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 35
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Auto Accident Reconstructionist",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessment.docx (path: /app/output/property_damage_assessment.docx, from step 'property_damage_assessment')",
+       "output_text": "accident_reconstruction result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 59
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Medical Claims Reviewer",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- property_damage_assessmen",
+       "output_text": "medical_claims_review result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 78
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Fraud Investigator",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review r",
+       "output_text": "fraud_investigation result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 90
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Weather/Catastrophe Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review r",
+       "output_text": "weather_cat_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 109
+      },
+      {
+       "step_id": 107,
+       "agent_id": 1007,
+       "step_name": "Subrogation Specialist",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review r",
+       "output_text": "subrogation_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 128
+      },
+      {
+       "step_id": 108,
+       "agent_id": 1008,
+       "step_name": "Policy Coverage Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review r",
+       "output_text": "coverage_determination result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 140
+      },
+      {
+       "step_id": 109,
+       "agent_id": 1009,
+       "step_name": "Settlement Report Writer",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'property_damage_assessment':\nproperty_damage_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'accident_reconstruction':\naccident_reconstruction result for: User request: Prepare a complete assessm\n\nOutput from 'medical_claims_review':\nmedical_claims_review r",
+       "output_text": "settlement_report result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 152
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

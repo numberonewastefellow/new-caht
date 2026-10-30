@@ -36,7 +36,9 @@ from om.utils.logger import setup_logger
 
 logger = setup_logger()
 
-NodeType = Literal["start", "orchestrator", "agent", "pause", "finish", "router"]
+# "step" is any workflow node other than an agent or router (e.g. code); its
+# workflow node type is in TraceNode.node_type.
+NodeType = Literal["start", "orchestrator", "agent", "pause", "finish", "router", "step"]
 EdgeType = Literal["delegation", "return", "sequence"]
 NodeStatus = Literal["running", "completed", "paused", "failed"]
 
@@ -86,6 +88,8 @@ class TraceNode(BaseModel):
     file_names: list[str] = Field(default_factory=list)
     started_at: str | None = None
     ended_at: str | None = None
+    # Workflow node type of a "step" node (e.g. "code").
+    node_type: str | None = None
 
 
 class TraceEdge(BaseModel):
@@ -298,6 +302,41 @@ class WorkflowTraceBuilder:
             logger.debug("[Trace] start_agent failed", exc_info=True)
             return None
 
+    def start_step(
+        self,
+        step_id: int | None,
+        name: str,
+        node_type: str,
+        input_text: str,
+    ) -> str | None:
+        """Append a non-agent step node (e.g. code) in the ``running`` state.
+
+        Finish it with ``finish_agent`` (which updates any node by id).
+        """
+        try:
+            node_id = f"step_{len(self.trace.nodes)}"
+            self.trace.nodes.append(
+                TraceNode(
+                    id=node_id,
+                    type="step",
+                    node_type=node_type,
+                    name=name,
+                    status="running",
+                    input=input_text or "",
+                    step_id=step_id,
+                    started_at=_now_iso(),
+                )
+            )
+            if self._prev_id:
+                self.trace.edges.append(
+                    TraceEdge(from_id=self._prev_id, to_id=node_id, type="sequence")
+                )
+            self._prev_id = node_id
+            return node_id
+        except Exception:
+            logger.debug("[Trace] start_step failed", exc_info=True)
+            return None
+
     def finish_agent(
         self,
         node_id: str | None,
@@ -308,7 +347,7 @@ class WorkflowTraceBuilder:
         file_ids: list[str] | None = None,
         file_names: list[str] | None = None,
     ) -> None:
-        """Update a node previously created by ``start_agent``.
+        """Update a node previously created by ``start_agent`` or ``start_step``.
 
         Falls back to ``add_agent`` if the node can't be found (defensive)."""
         try:

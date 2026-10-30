@@ -70,6 +70,8 @@ services:
     # ports:
     #   - "8080:8080"
     environment:
+      # Shared bearer token for the code interpreter (must match the service's)
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
       # Auth Settings
       - AUTH_TYPE=${AUTH_TYPE:-basic}
       - FILE_STORE_BACKEND=${FILE_STORE_BACKEND:-s3}
@@ -165,6 +167,8 @@ services:
       - cache
     restart: unless-stopped
     environment:
+      # Shared bearer token for the code interpreter (must match the service's)
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
       - USE_LIGHTWEIGHT_BACKGROUND_WORKER=${USE_LIGHTWEIGHT_BACKGROUND_WORKER:-true}
       - FILE_STORE_BACKEND=${FILE_STORE_BACKEND:-s3}
       # Arize Phoenix LLM Observability
@@ -295,6 +299,8 @@ services:
     # timeout (default 1800s) + PULSE_DEADLINE_MARGIN_SECONDS.
     stop_grace_period: 1900s
     environment:
+      # Shared bearer token for the code interpreter (must match the service's)
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
       - PULSE_ROLE=worker
       - PULSE_WORKER_CONCURRENCY=${PULSE_WORKER_CONCURRENCY:-4}
       - PULSE_MAX_CONSECUTIVE_FAILURES=${PULSE_MAX_CONSECUTIVE_FAILURES:-5}
@@ -697,6 +703,11 @@ services:
     env_file:
       - path: .env
         required: false
+    environment:
+      # /v1/* requires `Authorization: Bearer $CODE_INTERPRETER_API_TOKEN`; with no
+      # token the service fails closed (503). ALLOW_UNAUTHENTICATED is dev-only.
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
+      - CODE_INTERPRETER_ALLOW_UNAUTHENTICATED=${CODE_INTERPRETER_ALLOW_UNAUTHENTICATED:-false}
 
     # Below is needed for the `docker-out-of-docker` execution mode
     user: root

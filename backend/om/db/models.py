@@ -1,5 +1,6 @@
 import datetime
 import json
+import secrets
 from typing import Any
 from typing import Literal
 from typing import NotRequired
@@ -4892,6 +4893,16 @@ class AgentWorkflow(Base):
     max_calls_per_agent: Mapped[int] = mapped_column(Integer, default=2)
     timeout_seconds: Mapped[int] = mapped_column(Integer, default=1800)
 
+    # Versioning (see docs/flow-nodes/DESIGN.md)
+    # Bumped on every save; each save also writes an AgentWorkflowVersion row.
+    version: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=1, server_default="1"
+    )
+    # Engine semantics switch: 1 = legacy behaviour, kept for existing workflows.
+    schema_version: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=1, server_default="1"
+    )
+
     # Metadata
     is_public: Mapped[bool] = mapped_column(Boolean, default=True)
     is_visible: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -4931,10 +4942,28 @@ class AgentWorkflowStep(Base):
         ForeignKey("agent.id", ondelete="CASCADE"), nullable=True
     )
 
-    # Step type: "agent" (default) or "conditional_router"
+    # Stable identity of the step within its workflow. Survives re-ordering and
+    # saves; routers, checkpoints and traces reference steps by this key.
+    node_key: Mapped[str] = mapped_column(
+        String, nullable=False, default=lambda: new_workflow_node_key()
+    )
+
+    # Node type name and pinned version, resolved through the node type
+    # registry (om/workflows/nodes). "agent" and "conditional_router" v1 read
+    # their settings from the legacy columns below; newer types use `config`.
     step_type: Mapped[str] = mapped_column(
         String, default="agent", server_default="agent"
     )
+    type_version: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=1, server_default="1"
+    )
+    config: Mapped[dict | None] = mapped_column(PGJSONB, nullable=True)
+
+    # Container membership (parallel / loop nodes). NULL = top level.
+    parent_step_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent_workflow_step.id", ondelete="CASCADE"), nullable=True
+    )
+    branch_index: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     step_order: Mapped[int] = mapped_column(Integer, nullable=False)
     step_name: Mapped[str] = mapped_column(String, nullable=False)
@@ -4974,6 +5003,7 @@ class AgentWorkflowStep(Base):
 
     __table_args__ = (
         UniqueConstraint("workflow_id", "step_order", name="uq_workflow_step_order"),
+        UniqueConstraint("workflow_id", "node_key", name="uq_workflow_step_node_key"),
     )
 
     # Relationships
@@ -4981,6 +5011,42 @@ class AgentWorkflowStep(Base):
         "AgentWorkflow", back_populates="steps"
     )
     agent: Mapped[Agent | None] = relationship("Agent")
+
+
+def new_workflow_node_key() -> str:
+    """Generate a node key for a new workflow step (unique per workflow)."""
+    return f"n_{secrets.token_hex(4)}"
+
+
+class AgentWorkflowVersion(Base):
+    """Immutable snapshot of a workflow definition, written on every save.
+
+    Runs record the version they started on (WorkflowExecution.workflow_version_id),
+    so a paused run resumes against the definition it began with even if the
+    workflow was edited in between. Also provides history, diff and revert.
+    """
+
+    __tablename__ = "agent_workflow_version"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    workflow_id: Mapped[int] = mapped_column(
+        ForeignKey("agent_workflow.id", ondelete="CASCADE"), nullable=False
+    )
+    version: Mapped[int] = mapped_column(Integer, nullable=False)
+    schema_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    # SHA-256 of the canonical definition JSON; unchanged content is not re-saved.
+    content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    definition: Mapped[dict] = mapped_column(PGJSONB, nullable=False)
+    created_by_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    __table_args__ = (
+        UniqueConstraint("workflow_id", "version", name="uq_workflow_version_number"),
+    )
 
 
 class WorkflowExecution(Base):
@@ -5013,6 +5079,11 @@ class WorkflowExecution(Base):
         ForeignKey("agent_workflow_step.id", ondelete="SET NULL"), nullable=True
     )
     checkpoint_data: Mapped[dict | None] = mapped_column(PGJSONB, nullable=True)
+
+    # The workflow definition this run started on (resume uses it).
+    workflow_version_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent_workflow_version.id", ondelete="SET NULL"), nullable=True
+    )
 
     started_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

@@ -2,20 +2,20 @@
 
 import React, { memo } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
-import type { ConditionalRouterNodeData } from "./types";
+import {
+  describeCondition,
+  normalizeRouterConfig,
+} from "@/lib/workflows/routerConfig";
+import { StepNodeBadges } from "./NodeBadges";
+import type { StepNodeData } from "./types";
 
 function ConditionalRouterNodeComponent({
+  id,
   data,
   selected,
-}: NodeProps & { data: ConditionalRouterNodeData }) {
-  const operator = data.operator || "contains";
-  const field = data.condition_field || "";
-  const value = data.match_value || "";
-
-  // Build a short summary for display
-  const summary = field
-    ? `${field} ${operator} "${value}"`
-    : "No condition set";
+}: NodeProps & { data: StepNodeData }) {
+  // Branch targets are the node's True/False edges; the summary is the test.
+  const summary = describeCondition(normalizeRouterConfig(data.config));
 
   return (
     <div
@@ -54,6 +54,7 @@ function ConditionalRouterNodeComponent({
       <div className="wfb-condition-summary">
         <code className="wfb-condition-expr">{summary}</code>
       </div>
+      <StepNodeBadges nodeId={id} data={data} />
 
       {/* Handles: one input (left), two outputs (right) */}
       <Handle

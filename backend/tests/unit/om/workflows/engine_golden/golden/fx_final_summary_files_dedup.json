@@ -1,0 +1,887 @@
+{
+ "scenario": "fx_final_summary_files_dedup",
+ "description": "No promoted step: the final summary is the LAST output, with de-duplicated file links.",
+ "covers": [
+  "final summary",
+  "file de-dup"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "FX three steps",
+    "mode": "sequential",
+    "max_steps": 10,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Alpha",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "alpha",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Beta",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "beta",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Gamma",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "gamma",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Alpha",
+     "agent_name": "FX Alpha",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "Thinking about Alpha"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "alpha result for: User reques",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "t: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_101_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/report.docx",
+        "filename": "report.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_101_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "alpha result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Alpha",
+     "output_key": "alpha"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Beta",
+     "agent_name": "FX Beta",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Thinking about Beta"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "beta result for: User reques",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "t: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_102_0_0",
+       "file_102_0_1"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/report.docx",
+        "filename": "report.docx"
+       },
+       {
+        "file_path": "/app/output/chart.pptx",
+        "filename": "chart.pptx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_102_0_0",
+      "file_102_0_1"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "beta result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Beta",
+     "output_key": "beta"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Gamma",
+     "agent_name": "FX Gamma",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Thinking about Gamma"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "gamma result for: User reques",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "t: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "gamma result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Gamma",
+     "output_key": "gamma"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "gamma result for: User request: Prepare a complete assessm",
+     "file_ids": [
+      "file_102_0_0",
+      "file_102_0_1"
+     ],
+     "file_names": [
+      "report.docx",
+      "chart.pptx"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 3,
+     "content": "gamma result for: User request: Prepare a complete assessm",
+     "file_ids": [
+      "file_102_0_0",
+      "file_102_0_1"
+     ],
+     "file_names": [
+      "report.docx",
+      "chart.pptx"
+     ]
+    }
+   ],
+   "final_answer": "gamma result for: User request: Prepare a complete assessm",
+   "agent_calls": [
+    {
+     "step_name": "Alpha",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "alpha",
+     "agent": "FX Alpha",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Beta",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "beta",
+     "agent": "FX Beta",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'alpha':\nalpha result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- report.docx (path: /app/output/report.docx, from step 'alpha')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Gamma",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "gamma",
+     "agent": "FX Gamma",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'alpha':\nalpha result for: User request: Prepare a complete assessm\n\nOutput from 'beta':\nbeta result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- report.docx (path: /app/output/report.docx, from step 'alpha')\n- report.docx (path: /app/output/report.docx, from step 'beta')\n- chart.pptx (path: /app/output/chart.pptx, from step 'beta')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "alpha": "alpha result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "step_files": {
+        "alpha": {
+         "file_ids": [
+          "file_101_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/report.docx",
+           "filename": "report.docx"
+          }
+         ]
+        }
+       },
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "alpha": "alpha result for: User request: Prepare a complete assessm",
+       "beta": "beta result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "step_files": {
+        "alpha": {
+         "file_ids": [
+          "file_101_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/report.docx",
+           "filename": "report.docx"
+          }
+         ]
+        },
+        "beta": {
+         "file_ids": [
+          "file_102_0_0",
+          "file_102_0_1"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/report.docx",
+           "filename": "report.docx"
+          },
+          {
+           "file_path": "/app/output/chart.pptx",
+           "filename": "chart.pptx"
+          }
+         ]
+        }
+       },
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "alpha": "alpha result for: User request: Prepare a complete assessm",
+       "beta": "beta result for: User request: Prepare a complete assessm",
+       "gamma": "gamma result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "step_files": {
+        "alpha": {
+         "file_ids": [
+          "file_101_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/report.docx",
+           "filename": "report.docx"
+          }
+         ]
+        },
+        "beta": {
+         "file_ids": [
+          "file_102_0_0",
+          "file_102_0_1"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/report.docx",
+           "filename": "report.docx"
+          },
+          {
+           "file_path": "/app/output/chart.pptx",
+           "filename": "chart.pptx"
+          }
+         ]
+        }
+       },
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "alpha": "alpha result for: User request: Prepare a complete assessm",
+    "beta": "beta result for: User request: Prepare a complete assessm",
+    "gamma": "gamma result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed",
+      "agent_3:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "FX three steps",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 140,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Alpha",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "alpha result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 22,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Beta",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'alpha':\nalpha result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- report.docx (path: /app/output/report.docx, from step 'alpha')",
+      "output": "beta result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 46,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Gamma",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'alpha':\nalpha result for: User request: Prepare a complete assessm\n\nOutput from 'beta':\nbeta result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- report.docx (path: /app/output/report.docx, from step 'alpha')\n- report.docx (path: /app/output/report.docx, from step 'beta')\n- chart.pptx (path: /app/output/chart.pptx, from step 'beta')",
+      "output": "gamma result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 72,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "gamma result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 140,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Alpha",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "output_text": "alpha result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 22
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Beta",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'alpha':\nalpha result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- report.docx (path: /app/output/report.docx, from step 'alpha')",
+       "output_text": "beta result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 46
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Gamma",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'alpha':\nalpha result for: User request: Prepare a complete assessm\n\nOutput from 'beta':\nbeta result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- report.docx (path: /app/output/report.docx, from step 'alpha')\n- report.docx (path: /app/output/report.docx, from step 'beta')\n- chart.pptx (path: /app/output/chart.pptx, from step 'beta')",
+       "output_text": "gamma result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 72
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

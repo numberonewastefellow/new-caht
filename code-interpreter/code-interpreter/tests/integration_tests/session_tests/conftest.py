@@ -8,14 +8,26 @@ with Docker available. They exercise the real session lifecycle
 from __future__ import annotations
 
 import io
+import os
 import pathlib
 from typing import Generator
 
 import pytest
 import requests
 
-BASE_URL = "http://localhost:8000"
+# Point at a non-default instance with CODE_INTERPRETER_TEST_BASE_URL. If the service
+# requires auth, export CODE_INTERPRETER_API_TOKEN so requests carry the bearer token.
+BASE_URL = os.environ.get("CODE_INTERPRETER_TEST_BASE_URL") or "http://localhost:8000"
+TEST_TENANT = os.environ.get("CODE_INTERPRETER_TEST_TENANT") or "session-tests"
 SAMPLE_DATA_DIR = pathlib.Path(__file__).parent / "sample_data"
+
+
+def _auth_headers() -> dict[str, str]:
+    headers = {"X-OM-Tenant": TEST_TENANT}
+    token = os.environ.get("CODE_INTERPRETER_API_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
 
 
 def _is_service_running() -> bool:
@@ -41,7 +53,9 @@ def api() -> requests.Session:
     Note: Do NOT set Content-Type globally — it interferes with
     multipart file uploads.  Use ``json=`` for JSON requests instead.
     """
-    return requests.Session()
+    s = requests.Session()
+    s.headers.update(_auth_headers())
+    return s
 
 
 @pytest.fixture()

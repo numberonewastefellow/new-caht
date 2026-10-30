@@ -1,0 +1,3100 @@
+{
+ "scenario": "33_cybercrime__llm_decision",
+ "description": "Template 33_cybercrime.json in llm_decision mode; the fake orchestrator calls every step's agent once in step_order, then answers.",
+ "covers": [
+  "template",
+  "llm_decision"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Cybercrime Investigation",
+    "mode": "llm_decision",
+    "max_steps": 20,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Cyber Complaint Extractor",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "complaint_card",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Fraud-Ring Linker",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "linkage_analysis",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Records & Registry Verifier",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "verification_report",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Golden-Hour Freeze Drafter",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "freeze_request",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Refund & MRM Petition Drafter",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "refund_petition",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Charge-Sheet Drafter",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "chargesheet_skeleton",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Cyber Case Synthesizer",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "case_file_summary",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Cyber Complaint Extractor."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Cyber Complaint Extractor",
+     "agent_name": "WF Cyber Complaint Extractor",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Cyber Complaint Extractor",
+     "output_key": "complaint_card"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Cyber Complaint Extractor",
+     "agent_name": "WF Cyber Complaint Extractor",
+     "questions": "Which details are missing for complaint_card? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Which details are missing for complaint_card? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 5,
+     "content": "Which details are missing for complaint_card? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for complaint_card? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Cyber Complaint Extractor",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "complaint_card",
+     "agent": "WF Cyber Complaint Extractor",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4.1",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_cyber_complaint_extractor",
+      "delegate_to_wf_cyber_fraud_ring_linker",
+      "delegate_to_wf_cyber_records_verifier",
+      "delegate_to_wf_cyber_golden_hour_freeze_drafter",
+      "delegate_to_wf_cyber_refund_petition_drafter",
+      "delegate_to_wf_cyber_charge_sheet_drafter",
+      "delegate_to_wf_cyber_case_synthesizer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8447 sha1=624b2e34d3e5>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ]
+      ],
+      "cycle_count": 1,
+      "agent_call_counts": {
+       "delegate_to_wf_cyber_complaint_extractor": 1
+      },
+      "turn_index": 3,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for complaint_card? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Cybercrime Investigation",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "llm_decision",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Cyber Complaint Extractor.",
+      "reason": "Next I will delegate to Cyber Complaint Extractor.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Cyber Complaint Extractor",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for complaint_card? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Cyber Complaint Extractor.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Cyber Complaint Extractor."
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Cybercrime Investigation",
+    "mode": "llm_decision",
+    "max_steps": 20,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Cyber Complaint Extractor",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "complaint_card",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Fraud-Ring Linker",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "linkage_analysis",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Records & Registry Verifier",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "verification_report",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Golden-Hour Freeze Drafter",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "freeze_request",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Refund & MRM Petition Drafter",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "refund_petition",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Charge-Sheet Drafter",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "chargesheet_skeleton",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Cyber Case Synthesizer",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "case_file_summary",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Cyber Complaint Extractor",
+     "agent_name": "WF Cyber Complaint Extractor",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': ",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Cyber Complaint Extractor",
+     "output_key": "complaint_card"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Fraud-Ring Linker",
+     "agent_name": "WF Cyber Fraud-Ring Linker",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "Thinking about Fraud-Ring Linker"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Fraud-Ring Linker"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "linkage_analysis result for: Step ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "'Fraud-Ring Linker': work on: Prepa",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_102_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/linkage_analysis.docx",
+        "filename": "linkage_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_102_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "linkage_analysis result for: Step 'Fraud-Ring Linker': work on: Prepa",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Cyber Fraud-Ring Linker",
+     "output_key": "linkage_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Records & Registry Verifier."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Records & Registry Verifier",
+     "agent_name": "WF Cyber Records Verifier",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "Thinking about Records & Registry Verifier"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "verification_report result for: Step",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": " 'Records & Registry Verifier': work",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "verification_report result for: Step 'Records & Registry Verifier': work",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Cyber Records Verifier",
+     "output_key": "verification_report"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "Golden-Hour Freeze Drafter",
+     "agent_name": "WF Cyber Golden-Hour Freeze Drafter",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Thinking about Golden-Hour Freeze Drafter"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "freeze_request result for: Step '",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Golden-Hour Freeze Drafter': work ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "freeze_request result for: Step 'Golden-Hour Freeze Drafter': work ",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Cyber Golden-Hour Freeze Drafter",
+     "output_key": "freeze_request"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Refund & MRM Petition Drafter."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "step_name": "Refund & MRM Petition Drafter",
+     "agent_name": "WF Cyber Refund Petition Drafter",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "content": "Thinking about Refund & MRM Petition Drafter"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "content": "refund_petition result for: Step '",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "content": "Refund & MRM Petition Drafter': wo",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "content": "refund_petition result for: Step 'Refund & MRM Petition Drafter': wo",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Cyber Refund Petition Drafter",
+     "output_key": "refund_petition"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      15,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "step_name": "Charge-Sheet Drafter",
+     "agent_name": "WF Cyber Charge-Sheet Drafter",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "content": "Thinking about Charge-Sheet Drafter"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "content": "chargesheet_skeleton result for: Ste",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "content": "p 'Charge-Sheet Drafter': work on: Pr",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "content": "chargesheet_skeleton result for: Step 'Charge-Sheet Drafter': work on: Pr",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Cyber Charge-Sheet Drafter",
+     "output_key": "chargesheet_skeleton"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      17,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      18,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Cyber Case Synthesizer."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      18,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "step_name": "Cyber Case Synthesizer",
+     "agent_name": "WF Cyber Case Synthesizer",
+     "step_order": 6,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "content": "Thinking about Cyber Case Synthesizer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "content": "case_file_summary result for: Step ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "content": "'Cyber Case Synthesizer': work on: ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "content": "case_file_summary result for: Step 'Cyber Case Synthesizer': work on: ",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Cyber Case Synthesizer",
+     "output_key": "case_file_summary"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      20,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      21,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      21,
+      0,
+      null
+     ],
+     "content": "case_file_summary result for: Step 'Cyber Case Synthesizer': work on: "
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      21,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      22,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "content": "Final synthesis: all specialists were consulted."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      22,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      24,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 21,
+     "content": "case_file_summary result for: Step 'Cyber Case Synthesizer': work on: ",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 22,
+     "content": "Final synthesis: all specialists were consulted.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Final synthesis: all specialists were consulted.",
+   "agent_calls": [
+    {
+     "step_name": "Cyber Complaint Extractor",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "complaint_card",
+     "agent": "WF Cyber Complaint Extractor",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "TASK:\nStep 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for complaint_card? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4.1",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Fraud-Ring Linker",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "linkage_analysis",
+     "agent": "WF Cyber Fraud-Ring Linker",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Records & Registry Verifier",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "verification_report",
+     "agent": "WF Cyber Records Verifier",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "task": "Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Golden-Hour Freeze Drafter",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "freeze_request",
+     "agent": "WF Cyber Golden-Hour Freeze Drafter",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "task": "Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Refund & MRM Petition Drafter",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "refund_petition",
+     "agent": "WF Cyber Refund Petition Drafter",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "task": "Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Charge-Sheet Drafter",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "chargesheet_skeleton",
+     "agent": "WF Cyber Charge-Sheet Drafter",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "task": "Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Cyber Case Synthesizer",
+     "step_id": 107,
+     "step_order": 6,
+     "output_key": "case_file_summary",
+     "agent": "WF Cyber Case Synthesizer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "task": "Step 'Cyber Case Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_cyber_complaint_extractor",
+      "delegate_to_wf_cyber_fraud_ring_linker",
+      "delegate_to_wf_cyber_records_verifier",
+      "delegate_to_wf_cyber_golden_hour_freeze_drafter",
+      "delegate_to_wf_cyber_refund_petition_drafter",
+      "delegate_to_wf_cyber_charge_sheet_drafter",
+      "delegate_to_wf_cyber_case_synthesizer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8447 sha1=624b2e34d3e5>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_cyber_complaint_extractor",
+      "delegate_to_wf_cyber_fraud_ring_linker",
+      "delegate_to_wf_cyber_records_verifier",
+      "delegate_to_wf_cyber_golden_hour_freeze_drafter",
+      "delegate_to_wf_cyber_refund_petition_drafter",
+      "delegate_to_wf_cyber_charge_sheet_drafter",
+      "delegate_to_wf_cyber_case_synthesizer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8447 sha1=624b2e34d3e5>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_cyber_complaint_extractor",
+      "delegate_to_wf_cyber_fraud_ring_linker",
+      "delegate_to_wf_cyber_records_verifier",
+      "delegate_to_wf_cyber_golden_hour_freeze_drafter",
+      "delegate_to_wf_cyber_refund_petition_drafter",
+      "delegate_to_wf_cyber_charge_sheet_drafter",
+      "delegate_to_wf_cyber_case_synthesizer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8447 sha1=624b2e34d3e5>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_cyber_complaint_extractor",
+      "delegate_to_wf_cyber_fraud_ring_linker",
+      "delegate_to_wf_cyber_records_verifier",
+      "delegate_to_wf_cyber_golden_hour_freeze_drafter",
+      "delegate_to_wf_cyber_refund_petition_drafter",
+      "delegate_to_wf_cyber_charge_sheet_drafter",
+      "delegate_to_wf_cyber_case_synthesizer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8447 sha1=624b2e34d3e5>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_cyber_complaint_extractor",
+      "delegate_to_wf_cyber_fraud_ring_linker",
+      "delegate_to_wf_cyber_records_verifier",
+      "delegate_to_wf_cyber_golden_hour_freeze_drafter",
+      "delegate_to_wf_cyber_refund_petition_drafter",
+      "delegate_to_wf_cyber_charge_sheet_drafter",
+      "delegate_to_wf_cyber_case_synthesizer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8447 sha1=624b2e34d3e5>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      18,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_cyber_complaint_extractor",
+      "delegate_to_wf_cyber_fraud_ring_linker",
+      "delegate_to_wf_cyber_records_verifier",
+      "delegate_to_wf_cyber_golden_hour_freeze_drafter",
+      "delegate_to_wf_cyber_refund_petition_drafter",
+      "delegate_to_wf_cyber_charge_sheet_drafter",
+      "delegate_to_wf_cyber_case_synthesizer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8447 sha1=624b2e34d3e5>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_cyber_charge_sheet_drafter\", \"arguments\": {\"task\": \"Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      22,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_cyber_complaint_extractor",
+      "delegate_to_wf_cyber_fraud_ring_linker",
+      "delegate_to_wf_cyber_records_verifier",
+      "delegate_to_wf_cyber_golden_hour_freeze_drafter",
+      "delegate_to_wf_cyber_refund_petition_drafter",
+      "delegate_to_wf_cyber_charge_sheet_drafter",
+      "delegate_to_wf_cyber_case_synthesizer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8447 sha1=624b2e34d3e5>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_cyber_charge_sheet_drafter\", \"arguments\": {\"task\": \"Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_cyber_case_synthesizer\", \"arguments\": {\"task\": \"Step 'Cyber Case Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "complaint_card": "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': ",
+       "linkage_analysis": "linkage_analysis result for: Step 'Fraud-Ring Linker': work on: Prepa"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
+       ]
+      ],
+      "cycle_count": 2,
+      "agent_call_counts": {
+       "delegate_to_wf_cyber_complaint_extractor": 1,
+       "delegate_to_wf_cyber_fraud_ring_linker": 1
+      },
+      "turn_index": 7,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "complaint_card": "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': ",
+       "linkage_analysis": "linkage_analysis result for: Step 'Fraud-Ring Linker': work on: Prepa",
+       "verification_report": "verification_report result for: Step 'Records & Registry Verifier': work"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Cyber Records Verifier\", \"agent_output\": \"verification_report result for: Step 'Records & Registry Verifier': work\"}"
+       ]
+      ],
+      "cycle_count": 3,
+      "agent_call_counts": {
+       "delegate_to_wf_cyber_complaint_extractor": 1,
+       "delegate_to_wf_cyber_fraud_ring_linker": 1,
+       "delegate_to_wf_cyber_records_verifier": 1
+      },
+      "turn_index": 10,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "complaint_card": "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': ",
+       "linkage_analysis": "linkage_analysis result for: Step 'Fraud-Ring Linker': work on: Prepa",
+       "verification_report": "verification_report result for: Step 'Records & Registry Verifier': work",
+       "freeze_request": "freeze_request result for: Step 'Golden-Hour Freeze Drafter': work "
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Cyber Records Verifier\", \"agent_output\": \"verification_report result for: Step 'Records & Registry Verifier': work\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Cyber Golden-Hour Freeze Drafter\", \"agent_output\": \"freeze_request result for: Step 'Golden-Hour Freeze Drafter': work \"}"
+       ]
+      ],
+      "cycle_count": 4,
+      "agent_call_counts": {
+       "delegate_to_wf_cyber_complaint_extractor": 1,
+       "delegate_to_wf_cyber_fraud_ring_linker": 1,
+       "delegate_to_wf_cyber_records_verifier": 1,
+       "delegate_to_wf_cyber_golden_hour_freeze_drafter": 1
+      },
+      "turn_index": 12,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "complaint_card": "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': ",
+       "linkage_analysis": "linkage_analysis result for: Step 'Fraud-Ring Linker': work on: Prepa",
+       "verification_report": "verification_report result for: Step 'Records & Registry Verifier': work",
+       "freeze_request": "freeze_request result for: Step 'Golden-Hour Freeze Drafter': work ",
+       "refund_petition": "refund_petition result for: Step 'Refund & MRM Petition Drafter': wo"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Cyber Records Verifier\", \"agent_output\": \"verification_report result for: Step 'Records & Registry Verifier': work\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Cyber Golden-Hour Freeze Drafter\", \"agent_output\": \"freeze_request result for: Step 'Golden-Hour Freeze Drafter': work \"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        17,
+        "{\"agent_name\": \"WF Cyber Refund Petition Drafter\", \"agent_output\": \"refund_petition result for: Step 'Refund & MRM Petition Drafter': wo\"}"
+       ]
+      ],
+      "cycle_count": 5,
+      "agent_call_counts": {
+       "delegate_to_wf_cyber_complaint_extractor": 1,
+       "delegate_to_wf_cyber_fraud_ring_linker": 1,
+       "delegate_to_wf_cyber_records_verifier": 1,
+       "delegate_to_wf_cyber_golden_hour_freeze_drafter": 1,
+       "delegate_to_wf_cyber_refund_petition_drafter": 1
+      },
+      "turn_index": 15,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "complaint_card": "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': ",
+       "linkage_analysis": "linkage_analysis result for: Step 'Fraud-Ring Linker': work on: Prepa",
+       "verification_report": "verification_report result for: Step 'Records & Registry Verifier': work",
+       "freeze_request": "freeze_request result for: Step 'Golden-Hour Freeze Drafter': work ",
+       "refund_petition": "refund_petition result for: Step 'Refund & MRM Petition Drafter': wo",
+       "chargesheet_skeleton": "chargesheet_skeleton result for: Step 'Charge-Sheet Drafter': work on: Pr"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Cyber Records Verifier\", \"agent_output\": \"verification_report result for: Step 'Records & Registry Verifier': work\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Cyber Golden-Hour Freeze Drafter\", \"agent_output\": \"freeze_request result for: Step 'Golden-Hour Freeze Drafter': work \"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        17,
+        "{\"agent_name\": \"WF Cyber Refund Petition Drafter\", \"agent_output\": \"refund_petition result for: Step 'Refund & MRM Petition Drafter': wo\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_cyber_charge_sheet_drafter\", \"arguments\": {\"task\": \"Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Cyber Charge-Sheet Drafter\", \"agent_output\": \"chargesheet_skeleton result for: Step 'Charge-Sheet Drafter': work on: Pr\"}"
+       ]
+      ],
+      "cycle_count": 6,
+      "agent_call_counts": {
+       "delegate_to_wf_cyber_complaint_extractor": 1,
+       "delegate_to_wf_cyber_fraud_ring_linker": 1,
+       "delegate_to_wf_cyber_records_verifier": 1,
+       "delegate_to_wf_cyber_golden_hour_freeze_drafter": 1,
+       "delegate_to_wf_cyber_refund_petition_drafter": 1,
+       "delegate_to_wf_cyber_charge_sheet_drafter": 1
+      },
+      "turn_index": 17,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "complaint_card": "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': ",
+       "linkage_analysis": "linkage_analysis result for: Step 'Fraud-Ring Linker': work on: Prepa",
+       "verification_report": "verification_report result for: Step 'Records & Registry Verifier': work",
+       "freeze_request": "freeze_request result for: Step 'Golden-Hour Freeze Drafter': work ",
+       "refund_petition": "refund_petition result for: Step 'Refund & MRM Petition Drafter': wo",
+       "chargesheet_skeleton": "chargesheet_skeleton result for: Step 'Charge-Sheet Drafter': work on: Pr",
+       "case_file_summary": "case_file_summary result for: Step 'Cyber Case Synthesizer': work on: "
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_cyber_complaint_extractor\", \"arguments\": {\"task\": \"TASK:\\nStep ...<len=680 sha1=d58ce7dd6d48>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': "
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_cyber_fraud_ring_linker\", \"arguments\": {\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Cyber Fraud-Ring Linker\", \"agent_output\": \"linkage_analysis result for: Step 'Fraud-Ring Linker': wor...<len=272 sha1=b9bb5101b808>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_cyber_records_verifier\", \"arguments\": {\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Cyber Records Verifier\", \"agent_output\": \"verification_report result for: Step 'Records & Registry Verifier': work\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_cyber_golden_hour_freeze_drafter\", \"arguments\": {\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Cyber Golden-Hour Freeze Drafter\", \"agent_output\": \"freeze_request result for: Step 'Golden-Hour Freeze Drafter': work \"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_cyber_refund_petition_drafter\", \"arguments\": {\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        17,
+        "{\"agent_name\": \"WF Cyber Refund Petition Drafter\", \"agent_output\": \"refund_petition result for: Step 'Refund & MRM Petition Drafter': wo\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_cyber_charge_sheet_drafter\", \"arguments\": {\"task\": \"Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Cyber Charge-Sheet Drafter\", \"agent_output\": \"chargesheet_skeleton result for: Step 'Charge-Sheet Drafter': work on: Pr\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_cyber_case_synthesizer\", \"arguments\": {\"task\": \"Step 'Cyber Case Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Cyber Case Synthesizer\", \"agent_output\": \"case_file_summary result for: Step 'Cyber Case Synthesizer': work on: \"}"
+       ]
+      ],
+      "cycle_count": 7,
+      "agent_call_counts": {
+       "delegate_to_wf_cyber_complaint_extractor": 1,
+       "delegate_to_wf_cyber_fraud_ring_linker": 1,
+       "delegate_to_wf_cyber_records_verifier": 1,
+       "delegate_to_wf_cyber_golden_hour_freeze_drafter": 1,
+       "delegate_to_wf_cyber_refund_petition_drafter": 1,
+       "delegate_to_wf_cyber_charge_sheet_drafter": 1,
+       "delegate_to_wf_cyber_case_synthesizer": 1
+      },
+      "turn_index": 20,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "complaint_card": "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': ",
+    "linkage_analysis": "linkage_analysis result for: Step 'Fraud-Ring Linker': work on: Prepa",
+    "verification_report": "verification_report result for: Step 'Records & Registry Verifier': work",
+    "freeze_request": "freeze_request result for: Step 'Golden-Hour Freeze Drafter': work ",
+    "refund_petition": "refund_petition result for: Step 'Refund & MRM Petition Drafter': wo",
+    "chargesheet_skeleton": "chargesheet_skeleton result for: Step 'Charge-Sheet Drafter': work on: Pr",
+    "case_file_summary": "case_file_summary result for: Step 'Cyber Case Synthesizer': work on: "
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Cybercrime Investigation",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "llm_decision",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 253,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Cyber Complaint Extractor.",
+      "reason": "Next I will delegate to Cyber Complaint Extractor.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Cyber Complaint Extractor",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for complaint_card? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Cyber Complaint Extractor.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Agent: WF Cyber Complaint Extractor",
+      "status": "completed",
+      "input": "TASK:\nStep 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for complaint_card? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': ",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 0,
+      "duration_ms": "<ms>",
+      "tokens": 90,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_2_2",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Agent: WF Cyber Fraud-Ring Linker",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "linkage_analysis result for: Step 'Fraud-Ring Linker': work on: Prepa",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_3_3",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Records & Registry Verifier.",
+      "reason": "Next I will delegate to Records & Registry Verifier.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Agent: WF Cyber Records Verifier",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "verification_report result for: Step 'Records & Registry Verifier': work",
+      "reason": "Next I will delegate to Records & Registry Verifier.",
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 28,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_4_4",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Agent: WF Cyber Golden-Hour Freeze Drafter",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "freeze_request result for: Step 'Golden-Hour Freeze Drafter': work ",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_5_5",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Refund & MRM Petition Drafter.",
+      "reason": "Next I will delegate to Refund & MRM Petition Drafter.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Agent: WF Cyber Refund Petition Drafter",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "refund_petition result for: Step 'Refund & MRM Petition Drafter': wo",
+      "reason": "Next I will delegate to Refund & MRM Petition Drafter.",
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 30,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_6_6",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Agent: WF Cyber Charge-Sheet Drafter",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "chargesheet_skeleton result for: Step 'Charge-Sheet Drafter': work on: Pr",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_7_7",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Cyber Case Synthesizer.",
+      "reason": "Next I will delegate to Cyber Case Synthesizer.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_8",
+      "type": "agent",
+      "name": "Agent: WF Cyber Case Synthesizer",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Cyber Case Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "case_file_summary result for: Step 'Cyber Case Synthesizer': work on: ",
+      "reason": "Next I will delegate to Cyber Case Synthesizer.",
+      "step_id": 107,
+      "agent_id": 1007,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "Final synthesis: all specialists were consulted.",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Cyber Complaint Extractor."
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "orch_2_2",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_2_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "orch_3_3",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_3_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": "Next I will delegate to Records & Registry Verifier."
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "orch_4_4",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_4_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "orch_5_5",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_5_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": "Next I will delegate to Refund & MRM Petition Drafter."
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "orch_6_6",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_6_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "orch_7_7",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_7_7",
+      "to_id": "agent_8",
+      "type": "delegation",
+      "label": "Next I will delegate to Cyber Case Synthesizer."
+     },
+     {
+      "from_id": "agent_8",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 253,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Agent: WF Cyber Complaint Extractor",
+       "input_text": "TASK:\nStep 'Cyber Complaint Extractor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for complaint_card? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If",
+       "output_text": "complaint_card result for: TASK:\nStep 'Cyber Complaint Extractor': ",
+       "duration_ms": "<ms>",
+       "tokens_used": 90
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Agent: WF Cyber Fraud-Ring Linker",
+       "input_text": "{\"task\": \"Step 'Fraud-Ring Linker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "linkage_analysis result for: Step 'Fraud-Ring Linker': work on: Prepa",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Agent: WF Cyber Records Verifier",
+       "input_text": "{\"task\": \"Step 'Records & Registry Verifier': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "verification_report result for: Step 'Records & Registry Verifier': work",
+       "duration_ms": "<ms>",
+       "tokens_used": 28
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Agent: WF Cyber Golden-Hour Freeze Drafter",
+       "input_text": "{\"task\": \"Step 'Golden-Hour Freeze Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "freeze_request result for: Step 'Golden-Hour Freeze Drafter': work ",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Agent: WF Cyber Refund Petition Drafter",
+       "input_text": "{\"task\": \"Step 'Refund & MRM Petition Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "refund_petition result for: Step 'Refund & MRM Petition Drafter': wo",
+       "duration_ms": "<ms>",
+       "tokens_used": 30
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Agent: WF Cyber Charge-Sheet Drafter",
+       "input_text": "{\"task\": \"Step 'Charge-Sheet Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "chargesheet_skeleton result for: Step 'Charge-Sheet Drafter': work on: Pr",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 107,
+       "agent_id": 1007,
+       "step_name": "Agent: WF Cyber Case Synthesizer",
+       "input_text": "{\"task\": \"Step 'Cyber Case Synthesizer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "case_file_summary result for: Step 'Cyber Case Synthesizer': work on: ",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

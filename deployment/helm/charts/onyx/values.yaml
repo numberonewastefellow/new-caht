@@ -1023,6 +1023,17 @@ codeInterpreter:
   rbac:
     create: true
 
+  # API auth: read the bearer token from the Secret the parent chart creates via
+  # auth.codeinterpreter (set auth.codeinterpreter.enabled=true). The backend pods
+  # get the same Secret as CODE_INTERPRETER_API_TOKEN.
+  auth:
+    existingSecret: "onyx-code-interpreter"
+    existingSecretKey: "code_interpreter_api_token"
+
+  # Deny-all NetworkPolicy for executor pods (user code). Keep enabled.
+  executorNetworkPolicy:
+    enabled: true
+
   # Security context
   podSecurityContext:
     runAsNonRoot: true
@@ -1169,6 +1180,23 @@ auth:
     values:
       db_readonly_user: ""
       db_readonly_password: ""
+  codeinterpreter:
+    # -- Shared bearer token between the backend pods and the code-interpreter
+    # service. Enable together with codeInterpreter.enabled. Without it the
+    # code-interpreter fails closed (503 on every /v1 call).
+    enabled: false
+    # -- Overwrite the default secret name, ignored if existingSecret is defined.
+    # Must match codeInterpreter.auth.existingSecret below.
+    secretName: 'onyx-code-interpreter'
+    # -- Use a secret specified elsewhere
+    existingSecret: ""
+    # -- This defines the env var to secret map, key is always upper-cased as an env var
+    secretKeys:
+      CODE_INTERPRETER_API_TOKEN: code_interpreter_api_token
+    # -- Secrets values IF existingSecret is empty. Generate with `openssl rand -base64 32`.
+    # Never commit a real value.
+    values:
+      code_interpreter_api_token: ""
   opensearch:
     # Enable or disable this secret entirely. Will remove from env var
     # configurations and remove any created secrets.

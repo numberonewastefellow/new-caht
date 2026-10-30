@@ -1875,3 +1875,162 @@
 .dark .wfb-config-panel--collapsed {
   background: var(--background-tint-00, #111827);
 }
+
+/* ── Generic node (schema-driven / unsupported node types) ─────────── */
+
+.wfb-generic-node {
+  background: var(--background-tint-00, #ffffff);
+  border: 2px solid var(--border-02, #d1d5db);
+  border-radius: 12px;
+  min-width: 220px;
+  max-width: 280px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.wfb-generic-node:hover,
+.wfb-generic-node--selected {
+  border-color: var(--virtualai-accent, var(--theme-primary-05));
+}
+
+.wfb-generic-node--selected {
+  box-shadow: 0 0 0 2px var(--virtualai-accent-subtle, transparent),
+    0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.wfb-generic-node--unsupported {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.wfb-generic-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-01, #e5e7eb);
+}
+
+.wfb-generic-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--text-03);
+  background: var(--background-tint-02);
+}
+
+.wfb-generic-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.wfb-generic-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-05);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wfb-generic-type {
+  font-size: 11px;
+  color: var(--text-03);
+}
+
+.wfb-generic-body {
+  padding: 8px 12px 10px;
+  font-size: 11px;
+  color: var(--text-03);
+  line-height: 1.4;
+}
+
+.wfb-sidebar-card--generic {
+  border-left: 3px solid var(--border-02);
+}
+
+.wfb-sidebar-card-avatar--generic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--text-03);
+  background: var(--background-tint-02);
+}
+
+/* ── Node status badges ─────────────────────────────────────────────── */
+
+.wfb-node-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 12px 10px;
+}
+
+.wfb-upgrade-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--virtualai-accent, var(--theme-primary-05));
+  color: var(--virtualai-accent, var(--theme-primary-05));
+  background: var(--virtualai-accent-subtle, transparent);
+  cursor: pointer;
+}
+
+.wfb-upgrade-badge:hover {
+  background: var(--virtualai-accent-glow, var(--background-tint-02));
+}
+
+.wfb-mode-conflict-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--status-warning-05);
+  background: var(--status-warning-01);
+}
+
+/* ── Canvas warning banner ──────────────────────────────────────────── */
+
+.wfb-canvas-warning {
+  max-width: 520px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-05);
+  background: var(--status-warning-01);
+  border: 1px solid var(--status-warning-05);
+}
+
+/* ── Read-only JSON in config panels ────────────────────────────────── */
+
+.wfb-config-json {
+  font-size: 11px;
+  font-family: monospace;
+  background: var(--background-tint-02, #f3f4f6);
+  border: 1px solid var(--border-01, #e5e7eb);
+  border-radius: 6px;
+  padding: 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-05, #374151);
+  max-height: 320px;
+  overflow: auto;
+}
+
+.wfb-container-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--text-03);
+  background: var(--background-tint-02);
+}

@@ -1,0 +1,2032 @@
+{
+ "scenario": "34_police_chargesheet",
+ "description": "Template 34_police_chargesheet.json forced into sequential mode.",
+ "covers": [
+  "template",
+  "sequential"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "State Police Charge-Sheet Investigation",
+    "mode": "sequential",
+    "max_steps": 20,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Case-File Extractor",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "case_skeleton",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Antecedents & Linkage",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "antecedents",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "BNSS Compliance & Section-Mapping Verifier",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "compliance_report",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Charge-Sheet Drafter",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "chargesheet",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Compliance Deficiency Memo Drafter",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "deficiency_memo",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Default-Bail Risk Drafter",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "default_bail_alert",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Case Synthesizer",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "case_summary",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Case-File Extractor",
+     "agent_name": "WF Police Case-File Extractor",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Case-File Extractor",
+     "output_key": "case_skeleton"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Case-File Extractor",
+     "agent_name": "WF Police Case-File Extractor",
+     "questions": "Which details are missing for case_skeleton? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Which details are missing for case_skeleton? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 2,
+     "content": "Which details are missing for case_skeleton? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for case_skeleton? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Case-File Extractor",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "case_skeleton",
+     "agent": "WF Police Case-File Extractor",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4.1",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for case_skeleton? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "State Police Charge-Sheet Investigation",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Case-File Extractor",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for case_skeleton? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "State Police Charge-Sheet Investigation",
+    "mode": "sequential",
+    "max_steps": 20,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Case-File Extractor",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "case_skeleton",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Antecedents & Linkage",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "antecedents",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "BNSS Compliance & Section-Mapping Verifier",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "compliance_report",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Charge-Sheet Drafter",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "chargesheet",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Compliance Deficiency Memo Drafter",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "deficiency_memo",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Default-Bail Risk Drafter",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "default_bail_alert",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Case Synthesizer",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "case_summary",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Case-File Extractor",
+     "agent_name": "WF Police Case-File Extractor",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "case_skeleton result for: TASK:\nUser request: Prepare a complete a",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Case-File Extractor",
+     "output_key": "case_skeleton"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Antecedents & Linkage",
+     "agent_name": "WF Police Antecedents Linkage",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Thinking about Antecedents & Linkage"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Antecedents & Linkage"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "antecedents result for: User req",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "uest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_102_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/antecedents.docx",
+        "filename": "antecedents.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_102_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "antecedents result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Antecedents & Linkage",
+     "output_key": "antecedents"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "BNSS Compliance & Section-Mapping Verifier",
+     "agent_name": "WF Police BNSS Verifier",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about BNSS Compliance & Section-Mapping Verifier"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "compliance_report result for: User ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "compliance_report result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "BNSS Compliance & Section-Mapping Verifier",
+     "output_key": "compliance_report"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Charge-Sheet Drafter",
+     "agent_name": "WF Police Charge-Sheet Drafter",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "Thinking about Charge-Sheet Drafter"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "chargesheet result for: User req",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "uest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "chargesheet result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Charge-Sheet Drafter",
+     "output_key": "chargesheet"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Compliance Deficiency Memo Drafter",
+     "agent_name": "WF Police Deficiency Memo Drafter",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Thinking about Compliance Deficiency Memo Drafter"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "deficiency_memo result for: User r",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "equest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "deficiency_memo result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Compliance Deficiency Memo Drafter",
+     "output_key": "deficiency_memo"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Default-Bail Risk Drafter",
+     "agent_name": "WF Police Default-Bail Risk Drafter",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "Thinking about Default-Bail Risk Drafter"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "default_bail_alert result for: User",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": " request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "default_bail_alert result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Default-Bail Risk Drafter",
+     "output_key": "default_bail_alert"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "step_name": "Case Synthesizer",
+     "agent_name": "WF Police Case Synthesizer",
+     "step_order": 6,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "Thinking about Case Synthesizer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "case_summary result for: User re",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "quest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "case_summary result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "step_name": "Case Synthesizer",
+     "output_key": "case_summary"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "case_summary result for: User request: Prepare a complete assessm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      9,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "",
+     "file_ids": [
+      "file_102_0_0"
+     ],
+     "file_names": [
+      "antecedents.docx"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      9,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 8,
+     "content": "case_summary result for: User request: Prepare a complete assessm",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 9,
+     "content": "",
+     "file_ids": [
+      "file_102_0_0"
+     ],
+     "file_names": [
+      "antecedents.docx"
+     ]
+    }
+   ],
+   "final_answer": "",
+   "agent_calls": [
+    {
+     "step_name": "Case-File Extractor",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "case_skeleton",
+     "agent": "WF Police Case-File Extractor",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for case_skeleton? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4.1",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Antecedents & Linkage",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "antecedents",
+     "agent": "WF Police Antecedents Linkage",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "BNSS Compliance & Section-Mapping Verifier",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "compliance_report",
+     "agent": "WF Police BNSS Verifier",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Charge-Sheet Drafter",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "chargesheet",
+     "agent": "WF Police Charge-Sheet Drafter",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Compliance Deficiency Memo Drafter",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "deficiency_memo",
+     "agent": "WF Police Deficiency Memo Drafter",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nOutput from 'chargesheet':\nchargesheet result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4.1",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Default-Bail Risk Drafter",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "default_bail_alert",
+     "agent": "WF Police Default-Bail Risk Drafter",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nOutput from 'chargesheet':\nchargesheet result for: User request: Prepare a complete assessm\n\nOutput from 'deficiency_memo':\ndeficiency_memo result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Case Synthesizer",
+     "step_id": 107,
+     "step_order": 6,
+     "output_key": "case_summary",
+     "agent": "WF Police Case Synthesizer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nOutput from 'chargesheet':\nchargesheet result for: User request: Prepare a complete assessm\n\nOutput from 'deficiency_memo':\ndeficiency_memo result for: User request: Prepare a complete assessm\n\nOutput from 'default_bail_alert':\ndefault_bail_alert result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:gpt/gpt-4o-mini",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "case_skeleton": "case_skeleton result for: TASK:\nUser request: Prepare a complete a"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "case_skeleton": "case_skeleton result for: TASK:\nUser request: Prepare a complete a",
+       "antecedents": "antecedents result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "antecedents": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/antecedents.docx",
+           "filename": "antecedents.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "case_skeleton": "case_skeleton result for: TASK:\nUser request: Prepare a complete a",
+       "antecedents": "antecedents result for: User request: Prepare a complete assessm",
+       "compliance_report": "compliance_report result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "antecedents": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/antecedents.docx",
+           "filename": "antecedents.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 3,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "case_skeleton": "case_skeleton result for: TASK:\nUser request: Prepare a complete a",
+       "antecedents": "antecedents result for: User request: Prepare a complete assessm",
+       "compliance_report": "compliance_report result for: User request: Prepare a complete assessm",
+       "chargesheet": "chargesheet result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "antecedents": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/antecedents.docx",
+           "filename": "antecedents.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "case_skeleton": "case_skeleton result for: TASK:\nUser request: Prepare a complete a",
+       "antecedents": "antecedents result for: User request: Prepare a complete assessm",
+       "compliance_report": "compliance_report result for: User request: Prepare a complete assessm",
+       "chargesheet": "chargesheet result for: User request: Prepare a complete assessm",
+       "deficiency_memo": "deficiency_memo result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "antecedents": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/antecedents.docx",
+           "filename": "antecedents.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 5,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "case_skeleton": "case_skeleton result for: TASK:\nUser request: Prepare a complete a",
+       "antecedents": "antecedents result for: User request: Prepare a complete assessm",
+       "compliance_report": "compliance_report result for: User request: Prepare a complete assessm",
+       "chargesheet": "chargesheet result for: User request: Prepare a complete assessm",
+       "deficiency_memo": "deficiency_memo result for: User request: Prepare a complete assessm",
+       "default_bail_alert": "default_bail_alert result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "antecedents": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/antecedents.docx",
+           "filename": "antecedents.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 6,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "case_skeleton": "case_skeleton result for: TASK:\nUser request: Prepare a complete a",
+       "antecedents": "antecedents result for: User request: Prepare a complete assessm",
+       "compliance_report": "compliance_report result for: User request: Prepare a complete assessm",
+       "chargesheet": "chargesheet result for: User request: Prepare a complete assessm",
+       "deficiency_memo": "deficiency_memo result for: User request: Prepare a complete assessm",
+       "default_bail_alert": "default_bail_alert result for: User request: Prepare a complete assessm",
+       "case_summary": "case_summary result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "antecedents": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/antecedents.docx",
+           "filename": "antecedents.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 7,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "case_skeleton": "case_skeleton result for: TASK:\nUser request: Prepare a complete a",
+    "antecedents": "antecedents result for: User request: Prepare a complete assessm",
+    "compliance_report": "compliance_report result for: User request: Prepare a complete assessm",
+    "chargesheet": "chargesheet result for: User request: Prepare a complete assessm",
+    "deficiency_memo": "deficiency_memo result for: User request: Prepare a complete assessm",
+    "default_bail_alert": "default_bail_alert result for: User request: Prepare a complete assessm",
+    "case_summary": "case_summary result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "State Police Charge-Sheet Investigation",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 538,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Case-File Extractor",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for case_skeleton? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Case-File Extractor",
+      "status": "completed",
+      "input": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for case_skeleton? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "case_skeleton result for: TASK:\nUser request: Prepare a complete a",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 88,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Antecedents & Linkage",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a",
+      "output": "antecedents result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 35,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "BNSS Compliance & Section-Mapping Verifier",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+      "output": "compliance_report result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 59,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Charge-Sheet Drafter",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+      "output": "chargesheet result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 71,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Compliance Deficiency Memo Drafter",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nOutput from 'chargesheet':\nchargesheet result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+      "output": "deficiency_memo result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 83,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Default-Bail Risk Drafter",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nOutput from 'chargesheet':\nchargesheet result for: User request: Prepare a complete assessm\n\nOutput from 'deficiency_memo':\ndeficiency_memo result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+      "output": "default_bail_alert result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 95,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_8",
+      "type": "agent",
+      "name": "Case Synthesizer",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nOutput from 'chargesheet':\nchargesheet result for: User request: Prepare a complete assessm\n\nOutput from 'deficiency_memo':\ndeficiency_memo result for: User request: Prepare a complete assessm\n\nOutput from 'default_bail_alert':\ndefault_bail_alert result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+      "output": "case_summary result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 107,
+      "agent_id": 1007,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 107,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "case_summary result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "agent_8",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_8",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 538,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Case-File Extractor",
+       "input_text": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for case_skeleton? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ",
+       "output_text": "case_skeleton result for: TASK:\nUser request: Prepare a complete a",
+       "duration_ms": "<ms>",
+       "tokens_used": 88
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Antecedents & Linkage",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a",
+       "output_text": "antecedents result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 35
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "BNSS Compliance & Section-Mapping Verifier",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedents')",
+       "output_text": "compliance_report result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 59
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Charge-Sheet Drafter",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- antecedents.docx (path: /app/output/antecedents.docx, from step 'antecedent",
+       "output_text": "chargesheet result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 71
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Compliance Deficiency Memo Drafter",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nOutput from 'chargesheet':\nchargesheet result for: User request: Prepare a complete assessm\n\nFiles created by ",
+       "output_text": "deficiency_memo result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 83
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Default-Bail Risk Drafter",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nOutput from 'chargesheet':\nchargesheet result for: User request: Prepare a complete assessm\n\nOutput from 'defi",
+       "output_text": "default_bail_alert result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 95
+      },
+      {
+       "step_id": 107,
+       "agent_id": 1007,
+       "step_name": "Case Synthesizer",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'case_skeleton':\ncase_skeleton result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'antecedents':\nantecedents result for: User request: Prepare a complete assessm\n\nOutput from 'compliance_report':\ncompliance_report result for: User request: Prepare a complete assessm\n\nOutput from 'chargesheet':\nchargesheet result for: User request: Prepare a complete assessm\n\nOutput from 'defi",
+       "output_text": "case_summary result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 107
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

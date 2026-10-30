@@ -1,0 +1,2175 @@
+{
+ "scenario": "11_municipality_complaints__llm_decision",
+ "description": "Template 11_municipality_complaints.json in llm_decision mode; the fake orchestrator calls every step's agent once in step_order, then answers.",
+ "covers": [
+  "template",
+  "llm_decision"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Citizen Complaint Resolution System",
+    "mode": "llm_decision",
+    "max_steps": 15,
+    "max_calls_per_agent": 4,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Complaint Intake Officer",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "complaint_intake",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Department Router",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "department_routing",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "SLA & Policy Advisor",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "sla_policy",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Action Plan Generator",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "action_plan",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Citizen Response Drafter",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "citizen_response",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Complaint Intake Officer."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Complaint Intake Officer",
+     "agent_name": "WF Complaint Intake Officer",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Complaint Intake Officer",
+     "output_key": "complaint_intake"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Complaint Intake Officer",
+     "agent_name": "WF Complaint Intake Officer",
+     "questions": "Which details are missing for complaint_intake? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Which details are missing for complaint_intake? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 5,
+     "content": "Which details are missing for complaint_intake? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for complaint_intake? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Complaint Intake Officer",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "complaint_intake",
+     "agent": "WF Complaint Intake Officer",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_complaint_intake_officer",
+      "delegate_to_wf_department_router",
+      "delegate_to_wf_sla_policy_advisor",
+      "delegate_to_wf_action_plan_generator",
+      "delegate_to_wf_citizen_response_drafter"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3250 sha1=958a83f04c07>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ]
+      ],
+      "cycle_count": 1,
+      "agent_call_counts": {
+       "delegate_to_wf_complaint_intake_officer": 1
+      },
+      "turn_index": 3,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for complaint_intake? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Citizen Complaint Resolution System",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "llm_decision",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Complaint Intake Officer.",
+      "reason": "Next I will delegate to Complaint Intake Officer.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Complaint Intake Officer",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for complaint_intake? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Complaint Intake Officer.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Complaint Intake Officer."
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Citizen Complaint Resolution System",
+    "mode": "llm_decision",
+    "max_steps": 15,
+    "max_calls_per_agent": 4,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Complaint Intake Officer",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "complaint_intake",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Department Router",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "department_routing",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "SLA & Policy Advisor",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "sla_policy",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Action Plan Generator",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "action_plan",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Citizen Response Drafter",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "citizen_response",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Complaint Intake Officer",
+     "agent_name": "WF Complaint Intake Officer",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Complaint Intake Officer",
+     "output_key": "complaint_intake"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Department Router",
+     "agent_name": "WF Department Router",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "Thinking about Department Router"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "department_routing result for: Step",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": " 'Department Router': work on: Prepa",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "department_routing result for: Step 'Department Router': work on: Prepa",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Department Router",
+     "output_key": "department_routing"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to SLA & Policy Advisor."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "step_name": "SLA & Policy Advisor",
+     "agent_name": "WF SLA & Policy Advisor",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "Thinking about SLA & Policy Advisor"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "sla_policy result for: Step 'SL",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "A & Policy Advisor': work on: Pr",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "sla_policy result for: Step 'SLA & Policy Advisor': work on: Pr",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF SLA & Policy Advisor",
+     "output_key": "sla_policy"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      9,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "step_name": "Action Plan Generator",
+     "agent_name": "WF Action Plan Generator",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "Thinking about Action Plan Generator"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "action_plan result for: Step 'Ac",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "tion Plan Generator': work on: P",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "action_plan result for: Step 'Action Plan Generator': work on: P",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Action Plan Generator",
+     "output_key": "action_plan"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Citizen Response Drafter."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "step_name": "Citizen Response Drafter",
+     "agent_name": "WF Citizen Response Drafter",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "Thinking about Citizen Response Drafter"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "citizen_response result for: Step ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "'Citizen Response Drafter': work on",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "citizen_response result for: Step 'Citizen Response Drafter': work on",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Citizen Response Drafter",
+     "output_key": "citizen_response"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      15,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "content": "citizen_response result for: Step 'Citizen Response Drafter': work on"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      15,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      16,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "Final synthesis: all specialists were consulted."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      16,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      18,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 15,
+     "content": "citizen_response result for: Step 'Citizen Response Drafter': work on",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 16,
+     "content": "Final synthesis: all specialists were consulted.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Final synthesis: all specialists were consulted.",
+   "agent_calls": [
+    {
+     "step_name": "Complaint Intake Officer",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "complaint_intake",
+     "agent": "WF Complaint Intake Officer",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "TASK:\nStep 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for complaint_intake? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Department Router",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "department_routing",
+     "agent": "WF Department Router",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "SLA & Policy Advisor",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "sla_policy",
+     "agent": "WF SLA & Policy Advisor",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "task": "Step 'SLA & Policy Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Action Plan Generator",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "action_plan",
+     "agent": "WF Action Plan Generator",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "task": "Step 'Action Plan Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Citizen Response Drafter",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "citizen_response",
+     "agent": "WF Citizen Response Drafter",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "task": "Step 'Citizen Response Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_complaint_intake_officer",
+      "delegate_to_wf_department_router",
+      "delegate_to_wf_sla_policy_advisor",
+      "delegate_to_wf_action_plan_generator",
+      "delegate_to_wf_citizen_response_drafter"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3250 sha1=958a83f04c07>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=680 sha1=59f2fb150ee3>"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_complaint_intake_officer",
+      "delegate_to_wf_department_router",
+      "delegate_to_wf_sla_policy_advisor",
+      "delegate_to_wf_action_plan_generator",
+      "delegate_to_wf_citizen_response_drafter"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3250 sha1=958a83f04c07>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=680 sha1=59f2fb150ee3>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_department_router\", \"arguments\": {\"task\": \"Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_complaint_intake_officer",
+      "delegate_to_wf_department_router",
+      "delegate_to_wf_sla_policy_advisor",
+      "delegate_to_wf_action_plan_generator",
+      "delegate_to_wf_citizen_response_drafter"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3250 sha1=958a83f04c07>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=680 sha1=59f2fb150ee3>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_department_router\", \"arguments\": {\"task\": \"Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_sla_policy_advisor\", \"arguments\": {\"task\": \"Step 'SLA & Policy Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_complaint_intake_officer",
+      "delegate_to_wf_department_router",
+      "delegate_to_wf_sla_policy_advisor",
+      "delegate_to_wf_action_plan_generator",
+      "delegate_to_wf_citizen_response_drafter"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3250 sha1=958a83f04c07>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=680 sha1=59f2fb150ee3>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_department_router\", \"arguments\": {\"task\": \"Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_sla_policy_advisor\", \"arguments\": {\"task\": \"Step 'SLA & Policy Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_action_plan_generator\", \"arguments\": {\"task\": \"Step 'Action Plan Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_complaint_intake_officer",
+      "delegate_to_wf_department_router",
+      "delegate_to_wf_sla_policy_advisor",
+      "delegate_to_wf_action_plan_generator",
+      "delegate_to_wf_citizen_response_drafter"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3250 sha1=958a83f04c07>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=680 sha1=59f2fb150ee3>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_department_router\", \"arguments\": {\"task\": \"Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_sla_policy_advisor\", \"arguments\": {\"task\": \"Step 'SLA & Policy Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_action_plan_generator\", \"arguments\": {\"task\": \"Step 'Action Plan Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_citizen_response_drafter\", \"arguments\": {\"task\": \"Step 'Citizen Response Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "complaint_intake": "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w",
+       "department_routing": "department_routing result for: Step 'Department Router': work on: Prepa"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=680 sha1=59f2fb150ee3>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_department_router\", \"arguments\": {\"task\": \"Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Department Router\", \"agent_output\": \"department_routing result for: Step 'Department Router': work on: Prepa\"}"
+       ]
+      ],
+      "cycle_count": 2,
+      "agent_call_counts": {
+       "delegate_to_wf_complaint_intake_officer": 1,
+       "delegate_to_wf_department_router": 1
+      },
+      "turn_index": 6,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "complaint_intake": "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w",
+       "department_routing": "department_routing result for: Step 'Department Router': work on: Prepa",
+       "sla_policy": "sla_policy result for: Step 'SLA & Policy Advisor': work on: Pr"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=680 sha1=59f2fb150ee3>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_department_router\", \"arguments\": {\"task\": \"Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Department Router\", \"agent_output\": \"department_routing result for: Step 'Department Router': work on: Prepa\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_sla_policy_advisor\", \"arguments\": {\"task\": \"Step 'SLA & Policy Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        18,
+        "{\"agent_name\": \"WF SLA & Policy Advisor\", \"agent_output\": \"sla_policy result for: Step 'SLA & Policy Advisor': work on: Pr\"}"
+       ]
+      ],
+      "cycle_count": 3,
+      "agent_call_counts": {
+       "delegate_to_wf_complaint_intake_officer": 1,
+       "delegate_to_wf_department_router": 1,
+       "delegate_to_wf_sla_policy_advisor": 1
+      },
+      "turn_index": 9,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "complaint_intake": "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w",
+       "department_routing": "department_routing result for: Step 'Department Router': work on: Prepa",
+       "sla_policy": "sla_policy result for: Step 'SLA & Policy Advisor': work on: Pr",
+       "action_plan": "action_plan result for: Step 'Action Plan Generator': work on: P"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=680 sha1=59f2fb150ee3>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_department_router\", \"arguments\": {\"task\": \"Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Department Router\", \"agent_output\": \"department_routing result for: Step 'Department Router': work on: Prepa\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_sla_policy_advisor\", \"arguments\": {\"task\": \"Step 'SLA & Policy Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        18,
+        "{\"agent_name\": \"WF SLA & Policy Advisor\", \"agent_output\": \"sla_policy result for: Step 'SLA & Policy Advisor': work on: Pr\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_action_plan_generator\", \"arguments\": {\"task\": \"Step 'Action Plan Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Action Plan Generator\", \"agent_output\": \"action_plan result for: Step 'Action Plan Generator': work on: P\"}"
+       ]
+      ],
+      "cycle_count": 4,
+      "agent_call_counts": {
+       "delegate_to_wf_complaint_intake_officer": 1,
+       "delegate_to_wf_department_router": 1,
+       "delegate_to_wf_sla_policy_advisor": 1,
+       "delegate_to_wf_action_plan_generator": 1
+      },
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "complaint_intake": "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w",
+       "department_routing": "department_routing result for: Step 'Department Router': work on: Prepa",
+       "sla_policy": "sla_policy result for: Step 'SLA & Policy Advisor': work on: Pr",
+       "action_plan": "action_plan result for: Step 'Action Plan Generator': work on: P",
+       "citizen_response": "citizen_response result for: Step 'Citizen Response Drafter': work on"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_complaint_intake_officer\", \"arguments\": {\"task\": \"TASK:\\nStep '...<len=680 sha1=59f2fb150ee3>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_department_router\", \"arguments\": {\"task\": \"Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Department Router\", \"agent_output\": \"department_routing result for: Step 'Department Router': work on: Prepa\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_sla_policy_advisor\", \"arguments\": {\"task\": \"Step 'SLA & Policy Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        18,
+        "{\"agent_name\": \"WF SLA & Policy Advisor\", \"agent_output\": \"sla_policy result for: Step 'SLA & Policy Advisor': work on: Pr\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_action_plan_generator\", \"arguments\": {\"task\": \"Step 'Action Plan Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Action Plan Generator\", \"agent_output\": \"action_plan result for: Step 'Action Plan Generator': work on: P\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_citizen_response_drafter\", \"arguments\": {\"task\": \"Step 'Citizen Response Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Citizen Response Drafter\", \"agent_output\": \"citizen_response result for: Step 'Citizen Response Drafter': work on\"}"
+       ]
+      ],
+      "cycle_count": 5,
+      "agent_call_counts": {
+       "delegate_to_wf_complaint_intake_officer": 1,
+       "delegate_to_wf_department_router": 1,
+       "delegate_to_wf_sla_policy_advisor": 1,
+       "delegate_to_wf_action_plan_generator": 1,
+       "delegate_to_wf_citizen_response_drafter": 1
+      },
+      "turn_index": 14,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "complaint_intake": "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w",
+    "department_routing": "department_routing result for: Step 'Department Router': work on: Prepa",
+    "sla_policy": "sla_policy result for: Step 'SLA & Policy Advisor': work on: Pr",
+    "action_plan": "action_plan result for: Step 'Action Plan Generator': work on: P",
+    "citizen_response": "citizen_response result for: Step 'Citizen Response Drafter': work on"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Citizen Complaint Resolution System",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "llm_decision",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 202,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Complaint Intake Officer.",
+      "reason": "Next I will delegate to Complaint Intake Officer.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Complaint Intake Officer",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for complaint_intake? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Complaint Intake Officer.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Agent: WF Complaint Intake Officer",
+      "status": "completed",
+      "input": "TASK:\nStep 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for complaint_intake? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 0,
+      "duration_ms": "<ms>",
+      "tokens": 91,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_2_2",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Agent: WF Department Router",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "department_routing result for: Step 'Department Router': work on: Prepa",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_3_3",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to SLA & Policy Advisor.",
+      "reason": "Next I will delegate to SLA & Policy Advisor.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Agent: WF SLA & Policy Advisor",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'SLA & Policy Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "sla_policy result for: Step 'SLA & Policy Advisor': work on: Pr",
+      "reason": "Next I will delegate to SLA & Policy Advisor.",
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 30,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_4_4",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Agent: WF Action Plan Generator",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Action Plan Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "action_plan result for: Step 'Action Plan Generator': work on: P",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 28,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_5_5",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Citizen Response Drafter.",
+      "reason": "Next I will delegate to Citizen Response Drafter.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Agent: WF Citizen Response Drafter",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Citizen Response Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "citizen_response result for: Step 'Citizen Response Drafter': work on",
+      "reason": "Next I will delegate to Citizen Response Drafter.",
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "Final synthesis: all specialists were consulted.",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Complaint Intake Officer."
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "orch_2_2",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_2_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "orch_3_3",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_3_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": "Next I will delegate to SLA & Policy Advisor."
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "orch_4_4",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_4_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "orch_5_5",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_5_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": "Next I will delegate to Citizen Response Drafter."
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 202,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Agent: WF Complaint Intake Officer",
+       "input_text": "TASK:\nStep 'Complaint Intake Officer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for complaint_intake? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. I",
+       "output_text": "complaint_intake result for: TASK:\nStep 'Complaint Intake Officer': w",
+       "duration_ms": "<ms>",
+       "tokens_used": 91
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Agent: WF Department Router",
+       "input_text": "{\"task\": \"Step 'Department Router': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "department_routing result for: Step 'Department Router': work on: Prepa",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Agent: WF SLA & Policy Advisor",
+       "input_text": "{\"task\": \"Step 'SLA & Policy Advisor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "sla_policy result for: Step 'SLA & Policy Advisor': work on: Pr",
+       "duration_ms": "<ms>",
+       "tokens_used": 30
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Agent: WF Action Plan Generator",
+       "input_text": "{\"task\": \"Step 'Action Plan Generator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "action_plan result for: Step 'Action Plan Generator': work on: P",
+       "duration_ms": "<ms>",
+       "tokens_used": 28
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Agent: WF Citizen Response Drafter",
+       "input_text": "{\"task\": \"Step 'Citizen Response Drafter': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "citizen_response result for: Step 'Citizen Response Drafter': work on",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

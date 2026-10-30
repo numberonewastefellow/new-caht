@@ -53,6 +53,7 @@ def create_workflow(
 
     for step_create in workflow_create.steps:
         _add_step(db_session, workflow.id, step_create)
+    _link_parents(db_session, workflow.id, workflow_create.steps)
 
     db_session.commit()
     return workflow
@@ -133,18 +134,12 @@ def update_workflow(
     if workflow_update.icon_name is not None:
         workflow.icon_name = workflow_update.icon_name
 
-    # Replace steps if provided
     if workflow_update.steps is not None:
-        # Delete existing steps
-        for step in workflow.steps:
-            db_session.delete(step)
-        db_session.flush()
-
-        # Add new steps
-        for step_create in workflow_update.steps:
-            _add_step(db_session, workflow.id, step_create)
+        _replace_steps(db_session, workflow, workflow_update.steps)
 
     db_session.commit()
+    # Steps were changed through the session; reload them on next access.
+    db_session.expire(workflow, ["steps"])
     return workflow
 
 
@@ -295,32 +290,107 @@ def _add_step(
     workflow_id: int,
     step_create: WorkflowStepCreate,
 ) -> AgentWorkflowStep:
-    step = AgentWorkflowStep(
-        workflow_id=workflow_id,
-        step_type=step_create.step_type,
-        agent_id=step_create.agent_id,
-        step_order=step_create.step_order,
-        step_name=step_create.step_name,
-        step_description=step_create.step_description,
-        input_mapping=step_create.input_mapping,
-        output_key=step_create.output_key,
-        condition=step_create.condition.model_dump() if step_create.condition else None,
-        is_terminal=step_create.is_terminal,
-        can_request_input=step_create.can_request_input,
-        promote_output=step_create.promote_output,
-        # Step-level overrides
-        llm_provider_override=step_create.llm_provider_override,
-        llm_model_override=step_create.llm_model_override,
-        max_output_tokens_override=step_create.max_output_tokens_override,
-        system_prompt_override=step_create.system_prompt_override,
-        task_prompt_override=step_create.task_prompt_override,
-        tool_ids_override=step_create.tool_ids_override,
-        document_set_ids_override=step_create.document_set_ids_override,
-        replace_base_system_prompt_override=step_create.replace_base_system_prompt_override,
-    )
+    step = AgentWorkflowStep(workflow_id=workflow_id)
+    if step_create.node_key:
+        step.node_key = step_create.node_key
+    _apply_step_fields(step, step_create)
     db_session.add(step)
     db_session.flush()
     return step
+
+
+def _replace_steps(
+    db_session: Session,
+    workflow: AgentWorkflow,
+    step_creates: list[WorkflowStepCreate],
+) -> None:
+    """Make the workflow's steps match ``step_creates``, matching by node key.
+
+    Steps whose ``node_key`` is sent again are updated in place, so their ids
+    stay stable (paused runs, traces and router targets keep pointing at
+    them). Steps not sent are deleted; steps without a known key are added.
+    """
+    existing = {step.node_key: step for step in workflow.steps}
+    incoming_keys = {sc.node_key for sc in step_creates if sc.node_key}
+
+    kept = [step for key, step in existing.items() if key in incoming_keys]
+    # Detach kept steps from their containers first: deleting a removed
+    # container would otherwise cascade to children that are being kept.
+    for step in kept:
+        step.parent_step_id = None
+    db_session.flush()
+    for key, step in existing.items():
+        if key not in incoming_keys:
+            db_session.delete(step)
+    db_session.flush()
+
+    # Park kept steps on temporary orders first so re-ordering them can't
+    # trip the (workflow_id, step_order) unique constraint mid-update.
+    for i, step in enumerate(kept):
+        step.step_order = -(i + 1)
+    db_session.flush()
+
+    for step_create in step_creates:
+        current = existing.get(step_create.node_key) if step_create.node_key else None
+        if current is not None and current in kept:
+            _apply_step_fields(current, step_create)
+        else:
+            _add_step(db_session, workflow.id, step_create)
+    db_session.flush()
+    _link_parents(db_session, workflow.id, step_creates)
+
+
+def _link_parents(
+    db_session: Session,
+    workflow_id: int,
+    step_creates: list[WorkflowStepCreate],
+) -> None:
+    """Point each step at its container (by node key), once all rows exist."""
+    rows = (
+        db_session.execute(
+            select(AgentWorkflowStep).where(AgentWorkflowStep.workflow_id == workflow_id)
+        )
+        .scalars()
+        .all()
+    )
+    id_by_key = {row.node_key: row.id for row in rows}
+    parent_key_by_key = {sc.node_key: sc.parent_key for sc in step_creates if sc.node_key}
+    for row in rows:
+        parent_key = parent_key_by_key.get(row.node_key)
+        row.parent_step_id = id_by_key.get(parent_key) if parent_key else None
+    db_session.flush()
+
+
+def _apply_step_fields(step: AgentWorkflowStep, step_create: WorkflowStepCreate) -> None:
+    """Copy a step payload onto a (new or existing) step row."""
+    step.step_type = step_create.step_type
+    step.type_version = step_create.type_version or 1
+    step.config = step_create.config
+    step.agent_id = step_create.agent_id
+    step.step_order = step_create.step_order
+    step.step_name = step_create.step_name
+    step.step_description = step_create.step_description
+    step.input_mapping = step_create.input_mapping
+    step.output_key = step_create.output_key
+    step.condition = (
+        step_create.condition.model_dump() if step_create.condition else None
+    )
+    step.is_terminal = step_create.is_terminal
+    step.can_request_input = step_create.can_request_input
+    step.promote_output = step_create.promote_output
+    # parent_step_id is set by _link_parents once every row exists.
+    step.branch_index = step_create.branch_index
+    # Step-level overrides
+    step.llm_provider_override = step_create.llm_provider_override
+    step.llm_model_override = step_create.llm_model_override
+    step.max_output_tokens_override = step_create.max_output_tokens_override
+    step.system_prompt_override = step_create.system_prompt_override
+    step.task_prompt_override = step_create.task_prompt_override
+    step.tool_ids_override = step_create.tool_ids_override
+    step.document_set_ids_override = step_create.document_set_ids_override
+    step.replace_base_system_prompt_override = (
+        step_create.replace_base_system_prompt_override
+    )
 
 
 # ========================
@@ -333,11 +403,13 @@ def create_workflow_execution(
     workflow_id: int,
     user_id: UUID | None = None,
     chat_session_id: UUID | None = None,
+    workflow_version_id: int | None = None,
 ) -> WorkflowExecution:
     execution = WorkflowExecution(
         workflow_id=workflow_id,
         user_id=user_id,
         chat_session_id=chat_session_id,
+        workflow_version_id=workflow_version_id,
         status="running",
         steps_executed=[],
         total_tokens=0,
@@ -439,11 +511,15 @@ def save_checkpoint(
     execution_id: int,
     checkpoint: WorkflowCheckpoint,
     paused_at_step_id: int | None = None,
+    paused: bool = False,
 ) -> None:
     """Save checkpoint after step completion or on pause.
 
     Called after every step (crash recovery) and when an agent
-    requests user input (human-in-the-loop pause).
+    requests user input (human-in-the-loop pause). A run is paused when
+    ``paused`` is set or a ``paused_at_step_id`` is given; ``paused`` covers
+    runs pinned to a definition whose paused step row no longer exists (the
+    checkpoint's ``paused_node_key`` identifies the node instead).
     """
     execution = db_session.get(WorkflowExecution, execution_id)
     if execution is None:
@@ -454,13 +530,14 @@ def save_checkpoint(
         return
     execution.checkpoint_data = checkpoint.model_dump()
     execution.paused_at_step_id = paused_at_step_id
-    if paused_at_step_id is not None:
+    if paused or paused_at_step_id is not None:
         execution.status = "paused"
         logger.info(
-            "[Checkpoint] PAUSED execution_id=%d at step_id=%d "
+            "[Checkpoint] PAUSED execution_id=%d at step_id=%s node=%s "
             "completed_steps=%s",
             execution_id,
             paused_at_step_id,
+            checkpoint.paused_node_key,
             checkpoint.completed_step_ids,
         )
     else:

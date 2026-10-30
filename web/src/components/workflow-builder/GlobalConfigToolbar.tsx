@@ -16,6 +16,8 @@ interface GlobalConfigToolbarProps {
   isEditMode: boolean;
   llmProviders: LLMProviderDescriptor[];
   onViewJson?: () => void;
+  /** Opens the version history (edit mode only). */
+  onOpenVersions?: () => void;
 }
 
 export function GlobalConfigToolbar({
@@ -28,6 +30,7 @@ export function GlobalConfigToolbar({
   isEditMode,
   llmProviders,
   onViewJson,
+  onOpenVersions,
 }: GlobalConfigToolbarProps) {
   const [showSettings, setShowSettings] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -270,6 +273,16 @@ export function GlobalConfigToolbar({
             </div>
           )}
         </div>
+
+        {onOpenVersions && (
+          <button
+            className="wfb-toolbar-btn"
+            onClick={onOpenVersions}
+            title="Version history"
+          >
+            Versions
+          </button>
+        )}
 
         <button
           className="wfb-toolbar-btn wfb-toolbar-save"

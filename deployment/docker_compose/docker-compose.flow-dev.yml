@@ -1,0 +1,61 @@
+# Flow-nodes isolated dev/test stack.
+#
+# Runs the API from THIS checkout against an existing VirtualAI stack's
+# Postgres/Redis/OpenSearch/MinIO, but on a SEPARATE database and separate Redis
+# DB numbers, so the main stack (and its migrations) are untouched. Migrations
+# are applied the normal way: by the API container's start command, to flow_dev
+# only. No indexing/background worker is started (it would write to the shared
+# index).
+#
+# Prereqs:
+#   1. A running main stack on the docker network `virtualai_default`.
+#   2. A cloned database:  createdb flow_dev && pg_dump postgres | psql flow_dev
+#   3. An env file (NOT in git — contains secrets) with the main api_server env plus:
+#        POSTGRES_DB=flow_dev  REDIS_DB_NUMBER=5  REDIS_DB_NUMBER_CELERY=13
+#        REDIS_DB_NUMBER_CELERY_RESULT_BACKEND=14
+#
+# Usage:
+#   FLOWDEV_ENV_FILE=/path/to/flowdev.env \
+#     docker compose -p flowdev -f docker-compose.flow-dev.yml up -d
+#   API: http://localhost:8091
+
+services:
+  flow_api:
+    image: ${OM_BACKEND_IMAGE:-om/om-backend:latest}
+    env_file:
+      - path: ${FLOWDEV_ENV_FILE:?set FLOWDEV_ENV_FILE to the flow dev env file}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - "alembic upgrade head && uvicorn om.main:app --host 0.0.0.0 --port 8080"
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8091:8080"
+    networks:
+      - virtualai_default
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ../../backend/om:/app/om
+      - ../../backend/shared_configs:/app/shared_configs
+      - ../../backend/alembic:/app/alembic
+      - ../../backend/alembic_tenants:/app/alembic_tenants
+
+  # Web UI from THIS checkout, talking only to flow_api (http://localhost:3091).
+  # Build first: docker build -t om/om-web-server:flowdev web
+  flow_web:
+    image: ${FLOWDEV_WEB_IMAGE:-om/om-web-server:flowdev}
+    environment:
+      - INTERNAL_URL=http://flow_api:8080
+      # No nginx in this stack: let the web server proxy /api/* itself.
+      - OVERRIDE_API_PRODUCTION=true
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3091:3000"
+    networks:
+      - virtualai_default
+    depends_on:
+      - flow_api
+
+networks:
+  virtualai_default:
+    external: true

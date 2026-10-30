@@ -1,0 +1,4196 @@
+{
+ "scenario": "26_insurance_claims__llm_decision",
+ "description": "Template 26_insurance_claims.json in llm_decision mode; the fake orchestrator calls every step's agent once in step_order, then answers.",
+ "covers": [
+  "template",
+  "llm_decision"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Insurance Claims Investigation",
+    "mode": "llm_decision",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Claims Triage Adjuster",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Property Damage Assessor",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "property_damage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Auto Accident Reconstructionist",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "accident_reconstruction",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Medical Claims Reviewer",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "medical_claims_review",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Fraud Investigator",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "fraud_investigation",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Weather/Catastrophe Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "weather_cat_analysis",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Subrogation Specialist",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "subrogation_assessment",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Policy Coverage Analyst",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "coverage_determination",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "Settlement Report Writer",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "settlement_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Claims Triage Adjuster."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Claims Triage Adjuster",
+     "agent_name": "WF Claims Triage Adjuster",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Claims Triage Adjuster",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Claims Triage Adjuster",
+     "agent_name": "WF Claims Triage Adjuster",
+     "questions": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 5,
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Claims Triage Adjuster",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Claims Triage Adjuster",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_claims_triage_adjuster",
+      "delegate_to_wf_property_damage_assessor",
+      "delegate_to_wf_auto_accident_reconstructionist",
+      "delegate_to_wf_medical_claims_reviewer",
+      "delegate_to_wf_fraud_investigator",
+      "delegate_to_wf_weather_catastrophe_analyst",
+      "delegate_to_wf_subrogation_specialist",
+      "delegate_to_wf_policy_coverage_analyst",
+      "delegate_to_wf_settlement_report_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8188 sha1=10ecd8e7a0fd>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ]
+      ],
+      "cycle_count": 1,
+      "agent_call_counts": {
+       "delegate_to_wf_claims_triage_adjuster": 1
+      },
+      "turn_index": 3,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Insurance Claims Investigation",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "llm_decision",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Claims Triage Adjuster.",
+      "reason": "Next I will delegate to Claims Triage Adjuster.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Claims Triage Adjuster",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Claims Triage Adjuster.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Claims Triage Adjuster."
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Insurance Claims Investigation",
+    "mode": "llm_decision",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Claims Triage Adjuster",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Property Damage Assessor",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "property_damage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Auto Accident Reconstructionist",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "accident_reconstruction",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Medical Claims Reviewer",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "medical_claims_review",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Fraud Investigator",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "fraud_investigation",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Weather/Catastrophe Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "weather_cat_analysis",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Subrogation Specialist",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "subrogation_assessment",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Policy Coverage Analyst",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "coverage_determination",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "Settlement Report Writer",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "settlement_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Claims Triage Adjuster",
+     "agent_name": "WF Claims Triage Adjuster",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Claims Triage Adjuster",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Property Damage Assessor",
+     "agent_name": "WF Property Damage Assessor",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Property Damage Assessor"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_102_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/property_damage_assessment.docx",
+        "filename": "property_damage_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_102_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Property Damage Assessor",
+     "output_key": "property_damage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Auto Accident Reconstructionist."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Auto Accident Reconstructionist",
+     "agent_name": "WF Auto Accident Reconstructionist",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "Thinking about Auto Accident Reconstructionist"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Auto Accident Reconstructionist"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "accident_reconstruction result for: St",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "ep 'Auto Accident Reconstructionist': ",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_103_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/accident_reconstruction.docx",
+        "filename": "accident_reconstruction.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_103_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': ",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Auto Accident Reconstructionist",
+     "output_key": "accident_reconstruction"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "step_name": "Medical Claims Reviewer",
+     "agent_name": "WF Medical Claims Reviewer",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "medical_claims_review result for: Step 'Medical Claims Reviewer': work on:",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Medical Claims Reviewer",
+     "output_key": "medical_claims_review"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Fraud Investigator."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "step_name": "Fraud Investigator",
+     "agent_name": "WF Fraud Investigator",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "Thinking about Fraud Investigator"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Fraud Investigator"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      17,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "fraud_investigation result for: Step",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": " 'Fraud Investigator': work on: Prep",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_105_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/fraud_investigation.docx",
+        "filename": "fraud_investigation.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_105_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      16,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "fraud_investigation result for: Step 'Fraud Investigator': work on: Prep",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Fraud Investigator",
+     "output_key": "fraud_investigation"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      16,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "step_name": "Weather/Catastrophe Analyst",
+     "agent_name": "WF Weather Catastrophe Analyst",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "content": "Thinking about Weather/Catastrophe Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      20,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Weather/Catastrophe Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      20,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "content": "weather_cat_analysis result for: Ste",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "content": "p 'Weather/Catastrophe Analyst': work",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_106_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/weather_cat_analysis.docx",
+        "filename": "weather_cat_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_106_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      19,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "content": "weather_cat_analysis result for: Step 'Weather/Catastrophe Analyst': work",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Weather Catastrophe Analyst",
+     "output_key": "weather_cat_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      19,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      21,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Subrogation Specialist."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      21,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      23,
+      0,
+      null
+     ],
+     "step_name": "Subrogation Specialist",
+     "agent_name": "WF Subrogation Specialist",
+     "step_order": 6,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      23,
+      0,
+      null
+     ],
+     "content": "Thinking about Subrogation Specialist"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      23,
+      0,
+      null
+     ],
+     "content": "subrogation_assessment result for: St",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      23,
+      0,
+      null
+     ],
+     "content": "ep 'Subrogation Specialist': work on: ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      23,
+      0,
+      null
+     ],
+     "content": "subrogation_assessment result for: Step 'Subrogation Specialist': work on: ",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      23,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Subrogation Specialist",
+     "output_key": "subrogation_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      23,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      25,
+      0,
+      null
+     ],
+     "step_name": "Policy Coverage Analyst",
+     "agent_name": "WF Policy Coverage Analyst",
+     "step_order": 7,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      25,
+      0,
+      null
+     ],
+     "content": "coverage_determination result for: Step 'Policy Coverage Analyst': work on:",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      25,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Policy Coverage Analyst",
+     "output_key": "coverage_determination"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      25,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      26,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Settlement Report Writer."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      26,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      28,
+      0,
+      null
+     ],
+     "step_name": "Settlement Report Writer",
+     "agent_name": "WF Settlement Report Writer",
+     "step_order": 8,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      28,
+      0,
+      null
+     ],
+     "content": "Thinking about Settlement Report Writer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      28,
+      0,
+      null
+     ],
+     "content": "settlement_report result for: Step ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      28,
+      0,
+      null
+     ],
+     "content": "'Settlement Report Writer': work on",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      28,
+      0,
+      null
+     ],
+     "content": "settlement_report result for: Step 'Settlement Report Writer': work on",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      28,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Settlement Report Writer",
+     "output_key": "settlement_report"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      28,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      29,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      29,
+      0,
+      null
+     ],
+     "content": "settlement_report result for: Step 'Settlement Report Writer': work on"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      29,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      30,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      30,
+      0,
+      null
+     ],
+     "content": "Final synthesis: all specialists were consulted."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      30,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      32,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 29,
+     "content": "settlement_report result for: Step 'Settlement Report Writer': work on",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 30,
+     "content": "Final synthesis: all specialists were consulted.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Final synthesis: all specialists were consulted.",
+   "agent_calls": [
+    {
+     "step_name": "Claims Triage Adjuster",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Claims Triage Adjuster",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "TASK:\nStep 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Property Damage Assessor",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "property_damage_assessment",
+     "agent": "WF Property Damage Assessor",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Auto Accident Reconstructionist",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "accident_reconstruction",
+     "agent": "WF Auto Accident Reconstructionist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "task": "Step 'Auto Accident Reconstructionist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Medical Claims Reviewer",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "medical_claims_review",
+     "agent": "WF Medical Claims Reviewer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "task": "Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Fraud Investigator",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "fraud_investigation",
+     "agent": "WF Fraud Investigator",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "task": "Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Weather/Catastrophe Analyst",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "weather_cat_analysis",
+     "agent": "WF Weather Catastrophe Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      19,
+      0,
+      null
+     ],
+     "task": "Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Subrogation Specialist",
+     "step_id": 107,
+     "step_order": 6,
+     "output_key": "subrogation_assessment",
+     "agent": "WF Subrogation Specialist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      23,
+      0,
+      null
+     ],
+     "task": "Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Policy Coverage Analyst",
+     "step_id": 108,
+     "step_order": 7,
+     "output_key": "coverage_determination",
+     "agent": "WF Policy Coverage Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      25,
+      0,
+      null
+     ],
+     "task": "Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Settlement Report Writer",
+     "step_id": 109,
+     "step_order": 8,
+     "output_key": "settlement_report",
+     "agent": "WF Settlement Report Writer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      28,
+      0,
+      null
+     ],
+     "task": "Step 'Settlement Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_claims_triage_adjuster",
+      "delegate_to_wf_property_damage_assessor",
+      "delegate_to_wf_auto_accident_reconstructionist",
+      "delegate_to_wf_medical_claims_reviewer",
+      "delegate_to_wf_fraud_investigator",
+      "delegate_to_wf_weather_catastrophe_analyst",
+      "delegate_to_wf_subrogation_specialist",
+      "delegate_to_wf_policy_coverage_analyst",
+      "delegate_to_wf_settlement_report_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8188 sha1=10ecd8e7a0fd>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_claims_triage_adjuster",
+      "delegate_to_wf_property_damage_assessor",
+      "delegate_to_wf_auto_accident_reconstructionist",
+      "delegate_to_wf_medical_claims_reviewer",
+      "delegate_to_wf_fraud_investigator",
+      "delegate_to_wf_weather_catastrophe_analyst",
+      "delegate_to_wf_subrogation_specialist",
+      "delegate_to_wf_policy_coverage_analyst",
+      "delegate_to_wf_settlement_report_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8188 sha1=10ecd8e7a0fd>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_claims_triage_adjuster",
+      "delegate_to_wf_property_damage_assessor",
+      "delegate_to_wf_auto_accident_reconstructionist",
+      "delegate_to_wf_medical_claims_reviewer",
+      "delegate_to_wf_fraud_investigator",
+      "delegate_to_wf_weather_catastrophe_analyst",
+      "delegate_to_wf_subrogation_specialist",
+      "delegate_to_wf_policy_coverage_analyst",
+      "delegate_to_wf_settlement_report_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8188 sha1=10ecd8e7a0fd>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_claims_triage_adjuster",
+      "delegate_to_wf_property_damage_assessor",
+      "delegate_to_wf_auto_accident_reconstructionist",
+      "delegate_to_wf_medical_claims_reviewer",
+      "delegate_to_wf_fraud_investigator",
+      "delegate_to_wf_weather_catastrophe_analyst",
+      "delegate_to_wf_subrogation_specialist",
+      "delegate_to_wf_policy_coverage_analyst",
+      "delegate_to_wf_settlement_report_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8188 sha1=10ecd8e7a0fd>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      18,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_claims_triage_adjuster",
+      "delegate_to_wf_property_damage_assessor",
+      "delegate_to_wf_auto_accident_reconstructionist",
+      "delegate_to_wf_medical_claims_reviewer",
+      "delegate_to_wf_fraud_investigator",
+      "delegate_to_wf_weather_catastrophe_analyst",
+      "delegate_to_wf_subrogation_specialist",
+      "delegate_to_wf_policy_coverage_analyst",
+      "delegate_to_wf_settlement_report_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8188 sha1=10ecd8e7a0fd>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      21,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_claims_triage_adjuster",
+      "delegate_to_wf_property_damage_assessor",
+      "delegate_to_wf_auto_accident_reconstructionist",
+      "delegate_to_wf_medical_claims_reviewer",
+      "delegate_to_wf_fraud_investigator",
+      "delegate_to_wf_weather_catastrophe_analyst",
+      "delegate_to_wf_subrogation_specialist",
+      "delegate_to_wf_policy_coverage_analyst",
+      "delegate_to_wf_settlement_report_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8188 sha1=10ecd8e7a0fd>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      24,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_claims_triage_adjuster",
+      "delegate_to_wf_property_damage_assessor",
+      "delegate_to_wf_auto_accident_reconstructionist",
+      "delegate_to_wf_medical_claims_reviewer",
+      "delegate_to_wf_fraud_investigator",
+      "delegate_to_wf_weather_catastrophe_analyst",
+      "delegate_to_wf_subrogation_specialist",
+      "delegate_to_wf_policy_coverage_analyst",
+      "delegate_to_wf_settlement_report_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8188 sha1=10ecd8e7a0fd>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      26,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_claims_triage_adjuster",
+      "delegate_to_wf_property_damage_assessor",
+      "delegate_to_wf_auto_accident_reconstructionist",
+      "delegate_to_wf_medical_claims_reviewer",
+      "delegate_to_wf_fraud_investigator",
+      "delegate_to_wf_weather_catastrophe_analyst",
+      "delegate_to_wf_subrogation_specialist",
+      "delegate_to_wf_policy_coverage_analyst",
+      "delegate_to_wf_settlement_report_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8188 sha1=10ecd8e7a0fd>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_policy_coverage_analyst\", \"arguments\": {\"task\": \"Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      30,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_claims_triage_adjuster",
+      "delegate_to_wf_property_damage_assessor",
+      "delegate_to_wf_auto_accident_reconstructionist",
+      "delegate_to_wf_medical_claims_reviewer",
+      "delegate_to_wf_fraud_investigator",
+      "delegate_to_wf_weather_catastrophe_analyst",
+      "delegate_to_wf_subrogation_specialist",
+      "delegate_to_wf_policy_coverage_analyst",
+      "delegate_to_wf_settlement_report_writer"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=8188 sha1=10ecd8e7a0fd>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_policy_coverage_analyst\", \"arguments\": {\"task\": \"Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_settlement_report_writer\", \"arguments\": {\"task\": \"Step 'Settlement Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+       "property_damage_assessment": "property_damage_assessment result for: Step 'Property Damage Assessor': work on"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
+       ]
+      ],
+      "cycle_count": 2,
+      "agent_call_counts": {
+       "delegate_to_wf_claims_triage_adjuster": 1,
+       "delegate_to_wf_property_damage_assessor": 1
+      },
+      "turn_index": 7,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+       "property_damage_assessment": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+       "accident_reconstruction": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': "
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
+       ]
+      ],
+      "cycle_count": 3,
+      "agent_call_counts": {
+       "delegate_to_wf_claims_triage_adjuster": 1,
+       "delegate_to_wf_property_damage_assessor": 1,
+       "delegate_to_wf_auto_accident_reconstructionist": 1
+      },
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+       "property_damage_assessment": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+       "accident_reconstruction": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': ",
+       "medical_claims_review": "medical_claims_review result for: Step 'Medical Claims Reviewer': work on:"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
+       ]
+      ],
+      "cycle_count": 4,
+      "agent_call_counts": {
+       "delegate_to_wf_claims_triage_adjuster": 1,
+       "delegate_to_wf_property_damage_assessor": 1,
+       "delegate_to_wf_auto_accident_reconstructionist": 1,
+       "delegate_to_wf_medical_claims_reviewer": 1
+      },
+      "turn_index": 13,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+       "property_damage_assessment": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+       "accident_reconstruction": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': ",
+       "medical_claims_review": "medical_claims_review result for: Step 'Medical Claims Reviewer': work on:",
+       "fraud_investigation": "fraud_investigation result for: Step 'Fraud Investigator': work on: Prep"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Fraud Investigator\", \"agent_output\": \"fraud_investigation result for: Step 'Fraud Investigator': work...<len=276 sha1=3688da6e613c>"
+       ]
+      ],
+      "cycle_count": 5,
+      "agent_call_counts": {
+       "delegate_to_wf_claims_triage_adjuster": 1,
+       "delegate_to_wf_property_damage_assessor": 1,
+       "delegate_to_wf_auto_accident_reconstructionist": 1,
+       "delegate_to_wf_medical_claims_reviewer": 1,
+       "delegate_to_wf_fraud_investigator": 1
+      },
+      "turn_index": 17,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+       "property_damage_assessment": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+       "accident_reconstruction": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': ",
+       "medical_claims_review": "medical_claims_review result for: Step 'Medical Claims Reviewer': work on:",
+       "fraud_investigation": "fraud_investigation result for: Step 'Fraud Investigator': work on: Prep",
+       "weather_cat_analysis": "weather_cat_analysis result for: Step 'Weather/Catastrophe Analyst': work"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Fraud Investigator\", \"agent_output\": \"fraud_investigation result for: Step 'Fraud Investigator': work...<len=276 sha1=3688da6e613c>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        20,
+        "{\"agent_name\": \"WF Weather Catastrophe Analyst\", \"agent_output\": \"weather_cat_analysis result for: Step 'Weather/Catastr...<len=288 sha1=4bf35c83a88e>"
+       ]
+      ],
+      "cycle_count": 6,
+      "agent_call_counts": {
+       "delegate_to_wf_claims_triage_adjuster": 1,
+       "delegate_to_wf_property_damage_assessor": 1,
+       "delegate_to_wf_auto_accident_reconstructionist": 1,
+       "delegate_to_wf_medical_claims_reviewer": 1,
+       "delegate_to_wf_fraud_investigator": 1,
+       "delegate_to_wf_weather_catastrophe_analyst": 1
+      },
+      "turn_index": 20,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+       "property_damage_assessment": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+       "accident_reconstruction": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': ",
+       "medical_claims_review": "medical_claims_review result for: Step 'Medical Claims Reviewer': work on:",
+       "fraud_investigation": "fraud_investigation result for: Step 'Fraud Investigator': work on: Prep",
+       "weather_cat_analysis": "weather_cat_analysis result for: Step 'Weather/Catastrophe Analyst': work",
+       "subrogation_assessment": "subrogation_assessment result for: Step 'Subrogation Specialist': work on: "
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Fraud Investigator\", \"agent_output\": \"fraud_investigation result for: Step 'Fraud Investigator': work...<len=276 sha1=3688da6e613c>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        20,
+        "{\"agent_name\": \"WF Weather Catastrophe Analyst\", \"agent_output\": \"weather_cat_analysis result for: Step 'Weather/Catastr...<len=288 sha1=4bf35c83a88e>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Subrogation Specialist\", \"agent_output\": \"subrogation_assessment result for: Step 'Subrogation Specialist': work on: \"}"
+       ]
+      ],
+      "cycle_count": 7,
+      "agent_call_counts": {
+       "delegate_to_wf_claims_triage_adjuster": 1,
+       "delegate_to_wf_property_damage_assessor": 1,
+       "delegate_to_wf_auto_accident_reconstructionist": 1,
+       "delegate_to_wf_medical_claims_reviewer": 1,
+       "delegate_to_wf_fraud_investigator": 1,
+       "delegate_to_wf_weather_catastrophe_analyst": 1,
+       "delegate_to_wf_subrogation_specialist": 1
+      },
+      "turn_index": 23,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+       "property_damage_assessment": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+       "accident_reconstruction": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': ",
+       "medical_claims_review": "medical_claims_review result for: Step 'Medical Claims Reviewer': work on:",
+       "fraud_investigation": "fraud_investigation result for: Step 'Fraud Investigator': work on: Prep",
+       "weather_cat_analysis": "weather_cat_analysis result for: Step 'Weather/Catastrophe Analyst': work",
+       "subrogation_assessment": "subrogation_assessment result for: Step 'Subrogation Specialist': work on: ",
+       "coverage_determination": "coverage_determination result for: Step 'Policy Coverage Analyst': work on:"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Fraud Investigator\", \"agent_output\": \"fraud_investigation result for: Step 'Fraud Investigator': work...<len=276 sha1=3688da6e613c>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        20,
+        "{\"agent_name\": \"WF Weather Catastrophe Analyst\", \"agent_output\": \"weather_cat_analysis result for: Step 'Weather/Catastr...<len=288 sha1=4bf35c83a88e>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Subrogation Specialist\", \"agent_output\": \"subrogation_assessment result for: Step 'Subrogation Specialist': work on: \"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_policy_coverage_analyst\", \"arguments\": {\"task\": \"Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Policy Coverage Analyst\", \"agent_output\": \"coverage_determination result for: Step 'Policy Coverage Analyst': work on:\"}"
+       ]
+      ],
+      "cycle_count": 8,
+      "agent_call_counts": {
+       "delegate_to_wf_claims_triage_adjuster": 1,
+       "delegate_to_wf_property_damage_assessor": 1,
+       "delegate_to_wf_auto_accident_reconstructionist": 1,
+       "delegate_to_wf_medical_claims_reviewer": 1,
+       "delegate_to_wf_fraud_investigator": 1,
+       "delegate_to_wf_weather_catastrophe_analyst": 1,
+       "delegate_to_wf_subrogation_specialist": 1,
+       "delegate_to_wf_policy_coverage_analyst": 1
+      },
+      "turn_index": 25,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+       "property_damage_assessment": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+       "accident_reconstruction": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': ",
+       "medical_claims_review": "medical_claims_review result for: Step 'Medical Claims Reviewer': work on:",
+       "fraud_investigation": "fraud_investigation result for: Step 'Fraud Investigator': work on: Prep",
+       "weather_cat_analysis": "weather_cat_analysis result for: Step 'Weather/Catastrophe Analyst': work",
+       "subrogation_assessment": "subrogation_assessment result for: Step 'Subrogation Specialist': work on: ",
+       "coverage_determination": "coverage_determination result for: Step 'Policy Coverage Analyst': work on:",
+       "settlement_report": "settlement_report result for: Step 'Settlement Report Writer': work on"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_claims_triage_adjuster\", \"arguments\": {\"task\": \"TASK:\\nStep 'Cl...<len=677 sha1=92510da15c4e>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_property_damage_assessor\", \"arguments\": {\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        22,
+        "{\"agent_name\": \"WF Property Damage Assessor\", \"agent_output\": \"property_damage_assessment result for: Step 'Property Dam...<len=303 sha1=b8fef57ff18e>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_auto_accident_reconstructionist\", \"arguments\": {\"task\": \"Step 'Auto...<len=241 sha1=936966529163>"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Auto Accident Reconstructionist\", \"agent_output\": \"accident_reconstruction result for: Step 'Auto Acc...<len=301 sha1=b9788c131b86>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_medical_claims_reviewer\", \"arguments\": {\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Medical Claims Reviewer\", \"agent_output\": \"medical_claims_review result for: Step 'Medical Claims Reviewer': work on:\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_fraud_investigator\", \"arguments\": {\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        21,
+        "{\"agent_name\": \"WF Fraud Investigator\", \"agent_output\": \"fraud_investigation result for: Step 'Fraud Investigator': work...<len=276 sha1=3688da6e613c>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_weather_catastrophe_analyst\", \"arguments\": {\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        20,
+        "{\"agent_name\": \"WF Weather Catastrophe Analyst\", \"agent_output\": \"weather_cat_analysis result for: Step 'Weather/Catastr...<len=288 sha1=4bf35c83a88e>"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_7_0\", \"name\": \"delegate_to_wf_subrogation_specialist\", \"arguments\": {\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Subrogation Specialist\", \"agent_output\": \"subrogation_assessment result for: Step 'Subrogation Specialist': work on: \"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_8_0\", \"name\": \"delegate_to_wf_policy_coverage_analyst\", \"arguments\": {\"task\": \"Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Policy Coverage Analyst\", \"agent_output\": \"coverage_determination result for: Step 'Policy Coverage Analyst': work on:\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_9_0\", \"name\": \"delegate_to_wf_settlement_report_writer\", \"arguments\": {\"task\": \"Step 'Settlement Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Settlement Report Writer\", \"agent_output\": \"settlement_report result for: Step 'Settlement Report Writer': work on\"}"
+       ]
+      ],
+      "cycle_count": 9,
+      "agent_call_counts": {
+       "delegate_to_wf_claims_triage_adjuster": 1,
+       "delegate_to_wf_property_damage_assessor": 1,
+       "delegate_to_wf_auto_accident_reconstructionist": 1,
+       "delegate_to_wf_medical_claims_reviewer": 1,
+       "delegate_to_wf_fraud_investigator": 1,
+       "delegate_to_wf_weather_catastrophe_analyst": 1,
+       "delegate_to_wf_subrogation_specialist": 1,
+       "delegate_to_wf_policy_coverage_analyst": 1,
+       "delegate_to_wf_settlement_report_writer": 1
+      },
+      "turn_index": 28,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "triage_assessment": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+    "property_damage_assessment": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+    "accident_reconstruction": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': ",
+    "medical_claims_review": "medical_claims_review result for: Step 'Medical Claims Reviewer': work on:",
+    "fraud_investigation": "fraud_investigation result for: Step 'Fraud Investigator': work on: Prep",
+    "weather_cat_analysis": "weather_cat_analysis result for: Step 'Weather/Catastrophe Analyst': work",
+    "subrogation_assessment": "subrogation_assessment result for: Step 'Subrogation Specialist': work on: ",
+    "coverage_determination": "coverage_determination result for: Step 'Policy Coverage Analyst': work on:",
+    "settlement_report": "settlement_report result for: Step 'Settlement Report Writer': work on"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed",
+      "agent_10:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed",
+      "agent_10:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "orch_7_7:completed",
+      "agent_8:completed",
+      "orch_8_8:completed",
+      "agent_9:completed",
+      "orch_9_9:completed",
+      "agent_10:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Insurance Claims Investigation",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "llm_decision",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 299,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Claims Triage Adjuster.",
+      "reason": "Next I will delegate to Claims Triage Adjuster.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Claims Triage Adjuster",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Claims Triage Adjuster.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Agent: WF Claims Triage Adjuster",
+      "status": "completed",
+      "input": "TASK:\nStep 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 0,
+      "duration_ms": "<ms>",
+      "tokens": 91,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_2_2",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Agent: WF Property Damage Assessor",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_3_3",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Auto Accident Reconstructionist.",
+      "reason": "Next I will delegate to Auto Accident Reconstructionist.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Agent: WF Auto Accident Reconstructionist",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Auto Accident Reconstructionist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': ",
+      "reason": "Next I will delegate to Auto Accident Reconstructionist.",
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 25,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_4_4",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Agent: WF Medical Claims Reviewer",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "medical_claims_review result for: Step 'Medical Claims Reviewer': work on:",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_5_5",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Fraud Investigator.",
+      "reason": "Next I will delegate to Fraud Investigator.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Agent: WF Fraud Investigator",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "fraud_investigation result for: Step 'Fraud Investigator': work on: Prep",
+      "reason": "Next I will delegate to Fraud Investigator.",
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_6_6",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Agent: WF Weather Catastrophe Analyst",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "weather_cat_analysis result for: Step 'Weather/Catastrophe Analyst': work",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 24,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_7_7",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Subrogation Specialist.",
+      "reason": "Next I will delegate to Subrogation Specialist.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_8",
+      "type": "agent",
+      "name": "Agent: WF Subrogation Specialist",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "subrogation_assessment result for: Step 'Subrogation Specialist': work on: ",
+      "reason": "Next I will delegate to Subrogation Specialist.",
+      "step_id": 107,
+      "agent_id": 1007,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 25,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_8_8",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_9",
+      "type": "agent",
+      "name": "Agent: WF Policy Coverage Analyst",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "coverage_determination result for: Step 'Policy Coverage Analyst': work on:",
+      "reason": null,
+      "step_id": 108,
+      "agent_id": 1008,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_9_9",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Settlement Report Writer.",
+      "reason": "Next I will delegate to Settlement Report Writer.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_10",
+      "type": "agent",
+      "name": "Agent: WF Settlement Report Writer",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Settlement Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "settlement_report result for: Step 'Settlement Report Writer': work on",
+      "reason": "Next I will delegate to Settlement Report Writer.",
+      "step_id": 109,
+      "agent_id": 1009,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "Final synthesis: all specialists were consulted.",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Claims Triage Adjuster."
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "orch_2_2",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_2_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "orch_3_3",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_3_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": "Next I will delegate to Auto Accident Reconstructionist."
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "orch_4_4",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_4_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "orch_5_5",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_5_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": "Next I will delegate to Fraud Investigator."
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "orch_6_6",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_6_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "orch_7_7",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_7_7",
+      "to_id": "agent_8",
+      "type": "delegation",
+      "label": "Next I will delegate to Subrogation Specialist."
+     },
+     {
+      "from_id": "agent_8",
+      "to_id": "orch_8_8",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_8_8",
+      "to_id": "agent_9",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_9",
+      "to_id": "orch_9_9",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_9_9",
+      "to_id": "agent_10",
+      "type": "delegation",
+      "label": "Next I will delegate to Settlement Report Writer."
+     },
+     {
+      "from_id": "agent_10",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 299,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Agent: WF Claims Triage Adjuster",
+       "input_text": "TASK:\nStep 'Claims Triage Adjuster': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If",
+       "output_text": "triage_assessment result for: TASK:\nStep 'Claims Triage Adjuster': wor",
+       "duration_ms": "<ms>",
+       "tokens_used": 91
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Agent: WF Property Damage Assessor",
+       "input_text": "{\"task\": \"Step 'Property Damage Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "property_damage_assessment result for: Step 'Property Damage Assessor': work on",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Agent: WF Auto Accident Reconstructionist",
+       "input_text": "{\"task\": \"Step 'Auto Accident Reconstructionist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "accident_reconstruction result for: Step 'Auto Accident Reconstructionist': ",
+       "duration_ms": "<ms>",
+       "tokens_used": 25
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Agent: WF Medical Claims Reviewer",
+       "input_text": "{\"task\": \"Step 'Medical Claims Reviewer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "medical_claims_review result for: Step 'Medical Claims Reviewer': work on:",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Agent: WF Fraud Investigator",
+       "input_text": "{\"task\": \"Step 'Fraud Investigator': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "fraud_investigation result for: Step 'Fraud Investigator': work on: Prep",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Agent: WF Weather Catastrophe Analyst",
+       "input_text": "{\"task\": \"Step 'Weather/Catastrophe Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "weather_cat_analysis result for: Step 'Weather/Catastrophe Analyst': work",
+       "duration_ms": "<ms>",
+       "tokens_used": 24
+      },
+      {
+       "step_id": 107,
+       "agent_id": 1007,
+       "step_name": "Agent: WF Subrogation Specialist",
+       "input_text": "{\"task\": \"Step 'Subrogation Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "subrogation_assessment result for: Step 'Subrogation Specialist': work on: ",
+       "duration_ms": "<ms>",
+       "tokens_used": 25
+      },
+      {
+       "step_id": 108,
+       "agent_id": 1008,
+       "step_name": "Agent: WF Policy Coverage Analyst",
+       "input_text": "{\"task\": \"Step 'Policy Coverage Analyst': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "coverage_determination result for: Step 'Policy Coverage Analyst': work on:",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      },
+      {
+       "step_id": 109,
+       "agent_id": 1009,
+       "step_name": "Agent: WF Settlement Report Writer",
+       "input_text": "{\"task\": \"Step 'Settlement Report Writer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "settlement_report result for: Step 'Settlement Report Writer': work on",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

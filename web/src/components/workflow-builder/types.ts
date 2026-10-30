@@ -3,35 +3,24 @@
  * Node/edge data structures used by React Flow.
  */
 
+import type { ComponentType } from "react";
 import type { Node, Edge } from "@xyflow/react";
+import type { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
+import type { ToolSnapshot } from "@/lib/tools/interfaces";
+import type { DocumentSetSummary } from "@/lib/types";
+import type { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
+import type { OrchestrationMode } from "@/lib/workflows/interfaces";
+import type { EditorStep } from "@/lib/workflows/editorModel";
+import type { NodeCatalog, NodeEditorKind } from "@/lib/workflows/nodeRegistry";
+
+export type { WorkflowMeta } from "@/lib/workflows/editorModel";
+export { DEFAULT_WORKFLOW_META } from "@/lib/workflows/editorModel";
 
 // ── Node Data ──────────────────────────────────────────────────────────
 
-/** Data stored on each agent node */
-export interface AgentNodeData {
-  agent_id: number;
-  agent_name: string;
-  step_name: string;
-  step_description: string;
-  output_key: string;
-  is_terminal: boolean;
-  can_request_input: boolean;
-  promote_output: boolean;
-  input_mapping?: Record<string, any> | null;
-  condition?: Record<string, any> | null;
-
-  // Step-level overrides (saved to backend, override agent defaults)
-  // null/undefined = use agent default (inheritance)
-  llm_provider_override?: string | null;
-  llm_model_override?: string | null;
-  max_output_tokens_override?: number | null;
-  system_prompt_override?: string | null;
-  task_prompt_override?: string | null;
-  tool_ids_override?: number[] | null;
-  document_set_ids_override?: number[] | null;
-  replace_base_system_prompt_override?: boolean | null;
-
-  // Display-only fields from the agent (not saved to backend)
+/** Display-only data on a step node (never saved). */
+export interface StepNodeDisplay {
+  // From the agent (agent steps)
   agent_description?: string;
   agent_icon_url?: string | null;
   agent_num_tools?: number;
@@ -40,36 +29,36 @@ export interface AgentNodeData {
   agent_llm_provider?: string | null;
   agent_labels?: string[];
 
-  // Visual state
-  isSelected?: boolean;
-  stepOrder?: number;
-  orchestration_mode?: "sequential" | "llm_decision";
-  [key: string]: unknown;
-}
-
-/** Data stored on each conditional router node */
-export interface ConditionalRouterNodeData {
-  step_name: string;
-  step_description: string;
-  output_key: string;
-  condition_field: string;
-  operator: string;
-  match_value: string;
-  case_sensitive: boolean;
-  true_steps: number[];
-  false_steps: number[];
+  // From the node type catalog
+  type_label?: string;
+  type_description?: string;
 
   // Visual state
   isSelected?: boolean;
   stepOrder?: number;
-  orchestration_mode?: "sequential" | "llm_decision";
-  [key: string]: unknown;
+  orchestration_mode?: OrchestrationMode;
+  /** The step's type is not allowed in the workflow's orchestration mode. */
+  modeConflict?: boolean;
+  /** Containers: steps inside it. Children: the container they're in. */
+  childCount?: number;
+  containerName?: string | null;
 }
+
+/**
+ * Data of every step node, whatever its type: the shared editor step model
+ * (saved through `serializer.ts`) plus display-only fields. Router branch
+ * targets are derived from the node's outgoing edges when saving.
+ */
+export type StepNodeData = EditorStep &
+  StepNodeDisplay & { [key: string]: unknown };
+
+/** Kept for the agent config panel, which predates other node types. */
+export type AgentNodeData = StepNodeData;
 
 /** Data stored on the orchestrator (start) node */
 export interface OrchestratorNodeData {
   label: string;
-  orchestration_mode: "sequential" | "llm_decision";
+  orchestration_mode: OrchestrationMode;
   [key: string]: unknown;
 }
 
@@ -77,7 +66,7 @@ export interface OrchestratorNodeData {
 export interface StepEdgeData {
   stepOrder?: number;
   condition?: Record<string, any> | null;
-  orchestration_mode?: "sequential" | "llm_decision";
+  orchestration_mode?: OrchestrationMode;
   /** "True" or "False" label for edges from conditional router nodes */
   branchLabel?: "True" | "False" | null;
   [key: string]: unknown;
@@ -85,41 +74,34 @@ export interface StepEdgeData {
 
 // ── Typed Node/Edge aliases ────────────────────────────────────────────
 
-export type AgentFlowNode = Node<AgentNodeData, "agent">;
+/** A step node; its React Flow `type` is the editor kind of its node type. */
+export type StepFlowNode = Node<StepNodeData, NodeEditorKind>;
 export type OrchestratorFlowNode = Node<OrchestratorNodeData, "orchestrator">;
-export type ConditionalRouterFlowNode = Node<ConditionalRouterNodeData, "conditional_router">;
-export type WorkflowNode = AgentFlowNode | OrchestratorFlowNode | ConditionalRouterFlowNode;
+export type FinishFlowNode = Node<Record<string, never>, "finish">;
+export type WorkflowNode = StepFlowNode | OrchestratorFlowNode | FinishFlowNode;
 export type WorkflowEdge = Edge<StepEdgeData>;
 
-// ── Workflow meta (global settings, not per-node) ──────────────────────
-
-export interface WorkflowMeta {
-  name: string;
-  description: string;
-  orchestration_mode: "sequential" | "llm_decision";
-  orchestrator_prompt: string;
-  orchestrator_llm_provider: string;
-  orchestrator_llm_model: string;
-  max_steps: number;
-  max_calls_per_agent: number;
-  timeout_seconds: number;
-  is_public: boolean;
-  icon_name: string;
+export function isStepNode(node: WorkflowNode): node is StepFlowNode {
+  return node.type !== "orchestrator" && node.type !== "finish";
 }
 
-export const DEFAULT_WORKFLOW_META: WorkflowMeta = {
-  name: "",
-  description: "",
-  orchestration_mode: "llm_decision",
-  orchestrator_prompt: "",
-  orchestrator_llm_provider: "",
-  orchestrator_llm_model: "",
-  max_steps: 10,
-  max_calls_per_agent: 2,
-  timeout_seconds: 1800,
-  is_public: true,
-  icon_name: "",
-};
+// ── Config panel contract (one panel component per editor kind) ────────
+
+export interface StepConfigPanelProps {
+  nodeId: string;
+  data: StepNodeData;
+  catalog: NodeCatalog;
+  agents: MinimalAgentSnapshot[];
+  availableTools: ToolSnapshot[];
+  documentSets: DocumentSetSummary[];
+  llmProviders: LLMProviderDescriptor[];
+  onUpdate: (nodeId: string, partial: Partial<StepNodeData>) => void;
+  onDelete: (nodeId: string) => void;
+  onClose: () => void;
+  onToggleCollapse?: () => void;
+}
+
+export type StepConfigPanel = ComponentType<StepConfigPanelProps>;
 
 // ── Sidebar agent item (minimal data for drag) ──────────────────────
 
@@ -137,6 +119,11 @@ export interface DragAgentData {
 // ── Constants ──────────────────────────────────────────────────────────
 
 export const ORCHESTRATOR_NODE_ID = "orchestrator";
+export const FINISH_NODE_ID = "finish";
+
+/** Drag-and-drop payload types from the sidebar onto the canvas. */
+export const AGENT_DRAG_MIME = "application/reactflow";
+export const NODE_TYPE_DRAG_MIME = "application/reactflow-node-type";
 export const NODE_WIDTH = 300;
 export const NODE_HEIGHT_ESTIMATE = 200;
 export const NODE_SPACING_X = 400;

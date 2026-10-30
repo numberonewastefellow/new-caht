@@ -919,6 +919,13 @@ EVIDENCE_SELECTION_BUDGET_MULTIPLIER = max(
 # Code Interpreter Service Configuration
 CODE_INTERPRETER_BASE_URL = os.environ.get("CODE_INTERPRETER_BASE_URL")
 
+# Shared secret sent as `Authorization: Bearer <token>` on every call to the code
+# interpreter. Must equal the service's own CODE_INTERPRETER_API_TOKEN; the service
+# rejects /v1/* without it (401) and fails closed (503) when it has none configured.
+CODE_INTERPRETER_API_TOKEN = (
+    os.environ.get("CODE_INTERPRETER_API_TOKEN") or ""
+).strip()
+
 CODE_INTERPRETER_DEFAULT_TIMEOUT_MS = int(
     os.environ.get("CODE_INTERPRETER_DEFAULT_TIMEOUT_MS") or 60_000
 )
@@ -1356,3 +1363,16 @@ POSTHOG_DEBUG_LOGS_ENABLED = (
 MARKETING_POSTHOG_API_KEY = os.environ.get("MARKETING_POSTHOG_API_KEY")
 
 HUBSPOT_TRACKING_URL = os.environ.get("HUBSPOT_TRACKING_URL")
+
+#####
+# Workflows
+#####
+# Sequential workflows run on the node-registry coordinator
+# (om/workflows/sequential.py). Set to "false" to fall back to the legacy
+# inline engine; the fallback is kept for one release.
+WORKFLOW_ENGINE_V2 = os.environ.get("WORKFLOW_ENGINE_V2", "true").lower() != "false"
+# Code steps (Python, run in the code interpreter sandbox). They also need
+# CODE_INTERPRETER_BASE_URL; without it a code step fails closed.
+WORKFLOW_CODE_NODE_ENABLED = (
+    os.environ.get("WORKFLOW_CODE_NODE_ENABLED", "true").lower() != "false"
+)

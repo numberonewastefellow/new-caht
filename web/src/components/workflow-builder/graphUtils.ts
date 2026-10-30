@@ -1,35 +1,120 @@
 /**
- * Pure utility functions for converting between React Flow graph state
- * and the WorkflowCreate/WorkflowSnapshot API payloads.
+ * Pure utility functions for converting between React Flow graph state and
+ * the workflow API payloads. The step data itself is converted by the shared
+ * `@/lib/workflows/serializer` (also used by the Wizard); this module only
+ * adds what is specific to the canvas: node/edge layout, step ordering from
+ * edges, and router branches expressed as edges.
  */
 
-import type { WorkflowSnapshot, WorkflowStepCreate } from "@/lib/workflows/interfaces";
+import type {
+  OrchestrationMode,
+  WorkflowCreate,
+  WorkflowSnapshot,
+  WorkflowUpdate,
+} from "@/lib/workflows/interfaces";
+import {
+  type EditorStep,
+  type WorkflowMeta,
+  containerInfo,
+} from "@/lib/workflows/editorModel";
+import {
+  type NodeCatalog,
+  ROUTER_NODE_TYPE,
+  editorKindFor,
+  isAllowedInMode,
+  labelFor,
+  latestVersion,
+} from "@/lib/workflows/nodeRegistry";
+import {
+  type RouterBranch,
+  branchTargets,
+  normalizeRouterConfig,
+  withBranchTargets,
+} from "@/lib/workflows/routerConfig";
+import {
+  buildWorkflowCreate,
+  buildWorkflowUpdate,
+  snapshotToEditorSteps,
+} from "@/lib/workflows/serializer";
+import { validateSteps } from "@/lib/workflows/validation";
 import type {
   WorkflowNode,
   WorkflowEdge,
-  AgentNodeData,
-  ConditionalRouterNodeData,
-  WorkflowMeta,
+  StepFlowNode,
+  StepNodeData,
   OrchestratorNodeData,
 } from "./types";
 import {
+  FINISH_NODE_ID,
   ORCHESTRATOR_NODE_ID,
   NODE_SPACING_X,
   NODE_SPACING_Y,
+  isStepNode,
 } from "./types";
 
-export const FINISH_NODE_ID = "finish";
+export { FINISH_NODE_ID } from "./types";
+
+const ROUTER_BRANCHES: readonly RouterBranch[] = ["true", "false"];
+
+// ── Step nodes ─────────────────────────────────────────────────────────
+
+/**
+ * A React Flow node for an editor step. Its id is the step's node key and its
+ * React Flow type is the editor kind of its node type (see nodeUi.tsx).
+ */
+export function stepToFlowNode(
+  step: EditorStep,
+  catalog: NodeCatalog,
+  extra: Partial<StepNodeData> = {},
+  position = { x: 0, y: 0 }
+): StepFlowNode {
+  return {
+    id: step.node_key,
+    type: editorKindFor(catalog, step.step_type),
+    position,
+    data: {
+      ...step,
+      type_label: labelFor(catalog, step.step_type, step.type_version),
+      type_description: latestVersion(catalog, step.step_type)?.description,
+      ...extra,
+    },
+  };
+}
+
+function branchEdge(
+  routerId: string,
+  branch: RouterBranch,
+  targetId: string,
+  mode: OrchestrationMode
+): WorkflowEdge {
+  return {
+    id: `edge-${routerId}-${branch}-${targetId}`,
+    source: routerId,
+    sourceHandle: branch,
+    target: targetId,
+    type: "step",
+    data: {
+      orchestration_mode: mode,
+      branchLabel: branch === "true" ? "True" : "False",
+    },
+  };
+}
 
 // ── Snapshot → Graph ───────────────────────────────────────────────────
 
 /**
  * Convert a WorkflowSnapshot (from API) into React Flow nodes + edges.
  */
-export function snapshotToGraph(workflow: WorkflowSnapshot): {
+export function snapshotToGraph(
+  workflow: WorkflowSnapshot,
+  catalog: NodeCatalog
+): {
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
 } {
-  const mode = workflow.orchestration_mode as "sequential" | "llm_decision";
+  const mode: OrchestrationMode =
+    workflow.orchestration_mode === "sequential" ? "sequential" : "llm_decision";
+  const steps = snapshotToEditorSteps(workflow);
   const nodes: WorkflowNode[] = [];
   const edges: WorkflowEdge[] = [];
 
@@ -45,145 +130,60 @@ export function snapshotToGraph(workflow: WorkflowSnapshot): {
     },
   });
 
-  // 2. Nodes from steps (sorted by step_order)
-  const sortedSteps = [...workflow.steps].sort(
-    (a, b) => a.step_order - b.step_order
-  );
-
-  sortedSteps.forEach((step, i) => {
-    if (step.step_type === "conditional_router") {
-      // Conditional router node
-      const condition = step.condition || {};
-      const nodeId = `condition-${step.id}`;
-      nodes.push({
-        id: nodeId,
-        type: "conditional_router",
-        position: { x: 0, y: 0 },
-        data: {
-          step_name: step.step_name,
-          step_description: step.step_description || "",
-          output_key: step.output_key || "output",
-          condition_field: condition.condition_field || "",
-          operator: condition.operator || "contains",
-          match_value: condition.match_value || "",
-          case_sensitive: condition.case_sensitive || false,
-          true_steps: condition.true_steps || [],
-          false_steps: condition.false_steps || [],
-          stepOrder: i,
-          orchestration_mode: mode,
-        },
-      } as WorkflowNode);
-    } else {
-      // Agent node (default)
-      const nodeId = `agent-${step.id}`;
-      nodes.push({
-        id: nodeId,
-        type: "agent",
-        position: { x: 0, y: 0 },
-        data: {
-          agent_id: step.agent_id!,
-          agent_name: step.agent_name || `Agent ${step.agent_id}`,
-          step_name: step.step_name,
-          step_description: step.step_description || "",
-          output_key: step.output_key || "output",
-          is_terminal: step.is_terminal,
-          can_request_input: step.can_request_input,
-          promote_output: step.promote_output,
-          input_mapping: step.input_mapping,
-          condition: step.condition,
-          stepOrder: i,
-          orchestration_mode: mode,
-          // Step-level overrides
-          llm_provider_override: step.llm_provider_override ?? null,
-          llm_model_override: step.llm_model_override ?? null,
-          max_output_tokens_override: step.max_output_tokens_override ?? null,
-          system_prompt_override: step.system_prompt_override ?? null,
-          task_prompt_override: step.task_prompt_override ?? null,
-          tool_ids_override: step.tool_ids_override ?? null,
-          document_set_ids_override: step.document_set_ids_override ?? null,
-          replace_base_system_prompt_override: step.replace_base_system_prompt_override ?? null,
-        },
-      });
-    }
+  // 2. One node per step, in execution order. Container children are shown
+  // as normal nodes in order (group nodes come later) and keep their
+  // parent_key/branch_index so a save doesn't flatten the container.
+  steps.forEach((step, i) => {
+    const { childCount, containerName } = containerInfo(step, steps);
+    nodes.push(
+      stepToFlowNode(step, catalog, {
+        childCount,
+        containerName,
+        stepOrder: i,
+        orchestration_mode: mode,
+        modeConflict: !isAllowedInMode(
+          catalog,
+          step.step_type,
+          step.type_version,
+          mode
+        ),
+      })
+    );
   });
 
   // 3. Edges
-  // Build a map of step_order → nodeId for conditional routing
-  const stepOrderToNodeId = new Map<number, string>();
-  sortedSteps.forEach((step) => {
-    const prefix = step.step_type === "conditional_router" ? "condition" : "agent";
-    stepOrderToNodeId.set(step.step_order, `${prefix}-${step.id}`);
-  });
-
-  const allStepNodeIds = sortedSteps.map((s) => {
-    const prefix = s.step_type === "conditional_router" ? "condition" : "agent";
-    return `${prefix}-${s.id}`;
-  });
+  const stepIds = steps.map((s) => s.node_key);
 
   if (mode === "sequential") {
-    // Linear chain: orchestrator -> node[0] -> node[1] -> ...
-    // But conditional routers break the chain with true/false branches
-    allStepNodeIds.forEach((nodeId, i) => {
-      const step = sortedSteps[i]!;
+    // Router branch targets hang off the router's True/False handles;
+    // every other step chains from the step before it.
+    const branchTargetIds = new Set<string>();
+    for (const step of steps) {
+      if (step.step_type !== ROUTER_NODE_TYPE) continue;
+      const config = normalizeRouterConfig(step.config);
+      for (const branch of ROUTER_BRANCHES) {
+        for (const targetId of branchTargets(config, branch)) {
+          if (!stepIds.includes(targetId)) continue;
+          branchTargetIds.add(targetId);
+          edges.push(branchEdge(step.node_key, branch, targetId, mode));
+        }
+      }
+    }
 
-      // Check if this node is a target of a conditional router branch
-      // If so, the conditional router already created the edge
-      const isConditionalTarget = sortedSteps.some((s) => {
-        if (s.step_type !== "conditional_router") return false;
-        const cond = s.condition || {};
-        const trueSteps: number[] = cond.true_steps || [];
-        const falseSteps: number[] = cond.false_steps || [];
-        return trueSteps.includes(step.step_order) || falseSteps.includes(step.step_order);
+    stepIds.forEach((nodeId, i) => {
+      if (branchTargetIds.has(nodeId)) return;
+      const sourceId = i === 0 ? ORCHESTRATOR_NODE_ID : stepIds[i - 1]!;
+      edges.push({
+        id: `edge-${sourceId}-${nodeId}`,
+        source: sourceId,
+        target: nodeId,
+        type: "step",
+        data: { stepOrder: i, orchestration_mode: mode },
       });
-
-      if (!isConditionalTarget) {
-        const sourceId = i === 0 ? ORCHESTRATOR_NODE_ID : (allStepNodeIds[i - 1] ?? ORCHESTRATOR_NODE_ID);
-        edges.push({
-          id: `edge-${sourceId}-${nodeId}`,
-          source: sourceId,
-          target: nodeId,
-          type: "step",
-          data: { stepOrder: i, orchestration_mode: mode },
-        });
-      }
-
-      // If this is a conditional router, create true/false branch edges
-      if (step.step_type === "conditional_router") {
-        const cond = step.condition || {};
-        const trueSteps: number[] = cond.true_steps || [];
-        const falseSteps: number[] = cond.false_steps || [];
-
-        for (const targetOrder of trueSteps) {
-          const targetId = stepOrderToNodeId.get(targetOrder);
-          if (targetId) {
-            edges.push({
-              id: `edge-${nodeId}-true-${targetId}`,
-              source: nodeId,
-              sourceHandle: "true",
-              target: targetId,
-              type: "step",
-              data: { orchestration_mode: mode, branchLabel: "True" },
-            });
-          }
-        }
-        for (const targetOrder of falseSteps) {
-          const targetId = stepOrderToNodeId.get(targetOrder);
-          if (targetId) {
-            edges.push({
-              id: `edge-${nodeId}-false-${targetId}`,
-              source: nodeId,
-              sourceHandle: "false",
-              target: targetId,
-              type: "step",
-              data: { orchestration_mode: mode, branchLabel: "False" },
-            });
-          }
-        }
-      }
     });
   } else {
-    // Star topology: orchestrator -> each agent (conditional routers not used in llm_decision)
-    allStepNodeIds.forEach((nodeId, i) => {
+    // Star topology: orchestrator -> each step
+    stepIds.forEach((nodeId, i) => {
       edges.push({
         id: `edge-${ORCHESTRATOR_NODE_ID}-${nodeId}`,
         source: ORCHESTRATOR_NODE_ID,
@@ -195,22 +195,22 @@ export function snapshotToGraph(workflow: WorkflowSnapshot): {
   }
 
   // 4. Add END node for sequential mode
-  if (mode === "sequential" && allStepNodeIds.length > 0) {
+  if (mode === "sequential" && stepIds.length > 0) {
     nodes.push({
       id: FINISH_NODE_ID,
-      type: "finish" as any,
+      type: "finish",
       position: { x: 0, y: 0 },
       deletable: false,
       selectable: false,
-      data: {} as any,
+      data: {},
     });
-    const lastNodeId = allStepNodeIds[allStepNodeIds.length - 1]!;
+    const lastNodeId = stepIds[stepIds.length - 1]!;
     edges.push({
       id: `edge-${lastNodeId}-${FINISH_NODE_ID}`,
       source: lastNodeId,
       target: FINISH_NODE_ID,
       type: "step",
-      data: { stepOrder: allStepNodeIds.length, orchestration_mode: mode },
+      data: { stepOrder: stepIds.length, orchestration_mode: mode },
     });
   }
 
@@ -220,115 +220,99 @@ export function snapshotToGraph(workflow: WorkflowSnapshot): {
   return { nodes: laid, edges };
 }
 
-// ── Graph → Payload ────────────────────────────────────────────────────
+// ── Graph → Steps / Payload ────────────────────────────────────────────
+
+function withoutFinish(edges: WorkflowEdge[]): WorkflowEdge[] {
+  return edges.filter(
+    (e) => e.target !== FINISH_NODE_ID && e.source !== FINISH_NODE_ID
+  );
+}
+
+/** A router's config with branch targets read from its True/False edges. */
+function routerConfigFromEdges(
+  node: StepFlowNode,
+  edges: WorkflowEdge[],
+  stepIds: ReadonlySet<string>
+): Record<string, unknown> {
+  let config = normalizeRouterConfig(node.data.config);
+  for (const branch of ROUTER_BRANCHES) {
+    const targets = edges
+      .filter(
+        (e) =>
+          e.source === node.id &&
+          e.sourceHandle === branch &&
+          stepIds.has(e.target)
+      )
+      .map((e) => e.target);
+    config = withBranchTargets(config, branch, Array.from(new Set(targets)));
+  }
+  return { ...config };
+}
 
 /**
- * Convert React Flow nodes + edges + meta into a WorkflowCreate payload.
+ * The canvas as editor steps in execution order (BFS from the start node).
+ * Router branch targets come from the router's outgoing edges, so what the
+ * canvas shows is what gets saved.
+ */
+export function graphToSteps(
+  nodes: WorkflowNode[],
+  edges: WorkflowEdge[]
+): EditorStep[] {
+  const stepNodes = nodes.filter(isStepNode);
+  const stepEdges = withoutFinish(edges);
+  const stepOrders = computeStepOrders(nodes, stepEdges);
+  const stepIds = new Set(stepNodes.map((n) => n.id));
+
+  return [...stepNodes]
+    .sort(
+      (a, b) => (stepOrders.get(a.id) ?? 999) - (stepOrders.get(b.id) ?? 999)
+    )
+    .map((node) =>
+      node.data.step_type === ROUTER_NODE_TYPE
+        ? {
+            ...node.data,
+            config: routerConfigFromEdges(node, stepEdges, stepIds),
+          }
+        : node.data
+    );
+}
+
+/**
+ * Convert React Flow nodes + edges + meta into a create payload.
  */
 export function graphToPayload(
   nodes: WorkflowNode[],
   edges: WorkflowEdge[],
   meta: WorkflowMeta
-): {
-  name: string;
-  description?: string | null;
-  orchestration_mode: string;
-  orchestrator_prompt?: string | null;
-  orchestrator_llm_provider?: string | null;
-  orchestrator_llm_model?: string | null;
-  max_steps: number;
-  max_calls_per_agent: number;
-  timeout_seconds: number;
-  is_public: boolean;
-  icon_name?: string | null;
-  steps: WorkflowStepCreate[];
-} {
-  // Filter to step nodes (agent + conditional_router), exclude orchestrator/finish
-  const stepNodes = nodes.filter(
-    (n) => n.type === "agent" || n.type === "conditional_router"
+): WorkflowCreate {
+  return buildWorkflowCreate(meta, graphToSteps(nodes, edges));
+}
+
+/** An update payload; `expectedVersion` guards against concurrent saves. */
+export function graphToUpdatePayload(
+  nodes: WorkflowNode[],
+  edges: WorkflowEdge[],
+  meta: WorkflowMeta,
+  expectedVersion: number | null
+): WorkflowUpdate {
+  return buildWorkflowUpdate(
+    meta,
+    graphToSteps(nodes, edges),
+    expectedVersion
   );
-  // Filter edges to exclude finish node connections
-  const stepEdges = edges.filter(
-    (e) => e.target !== FINISH_NODE_ID && e.source !== FINISH_NODE_ID
-  );
-
-  // Compute step ordering via BFS from orchestrator
-  const stepOrders = computeStepOrders(nodes, stepEdges);
-
-  // Sort by computed step order
-  const sorted = [...stepNodes].sort((a, b) => {
-    const orderA = stepOrders.get(a.id) ?? 999;
-    const orderB = stepOrders.get(b.id) ?? 999;
-    return orderA - orderB;
-  });
-
-  const steps: WorkflowStepCreate[] = sorted.map((node, i) => {
-    if (node.type === "conditional_router") {
-      const data = node.data as ConditionalRouterNodeData;
-      return {
-        step_type: "conditional_router",
-        agent_id: null,
-        step_order: i,
-        step_name: data.step_name || "Condition",
-        step_description: data.step_description || null,
-        output_key: data.output_key || "output",
-        condition: {
-          condition_field: data.condition_field || "",
-          operator: data.operator || "contains",
-          match_value: data.match_value || "",
-          case_sensitive: data.case_sensitive || false,
-          true_steps: data.true_steps || [],
-          false_steps: data.false_steps || [],
-        },
-      };
-    }
-
-    // Agent node
-    const data = node.data as AgentNodeData;
-    return {
-      step_type: "agent",
-      agent_id: data.agent_id,
-      step_order: i,
-      step_name: data.step_name || data.agent_name,
-      step_description: data.step_description || null,
-      output_key: data.output_key || "output",
-      input_mapping: data.input_mapping || null,
-      condition: data.condition || null,
-      is_terminal: data.is_terminal ?? false,
-      can_request_input: data.can_request_input ?? false,
-      promote_output: data.promote_output ?? false,
-      // Step-level overrides
-      llm_provider_override: data.llm_provider_override || null,
-      llm_model_override: data.llm_model_override || null,
-      max_output_tokens_override: data.max_output_tokens_override ?? null,
-      system_prompt_override: data.system_prompt_override || null,
-      task_prompt_override: data.task_prompt_override || null,
-      tool_ids_override: data.tool_ids_override ?? null,
-      document_set_ids_override: data.document_set_ids_override ?? null,
-      replace_base_system_prompt_override: data.replace_base_system_prompt_override ?? null,
-    };
-  });
-
-  return {
-    name: meta.name,
-    description: meta.description || null,
-    orchestration_mode: meta.orchestration_mode,
-    orchestrator_prompt: meta.orchestrator_prompt || null,
-    orchestrator_llm_provider: meta.orchestrator_llm_provider || null,
-    orchestrator_llm_model: meta.orchestrator_llm_model || null,
-    max_steps: meta.max_steps,
-    max_calls_per_agent: meta.max_calls_per_agent,
-    timeout_seconds: meta.timeout_seconds,
-    is_public: meta.is_public,
-    icon_name: meta.icon_name || null,
-    steps,
-  };
 }
 
 // ── Step Order Computation ─────────────────────────────────────────────
 
+/** The order a step had when loaded or created (Infinity if unknown). */
+function savedOrderOf(node: WorkflowNode | undefined): number {
+  return node && isStepNode(node) && typeof node.data.stepOrder === "number"
+    ? node.data.stepOrder
+    : Infinity;
+}
+
 /**
- * BFS from orchestrator node to determine step_order for each agent node.
+ * BFS from orchestrator node to determine step_order for each step node.
  * Returns Map<nodeId, stepOrder>.
  */
 export function computeStepOrders(
@@ -337,6 +321,7 @@ export function computeStepOrders(
 ): Map<string, number> {
   const orders = new Map<string, number>();
   const adjacency = new Map<string, string[]>();
+  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
   // Build adjacency list
   for (const edge of edges) {
@@ -355,16 +340,20 @@ export function computeStepOrders(
     if (visited.has(current)) continue;
     visited.add(current);
 
-    if (current !== ORCHESTRATOR_NODE_ID) {
+    const currentNode = nodeMap.get(current);
+    if (currentNode && isStepNode(currentNode)) {
       orders.set(current, order++);
     }
 
     const neighbors = adjacency.get(current) || [];
-    // Sort neighbors by X (column) first, then Y (row) for grid-aware ordering
-    const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+    // Siblings (e.g. router branches) keep their saved order, so loading and
+    // saving never re-orders steps; ties (new nodes) fall back to position:
+    // X (column) first, then Y (row) for grid-aware ordering.
     neighbors.sort((a, b) => {
       const nodeA = nodeMap.get(a);
       const nodeB = nodeMap.get(b);
+      const savedDiff = savedOrderOf(nodeA) - savedOrderOf(nodeB);
+      if (savedDiff !== 0 && Number.isFinite(savedDiff)) return savedDiff;
       const xDiff = (nodeA?.position.x ?? 0) - (nodeB?.position.x ?? 0);
       if (Math.abs(xDiff) > 50) return xDiff;
       return (nodeA?.position.y ?? 0) - (nodeB?.position.y ?? 0);
@@ -379,7 +368,7 @@ export function computeStepOrders(
 
   // Assign remaining unvisited step nodes (disconnected)
   for (const node of nodes) {
-    if ((node.type === "agent" || node.type === "conditional_router") && !orders.has(node.id)) {
+    if (isStepNode(node) && !orders.has(node.id)) {
       orders.set(node.id, order++);
     }
   }
@@ -429,7 +418,7 @@ export function autoLayout(
   mode?: "sequential" | "llm_decision"
 ): WorkflowNode[] {
   const orchestrator = nodes.find((n) => n.id === ORCHESTRATOR_NODE_ID);
-  const agentNodes = nodes.filter((n) => n.type === "agent" || n.type === "conditional_router");
+  const agentNodes = nodes.filter(isStepNode);
   const finishNode = nodes.find((n) => n.id === FINISH_NODE_ID);
 
   if (!orchestrator) return nodes;
@@ -536,100 +525,37 @@ export interface ValidationError {
 }
 
 /**
- * Validate the graph before saving.
+ * Validate the graph before saving: the shared step rules (same as the
+ * Wizard) plus canvas-specific connectivity checks.
  * Returns an array of errors (empty = valid).
  */
 export function validateGraph(
   nodes: WorkflowNode[],
   edges: WorkflowEdge[],
-  meta: WorkflowMeta
+  meta: WorkflowMeta,
+  catalog: NodeCatalog
 ): ValidationError[] {
   const errors: ValidationError[] = [];
 
-  // Must have a name
   if (!meta.name.trim()) {
     errors.push({ message: "Workflow name is required" });
   }
 
-  // Must have at least one agent node
-  const agentNodes = nodes.filter((n) => n.type === "agent");
-  if (agentNodes.length === 0) {
-    errors.push({ message: "Add at least one agent to the workflow" });
+  // Node ids are node keys, so step errors map straight onto nodes.
+  const steps = graphToSteps(nodes, edges);
+  for (const error of validateSteps(steps, meta.orchestration_mode, catalog)) {
+    errors.push({ nodeId: error.nodeKey, message: error.message });
   }
 
-  // Each agent must have a step_name
-  for (const node of agentNodes) {
-    const data = node.data as AgentNodeData;
-    if (!data.step_name?.trim()) {
-      errors.push({
-        nodeId: node.id,
-        message: `Agent "${data.agent_name}" needs a step name`,
-      });
-    }
-  }
-
-  // Check for duplicate output keys
-  const outputKeys = new Map<string, string>();
-  for (const node of agentNodes) {
-    const data = node.data as AgentNodeData;
-    const key = data.output_key || "output";
-    if (outputKeys.has(key)) {
-      errors.push({
-        nodeId: node.id,
-        message: `Duplicate output key "${key}" — also used by "${outputKeys.get(key)}"`,
-      });
-    } else {
-      outputKeys.set(key, data.agent_name);
-    }
-  }
-
-  // Validate conditional router nodes
-  const conditionNodes = nodes.filter((n) => n.type === "conditional_router");
-  for (const node of conditionNodes) {
-    const data = node.data as ConditionalRouterNodeData;
-    if (!data.step_name?.trim()) {
-      errors.push({
-        nodeId: node.id,
-        message: "Conditional router needs a step name",
-      });
-    }
-    if (!data.condition_field?.trim()) {
-      errors.push({
-        nodeId: node.id,
-        message: `Condition "${data.step_name}" needs a condition field`,
-      });
-    }
-    // Check it has outgoing edges
-    const outgoing = edges.filter((e) => e.source === node.id);
-    if (outgoing.length === 0) {
-      errors.push({
-        nodeId: node.id,
-        message: `Condition "${data.step_name}" needs at least one outgoing branch`,
-      });
-    }
-    // Include in duplicate output key check
-    const key = data.output_key || "output";
-    if (outputKeys.has(key)) {
-      errors.push({
-        nodeId: node.id,
-        message: `Duplicate output key "${key}" — also used by "${outputKeys.get(key)}"`,
-      });
-    } else {
-      outputKeys.set(key, data.step_name);
-    }
-  }
-
-  // Check for disconnected nodes (no incoming edge, exclude finish node)
-  const allStepNodes = [...agentNodes, ...conditionNodes];
+  // Check for disconnected nodes (no incoming edge)
   const targetsWithEdges = new Set(edges.map((e) => e.target));
-  for (const node of allStepNodes.filter((n) => n.id !== FINISH_NODE_ID)) {
+  for (const node of nodes.filter(isStepNode)) {
     if (!targetsWithEdges.has(node.id)) {
-      const name = node.type === "conditional_router"
-        ? (node.data as ConditionalRouterNodeData).step_name
-        : (node.data as AgentNodeData).agent_name;
+      const name =
+        node.data.step_name || node.data.agent_name || node.data.type_label;
       errors.push({
         nodeId: node.id,
-        message: `"${name}" is not connected — draw an edge to it`,
+        message: `"${name ?? "Step"}" is not connected — draw an edge to it`,
       });
     }
   }
