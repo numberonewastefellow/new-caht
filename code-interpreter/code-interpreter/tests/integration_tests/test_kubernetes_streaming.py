@@ -299,10 +299,56 @@ def test_streaming_suppresses_chunks_past_limit(
 
 
 def test_streaming_forwards_stdin(executor: KubernetesExecutor) -> None:
+    """stdin is staged as a workspace file and redirected (so it reaches EOF), never
+    streamed over the exec websocket, which can't signal EOF."""
     exec_resp = FakeExecResp(stdout_chunks=["echoed\n"])
-    _run_streaming(executor, exec_resp, stdin="input data")
+    tar_mock = _make_tar_mock()
+    mocks: list[Any] = [tar_mock, exec_resp, _make_snapshot_mock(None)]
+    with patch("app.services.executor_kubernetes.stream.stream") as mock_stream:
+        mock_stream.side_effect = mocks
+        list(
+            executor.execute_python_streaming(
+                code="import sys; print(sys.stdin.read())",
+                stdin="input data",
+                timeout_ms=5000,
+                max_output_bytes=65536,
+            )
+        )
 
-    assert exec_resp.stdin_writes == ["input data"]
+    # Nothing is written to the python process's stdin channel.
+    assert exec_resp.stdin_writes == []
+
+    # The uploaded tar carries the stdin file.
+    uploaded = tar_mock.write_stdin.call_args_list[0].args[0]
+    with tarfile.open(fileobj=io.BytesIO(uploaded), mode="r") as tar:
+        member = tar.extractfile(".ci_stdin")
+        assert member is not None
+        assert member.read() == b"input data"
+
+    # The python exec is opened WITHOUT a stdin channel and redirects from the file.
+    exec_call = mock_stream.call_args_list[1]
+    assert exec_call.kwargs["stdin"] is False
+    script = exec_call.kwargs["command"][-1]
+    assert "exec 0</workspace/.ci_stdin" in script
+    assert "rm -f /workspace/.ci_stdin" in script
+
+
+def test_streaming_without_stdin_uses_dev_null(executor: KubernetesExecutor) -> None:
+    exec_resp = FakeExecResp(stdout_chunks=["hi\n"])
+    with patch("app.services.executor_kubernetes.stream.stream") as mock_stream:
+        mock_stream.side_effect = [_make_tar_mock(), exec_resp, _make_snapshot_mock(None)]
+        list(
+            executor.execute_python_streaming(
+                code="print('hi')", stdin=None, timeout_ms=5000, max_output_bytes=65536
+            )
+        )
+    exec_call = mock_stream.call_args_list[1]
+    assert exec_call.kwargs["stdin"] is False
+    assert exec_call.kwargs["command"] == [
+        "sh",
+        "-c",
+        "exec python /workspace/__main__.py </dev/null",
+    ]
 
 
 def test_streaming_includes_workspace_files(

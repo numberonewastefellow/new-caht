@@ -1,17 +1,26 @@
 from __future__ import annotations
 
+import os
 from typing import Any, Final
 
 import httpx
 import pytest
 
-BASE_URL: Final[str] = "http://localhost:8000"
+BASE_URL: Final[str] = os.environ.get("CODE_INTERPRETER_TEST_BASE_URL") or "http://localhost:8000"
+
+
+def _headers() -> dict[str, str]:
+    headers = {"X-OM-Tenant": "e2e"}
+    token = os.environ.get("CODE_INTERPRETER_API_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
 
 
 def test_execute_endpoint_basic_flow() -> None:
     timeout = httpx.Timeout(5.0, connect=5.0)
 
-    with httpx.Client(base_url=BASE_URL, timeout=timeout) as client:
+    with httpx.Client(base_url=BASE_URL, timeout=timeout, headers=_headers()) as client:
         try:
             health_response = client.get("/health")
         except httpx.TransportError as exc:  # pragma: no cover - network failure path
@@ -51,7 +60,7 @@ def test_execute_endpoint_basic_flow() -> None:
 def test_execute_edits_passed_file() -> None:
     timeout = httpx.Timeout(5.0, connect=5.0)
 
-    with httpx.Client(base_url=BASE_URL, timeout=timeout) as client:
+    with httpx.Client(base_url=BASE_URL, timeout=timeout, headers=_headers()) as client:
         # First check health
         try:
             health_response = client.get("/health")
@@ -145,7 +154,7 @@ print("File edited successfully")
 def test_matplotlib_sine_wave_plot() -> None:
     timeout = httpx.Timeout(10.0, connect=5.0)
 
-    with httpx.Client(base_url=BASE_URL, timeout=timeout) as client:
+    with httpx.Client(base_url=BASE_URL, timeout=timeout, headers=_headers()) as client:
         # First check health
         try:
             health_response = client.get("/health")
@@ -235,7 +244,7 @@ print("Plot saved successfully")
 def test_create_multiple_files() -> None:
     timeout = httpx.Timeout(5.0, connect=5.0)
 
-    with httpx.Client(base_url=BASE_URL, timeout=timeout) as client:
+    with httpx.Client(base_url=BASE_URL, timeout=timeout, headers=_headers()) as client:
         # First check health
         try:
             health_response = client.get("/health")

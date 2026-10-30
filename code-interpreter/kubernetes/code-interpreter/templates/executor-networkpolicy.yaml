@@ -1,0 +1,25 @@
+{{- if .Values.executorNetworkPolicy.enabled }}
+# Deny ALL ingress and egress for the ephemeral executor pods that run user code.
+# They are created by the code-interpreter service (not by this chart) with the
+# labels below, in the executor namespace. `kubectl exec`-style traffic (how the
+# service stages files and runs code) goes through the kubelet, not the pod network,
+# so it is unaffected. Requires a CNI that enforces NetworkPolicy (Calico, Cilium, ...).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "code-interpreter.fullname" . }}-executor-deny-all
+  namespace: {{ include "code-interpreter.kubernetesNamespace" . }}
+  labels:
+    {{- include "code-interpreter.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: code-interpreter
+      component: executor
+  policyTypes:
+    - Ingress
+    - Egress
+  # No ingress/egress rules: everything is denied (including DNS).
+  ingress: []
+  egress: []
+{{- end }}

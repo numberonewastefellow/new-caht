@@ -1,0 +1,2580 @@
+{
+ "scenario": "15_legal_contract_review__llm_decision",
+ "description": "Template 15_legal_contract_review.json in llm_decision mode; the fake orchestrator calls every step's agent once in step_order, then answers.",
+ "covers": [
+  "template",
+  "llm_decision"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Legal Contract Review & Risk Advisor",
+    "mode": "llm_decision",
+    "max_steps": 15,
+    "max_calls_per_agent": 4,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Contract Intake Specialist",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "contract_intake",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Clause Analyzer",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "clause_analysis",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Regulatory Compliance Checker",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "compliance_review",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Risk Assessor",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "risk_assessment",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Negotiation Strategist",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "negotiation_strategy",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Executive Review Summary",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "executive_summary",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Contract Intake Specialist."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Contract Intake Specialist",
+     "agent_name": "WF Contract Intake Specialist",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Contract Intake Specialist",
+     "output_key": "contract_intake"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Contract Intake Specialist",
+     "agent_name": "WF Contract Intake Specialist",
+     "questions": "Which details are missing for contract_intake? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Which details are missing for contract_intake? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 5,
+     "content": "Which details are missing for contract_intake? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for contract_intake? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Contract Intake Specialist",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "contract_intake",
+     "agent": "WF Contract Intake Specialist",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_contract_intake_specialist",
+      "delegate_to_wf_clause_analyzer",
+      "delegate_to_wf_regulatory_compliance_checker",
+      "delegate_to_wf_contract_risk_assessor",
+      "delegate_to_wf_negotiation_strategist",
+      "delegate_to_wf_executive_review_summary"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3719 sha1=dfa85d9b5ba7>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ]
+      ],
+      "cycle_count": 1,
+      "agent_call_counts": {
+       "delegate_to_wf_contract_intake_specialist": 1
+      },
+      "turn_index": 3,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for contract_intake? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Legal Contract Review & Risk Advisor",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "llm_decision",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Contract Intake Specialist.",
+      "reason": "Next I will delegate to Contract Intake Specialist.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Contract Intake Specialist",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for contract_intake? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Contract Intake Specialist.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Contract Intake Specialist."
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Legal Contract Review & Risk Advisor",
+    "mode": "llm_decision",
+    "max_steps": 15,
+    "max_calls_per_agent": 4,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Contract Intake Specialist",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "contract_intake",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Clause Analyzer",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "clause_analysis",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Regulatory Compliance Checker",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "compliance_review",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Risk Assessor",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "risk_assessment",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Negotiation Strategist",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "negotiation_strategy",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Executive Review Summary",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "executive_summary",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Contract Intake Specialist",
+     "agent_name": "WF Contract Intake Specialist",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Contract Intake Specialist",
+     "output_key": "contract_intake"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Clause Analyzer",
+     "agent_name": "WF Clause Analyzer",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "Thinking about Clause Analyzer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "clause_analysis result for: Step '",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "Clause Analyzer': work on: Prepare",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "clause_analysis result for: Step 'Clause Analyzer': work on: Prepare",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Clause Analyzer",
+     "output_key": "clause_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Regulatory Compliance Checker."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "step_name": "Regulatory Compliance Checker",
+     "agent_name": "WF Regulatory Compliance Checker",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "Thinking about Regulatory Compliance Checker"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "compliance_review result for: Step ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "'Regulatory Compliance Checker': wo",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "compliance_review result for: Step 'Regulatory Compliance Checker': wo",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Regulatory Compliance Checker",
+     "output_key": "compliance_review"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      9,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "step_name": "Risk Assessor",
+     "agent_name": "WF Contract Risk Assessor",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "Thinking about Risk Assessor"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "risk_assessment result for: Step '",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "Risk Assessor': work on: Prepare a",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "risk_assessment result for: Step 'Risk Assessor': work on: Prepare a",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Contract Risk Assessor",
+     "output_key": "risk_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Negotiation Strategist."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "step_name": "Negotiation Strategist",
+     "agent_name": "WF Negotiation Strategist",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "Thinking about Negotiation Strategist"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "negotiation_strategy result for: Ste",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "p 'Negotiation Strategist': work on: ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "negotiation_strategy result for: Step 'Negotiation Strategist': work on: ",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Negotiation Strategist",
+     "output_key": "negotiation_strategy"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "step_name": "Executive Review Summary",
+     "agent_name": "WF Executive Review Summary",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "Thinking about Executive Review Summary"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "executive_summary result for: Step ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "'Executive Review Summary': work on",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "executive_summary result for: Step 'Executive Review Summary': work on",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Executive Review Summary",
+     "output_key": "executive_summary"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      16,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      17,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "content": "executive_summary result for: Step 'Executive Review Summary': work on"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      17,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      18,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      18,
+      0,
+      null
+     ],
+     "content": "Final synthesis: all specialists were consulted."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      18,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      20,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 17,
+     "content": "executive_summary result for: Step 'Executive Review Summary': work on",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 18,
+     "content": "Final synthesis: all specialists were consulted.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Final synthesis: all specialists were consulted.",
+   "agent_calls": [
+    {
+     "step_name": "Contract Intake Specialist",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "contract_intake",
+     "agent": "WF Contract Intake Specialist",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "TASK:\nStep 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for contract_intake? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Clause Analyzer",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "clause_analysis",
+     "agent": "WF Clause Analyzer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Regulatory Compliance Checker",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "compliance_review",
+     "agent": "WF Regulatory Compliance Checker",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "task": "Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Risk Assessor",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "risk_assessment",
+     "agent": "WF Contract Risk Assessor",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "task": "Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Negotiation Strategist",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "negotiation_strategy",
+     "agent": "WF Negotiation Strategist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "task": "Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Executive Review Summary",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "executive_summary",
+     "agent": "WF Executive Review Summary",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "task": "Step 'Executive Review Summary': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_contract_intake_specialist",
+      "delegate_to_wf_clause_analyzer",
+      "delegate_to_wf_regulatory_compliance_checker",
+      "delegate_to_wf_contract_risk_assessor",
+      "delegate_to_wf_negotiation_strategist",
+      "delegate_to_wf_executive_review_summary"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3719 sha1=dfa85d9b5ba7>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_contract_intake_specialist",
+      "delegate_to_wf_clause_analyzer",
+      "delegate_to_wf_regulatory_compliance_checker",
+      "delegate_to_wf_contract_risk_assessor",
+      "delegate_to_wf_negotiation_strategist",
+      "delegate_to_wf_executive_review_summary"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3719 sha1=dfa85d9b5ba7>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_contract_intake_specialist",
+      "delegate_to_wf_clause_analyzer",
+      "delegate_to_wf_regulatory_compliance_checker",
+      "delegate_to_wf_contract_risk_assessor",
+      "delegate_to_wf_negotiation_strategist",
+      "delegate_to_wf_executive_review_summary"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3719 sha1=dfa85d9b5ba7>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_contract_intake_specialist",
+      "delegate_to_wf_clause_analyzer",
+      "delegate_to_wf_regulatory_compliance_checker",
+      "delegate_to_wf_contract_risk_assessor",
+      "delegate_to_wf_negotiation_strategist",
+      "delegate_to_wf_executive_review_summary"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3719 sha1=dfa85d9b5ba7>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_contract_intake_specialist",
+      "delegate_to_wf_clause_analyzer",
+      "delegate_to_wf_regulatory_compliance_checker",
+      "delegate_to_wf_contract_risk_assessor",
+      "delegate_to_wf_negotiation_strategist",
+      "delegate_to_wf_executive_review_summary"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3719 sha1=dfa85d9b5ba7>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_negotiation_strategist\", \"arguments\": {\"task\": \"Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      18,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_contract_intake_specialist",
+      "delegate_to_wf_clause_analyzer",
+      "delegate_to_wf_regulatory_compliance_checker",
+      "delegate_to_wf_contract_risk_assessor",
+      "delegate_to_wf_negotiation_strategist",
+      "delegate_to_wf_executive_review_summary"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3719 sha1=dfa85d9b5ba7>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_negotiation_strategist\", \"arguments\": {\"task\": \"Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_executive_review_summary\", \"arguments\": {\"task\": \"Step 'Executive Review Summary': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "contract_intake": "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':",
+       "clause_analysis": "clause_analysis result for: Step 'Clause Analyzer': work on: Prepare"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Clause Analyzer\", \"agent_output\": \"clause_analysis result for: Step 'Clause Analyzer': work on: Prepare\"}"
+       ]
+      ],
+      "cycle_count": 2,
+      "agent_call_counts": {
+       "delegate_to_wf_contract_intake_specialist": 1,
+       "delegate_to_wf_clause_analyzer": 1
+      },
+      "turn_index": 6,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "contract_intake": "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':",
+       "clause_analysis": "clause_analysis result for: Step 'Clause Analyzer': work on: Prepare",
+       "compliance_review": "compliance_review result for: Step 'Regulatory Compliance Checker': wo"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Clause Analyzer\", \"agent_output\": \"clause_analysis result for: Step 'Clause Analyzer': work on: Prepare\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Regulatory Compliance Checker\", \"agent_output\": \"compliance_review result for: Step 'Regulatory Compliance Checker': wo\"}"
+       ]
+      ],
+      "cycle_count": 3,
+      "agent_call_counts": {
+       "delegate_to_wf_contract_intake_specialist": 1,
+       "delegate_to_wf_clause_analyzer": 1,
+       "delegate_to_wf_regulatory_compliance_checker": 1
+      },
+      "turn_index": 9,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "contract_intake": "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':",
+       "clause_analysis": "clause_analysis result for: Step 'Clause Analyzer': work on: Prepare",
+       "compliance_review": "compliance_review result for: Step 'Regulatory Compliance Checker': wo",
+       "risk_assessment": "risk_assessment result for: Step 'Risk Assessor': work on: Prepare a"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Clause Analyzer\", \"agent_output\": \"clause_analysis result for: Step 'Clause Analyzer': work on: Prepare\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Regulatory Compliance Checker\", \"agent_output\": \"compliance_review result for: Step 'Regulatory Compliance Checker': wo\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Contract Risk Assessor\", \"agent_output\": \"risk_assessment result for: Step 'Risk Assessor': work on: Prepare a\"}"
+       ]
+      ],
+      "cycle_count": 4,
+      "agent_call_counts": {
+       "delegate_to_wf_contract_intake_specialist": 1,
+       "delegate_to_wf_clause_analyzer": 1,
+       "delegate_to_wf_regulatory_compliance_checker": 1,
+       "delegate_to_wf_contract_risk_assessor": 1
+      },
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "contract_intake": "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':",
+       "clause_analysis": "clause_analysis result for: Step 'Clause Analyzer': work on: Prepare",
+       "compliance_review": "compliance_review result for: Step 'Regulatory Compliance Checker': wo",
+       "risk_assessment": "risk_assessment result for: Step 'Risk Assessor': work on: Prepare a",
+       "negotiation_strategy": "negotiation_strategy result for: Step 'Negotiation Strategist': work on: "
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Clause Analyzer\", \"agent_output\": \"clause_analysis result for: Step 'Clause Analyzer': work on: Prepare\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Regulatory Compliance Checker\", \"agent_output\": \"compliance_review result for: Step 'Regulatory Compliance Checker': wo\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Contract Risk Assessor\", \"agent_output\": \"risk_assessment result for: Step 'Risk Assessor': work on: Prepare a\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_negotiation_strategist\", \"arguments\": {\"task\": \"Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Negotiation Strategist\", \"agent_output\": \"negotiation_strategy result for: Step 'Negotiation Strategist': work on: \"}"
+       ]
+      ],
+      "cycle_count": 5,
+      "agent_call_counts": {
+       "delegate_to_wf_contract_intake_specialist": 1,
+       "delegate_to_wf_clause_analyzer": 1,
+       "delegate_to_wf_regulatory_compliance_checker": 1,
+       "delegate_to_wf_contract_risk_assessor": 1,
+       "delegate_to_wf_negotiation_strategist": 1
+      },
+      "turn_index": 14,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "contract_intake": "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':",
+       "clause_analysis": "clause_analysis result for: Step 'Clause Analyzer': work on: Prepare",
+       "compliance_review": "compliance_review result for: Step 'Regulatory Compliance Checker': wo",
+       "risk_assessment": "risk_assessment result for: Step 'Risk Assessor': work on: Prepare a",
+       "negotiation_strategy": "negotiation_strategy result for: Step 'Negotiation Strategist': work on: ",
+       "executive_summary": "executive_summary result for: Step 'Executive Review Summary': work on"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_contract_intake_specialist\", \"arguments\": {\"task\": \"TASK:\\nStep...<len=683 sha1=d4f42afcd322>"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_clause_analyzer\", \"arguments\": {\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Clause Analyzer\", \"agent_output\": \"clause_analysis result for: Step 'Clause Analyzer': work on: Prepare\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_regulatory_compliance_checker\", \"arguments\": {\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Regulatory Compliance Checker\", \"agent_output\": \"compliance_review result for: Step 'Regulatory Compliance Checker': wo\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_contract_risk_assessor\", \"arguments\": {\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Contract Risk Assessor\", \"agent_output\": \"risk_assessment result for: Step 'Risk Assessor': work on: Prepare a\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_negotiation_strategist\", \"arguments\": {\"task\": \"Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Negotiation Strategist\", \"agent_output\": \"negotiation_strategy result for: Step 'Negotiation Strategist': work on: \"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_executive_review_summary\", \"arguments\": {\"task\": \"Step 'Executive Review Summary': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Executive Review Summary\", \"agent_output\": \"executive_summary result for: Step 'Executive Review Summary': work on\"}"
+       ]
+      ],
+      "cycle_count": 6,
+      "agent_call_counts": {
+       "delegate_to_wf_contract_intake_specialist": 1,
+       "delegate_to_wf_clause_analyzer": 1,
+       "delegate_to_wf_regulatory_compliance_checker": 1,
+       "delegate_to_wf_contract_risk_assessor": 1,
+       "delegate_to_wf_negotiation_strategist": 1,
+       "delegate_to_wf_executive_review_summary": 1
+      },
+      "turn_index": 16,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "contract_intake": "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':",
+    "clause_analysis": "clause_analysis result for: Step 'Clause Analyzer': work on: Prepare",
+    "compliance_review": "compliance_review result for: Step 'Regulatory Compliance Checker': wo",
+    "risk_assessment": "risk_assessment result for: Step 'Risk Assessor': work on: Prepare a",
+    "negotiation_strategy": "negotiation_strategy result for: Step 'Negotiation Strategist': work on: ",
+    "executive_summary": "executive_summary result for: Step 'Executive Review Summary': work on"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Legal Contract Review & Risk Advisor",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "llm_decision",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 221,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Contract Intake Specialist.",
+      "reason": "Next I will delegate to Contract Intake Specialist.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Contract Intake Specialist",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for contract_intake? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Contract Intake Specialist.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Agent: WF Contract Intake Specialist",
+      "status": "completed",
+      "input": "TASK:\nStep 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for contract_intake? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 0,
+      "duration_ms": "<ms>",
+      "tokens": 90,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_2_2",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Agent: WF Clause Analyzer",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "clause_analysis result for: Step 'Clause Analyzer': work on: Prepare",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_3_3",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Regulatory Compliance Checker.",
+      "reason": "Next I will delegate to Regulatory Compliance Checker.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Agent: WF Regulatory Compliance Checker",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "compliance_review result for: Step 'Regulatory Compliance Checker': wo",
+      "reason": "Next I will delegate to Regulatory Compliance Checker.",
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_4_4",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Agent: WF Contract Risk Assessor",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "risk_assessment result for: Step 'Risk Assessor': work on: Prepare a",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_5_5",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Negotiation Strategist.",
+      "reason": "Next I will delegate to Negotiation Strategist.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Agent: WF Negotiation Strategist",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "negotiation_strategy result for: Step 'Negotiation Strategist': work on: ",
+      "reason": "Next I will delegate to Negotiation Strategist.",
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 25,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_6_6",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Agent: WF Executive Review Summary",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Executive Review Summary': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "executive_summary result for: Step 'Executive Review Summary': work on",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "Final synthesis: all specialists were consulted.",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Contract Intake Specialist."
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "orch_2_2",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_2_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "orch_3_3",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_3_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": "Next I will delegate to Regulatory Compliance Checker."
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "orch_4_4",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_4_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "orch_5_5",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_5_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": "Next I will delegate to Negotiation Strategist."
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "orch_6_6",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_6_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 221,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Agent: WF Contract Intake Specialist",
+       "input_text": "TASK:\nStep 'Contract Intake Specialist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for contract_intake? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. ",
+       "output_text": "contract_intake result for: TASK:\nStep 'Contract Intake Specialist':",
+       "duration_ms": "<ms>",
+       "tokens_used": 90
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Agent: WF Clause Analyzer",
+       "input_text": "{\"task\": \"Step 'Clause Analyzer': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "clause_analysis result for: Step 'Clause Analyzer': work on: Prepare",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Agent: WF Regulatory Compliance Checker",
+       "input_text": "{\"task\": \"Step 'Regulatory Compliance Checker': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "compliance_review result for: Step 'Regulatory Compliance Checker': wo",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Agent: WF Contract Risk Assessor",
+       "input_text": "{\"task\": \"Step 'Risk Assessor': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "risk_assessment result for: Step 'Risk Assessor': work on: Prepare a",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Agent: WF Negotiation Strategist",
+       "input_text": "{\"task\": \"Step 'Negotiation Strategist': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "negotiation_strategy result for: Step 'Negotiation Strategist': work on: ",
+       "duration_ms": "<ms>",
+       "tokens_used": 25
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Agent: WF Executive Review Summary",
+       "input_text": "{\"task\": \"Step 'Executive Review Summary': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "executive_summary result for: Step 'Executive Review Summary': work on",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

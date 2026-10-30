@@ -1,7 +1,12 @@
 "use client";
 
 import useSWR from "swr";
-import { WorkflowSnapshot } from "@/lib/workflows/interfaces";
+import {
+  WorkflowSnapshot,
+  WorkflowVersionDetail,
+  WorkflowVersionSummary,
+} from "@/lib/workflows/interfaces";
+import { workflowVersionsUrl } from "@/lib/workflows/api";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 
 /**
@@ -44,4 +49,41 @@ export function useWorkflow(workflowId: number | null) {
     error,
     refresh: mutate,
   };
+}
+
+/**
+ * Saved versions of a workflow, newest first.
+ */
+export function useWorkflowVersions(workflowId: number | null) {
+  const { data, error, isLoading, mutate } = useSWR<WorkflowVersionSummary[]>(
+    workflowId ? workflowVersionsUrl(workflowId) : null,
+    errorHandlingFetcher,
+    { revalidateOnFocus: false }
+  );
+
+  return {
+    versions: data ?? [],
+    isLoading,
+    error,
+    refresh: mutate,
+  };
+}
+
+/**
+ * One saved version of a workflow, including its definition.
+ */
+export function useWorkflowVersion(
+  workflowId: number | null,
+  version: number | null
+) {
+  const { data, error, isLoading } = useSWR<WorkflowVersionDetail>(
+    workflowId && version
+      ? `${workflowVersionsUrl(workflowId)}/${version}`
+      : null,
+    errorHandlingFetcher,
+    // Versions are immutable.
+    { revalidateOnFocus: false, revalidateIfStale: false }
+  );
+
+  return { detail: data ?? null, isLoading, error };
 }

@@ -1,0 +1,535 @@
+{
+ "scenario": "fx_is_terminal",
+ "description": "Beta is_terminal: Gamma never runs; final summary is Beta's output.",
+ "covers": [
+  "is_terminal"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "FX terminal",
+    "mode": "sequential",
+    "max_steps": 10,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Alpha",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "alpha",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Beta",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "beta",
+      "flags": [
+       "is_terminal"
+      ]
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Gamma",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "gamma",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Alpha",
+     "agent_name": "FX Alpha",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "Thinking about Alpha"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "alpha result for: User reques",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "t: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "alpha result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Alpha",
+     "output_key": "alpha"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Beta",
+     "agent_name": "FX Beta",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Thinking about Beta"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "beta result for: User reques",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "t: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "beta result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Beta",
+     "output_key": "beta"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "beta result for: User request: Prepare a complete assessm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 2,
+     "content": "beta result for: User request: Prepare a complete assessm",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "beta result for: User request: Prepare a complete assessm",
+   "agent_calls": [
+    {
+     "step_name": "Alpha",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "alpha",
+     "agent": "FX Alpha",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Beta",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "beta",
+     "agent": "FX Beta",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'alpha':\nalpha result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "alpha": "alpha result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "alpha": "alpha result for: User request: Prepare a complete assessm",
+       "beta": "beta result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "alpha": "alpha result for: User request: Prepare a complete assessm",
+    "beta": "beta result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "FX terminal",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 56,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Alpha",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "alpha result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 22,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Beta",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'alpha':\nalpha result for: User request: Prepare a complete assessm",
+      "output": "beta result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 34,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "beta result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 56,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Alpha",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "output_text": "alpha result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 22
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Beta",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'alpha':\nalpha result for: User request: Prepare a complete assessm",
+       "output_text": "beta result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 34
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -28,8 +28,9 @@ from shutil import which
 from typing import Literal
 
 from app.app_configs import (
+    MAX_WORKSPACE_SNAPSHOT_BYTES,
     PYTHON_EXECUTOR_DOCKER_BIN,
-    PYTHON_EXECUTOR_DOCKER_IMAGE,
+    PYTHON_EXECUTOR_DOCKER_IMAGE_REF,
     PYTHON_EXECUTOR_DOCKER_RUN_ARGS,
     SESSION_CONTAINER_SLEEP_SEC,
     SESSION_IDLE_TIMEOUT_SEC,
@@ -37,12 +38,16 @@ from app.app_configs import (
     SESSION_MAX_LIFETIME_SEC,
 )
 from app.services.executor_base import (
-    EntryKind,
     ExecutionResult,
     StreamChunk,
     StreamEvent,
     StreamResult,
     WorkspaceEntry,
+)
+from app.services.sandbox_hardening import (
+    SANDBOX_USER,
+    hardened_docker_run_flags,
+    stream_workspace_snapshot,
 )
 
 logger = logging.getLogger(__name__)
@@ -64,6 +69,8 @@ class SessionState:
     kernel_proc: subprocess.Popen[bytes]
     created_at: float
     last_used_at: float
+    # Tenant that created the session; every later lookup must present the same one.
+    tenant_id: str
     staged_files: set[str] = field(default_factory=set)
     _lock: threading.Lock = field(default_factory=threading.Lock)
     # Monotonically increasing per-cell id, stamped on every request so the frame
@@ -87,7 +94,7 @@ class SessionManager:
         self._sessions: dict[str, SessionState] = {}
         self._lock = threading.Lock()
         self._docker_binary = self._resolve_docker_binary()
-        self._image = PYTHON_EXECUTOR_DOCKER_IMAGE
+        self._image = PYTHON_EXECUTOR_DOCKER_IMAGE_REF
         self._run_args = PYTHON_EXECUTOR_DOCKER_RUN_ARGS
         self._cleanup_thread: threading.Thread | None = None
         self._shutdown = threading.Event()
@@ -111,8 +118,10 @@ class SessionManager:
     def create_session(
         self,
         memory_limit_mb: int | None = None,
+        *,
+        tenant_id: str,
     ) -> str:
-        """Create a new persistent session with a running kernel.
+        """Create a new persistent session with a running kernel, bound to ``tenant_id``.
 
         Returns the ``session_id``.
         """
@@ -126,26 +135,14 @@ class SessionManager:
         container_name = f"ci-session-{session_id[:12]}"
         now = time.time()
 
-        # 1. Start a long-lived container (NO --rm)
+        # 1. Start a long-lived container (NO --rm) with the same hardened flag set as
+        #    the ephemeral executor (no network, read-only rootfs, capped tmpfs,
+        #    non-root, --cpus, ...).
         cmd: list[str] = [
             self._docker_binary,
             "run",
             "-d",
-            "--pull", "never",
-            "--network", "none",
-            "--name", container_name,
-            "--cgroupns", "host",
-            "--pids-limit", "64",
-            "--security-opt", "no-new-privileges",
-            "--cap-drop", "ALL",
-            "--cap-add", "CHOWN",
-            "--workdir", "/workspace",
-            "--tmpfs", "/tmp:rw,size=64m",  # noqa: S108
-            "--tmpfs", "/workspace:rw,uid=65532,gid=65532",
-            "--env", "PYTHONUNBUFFERED=1",
-            "--env", "PYTHONDONTWRITEBYTECODE=1",
-            "--env", "PYTHONIOENCODING=utf-8",
-            "--env", "MPLCONFIGDIR=/tmp/matplotlib",
+            *hardened_docker_run_flags(container_name),
         ]
 
         if memory_limit_mb is not None:
@@ -173,7 +170,7 @@ class SessionManager:
         tar_bytes = tar_buf.getvalue()
 
         tar_cmd = [
-            self._docker_binary, "exec", "-u", "65532:65532", "-i",
+            self._docker_binary, "exec", "-u", SANDBOX_USER, "-i",
             container_name, "tar", "-x", "-C", "/workspace",
         ]
         tar_proc = subprocess.run(tar_cmd, input=tar_bytes, capture_output=True)  # nosec B603
@@ -185,7 +182,7 @@ class SessionManager:
 
         # 3. Start the persistent kernel process
         kernel_cmd = [
-            self._docker_binary, "exec", "-u", "65532:65532", "-i",
+            self._docker_binary, "exec", "-u", SANDBOX_USER, "-i",
             container_name, "python", "/workspace/_kernel.py",
         ]
         kernel_proc = subprocess.Popen(  # nosec B603
@@ -202,6 +199,7 @@ class SessionManager:
             kernel_proc=kernel_proc,
             created_at=now,
             last_used_at=now,
+            tenant_id=tenant_id,
         )
 
         with self._lock:
@@ -506,7 +504,7 @@ class SessionManager:
                 tar.addfile(info, io.BytesIO(content))
 
         tar_cmd = [
-            self._docker_binary, "exec", "-u", "65532:65532", "-i",
+            self._docker_binary, "exec", "-u", SANDBOX_USER, "-i",
             state.container_name, "tar", "-x", "-C", "/workspace",
         ]
         result = subprocess.run(tar_cmd, input=tar_buf.getvalue(), capture_output=True)  # nosec
@@ -525,40 +523,15 @@ class SessionManager:
     # ------------------------------------------------------------------
 
     def _extract_workspace_snapshot(self, container_name: str) -> tuple[WorkspaceEntry, ...]:
-        """Extract files from the container workspace."""
-        try:
-            tar_cmd = [
-                self._docker_binary, "exec", container_name,
-                "tar", "-c",
-                "--exclude=__main__.py",
-                "--exclude=_kernel.py",
-                "-C", "/workspace", ".",
-            ]
-            tar_result = subprocess.run(tar_cmd, capture_output=True, timeout=10)
-            if tar_result.returncode != 0:
-                return tuple()
-
-            entries = []
-            with tarfile.open(fileobj=io.BytesIO(tar_result.stdout), mode="r") as tar:
-                for member in tar.getmembers():
-                    if member.name == ".":
-                        continue
-                    clean_path = member.name.lstrip("./")
-                    if member.isdir():
-                        entries.append(
-                            WorkspaceEntry(path=clean_path, kind=EntryKind.DIRECTORY, content=None)
-                        )
-                    elif member.isfile():
-                        file_obj = tar.extractfile(member)
-                        if file_obj:
-                            entries.append(
-                                WorkspaceEntry(
-                                    path=clean_path, kind=EntryKind.FILE, content=file_obj.read()
-                                )
-                            )
-            return tuple(entries)
-        except Exception:
-            return tuple()
+        """Extract files from the container workspace (bounded read; never raises)."""
+        tar_cmd = [
+            self._docker_binary, "exec", container_name,
+            "tar", "-c",
+            "--exclude=__main__.py",
+            "--exclude=_kernel.py",
+            "-C", "/workspace", ".",
+        ]
+        return stream_workspace_snapshot(tar_cmd, MAX_WORKSPACE_SNAPSHOT_BYTES)
 
     # ------------------------------------------------------------------
     # Kernel restart
@@ -579,7 +552,7 @@ class SessionManager:
 
         # Restart kernel
         kernel_cmd = [
-            self._docker_binary, "exec", "-u", "65532:65532", "-i",
+            self._docker_binary, "exec", "-u", SANDBOX_USER, "-i",
             state.container_name, "python", "/workspace/_kernel.py",
         ]
         state.kernel_proc = subprocess.Popen(  # nosec B603
@@ -638,9 +611,15 @@ class SessionManager:
     # Helpers
     # ------------------------------------------------------------------
 
-    def has_session(self, session_id: str) -> bool:
+    def has_session(self, session_id: str, tenant_id: str) -> bool:
+        """True if the session exists AND belongs to ``tenant_id``.
+
+        Another tenant's session is reported as missing, so routes answer 404 and
+        never confirm that the id exists.
+        """
         with self._lock:
-            return session_id in self._sessions
+            state = self._sessions.get(session_id)
+        return state is not None and state.tenant_id == tenant_id
 
     # ------------------------------------------------------------------
     # Background cleanup

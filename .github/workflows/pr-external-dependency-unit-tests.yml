@@ -44,6 +44,8 @@ env:
   # Code Interpreter
   # TODO: debug why this is failing and enable
   CODE_INTERPRETER_BASE_URL: http://localhost:8000
+  # Ephemeral CI-only value (not a secret); must match the .env written below.
+  CODE_INTERPRETER_API_TOKEN: ci-ephemeral-code-interpreter-token
 
   # OpenSearch
   OPENSEARCH_ADMIN_PASSWORD: "StrongPassword123!"
@@ -118,6 +120,7 @@ jobs:
           cat <<EOF > deployment/docker_compose/.env
           COMPOSE_PROFILES=s3-filestore
           CODE_INTERPRETER_BETA_ENABLED=true
+          CODE_INTERPRETER_API_TOKEN=ci-ephemeral-code-interpreter-token
           DISABLE_TELEMETRY=true
           EOF
 

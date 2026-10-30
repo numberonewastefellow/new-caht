@@ -19,6 +19,29 @@ import {
   mutedTextMarkdownComponents,
   collapsedMarkdownComponents,
 } from "@/app/app/message/messageComponents/timeline/renderers/sharedMarkdownComponents";
+// Timeline labels for steps that don't run an agent (they have no agent_name).
+const STEP_TYPE_LABELS: Record<string, string> = {
+  code: "Code",
+  parallel: "Parallel",
+  loop: "Loop",
+  loop_iteration: "Iteration",
+  conditional_router: "Condition",
+};
+
+/** Agent steps show their agent's name; other steps show "<Type>: <step name>". */
+export function workflowStepLabel(stepStart: WorkflowStepStart | undefined): string {
+  if (stepStart?.agent_name) {
+    return stepStart.agent_name;
+  }
+  const typeLabel = STEP_TYPE_LABELS[stepStart?.step_type ?? ""];
+  if (typeLabel && stepStart?.step_name) {
+    return stepStart.step_type === "loop_iteration"
+      ? stepStart.step_name
+      : `${typeLabel}: ${stepStart.step_name}`;
+  }
+  return stepStart?.step_name || "Agent";
+}
+
 export const WorkflowStepRenderer: MessageRenderer<
   WorkflowStepPacket,
   FullChatState
@@ -28,7 +51,7 @@ export const WorkflowStepRenderer: MessageRenderer<
     (p) => p.obj.type === PacketType.WORKFLOW_STEP_START
   );
   const stepStart = startPacket?.obj as WorkflowStepStart | undefined;
-  const agentName = stepStart?.agent_name || "Agent";
+  const agentName = workflowStepLabel(stepStart);
   const stepName = stepStart?.step_name || "";
 
   // Check completion. Only an explicit WorkflowStepEnd (or ERROR) means the step

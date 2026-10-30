@@ -1,0 +1,936 @@
+{
+ "scenario": "05_content_marketing",
+ "description": "Template 05_content_marketing.json forced into sequential mode.",
+ "covers": [
+  "template",
+  "sequential"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Content Marketing Pipeline",
+    "mode": "sequential",
+    "max_steps": 10,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Topic Researcher",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "research_brief",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Content Writer",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "blog_draft",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "SEO Optimizer",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "seo_optimized",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Social Media Adapter",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "social_posts",
+      "flags": [
+       "is_terminal"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Topic Researcher",
+     "agent_name": "WF Topic Researcher",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "Thinking about Topic Researcher"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Topic Researcher"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "research_brief result for: User r",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "equest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "research_brief result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Topic Researcher",
+     "output_key": "research_brief"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Content Writer",
+     "agent_name": "WF Content Writer",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Thinking about Content Writer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "blog_draft result for: User req",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "uest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "blog_draft result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Content Writer",
+     "output_key": "blog_draft"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "SEO Optimizer",
+     "agent_name": "WF SEO Optimizer",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about SEO Optimizer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "seo_optimized result for: User re",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "quest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "seo_optimized result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "SEO Optimizer",
+     "output_key": "seo_optimized"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Social Media Adapter",
+     "agent_name": "WF Social Media Adapter",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "Thinking about Social Media Adapter"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "social_posts result for: User re",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "quest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "social_posts result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Social Media Adapter",
+     "output_key": "social_posts"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "social_posts result for: User request: Prepare a complete assessm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 5,
+     "content": "social_posts result for: User request: Prepare a complete assessm",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "social_posts result for: User request: Prepare a complete assessm",
+   "agent_calls": [
+    {
+     "step_name": "Topic Researcher",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "research_brief",
+     "agent": "WF Topic Researcher",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Content Writer",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "blog_draft",
+     "agent": "WF Content Writer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'research_brief':\nresearch_brief result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "SEO Optimizer",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "seo_optimized",
+     "agent": "WF SEO Optimizer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'research_brief':\nresearch_brief result for: User request: Prepare a complete assessm\n\nOutput from 'blog_draft':\nblog_draft result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Social Media Adapter",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "social_posts",
+     "agent": "WF Social Media Adapter",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'research_brief':\nresearch_brief result for: User request: Prepare a complete assessm\n\nOutput from 'blog_draft':\nblog_draft result for: User request: Prepare a complete assessm\n\nOutput from 'seo_optimized':\nseo_optimized result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "research_brief": "research_brief result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "research_brief": "research_brief result for: User request: Prepare a complete assessm",
+       "blog_draft": "blog_draft result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "research_brief": "research_brief result for: User request: Prepare a complete assessm",
+       "blog_draft": "blog_draft result for: User request: Prepare a complete assessm",
+       "seo_optimized": "seo_optimized result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 3,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "research_brief": "research_brief result for: User request: Prepare a complete assessm",
+       "blog_draft": "blog_draft result for: User request: Prepare a complete assessm",
+       "seo_optimized": "seo_optimized result for: User request: Prepare a complete assessm",
+       "social_posts": "social_posts result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "research_brief": "research_brief result for: User request: Prepare a complete assessm",
+    "blog_draft": "blog_draft result for: User request: Prepare a complete assessm",
+    "seo_optimized": "seo_optimized result for: User request: Prepare a complete assessm",
+    "social_posts": "social_posts result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Content Marketing Pipeline",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 160,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Topic Researcher",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "research_brief result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 22,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Content Writer",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'research_brief':\nresearch_brief result for: User request: Prepare a complete assessm",
+      "output": "blog_draft result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 34,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "SEO Optimizer",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'research_brief':\nresearch_brief result for: User request: Prepare a complete assessm\n\nOutput from 'blog_draft':\nblog_draft result for: User request: Prepare a complete assessm",
+      "output": "seo_optimized result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 46,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Social Media Adapter",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'research_brief':\nresearch_brief result for: User request: Prepare a complete assessm\n\nOutput from 'blog_draft':\nblog_draft result for: User request: Prepare a complete assessm\n\nOutput from 'seo_optimized':\nseo_optimized result for: User request: Prepare a complete assessm",
+      "output": "social_posts result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 58,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "social_posts result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 160,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Topic Researcher",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "output_text": "research_brief result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 22
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Content Writer",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'research_brief':\nresearch_brief result for: User request: Prepare a complete assessm",
+       "output_text": "blog_draft result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 34
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "SEO Optimizer",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'research_brief':\nresearch_brief result for: User request: Prepare a complete assessm\n\nOutput from 'blog_draft':\nblog_draft result for: User request: Prepare a complete assessm",
+       "output_text": "seo_optimized result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 46
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Social Media Adapter",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'research_brief':\nresearch_brief result for: User request: Prepare a complete assessm\n\nOutput from 'blog_draft':\nblog_draft result for: User request: Prepare a complete assessm\n\nOutput from 'seo_optimized':\nseo_optimized result for: User request: Prepare a complete assessm",
+       "output_text": "social_posts result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 58
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

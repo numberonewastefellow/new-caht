@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import * as GeneralLayouts from "@/layouts/general-layouts";
@@ -16,22 +16,67 @@ import SimpleTooltip from "@/refresh-components/SimpleTooltip";
 import { Formik, Form, FieldArray, useFormikContext } from "formik";
 import * as Yup from "yup";
 import { useAgents } from "@/hooks/useAgents";
+import { selectableStepAgents } from "@/lib/workflows/stepAgents";
 import { useWorkflows } from "@/hooks/useWorkflows";
 import { useLLMProviders } from "@/lib/hooks/useLLMProviders";
 import { parseLlmDescriptor, structureValue } from "@/lib/llm/utils";
 import LLMSelector from "@/components/llm/LLMSelector";
-import { createWorkflow, updateWorkflow, deleteWorkflow } from "@/lib/workflows/api";
 import {
-  CONDITION_OPERATORS,
+  deleteWorkflow,
+  describeSaveError,
+  saveWorkflow,
+} from "@/lib/workflows/api";
+import type {
+  NodeUpgradeResult,
   WorkflowSnapshot,
-  WorkflowStepCreate,
 } from "@/lib/workflows/interfaces";
+import {
+  type EditorStep,
+  type WorkflowMeta,
+  DEFAULT_WORKFLOW_META,
+  containerInfo,
+  createEditorStep,
+  newNodeKey,
+  nextOutputKey,
+} from "@/lib/workflows/editorModel";
+import {
+  type NodeCatalog,
+  AGENT_NODE_TYPE,
+  ROUTER_NODE_TYPE,
+  editorKindFor,
+  isAllowedInMode,
+  labelFor,
+  paletteTypes,
+  resolveVersion,
+} from "@/lib/workflows/nodeRegistry";
+import {
+  buildWorkflowCreate,
+  buildWorkflowUpdate,
+  snapshotToEditorSteps,
+  snapshotToMeta,
+  stepOrderToNodeKey,
+} from "@/lib/workflows/serializer";
+import {
+  stepDisplayName,
+  stepsNotAllowedInMode,
+  validateSteps,
+} from "@/lib/workflows/validation";
+import { useNodeTypes } from "@/lib/workflows/useNodeTypes";
+import { SchemaConfigForm } from "@/components/workflows/SchemaConfigForm";
+import {
+  NodeUpgradeDialog,
+  type NodeUpgradeTarget,
+} from "@/components/workflows/NodeUpgradeDialog";
+import { WorkflowVersionsDialog } from "@/components/workflows/WorkflowVersionsDialog";
+import { RouterStepFields } from "@/components/workflows/wizard/RouterStepFields";
 import { toast } from "@/hooks/useToast";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
 import {
   SvgArrowLeft,
   SvgArrowRight,
+  SvgArrowUpCircle,
+  SvgHistory,
   SvgInfoSmall,
   SvgSettings,
   SvgSliders,
@@ -125,34 +170,82 @@ function StepIndicator({ currentStep, onStepClick }: { currentStep: number; onSt
 
 // ─── Workflow Step Row ───────────────────────────────────────────────────
 
+/** Formik values of the Wizard: workflow settings plus editor steps. */
+type WizardValues = WorkflowMeta & { steps: EditorStep[] };
+
+/** Step types offered for a step: the palette for the mode, plus its own type. */
+function stepTypeOptions(
+  catalog: NodeCatalog,
+  mode: WizardValues["orchestration_mode"],
+  currentType: string
+): { value: string; label: string }[] {
+  const options = paletteTypes(catalog, mode).map((t) => ({
+    value: t.type,
+    label: labelFor(catalog, t.type),
+  }));
+  if (!options.some((o) => o.value === currentType)) {
+    options.push({ value: currentType, label: labelFor(catalog, currentType) });
+  }
+  return options;
+}
+
 interface WorkflowStepRowProps {
   index: number;
   agents: { id: number; name: string; description: string }[];
+  catalog: NodeCatalog;
   onRemove: () => void;
   canRemove: boolean;
   canMoveUp: boolean;
   canMoveDown: boolean;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onUpgrade: () => void;
 }
 
 function WorkflowStepRow({
   index,
   agents,
+  catalog,
   onRemove,
   canRemove,
   canMoveUp,
   canMoveDown,
   onMoveUp,
   onMoveDown,
+  onUpgrade,
 }: WorkflowStepRowProps) {
-  const { values, setFieldValue, errors, touched } = useFormikContext<any>();
-  const stepType = values.steps?.[index]?.step_type ?? "agent";
-  const currentAgentId = values.steps?.[index]?.agent_id ?? 0;
+  const { values, setFieldValue, errors, touched } =
+    useFormikContext<WizardValues>();
+  const step = values.steps[index]!;
+  const kind = editorKindFor(catalog, step.step_type);
+  const isConditionalRouter = kind === "router";
+  const typeInfo = resolveVersion(catalog, step.step_type, step.type_version);
+  // Only node types that can pause may ask the user for input.
+  const canPause = typeInfo?.can_pause ?? kind === "agent";
+  const modeConflict = !isAllowedInMode(
+    catalog,
+    step.step_type,
+    step.type_version,
+    values.orchestration_mode
+  );
   const stepErrors = (errors.steps as any)?.[index];
   const stepTouched = (touched.steps as any)?.[index];
 
-  const isConditionalRouter = stepType === "conditional_router";
+  const changeType = (type: string) =>
+    setFieldValue(
+      `steps.${index}`,
+      createEditorStep(type, catalog, {
+        node_key: step.node_key,
+        step_name: step.step_name,
+        step_description: step.step_description,
+        output_key: step.output_key,
+        parent_key: step.parent_key,
+        branch_index: step.branch_index,
+        is_terminal: step.is_terminal,
+        promote_output: step.promote_output,
+      })
+    );
+  const container = containerInfo(step, values.steps);
 
   return (
     <Card padding={1}>
@@ -179,7 +272,7 @@ function WorkflowStepRow({
         </div>
 
         <div className="flex-1 space-y-4">
-          {/* Row 0: Step Type selector */}
+          {/* Row 0: Step name + type */}
           <div className="grid grid-cols-2 gap-4">
             <InputLayouts.Vertical
               name={`steps.${index}.step_name`}
@@ -200,38 +293,61 @@ function WorkflowStepRow({
               <div className="flex items-center gap-1">
                 <Text mainContentEmphasis text04>Step Type</Text>
                 <InfoTip>
-                  Agent steps run an AI agent. Conditional Router steps evaluate a condition and branch the workflow.
+                  Agent steps run an AI agent. Condition steps evaluate a condition and skip the steps of the losing branch. Other types come from the node type catalog.
                 </InfoTip>
               </div>
               <select
-                value={stepType}
+                value={step.step_type}
+                disabled={kind === "unsupported"}
                 className="w-full h-10 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm"
-                onChange={(e) => {
-                  setFieldValue(`steps.${index}.step_type`, e.target.value);
-                  if (e.target.value === "conditional_router") {
-                    setFieldValue(`steps.${index}.agent_id`, null);
-                    setFieldValue(`steps.${index}.condition`, {
-                      condition_field: "",
-                      operator: "contains",
-                      match_value: "",
-                      case_sensitive: false,
-                      true_steps: [],
-                      false_steps: [],
-                    });
-                  } else {
-                    setFieldValue(`steps.${index}.agent_id`, 0);
-                    setFieldValue(`steps.${index}.condition`, null);
-                  }
-                }}
+                onChange={(e) => changeType(e.target.value)}
               >
-                <option value="agent">Agent</option>
-                <option value="conditional_router">Conditional Router</option>
+                {stepTypeOptions(catalog, values.orchestration_mode, step.step_type).map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </select>
+              {step.upgrade_available && (
+                <button
+                  type="button"
+                  onClick={onUpgrade}
+                  className="self-start mt-1 inline-flex items-center gap-1 text-xs"
+                  style={{ color: "var(--virtualai-accent, var(--theme-primary-05))" }}
+                >
+                  <SvgArrowUpCircle className="w-3.5 h-3.5" style={{ stroke: "currentColor" }} />
+                  Upgrade available
+                </button>
+              )}
             </div>
           </div>
 
+          {(container.childCount > 0 || container.containerName) && (
+            <Text secondaryBody text03 className="text-xs">
+              {container.childCount > 0
+                ? `Contains ${container.childCount} step(s). `
+                : ""}
+              {container.containerName
+                ? `Inside "${container.containerName}"${
+                    container.branchIndex != null
+                      ? `, branch ${container.branchIndex + 1}`
+                      : ""
+                  }. `
+                : ""}
+              Container structure is kept when you save; edit it in a later version of the editor.
+            </Text>
+          )}
+
+          {modeConflict && (
+            <Text secondaryBody className="text-xs text-status-warning-05">
+              This step type can&apos;t be used in{" "}
+              {values.orchestration_mode === "llm_decision" ? "LLM Decision" : "Sequential"} mode.
+              Remove it or change the orchestration mode in step 3.
+            </Text>
+          )}
+
           {/* Agent-specific: agent selector */}
-          {!isConditionalRouter && (
+          {kind === "agent" && (
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-1">
                 <Text mainContentEmphasis text04>Agent</Text>
@@ -242,7 +358,7 @@ function WorkflowStepRow({
               </div>
               <select
                 name={`steps.${index}.agent_id`}
-                value={currentAgentId}
+                value={step.agent_id ?? ""}
                 className={cn(
                   "w-full h-10 px-3 rounded-8 border bg-background-tint-00 text-text-05 text-sm",
                   stepTouched?.agent_id && stepErrors?.agent_id
@@ -252,17 +368,12 @@ function WorkflowStepRow({
                 onChange={(e) => {
                   setFieldValue(
                     `steps.${index}.agent_id`,
-                    parseInt(e.target.value) || 0
+                    e.target.value === "" ? null : Number(e.target.value)
                   );
                 }}
-                onBlur={() => {
-                  const touchedArr = Array.isArray(touched.steps) ? touched.steps : [];
-                  const touchedSteps = [...touchedArr];
-                  touchedSteps[index] = { ...touchedSteps[index], agent_id: true };
-                }}
               >
-                <option value={0}>-- Select Agent --</option>
-                {agents.map((agent) => (
+                <option value="">-- Select Agent --</option>
+                {selectableStepAgents(agents).map((agent) => (
                   <option key={agent.id} value={agent.id}>
                     {agent.name}
                   </option>
@@ -276,73 +387,40 @@ function WorkflowStepRow({
             </div>
           )}
 
-          {/* Conditional Router config */}
+          {/* Conditional Router config (branches as node keys) */}
           {isConditionalRouter && (
-            <div className="space-y-3 p-3 rounded-8 border border-border bg-background-tint-01">
-              <Text secondaryBody text04 className="text-xs font-medium">Condition Configuration</Text>
+            <RouterStepFields
+              config={step.config}
+              laterSteps={values.steps.slice(index + 1).map((s, i) => ({
+                node_key: s.node_key,
+                label: `${index + i + 2}. ${stepDisplayName(s, index + i + 1)}`,
+              }))}
+              onChange={(config) => setFieldValue(`steps.${index}.config`, { ...config })}
+            />
+          )}
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col gap-0.5">
-                  <Text secondaryBody text04 className="text-xs">Condition Field</Text>
-                  <input
-                    type="text"
-                    className="w-full h-9 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm font-mono"
-                    value={values.steps[index]?.condition?.condition_field ?? ""}
-                    onChange={(e) =>
-                      setFieldValue(`steps.${index}.condition.condition_field`, e.target.value)
-                    }
-                    placeholder="$step_name.output"
-                  />
-                  <Text secondaryBody text03 className="text-xs">
-                    Reference a previous step output (e.g. $research.output) or $user_input
-                  </Text>
-                </div>
+          {/* Other catalog node types: form from their config schema */}
+          {kind === "schema" && typeInfo && (
+            <div className="space-y-2 p-3 rounded-8 border border-border bg-background-tint-01">
+              <Text secondaryBody text04 className="text-xs font-medium">
+                {typeInfo.label} Settings
+              </Text>
+              <SchemaConfigForm
+                schema={typeInfo.config_schema}
+                value={step.config}
+                onChange={(config) => setFieldValue(`steps.${index}.config`, config)}
+              />
+            </div>
+          )}
 
-                <div className="flex flex-col gap-0.5">
-                  <Text secondaryBody text04 className="text-xs">Operator</Text>
-                  <select
-                    className="w-full h-9 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm"
-                    value={values.steps[index]?.condition?.operator ?? "contains"}
-                    onChange={(e) =>
-                      setFieldValue(`steps.${index}.condition.operator`, e.target.value)
-                    }
-                  >
-                    {CONDITION_OPERATORS.map((op) => (
-                      <option key={op.value} value={op.value}>
-                        {op.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {!["is_empty", "is_not_empty"].includes(
-                values.steps[index]?.condition?.operator ?? ""
-              ) && (
-                <div className="flex flex-col gap-0.5">
-                  <Text secondaryBody text04 className="text-xs">Match Value</Text>
-                  <input
-                    type="text"
-                    className="w-full h-9 px-3 rounded-8 border border-border bg-background-tint-00 text-text-05 text-sm"
-                    value={values.steps[index]?.condition?.match_value ?? ""}
-                    onChange={(e) =>
-                      setFieldValue(`steps.${index}.condition.match_value`, e.target.value)
-                    }
-                    placeholder="Value to compare against"
-                  />
-                </div>
-              )}
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={values.steps[index]?.condition?.case_sensitive ?? false}
-                  onChange={(e) =>
-                    setFieldValue(`steps.${index}.condition.case_sensitive`, e.target.checked)
-                  }
-                />
-                <Text secondaryBody text04 className="text-xs">Case sensitive</Text>
-              </div>
+          {kind === "unsupported" && (
+            <div className="space-y-2 p-3 rounded-8 border border-border bg-background-tint-01">
+              <Text secondaryBody text03 className="text-xs">
+                This editor doesn&apos;t know the node type &quot;{step.step_type}&quot;. It is kept unchanged when you save.
+              </Text>
+              <pre className="text-xs text-text-04 whitespace-pre-wrap break-words">
+                {JSON.stringify(step.config ?? {}, null, 2)}
+              </pre>
             </div>
           )}
 
@@ -396,7 +474,7 @@ function WorkflowStepRow({
                 </InfoTip>
               </div>
             </div>
-            {!isConditionalRouter && (
+            {canPause && (
               <div className="flex items-center gap-2">
                 <SwitchField name={`steps.${index}.can_request_input`} />
                 <div className="flex items-center">
@@ -477,9 +555,14 @@ export default function WorkflowEditorPage({
   const { refresh: refreshWorkflows } = useWorkflows();
   const { agents } = useAgents();
   const { llmProviders } = useLLMProviders();
+  const { catalog, isReady: catalogReady } = useNodeTypes();
   const deleteModal = useCreateModal();
 
   const [currentStep, setCurrentStep] = useState(0);
+  const [showVersions, setShowVersions] = useState(false);
+  const [upgradeTarget, setUpgradeTarget] = useState<
+    (NodeUpgradeTarget & { index: number }) | null
+  >(null);
 
   const agentOptions = agents.map((a) => ({
     id: a.id,
@@ -520,43 +603,33 @@ export default function WorkflowEditorPage({
     []
   );
 
-  const initialValues = {
-    name: existingWorkflow?.name ?? "",
-    description: existingWorkflow?.description ?? "",
-    orchestration_mode: existingWorkflow?.orchestration_mode ?? "llm_decision",
-    orchestrator_prompt: existingWorkflow?.orchestrator_prompt ?? "",
-    orchestrator_llm_provider: existingWorkflow?.orchestrator_llm_provider ?? null,
-    orchestrator_llm_model: existingWorkflow?.orchestrator_llm_model ?? null,
-    max_steps: existingWorkflow?.max_steps ?? 10,
-    max_calls_per_agent: existingWorkflow?.max_calls_per_agent ?? 2,
-    timeout_seconds: existingWorkflow?.timeout_seconds ?? 1800,
-    is_public: existingWorkflow?.is_public ?? true,
-    steps: existingWorkflow?.steps?.map((s) => ({
-      step_type: s.step_type ?? "agent",
-      agent_id: s.agent_id,
-      step_order: s.step_order,
-      step_name: s.step_name,
-      step_description: s.step_description ?? "",
-      output_key: s.output_key ?? "output",
-      condition: s.condition ?? null,
-      is_terminal: s.is_terminal,
-      can_request_input: s.can_request_input ?? false,
-      promote_output: s.promote_output ?? false,
-    })) ?? [
-      {
-        step_type: "agent" as const,
-        agent_id: 0,
-        step_order: 0,
-        step_name: "",
-        step_description: "",
-        output_key: "output",
-        condition: null as Record<string, any> | null,
-        is_terminal: false,
-        can_request_input: false,
-        promote_output: false,
-      },
-    ],
-  };
+  // The shared serializer carries every step field (node keys, versions,
+  // configs, input mappings, overrides) and icon_name through a save.
+  const initialValues: WizardValues = useMemo(
+    () =>
+      existingWorkflow
+        ? {
+            ...snapshotToMeta(existingWorkflow),
+            steps: snapshotToEditorSteps(existingWorkflow),
+          }
+        : {
+            ...DEFAULT_WORKFLOW_META,
+            steps: [
+              createEditorStep(AGENT_NODE_TYPE, catalog, {
+                node_key: newNodeKey(),
+                output_key: "step_0",
+              }),
+            ],
+          },
+    [existingWorkflow, catalog]
+  );
+
+  /** A new step of `type`, with a fresh node key and output key. */
+  const newStep = (type: string, steps: EditorStep[]): EditorStep =>
+    createEditorStep(type, catalog, {
+      node_key: newNodeKey(steps.map((s) => s.node_key)),
+      output_key: nextOutputKey(type === ROUTER_NODE_TYPE ? "route" : "step", steps),
+    });
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Workflow name is required"),
@@ -569,11 +642,10 @@ export default function WorkflowEditorPage({
     steps: Yup.array()
       .of(
         Yup.object().shape({
-          step_type: Yup.string().oneOf(["agent", "conditional_router"]).required(),
-          agent_id: Yup.number().when("step_type", {
-            is: "agent",
-            then: (schema) => schema.min(1, "Please select an agent").required("Agent is required"),
-            otherwise: (schema) => schema.nullable(),
+          step_type: Yup.string().required(),
+          agent_id: Yup.number().nullable().when("step_type", {
+            is: AGENT_NODE_TYPE,
+            then: (schema) => schema.required("Agent is required").min(1, "Please select an agent"),
           }),
           step_name: Yup.string().required("Step name is required"),
           step_description: Yup.string().optional(),
@@ -589,79 +661,55 @@ export default function WorkflowEditorPage({
   });
 
   // Validate current step before allowing navigation forward
-  function validateCurrentStep(values: typeof initialValues, step: number): string | null {
+  function validateCurrentStep(values: WizardValues, step: number): string | null {
     if (step === 0) {
       if (!values.name.trim()) return "Please enter a workflow name before proceeding.";
     }
     if (step === 1) {
-      for (let i = 0; i < values.steps.length; i++) {
-        const s = values.steps[i];
-        if (!s) continue;
-        if (!s.step_name?.trim()) return `Step ${i + 1}: Please enter a step name.`;
-        if (s.step_type === "agent" && (!s.agent_id || s.agent_id === 0)) {
-          return `Step ${i + 1}: Please select an agent.`;
-        }
-        if (s.step_type === "conditional_router" && !s.condition?.condition_field) {
-          return `Step ${i + 1}: Please configure the condition field.`;
-        }
-      }
+      // Mode checks wait for submit: the mode is chosen in the next step.
+      const errors = validateSteps(values.steps, values.orchestration_mode, catalog, {
+        checkModes: false,
+      });
+      if (errors[0]) return errors[0].message;
     }
     return null;
   }
 
-  async function handleSubmit(values: typeof initialValues) {
-    try {
-      const steps: WorkflowStepCreate[] = values.steps.map((s, i) => ({
-        step_type: s.step_type || "agent",
-        agent_id: s.step_type === "conditional_router" ? null : s.agent_id,
-        step_order: i,
-        step_name: s.step_name,
-        step_description: s.step_description || null,
-        output_key: s.output_key || "output",
-        condition: s.step_type === "conditional_router" ? s.condition : null,
-        is_terminal: s.is_terminal,
-        can_request_input: s.can_request_input ?? false,
-        promote_output: s.promote_output ?? false,
-      }));
-
-      const payload = {
-        name: values.name,
-        description: values.description || null,
-        orchestration_mode: values.orchestration_mode,
-        orchestrator_prompt: values.orchestrator_prompt || null,
-        orchestrator_llm_provider: values.orchestrator_llm_provider || null,
-        orchestrator_llm_model: values.orchestrator_llm_model || null,
-        max_steps: values.max_steps,
-        max_calls_per_agent: values.max_calls_per_agent,
-        timeout_seconds: values.timeout_seconds,
-        is_public: values.is_public,
-        steps,
-      };
-
-      let response;
-      if (existingWorkflow) {
-        response = await updateWorkflow(existingWorkflow.id, payload);
-      } else {
-        response = await createWorkflow(payload);
-      }
-
-      if (!response.ok) {
-        const error = await response.text();
-        toast.error(`Failed to ${existingWorkflow ? "update" : "create"} workflow: ${error}`);
-        return;
-      }
-
-      toast.success(
-        `Workflow "${values.name}" ${existingWorkflow ? "updated" : "created"} successfully`
-      );
-
-      await refreshWorkflows();
-      if (refreshWorkflow) refreshWorkflow();
-      router.push("/admin/workflows");
-    } catch (error) {
-      console.error("Submit error:", error);
-      toast.error(`An error occurred: ${error}`);
+  async function handleSubmit(values: WizardValues) {
+    const errors = validateSteps(values.steps, values.orchestration_mode, catalog);
+    if (errors[0]) {
+      toast.error(errors[0].message);
+      return;
     }
+
+    const { steps, ...meta } = values;
+    const payload = existingWorkflow
+      ? buildWorkflowUpdate(meta, steps, existingWorkflow.version)
+      : buildWorkflowCreate(meta, steps);
+
+    try {
+      await saveWorkflow(existingWorkflow?.id ?? null, payload);
+    } catch (error) {
+      toast.error(
+        `Failed to ${existingWorkflow ? "update" : "create"} workflow: ${describeSaveError(error)}`
+      );
+      return;
+    }
+
+    toast.success(
+      `Workflow "${values.name}" ${existingWorkflow ? "updated" : "created"} successfully`
+    );
+
+    await refreshWorkflows();
+    if (refreshWorkflow) refreshWorkflow();
+    router.push("/admin/workflows");
+  }
+
+  function handleRestored(restored: WorkflowSnapshot) {
+    setShowVersions(false);
+    toast.success(`Restored; saved as version ${restored.version}.`);
+    // The editor re-mounts with the restored definition (Formik is keyed by version).
+    if (refreshWorkflow) refreshWorkflow();
   }
 
   async function handleDelete() {
@@ -682,7 +730,13 @@ export default function WorkflowEditorPage({
   return (
     <>
       <div className="h-full w-full">
+        {!catalogReady ? (
+          <div className="flex items-center justify-center h-full">
+            <Text secondaryBody text03>Loading...</Text>
+          </div>
+        ) : (
         <Formik
+          key={existingWorkflow?.version ?? "new"}
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
@@ -691,6 +745,22 @@ export default function WorkflowEditorPage({
         >
           {({ isSubmitting, isValid, dirty, values, setFieldValue, errors, setTouched, touched }) => (
             <>
+              {upgradeTarget && (
+                <NodeUpgradeDialog
+                  target={upgradeTarget}
+                  onApply={(result: NodeUpgradeResult) => {
+                    const i = upgradeTarget.index;
+                    const latest = values.steps[i]?.latest_type_version ?? result.to_version;
+                    setFieldValue(`steps.${i}.type_version`, result.to_version);
+                    setFieldValue(`steps.${i}.config`, result.config);
+                    setFieldValue(`steps.${i}.upgrade_available`, result.to_version < latest);
+                    setUpgradeTarget(null);
+                    toast.success("Upgrade applied. Save the workflow to keep it.");
+                  }}
+                  onClose={() => setUpgradeTarget(null)}
+                />
+              )}
+
               <deleteModal.Provider>
                 {deleteModal.isOpen && (
                   <ConfirmationModalLayout
@@ -721,6 +791,11 @@ export default function WorkflowEditorPage({
                         <Button type="button" secondary onClick={() => router.push("/admin/workflows")}>
                           Cancel
                         </Button>
+                        {existingWorkflow && (
+                          <Button type="button" secondary leftIcon={SvgHistory} onClick={() => setShowVersions(true)}>
+                            Versions
+                          </Button>
+                        )}
                         {currentStep > 0 && (
                           <Button type="button" secondary leftIcon={SvgArrowLeft} onClick={() => setCurrentStep(currentStep - 1)}>
                             Back
@@ -838,11 +913,22 @@ export default function WorkflowEditorPage({
                         <FieldArray name="steps">
                           {(arrayHelpers) => (
                             <GeneralLayouts.Section gap={0.5}>
-                              {values.steps.map((_step, index) => (
+                              {values.steps.map((step, index) => (
                                 <WorkflowStepRow
-                                  key={index}
+                                  key={step.node_key}
                                   index={index}
                                   agents={agentOptions}
+                                  catalog={catalog}
+                                  onUpgrade={() =>
+                                    setUpgradeTarget({
+                                      index,
+                                      stepName: stepDisplayName(step, index),
+                                      stepType: step.step_type,
+                                      fromVersion: step.type_version ?? 1,
+                                      config: step.config,
+                                      stepOrderToNodeKey: stepOrderToNodeKey(values.steps),
+                                    })
+                                  }
                                   onRemove={() => arrayHelpers.remove(index)}
                                   canRemove={values.steps.length > 1}
                                   canMoveUp={index > 0}
@@ -852,56 +938,34 @@ export default function WorkflowEditorPage({
                                 />
                               ))}
 
-                              <div className="flex gap-2">
+                              <div className="flex flex-wrap gap-2">
                                 <Button
                                   type="button"
                                   secondary
                                   leftIcon={SvgSparkle}
-                                  onClick={() =>
-                                    arrayHelpers.push({
-                                      step_type: "agent",
-                                      agent_id: 0,
-                                      step_order: values.steps.length,
-                                      step_name: "",
-                                      step_description: "",
-                                      output_key: "output",
-                                      condition: null,
-                                      is_terminal: false,
-                                      can_request_input: false,
-                                      promote_output: false,
-                                    })
-                                  }
+                                  onClick={() => arrayHelpers.push(newStep(AGENT_NODE_TYPE, values.steps))}
                                 >
                                   Add Agent Step
                                 </Button>
-                                <Button
-                                  type="button"
-                                  secondary
-                                  onClick={() =>
-                                    arrayHelpers.push({
-                                      step_type: "conditional_router",
-                                      agent_id: null,
-                                      step_order: values.steps.length,
-                                      step_name: "",
-                                      step_description: "",
-                                      output_key: "route_result",
-                                      condition: {
-                                        condition_field: "",
-                                        operator: "contains",
-                                        match_value: "",
-                                        case_sensitive: false,
-                                        true_steps: [],
-                                        false_steps: [],
-                                      },
-                                      is_terminal: false,
-                                      can_request_input: false,
-                                      promote_output: false,
-                                    })
-                                  }
-                                >
-                                  Add Conditional Router
-                                </Button>
+                                {paletteTypes(catalog, values.orchestration_mode)
+                                  .filter((t) => t.type !== AGENT_NODE_TYPE)
+                                  .map((t) => (
+                                    <Button
+                                      key={t.type}
+                                      type="button"
+                                      secondary
+                                      onClick={() => arrayHelpers.push(newStep(t.type, values.steps))}
+                                    >
+                                      {`Add ${labelFor(catalog, t.type)}`}
+                                    </Button>
+                                  ))}
                               </div>
+                              {values.orchestration_mode === "llm_decision" && (
+                                <Text secondaryBody text03 className="text-xs">
+                                  Conditions and other step types that only run in order are available when the
+                                  orchestration mode (step 3) is Sequential.
+                                </Text>
+                              )}
                             </GeneralLayouts.Section>
                           )}
                         </FieldArray>
@@ -970,6 +1034,15 @@ export default function WorkflowEditorPage({
                               </div>
                             </div>
                           </Card>
+                          {stepsNotAllowedInMode(values.steps, values.orchestration_mode, catalog).length > 0 && (
+                            <Text secondaryBody className="text-xs text-status-warning-05">
+                              Some steps can&apos;t run in this mode:{" "}
+                              {stepsNotAllowedInMode(values.steps, values.orchestration_mode, catalog)
+                                .map((s) => `"${s.step_name || s.step_type}"`)
+                                .join(", ")}
+                              . Remove them in step 2 or pick another mode.
+                            </Text>
+                          )}
                         </GeneralLayouts.Section>
 
                         {values.orchestration_mode === "llm_decision" && (
@@ -1099,7 +1172,18 @@ export default function WorkflowEditorPage({
             </>
           )}
         </Formik>
+        )}
       </div>
+
+      {showVersions && existingWorkflow && (
+        <WorkflowVersionsDialog
+          workflowId={existingWorkflow.id}
+          currentVersion={existingWorkflow.version}
+          catalog={catalog}
+          onRestored={handleRestored}
+          onClose={() => setShowVersions(false)}
+        />
+      )}
     </>
   );
 }

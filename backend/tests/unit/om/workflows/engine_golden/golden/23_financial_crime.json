@@ -1,0 +1,2787 @@
+{
+ "scenario": "23_financial_crime",
+ "description": "Template 23_financial_crime.json forced into sequential mode.",
+ "covers": [
+  "template",
+  "sequential"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Financial Crime Investigation",
+    "mode": "sequential",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Alert Triage Analyst",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "KYC Analyst",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "kyc_assessment",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Transaction Pattern Analyst",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "transaction_analysis",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Sanctions Screening Specialist",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "sanctions_screening",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Trade Finance Investigator",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "trade_finance_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Crypto/Digital Assets Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "crypto_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Geopolitical Risk Analyst",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "geopolitical_assessment",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Forensic Accountant",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "forensic_accounting",
+      "flags": []
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "SAR Report Writer",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "sar_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Alert Triage Analyst",
+     "agent_name": "WF Alert Triage Analyst",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Alert Triage Analyst",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Alert Triage Analyst",
+     "agent_name": "WF Alert Triage Analyst",
+     "questions": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 2,
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Alert Triage Analyst",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Alert Triage Analyst",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Financial Crime Investigation",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Alert Triage Analyst",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Financial Crime Investigation",
+    "mode": "sequential",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Alert Triage Analyst",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "KYC Analyst",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "kyc_assessment",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Transaction Pattern Analyst",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "transaction_analysis",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Sanctions Screening Specialist",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "sanctions_screening",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Trade Finance Investigator",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "trade_finance_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Crypto/Digital Assets Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "crypto_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Geopolitical Risk Analyst",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "geopolitical_assessment",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Forensic Accountant",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "forensic_accounting",
+      "flags": []
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "SAR Report Writer",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "sar_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Alert Triage Analyst",
+     "agent_name": "WF Alert Triage Analyst",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Alert Triage Analyst",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "KYC Analyst",
+     "agent_name": "WF KYC Analyst",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Thinking about KYC Analyst"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "kyc_assessment result for: User r",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "equest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "kyc_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "KYC Analyst",
+     "output_key": "kyc_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Transaction Pattern Analyst",
+     "agent_name": "WF Transaction Pattern Analyst",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Thinking about Transaction Pattern Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Transaction Pattern Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "transaction_analysis result for: Use",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "r request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_103_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/transaction_analysis.docx",
+        "filename": "transaction_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_103_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "transaction_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Transaction Pattern Analyst",
+     "output_key": "transaction_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Sanctions Screening Specialist",
+     "agent_name": "WF Sanctions Screening Specialist",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "Thinking about Sanctions Screening Specialist"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "sanctions_screening result for: User",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": " request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "sanctions_screening result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Sanctions Screening Specialist",
+     "output_key": "sanctions_screening"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Trade Finance Investigator",
+     "agent_name": "WF Trade Finance Investigator",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Trade Finance Investigator"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_105_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/trade_finance_assessment.docx",
+        "filename": "trade_finance_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_105_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "trade_finance_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Trade Finance Investigator",
+     "output_key": "trade_finance_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "step_name": "Crypto/Digital Assets Analyst",
+     "agent_name": "WF Crypto Digital Assets Analyst",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Crypto/Digital Assets Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_106_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/crypto_assessment.docx",
+        "filename": "crypto_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_106_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "crypto_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "step_name": "Crypto/Digital Assets Analyst",
+     "output_key": "crypto_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "step_name": "Geopolitical Risk Analyst",
+     "agent_name": "WF Geopolitical Risk Analyst",
+     "step_order": 6,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "Thinking about Geopolitical Risk Analyst"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "geopolitical_assessment result for: Us",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "er request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "geopolitical_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "step_name": "Geopolitical Risk Analyst",
+     "output_key": "geopolitical_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      9,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Forensic Accountant",
+     "agent_name": "WF Forensic Accountant",
+     "step_order": 7,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "Thinking about Forensic Accountant"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Forensic Accountant"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "forensic_accounting result for: User",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": " request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_108_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/forensic_accounting.docx",
+        "filename": "forensic_accounting.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_108_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "forensic_accounting result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Forensic Accountant",
+     "output_key": "forensic_accounting"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "SAR Report Writer",
+     "agent_name": "WF SAR Report Writer",
+     "step_order": 8,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Thinking about SAR Report Writer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "sar_report result for: User req",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "uest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "sar_report result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "SAR Report Writer",
+     "output_key": "sar_report"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "sar_report result for: User request: Prepare a complete assessm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "",
+     "file_ids": [
+      "file_103_0_0",
+      "file_105_0_0",
+      "file_106_0_0",
+      "file_108_0_0"
+     ],
+     "file_names": [
+      "transaction_analysis.docx",
+      "trade_finance_assessment.docx",
+      "crypto_assessment.docx",
+      "forensic_accounting.docx"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      15,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 13,
+     "content": "sar_report result for: User request: Prepare a complete assessm",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 14,
+     "content": "",
+     "file_ids": [
+      "file_103_0_0",
+      "file_105_0_0",
+      "file_106_0_0",
+      "file_108_0_0"
+     ],
+     "file_names": [
+      "transaction_analysis.docx",
+      "trade_finance_assessment.docx",
+      "crypto_assessment.docx",
+      "forensic_accounting.docx"
+     ]
+    }
+   ],
+   "final_answer": "",
+   "agent_calls": [
+    {
+     "step_name": "Alert Triage Analyst",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Alert Triage Analyst",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "KYC Analyst",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "kyc_assessment",
+     "agent": "WF KYC Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Transaction Pattern Analyst",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "transaction_analysis",
+     "agent": "WF Transaction Pattern Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Sanctions Screening Specialist",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "sanctions_screening",
+     "agent": "WF Sanctions Screening Specialist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Trade Finance Investigator",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "trade_finance_assessment",
+     "agent": "WF Trade Finance Investigator",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Crypto/Digital Assets Analyst",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "crypto_assessment",
+     "agent": "WF Crypto Digital Assets Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a complete assessm\n\nOutput from 'trade_finance_assessment':\ntrade_finance_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')\n- trade_finance_assessment.docx (path: /app/output/trade_finance_assessment.docx, from step 'trade_finance_assessment')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Geopolitical Risk Analyst",
+     "step_id": 107,
+     "step_order": 6,
+     "output_key": "geopolitical_assessment",
+     "agent": "WF Geopolitical Risk Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a complete assessm\n\nOutput from 'trade_finance_assessment':\ntrade_finance_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'crypto_assessment':\ncrypto_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')\n- trade_finance_assessment.docx (path: /app/output/trade_finance_assessment.docx, from step 'trade_finance_assessment')\n- crypto_assessment.docx (path: /app/output/crypto_assessment.docx, from step 'crypto_assessment')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Forensic Accountant",
+     "step_id": 108,
+     "step_order": 7,
+     "output_key": "forensic_accounting",
+     "agent": "WF Forensic Accountant",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a complete assessm\n\nOutput from 'trade_finance_assessment':\ntrade_finance_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'crypto_assessment':\ncrypto_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'geopolitical_assessment':\ngeopolitical_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')\n- trade_finance_assessment.docx (path: /app/output/trade_finance_assessment.docx, from step 'trade_finance_assessment')\n- crypto_assessment.docx (path: /app/output/crypto_assessment.docx, from step 'crypto_assessment')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "SAR Report Writer",
+     "step_id": 109,
+     "step_order": 8,
+     "output_key": "sar_report",
+     "agent": "WF SAR Report Writer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a complete assessm\n\nOutput from 'trade_finance_assessment':\ntrade_finance_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'crypto_assessment':\ncrypto_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'geopolitical_assessment':\ngeopolitical_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'forensic_accounting':\nforensic_accounting result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')\n- trade_finance_assessment.docx (path: /app/output/trade_finance_assessment.docx, from step 'trade_finance_assessment')\n- crypto_assessment.docx (path: /app/output/crypto_assessment.docx, from step 'crypto_assessment')\n- forensic_accounting.docx (path: /app/output/forensic_accounting.docx, from step 'forensic_accounting')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "kyc_assessment": "kyc_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "kyc_assessment": "kyc_assessment result for: User request: Prepare a complete assessm",
+       "transaction_analysis": "transaction_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "transaction_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/transaction_analysis.docx",
+           "filename": "transaction_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 3,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "kyc_assessment": "kyc_assessment result for: User request: Prepare a complete assessm",
+       "transaction_analysis": "transaction_analysis result for: User request: Prepare a complete assessm",
+       "sanctions_screening": "sanctions_screening result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "transaction_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/transaction_analysis.docx",
+           "filename": "transaction_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "kyc_assessment": "kyc_assessment result for: User request: Prepare a complete assessm",
+       "transaction_analysis": "transaction_analysis result for: User request: Prepare a complete assessm",
+       "sanctions_screening": "sanctions_screening result for: User request: Prepare a complete assessm",
+       "trade_finance_assessment": "trade_finance_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "transaction_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/transaction_analysis.docx",
+           "filename": "transaction_analysis.docx"
+          }
+         ]
+        },
+        "trade_finance_assessment": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/trade_finance_assessment.docx",
+           "filename": "trade_finance_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 6,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "kyc_assessment": "kyc_assessment result for: User request: Prepare a complete assessm",
+       "transaction_analysis": "transaction_analysis result for: User request: Prepare a complete assessm",
+       "sanctions_screening": "sanctions_screening result for: User request: Prepare a complete assessm",
+       "trade_finance_assessment": "trade_finance_assessment result for: User request: Prepare a complete assessm",
+       "crypto_assessment": "crypto_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "transaction_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/transaction_analysis.docx",
+           "filename": "transaction_analysis.docx"
+          }
+         ]
+        },
+        "trade_finance_assessment": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/trade_finance_assessment.docx",
+           "filename": "trade_finance_assessment.docx"
+          }
+         ]
+        },
+        "crypto_assessment": {
+         "file_ids": [
+          "file_106_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/crypto_assessment.docx",
+           "filename": "crypto_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 8,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "kyc_assessment": "kyc_assessment result for: User request: Prepare a complete assessm",
+       "transaction_analysis": "transaction_analysis result for: User request: Prepare a complete assessm",
+       "sanctions_screening": "sanctions_screening result for: User request: Prepare a complete assessm",
+       "trade_finance_assessment": "trade_finance_assessment result for: User request: Prepare a complete assessm",
+       "crypto_assessment": "crypto_assessment result for: User request: Prepare a complete assessm",
+       "geopolitical_assessment": "geopolitical_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "transaction_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/transaction_analysis.docx",
+           "filename": "transaction_analysis.docx"
+          }
+         ]
+        },
+        "trade_finance_assessment": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/trade_finance_assessment.docx",
+           "filename": "trade_finance_assessment.docx"
+          }
+         ]
+        },
+        "crypto_assessment": {
+         "file_ids": [
+          "file_106_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/crypto_assessment.docx",
+           "filename": "crypto_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 9,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "kyc_assessment": "kyc_assessment result for: User request: Prepare a complete assessm",
+       "transaction_analysis": "transaction_analysis result for: User request: Prepare a complete assessm",
+       "sanctions_screening": "sanctions_screening result for: User request: Prepare a complete assessm",
+       "trade_finance_assessment": "trade_finance_assessment result for: User request: Prepare a complete assessm",
+       "crypto_assessment": "crypto_assessment result for: User request: Prepare a complete assessm",
+       "geopolitical_assessment": "geopolitical_assessment result for: User request: Prepare a complete assessm",
+       "forensic_accounting": "forensic_accounting result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "transaction_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/transaction_analysis.docx",
+           "filename": "transaction_analysis.docx"
+          }
+         ]
+        },
+        "trade_finance_assessment": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/trade_finance_assessment.docx",
+           "filename": "trade_finance_assessment.docx"
+          }
+         ]
+        },
+        "crypto_assessment": {
+         "file_ids": [
+          "file_106_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/crypto_assessment.docx",
+           "filename": "crypto_assessment.docx"
+          }
+         ]
+        },
+        "forensic_accounting": {
+         "file_ids": [
+          "file_108_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/forensic_accounting.docx",
+           "filename": "forensic_accounting.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "kyc_assessment": "kyc_assessment result for: User request: Prepare a complete assessm",
+       "transaction_analysis": "transaction_analysis result for: User request: Prepare a complete assessm",
+       "sanctions_screening": "sanctions_screening result for: User request: Prepare a complete assessm",
+       "trade_finance_assessment": "trade_finance_assessment result for: User request: Prepare a complete assessm",
+       "crypto_assessment": "crypto_assessment result for: User request: Prepare a complete assessm",
+       "geopolitical_assessment": "geopolitical_assessment result for: User request: Prepare a complete assessm",
+       "forensic_accounting": "forensic_accounting result for: User request: Prepare a complete assessm",
+       "sar_report": "sar_report result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "transaction_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/transaction_analysis.docx",
+           "filename": "transaction_analysis.docx"
+          }
+         ]
+        },
+        "trade_finance_assessment": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/trade_finance_assessment.docx",
+           "filename": "trade_finance_assessment.docx"
+          }
+         ]
+        },
+        "crypto_assessment": {
+         "file_ids": [
+          "file_106_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/crypto_assessment.docx",
+           "filename": "crypto_assessment.docx"
+          }
+         ]
+        },
+        "forensic_accounting": {
+         "file_ids": [
+          "file_108_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/forensic_accounting.docx",
+           "filename": "forensic_accounting.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 12,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+    "kyc_assessment": "kyc_assessment result for: User request: Prepare a complete assessm",
+    "transaction_analysis": "transaction_analysis result for: User request: Prepare a complete assessm",
+    "sanctions_screening": "sanctions_screening result for: User request: Prepare a complete assessm",
+    "trade_finance_assessment": "trade_finance_assessment result for: User request: Prepare a complete assessm",
+    "crypto_assessment": "crypto_assessment result for: User request: Prepare a complete assessm",
+    "geopolitical_assessment": "geopolitical_assessment result for: User request: Prepare a complete assessm",
+    "forensic_accounting": "forensic_accounting result for: User request: Prepare a complete assessm",
+    "sar_report": "sar_report result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Financial Crime Investigation",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 832,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Alert Triage Analyst",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Alert Triage Analyst",
+      "status": "completed",
+      "input": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 88,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "KYC Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+      "output": "kyc_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 35,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Transaction Pattern Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm",
+      "output": "transaction_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 47,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Sanctions Screening Specialist",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')",
+      "output": "sanctions_screening result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 71,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Trade Finance Investigator",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')",
+      "output": "trade_finance_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 83,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Crypto/Digital Assets Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a complete assessm\n\nOutput from 'trade_finance_assessment':\ntrade_finance_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')\n- trade_finance_assessment.docx (path: /app/output/trade_finance_assessment.docx, from step 'trade_finance_assessment')",
+      "output": "crypto_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 102,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_8",
+      "type": "agent",
+      "name": "Geopolitical Risk Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a complete assessm\n\nOutput from 'trade_finance_assessment':\ntrade_finance_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'crypto_assessment':\ncrypto_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')\n- trade_finance_assessment.docx (path: /app/output/trade_finance_assessment.docx, from step 'trade_finance_assessment')\n- crypto_assessment.docx (path: /app/output/crypto_assessment.docx, from step 'crypto_assessment')",
+      "output": "geopolitical_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 107,
+      "agent_id": 1007,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 121,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_9",
+      "type": "agent",
+      "name": "Forensic Accountant",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a complete assessm\n\nOutput from 'trade_finance_assessment':\ntrade_finance_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'crypto_assessment':\ncrypto_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'geopolitical_assessment':\ngeopolitical_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')\n- trade_finance_assessment.docx (path: /app/output/trade_finance_assessment.docx, from step 'trade_finance_assessment')\n- crypto_assessment.docx (path: /app/output/crypto_assessment.docx, from step 'crypto_assessment')",
+      "output": "forensic_accounting result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 108,
+      "agent_id": 1008,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 133,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_10",
+      "type": "agent",
+      "name": "SAR Report Writer",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a complete assessm\n\nOutput from 'trade_finance_assessment':\ntrade_finance_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'crypto_assessment':\ncrypto_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'geopolitical_assessment':\ngeopolitical_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'forensic_accounting':\nforensic_accounting result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transaction_analysis.docx, from step 'transaction_analysis')\n- trade_finance_assessment.docx (path: /app/output/trade_finance_assessment.docx, from step 'trade_finance_assessment')\n- crypto_assessment.docx (path: /app/output/crypto_assessment.docx, from step 'crypto_assessment')\n- forensic_accounting.docx (path: /app/output/forensic_accounting.docx, from step 'forensic_accounting')",
+      "output": "sar_report result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 109,
+      "agent_id": 1009,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 152,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "sar_report result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "agent_8",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_8",
+      "to_id": "agent_9",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_9",
+      "to_id": "agent_10",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_10",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 832,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Alert Triage Analyst",
+       "input_text": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more detai",
+       "output_text": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "duration_ms": "<ms>",
+       "tokens_used": 88
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "KYC Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "output_text": "kyc_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 35
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Transaction Pattern Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm",
+       "output_text": "transaction_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 47
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Sanctions Screening Specialist",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- transaction_analysis.docx (path: /app/output/transactio",
+       "output_text": "sanctions_screening result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 71
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Trade Finance Investigator",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a",
+       "output_text": "trade_finance_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 83
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Crypto/Digital Assets Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a",
+       "output_text": "crypto_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 102
+      },
+      {
+       "step_id": 107,
+       "agent_id": 1007,
+       "step_name": "Geopolitical Risk Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a",
+       "output_text": "geopolitical_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 121
+      },
+      {
+       "step_id": 108,
+       "agent_id": 1008,
+       "step_name": "Forensic Accountant",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a",
+       "output_text": "forensic_accounting result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 133
+      },
+      {
+       "step_id": 109,
+       "agent_id": 1009,
+       "step_name": "SAR Report Writer",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'kyc_assessment':\nkyc_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'transaction_analysis':\ntransaction_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'sanctions_screening':\nsanctions_screening result for: User request: Prepare a",
+       "output_text": "sar_report result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 152
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

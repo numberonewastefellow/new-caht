@@ -1,0 +1,2858 @@
+{
+ "scenario": "25_cybersecurity_ir",
+ "description": "Template 25_cybersecurity_ir.json forced into sequential mode.",
+ "covers": [
+  "template",
+  "sequential"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Cybersecurity Incident Response",
+    "mode": "sequential",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "SOC Triage Analyst",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Network Forensics Analyst",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "network_analysis",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Endpoint/Malware Analyst",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "endpoint_analysis",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Identity/Access Analyst",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "identity_analysis",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Cloud Security Analyst",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "cloud_analysis",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Email/Phishing Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "email_analysis",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Threat Intelligence Analyst",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "threat_intel",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Data Loss Analyst",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "data_loss_analysis",
+      "flags": []
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "Incident Report Writer",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "incident_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "SOC Triage Analyst",
+     "agent_name": "WF SOC Triage Analyst",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "SOC Triage Analyst",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "SOC Triage Analyst",
+     "agent_name": "WF SOC Triage Analyst",
+     "questions": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 2,
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "SOC Triage Analyst",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF SOC Triage Analyst",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Cybersecurity Incident Response",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "SOC Triage Analyst",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Cybersecurity Incident Response",
+    "mode": "sequential",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "SOC Triage Analyst",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Network Forensics Analyst",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "network_analysis",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Endpoint/Malware Analyst",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "endpoint_analysis",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Identity/Access Analyst",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "identity_analysis",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Cloud Security Analyst",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "cloud_analysis",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Email/Phishing Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "email_analysis",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Threat Intelligence Analyst",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "threat_intel",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Data Loss Analyst",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "data_loss_analysis",
+      "flags": []
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "Incident Report Writer",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "incident_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "SOC Triage Analyst",
+     "agent_name": "WF SOC Triage Analyst",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "SOC Triage Analyst",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Network Forensics Analyst",
+     "agent_name": "WF Network Forensics Analyst",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Thinking about Network Forensics Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Network Forensics Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "network_analysis result for: User ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_102_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/network_analysis.docx",
+        "filename": "network_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_102_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "network_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Network Forensics Analyst",
+     "output_key": "network_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Endpoint/Malware Analyst",
+     "agent_name": "WF Endpoint Malware Analyst",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about Endpoint/Malware Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Endpoint/Malware Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "endpoint_analysis result for: User ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_103_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/endpoint_analysis.docx",
+        "filename": "endpoint_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_103_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "endpoint_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Endpoint/Malware Analyst",
+     "output_key": "endpoint_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Identity/Access Analyst",
+     "agent_name": "WF Identity Access Analyst",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Thinking about Identity/Access Analyst"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "identity_analysis result for: User ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "identity_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Identity/Access Analyst",
+     "output_key": "identity_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Cloud Security Analyst",
+     "agent_name": "WF Cloud Security Analyst",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Cloud Security Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_105_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/cloud_analysis.docx",
+        "filename": "cloud_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_105_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "cloud_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Cloud Security Analyst",
+     "output_key": "cloud_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "step_name": "Email/Phishing Analyst",
+     "agent_name": "WF Email Phishing Analyst",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "Thinking about Email/Phishing Analyst"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "email_analysis result for: User r",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "equest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "email_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "step_name": "Email/Phishing Analyst",
+     "output_key": "email_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "step_name": "Threat Intelligence Analyst",
+     "agent_name": "WF Threat Intelligence Analyst",
+     "step_order": 6,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "Thinking about Threat Intelligence Analyst"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "threat_intel result for: User re",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "quest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "threat_intel result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "step_name": "Threat Intelligence Analyst",
+     "output_key": "threat_intel"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      9,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Data Loss Analyst",
+     "agent_name": "WF Data Loss Analyst",
+     "step_order": 7,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "Thinking about Data Loss Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Data Loss Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "data_loss_analysis result for: User",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": " request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_108_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/data_loss_analysis.docx",
+        "filename": "data_loss_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_108_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "data_loss_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Data Loss Analyst",
+     "output_key": "data_loss_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "Incident Report Writer",
+     "agent_name": "WF Incident Report Writer",
+     "step_order": 8,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Thinking about Incident Report Writer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "incident_report result for: User r",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "equest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "incident_report result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "Incident Report Writer",
+     "output_key": "incident_report"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "incident_report result for: User request: Prepare a complete assessm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "",
+     "file_ids": [
+      "file_102_0_0",
+      "file_103_0_0",
+      "file_105_0_0",
+      "file_108_0_0"
+     ],
+     "file_names": [
+      "network_analysis.docx",
+      "endpoint_analysis.docx",
+      "cloud_analysis.docx",
+      "data_loss_analysis.docx"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      15,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 13,
+     "content": "incident_report result for: User request: Prepare a complete assessm",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 14,
+     "content": "",
+     "file_ids": [
+      "file_102_0_0",
+      "file_103_0_0",
+      "file_105_0_0",
+      "file_108_0_0"
+     ],
+     "file_names": [
+      "network_analysis.docx",
+      "endpoint_analysis.docx",
+      "cloud_analysis.docx",
+      "data_loss_analysis.docx"
+     ]
+    }
+   ],
+   "final_answer": "",
+   "agent_calls": [
+    {
+     "step_name": "SOC Triage Analyst",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF SOC Triage Analyst",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Network Forensics Analyst",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "network_analysis",
+     "agent": "WF Network Forensics Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Endpoint/Malware Analyst",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "endpoint_analysis",
+     "agent": "WF Endpoint Malware Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Identity/Access Analyst",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "identity_analysis",
+     "agent": "WF Identity Access Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Cloud Security Analyst",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "cloud_analysis",
+     "agent": "WF Cloud Security Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Email/Phishing Analyst",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "email_analysis",
+     "agent": "WF Email Phishing Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'cloud_analysis':\ncloud_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')\n- cloud_analysis.docx (path: /app/output/cloud_analysis.docx, from step 'cloud_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Threat Intelligence Analyst",
+     "step_id": 107,
+     "step_order": 6,
+     "output_key": "threat_intel",
+     "agent": "WF Threat Intelligence Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'cloud_analysis':\ncloud_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'email_analysis':\nemail_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')\n- cloud_analysis.docx (path: /app/output/cloud_analysis.docx, from step 'cloud_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Data Loss Analyst",
+     "step_id": 108,
+     "step_order": 7,
+     "output_key": "data_loss_analysis",
+     "agent": "WF Data Loss Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'cloud_analysis':\ncloud_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'email_analysis':\nemail_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'threat_intel':\nthreat_intel result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')\n- cloud_analysis.docx (path: /app/output/cloud_analysis.docx, from step 'cloud_analysis')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Incident Report Writer",
+     "step_id": 109,
+     "step_order": 8,
+     "output_key": "incident_report",
+     "agent": "WF Incident Report Writer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'cloud_analysis':\ncloud_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'email_analysis':\nemail_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'threat_intel':\nthreat_intel result for: User request: Prepare a complete assessm\n\nOutput from 'data_loss_analysis':\ndata_loss_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')\n- cloud_analysis.docx (path: /app/output/cloud_analysis.docx, from step 'cloud_analysis')\n- data_loss_analysis.docx (path: /app/output/data_loss_analysis.docx, from step 'data_loss_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "network_analysis": "network_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "network_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/network_analysis.docx",
+           "filename": "network_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "network_analysis": "network_analysis result for: User request: Prepare a complete assessm",
+       "endpoint_analysis": "endpoint_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "network_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/network_analysis.docx",
+           "filename": "network_analysis.docx"
+          }
+         ]
+        },
+        "endpoint_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/endpoint_analysis.docx",
+           "filename": "endpoint_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "network_analysis": "network_analysis result for: User request: Prepare a complete assessm",
+       "endpoint_analysis": "endpoint_analysis result for: User request: Prepare a complete assessm",
+       "identity_analysis": "identity_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "network_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/network_analysis.docx",
+           "filename": "network_analysis.docx"
+          }
+         ]
+        },
+        "endpoint_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/endpoint_analysis.docx",
+           "filename": "endpoint_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 5,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "network_analysis": "network_analysis result for: User request: Prepare a complete assessm",
+       "endpoint_analysis": "endpoint_analysis result for: User request: Prepare a complete assessm",
+       "identity_analysis": "identity_analysis result for: User request: Prepare a complete assessm",
+       "cloud_analysis": "cloud_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "network_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/network_analysis.docx",
+           "filename": "network_analysis.docx"
+          }
+         ]
+        },
+        "endpoint_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/endpoint_analysis.docx",
+           "filename": "endpoint_analysis.docx"
+          }
+         ]
+        },
+        "cloud_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/cloud_analysis.docx",
+           "filename": "cloud_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 7,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "network_analysis": "network_analysis result for: User request: Prepare a complete assessm",
+       "endpoint_analysis": "endpoint_analysis result for: User request: Prepare a complete assessm",
+       "identity_analysis": "identity_analysis result for: User request: Prepare a complete assessm",
+       "cloud_analysis": "cloud_analysis result for: User request: Prepare a complete assessm",
+       "email_analysis": "email_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "network_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/network_analysis.docx",
+           "filename": "network_analysis.docx"
+          }
+         ]
+        },
+        "endpoint_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/endpoint_analysis.docx",
+           "filename": "endpoint_analysis.docx"
+          }
+         ]
+        },
+        "cloud_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/cloud_analysis.docx",
+           "filename": "cloud_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 8,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "network_analysis": "network_analysis result for: User request: Prepare a complete assessm",
+       "endpoint_analysis": "endpoint_analysis result for: User request: Prepare a complete assessm",
+       "identity_analysis": "identity_analysis result for: User request: Prepare a complete assessm",
+       "cloud_analysis": "cloud_analysis result for: User request: Prepare a complete assessm",
+       "email_analysis": "email_analysis result for: User request: Prepare a complete assessm",
+       "threat_intel": "threat_intel result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "network_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/network_analysis.docx",
+           "filename": "network_analysis.docx"
+          }
+         ]
+        },
+        "endpoint_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/endpoint_analysis.docx",
+           "filename": "endpoint_analysis.docx"
+          }
+         ]
+        },
+        "cloud_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/cloud_analysis.docx",
+           "filename": "cloud_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 9,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "network_analysis": "network_analysis result for: User request: Prepare a complete assessm",
+       "endpoint_analysis": "endpoint_analysis result for: User request: Prepare a complete assessm",
+       "identity_analysis": "identity_analysis result for: User request: Prepare a complete assessm",
+       "cloud_analysis": "cloud_analysis result for: User request: Prepare a complete assessm",
+       "email_analysis": "email_analysis result for: User request: Prepare a complete assessm",
+       "threat_intel": "threat_intel result for: User request: Prepare a complete assessm",
+       "data_loss_analysis": "data_loss_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "network_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/network_analysis.docx",
+           "filename": "network_analysis.docx"
+          }
+         ]
+        },
+        "endpoint_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/endpoint_analysis.docx",
+           "filename": "endpoint_analysis.docx"
+          }
+         ]
+        },
+        "cloud_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/cloud_analysis.docx",
+           "filename": "cloud_analysis.docx"
+          }
+         ]
+        },
+        "data_loss_analysis": {
+         "file_ids": [
+          "file_108_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/data_loss_analysis.docx",
+           "filename": "data_loss_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "network_analysis": "network_analysis result for: User request: Prepare a complete assessm",
+       "endpoint_analysis": "endpoint_analysis result for: User request: Prepare a complete assessm",
+       "identity_analysis": "identity_analysis result for: User request: Prepare a complete assessm",
+       "cloud_analysis": "cloud_analysis result for: User request: Prepare a complete assessm",
+       "email_analysis": "email_analysis result for: User request: Prepare a complete assessm",
+       "threat_intel": "threat_intel result for: User request: Prepare a complete assessm",
+       "data_loss_analysis": "data_loss_analysis result for: User request: Prepare a complete assessm",
+       "incident_report": "incident_report result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "network_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/network_analysis.docx",
+           "filename": "network_analysis.docx"
+          }
+         ]
+        },
+        "endpoint_analysis": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/endpoint_analysis.docx",
+           "filename": "endpoint_analysis.docx"
+          }
+         ]
+        },
+        "cloud_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/cloud_analysis.docx",
+           "filename": "cloud_analysis.docx"
+          }
+         ]
+        },
+        "data_loss_analysis": {
+         "file_ids": [
+          "file_108_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/data_loss_analysis.docx",
+           "filename": "data_loss_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 12,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+    "network_analysis": "network_analysis result for: User request: Prepare a complete assessm",
+    "endpoint_analysis": "endpoint_analysis result for: User request: Prepare a complete assessm",
+    "identity_analysis": "identity_analysis result for: User request: Prepare a complete assessm",
+    "cloud_analysis": "cloud_analysis result for: User request: Prepare a complete assessm",
+    "email_analysis": "email_analysis result for: User request: Prepare a complete assessm",
+    "threat_intel": "threat_intel result for: User request: Prepare a complete assessm",
+    "data_loss_analysis": "data_loss_analysis result for: User request: Prepare a complete assessm",
+    "incident_report": "incident_report result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Cybersecurity Incident Response",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 865,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "SOC Triage Analyst",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "SOC Triage Analyst",
+      "status": "completed",
+      "input": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 88,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Network Forensics Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+      "output": "network_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 35,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Endpoint/Malware Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')",
+      "output": "endpoint_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 59,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Identity/Access Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')",
+      "output": "identity_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 78,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Cloud Security Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')",
+      "output": "cloud_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 90,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Email/Phishing Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'cloud_analysis':\ncloud_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')\n- cloud_analysis.docx (path: /app/output/cloud_analysis.docx, from step 'cloud_analysis')",
+      "output": "email_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 109,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_8",
+      "type": "agent",
+      "name": "Threat Intelligence Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'cloud_analysis':\ncloud_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'email_analysis':\nemail_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')\n- cloud_analysis.docx (path: /app/output/cloud_analysis.docx, from step 'cloud_analysis')",
+      "output": "threat_intel result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 107,
+      "agent_id": 1007,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 121,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_9",
+      "type": "agent",
+      "name": "Data Loss Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'cloud_analysis':\ncloud_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'email_analysis':\nemail_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'threat_intel':\nthreat_intel result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')\n- cloud_analysis.docx (path: /app/output/cloud_analysis.docx, from step 'cloud_analysis')",
+      "output": "data_loss_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 108,
+      "agent_id": 1008,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 133,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_10",
+      "type": "agent",
+      "name": "Incident Report Writer",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'cloud_analysis':\ncloud_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'email_analysis':\nemail_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'threat_intel':\nthreat_intel result for: User request: Prepare a complete assessm\n\nOutput from 'data_loss_analysis':\ndata_loss_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')\n- endpoint_analysis.docx (path: /app/output/endpoint_analysis.docx, from step 'endpoint_analysis')\n- cloud_analysis.docx (path: /app/output/cloud_analysis.docx, from step 'cloud_analysis')\n- data_loss_analysis.docx (path: /app/output/data_loss_analysis.docx, from step 'data_loss_analysis')",
+      "output": "incident_report result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 109,
+      "agent_id": 1009,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 152,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "incident_report result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "agent_8",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_8",
+      "to_id": "agent_9",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_9",
+      "to_id": "agent_10",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_10",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 865,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "SOC Triage Analyst",
+       "input_text": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more detai",
+       "output_text": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "duration_ms": "<ms>",
+       "tokens_used": 88
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Network Forensics Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "output_text": "network_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 35
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Endpoint/Malware Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis.docx, from step 'network_analysis')",
+       "output_text": "endpoint_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 59
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Identity/Access Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- network_analysis.docx (path: /app/output/network_analysis",
+       "output_text": "identity_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 78
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Cloud Security Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a compl",
+       "output_text": "cloud_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 90
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Email/Phishing Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a compl",
+       "output_text": "email_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 109
+      },
+      {
+       "step_id": 107,
+       "agent_id": 1007,
+       "step_name": "Threat Intelligence Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a compl",
+       "output_text": "threat_intel result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 121
+      },
+      {
+       "step_id": 108,
+       "agent_id": 1008,
+       "step_name": "Data Loss Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a compl",
+       "output_text": "data_loss_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 133
+      },
+      {
+       "step_id": 109,
+       "agent_id": 1009,
+       "step_name": "Incident Report Writer",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'network_analysis':\nnetwork_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'endpoint_analysis':\nendpoint_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'identity_analysis':\nidentity_analysis result for: User request: Prepare a compl",
+       "output_text": "incident_report result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 152
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

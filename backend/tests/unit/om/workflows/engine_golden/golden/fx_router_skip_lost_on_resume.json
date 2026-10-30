@@ -1,0 +1,1425 @@
+{
+ "scenario": "fx_router_skip_lost_on_resume",
+ "description": "Router TRUE skips step 3, then step 2 pauses. On resume the skip set is NOT restored (it lives only in a local variable), so the inactive-branch step 3 runs. Known bug.",
+ "covers": [
+  "conditional_router",
+  "HITL resume",
+  "BUG: skip set lost on resume"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "FX router + pause",
+    "mode": "sequential",
+    "max_steps": 10,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Classifier",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "a",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Route",
+      "type": "conditional_router",
+      "agent_id": null,
+      "output_key": "route",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Urgent Clarifier",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "urgent",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Routine Handler",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "routine",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Summary",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "summary",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Classifier",
+     "agent_name": "FX Classifier",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "Thinking about Classifier"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "urgen",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "t leak",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "urgent leak",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Classifier",
+     "output_key": "a"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Route",
+     "step_order": 1,
+     "step_type": "conditional_router",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Condition: $a.output contains 'urgent' → TRUE (actual: 'urgent leak')",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Route",
+     "output_key": "route"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Urgent Clarifier",
+     "agent_name": "FX Urgent Clarifier",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Urgent Clarifier",
+     "output_key": "urgent"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Urgent Clarifier",
+     "agent_name": "FX Urgent Clarifier",
+     "questions": "Which details are missing for urgent? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "Which details are missing for urgent? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 4,
+     "content": "Which details are missing for urgent? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for urgent? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Classifier",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "a",
+     "agent": "FX Classifier",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Urgent Clarifier",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "urgent",
+     "agent": "FX Urgent Clarifier",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent leak"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent leak",
+       "route": "true"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 103,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent leak",
+       "route": "true"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for urgent? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue"
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "a": "urgent leak",
+    "route": "true"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "FX router + pause",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 15,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Classifier",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "urgent leak",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 15,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "router_2",
+      "type": "router",
+      "name": "Route",
+      "status": "completed",
+      "input": "",
+      "output": "branch: true",
+      "reason": "Condition: $a.output contains 'urgent' → TRUE (actual: 'urgent leak')",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Urgent Clarifier",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue",
+      "output": "Which details are missing for urgent? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "router_2",
+      "type": "sequence",
+      "label": null
+     },
+     {
+      "from_id": "router_2",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 103,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 15,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Classifier",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "output_text": "urgent leak",
+       "duration_ms": "<ms>",
+       "tokens_used": 15
+      },
+      {
+       "step_id": 102,
+       "agent_id": null,
+       "step_name": "Route",
+       "input_text": "{'condition_field': '$a.output', 'operator': 'contains', 'match_value': 'urgent', 'case_sensitive': False, 'true_steps': [2], 'false_steps': [3]}",
+       "output_text": "Condition: $a.output contains 'urgent' → TRUE (actual: 'urgent leak')",
+       "duration_ms": "<ms>",
+       "tokens_used": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "FX router + pause",
+    "mode": "sequential",
+    "max_steps": 10,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Classifier",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "a",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Route",
+      "type": "conditional_router",
+      "agent_id": null,
+      "output_key": "route",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Urgent Clarifier",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "urgent",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Routine Handler",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "routine",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Summary",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "summary",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Urgent Clarifier",
+     "agent_name": "FX Urgent Clarifier",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "urgent result for: TASK:\nUser request: Prepare a complete a",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Urgent Clarifier",
+     "output_key": "urgent"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Routine Handler",
+     "agent_name": "FX Routine Handler",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about Routine Handler"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "routine result for: User reque",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "st: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "routine result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Routine Handler",
+     "output_key": "routine"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Summary",
+     "agent_name": "FX Summary",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "Thinking about Summary"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "summary result for: User reque",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "st: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "summary result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Summary",
+     "output_key": "summary"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "summary result for: User request: Prepare a complete assessm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 5,
+     "content": "summary result for: User request: Prepare a complete assessm",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "summary result for: User request: Prepare a complete assessm",
+   "agent_calls": [
+    {
+     "step_name": "Urgent Clarifier",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "urgent",
+     "agent": "FX Urgent Clarifier",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "task": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for urgent? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Routine Handler",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "routine",
+     "agent": "FX Routine Handler",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue\n\nOutput from 'urgent':\nurgent result for: TASK:\nUser request: Prepare a complete a",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Summary",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "summary",
+     "agent": "FX Summary",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue\n\nOutput from 'urgent':\nurgent result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'routine':\nroutine result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent leak",
+       "route": "true",
+       "urgent": "urgent result for: TASK:\nUser request: Prepare a complete a"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent leak",
+       "route": "true",
+       "urgent": "urgent result for: TASK:\nUser request: Prepare a complete a",
+       "routine": "routine result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 3,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent leak",
+       "route": "true",
+       "urgent": "urgent result for: TASK:\nUser request: Prepare a complete a",
+       "routine": "routine result for: User request: Prepare a complete assessm",
+       "summary": "summary result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "a": "urgent leak",
+    "route": "true",
+    "urgent": "urgent result for: TASK:\nUser request: Prepare a complete a",
+    "routine": "routine result for: User request: Prepare a complete assessm",
+    "summary": "summary result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:paused",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:paused",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:paused",
+      "agent_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:paused",
+      "agent_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:paused",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:paused",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:paused",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "FX router + pause",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 197,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Classifier",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "urgent leak",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 15,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "router_2",
+      "type": "router",
+      "name": "Route",
+      "status": "completed",
+      "input": "",
+      "output": "branch: true",
+      "reason": "Condition: $a.output contains 'urgent' → TRUE (actual: 'urgent leak')",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Urgent Clarifier",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue",
+      "output": "Which details are missing for urgent? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Urgent Clarifier",
+      "status": "completed",
+      "input": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for urgent? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "urgent result for: TASK:\nUser request: Prepare a complete a",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 97,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Routine Handler",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue\n\nOutput from 'urgent':\nurgent result for: TASK:\nUser request: Prepare a complete a",
+      "output": "routine result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1003,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 44,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Summary",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue\n\nOutput from 'urgent':\nurgent result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'routine':\nroutine result for: User request: Prepare a complete assessm",
+      "output": "summary result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 105,
+      "agent_id": 1004,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 56,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "summary result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "router_2",
+      "type": "sequence",
+      "label": null
+     },
+     {
+      "from_id": "router_2",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 197,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Classifier",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "output_text": "urgent leak",
+       "duration_ms": "<ms>",
+       "tokens_used": 15
+      },
+      {
+       "step_id": 102,
+       "agent_id": null,
+       "step_name": "Route",
+       "input_text": "{'condition_field': '$a.output', 'operator': 'contains', 'match_value': 'urgent', 'case_sensitive': False, 'true_steps': [2], 'false_steps': [3]}",
+       "output_text": "Condition: $a.output contains 'urgent' → TRUE (actual: 'urgent leak')",
+       "duration_ms": "<ms>",
+       "tokens_used": 0
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1002,
+       "step_name": "Urgent Clarifier",
+       "input_text": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for urgent? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your compl",
+       "output_text": "urgent result for: TASK:\nUser request: Prepare a complete a",
+       "duration_ms": "<ms>",
+       "tokens_used": 97
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1003,
+       "step_name": "Routine Handler",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue\n\nOutput from 'urgent':\nurgent result for: TASK:\nUser request: Prepare a complete a",
+       "output_text": "routine result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 44
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1004,
+       "step_name": "Summary",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent leak\n\nOutput from 'route':\ntrue\n\nOutput from 'urgent':\nurgent result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'routine':\nroutine result for: User request: Prepare a complete assessm",
+       "output_text": "summary result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 56
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

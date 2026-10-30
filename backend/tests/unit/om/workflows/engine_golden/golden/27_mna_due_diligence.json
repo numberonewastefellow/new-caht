@@ -1,0 +1,3086 @@
+{
+ "scenario": "27_mna_due_diligence",
+ "description": "Template 27_mna_due_diligence.json forced into sequential mode.",
+ "covers": [
+  "template",
+  "sequential"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "M&A Due Diligence Panel",
+    "mode": "sequential",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Deal Triage Analyst",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Financial Analyst",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "financial_analysis",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Tax Specialist",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "tax_analysis",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Legal/Regulatory Analyst",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "legal_analysis",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Commercial/Market Analyst",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "commercial_analysis",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Technology/IP Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "technology_analysis",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "HR/Culture Analyst",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "hr_analysis",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Operations Analyst",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "operations_analysis",
+      "flags": []
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "ESG/Compliance Analyst",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "esg_analysis",
+      "flags": []
+     },
+     {
+      "id": 110,
+      "order": 9,
+      "name": "Investment Memo Writer",
+      "type": "agent",
+      "agent_id": 1010,
+      "output_key": "investment_memo",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Deal Triage Analyst",
+     "agent_name": "WF Deal Triage Analyst",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Deal Triage Analyst",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Deal Triage Analyst",
+     "agent_name": "WF Deal Triage Analyst",
+     "questions": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 2,
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Deal Triage Analyst",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Deal Triage Analyst",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "M&A Due Diligence Panel",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Deal Triage Analyst",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "M&A Due Diligence Panel",
+    "mode": "sequential",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Deal Triage Analyst",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Financial Analyst",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "financial_analysis",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Tax Specialist",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "tax_analysis",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Legal/Regulatory Analyst",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "legal_analysis",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Commercial/Market Analyst",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "commercial_analysis",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Technology/IP Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "technology_analysis",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "HR/Culture Analyst",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "hr_analysis",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "Operations Analyst",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "operations_analysis",
+      "flags": []
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "ESG/Compliance Analyst",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "esg_analysis",
+      "flags": []
+     },
+     {
+      "id": 110,
+      "order": 9,
+      "name": "Investment Memo Writer",
+      "type": "agent",
+      "agent_id": 1010,
+      "output_key": "investment_memo",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Deal Triage Analyst",
+     "agent_name": "WF Deal Triage Analyst",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Deal Triage Analyst",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Financial Analyst",
+     "agent_name": "WF M&A Financial Analyst",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Thinking about Financial Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Financial Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "financial_analysis result for: User",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": " request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_102_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/financial_analysis.docx",
+        "filename": "financial_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_102_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "financial_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Financial Analyst",
+     "output_key": "financial_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Tax Specialist",
+     "agent_name": "WF M&A Tax Specialist",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about Tax Specialist"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "tax_analysis result for: User re",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "quest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "tax_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Tax Specialist",
+     "output_key": "tax_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Legal/Regulatory Analyst",
+     "agent_name": "WF M&A Legal Analyst",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "legal_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Legal/Regulatory Analyst",
+     "output_key": "legal_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Commercial/Market Analyst",
+     "agent_name": "WF M&A Commercial Analyst",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Thinking about Commercial/Market Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Commercial/Market Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "commercial_analysis result for: User",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": " request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_105_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/commercial_analysis.docx",
+        "filename": "commercial_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_105_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "commercial_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Commercial/Market Analyst",
+     "output_key": "commercial_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "step_name": "Technology/IP Analyst",
+     "agent_name": "WF M&A Technology Analyst",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "Thinking about Technology/IP Analyst"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "technology_analysis result for: User",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": " request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "technology_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "step_name": "Technology/IP Analyst",
+     "output_key": "technology_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "step_name": "HR/Culture Analyst",
+     "agent_name": "WF M&A HR Analyst",
+     "step_order": 6,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "Thinking about HR/Culture Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "HR/Culture Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      9,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "hr_analysis result for: User req",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "uest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_107_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/hr_analysis.docx",
+        "filename": "hr_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_107_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "hr_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "step_name": "HR/Culture Analyst",
+     "output_key": "hr_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Operations Analyst",
+     "agent_name": "WF M&A Operations Analyst",
+     "step_order": 7,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "Thinking about Operations Analyst"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Operations Analyst"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "operations_analysis result for: User",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": " request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_108_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/operations_analysis.docx",
+        "filename": "operations_analysis.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_108_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "operations_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Operations Analyst",
+     "output_key": "operations_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "ESG/Compliance Analyst",
+     "agent_name": "WF M&A ESG Analyst",
+     "step_order": 8,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Thinking about ESG/Compliance Analyst"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "esg_analysis result for: User re",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "quest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "esg_analysis result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "ESG/Compliance Analyst",
+     "output_key": "esg_analysis"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "step_name": "Investment Memo Writer",
+     "agent_name": "WF Investment Memo Writer",
+     "step_order": 9,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "Thinking about Investment Memo Writer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "investment_memo result for: User r",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "equest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "investment_memo result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "step_name": "Investment Memo Writer",
+     "output_key": "investment_memo"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "investment_memo result for: User request: Prepare a complete assessm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      15,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "content": "",
+     "file_ids": [
+      "file_102_0_0",
+      "file_105_0_0",
+      "file_107_0_0",
+      "file_108_0_0"
+     ],
+     "file_names": [
+      "financial_analysis.docx",
+      "commercial_analysis.docx",
+      "hr_analysis.docx",
+      "operations_analysis.docx"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      15,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      16,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 14,
+     "content": "investment_memo result for: User request: Prepare a complete assessm",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 15,
+     "content": "",
+     "file_ids": [
+      "file_102_0_0",
+      "file_105_0_0",
+      "file_107_0_0",
+      "file_108_0_0"
+     ],
+     "file_names": [
+      "financial_analysis.docx",
+      "commercial_analysis.docx",
+      "hr_analysis.docx",
+      "operations_analysis.docx"
+     ]
+    }
+   ],
+   "final_answer": "",
+   "agent_calls": [
+    {
+     "step_name": "Deal Triage Analyst",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Deal Triage Analyst",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Financial Analyst",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "financial_analysis",
+     "agent": "WF M&A Financial Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Tax Specialist",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "tax_analysis",
+     "agent": "WF M&A Tax Specialist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Legal/Regulatory Analyst",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "legal_analysis",
+     "agent": "WF M&A Legal Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Commercial/Market Analyst",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "commercial_analysis",
+     "agent": "WF M&A Commercial Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Technology/IP Analyst",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "technology_analysis",
+     "agent": "WF M&A Technology Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'commercial_analysis':\ncommercial_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')\n- commercial_analysis.docx (path: /app/output/commercial_analysis.docx, from step 'commercial_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "HR/Culture Analyst",
+     "step_id": 107,
+     "step_order": 6,
+     "output_key": "hr_analysis",
+     "agent": "WF M&A HR Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'commercial_analysis':\ncommercial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'technology_analysis':\ntechnology_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')\n- commercial_analysis.docx (path: /app/output/commercial_analysis.docx, from step 'commercial_analysis')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Operations Analyst",
+     "step_id": 108,
+     "step_order": 7,
+     "output_key": "operations_analysis",
+     "agent": "WF M&A Operations Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'commercial_analysis':\ncommercial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'technology_analysis':\ntechnology_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'hr_analysis':\nhr_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')\n- commercial_analysis.docx (path: /app/output/commercial_analysis.docx, from step 'commercial_analysis')\n- hr_analysis.docx (path: /app/output/hr_analysis.docx, from step 'hr_analysis')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "ESG/Compliance Analyst",
+     "step_id": 109,
+     "step_order": 8,
+     "output_key": "esg_analysis",
+     "agent": "WF M&A ESG Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'commercial_analysis':\ncommercial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'technology_analysis':\ntechnology_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'hr_analysis':\nhr_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'operations_analysis':\noperations_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')\n- commercial_analysis.docx (path: /app/output/commercial_analysis.docx, from step 'commercial_analysis')\n- hr_analysis.docx (path: /app/output/hr_analysis.docx, from step 'hr_analysis')\n- operations_analysis.docx (path: /app/output/operations_analysis.docx, from step 'operations_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Investment Memo Writer",
+     "step_id": 110,
+     "step_order": 9,
+     "output_key": "investment_memo",
+     "agent": "WF Investment Memo Writer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'commercial_analysis':\ncommercial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'technology_analysis':\ntechnology_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'hr_analysis':\nhr_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'operations_analysis':\noperations_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'esg_analysis':\nesg_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')\n- commercial_analysis.docx (path: /app/output/commercial_analysis.docx, from step 'commercial_analysis')\n- hr_analysis.docx (path: /app/output/hr_analysis.docx, from step 'hr_analysis')\n- operations_analysis.docx (path: /app/output/operations_analysis.docx, from step 'operations_analysis')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "financial_analysis": "financial_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "financial_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/financial_analysis.docx",
+           "filename": "financial_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "financial_analysis": "financial_analysis result for: User request: Prepare a complete assessm",
+       "tax_analysis": "tax_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "financial_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/financial_analysis.docx",
+           "filename": "financial_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 3,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "financial_analysis": "financial_analysis result for: User request: Prepare a complete assessm",
+       "tax_analysis": "tax_analysis result for: User request: Prepare a complete assessm",
+       "legal_analysis": "legal_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "financial_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/financial_analysis.docx",
+           "filename": "financial_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "financial_analysis": "financial_analysis result for: User request: Prepare a complete assessm",
+       "tax_analysis": "tax_analysis result for: User request: Prepare a complete assessm",
+       "legal_analysis": "legal_analysis result for: User request: Prepare a complete assessm",
+       "commercial_analysis": "commercial_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "financial_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/financial_analysis.docx",
+           "filename": "financial_analysis.docx"
+          }
+         ]
+        },
+        "commercial_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/commercial_analysis.docx",
+           "filename": "commercial_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 6,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "financial_analysis": "financial_analysis result for: User request: Prepare a complete assessm",
+       "tax_analysis": "tax_analysis result for: User request: Prepare a complete assessm",
+       "legal_analysis": "legal_analysis result for: User request: Prepare a complete assessm",
+       "commercial_analysis": "commercial_analysis result for: User request: Prepare a complete assessm",
+       "technology_analysis": "technology_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "financial_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/financial_analysis.docx",
+           "filename": "financial_analysis.docx"
+          }
+         ]
+        },
+        "commercial_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/commercial_analysis.docx",
+           "filename": "commercial_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 7,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "financial_analysis": "financial_analysis result for: User request: Prepare a complete assessm",
+       "tax_analysis": "tax_analysis result for: User request: Prepare a complete assessm",
+       "legal_analysis": "legal_analysis result for: User request: Prepare a complete assessm",
+       "commercial_analysis": "commercial_analysis result for: User request: Prepare a complete assessm",
+       "technology_analysis": "technology_analysis result for: User request: Prepare a complete assessm",
+       "hr_analysis": "hr_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "financial_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/financial_analysis.docx",
+           "filename": "financial_analysis.docx"
+          }
+         ]
+        },
+        "commercial_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/commercial_analysis.docx",
+           "filename": "commercial_analysis.docx"
+          }
+         ]
+        },
+        "hr_analysis": {
+         "file_ids": [
+          "file_107_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/hr_analysis.docx",
+           "filename": "hr_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 9,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "financial_analysis": "financial_analysis result for: User request: Prepare a complete assessm",
+       "tax_analysis": "tax_analysis result for: User request: Prepare a complete assessm",
+       "legal_analysis": "legal_analysis result for: User request: Prepare a complete assessm",
+       "commercial_analysis": "commercial_analysis result for: User request: Prepare a complete assessm",
+       "technology_analysis": "technology_analysis result for: User request: Prepare a complete assessm",
+       "hr_analysis": "hr_analysis result for: User request: Prepare a complete assessm",
+       "operations_analysis": "operations_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "financial_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/financial_analysis.docx",
+           "filename": "financial_analysis.docx"
+          }
+         ]
+        },
+        "commercial_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/commercial_analysis.docx",
+           "filename": "commercial_analysis.docx"
+          }
+         ]
+        },
+        "hr_analysis": {
+         "file_ids": [
+          "file_107_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/hr_analysis.docx",
+           "filename": "hr_analysis.docx"
+          }
+         ]
+        },
+        "operations_analysis": {
+         "file_ids": [
+          "file_108_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/operations_analysis.docx",
+           "filename": "operations_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "financial_analysis": "financial_analysis result for: User request: Prepare a complete assessm",
+       "tax_analysis": "tax_analysis result for: User request: Prepare a complete assessm",
+       "legal_analysis": "legal_analysis result for: User request: Prepare a complete assessm",
+       "commercial_analysis": "commercial_analysis result for: User request: Prepare a complete assessm",
+       "technology_analysis": "technology_analysis result for: User request: Prepare a complete assessm",
+       "hr_analysis": "hr_analysis result for: User request: Prepare a complete assessm",
+       "operations_analysis": "operations_analysis result for: User request: Prepare a complete assessm",
+       "esg_analysis": "esg_analysis result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "financial_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/financial_analysis.docx",
+           "filename": "financial_analysis.docx"
+          }
+         ]
+        },
+        "commercial_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/commercial_analysis.docx",
+           "filename": "commercial_analysis.docx"
+          }
+         ]
+        },
+        "hr_analysis": {
+         "file_ids": [
+          "file_107_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/hr_analysis.docx",
+           "filename": "hr_analysis.docx"
+          }
+         ]
+        },
+        "operations_analysis": {
+         "file_ids": [
+          "file_108_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/operations_analysis.docx",
+           "filename": "operations_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 12,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "financial_analysis": "financial_analysis result for: User request: Prepare a complete assessm",
+       "tax_analysis": "tax_analysis result for: User request: Prepare a complete assessm",
+       "legal_analysis": "legal_analysis result for: User request: Prepare a complete assessm",
+       "commercial_analysis": "commercial_analysis result for: User request: Prepare a complete assessm",
+       "technology_analysis": "technology_analysis result for: User request: Prepare a complete assessm",
+       "hr_analysis": "hr_analysis result for: User request: Prepare a complete assessm",
+       "operations_analysis": "operations_analysis result for: User request: Prepare a complete assessm",
+       "esg_analysis": "esg_analysis result for: User request: Prepare a complete assessm",
+       "investment_memo": "investment_memo result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "financial_analysis": {
+         "file_ids": [
+          "file_102_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/financial_analysis.docx",
+           "filename": "financial_analysis.docx"
+          }
+         ]
+        },
+        "commercial_analysis": {
+         "file_ids": [
+          "file_105_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/commercial_analysis.docx",
+           "filename": "commercial_analysis.docx"
+          }
+         ]
+        },
+        "hr_analysis": {
+         "file_ids": [
+          "file_107_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/hr_analysis.docx",
+           "filename": "hr_analysis.docx"
+          }
+         ]
+        },
+        "operations_analysis": {
+         "file_ids": [
+          "file_108_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/operations_analysis.docx",
+           "filename": "operations_analysis.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109,
+       110
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 13,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+    "financial_analysis": "financial_analysis result for: User request: Prepare a complete assessm",
+    "tax_analysis": "tax_analysis result for: User request: Prepare a complete assessm",
+    "legal_analysis": "legal_analysis result for: User request: Prepare a complete assessm",
+    "commercial_analysis": "commercial_analysis result for: User request: Prepare a complete assessm",
+    "technology_analysis": "technology_analysis result for: User request: Prepare a complete assessm",
+    "hr_analysis": "hr_analysis result for: User request: Prepare a complete assessm",
+    "operations_analysis": "operations_analysis result for: User request: Prepare a complete assessm",
+    "esg_analysis": "esg_analysis result for: User request: Prepare a complete assessm",
+    "investment_memo": "investment_memo result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed",
+      "agent_11:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed",
+      "agent_11:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed",
+      "agent_11:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "M&A Due Diligence Panel",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 1001,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Deal Triage Analyst",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Deal Triage Analyst",
+      "status": "completed",
+      "input": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 88,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Financial Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+      "output": "financial_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 35,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Tax Specialist",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')",
+      "output": "tax_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 59,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Legal/Regulatory Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')",
+      "output": "legal_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 71,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Commercial/Market Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')",
+      "output": "commercial_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 83,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Technology/IP Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'commercial_analysis':\ncommercial_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')\n- commercial_analysis.docx (path: /app/output/commercial_analysis.docx, from step 'commercial_analysis')",
+      "output": "technology_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 102,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_8",
+      "type": "agent",
+      "name": "HR/Culture Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'commercial_analysis':\ncommercial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'technology_analysis':\ntechnology_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')\n- commercial_analysis.docx (path: /app/output/commercial_analysis.docx, from step 'commercial_analysis')",
+      "output": "hr_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 107,
+      "agent_id": 1007,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 114,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_9",
+      "type": "agent",
+      "name": "Operations Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'commercial_analysis':\ncommercial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'technology_analysis':\ntechnology_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'hr_analysis':\nhr_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')\n- commercial_analysis.docx (path: /app/output/commercial_analysis.docx, from step 'commercial_analysis')\n- hr_analysis.docx (path: /app/output/hr_analysis.docx, from step 'hr_analysis')",
+      "output": "operations_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 108,
+      "agent_id": 1008,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 133,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_10",
+      "type": "agent",
+      "name": "ESG/Compliance Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'commercial_analysis':\ncommercial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'technology_analysis':\ntechnology_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'hr_analysis':\nhr_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'operations_analysis':\noperations_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')\n- commercial_analysis.docx (path: /app/output/commercial_analysis.docx, from step 'commercial_analysis')\n- hr_analysis.docx (path: /app/output/hr_analysis.docx, from step 'hr_analysis')\n- operations_analysis.docx (path: /app/output/operations_analysis.docx, from step 'operations_analysis')",
+      "output": "esg_analysis result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 109,
+      "agent_id": 1009,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 152,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_11",
+      "type": "agent",
+      "name": "Investment Memo Writer",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'commercial_analysis':\ncommercial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'technology_analysis':\ntechnology_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'hr_analysis':\nhr_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'operations_analysis':\noperations_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'esg_analysis':\nesg_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')\n- commercial_analysis.docx (path: /app/output/commercial_analysis.docx, from step 'commercial_analysis')\n- hr_analysis.docx (path: /app/output/hr_analysis.docx, from step 'hr_analysis')\n- operations_analysis.docx (path: /app/output/operations_analysis.docx, from step 'operations_analysis')",
+      "output": "investment_memo result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 110,
+      "agent_id": 1010,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 164,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "investment_memo result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "agent_8",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_8",
+      "to_id": "agent_9",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_9",
+      "to_id": "agent_10",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_10",
+      "to_id": "agent_11",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_11",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 1001,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Deal Triage Analyst",
+       "input_text": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more detai",
+       "output_text": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "duration_ms": "<ms>",
+       "tokens_used": 88
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Financial Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "output_text": "financial_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 35
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Tax Specialist",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.docx, from step 'financial_analysis')",
+       "output_text": "tax_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 59
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Legal/Regulatory Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- financial_analysis.docx (path: /app/output/financial_analysis.d",
+       "output_text": "legal_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 71
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Commercial/Market Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n",
+       "output_text": "commercial_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 83
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Technology/IP Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n",
+       "output_text": "technology_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 102
+      },
+      {
+       "step_id": 107,
+       "agent_id": 1007,
+       "step_name": "HR/Culture Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n",
+       "output_text": "hr_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 114
+      },
+      {
+       "step_id": 108,
+       "agent_id": 1008,
+       "step_name": "Operations Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n",
+       "output_text": "operations_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 133
+      },
+      {
+       "step_id": 109,
+       "agent_id": 1009,
+       "step_name": "ESG/Compliance Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n",
+       "output_text": "esg_analysis result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 152
+      },
+      {
+       "step_id": 110,
+       "agent_id": 1010,
+       "step_name": "Investment Memo Writer",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'financial_analysis':\nfinancial_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'tax_analysis':\ntax_analysis result for: User request: Prepare a complete assessm\n\nOutput from 'legal_analysis':\nlegal_analysis result for: User request: Prepare a complete assessm\n",
+       "output_text": "investment_memo result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 164
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

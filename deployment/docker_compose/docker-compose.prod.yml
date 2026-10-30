@@ -18,6 +18,8 @@ services:
       - minio
     restart: unless-stopped
     environment:
+      # Shared bearer token for the code interpreter (must match the service's)
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
       - AUTH_TYPE=${AUTH_TYPE:-oidc}
       - POSTGRES_HOST=relational_db
       # Per-worker DB pools (the API runs API_SERVER_WORKERS processes, each with its own pools)
@@ -81,6 +83,8 @@ services:
       - cache
     restart: unless-stopped
     environment:
+      # Shared bearer token for the code interpreter (must match the service's)
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
       - USE_LIGHTWEIGHT_BACKGROUND_WORKER=${USE_LIGHTWEIGHT_BACKGROUND_WORKER:-true}
       - AUTH_TYPE=${AUTH_TYPE:-oidc}
       - POSTGRES_HOST=relational_db
@@ -183,6 +187,8 @@ services:
     restart: unless-stopped
     stop_grace_period: 1900s
     environment:
+      # Shared bearer token for the code interpreter (must match the service's)
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
       - PULSE_ROLE=worker
       - PULSE_WORKER_CONCURRENCY=${PULSE_WORKER_CONCURRENCY:-4}
       - AUTH_TYPE=${AUTH_TYPE:-oidc}
@@ -555,6 +561,11 @@ services:
     env_file:
       - path: .env
         required: false
+    environment:
+      # /v1/* requires `Authorization: Bearer $CODE_INTERPRETER_API_TOKEN`; with no
+      # token the service fails closed (503). ALLOW_UNAUTHENTICATED is dev-only.
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
+      - CODE_INTERPRETER_ALLOW_UNAUTHENTICATED=${CODE_INTERPRETER_ALLOW_UNAUTHENTICATED:-false}
 
     # Below is needed for the `docker-out-of-docker` execution mode
     user: root

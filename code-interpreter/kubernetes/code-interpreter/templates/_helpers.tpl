@@ -62,6 +62,17 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+Name of the Secret holding CODE_INTERPRETER_API_TOKEN ("" when none is configured)
+*/}}
+{{- define "code-interpreter.authSecretName" -}}
+{{- if .Values.auth.existingSecret }}
+{{- .Values.auth.existingSecret }}
+{{- else if .Values.auth.apiToken }}
+{{- printf "%s-auth" (include "code-interpreter.fullname" .) }}
+{{- end }}
+{{- end }}
+
+{{/*
 Get the namespace for Kubernetes executor
 */}}
 {{- define "code-interpreter.kubernetesNamespace" -}}

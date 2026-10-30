@@ -1,0 +1,760 @@
+{
+ "scenario": "fx_step_overrides__llm_decision",
+ "description": "Same overrides as fx_step_overrides in llm_decision mode (honoured here).",
+ "covers": [
+  "llm_decision",
+  "step overrides"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "FX overrides",
+    "mode": "llm_decision",
+    "max_steps": 10,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Overridden",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "over",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Agent Level LLM",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "agent_llm",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Overridden",
+     "agent_name": "FX Overridden",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Thinking about Overridden"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "over result for: ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Use your overrides",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "over result for: Use your overrides",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Agent: FX Overridden",
+     "output_key": "over"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Agent Level LLM",
+     "agent_name": "FX Agent Level LLM",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about Agent Level LLM"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Agent Level LLM"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "agent_llm result fo",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "r: Use the agent LLM",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "agent_llm result for: Use the agent LLM",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Agent: FX Agent Level LLM",
+     "output_key": "agent_llm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Final synthesis after 2 orchestrator decisions."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 5,
+     "content": "Final synthesis after 2 orchestrator decisions.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Final synthesis after 2 orchestrator decisions.",
+   "agent_calls": [
+    {
+     "step_name": "Overridden",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "over",
+     "agent": "FX Overridden",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "Use your overrides",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:step-provider/step-model",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": 123,
+      "system_prompt": "SYS OVERRIDE",
+      "task_prompt": "TASK OVERRIDE",
+      "tool_ids": [],
+      "document_set_ids": [
+       7
+      ],
+      "replace_base_system_prompt": true
+     }
+    },
+    {
+     "step_name": "Agent Level LLM",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "agent_llm",
+     "agent": "FX Agent Level LLM",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "Use the agent LLM",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:agent-provider/agent-model",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_fx_overridden",
+      "delegate_to_fx_agent_level_llm"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=1358 sha1=054f0b7f0c03>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ]
+     ]
+    },
+    {
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_fx_overridden",
+      "delegate_to_fx_agent_level_llm"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=1358 sha1=054f0b7f0c03>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_overridden\", \"arguments\": {\"task\": \"Use your overrides\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_fx_overridden",
+      "delegate_to_fx_agent_level_llm"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=1358 sha1=054f0b7f0c03>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_overridden\", \"arguments\": {\"task\": \"Use your overrides\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_agent_level_llm\", \"arguments\": {\"task\": \"Use the agent LLM\"}}"
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "over": "over result for: Use your overrides"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_overridden\", \"arguments\": {\"task\": \"Use your overrides\"}}"
+       ],
+       [
+        "tool_call_response",
+        10,
+        "{\"agent_name\": \"FX Overridden\", \"agent_output\": \"over result for: Use your overrides\"}"
+       ]
+      ],
+      "cycle_count": 1,
+      "agent_call_counts": {
+       "delegate_to_fx_overridden": 1
+      },
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "over": "over result for: Use your overrides",
+       "agent_llm": "agent_llm result for: Use the agent LLM"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_overridden\", \"arguments\": {\"task\": \"Use your overrides\"}}"
+       ],
+       [
+        "tool_call_response",
+        10,
+        "{\"agent_name\": \"FX Overridden\", \"agent_output\": \"over result for: Use your overrides\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_agent_level_llm\", \"arguments\": {\"task\": \"Use the agent LLM\"}}"
+       ],
+       [
+        "tool_call_response",
+        13,
+        "{\"agent_name\": \"FX Agent Level LLM\", \"agent_output\": \"agent_llm result for: Use the agent LLM\"}"
+       ]
+      ],
+      "cycle_count": 2,
+      "agent_call_counts": {
+       "delegate_to_fx_overridden": 1,
+       "delegate_to_fx_agent_level_llm": 1
+      },
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "over": "over result for: Use your overrides",
+    "agent_llm": "agent_llm result for: Use the agent LLM"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "agent_2:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "FX overrides",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "llm_decision",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 22,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: FX Overridden",
+      "status": "completed",
+      "input": "{\"task\": \"Use your overrides\"}",
+      "output": "over result for: Use your overrides",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 10,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_2_2",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Agent: FX Agent Level LLM",
+      "status": "completed",
+      "input": "{\"task\": \"Use the agent LLM\"}",
+      "output": "agent_llm result for: Use the agent LLM",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 12,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "Final synthesis after 2 orchestrator decisions.",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "orch_2_2",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_2_2",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 22,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Agent: FX Overridden",
+       "input_text": "{\"task\": \"Use your overrides\"}",
+       "output_text": "over result for: Use your overrides",
+       "duration_ms": "<ms>",
+       "tokens_used": 10
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Agent: FX Agent Level LLM",
+       "input_text": "{\"task\": \"Use the agent LLM\"}",
+       "output_text": "agent_llm result for: Use the agent LLM",
+       "duration_ms": "<ms>",
+       "tokens_used": 12
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

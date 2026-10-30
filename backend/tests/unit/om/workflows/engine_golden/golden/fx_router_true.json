@@ -1,0 +1,847 @@
+{
+ "scenario": "fx_router_true",
+ "description": "Router evaluates TRUE: false_steps [3] skipped, router output 'true' visible via $route.",
+ "covers": [
+  "conditional_router",
+  "true_steps/false_steps",
+  "router output substitution"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "FX router true",
+    "mode": "sequential",
+    "max_steps": 10,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Classifier",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "a",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Route",
+      "type": "conditional_router",
+      "agent_id": null,
+      "output_key": "route",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Urgent Handler",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "urgent",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Routine Handler",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "routine",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Summary",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "summary",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Classifier",
+     "agent_name": "FX Classifier",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "Thinking about Classifier"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "URGENT: water main ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "burst on 5th street",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "URGENT: water main burst on 5th street",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Classifier",
+     "output_key": "a"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Route",
+     "step_order": 1,
+     "step_type": "conditional_router",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Condition: $a.output contains 'urgent' → TRUE (actual: 'URGENT: water main burst on 5th street')",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Route",
+     "output_key": "route"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Urgent Handler",
+     "agent_name": "FX Urgent Handler",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Thinking about Urgent Handler"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "urgent result for: User reque",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "st: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "urgent result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Urgent Handler",
+     "output_key": "urgent"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Summary",
+     "agent_name": "FX Summary",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about Summary"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "summary result for: route: tru",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "e\nclassification: URGENT: wate",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "summary result for: route: true\nclassification: URGENT: wate",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Summary",
+     "output_key": "summary"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "summary result for: route: true\nclassification: URGENT: wate"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 4,
+     "content": "summary result for: route: true\nclassification: URGENT: wate",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "summary result for: route: true\nclassification: URGENT: wate",
+   "agent_calls": [
+    {
+     "step_name": "Classifier",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "a",
+     "agent": "FX Classifier",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Urgent Handler",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "urgent",
+     "agent": "FX Urgent Handler",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nURGENT: water main burst on 5th street\n\nOutput from 'route':\ntrue",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Summary",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "summary",
+     "agent": "FX Summary",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "route: true\nclassification: URGENT: water main burst on 5th street",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "URGENT: water main burst on 5th street"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "URGENT: water main burst on 5th street",
+       "route": "true"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "URGENT: water main burst on 5th street",
+       "route": "true",
+       "urgent": "urgent result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "URGENT: water main burst on 5th street",
+       "route": "true",
+       "urgent": "urgent result for: User request: Prepare a complete assessm",
+       "summary": "summary result for: route: true\nclassification: URGENT: wate"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       105
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 3,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "a": "URGENT: water main burst on 5th street",
+    "route": "true",
+    "urgent": "urgent result for: User request: Prepare a complete assessm",
+    "summary": "summary result for: route: true\nclassification: URGENT: wate"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "agent_2:completed",
+      "agent_3:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "FX router true",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 74,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Classifier",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "URGENT: water main burst on 5th street",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 20,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "router_2",
+      "type": "router",
+      "name": "Route",
+      "status": "completed",
+      "input": "",
+      "output": "branch: true",
+      "reason": "Condition: $a.output contains 'urgent' → TRUE (actual: 'URGENT: water main burst on 5th street')",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Urgent Handler",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nURGENT: water main burst on 5th street\n\nOutput from 'route':\ntrue",
+      "output": "urgent result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 36,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Summary",
+      "status": "completed",
+      "input": "route: true\nclassification: URGENT: water main burst on 5th street",
+      "output": "summary result for: route: true\nclassification: URGENT: wate",
+      "reason": null,
+      "step_id": 105,
+      "agent_id": 1004,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 18,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "summary result for: route: true\nclassification: URGENT: wate",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "router_2",
+      "type": "sequence",
+      "label": null
+     },
+     {
+      "from_id": "router_2",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 74,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Classifier",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "output_text": "URGENT: water main burst on 5th street",
+       "duration_ms": "<ms>",
+       "tokens_used": 20
+      },
+      {
+       "step_id": 102,
+       "agent_id": null,
+       "step_name": "Route",
+       "input_text": "{'condition_field': '$a.output', 'operator': 'contains', 'match_value': 'urgent', 'case_sensitive': False, 'true_steps': [2], 'false_steps': [3]}",
+       "output_text": "Condition: $a.output contains 'urgent' → TRUE (actual: 'URGENT: water main burst on 5th street')",
+       "duration_ms": "<ms>",
+       "tokens_used": 0
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1002,
+       "step_name": "Urgent Handler",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nURGENT: water main burst on 5th street\n\nOutput from 'route':\ntrue",
+       "output_text": "urgent result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 36
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1004,
+       "step_name": "Summary",
+       "input_text": "route: true\nclassification: URGENT: water main burst on 5th street",
+       "output_text": "summary result for: route: true\nclassification: URGENT: wate",
+       "duration_ms": "<ms>",
+       "tokens_used": 18
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

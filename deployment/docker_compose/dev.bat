@@ -16,6 +16,11 @@ set OFFICE_COMPOSE=docker compose -f "%OFFICE_DIR%\docker-compose.yml"
 
 if "%~1"=="" goto usage
 
+:: The code interpreter rejects unauthenticated calls (fails closed without a token),
+:: so make sure the local .env has a CODE_INTERPRETER_API_TOKEN before starting anything.
+if /i "%~1"=="up" call :ensure_ci_token
+if /i "%~1"=="build" call :ensure_ci_token
+
 :: Resolve service names from arguments 2..N into SERVICES variable
 set SERVICES=
 set _i=2
@@ -338,6 +343,35 @@ if defined _has_office (
         %OFFICE_COMPOSE% logs -f --tail=100
     )
 )
+goto :eof
+
+:: Ensure the LOCAL .env (next to this script, never committed) has a non-placeholder
+:: CODE_INTERPRETER_API_TOKEN. If not, generate a random 256-bit hex token and append it.
+:: Compose passes it to code-interpreter AND to api_server / background / pulse_worker.
+:ensure_ci_token
+set _env_file=%~dp0.env
+if not exist "!_env_file!" (
+    echo   No .env next to dev.bat - skipping CODE_INTERPRETER_API_TOKEN setup ^(copy env.template to .env^).
+    goto :eof
+)
+findstr /r /c:"^CODE_INTERPRETER_API_TOKEN=." "!_env_file!" >nul 2>nul
+if !errorlevel! equ 0 (
+    findstr /r /c:"^CODE_INTERPRETER_API_TOKEN=change-me" "!_env_file!" >nul 2>nul
+    if !errorlevel! neq 0 goto :eof
+)
+set _ci_token=
+for /f "usebackq delims=" %%t in (`powershell -NoProfile -Command "$b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [BitConverter]::ToString($b).Replace('-','').ToLower()"`) do set _ci_token=%%t
+if not defined _ci_token (
+    echo   WARNING: could not generate CODE_INTERPRETER_API_TOKEN - set it in .env manually.
+    goto :eof
+)
+(
+    echo(
+    echo # Code interpreter API token ^(generated locally by dev.bat; keep secret, never commit^)
+    echo CODE_INTERPRETER_API_TOKEN=!_ci_token!
+) >> "!_env_file!"
+set _ci_token=
+echo   Generated CODE_INTERPRETER_API_TOKEN in .env ^(recreate code-interpreter + app services to apply^).
 goto :eof
 
 :: Office MCP server operations

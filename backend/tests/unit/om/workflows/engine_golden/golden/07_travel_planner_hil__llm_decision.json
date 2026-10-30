@@ -1,0 +1,2545 @@
+{
+ "scenario": "07_travel_planner_hil__llm_decision",
+ "description": "Template 07_travel_planner_hil.json in llm_decision mode; the fake orchestrator calls every step's agent once in step_order, then answers.",
+ "covers": [
+  "template",
+  "llm_decision"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Travel Planner (Interactive)",
+    "mode": "llm_decision",
+    "max_steps": 20,
+    "max_calls_per_agent": 5,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Travel Details Collector",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "travel_details",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Interest & Activities Planner",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "activities",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Flight Finder",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "flights",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Hotel Finder",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "hotels",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Itinerary Builder",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "itinerary",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Trip Summary & Budget",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "trip_summary",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Travel Details Collector."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Travel Details Collector",
+     "agent_name": "WF Smart Details Collector",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Smart Details Collector",
+     "output_key": "travel_details"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Travel Details Collector",
+     "agent_name": "WF Smart Details Collector",
+     "questions": "Which details are missing for travel_details? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Which details are missing for travel_details? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 5,
+     "content": "Which details are missing for travel_details? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for travel_details? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Travel Details Collector",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "travel_details",
+     "agent": "WF Smart Details Collector",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_smart_details_collector",
+      "delegate_to_wf_interest_activities_planner",
+      "delegate_to_wf_flight_finder",
+      "delegate_to_wf_hotel_finder",
+      "delegate_to_wf_itinerary_builder",
+      "delegate_to_wf_trip_summary_budget"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3269 sha1=2b49175b80c8>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ]
+      ],
+      "cycle_count": 1,
+      "agent_call_counts": {
+       "delegate_to_wf_smart_details_collector": 1
+      },
+      "turn_index": 3,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for travel_details? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Travel Planner (Interactive)",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "llm_decision",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Travel Details Collector.",
+      "reason": "Next I will delegate to Travel Details Collector.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Smart Details Collector",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for travel_details? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Travel Details Collector.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Travel Details Collector."
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Travel Planner (Interactive)",
+    "mode": "llm_decision",
+    "max_steps": 20,
+    "max_calls_per_agent": 5,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Travel Details Collector",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "travel_details",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Interest & Activities Planner",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "activities",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Flight Finder",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "flights",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Hotel Finder",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "hotels",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Itinerary Builder",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "itinerary",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Trip Summary & Budget",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "trip_summary",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Travel Details Collector",
+     "agent_name": "WF Smart Details Collector",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "travel_details result for: TASK:\nStep 'Travel Details Collector': w",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Smart Details Collector",
+     "output_key": "travel_details"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Interest & Activities Planner",
+     "agent_name": "WF Interest & Activities Planner",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "Thinking about Interest & Activities Planner"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "activities result for: Step 'In",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "terest & Activities Planner': wo",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "activities result for: Step 'Interest & Activities Planner': wo",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Interest & Activities Planner",
+     "output_key": "activities"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Flight Finder."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "step_name": "Flight Finder",
+     "agent_name": "WF Flight Finder",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "Thinking about Flight Finder"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "flights result for: Step 'Flig",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "ht Finder': work on: Prepare a",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "content": "flights result for: Step 'Flight Finder': work on: Prepare a",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Flight Finder",
+     "output_key": "flights"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      9,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "step_name": "Hotel Finder",
+     "agent_name": "WF Hotel Finder",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "Thinking about Hotel Finder"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "hotels result for: Step 'Hote",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "l Finder': work on: Prepare a ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "hotels result for: Step 'Hotel Finder': work on: Prepare a ",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Hotel Finder",
+     "output_key": "hotels"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Itinerary Builder."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "step_name": "Itinerary Builder",
+     "agent_name": "WF Itinerary Builder",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "Thinking about Itinerary Builder"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "itinerary result for: Step 'Iti",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "nerary Builder': work on: Prepa",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "itinerary result for: Step 'Itinerary Builder': work on: Prepa",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Itinerary Builder",
+     "output_key": "itinerary"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "step_name": "Trip Summary & Budget",
+     "agent_name": "WF Trip Summary & Budget",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "Thinking about Trip Summary & Budget"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "trip_summary result for: Step 'T",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "rip Summary & Budget': work on: P",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "content": "trip_summary result for: Step 'Trip Summary & Budget': work on: P",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Trip Summary & Budget",
+     "output_key": "trip_summary"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      16,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      17,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "content": "Final synthesis: all specialists were consulted."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      17,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      19,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 17,
+     "content": "Final synthesis: all specialists were consulted.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Final synthesis: all specialists were consulted.",
+   "agent_calls": [
+    {
+     "step_name": "Travel Details Collector",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "travel_details",
+     "agent": "WF Smart Details Collector",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "TASK:\nStep 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for travel_details? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Interest & Activities Planner",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "activities",
+     "agent": "WF Interest & Activities Planner",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Flight Finder",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "flights",
+     "agent": "WF Flight Finder",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "task": "Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Hotel Finder",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "hotels",
+     "agent": "WF Hotel Finder",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "task": "Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Itinerary Builder",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "itinerary",
+     "agent": "WF Itinerary Builder",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "task": "Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Trip Summary & Budget",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "trip_summary",
+     "agent": "WF Trip Summary & Budget",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      16,
+      0,
+      null
+     ],
+     "task": "Step 'Trip Summary & Budget': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_smart_details_collector",
+      "delegate_to_wf_interest_activities_planner",
+      "delegate_to_wf_flight_finder",
+      "delegate_to_wf_hotel_finder",
+      "delegate_to_wf_itinerary_builder",
+      "delegate_to_wf_trip_summary_budget"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3269 sha1=2b49175b80c8>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_smart_details_collector",
+      "delegate_to_wf_interest_activities_planner",
+      "delegate_to_wf_flight_finder",
+      "delegate_to_wf_hotel_finder",
+      "delegate_to_wf_itinerary_builder",
+      "delegate_to_wf_trip_summary_budget"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3269 sha1=2b49175b80c8>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_smart_details_collector",
+      "delegate_to_wf_interest_activities_planner",
+      "delegate_to_wf_flight_finder",
+      "delegate_to_wf_hotel_finder",
+      "delegate_to_wf_itinerary_builder",
+      "delegate_to_wf_trip_summary_budget"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3269 sha1=2b49175b80c8>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_smart_details_collector",
+      "delegate_to_wf_interest_activities_planner",
+      "delegate_to_wf_flight_finder",
+      "delegate_to_wf_hotel_finder",
+      "delegate_to_wf_itinerary_builder",
+      "delegate_to_wf_trip_summary_budget"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3269 sha1=2b49175b80c8>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      15,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_smart_details_collector",
+      "delegate_to_wf_interest_activities_planner",
+      "delegate_to_wf_flight_finder",
+      "delegate_to_wf_hotel_finder",
+      "delegate_to_wf_itinerary_builder",
+      "delegate_to_wf_trip_summary_budget"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3269 sha1=2b49175b80c8>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_itinerary_builder\", \"arguments\": {\"task\": \"Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      17,
+      0,
+      null
+     ],
+     "llm": "provider_llm:gpt/gpt-4.1",
+     "available_tools": [
+      "delegate_to_wf_smart_details_collector",
+      "delegate_to_wf_interest_activities_planner",
+      "delegate_to_wf_flight_finder",
+      "delegate_to_wf_hotel_finder",
+      "delegate_to_wf_itinerary_builder",
+      "delegate_to_wf_trip_summary_budget"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=3269 sha1=2b49175b80c8>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_itinerary_builder\", \"arguments\": {\"task\": \"Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_trip_summary_budget\", \"arguments\": {\"task\": \"Step 'Trip Summary & Budget': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nStep 'Travel Details Collector': w",
+       "activities": "activities result for: Step 'Interest & Activities Planner': wo"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Interest & Activities Planner\", \"agent_output\": \"activities result for: Step 'Interest & Activities Planner': wo\"}"
+       ]
+      ],
+      "cycle_count": 2,
+      "agent_call_counts": {
+       "delegate_to_wf_smart_details_collector": 1,
+       "delegate_to_wf_interest_activities_planner": 1
+      },
+      "turn_index": 6,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nStep 'Travel Details Collector': w",
+       "activities": "activities result for: Step 'Interest & Activities Planner': wo",
+       "flights": "flights result for: Step 'Flight Finder': work on: Prepare a"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Interest & Activities Planner\", \"agent_output\": \"activities result for: Step 'Interest & Activities Planner': wo\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Flight Finder\", \"agent_output\": \"flights result for: Step 'Flight Finder': work on: Prepare a\"}"
+       ]
+      ],
+      "cycle_count": 3,
+      "agent_call_counts": {
+       "delegate_to_wf_smart_details_collector": 1,
+       "delegate_to_wf_interest_activities_planner": 1,
+       "delegate_to_wf_flight_finder": 1
+      },
+      "turn_index": 9,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nStep 'Travel Details Collector': w",
+       "activities": "activities result for: Step 'Interest & Activities Planner': wo",
+       "flights": "flights result for: Step 'Flight Finder': work on: Prepare a",
+       "hotels": "hotels result for: Step 'Hotel Finder': work on: Prepare a "
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Interest & Activities Planner\", \"agent_output\": \"activities result for: Step 'Interest & Activities Planner': wo\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Flight Finder\", \"agent_output\": \"flights result for: Step 'Flight Finder': work on: Prepare a\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Hotel Finder\", \"agent_output\": \"hotels result for: Step 'Hotel Finder': work on: Prepare a \"}"
+       ]
+      ],
+      "cycle_count": 4,
+      "agent_call_counts": {
+       "delegate_to_wf_smart_details_collector": 1,
+       "delegate_to_wf_interest_activities_planner": 1,
+       "delegate_to_wf_flight_finder": 1,
+       "delegate_to_wf_hotel_finder": 1
+      },
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nStep 'Travel Details Collector': w",
+       "activities": "activities result for: Step 'Interest & Activities Planner': wo",
+       "flights": "flights result for: Step 'Flight Finder': work on: Prepare a",
+       "hotels": "hotels result for: Step 'Hotel Finder': work on: Prepare a ",
+       "itinerary": "itinerary result for: Step 'Itinerary Builder': work on: Prepa"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Interest & Activities Planner\", \"agent_output\": \"activities result for: Step 'Interest & Activities Planner': wo\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Flight Finder\", \"agent_output\": \"flights result for: Step 'Flight Finder': work on: Prepare a\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Hotel Finder\", \"agent_output\": \"hotels result for: Step 'Hotel Finder': work on: Prepare a \"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_itinerary_builder\", \"arguments\": {\"task\": \"Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Itinerary Builder\", \"agent_output\": \"itinerary result for: Step 'Itinerary Builder': work on: Prepa\"}"
+       ]
+      ],
+      "cycle_count": 5,
+      "agent_call_counts": {
+       "delegate_to_wf_smart_details_collector": 1,
+       "delegate_to_wf_interest_activities_planner": 1,
+       "delegate_to_wf_flight_finder": 1,
+       "delegate_to_wf_hotel_finder": 1,
+       "delegate_to_wf_itinerary_builder": 1
+      },
+      "turn_index": 14,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nStep 'Travel Details Collector': w",
+       "activities": "activities result for: Step 'Interest & Activities Planner': wo",
+       "flights": "flights result for: Step 'Flight Finder': work on: Prepare a",
+       "hotels": "hotels result for: Step 'Hotel Finder': work on: Prepare a ",
+       "itinerary": "itinerary result for: Step 'Itinerary Builder': work on: Prepa",
+       "trip_summary": "trip_summary result for: Step 'Trip Summary & Budget': work on: P"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"resume_101_1\", \"name\": \"delegate_to_wf_smart_details_collector\", \"arguments\": {\"task\": \"TASK:\\nStep 'T...<len=677 sha1=9cbbb9c6e452>"
+       ],
+       [
+        "tool_call_response",
+        9,
+        "travel_details result for: TASK:\nStep 'Travel Details Collector': w"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_interest_activities_planner\", \"arguments\": {\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Interest & Activities Planner\", \"agent_output\": \"activities result for: Step 'Interest & Activities Planner': wo\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_flight_finder\", \"arguments\": {\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        15,
+        "{\"agent_name\": \"WF Flight Finder\", \"agent_output\": \"flights result for: Step 'Flight Finder': work on: Prepare a\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_wf_hotel_finder\", \"arguments\": {\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Hotel Finder\", \"agent_output\": \"hotels result for: Step 'Hotel Finder': work on: Prepare a \"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_5_0\", \"name\": \"delegate_to_wf_itinerary_builder\", \"arguments\": {\"task\": \"Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Itinerary Builder\", \"agent_output\": \"itinerary result for: Step 'Itinerary Builder': work on: Prepa\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_6_0\", \"name\": \"delegate_to_wf_trip_summary_budget\", \"arguments\": {\"task\": \"Step 'Trip Summary & Budget': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        18,
+        "{\"agent_name\": \"WF Trip Summary & Budget\", \"agent_output\": \"trip_summary result for: Step 'Trip Summary & Budget': work on: P\"}"
+       ]
+      ],
+      "cycle_count": 6,
+      "agent_call_counts": {
+       "delegate_to_wf_smart_details_collector": 1,
+       "delegate_to_wf_interest_activities_planner": 1,
+       "delegate_to_wf_flight_finder": 1,
+       "delegate_to_wf_hotel_finder": 1,
+       "delegate_to_wf_itinerary_builder": 1,
+       "delegate_to_wf_trip_summary_budget": 1
+      },
+      "turn_index": 16,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "travel_details": "travel_details result for: TASK:\nStep 'Travel Details Collector': w",
+    "activities": "activities result for: Step 'Interest & Activities Planner': wo",
+    "flights": "flights result for: Step 'Flight Finder': work on: Prepare a",
+    "hotels": "hotels result for: Step 'Hotel Finder': work on: Prepare a ",
+    "itinerary": "itinerary result for: Step 'Itinerary Builder': work on: Prepa",
+    "trip_summary": "trip_summary result for: Step 'Trip Summary & Budget': work on: P"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "orch_2_2:completed",
+      "agent_3:completed",
+      "orch_3_3:completed",
+      "agent_4:completed",
+      "orch_4_4:completed",
+      "agent_5:completed",
+      "orch_5_5:completed",
+      "agent_6:completed",
+      "orch_6_6:completed",
+      "agent_7:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Travel Planner (Interactive)",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "llm_decision",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 229,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Travel Details Collector.",
+      "reason": "Next I will delegate to Travel Details Collector.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Smart Details Collector",
+      "status": "paused",
+      "input": "{\"task\": \"Step 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "Which details are missing for travel_details? Please provide the budget and the deadline.",
+      "reason": "Next I will delegate to Travel Details Collector.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Agent: WF Smart Details Collector",
+      "status": "completed",
+      "input": "TASK:\nStep 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for travel_details? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "travel_details result for: TASK:\nStep 'Travel Details Collector': w",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 0,
+      "duration_ms": "<ms>",
+      "tokens": 91,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_2_2",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Agent: WF Interest & Activities Planner",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "activities result for: Step 'Interest & Activities Planner': wo",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 28,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_3_3",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Flight Finder.",
+      "reason": "Next I will delegate to Flight Finder.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Agent: WF Flight Finder",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "flights result for: Step 'Flight Finder': work on: Prepare a",
+      "reason": "Next I will delegate to Flight Finder.",
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_4_4",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Agent: WF Hotel Finder",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "hotels result for: Step 'Hotel Finder': work on: Prepare a ",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 27,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_5_5",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Itinerary Builder.",
+      "reason": "Next I will delegate to Itinerary Builder.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Agent: WF Itinerary Builder",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "itinerary result for: Step 'Itinerary Builder': work on: Prepa",
+      "reason": "Next I will delegate to Itinerary Builder.",
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_6_6",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Agent: WF Trip Summary & Budget",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Trip Summary & Budget': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "trip_summary result for: Step 'Trip Summary & Budget': work on: P",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 30,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "Final synthesis: all specialists were consulted.",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Travel Details Collector."
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "orch_2_2",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_2_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "orch_3_3",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_3_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": "Next I will delegate to Flight Finder."
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "orch_4_4",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_4_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "orch_5_5",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_5_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": "Next I will delegate to Itinerary Builder."
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "orch_6_6",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_6_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 229,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Agent: WF Smart Details Collector",
+       "input_text": "TASK:\nStep 'Travel Details Collector': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for travel_details? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If ",
+       "output_text": "travel_details result for: TASK:\nStep 'Travel Details Collector': w",
+       "duration_ms": "<ms>",
+       "tokens_used": 91
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Agent: WF Interest & Activities Planner",
+       "input_text": "{\"task\": \"Step 'Interest & Activities Planner': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "activities result for: Step 'Interest & Activities Planner': wo",
+       "duration_ms": "<ms>",
+       "tokens_used": 28
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Agent: WF Flight Finder",
+       "input_text": "{\"task\": \"Step 'Flight Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "flights result for: Step 'Flight Finder': work on: Prepare a",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Agent: WF Hotel Finder",
+       "input_text": "{\"task\": \"Step 'Hotel Finder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "hotels result for: Step 'Hotel Finder': work on: Prepare a ",
+       "duration_ms": "<ms>",
+       "tokens_used": 27
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Agent: WF Itinerary Builder",
+       "input_text": "{\"task\": \"Step 'Itinerary Builder': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "itinerary result for: Step 'Itinerary Builder': work on: Prepa",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Agent: WF Trip Summary & Budget",
+       "input_text": "{\"task\": \"Step 'Trip Summary & Budget': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "trip_summary result for: Step 'Trip Summary & Budget': work on: P",
+       "duration_ms": "<ms>",
+       "tokens_used": 30
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

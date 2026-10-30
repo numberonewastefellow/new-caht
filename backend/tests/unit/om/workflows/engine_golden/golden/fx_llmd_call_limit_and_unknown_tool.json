@@ -1,0 +1,1146 @@
+{
+ "scenario": "fx_llmd_call_limit_and_unknown_tool",
+ "description": "max_calls_per_agent=1: second call to Alpha is refused (error injected in history, Alpha filtered from available tools); an unknown tool is ignored; two tool calls in one cycle (Beta + Gamma) both run.",
+ "covers": [
+  "llm_decision",
+  "max_calls_per_agent",
+  "unknown tool",
+  "multiple tool calls per cycle"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "FX three steps",
+    "mode": "llm_decision",
+    "max_steps": 10,
+    "max_calls_per_agent": 1,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Alpha",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "alpha",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Beta",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "beta",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Gamma",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "gamma",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Alpha",
+     "agent_name": "FX Alpha",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Thinking about Alpha"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "alpha resul",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "t for: first",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "alpha result for: first",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Agent: FX Alpha",
+     "output_key": "alpha"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "Run Beta and Gamma together."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Beta",
+     "agent_name": "FX Beta",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "Thinking about Beta"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "beta resu",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "lt for: b",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "beta result for: b",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Agent: FX Beta",
+     "output_key": "beta"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "step_name": "Gamma",
+     "agent_name": "FX Gamma",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "Thinking about Gamma"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "gamma res",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "ult for: g",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "gamma result for: g",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "step_name": "Agent: FX Gamma",
+     "output_key": "gamma"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "Done after limits."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 8,
+     "content": "Done after limits.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Done after limits.",
+   "agent_calls": [
+    {
+     "step_name": "Alpha",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "alpha",
+     "agent": "FX Alpha",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "first",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Beta",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "beta",
+     "agent": "FX Beta",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "b",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Gamma",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "gamma",
+     "agent": "FX Gamma",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "task": "g",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_fx_alpha",
+      "delegate_to_fx_beta",
+      "delegate_to_fx_gamma"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=1397 sha1=36eed086fcb4>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ]
+     ]
+    },
+    {
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_fx_beta",
+      "delegate_to_fx_gamma"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=1397 sha1=36eed086fcb4>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_fx_beta",
+      "delegate_to_fx_gamma"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=1397 sha1=36eed086fcb4>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"again\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_fx_beta",
+      "delegate_to_fx_gamma"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=1397 sha1=36eed086fcb4>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"again\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=1397 sha1=36eed086fcb4>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"again\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_4_1\", \"name\": \"delegate_to_fx_gamma\", \"arguments\": {\"task\": \"g\"}}"
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "alpha": "alpha result for: first"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: first\"}"
+       ]
+      ],
+      "cycle_count": 1,
+      "agent_call_counts": {
+       "delegate_to_fx_alpha": 1
+      },
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "alpha": "alpha result for: first",
+       "beta": "beta result for: b"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: first\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"again\"}}"
+       ],
+       [
+        "tool_call_response",
+        26,
+        "ERROR: Agent 'Agent: FX Alpha' has already been called 1 times. Do NOT call this agent again. Use a DIFFERENT agent or provide the final answer."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "{\"agent_name\": \"FX Beta\", \"agent_output\": \"beta result for: b\"}"
+       ]
+      ],
+      "cycle_count": 4,
+      "agent_call_counts": {
+       "delegate_to_fx_alpha": 1,
+       "delegate_to_fx_beta": 1
+      },
+      "turn_index": 6,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "alpha": "alpha result for: first",
+       "beta": "beta result for: b",
+       "gamma": "gamma result for: g"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"first\"}}"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: first\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"again\"}}"
+       ],
+       [
+        "tool_call_response",
+        26,
+        "ERROR: Agent 'Agent: FX Alpha' has already been called 1 times. Do NOT call this agent again. Use a DIFFERENT agent or provide the final answer."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_0\", \"name\": \"delegate_to_fx_beta\", \"arguments\": {\"task\": \"b\"}}"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "{\"agent_name\": \"FX Beta\", \"agent_output\": \"beta result for: b\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_4_1\", \"name\": \"delegate_to_fx_gamma\", \"arguments\": {\"task\": \"g\"}}"
+       ],
+       [
+        "tool_call_response",
+        8,
+        "{\"agent_name\": \"FX Gamma\", \"agent_output\": \"gamma result for: g\"}"
+       ]
+      ],
+      "cycle_count": 4,
+      "agent_call_counts": {
+       "delegate_to_fx_alpha": 1,
+       "delegate_to_fx_beta": 1,
+       "delegate_to_fx_gamma": 1
+      },
+      "turn_index": 7,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "alpha": "alpha result for: first",
+    "beta": "beta result for: b",
+    "gamma": "gamma result for: g"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "orch_3_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "orch_3_3:completed",
+      "orch_4_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "orch_3_3:completed",
+      "orch_4_4:completed",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "orch_3_3:completed",
+      "orch_4_4:completed",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "orch_3_3:completed",
+      "orch_4_4:completed",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "orch_3_3:completed",
+      "orch_4_4:completed",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "orch_3_3:completed",
+      "orch_4_4:completed",
+      "agent_2:completed",
+      "agent_3:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "FX three steps",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "llm_decision",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 18,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: FX Alpha",
+      "status": "completed",
+      "input": "{\"task\": \"first\"}",
+      "output": "alpha result for: first",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 6,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_2_2",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_3_3",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_4_4",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Run Beta and Gamma together.",
+      "reason": "Run Beta and Gamma together.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Agent: FX Beta",
+      "status": "completed",
+      "input": "{\"task\": \"b\"}",
+      "output": "beta result for: b",
+      "reason": "Run Beta and Gamma together.",
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 6,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Agent: FX Gamma",
+      "status": "completed",
+      "input": "{\"task\": \"g\"}",
+      "output": "gamma result for: g",
+      "reason": "Run Beta and Gamma together.",
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 6,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "Done after limits.",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "orch_2_2",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_2_2",
+      "to_id": "orch_3_3",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_3_3",
+      "to_id": "orch_4_4",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_4_4",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": "Run Beta and Gamma together."
+     },
+     {
+      "from_id": "orch_4_4",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": "Run Beta and Gamma together."
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 18,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Agent: FX Alpha",
+       "input_text": "{\"task\": \"first\"}",
+       "output_text": "alpha result for: first",
+       "duration_ms": "<ms>",
+       "tokens_used": 6
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Agent: FX Beta",
+       "input_text": "{\"task\": \"b\"}",
+       "output_text": "beta result for: b",
+       "duration_ms": "<ms>",
+       "tokens_used": 6
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Agent: FX Gamma",
+       "input_text": "{\"task\": \"g\"}",
+       "output_text": "gamma result for: g",
+       "duration_ms": "<ms>",
+       "tokens_used": 6
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

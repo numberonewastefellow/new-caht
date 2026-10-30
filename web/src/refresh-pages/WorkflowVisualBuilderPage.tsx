@@ -8,15 +8,15 @@ import { useWorkflow } from "@/hooks/useWorkflows";
 import { useLLMProviders } from "@/lib/hooks/useLLMProviders";
 import { useAvailableTools } from "@/hooks/useAvailableTools";
 import { useDocumentSets } from "@/lib/hooks/useDocumentSets";
-import {
-  createWorkflow,
-  updateWorkflow,
-} from "@/lib/workflows/api";
+import { describeSaveError, saveWorkflow } from "@/lib/workflows/api";
+import type { WorkflowSnapshot } from "@/lib/workflows/interfaces";
+import { AGENT_NODE_TYPE } from "@/lib/workflows/nodeRegistry";
+import { useNodeTypes } from "@/lib/workflows/useNodeTypes";
 import { toast } from "@/hooks/useToast";
 
 import { WorkflowCanvas } from "@/components/workflow-builder/WorkflowCanvas";
 import { AgentSidebar } from "@/components/workflow-builder/AgentSidebar";
-import { NodeConfigPanel } from "@/components/workflow-builder/NodeConfigPanel";
+import { StepConfigPanel } from "@/components/workflow-builder/StepConfigPanel";
 import { GlobalConfigToolbar } from "@/components/workflow-builder/GlobalConfigToolbar";
 import { useWorkflowGraph } from "@/components/workflow-builder/useWorkflowGraph";
 import {
@@ -25,12 +25,20 @@ import {
 } from "@/components/workflow-builder/AgentTestModal";
 import { QuickCreateAgentModal } from "@/components/workflow-builder/QuickCreateAgentModal";
 import { JsonViewModal } from "@/components/workflow-builder/JsonViewModal";
-import type {
-  AgentNodeData,
-  ConditionalRouterNodeData,
-  DragAgentData,
+import {
+  UPGRADE_NODE_EVENT,
+  type UpgradeNodeEventDetail,
+} from "@/components/workflow-builder/NodeBadges";
+import {
+  NodeUpgradeDialog,
+  type NodeUpgradeTarget,
+} from "@/components/workflows/NodeUpgradeDialog";
+import { WorkflowVersionsDialog } from "@/components/workflows/WorkflowVersionsDialog";
+import type { DragAgentData } from "@/components/workflow-builder/types";
+import {
+  ORCHESTRATOR_NODE_ID,
+  isStepNode,
 } from "@/components/workflow-builder/types";
-import { ORCHESTRATOR_NODE_ID } from "@/components/workflow-builder/types";
 
 // localStorage keys for panel state persistence
 const LS_SIDEBAR_WIDTH = "wfb-sidebar-width";
@@ -72,9 +80,16 @@ function WorkflowVisualBuilderInner({
 }: WorkflowVisualBuilderPageProps) {
   const router = useRouter();
   const { agents, isLoading: agentsLoading, refresh: refreshAgents } = useAgents();
-  const { workflow, isLoading: workflowLoading } = useWorkflow(
-    workflowId ?? null
-  );
+  const {
+    workflow,
+    isLoading: workflowLoading,
+    refresh: refreshWorkflow,
+  } = useWorkflow(workflowId ?? null);
+  const {
+    catalog,
+    isReady: catalogReady,
+    isLoading: catalogLoading,
+  } = useNodeTypes();
   const { llmProviders } = useLLMProviders();
   const { tools: availableTools } = useAvailableTools();
   const { documentSets } = useDocumentSets();
@@ -84,6 +99,10 @@ function WorkflowVisualBuilderInner({
   const [testTarget, setTestTarget] = useState<AgentTestTarget | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJsonView, setShowJsonView] = useState(false);
+  const [showVersions, setShowVersions] = useState(false);
+  const [upgradeTarget, setUpgradeTarget] = useState<
+    (NodeUpgradeTarget & { nodeId: string }) | null
+  >(null);
 
   // ── Panel resize & collapse state ──────────────────────────────────
   const [sidebarWidth, setSidebarWidth] = useState(() => readLsNumber(LS_SIDEBAR_WIDTH, DEFAULT_SIDEBAR_WIDTH));
@@ -134,25 +153,50 @@ function WorkflowVisualBuilderInner({
     meta,
     updateMeta,
     addAgentNode,
-    addConditionalRouterNode,
+    addTypedNode,
     removeNode,
     updateNodeData,
-    selectedNodeId,
+    applyNodeUpgrade,
     selectedNode,
     selectNode,
     loadFromSnapshot,
+    markSaved,
+    baseVersion,
     runAutoLayout,
     toPayload,
+    toUpdatePayload,
+    stepOrderToNodeKey,
     validate,
-  } = useWorkflowGraph();
+    modeConflicts,
+  } = useWorkflowGraph(catalog);
 
-  // Load existing workflow on mount
+  // Load existing workflow on mount, once the node type catalog settled
+  // (each node's view depends on whether its type is in the catalog).
   useEffect(() => {
-    if (workflow && !loaded) {
+    if (workflow && catalogReady && !loaded) {
       loadFromSnapshot(workflow);
       setLoaded(true);
     }
-  }, [workflow, loaded, loadFromSnapshot]);
+  }, [workflow, catalogReady, loaded, loadFromSnapshot]);
+
+  // Listen for "Upgrade available" clicks from ReactFlow nodes
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { nodeId } = (e as CustomEvent<UpgradeNodeEventDetail>).detail;
+      const node = nodes.find((n) => n.id === nodeId);
+      if (!node || !isStepNode(node)) return;
+      setUpgradeTarget({
+        nodeId,
+        stepName: node.data.step_name || node.data.step_type,
+        stepType: node.data.step_type,
+        fromVersion: node.data.type_version ?? 1,
+        config: node.data.config,
+        stepOrderToNodeKey: stepOrderToNodeKey(),
+      });
+    };
+    window.addEventListener(UPGRADE_NODE_EVENT, handler);
+    return () => window.removeEventListener(UPGRADE_NODE_EVENT, handler);
+  }, [nodes, stepOrderToNodeKey]);
 
   // Enrich agent nodes with agent details (LLM, tools, labels) once agents are loaded
   useEffect(() => {
@@ -166,9 +210,9 @@ function WorkflowVisualBuilderInner({
     enrichedRef.current = true;
     const agentMap = new Map(agents.map((a) => [a.id, a]));
     for (const node of nodes) {
-      if (node.type !== "agent") continue;
-      const d = node.data as AgentNodeData;
-      const agent = agentMap.get(d.agent_id);
+      if (!isStepNode(node) || node.data.step_type !== AGENT_NODE_TYPE) continue;
+      const d = node.data;
+      const agent = d.agent_id != null ? agentMap.get(d.agent_id) : undefined;
       if (!agent) continue;
       updateNodeData(node.id, {
         agent_icon_url: agent.uploaded_image_id
@@ -205,12 +249,12 @@ function WorkflowVisualBuilderInner({
     [addAgentNode]
   );
 
-  // Handle conditional router drop from sidebar
-  const handleConditionDrop = useCallback(
-    (position: { x: number; y: number }) => {
-      addConditionalRouterNode(position);
+  // Handle a node type dropped from the Utils palette
+  const handleNodeTypeDrop = useCallback(
+    (stepType: string, position: { x: number; y: number }) => {
+      addTypedNode(stepType, position);
     },
-    [addConditionalRouterNode]
+    [addTypedNode]
   );
 
   // Save workflow
@@ -223,30 +267,42 @@ function WorkflowVisualBuilderInner({
 
     setIsSaving(true);
     try {
-      const payload = toPayload();
-
       if (workflowId) {
-        const resp = await updateWorkflow(workflowId, payload);
-        if (!resp.ok) {
-          const err = await resp.text();
-          throw new Error(err);
-        }
-        toast.success(`"${meta.name}" has been updated.`);
+        const saved = await saveWorkflow(workflowId, toUpdatePayload());
+        markSaved(saved);
+        refreshWorkflow(saved, { revalidate: false });
+        toast.success(`"${meta.name}" has been updated (version ${saved.version}).`);
       } else {
-        const resp = await createWorkflow(payload as any);
-        if (!resp.ok) {
-          const err = await resp.text();
-          throw new Error(err);
-        }
+        await saveWorkflow(null, toPayload());
         toast.success(`"${meta.name}" has been created.`);
         router.push("/admin/workflows");
       }
-    } catch (err: any) {
-      toast.error(err.message || "Save failed");
+    } catch (err) {
+      toast.error(describeSaveError(err));
     } finally {
       setIsSaving(false);
     }
-  }, [validate, toPayload, workflowId, meta.name, router]);
+  }, [
+    validate,
+    toPayload,
+    toUpdatePayload,
+    markSaved,
+    refreshWorkflow,
+    workflowId,
+    meta.name,
+    router,
+  ]);
+
+  // A version was restored: it is now the saved workflow
+  const handleRestored = useCallback(
+    (restored: WorkflowSnapshot) => {
+      loadFromSnapshot(restored);
+      refreshWorkflow(restored, { revalidate: false });
+      setShowVersions(false);
+      toast.success(`Restored; saved as version ${restored.version}.`);
+    },
+    [loadFromSnapshot, refreshWorkflow]
+  );
 
   // Navigate back
   const handleBack = useCallback(() => {
@@ -318,10 +374,19 @@ function WorkflowVisualBuilderInner({
     );
   }
 
-  const showConfigPanel =
-    selectedNodeId &&
-    selectedNodeId !== ORCHESTRATOR_NODE_ID &&
-    selectedNode;
+  const selectedStep =
+    selectedNode && isStepNode(selectedNode) ? selectedNode : null;
+  const showConfigPanel = !!selectedStep;
+  const canvasWarnings =
+    modeConflicts.length > 0
+      ? [
+          `${modeConflicts
+            .map((s) => `"${s.step_name || s.step_type}"`)
+            .join(", ")} can't run in ${
+            meta.orchestration_mode === "llm_decision" ? "LLM Decision" : "Sequential"
+          } mode. Remove ${modeConflicts.length === 1 ? "it" : "them"} or switch the orchestration mode.`,
+        ]
+      : [];
   // Compute sidebar style
   const sidebarStyle: React.CSSProperties = sidebarCollapsed
     ? { width: 36, minWidth: 36 }
@@ -344,6 +409,7 @@ function WorkflowVisualBuilderInner({
         isEditMode={!!workflowId}
         llmProviders={llmProviders ?? []}
         onViewJson={() => setShowJsonView(true)}
+        onOpenVersions={workflowId ? () => setShowVersions(true) : undefined}
       />
       <div className="wfb-content">
         {/* Sidebar with dynamic width */}
@@ -357,6 +423,8 @@ function WorkflowVisualBuilderInner({
             llmProviders={llmProviders ?? []}
             collapsed={sidebarCollapsed}
             onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+            catalog={catalog}
+            catalogLoading={catalogLoading}
           />
         </div>
 
@@ -379,7 +447,8 @@ function WorkflowVisualBuilderInner({
           onConnect={onConnect}
           onNodeClick={handleNodeClick}
           onDrop={handleDrop}
-          onConditionDrop={handleConditionDrop}
+          onNodeTypeDrop={handleNodeTypeDrop}
+          warnings={canvasWarnings}
         />
 
         {/* Resize handle: config panel */}
@@ -393,18 +462,19 @@ function WorkflowVisualBuilderInner({
         )}
 
         {/* Config panel with dynamic width */}
-        {showConfigPanel && (
+        {selectedStep && (
           <div style={configStyle}>
-            <NodeConfigPanel
-              nodeId={selectedNodeId!}
-              nodeType={selectedNode!.type}
-              data={selectedNode!.data as AgentNodeData | ConditionalRouterNodeData}
+            <StepConfigPanel
+              nodeId={selectedStep.id}
+              kind={selectedStep.type}
+              data={selectedStep.data}
+              catalog={catalog}
               agents={agents}
               availableTools={availableTools}
               documentSets={documentSets}
               llmProviders={llmProviders ?? []}
               onUpdate={updateNodeData}
-              onDelete={(id) => {
+              onDelete={(id: string) => {
                 removeNode(id);
                 selectNode(null);
               }}
@@ -442,9 +512,34 @@ function WorkflowVisualBuilderInner({
         <JsonViewModal
           workflowJson={toPayload()}
           agentIds={nodes
-            .filter((n) => n.type === "agent")
-            .map((n) => (n.data as AgentNodeData).agent_id)}
+            .filter(isStepNode)
+            .map((n) => n.data.agent_id)
+            .filter((id): id is number => id != null)}
           onClose={() => setShowJsonView(false)}
+        />
+      )}
+
+      {/* Node type upgrade preview */}
+      {upgradeTarget && (
+        <NodeUpgradeDialog
+          target={upgradeTarget}
+          onApply={(result) => {
+            applyNodeUpgrade(upgradeTarget.nodeId, result);
+            setUpgradeTarget(null);
+            toast.success("Upgrade applied. Click Update to save it.");
+          }}
+          onClose={() => setUpgradeTarget(null)}
+        />
+      )}
+
+      {/* Version history */}
+      {showVersions && workflowId && (
+        <WorkflowVersionsDialog
+          workflowId={workflowId}
+          currentVersion={baseVersion}
+          catalog={catalog}
+          onRestored={handleRestored}
+          onClose={() => setShowVersions(false)}
         />
       )}
     </div>

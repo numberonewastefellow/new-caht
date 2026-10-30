@@ -1,0 +1,1622 @@
+{
+ "scenario": "05_travel_planner_hitl_test",
+ "description": "Template 05_travel_planner_hitl_test.json forced into sequential mode.",
+ "covers": [
+  "template",
+  "sequential"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Travel Planner HITL Test",
+    "mode": "sequential",
+    "max_steps": 15,
+    "max_calls_per_agent": 1,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Travel Details Collector",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "travel_details",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Interest & Activities Planner",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "activities",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Flight Finder",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "flights",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Hotel Finder",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "hotels",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Itinerary Builder",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "itinerary",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Trip Summary & Budget",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "trip_summary",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Travel Details Collector",
+     "agent_name": "WF HITL Details Collector",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Travel Details Collector",
+     "output_key": "travel_details"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Travel Details Collector",
+     "agent_name": "WF HITL Details Collector",
+     "questions": "Which details are missing for travel_details? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Which details are missing for travel_details? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 2,
+     "content": "Which details are missing for travel_details? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for travel_details? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Travel Details Collector",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "travel_details",
+     "agent": "WF HITL Details Collector",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for travel_details? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Travel Planner HITL Test",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Travel Details Collector",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for travel_details? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Travel Planner HITL Test",
+    "mode": "sequential",
+    "max_steps": 15,
+    "max_calls_per_agent": 1,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Travel Details Collector",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "travel_details",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Interest & Activities Planner",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "activities",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Flight Finder",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "flights",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Hotel Finder",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "hotels",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Itinerary Builder",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "itinerary",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Trip Summary & Budget",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "trip_summary",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Travel Details Collector",
+     "agent_name": "WF HITL Details Collector",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "travel_details result for: TASK:\nUser request: Prepare a complete a",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Travel Details Collector",
+     "output_key": "travel_details"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Interest & Activities Planner",
+     "agent_name": "WF Interest & Activities Planner",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Thinking about Interest & Activities Planner"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "activities result for: User req",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "uest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "activities result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Interest & Activities Planner",
+     "output_key": "activities"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Flight Finder",
+     "agent_name": "WF Flight Finder",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Thinking about Flight Finder"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "flights result for: User reque",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "st: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "flights result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Flight Finder",
+     "output_key": "flights"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Hotel Finder",
+     "agent_name": "WF Hotel Finder",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about Hotel Finder"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "hotels result for: User reque",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "st: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "hotels result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Hotel Finder",
+     "output_key": "hotels"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Itinerary Builder",
+     "agent_name": "WF Itinerary Builder",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "Thinking about Itinerary Builder"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "itinerary result for: User requ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "est: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "itinerary result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Itinerary Builder",
+     "output_key": "itinerary"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Trip Summary & Budget",
+     "agent_name": "WF Trip Summary & Budget",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Thinking about Trip Summary & Budget"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "trip_summary result for: User re",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "quest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "trip_summary result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "Trip Summary & Budget",
+     "output_key": "trip_summary"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "trip_summary result for: User request: Prepare a complete assessm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 6,
+     "content": "trip_summary result for: User request: Prepare a complete assessm",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "trip_summary result for: User request: Prepare a complete assessm",
+   "agent_calls": [
+    {
+     "step_name": "Travel Details Collector",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "travel_details",
+     "agent": "WF HITL Details Collector",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for travel_details? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Interest & Activities Planner",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "activities",
+     "agent": "WF Interest & Activities Planner",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Flight Finder",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "flights",
+     "agent": "WF Flight Finder",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Hotel Finder",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "hotels",
+     "agent": "WF Hotel Finder",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm\n\nOutput from 'flights':\nflights result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Itinerary Builder",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "itinerary",
+     "agent": "WF Itinerary Builder",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm\n\nOutput from 'flights':\nflights result for: User request: Prepare a complete assessm\n\nOutput from 'hotels':\nhotels result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Trip Summary & Budget",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "trip_summary",
+     "agent": "WF Trip Summary & Budget",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm\n\nOutput from 'flights':\nflights result for: User request: Prepare a complete assessm\n\nOutput from 'hotels':\nhotels result for: User request: Prepare a complete assessm\n\nOutput from 'itinerary':\nitinerary result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nUser request: Prepare a complete a"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nUser request: Prepare a complete a",
+       "activities": "activities result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nUser request: Prepare a complete a",
+       "activities": "activities result for: User request: Prepare a complete assessm",
+       "flights": "flights result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nUser request: Prepare a complete a",
+       "activities": "activities result for: User request: Prepare a complete assessm",
+       "flights": "flights result for: User request: Prepare a complete assessm",
+       "hotels": "hotels result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 3,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nUser request: Prepare a complete a",
+       "activities": "activities result for: User request: Prepare a complete assessm",
+       "flights": "flights result for: User request: Prepare a complete assessm",
+       "hotels": "hotels result for: User request: Prepare a complete assessm",
+       "itinerary": "itinerary result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "travel_details": "travel_details result for: TASK:\nUser request: Prepare a complete a",
+       "activities": "activities result for: User request: Prepare a complete assessm",
+       "flights": "flights result for: User request: Prepare a complete assessm",
+       "hotels": "hotels result for: User request: Prepare a complete assessm",
+       "itinerary": "itinerary result for: User request: Prepare a complete assessm",
+       "trip_summary": "trip_summary result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 5,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "travel_details": "travel_details result for: TASK:\nUser request: Prepare a complete a",
+    "activities": "activities result for: User request: Prepare a complete assessm",
+    "flights": "flights result for: User request: Prepare a complete assessm",
+    "hotels": "hotels result for: User request: Prepare a complete assessm",
+    "itinerary": "itinerary result for: User request: Prepare a complete assessm",
+    "trip_summary": "trip_summary result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Travel Planner HITL Test",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 383,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Travel Details Collector",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for travel_details? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Travel Details Collector",
+      "status": "completed",
+      "input": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for travel_details? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "travel_details result for: TASK:\nUser request: Prepare a complete a",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 88,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Interest & Activities Planner",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a",
+      "output": "activities result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 35,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Flight Finder",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm",
+      "output": "flights result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 47,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Hotel Finder",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm\n\nOutput from 'flights':\nflights result for: User request: Prepare a complete assessm",
+      "output": "hotels result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 59,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Itinerary Builder",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm\n\nOutput from 'flights':\nflights result for: User request: Prepare a complete assessm\n\nOutput from 'hotels':\nhotels result for: User request: Prepare a complete assessm",
+      "output": "itinerary result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 71,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Trip Summary & Budget",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm\n\nOutput from 'flights':\nflights result for: User request: Prepare a complete assessm\n\nOutput from 'hotels':\nhotels result for: User request: Prepare a complete assessm\n\nOutput from 'itinerary':\nitinerary result for: User request: Prepare a complete assessm",
+      "output": "trip_summary result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 83,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "trip_summary result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 383,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Travel Details Collector",
+       "input_text": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for travel_details? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details,",
+       "output_text": "travel_details result for: TASK:\nUser request: Prepare a complete a",
+       "duration_ms": "<ms>",
+       "tokens_used": 88
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Interest & Activities Planner",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a",
+       "output_text": "activities result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 35
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Flight Finder",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm",
+       "output_text": "flights result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 47
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Hotel Finder",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm\n\nOutput from 'flights':\nflights result for: User request: Prepare a complete assessm",
+       "output_text": "hotels result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 59
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Itinerary Builder",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm\n\nOutput from 'flights':\nflights result for: User request: Prepare a complete assessm\n\nOutput from 'hotels':\nhotels result for: User request: Prepare a complete assessm",
+       "output_text": "itinerary result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 71
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Trip Summary & Budget",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'travel_details':\ntravel_details result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'activities':\nactivities result for: User request: Prepare a complete assessm\n\nOutput from 'flights':\nflights result for: User request: Prepare a complete assessm\n\nOutput from 'hotels':\nhotels result for: User request: Prepare a complete assessm\n\nOutput from 'itinerary':\nitinerary result for: ",
+       "output_text": "trip_summary result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 83
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

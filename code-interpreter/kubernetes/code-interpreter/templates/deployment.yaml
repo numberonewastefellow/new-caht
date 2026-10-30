@@ -65,6 +65,27 @@ spec:
             - name: KUBERNETES_EXECUTOR_SERVICE_ACCOUNT
               value: {{ .Values.codeInterpreter.kubernetesExecutor.serviceAccount | quote }}
             {{- end }}
+            # API auth: /v1/* requires `Authorization: Bearer <token>`. With no token
+            # the service fails closed (503). `optional` keeps the pod starting (and
+            # failing closed) if the referenced Secret doesn't exist yet.
+            {{- $authSecret := include "code-interpreter.authSecretName" . }}
+            {{- if $authSecret }}
+            - name: CODE_INTERPRETER_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $authSecret | quote }}
+                  key: {{ .Values.auth.existingSecretKey | quote }}
+                  optional: true
+            {{- end }}
+            {{- if .Values.auth.allowUnauthenticated }}
+            - name: CODE_INTERPRETER_ALLOW_UNAUTHENTICATED
+              value: "true"
+            {{- end }}
+            # Execution admission control
+            - name: EXECUTION_MAX_WORKERS
+              value: {{ .Values.codeInterpreter.maxWorkers | quote }}
+            - name: EXECUTION_MAX_QUEUE
+              value: {{ .Values.codeInterpreter.maxQueue | quote }}
             {{- with .Values.extraEnvVars }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

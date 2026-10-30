@@ -26,11 +26,11 @@ from app.app_configs import (
     KUBERNETES_EXECUTOR_IMAGE,
     KUBERNETES_EXECUTOR_NAMESPACE,
     KUBERNETES_EXECUTOR_SERVICE_ACCOUNT,
+    MAX_WORKSPACE_SNAPSHOT_BYTES,
 )
 from app.services.executor_base import (
     FIGURE_CAPTURE_PROLOGUE,
     BaseExecutor,
-    EntryKind,
     ExecutionResult,
     HealthCheck,
     StreamChunk,
@@ -39,8 +39,28 @@ from app.services.executor_base import (
     WorkspaceEntry,
     wrap_last_line_interactive,
 )
+from app.services.sandbox_hardening import SANDBOX_GID, SANDBOX_UID, read_workspace_tar
 
 logger = logging.getLogger(__name__)
+
+# Workspace file that carries the program's stdin. The exec shell opens it as fd 0
+# and unlinks it BEFORE python starts, so user code sees a normal stdin that hits EOF
+# (the Kubernetes v4 exec protocol used by the python client has no way to close
+# stdin, so streaming stdin over the websocket left ``sys.stdin.read()`` hanging).
+_STDIN_FILE = ".ci_stdin"
+_RESERVED_PATHS = frozenset({"__main__.py", _STDIN_FILE})
+
+
+def _python_exec_command(has_stdin: bool) -> list[str]:
+    """Command that runs the staged program with a stdin that always reaches EOF."""
+    if has_stdin:
+        script = (
+            f"exec 0</workspace/{_STDIN_FILE} && rm -f /workspace/{_STDIN_FILE} "
+            "&& exec python /workspace/__main__.py"
+        )
+    else:
+        script = "exec python /workspace/__main__.py </dev/null"
+    return ["sh", "-c", script]
 
 
 def _parse_exit_code(error: str) -> int | None:
@@ -151,11 +171,14 @@ class KubernetesExecutor(BaseExecutor):
             working_dir="/workspace",
             resources=resources if resources["limits"] else None,
             security_context={
-                "runAsUser": 65532,
-                "runAsGroup": 65532,
+                "runAsUser": SANDBOX_UID,
+                "runAsGroup": SANDBOX_GID,
+                "runAsNonRoot": True,
                 "allowPrivilegeEscalation": False,
-                "readOnlyRootFilesystem": False,
+                # Only the emptyDir mounts below (/workspace, /tmp) are writable.
+                "readOnlyRootFilesystem": True,
                 "capabilities": {"drop": ["ALL"]},
+                "seccompProfile": {"type": "RuntimeDefault"},
             },
             env=[
                 {"name": "PYTHONUNBUFFERED", "value": "1"},
@@ -173,13 +196,20 @@ class KubernetesExecutor(BaseExecutor):
             containers=[container],
             restart_policy="Never",
             service_account_name=self.service_account if self.service_account else None,
+            # User code must never see a Kubernetes API credential ...
+            automount_service_account_token=False,
+            # ... nor the env vars Kubernetes injects for every Service in the namespace.
+            enable_service_links=False,
             volumes=[
                 {"name": "workspace", "emptyDir": {"sizeLimit": "100Mi"}},
                 {"name": "tmp", "emptyDir": {"sizeLimit": "64Mi"}},
             ],
             security_context={
                 "runAsNonRoot": True,
-                "fsGroup": 65532,
+                "runAsUser": SANDBOX_UID,
+                "runAsGroup": SANDBOX_GID,
+                "fsGroup": SANDBOX_GID,
+                "seccompProfile": {"type": "RuntimeDefault"},
             },
         )
 
@@ -199,12 +229,15 @@ class KubernetesExecutor(BaseExecutor):
         code: str,
         files: Sequence[tuple[str, bytes]] | None = None,
         last_line_interactive: bool = True,
+        stdin: str | None = None,
     ) -> bytes:
         """Create a tar archive containing the code and any additional files.
 
         Args:
             last_line_interactive: If True, wrap code so the last line prints its value
                                    if it's a bare expression (only the last line is affected).
+            stdin: Optional program stdin, staged as ``_STDIN_FILE`` (see
+                   ``_python_exec_command``).
         """
         tar_buffer = io.BytesIO()
         with tarfile.open(fileobj=tar_buffer, mode="w") as tar:
@@ -226,14 +259,24 @@ class KubernetesExecutor(BaseExecutor):
             code_info.gid = 65532
             tar.addfile(code_info, io.BytesIO(code_bytes))
 
+            if stdin:
+                stdin_bytes = stdin.encode("utf-8")
+                stdin_info = tarfile.TarInfo(name=_STDIN_FILE)
+                stdin_info.size = len(stdin_bytes)
+                stdin_info.mode = 0o600
+                stdin_info.uid = SANDBOX_UID
+                stdin_info.gid = SANDBOX_GID
+                tar.addfile(stdin_info, io.BytesIO(stdin_bytes))
+
             created_dirs = set()
 
             if files:
                 for file_path, content in files:
                     validated_path = self._validate_relative_path(file_path)
-                    if validated_path == Path("__main__.py"):
+                    if validated_path.as_posix() in _RESERVED_PATHS:
                         raise ValueError(
-                            "File path '__main__.py' is reserved for the execution entrypoint."
+                            f"File path '{validated_path.as_posix()}' is reserved for the "
+                            "execution entrypoint."
                         )
 
                     parent_parts = validated_path.parts[:-1]
@@ -340,10 +383,12 @@ class KubernetesExecutor(BaseExecutor):
         memory_limit_mb: int | None,
         files: Sequence[tuple[str, bytes]] | None,
         last_line_interactive: bool,
+        stdin: str | None = None,
     ) -> Generator[_KubeExecContext, None, None]:
         """Create a pod, stage files, open Python exec stream, and clean up.
 
-        Yields a _KubeExecContext whose exec_resp is ready for stdin/stdout I/O.
+        Yields a _KubeExecContext whose exec_resp is ready for stdout/stderr reads. The
+        program's stdin is staged as a file (never streamed), so it always hits EOF.
         The pod is deleted in the finally block regardless of how the caller exits.
         """
         pod_name = f"code-exec-{uuid.uuid4().hex}"
@@ -367,12 +412,12 @@ class KubernetesExecutor(BaseExecutor):
 
             self._wait_for_pod_ready(pod_name)
 
-            tar_archive = self._create_tar_archive(code, files, last_line_interactive)
+            tar_archive = self._create_tar_archive(code, files, last_line_interactive, stdin)
             self._upload_tar_to_pod(pod_name, tar_archive)
 
             logger.info(f"Executing Python code in pod {pod_name}")
             start = time.perf_counter()
-            exec_command = ["python", "/workspace/__main__.py"]
+            exec_command = _python_exec_command(has_stdin=bool(stdin))
 
             exec_resp = stream.stream(
                 self.v1.connect_get_namespaced_pod_exec,
@@ -380,7 +425,7 @@ class KubernetesExecutor(BaseExecutor):
                 self.namespace,
                 command=exec_command,
                 stderr=True,
-                stdin=True,
+                stdin=False,
                 stdout=True,
                 tty=False,
                 _preload_content=False,
@@ -410,8 +455,12 @@ class KubernetesExecutor(BaseExecutor):
             exec_command = [
                 "sh",
                 "-c",
-                "tar -c --exclude=__main__.py -C /workspace . | base64",
+                f"tar -c --exclude=__main__.py --exclude={_STDIN_FILE} -C /workspace . | base64",
             ]
+            # base64 inflates by 4/3; stop reading once the encoded stream exceeds the
+            # snapshot cap (plus tar header slack) so a huge workspace can't exhaust the
+            # service's memory. The truncated tar still yields the files before the cut.
+            max_b64_chars = (MAX_WORKSPACE_SNAPSHOT_BYTES * 4) // 3 + 1024 * 1024
 
             logger.info(f"Starting tar extraction from pod {pod_name}")
             resp = stream.stream(
@@ -426,19 +475,35 @@ class KubernetesExecutor(BaseExecutor):
                 _preload_content=False,
             )
 
-            base64_data = ""
+            b64_parts: list[str] = []
+            b64_len = 0
             stderr_data = ""
+            truncated = False
 
             while resp.is_open():
                 resp.update(timeout=1)
 
                 if resp.peek_stdout():
-                    base64_data += resp.read_stdout()
+                    chunk = resp.read_stdout()
+                    b64_parts.append(chunk)
+                    b64_len += len(chunk)
+                    if b64_len > max_b64_chars:
+                        truncated = True
+                        break
 
                 if resp.peek_stderr():
                     stderr_data += resp.read_stderr()
 
             resp.close()
+            base64_data = "".join(b64_parts)
+            if truncated:
+                logger.warning(
+                    f"Workspace snapshot of pod {pod_name} exceeded the "
+                    f"{MAX_WORKSPACE_SNAPSHOT_BYTES}-byte cap; keeping the files before the cut"
+                )
+                # Keep only whole base64 lines/quanta so decoding can't fail.
+                base64_data = "".join(base64_data.split())
+                base64_data = base64_data[: len(base64_data) - (len(base64_data) % 4)]
 
             logger.info(f"Tar extraction complete. Received {len(base64_data)} base64 chars")
             if stderr_data:
@@ -452,40 +517,13 @@ class KubernetesExecutor(BaseExecutor):
             tar_data = base64.b64decode(base64_data)
             logger.info(f"Decoded to {len(tar_data)} bytes of tar data")
 
-            entries = []
-            logger.info("Parsing tar archive")
-            with tarfile.open(fileobj=io.BytesIO(tar_data), mode="r") as tar:
-                members = tar.getmembers()
-                logger.info(f"Tar archive contains {len(members)} members")
-                for member in members:
-                    logger.debug(
-                        f"Processing tar member: {member.name!r} (type={member.type!r}, "
-                        f"size={member.size})"
-                    )
-                    if member.name == ".":
-                        continue
-
-                    clean_path = member.name.lstrip("./")
-
-                    if member.isdir():
-                        entries.append(
-                            WorkspaceEntry(path=clean_path, kind=EntryKind.DIRECTORY, content=None)
-                        )
-                    elif member.isfile():
-                        file_obj = tar.extractfile(member)
-                        if file_obj:
-                            content = file_obj.read()
-                            logger.debug(f"Extracted file {clean_path}: {len(content)} bytes")
-                            entries.append(
-                                WorkspaceEntry(
-                                    path=clean_path, kind=EntryKind.FILE, content=content
-                                )
-                            )
-                        else:
-                            logger.warning(f"Failed to extract file content for {clean_path}")
-
+            entries = read_workspace_tar(
+                io.BytesIO(tar_data),
+                MAX_WORKSPACE_SNAPSHOT_BYTES,
+                exclude=frozenset({_STDIN_FILE}),
+            )
             logger.info(f"Extracted {len(entries)} workspace entries")
-            return tuple(entries)
+            return entries
         except Exception as e:
             logger.error(f"Failed to extract workspace snapshot: {e}", exc_info=True)
             return tuple()
@@ -523,11 +561,8 @@ class KubernetesExecutor(BaseExecutor):
             memory_limit_mb=memory_limit_mb,
             files=files,
             last_line_interactive=last_line_interactive,
+            stdin=stdin,
         ) as ctx:
-            if stdin:
-                logger.debug("Writing stdin to Python process")
-                ctx.exec_resp.write_stdin(stdin)
-
             stdout_data = b""
             stderr_data = b""
             exit_code: int | None = None
@@ -607,11 +642,8 @@ class KubernetesExecutor(BaseExecutor):
             memory_limit_mb=memory_limit_mb,
             files=files,
             last_line_interactive=last_line_interactive,
+            stdin=stdin,
         ) as ctx:
-            if stdin:
-                logger.debug("Writing stdin to Python process")
-                ctx.exec_resp.write_stdin(stdin)
-
             deadline = time.time() + (timeout_ms / 1000.0)
             exit_code, timed_out = yield from _stream_kube_output(
                 ctx.exec_resp, deadline, max_output_bytes

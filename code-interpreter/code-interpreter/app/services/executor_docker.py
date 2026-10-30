@@ -16,14 +16,14 @@ from shutil import which
 from typing import Literal
 
 from app.app_configs import (
+    MAX_WORKSPACE_SNAPSHOT_BYTES,
     PYTHON_EXECUTOR_DOCKER_BIN,
-    PYTHON_EXECUTOR_DOCKER_IMAGE,
+    PYTHON_EXECUTOR_DOCKER_IMAGE_REF,
     PYTHON_EXECUTOR_DOCKER_RUN_ARGS,
 )
 from app.services.executor_base import (
     FIGURE_CAPTURE_PROLOGUE,
     BaseExecutor,
-    EntryKind,
     ExecutionResult,
     HealthCheck,
     StreamChunk,
@@ -31,6 +31,11 @@ from app.services.executor_base import (
     StreamResult,
     WorkspaceEntry,
     wrap_last_line_interactive,
+)
+from app.services.sandbox_hardening import (
+    SANDBOX_USER,
+    hardened_docker_run_flags,
+    stream_workspace_snapshot,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,7 +53,8 @@ class _ExecContext:
 class DockerExecutor(BaseExecutor):
     def __init__(self) -> None:
         self.docker_binary = self._resolve_docker_binary()
-        self.image = PYTHON_EXECUTOR_DOCKER_IMAGE
+        # Fully qualified (image:tag), so health check and `docker run` agree.
+        self.image = PYTHON_EXECUTOR_DOCKER_IMAGE_REF
         self.run_args = PYTHON_EXECUTOR_DOCKER_RUN_ARGS
 
     def check_health(self) -> HealthCheck:
@@ -74,7 +80,7 @@ class DockerExecutor(BaseExecutor):
             )
 
         # Check executor image is available locally
-        image_with_tag = f"{self.image}:latest"
+        image_with_tag = self.image
         try:
             img_result = subprocess.run(
                 [self.docker_binary, "image", "inspect", image_with_tag],
@@ -196,54 +202,19 @@ class DockerExecutor(BaseExecutor):
 
     def _extract_workspace_snapshot(self, container_name: str) -> tuple[WorkspaceEntry, ...]:
         """Extract files from the container workspace after execution using tar."""
-        try:
-            # Use tar to get all files from workspace (excluding __main__.py)
-            tar_cmd = [
-                self.docker_binary,
-                "exec",
-                container_name,
-                "tar",
-                "-c",
-                "--exclude=__main__.py",
-                "-C",
-                "/workspace",
-                ".",
-            ]
-            tar_result = subprocess.run(tar_cmd, capture_output=True, timeout=10)
-
-            if tar_result.returncode != 0:
-                return tuple()
-
-            entries = []
-
-            # Extract files from tar archive
-            with tarfile.open(fileobj=io.BytesIO(tar_result.stdout), mode="r") as tar:
-                for member in tar.getmembers():
-                    # Skip the root directory
-                    if member.name == ".":
-                        continue
-
-                    # Clean up the path (remove leading ./)
-                    clean_path = member.name.lstrip("./")
-
-                    if member.isdir():
-                        entries.append(
-                            WorkspaceEntry(path=clean_path, kind=EntryKind.DIRECTORY, content=None)
-                        )
-                    elif member.isfile():
-                        # Extract file content
-                        file_obj = tar.extractfile(member)
-                        if file_obj:
-                            content = file_obj.read()
-                            entries.append(
-                                WorkspaceEntry(
-                                    path=clean_path, kind=EntryKind.FILE, content=content
-                                )
-                            )
-
-            return tuple(entries)
-        except (subprocess.TimeoutExpired, Exception):
-            return tuple()
+        # Use tar to get all files from workspace (excluding __main__.py)
+        tar_cmd = [
+            self.docker_binary,
+            "exec",
+            container_name,
+            "tar",
+            "-c",
+            "--exclude=__main__.py",
+            "-C",
+            "/workspace",
+            ".",
+        ]
+        return stream_workspace_snapshot(tar_cmd, MAX_WORKSPACE_SNAPSHOT_BYTES)
 
     def _build_run_command(
         self,
@@ -253,44 +224,14 @@ class DockerExecutor(BaseExecutor):
         timeout_ms: int,
     ) -> list[str]:
         """Build the ``docker run`` command for an ephemeral container."""
-        # Start the container in detached mode
-        # We need CAP_CHOWN to set up the workspace, but we'll drop privileges for execution
+        # Start the container in detached mode with the shared hardened flag set
+        # (no network, read-only rootfs, size-capped tmpfs, non-root, --cpus, ...).
         cmd: list[str] = [
             self.docker_binary,
             "run",
             "-d",  # detached mode
             "--rm",
-            "--pull",
-            "never",
-            "--network",
-            "none",
-            "--name",
-            container_name,
-            "--cgroupns",
-            "host",  # Use host cgroup namespace to avoid cgroup v2 issues in DinD
-            "--pids-limit",
-            "64",
-            "--security-opt",
-            "no-new-privileges",
-            # Keep CAP_CHOWN to allow setting up workspace permissions
-            "--cap-drop",
-            "ALL",
-            "--cap-add",
-            "CHOWN",
-            "--workdir",
-            "/workspace",
-            "--tmpfs",
-            "/tmp:rw,size=64m",  # noqa: S108 - intentionally constrain container tmpfs
-            "--tmpfs",
-            "/workspace:rw,uid=65532,gid=65532",  # Create workspace as tmpfs owned by the user
-            "--env",
-            "PYTHONUNBUFFERED=1",
-            "--env",
-            "PYTHONDONTWRITEBYTECODE=1",
-            "--env",
-            "PYTHONIOENCODING=utf-8",
-            "--env",
-            "MPLCONFIGDIR=/tmp/matplotlib",
+            *hardened_docker_run_flags(container_name),
         ]
 
         if cpu_time_limit_sec is not None:
@@ -322,7 +263,7 @@ class DockerExecutor(BaseExecutor):
             self.docker_binary,
             "exec",
             "-u",
-            "65532:65532",
+            SANDBOX_USER,
             "-i",
             container_name,
             "tar",
@@ -370,7 +311,7 @@ class DockerExecutor(BaseExecutor):
                 self.docker_binary,
                 "exec",
                 "-u",
-                "65532:65532",
+                SANDBOX_USER,
                 "-i",
                 container_name,
                 "python",

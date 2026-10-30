@@ -1,0 +1,1123 @@
+{
+ "scenario": "fx_router_chain",
+ "description": "Router after a router (R2 reads R1's 'true'), a router inside a skipped branch (R4, never evaluated), a router on an unresolved reference (R3: $missing is_empty -> TRUE), and a final mapping that references an unset router key ($r4 stays literal).",
+ "covers": [
+  "router after router",
+  "router in skipped branch",
+  "unresolved router reference"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "FX router chain",
+    "mode": "sequential",
+    "max_steps": 10,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Scorer",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "a",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "R1",
+      "type": "conditional_router",
+      "agent_id": null,
+      "output_key": "r1",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "R2",
+      "type": "conditional_router",
+      "agent_id": null,
+      "output_key": "r2",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "B",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "b",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "C",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "c",
+      "flags": []
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "R3",
+      "type": "conditional_router",
+      "agent_id": null,
+      "output_key": "r3",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "R4",
+      "type": "conditional_router",
+      "agent_id": null,
+      "output_key": "r4",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "E",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "e",
+      "flags": []
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "F",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "final",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Scorer",
+     "agent_name": "FX Scorer",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "Thinking about Scorer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "urgent:",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": " score 7",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "urgent: score 7",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Scorer",
+     "output_key": "a"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "R1",
+     "step_order": 1,
+     "step_type": "conditional_router",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Condition: $a.output contains 'urgent' → TRUE (actual: 'urgent: score 7')",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "R1",
+     "output_key": "r1"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "R2",
+     "step_order": 2,
+     "step_type": "conditional_router",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Condition: $r1 equals 'true' → TRUE (actual: 'true')",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "R2",
+     "output_key": "r2"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "B",
+     "agent_name": "FX B",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about B"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "b result for: User request:",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": " Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "b result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "B",
+     "output_key": "b"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "R3",
+     "step_order": 5,
+     "step_type": "conditional_router",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "Condition: $missing is_empty '' → TRUE (actual: '')",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "R3",
+     "output_key": "r3"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "F",
+     "agent_name": "FX F",
+     "step_order": 8,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "Thinking about F"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "final result for: routing: r1",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "=true r2=true r3=true r4=$r4\n",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "content": "final result for: routing: r1=true r2=true r3=true r4=$r4\n",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "step_name": "F",
+     "output_key": "final"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "final result for: routing: r1=true r2=true r3=true r4=$r4\n"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 6,
+     "content": "final result for: routing: r1=true r2=true r3=true r4=$r4\n",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "final result for: routing: r1=true r2=true r3=true r4=$r4\n",
+   "agent_calls": [
+    {
+     "step_name": "Scorer",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "a",
+     "agent": "FX Scorer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "B",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "b",
+     "agent": "FX B",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent: score 7\n\nOutput from 'r1':\ntrue\n\nOutput from 'r2':\ntrue",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "F",
+     "step_id": 109,
+     "step_order": 8,
+     "output_key": "final",
+     "agent": "FX F",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "task": "routing: r1=true r2=true r3=true r4=$r4\nb: b result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent: score 7"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent: score 7",
+       "r1": "true"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent: score 7",
+       "r1": "true",
+       "r2": "true"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 2,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent: score 7",
+       "r1": "true",
+       "r2": "true",
+       "b": "b result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 3,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent: score 7",
+       "r1": "true",
+       "r2": "true",
+       "b": "b result for: User request: Prepare a complete assessm",
+       "r3": "true"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       106
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "a": "urgent: score 7",
+       "r1": "true",
+       "r2": "true",
+       "b": "b result for: User request: Prepare a complete assessm",
+       "r3": "true",
+       "final": "final result for: routing: r1=true r2=true r3=true r4=$r4\n"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       106,
+       109
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 5,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "a": "urgent: score 7",
+    "r1": "true",
+    "r2": "true",
+    "b": "b result for: User request: Prepare a complete assessm",
+    "r3": "true",
+    "final": "final result for: routing: r1=true r2=true r3=true r4=$r4\n"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "router_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "router_3:completed",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "router_3:completed",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "router_3:completed",
+      "agent_2:completed",
+      "router_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "router_3:completed",
+      "agent_2:completed",
+      "router_5:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "router_3:completed",
+      "agent_2:completed",
+      "router_5:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:completed",
+      "router_2:completed",
+      "router_3:completed",
+      "agent_2:completed",
+      "router_5:completed",
+      "agent_3:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "FX router chain",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 75,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Scorer",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "urgent: score 7",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 16,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "router_2",
+      "type": "router",
+      "name": "R1",
+      "status": "completed",
+      "input": "",
+      "output": "branch: true",
+      "reason": "Condition: $a.output contains 'urgent' → TRUE (actual: 'urgent: score 7')",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "router_3",
+      "type": "router",
+      "name": "R2",
+      "status": "completed",
+      "input": "",
+      "output": "branch: true",
+      "reason": "Condition: $r1 equals 'true' → TRUE (actual: 'true')",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "B",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent: score 7\n\nOutput from 'r1':\ntrue\n\nOutput from 'r2':\ntrue",
+      "output": "b result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 36,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "router_5",
+      "type": "router",
+      "name": "R3",
+      "status": "completed",
+      "input": "",
+      "output": "branch: true",
+      "reason": "Condition: $missing is_empty '' → TRUE (actual: '')",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "F",
+      "status": "completed",
+      "input": "routing: r1=true r2=true r3=true r4=$r4\nb: b result for: User request: Prepare a complete assessm",
+      "output": "final result for: routing: r1=true r2=true r3=true r4=$r4\n",
+      "reason": null,
+      "step_id": 109,
+      "agent_id": 1005,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 23,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "final result for: routing: r1=true r2=true r3=true r4=$r4\n",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "router_2",
+      "type": "sequence",
+      "label": null
+     },
+     {
+      "from_id": "router_2",
+      "to_id": "router_3",
+      "type": "sequence",
+      "label": null
+     },
+     {
+      "from_id": "router_3",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "router_5",
+      "type": "sequence",
+      "label": null
+     },
+     {
+      "from_id": "router_5",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 75,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Scorer",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "output_text": "urgent: score 7",
+       "duration_ms": "<ms>",
+       "tokens_used": 16
+      },
+      {
+       "step_id": 102,
+       "agent_id": null,
+       "step_name": "R1",
+       "input_text": "{'condition_field': '$a.output', 'operator': 'contains', 'match_value': 'urgent', 'case_sensitive': False, 'true_steps': [2, 3], 'false_steps': [6]}",
+       "output_text": "Condition: $a.output contains 'urgent' → TRUE (actual: 'urgent: score 7')",
+       "duration_ms": "<ms>",
+       "tokens_used": 0
+      },
+      {
+       "step_id": 103,
+       "agent_id": null,
+       "step_name": "R2",
+       "input_text": "{'condition_field': '$r1', 'operator': 'equals', 'match_value': 'true', 'case_sensitive': False, 'true_steps': [3], 'false_steps': [4]}",
+       "output_text": "Condition: $r1 equals 'true' → TRUE (actual: 'true')",
+       "duration_ms": "<ms>",
+       "tokens_used": 0
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1002,
+       "step_name": "B",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'a':\nurgent: score 7\n\nOutput from 'r1':\ntrue\n\nOutput from 'r2':\ntrue",
+       "output_text": "b result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 36
+      },
+      {
+       "step_id": 106,
+       "agent_id": null,
+       "step_name": "R3",
+       "input_text": "{'condition_field': '$missing', 'operator': 'is_empty', 'match_value': '', 'case_sensitive': False, 'true_steps': [], 'false_steps': [7]}",
+       "output_text": "Condition: $missing is_empty '' → TRUE (actual: '')",
+       "duration_ms": "<ms>",
+       "tokens_used": 0
+      },
+      {
+       "step_id": 109,
+       "agent_id": 1005,
+       "step_name": "F",
+       "input_text": "routing: r1=true r2=true r3=true r4=$r4\nb: b result for: User request: Prepare a complete assessm",
+       "output_text": "final result for: routing: r1=true r2=true r3=true r4=$r4\n",
+       "duration_ms": "<ms>",
+       "tokens_used": 23
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -18,20 +18,17 @@ import {
 import "@xyflow/react/dist/style.css";
 import "./WorkflowCanvas.css";
 
-import { AgentNode } from "./AgentNode";
-import { OrchestratorNode } from "./OrchestratorNode";
-import { FinishNode } from "./FinishNode";
-import { ConditionalRouterNode } from "./ConditionalRouterNode";
+import { FLOW_NODE_TYPES } from "./nodeUi";
 import { StepEdge } from "./StepEdge";
 import type { WorkflowNode, WorkflowEdge, DragAgentData, OrchestratorNodeData } from "./types";
-import { ORCHESTRATOR_NODE_ID } from "./types";
+import {
+  AGENT_DRAG_MIME,
+  NODE_TYPE_DRAG_MIME,
+  ORCHESTRATOR_NODE_ID,
+} from "./types";
 
-const nodeTypes: NodeTypes = {
-  agent: AgentNode as any,
-  orchestrator: OrchestratorNode as any,
-  finish: FinishNode as any,
-  conditional_router: ConditionalRouterNode as any,
-};
+// Node components come from the per-kind UI registry (nodeUi.tsx).
+const nodeTypes: NodeTypes = FLOW_NODE_TYPES;
 
 const edgeTypes: EdgeTypes = {
   step: StepEdge as any,
@@ -45,7 +42,23 @@ interface WorkflowCanvasProps {
   onConnect: OnConnect;
   onNodeClick: (nodeId: string) => void;
   onDrop: (agent: DragAgentData, position: { x: number; y: number }) => void;
-  onConditionDrop?: (position: { x: number; y: number }) => void;
+  /** A node type dragged from the Utils palette. */
+  onNodeTypeDrop?: (stepType: string, position: { x: number; y: number }) => void;
+  /** Problems to show above the canvas (e.g. steps the mode can't run). */
+  warnings?: string[];
+}
+
+function CanvasWarnings({ warnings }: { warnings: string[] }) {
+  if (warnings.length === 0) return null;
+  return (
+    <Panel position="top-center">
+      <div className="wfb-canvas-warning" role="alert">
+        {warnings.map((w) => (
+          <div key={w}>{w}</div>
+        ))}
+      </div>
+    </Panel>
+  );
 }
 
 function FlowLegend({ nodes }: { nodes: WorkflowNode[] }) {
@@ -113,7 +126,8 @@ export function WorkflowCanvas({
   onConnect,
   onNodeClick,
   onDrop,
-  onConditionDrop,
+  onNodeTypeDrop,
+  warnings = [],
 }: WorkflowCanvasProps) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { screenToFlowPosition } = useReactFlow();
@@ -127,19 +141,19 @@ export function WorkflowCanvas({
     (event: DragEvent) => {
       event.preventDefault();
 
-      // Check for conditional router drop
-      const conditionData = event.dataTransfer.getData("application/reactflow-condition");
-      if (conditionData && onConditionDrop) {
+      // A node type from the Utils palette
+      const stepType = event.dataTransfer.getData(NODE_TYPE_DRAG_MIME);
+      if (stepType && onNodeTypeDrop) {
         const position = screenToFlowPosition({
           x: event.clientX,
           y: event.clientY,
         });
-        onConditionDrop(position);
+        onNodeTypeDrop(stepType, position);
         return;
       }
 
-      // Check for agent agent drop
-      const raw = event.dataTransfer.getData("application/reactflow");
+      // An agent from the Agents tab
+      const raw = event.dataTransfer.getData(AGENT_DRAG_MIME);
       if (!raw) return;
 
       try {
@@ -153,7 +167,7 @@ export function WorkflowCanvas({
         // Invalid drag data
       }
     },
-    [screenToFlowPosition, onDrop, onConditionDrop]
+    [screenToFlowPosition, onDrop, onNodeTypeDrop]
   );
 
   const handleNodeClick = useCallback(
@@ -198,6 +212,7 @@ export function WorkflowCanvas({
           style={{ width: 150, height: 100 }}
         />
         <FlowLegend nodes={nodes} />
+        <CanvasWarnings warnings={warnings} />
       </ReactFlow>
     </div>
   );

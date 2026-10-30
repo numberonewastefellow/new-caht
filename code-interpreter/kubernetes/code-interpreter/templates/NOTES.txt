@@ -43,4 +43,18 @@
   kubectl auth can-i create pods --as=system:serviceaccount:{{ .Release.Namespace }}:{{ include "code-interpreter.serviceAccountName" . }} -n {{ include "code-interpreter.kubernetesNamespace" . }}
 {{- end }}
 
+5. API auth:
+{{- if include "code-interpreter.authSecretName" . }}
+  Bearer token read from Secret "{{ include "code-interpreter.authSecretName" . }}" (key {{ .Values.auth.existingSecretKey }}).
+  Callers must send the same value in CODE_INTERPRETER_API_TOKEN.
+{{- else if .Values.auth.allowUnauthenticated }}
+  WARNING: no API token and allowUnauthenticated=true -- /v1/* is OPEN. Dev only!
+{{- else }}
+  WARNING: no API token configured -- every /v1/* request will get 503 (fail closed).
+  Set auth.existingSecret (or auth.apiToken).
+{{- end }}
+{{- if .Values.executorNetworkPolicy.enabled }}
+  Executor pods: deny-all NetworkPolicy installed (needs a NetworkPolicy-enforcing CNI).
+{{- end }}
+
 For more information, visit: https://github.com/your-org/code-interpreter

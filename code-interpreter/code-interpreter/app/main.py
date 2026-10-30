@@ -9,10 +9,19 @@ from typing import Final
 
 from fastapi import FastAPI
 
-from app.api.routes import router as api_router, set_session_manager
-from app.app_configs import EXECUTOR_BACKEND, HOST, PORT, PYTHON_EXECUTOR_DOCKER_IMAGE
+from app.api.routes import router as api_router
+from app.api.routes import set_function_runner, set_session_manager
+from app.api.security import BearerAuthMiddleware, log_auth_mode_at_startup
+from app.app_configs import (
+    EXECUTOR_BACKEND,
+    HOST,
+    PORT,
+    PYTHON_EXECUTOR_DOCKER_IMAGE_REF,
+    get_settings,
+)
 from app.models.schemas import HealthResponse
 from app.services.executor_factory import get_executor
+from app.services.run_function import FunctionRunner, build_function_runner
 from app.services.session_manager import SessionManager
 
 # Configure logging
@@ -36,7 +45,7 @@ def _ensure_docker_image_available() -> None:
         logger.warning("Docker binary not found, skipping image check")
         return
 
-    image_with_tag = f"{PYTHON_EXECUTOR_DOCKER_IMAGE}:latest"
+    image_with_tag = PYTHON_EXECUTOR_DOCKER_IMAGE_REF
 
     # Check if image exists locally
     logger.info(f"Checking for Docker image: {image_with_tag}")
@@ -82,6 +91,8 @@ def _ensure_docker_image_available() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Manage application lifespan events."""
+    log_auth_mode_at_startup()
+
     # Startup: Ensure Docker executor image is available before accepting requests
     if EXECUTOR_BACKEND == "docker":
         logger.info("Ensuring Docker executor image is available...")
@@ -94,9 +105,23 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     session_mgr.start_cleanup_loop()
     logger.info("Session manager started")
 
+    # run_function: single-use sandboxes + warm pool (Docker backend only). Startup
+    # removes containers an earlier process left behind, then fills the pool.
+    runner: FunctionRunner | None = None
+    if EXECUTOR_BACKEND.lower() == "docker":
+        runner = build_function_runner(get_settings())
+        runner.start()
+        set_function_runner(runner)
+        pool_state = "enabled" if runner.pool is not None else "disabled"
+        logger.info(f"run_function started (warm pool {pool_state})")
+
     yield
 
-    # Shutdown: clean up all sessions
+    # Shutdown: destroy pooled run_function containers, then clean up all sessions
+    if runner is not None:
+        logger.info("Shutting down run_function pool...")
+        set_function_runner(None)
+        runner.shutdown()
     logger.info("Shutting down session manager...")
     session_mgr.shutdown()
     logger.info("Session manager shut down")
@@ -119,6 +144,8 @@ def create_app() -> FastAPI:
         return HealthResponse(status=result.status, message=result.message)
 
     app.include_router(api_router, prefix="/v1")
+    # Bearer-token guard for /v1/* (health + docs stay open). See app/api/security.py.
+    app.add_middleware(BearerAuthMiddleware)
     return app
 
 

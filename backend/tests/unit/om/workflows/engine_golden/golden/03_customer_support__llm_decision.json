@@ -1,0 +1,1163 @@
+{
+ "scenario": "03_customer_support__llm_decision",
+ "description": "Template 03_customer_support.json in llm_decision mode; the fake orchestrator calls every step's agent once in step_order, then answers.",
+ "covers": [
+  "template",
+  "llm_decision"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Customer Support Triage",
+    "mode": "llm_decision",
+    "max_steps": 8,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 600,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Technical Support",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "tech_response",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Billing Support",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "billing_response",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Product FAQ",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "faq_response",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Technical Support."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Technical Support",
+     "agent_name": "WF Technical Support",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about Technical Support"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Technical Support"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "tech_response result for: Step 'T",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "echnical Support': work on: Prepa",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "tech_response result for: Step 'Technical Support': work on: Prepa",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Technical Support",
+     "output_key": "tech_response"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Billing Support",
+     "agent_name": "WF Billing Support",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "Thinking about Billing Support"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Billing Support"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "billing_response result for: Step ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "'Billing Support': work on: Prepare",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "billing_response result for: Step 'Billing Support': work on: Prepare",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Billing Support",
+     "output_key": "billing_response"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "Next I will delegate to Product FAQ."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Product FAQ",
+     "agent_name": "WF Product FAQ",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "Thinking about Product FAQ"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Product FAQ"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "faq_response result for: Step 'P",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "roduct FAQ': work on: Prepare a c",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "faq_response result for: Step 'Product FAQ': work on: Prepare a c",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "Agent: WF Product FAQ",
+     "output_key": "faq_response"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Final synthesis: all specialists were consulted."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 12,
+     "content": "Final synthesis: all specialists were consulted.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Final synthesis: all specialists were consulted.",
+   "agent_calls": [
+    {
+     "step_name": "Technical Support",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "tech_response",
+     "agent": "WF Technical Support",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Billing Support",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "billing_response",
+     "agent": "WF Billing Support",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Product FAQ",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "faq_response",
+     "agent": "WF Product FAQ",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "task": "Step 'Product FAQ': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_wf_technical_support",
+      "delegate_to_wf_billing_support",
+      "delegate_to_wf_product_faq"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=2657 sha1=d29380f903f2>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ]
+     ]
+    },
+    {
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_wf_technical_support",
+      "delegate_to_wf_billing_support",
+      "delegate_to_wf_product_faq"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=2657 sha1=d29380f903f2>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_wf_technical_support",
+      "delegate_to_wf_billing_support",
+      "delegate_to_wf_product_faq"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=2657 sha1=d29380f903f2>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_billing_support\", \"arguments\": {\"task\": \"Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    },
+    {
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_wf_technical_support",
+      "delegate_to_wf_billing_support",
+      "delegate_to_wf_product_faq"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=2657 sha1=d29380f903f2>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_billing_support\", \"arguments\": {\"task\": \"Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ],
+      [
+       "assistant",
+       "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_product_faq\", \"arguments\": {\"task\": \"Step 'Product FAQ': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "tech_response": "tech_response result for: Step 'Technical Support': work on: Prepa"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Technical Support\", \"agent_output\": \"tech_response result for: Step 'Technical Support': work on: Prepa\"}"
+       ]
+      ],
+      "cycle_count": 1,
+      "agent_call_counts": {
+       "delegate_to_wf_technical_support": 1
+      },
+      "turn_index": 4,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "tech_response": "tech_response result for: Step 'Technical Support': work on: Prepa",
+       "billing_response": "billing_response result for: Step 'Billing Support': work on: Prepare"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Technical Support\", \"agent_output\": \"tech_response result for: Step 'Technical Support': work on: Prepa\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_billing_support\", \"arguments\": {\"task\": \"Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Billing Support\", \"agent_output\": \"billing_response result for: Step 'Billing Support': work on: Prepare\"}"
+       ]
+      ],
+      "cycle_count": 2,
+      "agent_call_counts": {
+       "delegate_to_wf_technical_support": 1,
+       "delegate_to_wf_billing_support": 1
+      },
+      "turn_index": 7,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "tech_response": "tech_response result for: Step 'Technical Support': work on: Prepa",
+       "billing_response": "billing_response result for: Step 'Billing Support': work on: Prepare",
+       "faq_response": "faq_response result for: Step 'Product FAQ': work on: Prepare a c"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_wf_technical_support\", \"arguments\": {\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Technical Support\", \"agent_output\": \"tech_response result for: Step 'Technical Support': work on: Prepa\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_2_0\", \"name\": \"delegate_to_wf_billing_support\", \"arguments\": {\"task\": \"Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        14,
+        "{\"agent_name\": \"WF Billing Support\", \"agent_output\": \"billing_response result for: Step 'Billing Support': work on: Prepare\"}"
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_3_0\", \"name\": \"delegate_to_wf_product_faq\", \"arguments\": {\"task\": \"Step 'Product FAQ': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}}"
+       ],
+       [
+        "tool_call_response",
+        16,
+        "{\"agent_name\": \"WF Product FAQ\", \"agent_output\": \"faq_response result for: Step 'Product FAQ': work on: Prepare a c\"}"
+       ]
+      ],
+      "cycle_count": 3,
+      "agent_call_counts": {
+       "delegate_to_wf_technical_support": 1,
+       "delegate_to_wf_billing_support": 1,
+       "delegate_to_wf_product_faq": 1
+      },
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "tech_response": "tech_response result for: Step 'Technical Support': work on: Prepa",
+    "billing_response": "billing_response result for: Step 'Billing Support': work on: Prepare",
+    "faq_response": "faq_response result for: Step 'Product FAQ': work on: Prepare a c"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "agent_2:completed",
+      "orch_3_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "agent_2:completed",
+      "orch_3_3:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "agent_2:completed",
+      "orch_3_3:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed",
+      "orch_2_2:completed",
+      "agent_2:completed",
+      "orch_3_3:completed",
+      "agent_3:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Customer Support Triage",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "llm_decision",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 80,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Technical Support.",
+      "reason": "Next I will delegate to Technical Support.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: WF Technical Support",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "tech_response result for: Step 'Technical Support': work on: Prepa",
+      "reason": "Next I will delegate to Technical Support.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_2_2",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Agent: WF Billing Support",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "billing_response result for: Step 'Billing Support': work on: Prepare",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 26,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "orch_3_3",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Next I will delegate to Product FAQ.",
+      "reason": "Next I will delegate to Product FAQ.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Agent: WF Product FAQ",
+      "status": "completed",
+      "input": "{\"task\": \"Step 'Product FAQ': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+      "output": "faq_response result for: Step 'Product FAQ': work on: Prepare a c",
+      "reason": "Next I will delegate to Product FAQ.",
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 28,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "Final synthesis: all specialists were consulted.",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Next I will delegate to Technical Support."
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "orch_2_2",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_2_2",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "orch_3_3",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_3_3",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": "Next I will delegate to Product FAQ."
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 80,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Agent: WF Technical Support",
+       "input_text": "{\"task\": \"Step 'Technical Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "tech_response result for: Step 'Technical Support': work on: Prepa",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Agent: WF Billing Support",
+       "input_text": "{\"task\": \"Step 'Billing Support': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "billing_response result for: Step 'Billing Support': work on: Prepare",
+       "duration_ms": "<ms>",
+       "tokens_used": 26
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Agent: WF Product FAQ",
+       "input_text": "{\"task\": \"Step 'Product FAQ': work on: Prepare a complete assessment for case GOLD-001 covering all required sections.\"}",
+       "output_text": "faq_response result for: Step 'Product FAQ': work on: Prepare a c",
+       "duration_ms": "<ms>",
+       "tokens_used": 28
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

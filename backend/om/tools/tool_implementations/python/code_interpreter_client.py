@@ -7,10 +7,107 @@ from typing import TypedDict
 import requests
 from pydantic import BaseModel
 
+from om.configs.app_configs import CODE_INTERPRETER_API_TOKEN
 from om.configs.app_configs import CODE_INTERPRETER_BASE_URL
 from om.utils.logger import setup_logger
+from shared_configs.contextvars import get_current_tenant_id
 
 logger = setup_logger()
+
+# Header naming the calling tenant. The service binds every session/file to it and
+# answers 404 for another tenant's ids.
+TENANT_HEADER = "X-OM-Tenant"
+
+_warned_missing_token = False
+
+
+def _warn_missing_token_once() -> None:
+    global _warned_missing_token
+    if _warned_missing_token:
+        return
+    _warned_missing_token = True
+    logger.warning(
+        "CODE_INTERPRETER_API_TOKEN is not set; the code interpreter will reject "
+        "requests unless it runs with CODE_INTERPRETER_ALLOW_UNAUTHENTICATED=true "
+        "(dev only)."
+    )
+
+
+class CodeInterpreterError(requests.exceptions.HTTPError):
+    """An HTTP error from the code interpreter with an actionable message.
+
+    Subclasses ``requests.HTTPError`` (with ``.response`` set) so existing callers
+    that inspect ``exc.response.status_code`` keep working.
+    """
+
+
+class CodeInterpreterAuthError(CodeInterpreterError):
+    """401/403: the shared API token is missing or does not match the service."""
+
+
+class CodeInterpreterUnavailableError(CodeInterpreterError):
+    """503: the service is at capacity, or has no API token configured."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        response: requests.Response | None = None,
+        retry_after: int | None = None,
+    ):
+        super().__init__(message, response=response)
+        self.retry_after = retry_after
+
+
+class RunFunctionUnsupportedError(CodeInterpreterError):
+    """The service has no ``/v1/run_function`` (an older service answers 404; a
+    service on a backend without it, e.g. Kubernetes, answers 501).
+
+    Callers can fall back to :meth:`CodeInterpreterClient.execute`.
+    """
+
+
+def _error_detail(response: requests.Response) -> str:
+    try:
+        detail = response.json().get("detail")
+        if isinstance(detail, str):
+            return detail
+    except Exception:
+        pass
+    return (response.text or "")[:200]
+
+
+def _check_response(response: requests.Response) -> None:
+    """Raise a clear error for auth/capacity failures, else ``raise_for_status``."""
+    status = response.status_code
+    if status in (401, 403):
+        raise CodeInterpreterAuthError(
+            f"Code interpreter rejected the request (HTTP {status}): the API token is "
+            "missing or wrong. Set CODE_INTERPRETER_API_TOKEN to the same value on the "
+            "backend services and on the code-interpreter service.",
+            response=response,
+        )
+    if status == 503:
+        detail = _error_detail(response)
+        retry_after_raw = response.headers.get("Retry-After")
+        retry_after = (
+            int(retry_after_raw) if retry_after_raw and retry_after_raw.isdigit() else None
+        )
+        if "token is not configured" in detail:
+            msg = (
+                "Code interpreter is refusing requests (HTTP 503) because it has no "
+                "CODE_INTERPRETER_API_TOKEN configured. Set the same token on the "
+                "code-interpreter service and the backend services, then restart them."
+            )
+        else:
+            msg = (
+                f"Code interpreter is unavailable or at capacity (HTTP 503): {detail}"
+                + (f" Retry after {retry_after}s." if retry_after else "")
+            )
+        raise CodeInterpreterUnavailableError(
+            msg, response=response, retry_after=retry_after
+        )
+    response.raise_for_status()
 
 
 class FileInput(TypedDict):
@@ -41,6 +138,27 @@ class ExecuteResponse(BaseModel):
     error_kind: str | None = None
 
 
+class RunFunctionResponse(BaseModel):
+    """Response from ``/v1/run_function`` (one program in a fresh, single-use sandbox)."""
+
+    stdout: str
+    stderr: str
+    exit_code: int | None
+    timed_out: bool
+    duration_ms: int
+    # "timeout" (wall clock or CPU-time limit), "oom", "sandbox_error", or None.
+    # Kept as ``str`` so a newer service's additional kinds don't break parsing.
+    error_kind: str | None = None
+    stdout_truncated: bool = False
+    stderr_truncated: bool = False
+    # The program's out-of-band result file, when requested with read_result_file.
+    result_payload: str | None = None
+    # Why a written result file was not returned: "too_large" or "invalid_utf8".
+    result_error: str | None = None
+    # True when the run used a pre-started (warm) sandbox.
+    pool_hit: bool = False
+
+
 @dataclass
 class CIStreamEvent:
     """One event from :meth:`CodeInterpreterClient.execute_stream`.
@@ -59,24 +177,39 @@ class CIStreamEvent:
 class CodeInterpreterClient:
     """Client for Code Interpreter service"""
 
-    def __init__(self, base_url: str | None = CODE_INTERPRETER_BASE_URL):
+    def __init__(
+        self,
+        base_url: str | None = CODE_INTERPRETER_BASE_URL,
+        api_token: str | None = None,
+    ):
         if not base_url:
             raise ValueError("CODE_INTERPRETER_BASE_URL not configured")
         self.base_url = base_url.rstrip("/")
         self.session = requests.Session()
+        token = CODE_INTERPRETER_API_TOKEN if api_token is None else api_token
+        if token:
+            self.session.headers["Authorization"] = f"Bearer {token}"
+        else:
+            _warn_missing_token_once()
+
+    @staticmethod
+    def _tenant_headers() -> dict[str, str]:
+        """Per-request tenant header (the current tenant, or the default schema in
+        single-tenant mode). Resolved per call, not cached on the client."""
+        return {TENANT_HEADER: get_current_tenant_id()}
 
     def create_session(self) -> str:
         """Create a persistent execution session. Returns session_id."""
         url = f"{self.base_url}/v1/sessions"
-        response = self.session.post(url, timeout=30)
-        response.raise_for_status()
+        response = self.session.post(url, headers=self._tenant_headers(), timeout=30)
+        _check_response(response)
         return response.json()["session_id"]
 
     def delete_session(self, session_id: str) -> None:
         """Destroy a persistent execution session."""
         url = f"{self.base_url}/v1/sessions/{session_id}"
-        response = self.session.delete(url, timeout=10)
-        response.raise_for_status()
+        response = self.session.delete(url, headers=self._tenant_headers(), timeout=10)
+        _check_response(response)
 
     def execute(
         self,
@@ -107,10 +240,56 @@ class CodeInterpreterClient:
         if session_id is not None:
             payload["session_id"] = session_id
 
-        response = self.session.post(url, json=payload, timeout=timeout_ms / 1000 + 10)
-        response.raise_for_status()
+        response = self.session.post(
+            url,
+            json=payload,
+            headers=self._tenant_headers(),
+            timeout=timeout_ms / 1000 + 10,
+        )
+        _check_response(response)
 
         return ExecuteResponse(**response.json())
+
+    def run_function(
+        self,
+        program: str,
+        timeout_ms: int,
+        *,
+        read_result_file: bool = False,
+    ) -> RunFunctionResponse:
+        """Run a self-contained program in a fresh, single-use sandbox.
+
+        Lower latency than :meth:`execute`: the program runs as-is (no last-line
+        wrapper, figure prologue or workspace files), usually in a pre-started
+        sandbox. With ``read_result_file`` the program may write its result to
+        ``$OM_RESULT_PATH`` and it comes back as ``result_payload``.
+
+        Raises:
+            RunFunctionUnsupportedError: the service has no run_function endpoint
+                (fall back to :meth:`execute`).
+            CodeInterpreterAuthError / CodeInterpreterUnavailableError /
+                requests.HTTPError: as for :meth:`execute`.
+        """
+        url = f"{self.base_url}/v1/run_function"
+        payload: dict = {"program": program, "timeout_ms": timeout_ms}
+        if read_result_file:
+            payload["read_result_file"] = True
+
+        response = self.session.post(
+            url,
+            json=payload,
+            headers=self._tenant_headers(),
+            timeout=timeout_ms / 1000 + 10,
+        )
+        if response.status_code in (404, 501):
+            raise RunFunctionUnsupportedError(
+                "The code interpreter does not support run_function "
+                f"(HTTP {response.status_code}): {_error_detail(response)}",
+                response=response,
+            )
+        _check_response(response)
+
+        return RunFunctionResponse(**response.json())
 
     def execute_stream(
         self,
@@ -140,9 +319,13 @@ class CodeInterpreterClient:
         # (connect timeout, read timeout). The read timeout is the wall-clock budget
         # plus headroom so a legitimately long cell isn't cut off client-side.
         with self.session.post(
-            url, json=payload, stream=True, timeout=(10, timeout_ms / 1000 + 30)
+            url,
+            json=payload,
+            headers=self._tenant_headers(),
+            stream=True,
+            timeout=(10, timeout_ms / 1000 + 30),
         ) as response:
-            response.raise_for_status()
+            _check_response(response)
 
             event: str | None = None
             data: str | None = None
@@ -198,8 +381,10 @@ class CodeInterpreterClient:
         url = f"{self.base_url}/v1/files"
 
         files = {"file": (filename, file_content)}
-        response = self.session.post(url, files=files, timeout=30)
-        response.raise_for_status()
+        response = self.session.post(
+            url, files=files, headers=self._tenant_headers(), timeout=30
+        )
+        _check_response(response)
 
         return response.json()["file_id"]
 
@@ -207,8 +392,8 @@ class CodeInterpreterClient:
         """Download file from Code Interpreter"""
         url = f"{self.base_url}/v1/files/{file_id}"
 
-        response = self.session.get(url, timeout=30)
-        response.raise_for_status()
+        response = self.session.get(url, headers=self._tenant_headers(), timeout=30)
+        _check_response(response)
 
         return response.content
 
@@ -216,5 +401,5 @@ class CodeInterpreterClient:
         """Delete file from Code Interpreter"""
         url = f"{self.base_url}/v1/files/{file_id}"
 
-        response = self.session.delete(url, timeout=10)
-        response.raise_for_status()
+        response = self.session.delete(url, headers=self._tenant_headers(), timeout=10)
+        _check_response(response)

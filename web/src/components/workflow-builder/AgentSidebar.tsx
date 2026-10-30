@@ -4,12 +4,18 @@ import React, { useState, useMemo, useCallback, type DragEvent } from "react";
 import type { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import type { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
 import type { DragAgentData, WorkflowMeta } from "./types";
+import { AGENT_DRAG_MIME, NODE_TYPE_DRAG_MIME } from "./types";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import LLMSelector from "@/components/llm/LLMSelector";
 import { parseLlmDescriptor, structureValue } from "@/lib/llm/utils";
-
-/** Special drag data type for non-agent items (e.g., conditional router) */
-export const CONDITION_DRAG_TYPE = "application/reactflow-condition";
+import {
+  type NodeCatalog,
+  editorKindFor,
+  latestVersion,
+  paletteTypes,
+} from "@/lib/workflows/nodeRegistry";
+import { nodeKindUi } from "./nodeUi";
+import { selectableStepAgents } from "@/lib/workflows/stepAgents";
 
 // Names of utility agents that get their own section
 const UTILITY_AGENT_NAMES = new Set(["HTTP Request", "Code Executor"]);
@@ -27,6 +33,69 @@ interface AgentSidebarProps {
   /** Collapse state */
   collapsed?: boolean;
   onToggleCollapse?: () => void;
+  /** Node type catalog; the Utils palette lists its types for the mode. */
+  catalog: NodeCatalog;
+  catalogLoading?: boolean;
+}
+
+/** Utils palette: every catalog node type usable in the current mode. */
+function NodeTypePalette({
+  catalog,
+  mode,
+  loading,
+}: {
+  catalog: NodeCatalog;
+  mode: WorkflowMeta["orchestration_mode"];
+  loading: boolean;
+}) {
+  const types = paletteTypes(catalog, mode).filter(
+    (t) => nodeKindUi(editorKindFor(catalog, t.type)).inUtilsPalette
+  );
+
+  if (loading) {
+    return <div className="wfb-sidebar-empty">Loading node types...</div>;
+  }
+  if (types.length === 0) {
+    return (
+      <div className="wfb-sidebar-empty">
+        {mode === "llm_decision"
+          ? "No extra node types are available in LLM Decision mode. Switch to Sequential to use conditions and other nodes."
+          : "No node types available."}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {types.map((t) => {
+        const ui = nodeKindUi(editorKindFor(catalog, t.type));
+        const info = latestVersion(catalog, t.type);
+        const label = info?.label ?? t.type;
+        return (
+          <div
+            key={t.type}
+            className={`wfb-sidebar-card wfb-sidebar-card--${ui.paletteVariant}`}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData(NODE_TYPE_DRAG_MIME, t.type);
+              e.dataTransfer.effectAllowed = "move";
+            }}
+            title={`Drag to add a ${label} step`}
+          >
+            <div
+              className={`wfb-sidebar-card-avatar wfb-sidebar-card-avatar--${ui.paletteVariant}`}
+            >
+              <ui.PaletteIcon />
+            </div>
+            <div className="wfb-sidebar-card-info">
+              <div className="wfb-sidebar-card-name">{label}</div>
+              <div className="wfb-sidebar-card-desc">{info?.description}</div>
+            </div>
+          </div>
+        );
+      })}
+    </>
+  );
 }
 
 export function AgentSidebar({
@@ -38,13 +107,15 @@ export function AgentSidebar({
   llmProviders,
   collapsed,
   onToggleCollapse,
+  catalog,
+  catalogLoading = false,
 }: AgentSidebarProps) {
   const [activeTab, setActiveTab] = useState<SidebarTab>("agents");
   const [search, setSearch] = useState("");
 
   // Split agents into utility vs regular, filter out workflow wrappers
   const { utilityAgents, regularAgents } = useMemo(() => {
-    const nonWorkflow = agents.filter((a) => !a.workflow_id && a.id !== 0);
+    const nonWorkflow = selectableStepAgents(agents);
     const q = search.trim().toLowerCase();
     const matchesSearch = (a: MinimalAgentSnapshot) =>
       !q ||
@@ -77,7 +148,7 @@ export function AgentSidebar({
       agent_llm_model: agent.llm_model_version_override || null,
       agent_llm_provider: agent.llm_model_provider_override || null,
     };
-    event.dataTransfer.setData("application/reactflow", JSON.stringify(data));
+    event.dataTransfer.setData(AGENT_DRAG_MIME, JSON.stringify(data));
     event.dataTransfer.effectAllowed = "move";
   };
 
@@ -206,29 +277,11 @@ export function AgentSidebar({
       {activeTab === "utilities" && (
         <div className="wfb-sidebar-list">
           <div className="wfb-sidebar-section-title">Drag to canvas</div>
-          {/* Condition (If-Else) */}
-          <div
-            className="wfb-sidebar-card wfb-sidebar-card--condition"
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData(CONDITION_DRAG_TYPE, "conditional_router");
-              e.dataTransfer.effectAllowed = "move";
-            }}
-            title="Drag to add a conditional branch (If/Else)"
-          >
-            <div className="wfb-sidebar-card-avatar wfb-sidebar-card-avatar--condition">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M16 3h5v5" />
-                <path d="M8 3H3v5" />
-                <path d="M12 22v-8.3a4 4 0 00-1.172-2.872L3 3" />
-                <path d="M15 9l6-6" />
-              </svg>
-            </div>
-            <div className="wfb-sidebar-card-info">
-              <div className="wfb-sidebar-card-name">Condition (If-Else)</div>
-              <div className="wfb-sidebar-card-desc">Branch based on step output</div>
-            </div>
-          </div>
+          <NodeTypePalette
+            catalog={catalog}
+            mode={meta?.orchestration_mode ?? "llm_decision"}
+            loading={catalogLoading}
+          />
           {/* Utility agents (HTTP Request, Code Executor) */}
           {utilityAgents.map(renderAgentCard)}
           {utilityAgents.length === 0 && !isLoading && (

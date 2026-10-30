@@ -296,8 +296,12 @@ export interface IntermediateReportCitedDocs extends BaseObj {
 export interface WorkflowStepStart extends BaseObj {
   type: "workflow_step_start";
   step_name: string;
-  agent_name: string;
+  // null for steps that don't run an agent (code, parallel, loop, condition)
+  agent_name: string | null;
   step_order: number;
+  // Node type of the step, e.g. "agent", "code", "parallel", "loop",
+  // "loop_iteration", "conditional_router"
+  step_type?: string;
   promote_output?: boolean;
 }
 

@@ -1,0 +1,2949 @@
+{
+ "scenario": "28_drug_development",
+ "description": "Template 28_drug_development.json forced into sequential mode.",
+ "covers": [
+  "template",
+  "sequential"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "Drug Development Pipeline Review",
+    "mode": "sequential",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Program Triage Manager",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Medicinal Chemist",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "medchem_assessment",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Biostatistician",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "biostatistics_assessment",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Toxicologist",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "toxicology_assessment",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Regulatory Affairs Specialist",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "regulatory_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Clinical Operations Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "clinical_ops_assessment",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Pharmacoeconomist",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "pharmacoeconomics_assessment",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "IP/Patent Analyst",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "ip_assessment",
+      "flags": []
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "Manufacturing/CMC Specialist",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "cmc_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 110,
+      "order": 9,
+      "name": "Stage Gate Report Writer",
+      "type": "agent",
+      "agent_id": 1010,
+      "output_key": "stage_gate_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Program Triage Manager",
+     "agent_name": "WF Program Triage Manager",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Program Triage Manager",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_pause_for_input",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Program Triage Manager",
+     "agent_name": "WF Program Triage Manager",
+     "questions": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 2,
+     "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+     "file_ids": [],
+     "file_names": []
+    }
+   ],
+   "final_answer": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+   "agent_calls": [
+    {
+     "step_name": "Program Triage Manager",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Program Triage Manager",
+     "call_index": 0,
+     "behavior": "needs_input",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": 101,
+     "checkpoint": {
+      "step_outputs": {},
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [
+       {
+        "role": "agent",
+        "content": "Which details are missing for triage_assessment? Please provide the budget and the deadline."
+       }
+      ],
+      "paused_agent_original_task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections."
+     }
+    }
+   ],
+   "final_step_outputs": {},
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "paused",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Drug Development Pipeline Review",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "sequential",
+    "status": "paused",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 0,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Program Triage Manager",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "paused",
+     "paused_at_step_id": 101,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 0,
+     "total_duration_ms": "<ms>",
+     "steps_executed": []
+    }
+   ]
+  },
+  {
+   "user_message": "Here are the missing details: budget 5000 USD, deadline Friday, region South.",
+   "message_id": 5002,
+   "workflow": {
+    "id": 1,
+    "name": "Drug Development Pipeline Review",
+    "mode": "sequential",
+    "max_steps": 25,
+    "max_calls_per_agent": 3,
+    "timeout_seconds": 2400,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Program Triage Manager",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "triage_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Medicinal Chemist",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "medchem_assessment",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Biostatistician",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "biostatistics_assessment",
+      "flags": []
+     },
+     {
+      "id": 104,
+      "order": 3,
+      "name": "Toxicologist",
+      "type": "agent",
+      "agent_id": 1004,
+      "output_key": "toxicology_assessment",
+      "flags": []
+     },
+     {
+      "id": 105,
+      "order": 4,
+      "name": "Regulatory Affairs Specialist",
+      "type": "agent",
+      "agent_id": 1005,
+      "output_key": "regulatory_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 106,
+      "order": 5,
+      "name": "Clinical Operations Analyst",
+      "type": "agent",
+      "agent_id": 1006,
+      "output_key": "clinical_ops_assessment",
+      "flags": []
+     },
+     {
+      "id": 107,
+      "order": 6,
+      "name": "Pharmacoeconomist",
+      "type": "agent",
+      "agent_id": 1007,
+      "output_key": "pharmacoeconomics_assessment",
+      "flags": []
+     },
+     {
+      "id": 108,
+      "order": 7,
+      "name": "IP/Patent Analyst",
+      "type": "agent",
+      "agent_id": 1008,
+      "output_key": "ip_assessment",
+      "flags": []
+     },
+     {
+      "id": 109,
+      "order": 8,
+      "name": "Manufacturing/CMC Specialist",
+      "type": "agent",
+      "agent_id": 1009,
+      "output_key": "cmc_assessment",
+      "flags": [
+       "can_request_input"
+      ]
+     },
+     {
+      "id": 110,
+      "order": 9,
+      "name": "Stage Gate Report Writer",
+      "type": "agent",
+      "agent_id": 1010,
+      "output_key": "stage_gate_report",
+      "flags": [
+       "promote_output"
+      ]
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Program Triage Manager",
+     "agent_name": "WF Program Triage Manager",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "content": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "step_name": "Program Triage Manager",
+     "output_key": "triage_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      0,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Medicinal Chemist",
+     "agent_name": "WF Medicinal Chemist",
+     "step_order": 1,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Thinking about Medicinal Chemist"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "medchem_assessment result for: User",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": " request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "medchem_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "step_name": "Medicinal Chemist",
+     "output_key": "medchem_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Biostatistician",
+     "agent_name": "WF Biostatistician",
+     "step_order": 2,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "Thinking about Biostatistician"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Biostatistician"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "biostatistics_assessment result for: U",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "ser request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_103_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/biostatistics_assessment.docx",
+        "filename": "biostatistics_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_103_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "content": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "step_name": "Biostatistician",
+     "output_key": "biostatistics_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      2,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Toxicologist",
+     "agent_name": "WF Toxicologist",
+     "step_order": 3,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "Thinking about Toxicologist"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Toxicologist"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      5,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "toxicology_assessment result for: Use",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "r request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_104_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/toxicology_assessment.docx",
+        "filename": "toxicology_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_104_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "content": "toxicology_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "step_name": "Toxicologist",
+     "output_key": "toxicology_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      4,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Regulatory Affairs Specialist",
+     "agent_name": "WF Regulatory Affairs Specialist",
+     "step_order": 4,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "content": "regulatory_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "step_name": "Regulatory Affairs Specialist",
+     "output_key": "regulatory_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      6,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "step_name": "Clinical Operations Analyst",
+     "agent_name": "WF Clinical Operations Analyst",
+     "step_order": 5,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "Thinking about Clinical Operations Analyst"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "clinical_ops_assessment result for: Us",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "er request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "content": "clinical_ops_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "step_name": "Clinical Operations Analyst",
+     "output_key": "clinical_ops_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      7,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "step_name": "Pharmacoeconomist",
+     "agent_name": "WF Pharmacoeconomist",
+     "step_order": 6,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "Thinking about Pharmacoeconomist"
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "tool_name": "fake_search"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      9,
+      0,
+      null
+     ],
+     "tool_name": "fake_search",
+     "response_type": "json",
+     "data": {
+      "hits": 3,
+      "step": "Pharmacoeconomist"
+     }
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      9,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "pharmacoeconomics_assessment result for:",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": " User request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "custom_tool_start",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "tool_name": "document_files"
+    },
+    {
+     "type": "custom_tool_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "tool_name": "document_files",
+     "response_type": "json",
+     "data": {
+      "tool_result": "Generated document files",
+      "_file_ids": [
+       "file_107_0_0"
+      ],
+      "_file_details": [
+       {
+        "file_path": "/app/output/pharmacoeconomics_assessment.docx",
+        "filename": "pharmacoeconomics_assessment.docx"
+       }
+      ]
+     },
+     "file_ids": [
+      "file_107_0_0"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "content": "pharmacoeconomics_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "step_name": "Pharmacoeconomist",
+     "output_key": "pharmacoeconomics_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      8,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "IP/Patent Analyst",
+     "agent_name": "WF IP Patent Analyst",
+     "step_order": 7,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "Thinking about IP/Patent Analyst"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "ip_assessment result for: User re",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "quest: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "content": "ip_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "step_name": "IP/Patent Analyst",
+     "output_key": "ip_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      10,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "step_name": "Manufacturing/CMC Specialist",
+     "agent_name": "WF Manufacturing CMC Specialist",
+     "step_order": 8,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "content": "cmc_assessment result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "step_name": "Manufacturing/CMC Specialist",
+     "output_key": "cmc_assessment"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      11,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "Stage Gate Report Writer",
+     "agent_name": "WF Stage Gate Report Writer",
+     "step_order": 9,
+     "step_type": "agent",
+     "promote_output": true
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "Thinking about Stage Gate Report Writer"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "stage_gate_report result for: User ",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "request: Prepare a complete assessm",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "content": "stage_gate_report result for: User request: Prepare a complete assessm",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "step_name": "Stage Gate Report Writer",
+     "output_key": "stage_gate_report"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      12,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      13,
+      0,
+      null
+     ],
+     "content": "stage_gate_report result for: User request: Prepare a complete assessm"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      13,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_start",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "message_delta",
+     "placement": [
+      14,
+      0,
+      null
+     ],
+     "content": "",
+     "file_ids": [
+      "file_103_0_0",
+      "file_104_0_0",
+      "file_107_0_0"
+     ],
+     "file_names": [
+      "biostatistics_assessment.docx",
+      "toxicology_assessment.docx",
+      "pharmacoeconomics_assessment.docx"
+     ]
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      14,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      15,
+      0,
+      null
+     ]
+    }
+   ],
+   "messages": [
+    {
+     "turn_index": 13,
+     "content": "stage_gate_report result for: User request: Prepare a complete assessm",
+     "file_ids": [],
+     "file_names": []
+    },
+    {
+     "turn_index": 14,
+     "content": "",
+     "file_ids": [
+      "file_103_0_0",
+      "file_104_0_0",
+      "file_107_0_0"
+     ],
+     "file_names": [
+      "biostatistics_assessment.docx",
+      "toxicology_assessment.docx",
+      "pharmacoeconomics_assessment.docx"
+     ]
+    }
+   ],
+   "final_answer": "",
+   "agent_calls": [
+    {
+     "step_name": "Program Triage Manager",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "triage_assessment",
+     "agent": "WF Program Triage Manager",
+     "call_index": 1,
+     "behavior": "normal",
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "task": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Medicinal Chemist",
+     "step_id": 102,
+     "step_order": 1,
+     "output_key": "medchem_assessment",
+     "agent": "WF Medicinal Chemist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Biostatistician",
+     "step_id": 103,
+     "step_order": 2,
+     "output_key": "biostatistics_assessment",
+     "agent": "WF Biostatistician",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      2,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Toxicologist",
+     "step_id": 104,
+     "step_order": 3,
+     "output_key": "toxicology_assessment",
+     "agent": "WF Toxicologist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      4,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Regulatory Affairs Specialist",
+     "step_id": 105,
+     "step_order": 4,
+     "output_key": "regulatory_assessment",
+     "agent": "WF Regulatory Affairs Specialist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      6,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Clinical Operations Analyst",
+     "step_id": 106,
+     "step_order": 5,
+     "output_key": "clinical_ops_assessment",
+     "agent": "WF Clinical Operations Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      7,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'regulatory_assessment':\nregulatory_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Pharmacoeconomist",
+     "step_id": 107,
+     "step_order": 6,
+     "output_key": "pharmacoeconomics_assessment",
+     "agent": "WF Pharmacoeconomist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      8,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'regulatory_assessment':\nregulatory_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'clinical_ops_assessment':\nclinical_ops_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')",
+     "extra_kwargs": [],
+     "has_tools": true,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "IP/Patent Analyst",
+     "step_id": 108,
+     "step_order": 7,
+     "output_key": "ip_assessment",
+     "agent": "WF IP Patent Analyst",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      10,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'regulatory_assessment':\nregulatory_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'clinical_ops_assessment':\nclinical_ops_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'pharmacoeconomics_assessment':\npharmacoeconomics_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')\n- pharmacoeconomics_assessment.docx (path: /app/output/pharmacoeconomics_assessment.docx, from step 'pharmacoeconomics_assessment')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Manufacturing/CMC Specialist",
+     "step_id": 109,
+     "step_order": 8,
+     "output_key": "cmc_assessment",
+     "agent": "WF Manufacturing CMC Specialist",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      11,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'regulatory_assessment':\nregulatory_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'clinical_ops_assessment':\nclinical_ops_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'pharmacoeconomics_assessment':\npharmacoeconomics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'ip_assessment':\nip_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')\n- pharmacoeconomics_assessment.docx (path: /app/output/pharmacoeconomics_assessment.docx, from step 'pharmacoeconomics_assessment')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    },
+    {
+     "step_name": "Stage Gate Report Writer",
+     "step_id": 110,
+     "step_order": 9,
+     "output_key": "stage_gate_report",
+     "agent": "WF Stage Gate Report Writer",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      12,
+      0,
+      null
+     ],
+     "task": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'regulatory_assessment':\nregulatory_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'clinical_ops_assessment':\nclinical_ops_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'pharmacoeconomics_assessment':\npharmacoeconomics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'ip_assessment':\nip_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'cmc_assessment':\ncmc_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')\n- pharmacoeconomics_assessment.docx (path: /app/output/pharmacoeconomics_assessment.docx, from step 'pharmacoeconomics_assessment')",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": true,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 0,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "medchem_assessment": "medchem_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101,
+       102
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 1,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "medchem_assessment": "medchem_assessment result for: User request: Prepare a complete assessm",
+       "biostatistics_assessment": "biostatistics_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "biostatistics_assessment": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/biostatistics_assessment.docx",
+           "filename": "biostatistics_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 3,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "medchem_assessment": "medchem_assessment result for: User request: Prepare a complete assessm",
+       "biostatistics_assessment": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+       "toxicology_assessment": "toxicology_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "biostatistics_assessment": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/biostatistics_assessment.docx",
+           "filename": "biostatistics_assessment.docx"
+          }
+         ]
+        },
+        "toxicology_assessment": {
+         "file_ids": [
+          "file_104_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/toxicology_assessment.docx",
+           "filename": "toxicology_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 5,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "medchem_assessment": "medchem_assessment result for: User request: Prepare a complete assessm",
+       "biostatistics_assessment": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+       "toxicology_assessment": "toxicology_assessment result for: User request: Prepare a complete assessm",
+       "regulatory_assessment": "regulatory_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "biostatistics_assessment": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/biostatistics_assessment.docx",
+           "filename": "biostatistics_assessment.docx"
+          }
+         ]
+        },
+        "toxicology_assessment": {
+         "file_ids": [
+          "file_104_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/toxicology_assessment.docx",
+           "filename": "toxicology_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 6,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "medchem_assessment": "medchem_assessment result for: User request: Prepare a complete assessm",
+       "biostatistics_assessment": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+       "toxicology_assessment": "toxicology_assessment result for: User request: Prepare a complete assessm",
+       "regulatory_assessment": "regulatory_assessment result for: User request: Prepare a complete assessm",
+       "clinical_ops_assessment": "clinical_ops_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "biostatistics_assessment": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/biostatistics_assessment.docx",
+           "filename": "biostatistics_assessment.docx"
+          }
+         ]
+        },
+        "toxicology_assessment": {
+         "file_ids": [
+          "file_104_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/toxicology_assessment.docx",
+           "filename": "toxicology_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 7,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "medchem_assessment": "medchem_assessment result for: User request: Prepare a complete assessm",
+       "biostatistics_assessment": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+       "toxicology_assessment": "toxicology_assessment result for: User request: Prepare a complete assessm",
+       "regulatory_assessment": "regulatory_assessment result for: User request: Prepare a complete assessm",
+       "clinical_ops_assessment": "clinical_ops_assessment result for: User request: Prepare a complete assessm",
+       "pharmacoeconomics_assessment": "pharmacoeconomics_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "biostatistics_assessment": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/biostatistics_assessment.docx",
+           "filename": "biostatistics_assessment.docx"
+          }
+         ]
+        },
+        "toxicology_assessment": {
+         "file_ids": [
+          "file_104_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/toxicology_assessment.docx",
+           "filename": "toxicology_assessment.docx"
+          }
+         ]
+        },
+        "pharmacoeconomics_assessment": {
+         "file_ids": [
+          "file_107_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/pharmacoeconomics_assessment.docx",
+           "filename": "pharmacoeconomics_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 9,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "medchem_assessment": "medchem_assessment result for: User request: Prepare a complete assessm",
+       "biostatistics_assessment": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+       "toxicology_assessment": "toxicology_assessment result for: User request: Prepare a complete assessm",
+       "regulatory_assessment": "regulatory_assessment result for: User request: Prepare a complete assessm",
+       "clinical_ops_assessment": "clinical_ops_assessment result for: User request: Prepare a complete assessm",
+       "pharmacoeconomics_assessment": "pharmacoeconomics_assessment result for: User request: Prepare a complete assessm",
+       "ip_assessment": "ip_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "biostatistics_assessment": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/biostatistics_assessment.docx",
+           "filename": "biostatistics_assessment.docx"
+          }
+         ]
+        },
+        "toxicology_assessment": {
+         "file_ids": [
+          "file_104_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/toxicology_assessment.docx",
+           "filename": "toxicology_assessment.docx"
+          }
+         ]
+        },
+        "pharmacoeconomics_assessment": {
+         "file_ids": [
+          "file_107_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/pharmacoeconomics_assessment.docx",
+           "filename": "pharmacoeconomics_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 10,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "medchem_assessment": "medchem_assessment result for: User request: Prepare a complete assessm",
+       "biostatistics_assessment": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+       "toxicology_assessment": "toxicology_assessment result for: User request: Prepare a complete assessm",
+       "regulatory_assessment": "regulatory_assessment result for: User request: Prepare a complete assessm",
+       "clinical_ops_assessment": "clinical_ops_assessment result for: User request: Prepare a complete assessm",
+       "pharmacoeconomics_assessment": "pharmacoeconomics_assessment result for: User request: Prepare a complete assessm",
+       "ip_assessment": "ip_assessment result for: User request: Prepare a complete assessm",
+       "cmc_assessment": "cmc_assessment result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "biostatistics_assessment": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/biostatistics_assessment.docx",
+           "filename": "biostatistics_assessment.docx"
+          }
+         ]
+        },
+        "toxicology_assessment": {
+         "file_ids": [
+          "file_104_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/toxicology_assessment.docx",
+           "filename": "toxicology_assessment.docx"
+          }
+         ]
+        },
+        "pharmacoeconomics_assessment": {
+         "file_ids": [
+          "file_107_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/pharmacoeconomics_assessment.docx",
+           "filename": "pharmacoeconomics_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 11,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    },
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "medchem_assessment": "medchem_assessment result for: User request: Prepare a complete assessm",
+       "biostatistics_assessment": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+       "toxicology_assessment": "toxicology_assessment result for: User request: Prepare a complete assessm",
+       "regulatory_assessment": "regulatory_assessment result for: User request: Prepare a complete assessm",
+       "clinical_ops_assessment": "clinical_ops_assessment result for: User request: Prepare a complete assessm",
+       "pharmacoeconomics_assessment": "pharmacoeconomics_assessment result for: User request: Prepare a complete assessm",
+       "ip_assessment": "ip_assessment result for: User request: Prepare a complete assessm",
+       "cmc_assessment": "cmc_assessment result for: User request: Prepare a complete assessm",
+       "stage_gate_report": "stage_gate_report result for: User request: Prepare a complete assessm"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+       "step_files": {
+        "biostatistics_assessment": {
+         "file_ids": [
+          "file_103_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/biostatistics_assessment.docx",
+           "filename": "biostatistics_assessment.docx"
+          }
+         ]
+        },
+        "toxicology_assessment": {
+         "file_ids": [
+          "file_104_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/toxicology_assessment.docx",
+           "filename": "toxicology_assessment.docx"
+          }
+         ]
+        },
+        "pharmacoeconomics_assessment": {
+         "file_ids": [
+          "file_107_0_0"
+         ],
+         "files": [
+          {
+           "file_path": "/app/output/pharmacoeconomics_assessment.docx",
+           "filename": "pharmacoeconomics_assessment.docx"
+          }
+         ]
+        }
+       }
+      },
+      "completed_step_ids": [
+       101,
+       102,
+       103,
+       104,
+       105,
+       106,
+       107,
+       108,
+       109,
+       110
+      ],
+      "orchestrator_history": [],
+      "cycle_count": 0,
+      "agent_call_counts": {},
+      "turn_index": 12,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "triage_assessment": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+    "medchem_assessment": "medchem_assessment result for: User request: Prepare a complete assessm",
+    "biostatistics_assessment": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+    "toxicology_assessment": "toxicology_assessment result for: User request: Prepare a complete assessm",
+    "regulatory_assessment": "regulatory_assessment result for: User request: Prepare a complete assessm",
+    "clinical_ops_assessment": "clinical_ops_assessment result for: User request: Prepare a complete assessm",
+    "pharmacoeconomics_assessment": "pharmacoeconomics_assessment result for: User request: Prepare a complete assessm",
+    "ip_assessment": "ip_assessment result for: User request: Prepare a complete assessm",
+    "cmc_assessment": "cmc_assessment result for: User request: Prepare a complete assessm",
+    "stage_gate_report": "stage_gate_report result for: User request: Prepare a complete assessm"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed",
+      "agent_11:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed",
+      "agent_11:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "completed",
+     "nodes": [
+      "start:completed",
+      "agent_1:paused",
+      "agent_2:completed",
+      "agent_3:completed",
+      "agent_4:completed",
+      "agent_5:completed",
+      "agent_6:completed",
+      "agent_7:completed",
+      "agent_8:completed",
+      "agent_9:completed",
+      "agent_10:completed",
+      "agent_11:completed",
+      "finish:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "Drug Development Pipeline Review",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5002,
+    "mode": "sequential",
+    "status": "completed",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 982,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Program Triage Manager",
+      "status": "paused",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "Which details are missing for triage_assessment? Please provide the budget and the deadline.",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_2",
+      "type": "agent",
+      "name": "Program Triage Manager",
+      "status": "completed",
+      "input": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more details, ask your follow-up questions.",
+      "output": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+      "reason": null,
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 88,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_3",
+      "type": "agent",
+      "name": "Medicinal Chemist",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+      "output": "medchem_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 102,
+      "agent_id": 1002,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 35,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_4",
+      "type": "agent",
+      "name": "Biostatistician",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm",
+      "output": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 103,
+      "agent_id": 1003,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 47,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_5",
+      "type": "agent",
+      "name": "Toxicologist",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')",
+      "output": "toxicology_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 104,
+      "agent_id": 1004,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 71,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_6",
+      "type": "agent",
+      "name": "Regulatory Affairs Specialist",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')",
+      "output": "regulatory_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 105,
+      "agent_id": 1005,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 90,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_7",
+      "type": "agent",
+      "name": "Clinical Operations Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'regulatory_assessment':\nregulatory_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')",
+      "output": "clinical_ops_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 106,
+      "agent_id": 1006,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 102,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_8",
+      "type": "agent",
+      "name": "Pharmacoeconomist",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'regulatory_assessment':\nregulatory_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'clinical_ops_assessment':\nclinical_ops_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')",
+      "output": "pharmacoeconomics_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 107,
+      "agent_id": 1007,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 114,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_9",
+      "type": "agent",
+      "name": "IP/Patent Analyst",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'regulatory_assessment':\nregulatory_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'clinical_ops_assessment':\nclinical_ops_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'pharmacoeconomics_assessment':\npharmacoeconomics_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')\n- pharmacoeconomics_assessment.docx (path: /app/output/pharmacoeconomics_assessment.docx, from step 'pharmacoeconomics_assessment')",
+      "output": "ip_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 108,
+      "agent_id": 1008,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 133,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_10",
+      "type": "agent",
+      "name": "Manufacturing/CMC Specialist",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'regulatory_assessment':\nregulatory_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'clinical_ops_assessment':\nclinical_ops_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'pharmacoeconomics_assessment':\npharmacoeconomics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'ip_assessment':\nip_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')\n- pharmacoeconomics_assessment.docx (path: /app/output/pharmacoeconomics_assessment.docx, from step 'pharmacoeconomics_assessment')",
+      "output": "cmc_assessment result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 109,
+      "agent_id": 1009,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 145,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "agent_11",
+      "type": "agent",
+      "name": "Stage Gate Report Writer",
+      "status": "completed",
+      "input": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'regulatory_assessment':\nregulatory_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'clinical_ops_assessment':\nclinical_ops_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'pharmacoeconomics_assessment':\npharmacoeconomics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'ip_assessment':\nip_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'cmc_assessment':\ncmc_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /app/output/biostatistics_assessment.docx, from step 'biostatistics_assessment')\n- toxicology_assessment.docx (path: /app/output/toxicology_assessment.docx, from step 'toxicology_assessment')\n- pharmacoeconomics_assessment.docx (path: /app/output/pharmacoeconomics_assessment.docx, from step 'pharmacoeconomics_assessment')",
+      "output": "stage_gate_report result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": 110,
+      "agent_id": 1010,
+      "call_index": null,
+      "duration_ms": "<ms>",
+      "tokens": 157,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     },
+     {
+      "id": "finish",
+      "type": "finish",
+      "name": "Final answer",
+      "status": "completed",
+      "input": "",
+      "output": "stage_gate_report result for: User request: Prepare a complete assessm",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_1",
+      "to_id": "agent_2",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_2",
+      "to_id": "agent_3",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_3",
+      "to_id": "agent_4",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_4",
+      "to_id": "agent_5",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_5",
+      "to_id": "agent_6",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_6",
+      "to_id": "agent_7",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_7",
+      "to_id": "agent_8",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_8",
+      "to_id": "agent_9",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_9",
+      "to_id": "agent_10",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_10",
+      "to_id": "agent_11",
+      "type": "delegation",
+      "label": null
+     },
+     {
+      "from_id": "agent_11",
+      "to_id": "finish",
+      "type": "return",
+      "label": null
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "completed",
+     "paused_at_step_id": null,
+     "has_checkpoint": false,
+     "completed_at_set": true,
+     "error_message": null,
+     "total_tokens": 982,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Program Triage Manager",
+       "input_text": "TASK:\nUser request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nCLARIFICATION HISTORY:\nYou previously asked:\nWhich details are missing for triage_assessment? Please provide the budget and the deadline.\n\nThe user responded:\nHere are the missing details: budget 5000 USD, deadline Friday, region South.\n\nINSTRUCTIONS: You now have the user's responses above. If you have all the information you need, produce your complete final output. If you still need more detai",
+       "output_text": "triage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "duration_ms": "<ms>",
+       "tokens_used": 88
+      },
+      {
+       "step_id": 102,
+       "agent_id": 1002,
+       "step_name": "Medicinal Chemist",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a",
+       "output_text": "medchem_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 35
+      },
+      {
+       "step_id": 103,
+       "agent_id": 1003,
+       "step_name": "Biostatistician",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm",
+       "output_text": "biostatistics_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 47
+      },
+      {
+       "step_id": 104,
+       "agent_id": 1004,
+       "step_name": "Toxicologist",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nFiles created by previous steps:\n- biostatistics_assessment.docx (path: /a",
+       "output_text": "toxicology_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 71
+      },
+      {
+       "step_id": 105,
+       "agent_id": 1005,
+       "step_name": "Regulatory Affairs Specialist",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: Use",
+       "output_text": "regulatory_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 90
+      },
+      {
+       "step_id": 106,
+       "agent_id": 1006,
+       "step_name": "Clinical Operations Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: Use",
+       "output_text": "clinical_ops_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 102
+      },
+      {
+       "step_id": 107,
+       "agent_id": 1007,
+       "step_name": "Pharmacoeconomist",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: Use",
+       "output_text": "pharmacoeconomics_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 114
+      },
+      {
+       "step_id": 108,
+       "agent_id": 1008,
+       "step_name": "IP/Patent Analyst",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: Use",
+       "output_text": "ip_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 133
+      },
+      {
+       "step_id": 109,
+       "agent_id": 1009,
+       "step_name": "Manufacturing/CMC Specialist",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: Use",
+       "output_text": "cmc_assessment result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 145
+      },
+      {
+       "step_id": 110,
+       "agent_id": 1010,
+       "step_name": "Stage Gate Report Writer",
+       "input_text": "User request: Prepare a complete assessment for case GOLD-001 covering all required sections.\n\nOutput from 'triage_assessment':\ntriage_assessment result for: TASK:\nUser request: Prepare a complete a\n\nOutput from 'medchem_assessment':\nmedchem_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'biostatistics_assessment':\nbiostatistics_assessment result for: User request: Prepare a complete assessm\n\nOutput from 'toxicology_assessment':\ntoxicology_assessment result for: Use",
+       "output_text": "stage_gate_report result for: User request: Prepare a complete assessm",
+       "duration_ms": "<ms>",
+       "tokens_used": 157
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

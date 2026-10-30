@@ -1,0 +1,398 @@
+{
+ "scenario": "fx_llmd_stop_between_steps",
+ "description": "Stop right after Alpha ends (checked at the next cycle start).",
+ "covers": [
+  "llm_decision",
+  "stop/cancel before cycle"
+ ],
+ "runs": [
+  {
+   "user_message": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+   "message_id": 5001,
+   "workflow": {
+    "id": 1,
+    "name": "FX three steps",
+    "mode": "llm_decision",
+    "max_steps": 10,
+    "max_calls_per_agent": 2,
+    "timeout_seconds": 1800,
+    "steps": [
+     {
+      "id": 101,
+      "order": 0,
+      "name": "Alpha",
+      "type": "agent",
+      "agent_id": 1001,
+      "output_key": "alpha",
+      "flags": []
+     },
+     {
+      "id": 102,
+      "order": 1,
+      "name": "Beta",
+      "type": "agent",
+      "agent_id": 1002,
+      "output_key": "beta",
+      "flags": []
+     },
+     {
+      "id": 103,
+      "order": 2,
+      "name": "Gamma",
+      "type": "agent",
+      "agent_id": 1003,
+      "output_key": "gamma",
+      "flags": []
+     }
+    ]
+   },
+   "raised": null,
+   "packets": [
+    {
+     "type": "workflow_orchestrator_thinking",
+     "placement": [
+      1,
+      0,
+      null
+     ],
+     "content": "Start with Alpha."
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      1,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "workflow_step_start",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Alpha",
+     "agent_name": "FX Alpha",
+     "step_order": 0,
+     "step_type": "agent",
+     "promote_output": false
+    },
+    {
+     "type": "workflow_step_reasoning_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "Thinking about Alpha"
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "alpha result for:",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": " Collect the facts",
+     "replace": false
+    },
+    {
+     "type": "workflow_step_delta",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "content": "alpha result for: Collect the facts",
+     "replace": true
+    },
+    {
+     "type": "workflow_step_end",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "step_name": "Agent: FX Alpha",
+     "output_key": "alpha"
+    },
+    {
+     "type": "section_end",
+     "placement": [
+      3,
+      0,
+      null
+     ]
+    },
+    {
+     "type": "stop",
+     "placement": [
+      5,
+      0,
+      null
+     ],
+     "stop_reason": "user_cancelled"
+    }
+   ],
+   "messages": [],
+   "final_answer": null,
+   "agent_calls": [
+    {
+     "step_name": "Alpha",
+     "step_id": 101,
+     "step_order": 0,
+     "output_key": "alpha",
+     "agent": "FX Alpha",
+     "call_index": 0,
+     "behavior": "normal",
+     "placement": [
+      3,
+      0,
+      null
+     ],
+     "task": "Collect the facts",
+     "extra_kwargs": [],
+     "has_tools": false,
+     "llm": "agent_llm:default/default",
+     "promote_output": false,
+     "overrides": {
+      "max_output_tokens": null,
+      "system_prompt": null,
+      "task_prompt": null,
+      "tool_ids": null,
+      "document_set_ids": null,
+      "replace_base_system_prompt": null
+     }
+    }
+   ],
+   "orchestrator_calls": [
+    {
+     "placement": [
+      0,
+      0,
+      null
+     ],
+     "llm": "default_llm",
+     "available_tools": [
+      "delegate_to_fx_alpha",
+      "delegate_to_fx_beta",
+      "delegate_to_fx_gamma"
+     ],
+     "history": [
+      [
+       "system",
+       "You are a workflow orchestrator that coordinates multiple AI agents to complete tasks.\n\nYour job is to:\n1. Analyze the u...<len=1397 sha1=36eed086fcb4>"
+      ],
+      [
+       "user",
+       "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      ]
+     ]
+    }
+   ],
+   "checkpoints": [
+    {
+     "execution_id": 1,
+     "paused_at_step_id": null,
+     "checkpoint": {
+      "step_outputs": {
+       "alpha": "alpha result for: Collect the facts"
+      },
+      "shared_data": {
+       "_original_user_input": "Prepare a complete assessment for case GOLD-001 covering all required sections."
+      },
+      "completed_step_ids": [
+       101
+      ],
+      "orchestrator_history": [
+       [
+        "user",
+        11,
+        "Prepare a complete assessment for case GOLD-001 covering all required sections."
+       ],
+       [
+        "assistant",
+        50,
+        "{\"tool_call_id\": \"call_1_0\", \"name\": \"delegate_to_fx_alpha\", \"arguments\": {\"task\": \"Collect the facts\"}}"
+       ],
+       [
+        "tool_call_response",
+        10,
+        "{\"agent_name\": \"FX Alpha\", \"agent_output\": \"alpha result for: Collect the facts\"}"
+       ]
+      ],
+      "cycle_count": 1,
+      "agent_call_counts": {
+       "delegate_to_fx_alpha": 1
+      },
+      "turn_index": 3,
+      "clarification_conversation": [],
+      "paused_agent_original_task": ""
+     }
+    }
+   ],
+   "final_step_outputs": {
+    "alpha": "alpha result for: Collect the facts"
+   },
+   "trace_persists": [
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:running"
+     ]
+    },
+    {
+     "include_message_key": false,
+     "status": "running",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed"
+     ]
+    },
+    {
+     "include_message_key": true,
+     "status": "cancelled",
+     "nodes": [
+      "start:completed",
+      "orch_1_1:completed",
+      "agent_1:completed"
+     ]
+    }
+   ],
+   "trace": {
+    "execution_id": 1,
+    "workflow_id": 1,
+    "workflow_name": "FX three steps",
+    "chat_session_id": "00000000-0000-4000-8000-000000000001",
+    "message_id": 5001,
+    "mode": "llm_decision",
+    "status": "cancelled",
+    "started_at": "<ts>",
+    "completed_at": "<ts>",
+    "total_tokens": 10,
+    "total_duration_ms": "<ms>",
+    "nodes": [
+     {
+      "id": "start",
+      "type": "start",
+      "name": "User request",
+      "status": "completed",
+      "input": "Prepare a complete assessment for case GOLD-001 covering all required sections.",
+      "output": "",
+      "reason": null,
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "orch_1_1",
+      "type": "orchestrator",
+      "name": "Orchestrator",
+      "status": "completed",
+      "input": "",
+      "output": "Start with Alpha.",
+      "reason": "Start with Alpha.",
+      "step_id": null,
+      "agent_id": null,
+      "call_index": null,
+      "duration_ms": null,
+      "tokens": null,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": null,
+      "node_type": null
+     },
+     {
+      "id": "agent_1",
+      "type": "agent",
+      "name": "Agent: FX Alpha",
+      "status": "completed",
+      "input": "{\"task\": \"Collect the facts\"}",
+      "output": "alpha result for: Collect the facts",
+      "reason": "Start with Alpha.",
+      "step_id": 101,
+      "agent_id": 1001,
+      "call_index": 1,
+      "duration_ms": "<ms>",
+      "tokens": 10,
+      "file_ids": [],
+      "file_names": [],
+      "started_at": "<ts>",
+      "ended_at": "<ts>",
+      "node_type": null
+     }
+    ],
+    "edges": [
+     {
+      "from_id": "start",
+      "to_id": "orch_1_1",
+      "type": "return",
+      "label": null
+     },
+     {
+      "from_id": "orch_1_1",
+      "to_id": "agent_1",
+      "type": "delegation",
+      "label": "Start with Alpha."
+     }
+    ]
+   },
+   "trace_by_message_matches_execution_trace": true,
+   "executions": [
+    {
+     "id": 1,
+     "workflow_id": 1,
+     "status": "cancelled",
+     "paused_at_step_id": null,
+     "has_checkpoint": true,
+     "completed_at_set": false,
+     "error_message": null,
+     "total_tokens": 10,
+     "total_duration_ms": "<ms>",
+     "steps_executed": [
+      {
+       "step_id": 101,
+       "agent_id": 1001,
+       "step_name": "Agent: FX Alpha",
+       "input_text": "{\"task\": \"Collect the facts\"}",
+       "output_text": "alpha result for: Collect the facts",
+       "duration_ms": "<ms>",
+       "tokens_used": 10
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

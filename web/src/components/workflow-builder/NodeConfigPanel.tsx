@@ -5,7 +5,7 @@ import type { MinimalAgentSnapshot } from "@/app/admin/assistants/interfaces";
 import type { ToolSnapshot } from "@/lib/tools/interfaces";
 import type { DocumentSetSummary } from "@/lib/types";
 import type { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
-import type { AgentNodeData, ConditionalRouterNodeData } from "./types";
+import type { AgentNodeData, StepConfigPanelProps } from "./types";
 import {
   SEARCH_TOOL_ID,
   WEB_SEARCH_TOOL_ID,
@@ -16,7 +16,7 @@ import {
   HTTP_REQUEST_TOOL_ID,
 } from "@/app/app/components/tools/constants";
 import { structureValue, parseLlmDescriptor } from "@/lib/llm/utils";
-import { CONDITION_OPERATORS } from "@/lib/workflows/interfaces";
+import { selectableStepAgents } from "@/lib/workflows/stepAgents";
 
 // Built-in tool display config
 const BUILTIN_TOOLS: {
@@ -56,30 +56,15 @@ const BUILTIN_TOOLS: {
   },
 ];
 
-// CONDITION_OPERATORS imported from @/lib/workflows/interfaces (single source of truth)
-
 type ConfigTab = "properties" | "advanced" | "json";
 
-interface NodeConfigPanelProps {
-  nodeId: string;
-  nodeType?: string;
-  data: AgentNodeData | ConditionalRouterNodeData;
-  agents: MinimalAgentSnapshot[];
-  availableTools: ToolSnapshot[];
-  documentSets: DocumentSetSummary[];
-  llmProviders: LLMProviderDescriptor[];
-  onUpdate: (nodeId: string, partial: Partial<AgentNodeData> | Partial<ConditionalRouterNodeData>) => void;
-  onDelete: (nodeId: string) => void;
-  onClose: () => void;
-  /** Collapse state */
-  collapsed?: boolean;
-  onToggleCollapse?: () => void;
-}
-
-export function NodeConfigPanel({
+/**
+ * Config panel for agent steps (the `agent` editor kind). The panel for each
+ * kind is chosen in nodeUi.tsx; StepConfigPanel handles collapsing.
+ */
+export function AgentConfigPanel({
   nodeId,
-  nodeType,
-  data: rawData,
+  data,
   agents,
   availableTools,
   documentSets,
@@ -87,44 +72,9 @@ export function NodeConfigPanel({
   onUpdate,
   onDelete,
   onClose,
-  collapsed,
   onToggleCollapse,
-}: NodeConfigPanelProps) {
+}: StepConfigPanelProps) {
   const [activeTab, setActiveTab] = useState<ConfigTab>("properties");
-
-  // Collapsed state: render thin strip
-  if (collapsed) {
-    return (
-      <div className="wfb-config-panel wfb-config-panel--collapsed">
-        <button
-          className="wfb-sidebar-collapse-btn"
-          onClick={onToggleCollapse}
-          title="Expand config panel"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-      </div>
-    );
-  }
-
-  // If this is a conditional router node, render specialized config
-  if (nodeType === "conditional_router") {
-    return (
-      <ConditionConfigPanel
-        nodeId={nodeId}
-        data={rawData as ConditionalRouterNodeData}
-        onUpdate={onUpdate}
-        onDelete={onDelete}
-        onClose={onClose}
-        onToggleCollapse={onToggleCollapse}
-      />
-    );
-  }
-
-  // After the early return above, rawData is guaranteed to be AgentNodeData.
-  const data = rawData as AgentNodeData;
   const currentAgent = agents.find((a) => a.id === data.agent_id);
 
   // Check if current agent is a utility agent
@@ -224,7 +174,7 @@ export function NodeConfigPanel({
               <div className="wfb-config-label">Agent</div>
               <select
                 className="wfb-agent-select"
-                value={data.agent_id}
+                value={data.agent_id ?? ""}
                 onChange={(e) => {
                   const id = Number(e.target.value);
                   const agent = agents.find((a) => a.id === id);
@@ -255,8 +205,7 @@ export function NodeConfigPanel({
                   }
                 }}
               >
-                {agents
-                  .filter((a) => !a.workflow_id && a.id !== 0)
+                {selectableStepAgents(agents)
                   .map((a) => (
                     <option key={a.id} value={a.id}>
                       {a.name}
@@ -1550,162 +1499,5 @@ function ToggleSwitch({
         }}
       />
     </button>
-  );
-}
-
-
-// ── Condition Config Panel ──────────────────────────────────────────
-
-function ConditionConfigPanel({
-  nodeId,
-  data,
-  onUpdate,
-  onDelete,
-  onClose,
-  onToggleCollapse,
-}: {
-  nodeId: string;
-  data: ConditionalRouterNodeData;
-  onUpdate: (nodeId: string, partial: Partial<ConditionalRouterNodeData>) => void;
-  onDelete: (nodeId: string) => void;
-  onClose: () => void;
-  onToggleCollapse?: () => void;
-}) {
-  const needsMatchValue = !["is_empty", "is_not_empty"].includes(data.operator);
-
-  return (
-    <div className="wfb-config-panel">
-      {/* Header */}
-      <div className="wfb-config-header">
-        <div className="wfb-config-title">Configure Condition</div>
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          {onToggleCollapse && (
-            <button className="wfb-config-close" onClick={onToggleCollapse} title="Collapse panel">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="9 18 15 12 15 6" />
-              </svg>
-            </button>
-          )}
-          <button className="wfb-config-close" onClick={onClose} title="Close">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div className="wfb-config-body">
-        {/* Step Name */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-label">Step Name</div>
-          <input
-            className="wfb-config-input"
-            value={data.step_name}
-            onChange={(e) => onUpdate(nodeId, { step_name: e.target.value })}
-            placeholder="e.g., Check for errors"
-          />
-        </div>
-
-        {/* Output Key */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-label">Output Key</div>
-          <input
-            className="wfb-config-input"
-            value={data.output_key}
-            onChange={(e) => onUpdate(nodeId, { output_key: e.target.value })}
-            placeholder="e.g., condition_result"
-          />
-          <div className="wfb-config-hint">
-            Stores &quot;true&quot; or &quot;false&quot; in workflow context
-          </div>
-        </div>
-
-        {/* Condition Field */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-label">Condition Field</div>
-          <input
-            className="wfb-config-input"
-            value={data.condition_field}
-            onChange={(e) => onUpdate(nodeId, { condition_field: e.target.value })}
-            placeholder="e.g., $research.output"
-          />
-          <div className="wfb-config-hint">
-            Reference a previous step&apos;s output using $step_name.output
-          </div>
-        </div>
-
-        {/* Operator */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-label">Operator</div>
-          <select
-            className="wfb-config-input"
-            value={data.operator}
-            onChange={(e) => onUpdate(nodeId, { operator: e.target.value })}
-          >
-            {CONDITION_OPERATORS.map((op) => (
-              <option key={op.value} value={op.value}>
-                {op.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Match Value */}
-        {needsMatchValue && (
-          <div className="wfb-config-section">
-            <div className="wfb-config-label">Match Value</div>
-            <input
-              className="wfb-config-input"
-              value={data.match_value}
-              onChange={(e) => onUpdate(nodeId, { match_value: e.target.value })}
-              placeholder="e.g., error"
-            />
-          </div>
-        )}
-
-        {/* Case Sensitive */}
-        <div className="wfb-config-section">
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <input
-              type="checkbox"
-              checked={data.case_sensitive}
-              onChange={(e) => onUpdate(nodeId, { case_sensitive: e.target.checked })}
-            />
-            <span className="wfb-config-label" style={{ margin: 0 }}>Case sensitive</span>
-          </div>
-        </div>
-
-        {/* Description */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-label">Description (optional)</div>
-          <textarea
-            className="wfb-config-textarea"
-            value={data.step_description}
-            onChange={(e) => onUpdate(nodeId, { step_description: e.target.value })}
-            placeholder="Describe what this condition checks..."
-            rows={2}
-          />
-        </div>
-
-        {/* Info about branch connections */}
-        <div className="wfb-config-section">
-          <div className="wfb-config-hint" style={{ padding: "8px 10px", background: "var(--bg-02, #f3f4f6)", borderRadius: 6 }}>
-            Connect the <strong style={{ color: "#22c55e" }}>True</strong> and{" "}
-            <strong style={{ color: "#ef4444" }}>False</strong> handles on the right
-            side of the node to the agents that should run for each branch.
-          </div>
-        </div>
-
-        {/* Delete */}
-        <div className="wfb-config-section" style={{ marginTop: 16 }}>
-          <button
-            className="wfb-config-danger-btn"
-            onClick={() => onDelete(nodeId)}
-          >
-            Remove Condition
-          </button>
-        </div>
-      </div>
-    </div>
   );
 }

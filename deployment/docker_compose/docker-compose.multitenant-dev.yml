@@ -20,6 +20,8 @@ services:
     ports:
       - "8080:8080"
     environment:
+      # Shared bearer token for the code interpreter (must match the service's)
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
       - MULTI_TENANT=true
       - LOG_LEVEL=DEBUG
       - AUTH_TYPE=cloud
@@ -143,6 +145,8 @@ services:
       - cache
     restart: unless-stopped
     environment:
+      # Shared bearer token for the code interpreter (must match the service's)
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
       - USE_LIGHTWEIGHT_BACKGROUND_WORKER=${USE_LIGHTWEIGHT_BACKGROUND_WORKER:-true}
       - MULTI_TENANT=true
       - LOG_LEVEL=DEBUG
@@ -593,6 +597,11 @@ services:
     env_file:
       - path: .env
         required: false
+    environment:
+      # /v1/* requires `Authorization: Bearer $CODE_INTERPRETER_API_TOKEN`; with no
+      # token the service fails closed (503). ALLOW_UNAUTHENTICATED is dev-only.
+      - CODE_INTERPRETER_API_TOKEN=${CODE_INTERPRETER_API_TOKEN:-}
+      - CODE_INTERPRETER_ALLOW_UNAUTHENTICATED=${CODE_INTERPRETER_ALLOW_UNAUTHENTICATED:-false}
 
     # Below is needed for the `docker-out-of-docker` execution mode
     user: root
