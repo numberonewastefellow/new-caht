@@ -25,9 +25,10 @@ import { AdvancedOptions } from "./components/AdvancedOptions";
 import { DisplayModels } from "./components/DisplayModels";
 import { useEffect, useState } from "react";
 import { fetchOllamaModels } from "../utils";
+import { LOCAL_SERVER_DOCKER_HINT } from "../constants";
 
 export const OLLAMA_PROVIDER_NAME = "ollama_chat";
-const DEFAULT_API_BASE = "http://127.0.0.1:11434";
+const DEFAULT_API_BASE = "http://host.docker.internal:11434";
 
 interface OllamaFormValues extends BaseLLMFormValues {
   api_base: string;
@@ -39,6 +40,8 @@ interface OllamaFormValues extends BaseLLMFormValues {
 interface OllamaFormContentProps {
   formikProps: FormikProps<OllamaFormValues>;
   existingLlmProvider?: LLMProviderView;
+  /** Stored (masked) key; an unchanged value means "use the stored key" */
+  initialApiKey: string;
   fetchedModels: ModelConfiguration[];
   setFetchedModels: (models: ModelConfiguration[]) => void;
   isTesting: boolean;
@@ -51,6 +54,7 @@ interface OllamaFormContentProps {
 function OllamaFormContent({
   formikProps,
   existingLlmProvider,
+  initialApiKey,
   fetchedModels,
   setFetchedModels,
   isTesting,
@@ -60,12 +64,15 @@ function OllamaFormContent({
   isFormValid,
 }: OllamaFormContentProps) {
   const [isLoadingModels, setIsLoadingModels] = useState(true);
+  const apiKey = formikProps.values.custom_config?.OLLAMA_API_KEY ?? "";
 
   useEffect(() => {
     if (formikProps.values.api_base) {
       setIsLoadingModels(true);
       fetchOllamaModels({
         api_base: formikProps.values.api_base,
+        api_key: apiKey,
+        api_key_changed: apiKey !== initialApiKey,
         provider_name: existingLlmProvider?.name,
       })
         .then((data) => {
@@ -82,6 +89,8 @@ function OllamaFormContent({
     }
   }, [
     formikProps.values.api_base,
+    apiKey,
+    initialApiKey,
     existingLlmProvider?.name,
     setFetchedModels,
   ]);
@@ -98,14 +107,14 @@ function OllamaFormContent({
       <TextFormField
         name="api_base"
         label="API Base URL"
-        subtext="The base URL for your Ollama instance (e.g., http://127.0.0.1:11434)"
+        subtext={`The base URL for your Ollama instance (port 11434 by default). ${LOCAL_SERVER_DOCKER_HINT}`}
         placeholder={DEFAULT_API_BASE}
       />
 
       <PasswordInputTypeInField
         name="custom_config.OLLAMA_API_KEY"
         label="API Key (Optional)"
-        subtext="Optional API key for Ollama Cloud (https://ollama.com). Leave blank for local instances."
+        subtext="Optional API key for Ollama Cloud (https://ollama.com) or an Ollama behind an auth proxy. Leave blank for local instances."
       />
 
       <DisplayModels
@@ -161,6 +170,8 @@ export function OllamaForm({
           existingLlmProvider,
           wellKnownLLMProvider
         );
+        const initialApiKey =
+          (existingLlmProvider?.custom_config?.OLLAMA_API_KEY as string) ?? "";
         const initialValues: OllamaFormValues = {
           ...buildDefaultInitialValues(
             existingLlmProvider,
@@ -168,9 +179,7 @@ export function OllamaForm({
           ),
           api_base: existingLlmProvider?.api_base ?? DEFAULT_API_BASE,
           custom_config: {
-            OLLAMA_API_KEY:
-              (existingLlmProvider?.custom_config?.OLLAMA_API_KEY as string) ??
-              "",
+            OLLAMA_API_KEY: initialApiKey,
           },
         };
 
@@ -221,6 +230,7 @@ export function OllamaForm({
               <OllamaFormContent
                 formikProps={formikProps}
                 existingLlmProvider={existingLlmProvider}
+                initialApiKey={initialApiKey}
                 fetchedModels={fetchedModels}
                 setFetchedModels={setFetchedModels}
                 isTesting={isTesting}

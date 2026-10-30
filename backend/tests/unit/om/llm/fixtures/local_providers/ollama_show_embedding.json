@@ -1,0 +1,9 @@
+{
+  "capabilities": [
+    "embedding"
+  ],
+  "model_info": {
+    "general.architecture": "nomic-bert",
+    "nomic-bert.context_length": 2048
+  }
+}

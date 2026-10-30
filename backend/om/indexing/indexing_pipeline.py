@@ -25,6 +25,7 @@ from om.connectors.models import ImageSection
 from om.connectors.models import IndexAttemptMetadata
 from om.connectors.models import IndexingDocument
 from om.connectors.models import Section
+from om.connectors.models import TableSection
 from om.connectors.models import TextSection
 from om.db.document import get_documents_by_ids
 from om.db.document import upsert_document_by_connector_credential_pair
@@ -301,7 +302,7 @@ def filter_documents(document_batch: list[Document]) -> list[Document]:
 
     for document in document_batch:
         empty_contents = not any(
-            isinstance(section, TextSection)
+            isinstance(section, (TextSection, TableSection))
             and section.text is not None
             and section.text.strip()
             for section in document.sections
@@ -331,7 +332,8 @@ def filter_documents(document_batch: list[Document]) -> list[Document]:
         section_chars = sum(
             (
                 len(section.text)
-                if isinstance(section, TextSection) and section.text is not None
+                if isinstance(section, (TextSection, TableSection))
+                and section.text is not None
                 else 0
             )
             for section in document.sections
@@ -399,14 +401,22 @@ def process_image_sections(documents: list[Document]) -> list[IndexingDocument]:
             IndexingDocument(
                 **document.model_dump(),
                 processed_sections=[
-                    Section(
-                        text=section.text if isinstance(section, TextSection) else "",
-                        link=section.link,
-                        image_file_id=(
-                            section.image_file_id
-                            if isinstance(section, ImageSection)
-                            else None
-                        ),
+                    (
+                        # Table sections reach the chunker as they are; a base
+                        # Section would lose the sheet.
+                        section
+                        if isinstance(section, TableSection)
+                        else Section(
+                            text=(
+                                section.text if isinstance(section, TextSection) else ""
+                            ),
+                            link=section.link,
+                            image_file_id=(
+                                section.image_file_id
+                                if isinstance(section, ImageSection)
+                                else None
+                            ),
+                        )
                     )
                     for section in document.sections
                 ],
@@ -472,6 +482,10 @@ def process_image_sections(documents: list[Document]) -> list[IndexingDocument]:
                     image_file_id=None,
                 )
                 processed_sections.append(processed_section)
+
+            # Table sections reach the chunker as they are
+            elif isinstance(section, TableSection):
+                processed_sections.append(section)
 
         # Create IndexingDocument with original sections and processed_sections
         indexed_document = IndexingDocument(

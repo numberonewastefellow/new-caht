@@ -1,0 +1,151 @@
+certificate_no,applicant,district,certificate_type,fee_paid_rs,issued_on
+COLB-HYD-00001,Deepa Naik,Hyderabad,Residence,80,2025-08-30
+COLB-MDL-00002,Lakshmi Naidu,Medchal-Malkajgiri,Income,95,2025-05-08
+COLB-WGL-00003,Prakash Reddy,Warangal,No-Objection,90,2025-07-02
+COLB-KMM-00004,Swathi Varma,Khammam,Family Member,405,2026-01-07
+COLB-NLG-00005,Jyothi Murthy,Nalgonda,Income,25,2025-09-07
+COLB-MDL-00006,Prakash Rao,Medchal-Malkajgiri,Residence,260,2025-05-14
+COLB-RRD-00007,Padma Kumar,Ranga Reddy,No-Objection,425,2026-03-13
+COLB-MDL-00008,Harish Goud,Medchal-Malkajgiri,Income,15,2025-11-30
+COLB-MBN-00009,Lakshmi Murthy,Mahabubnagar,Solvency,60,2025-09-29
+COLB-WGL-00010,Sarala Yadav,Warangal,Family Member,390,2025-11-28
+COLB-ADB-00011,Anil Rao,Adilabad,Income,215,2025-11-17
+COLB-ADB-00012,Ramesh Murthy,Adilabad,Income,340,2025-09-13
+COLB-KRM-00013,Harish Yadav,Karimnagar,Solvency,350,2025-10-11
+COLB-KRM-00014,Ravi Kumar,Karimnagar,No-Objection,180,2025-12-06
+COLB-NZB-00015,Jyothi Yadav,Nizamabad,Family Member,110,2025-07-29
+COLB-NZB-00016,Bhavani Kumar,Nizamabad,No-Objection,110,2025-07-28
+COLB-ADB-00017,Ravi Babu,Adilabad,No-Objection,30,2026-03-11
+COLB-MDL-00018,Radha Reddy,Medchal-Malkajgiri,Residence,455,2025-04-23
+COLB-KMM-00019,Ramesh Yadav,Khammam,Family Member,220,2025-12-16
+COLB-KMM-00020,Usha Prasad,Khammam,Solvency,240,2025-12-12
+COLB-MDL-00021,Usha Chary,Medchal-Malkajgiri,Income,340,2026-03-18
+COLB-MBN-00022,Madhavi Chary,Mahabubnagar,No-Objection,85,2025-11-04
+COLB-KMM-00023,Suresh Goud,Khammam,Family Member,125,2025-05-04
+COLB-NLG-00024,Usha Rao,Nalgonda,Residence,335,2025-09-23
+COLB-ADB-00025,Venkatesh Sharma,Adilabad,No-Objection,480,2026-03-15
+COLB-KMM-00026,Lakshmi Reddy,Khammam,Residence,405,2026-02-24
+COLB-NZB-00027,Ramesh Naik,Nizamabad,Solvency,50,2025-05-27
+COLB-NLG-00028,Prakash Rao,Nalgonda,No-Objection,190,2025-08-05
+COLB-WGL-00029,Bhavani Achari,Warangal,Residence,105,2026-02-10
+COLB-ADB-00030,Venkatesh Devi,Adilabad,Family Member,220,2025-11-24
+COLB-KMM-00031,Suresh Prasad,Khammam,No-Objection,325,2026-03-01
+COLB-RRD-00032,Kavitha Prasad,Ranga Reddy,Family Member,95,2025-11-10
+COLB-ADB-00033,Sarala Achari,Adilabad,No-Objection,135,2026-01-18
+COLB-ADB-00034,Suresh Devi,Adilabad,Solvency,390,2025-04-25
+COLB-MDL-00035,Suresh Naidu,Medchal-Malkajgiri,Income,35,2026-03-08
+COLB-KRM-00036,Ramesh Patel,Karimnagar,Family Member,190,2025-04-25
+COLB-KRM-00037,Ravi Devi,Karimnagar,Solvency,155,2025-05-14
+COLB-KMM-00038,Ravi Naidu,Khammam,Residence,205,2025-07-15
+COLB-RRD-00039,Rekha Achari,Ranga Reddy,Family Member,245,2025-04-05
+COLB-KMM-00040,Madhavi Achari,Khammam,Income,135,2025-06-22
+COLB-KRM-00041,Radha Devi,Karimnagar,Family Member,305,2025-11-01
+COLB-NZB-00042,Lakshmi Prasad,Nizamabad,Income,60,2025-08-15
+COLB-NZB-00043,Prakash Yadav,Nizamabad,Solvency,160,2026-03-16
+COLB-MBN-00044,Naresh Prasad,Mahabubnagar,Residence,425,2025-10-20
+COLB-WGL-00045,Lakshmi Chary,Warangal,Residence,435,2025-04-01
+COLB-RRD-00046,Sai Naik,Ranga Reddy,Family Member,290,2026-03-12
+COLB-WGL-00047,Jyothi Chary,Warangal,Solvency,135,2025-06-11
+COLB-KMM-00048,Padma Devi,Khammam,Residence,220,2025-06-11
+COLB-KMM-00049,Anil Sharma,Khammam,Family Member,35,2025-08-19
+COLB-KMM-00050,Sai Yadav,Khammam,Solvency,490,2025-07-05
+COLB-RRD-00051,Ravi Naidu,Ranga Reddy,Family Member,465,2026-02-28
+COLB-KRM-00052,Anitha Kumar,Karimnagar,No-Objection,165,2025-09-17
+COLB-RRD-00053,Radha Goud,Ranga Reddy,Residence,50,2025-06-05
+COLB-KRM-00054,Raju Varma,Karimnagar,Income,60,2025-04-26
+COLB-KRM-00055,Ravi Rao,Karimnagar,Residence,150,2025-07-15
+COLB-HYD-00056,Raju Sharma,Hyderabad,Solvency,490,2025-06-02
+COLB-ADB-00057,Naresh Babu,Adilabad,Residence,450,2025-11-19
+COLB-KRM-00058,Vijay Varma,Karimnagar,Residence,230,2025-11-09
+COLB-KRM-00059,Mahesh Varma,Karimnagar,Family Member,435,2025-08-17
+COLB-WGL-00060,Prakash Devi,Warangal,Residence,155,2026-03-18
+COLB-NZB-00061,Raju Chary,Nizamabad,Residence,280,2025-06-01
+COLB-MBN-00062,Harish Prasad,Mahabubnagar,Income,50,2025-08-21
+COLB-NLG-00063,Madhavi Patel,Nalgonda,Family Member,230,2025-09-11
+COLB-WGL-00064,Rekha Yadav,Warangal,Solvency,410,2025-06-15
+COLB-HYD-00065,Kiran Sharma,Hyderabad,Residence,475,2025-08-30
+COLB-KMM-00066,Rekha Reddy,Khammam,Solvency,30,2026-03-19
+COLB-MDL-00067,Deepa Sharma,Medchal-Malkajgiri,Income,410,2025-05-22
+COLB-ADB-00068,Ravi Patel,Adilabad,Solvency,220,2025-10-12
+COLB-HYD-00069,Deepa Goud,Hyderabad,Solvency,375,2025-08-01
+COLB-NZB-00070,Ramesh Achari,Nizamabad,Residence,25,2026-02-17
+COLB-NZB-00071,Kiran Murthy,Nizamabad,Family Member,475,2025-07-11
+COLB-KMM-00072,Harish Naidu,Khammam,Residence,165,2025-06-30
+COLB-NZB-00073,Swathi Babu,Nizamabad,Family Member,210,2025-06-07
+COLB-NLG-00074,Vijay Prasad,Nalgonda,Residence,25,2025-08-23
+COLB-NLG-00075,Anil Achari,Nalgonda,No-Objection,215,2025-10-15
+COLB-MBN-00076,Usha Achari,Mahabubnagar,Income,250,2026-01-28
+COLB-MBN-00077,Shobha Devi,Mahabubnagar,No-Objection,110,2025-06-16
+COLB-NZB-00078,Vijay Achari,Nizamabad,Solvency,80,2025-07-27
+COLB-KMM-00079,Kavitha Naik,Khammam,No-Objection,465,2025-07-24
+COLB-WGL-00080,Bhavani Chary,Warangal,Solvency,400,2025-09-10
+COLB-WGL-00081,Venkatesh Murthy,Warangal,No-Objection,165,2025-10-14
+COLB-ADB-00082,Vijay Devi,Adilabad,Residence,285,2025-09-26
+COLB-MDL-00083,Anitha Babu,Medchal-Malkajgiri,Family Member,370,2026-03-18
+COLB-NZB-00084,Jyothi Naik,Nizamabad,Residence,135,2025-05-03
+COLB-RRD-00085,Sarala Chary,Ranga Reddy,Solvency,50,2025-04-17
+COLB-NZB-00086,Gopal Prasad,Nizamabad,Income,55,2025-07-16
+COLB-MBN-00087,Vijay Naik,Mahabubnagar,Income,490,2025-06-18
+COLB-MDL-00088,Jyothi Reddy,Medchal-Malkajgiri,Income,280,2025-06-28
+COLB-KRM-00089,Gopal Goud,Karimnagar,Family Member,100,2026-02-05
+COLB-MBN-00090,Naresh Naidu,Mahabubnagar,Income,165,2025-05-26
+COLB-NZB-00091,Madhavi Naik,Nizamabad,Income,275,2026-02-24
+COLB-WGL-00092,Sarala Chary,Warangal,Residence,270,2025-04-30
+COLB-ADB-00093,Ravi Achari,Adilabad,No-Objection,445,2025-11-17
+COLB-NZB-00094,Raju Prasad,Nizamabad,No-Objection,235,2025-10-19
+COLB-ADB-00095,Srinivas Kumar,Adilabad,No-Objection,65,2025-12-07
+COLB-ADB-00096,Naresh Varma,Adilabad,No-Objection,390,2026-03-24
+COLB-MDL-00097,Anitha Rao,Medchal-Malkajgiri,Family Member,160,2025-07-03
+COLB-NZB-00098,Kiran Yadav,Nizamabad,Residence,460,2025-04-27
+COLB-KMM-00099,Vijay Sharma,Khammam,Residence,210,2025-12-28
+COLB-WGL-00100,Sarala Naik,Warangal,No-Objection,400,2025-04-26
+COLB-HYD-00101,Prakash Varma,Hyderabad,Family Member,190,2025-10-07
+COLB-ADB-00102,Vijay Kumar,Adilabad,Family Member,150,2025-08-26
+COLB-NZB-00103,Anil Patel,Nizamabad,No-Objection,280,2025-11-13
+COLB-MBN-00104,Shobha Kumar,Mahabubnagar,Residence,380,2025-08-10
+COLB-NLG-00105,Harish Sharma,Nalgonda,Income,40,2025-10-30
+COLB-HYD-00106,Prakash Naidu,Hyderabad,Residence,180,2025-04-19
+COLB-HYD-00107,Mahesh Patel,Hyderabad,Solvency,400,2025-06-30
+COLB-RRD-00108,Mahesh Sharma,Ranga Reddy,Family Member,225,2025-08-28
+COLB-KRM-00109,Gopal Murthy,Karimnagar,No-Objection,120,2025-08-20
+COLB-HYD-00110,Sujatha Devi,Hyderabad,No-Objection,40,2025-04-14
+COLB-KRM-00111,Sarala Naik,Karimnagar,No-Objection,295,2025-06-25
+COLB-MBN-00112,Suresh Naik,Mahabubnagar,Residence,95,2025-12-11
+COLB-ADB-00113,Harish Patel,Adilabad,Income,40,2025-07-28
+COLB-KRM-00114,Bhavani Achari,Karimnagar,Residence,435,2026-02-10
+COLB-WGL-00115,Sai Rao,Warangal,Solvency,100,2025-04-22
+COLB-KRM-00116,Shobha Achari,Karimnagar,Family Member,360,2025-04-25
+COLB-MBN-00117,Prakash Naik,Mahabubnagar,No-Objection,435,2026-03-28
+COLB-KMM-00118,Sujatha Reddy,Khammam,Residence,465,2025-05-27
+COLB-NLG-00119,Mahesh Sharma,Nalgonda,Family Member,445,2026-01-05
+COLB-KMM-00120,Usha Yadav,Khammam,Family Member,75,2025-12-09
+COLB-NZB-00121,Srinivas Naik,Nizamabad,No-Objection,275,2025-09-01
+COLB-KRM-00122,Sai Yadav,Karimnagar,Residence,185,2026-03-22
+COLB-MBN-00123,Srinivas Sharma,Mahabubnagar,Solvency,480,2025-04-15
+COLB-MDL-00124,Sarala Chary,Medchal-Malkajgiri,Income,130,2025-11-20
+COLB-NLG-00125,Kavitha Reddy,Nalgonda,Solvency,365,2026-01-23
+COLB-MDL-00126,Kavitha Sharma,Medchal-Malkajgiri,Solvency,450,2026-03-11
+COLB-MDL-00127,Rekha Murthy,Medchal-Malkajgiri,Solvency,420,2025-10-09
+COLB-KMM-00128,Jyothi Patel,Khammam,Family Member,90,2026-01-07
+COLB-WGL-00129,Padma Chary,Warangal,Income,490,2025-06-11
+COLB-MBN-00130,Jyothi Naik,Mahabubnagar,Family Member,245,2025-07-24
+COLB-ADB-00131,Venkatesh Prasad,Adilabad,Solvency,305,2026-01-17
+COLB-KRM-00132,Kiran Varma,Karimnagar,Income,440,2025-08-02
+COLB-KRM-00133,Kavitha Rao,Karimnagar,Family Member,320,2026-02-16
+COLB-MBN-00134,Srinivas Babu,Mahabubnagar,Residence,305,2025-10-19
+COLB-WGL-00135,Ravi Chary,Warangal,Family Member,45,2026-01-13
+COLB-MDL-00136,Gopal Chary,Medchal-Malkajgiri,Residence,290,2025-11-21
+COLB-KMM-00137,Prakash Goud,Khammam,No-Objection,440,2025-12-11
+COLB-MBN-00138,Swathi Varma,Mahabubnagar,No-Objection,195,2025-09-07
+COLB-WGL-00139,Radha Goud,Warangal,Income,10,2025-07-24
+COLB-KMM-00140,Anil Murthy,Khammam,Residence,120,2025-11-10
+COLB-RRD-00141,Madhavi Reddy,Ranga Reddy,Residence,125,2025-08-23
+COLB-MBN-00142,Prakash Goud,Mahabubnagar,No-Objection,290,2025-12-03
+COLB-MBN-00143,Ravi Prasad,Mahabubnagar,Solvency,485,2025-07-07
+COLB-NLG-00144,Anitha Achari,Nalgonda,No-Objection,425,2025-10-23
+COLB-KRM-00145,Radha Naidu,Karimnagar,No-Objection,430,2025-09-18
+COLB-KRM-00146,Madhavi Chary,Karimnagar,Residence,165,2025-06-24
+COLB-NZB-00147,Suresh Prasad,Nizamabad,Residence,375,2026-02-21
+COLB-HYD-00148,Rekha Devi,Hyderabad,Residence,245,2026-02-04
+COLB-MDL-00149,Deepa Goud,Medchal-Malkajgiri,Residence,480,2025-11-02
+COLB-KMM-00150,Ravi Reddy,Khammam,Residence,265,2025-12-26

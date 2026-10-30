@@ -44,10 +44,26 @@ CRITICAL: If referencing knowledge from searches, cite relevant statements INLIN
 DO NOT provide any links following the citations. Cite inline as opposed to leaving all citations until the very end of the response.
 """
 
+# Added right after REQUIRE_CITATION_GUIDANCE (search-backed turns only), behind
+# ENABLE_COMPLETE_ANSWER_PROMPTS. Covers layout and which passage the answer uses.
+MULTI_PART_ANSWER_GUIDANCE = """
+
+When the answer has several parts, give them as a list rather than one long sentence, and include the secondary details the question asks for, not just its main point. \
+Make sure the passage you rely on matches the full context of the question: a document on a nearby topic usually lacks the details that were asked for.
+"""
+
 
 # Reminder message if any search tool has been run anytime in the chat turn
 CITATION_REMINDER = """
 Remember to provide inline citations in the format [1], [2], [3], etc. based on the "document" field of the documents.
+""".strip()
+
+# Sent after CITATION_REMINDER (search-backed turns only), behind
+# ENABLE_COMPLETE_ANSWER_PROMPTS. Asks for every part of the question + exact figures.
+COMPLETE_ANSWER_REMINDER = """
+Answer each part of the question. Where the documents give a specific number, date, limit, name, command or step that bears on the question, quote it exactly instead of paraphrasing it. \
+Before you finish, re-read the question and check that no part is left unanswered. \
+If the documents do not contain what was asked, say so plainly instead of offering related information that does not answer it.
 """.strip()
 
 LAST_CYCLE_CITATION_REMINDER = """

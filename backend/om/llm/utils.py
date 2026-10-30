@@ -24,6 +24,7 @@ from om.db.models import ModelConfiguration
 from om.llm.constants import LlmProviderNames
 from om.llm.interfaces import LLM
 from om.llm.interfaces import LLMUserIdentity
+from om.llm.local_providers import litellm_lookup_provider
 from om.llm.model_response import ModelResponse
 from om.llm.models import UserMessage
 from om.prompts.contextual_retrieval import CONTEXTUAL_RAG_TOKEN_ESTIMATE
@@ -743,6 +744,8 @@ def litellm_thinks_model_supports_image_input(
 def model_is_reasoning_model(model_name: str, model_provider: str) -> bool:
     import litellm
 
+    # "openai_compatible" is unknown to LiteLLM; look it up as "openai".
+    model_provider = litellm_lookup_provider(model_provider)
     model_map = get_model_map()
     try:
         model_obj = find_model_obj(

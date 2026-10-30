@@ -18,6 +18,9 @@ from om.context.search.utils import inference_section_from_chunks
 from om.db.models import Agent
 from om.db.models import User
 from om.document_index.interfaces_new import DocumentIndex
+from om.document_index.opensearch.hybrid_rescore import (
+    recency_bias_multiplier_for_setting,
+)
 from om.llm.interfaces import LLM
 from om.natural_language_processing.english_stopwords import strip_stopwords
 from om.secondary_llm_flows.source_filter import extract_source_filter
@@ -304,7 +307,10 @@ def search_pipeline(
     query_request = ChunkIndexRequest(
         query=chunk_search_request.query,
         hybrid_alpha=chunk_search_request.hybrid_alpha,
-        recency_bias_multiplier=chunk_search_request.recency_bias_multiplier,
+        # --- hybrid-rescore (lane L3) --- fold the agent's recency setting
+        # (FAVOR_RECENT=2x, NO_DECAY=0, else 1x) into the freshness decay.
+        recency_bias_multiplier=chunk_search_request.recency_bias_multiplier
+        * recency_bias_multiplier_for_setting(agent.recency_bias if agent else None),
         query_keywords=query_keywords,
         filters=filters,
         limit=chunk_search_request.limit,

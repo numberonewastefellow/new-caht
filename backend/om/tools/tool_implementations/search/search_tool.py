@@ -36,6 +36,7 @@ refer to by using matching keywords to other parts of the prompt and reminders.
 
 import time
 from collections.abc import Callable
+from functools import cached_property
 from typing import Any
 from typing import cast
 
@@ -43,6 +44,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
 from om.chat.emitter import Emitter
+from om.configs.app_configs import EVIDENCE_SELECTION_BUDGET_MULTIPLIER
 from om.configs.app_configs import RERANK_PROTECT_TOP_K
 from om.configs.chat_configs import MAX_CHUNKS_FED_TO_CHAT
 from om.configs.constants import FederatedConnectorSource
@@ -73,6 +75,9 @@ from om.llm.interfaces import LLM
 from om.ombot.slack.models import SlackContext
 from om.secondary_llm_flows.document_filter import select_chunks_for_relevance
 from om.secondary_llm_flows.document_filter import select_sections_for_expansion
+from om.secondary_llm_flows.evidence_selection_llm import (
+    resolve_evidence_selection_llm,
+)
 from om.secondary_llm_flows.query_expansion import keyword_query_expansion
 from om.secondary_llm_flows.query_expansion import semantic_query_rephrase
 from om.server.query_and_chat.placement import Placement
@@ -218,6 +223,42 @@ def _trim_sections_by_tokens(
     return trimmed_sections
 
 
+# Room for the selection prompt itself + per-section metadata, on top of the
+# section-content budget.
+_EVIDENCE_SELECTION_PROMPT_MARGIN_TOKENS = 2000
+
+
+def _fits_evidence_selection_window(llm: LLM, max_tokens_for_selection: int) -> bool:
+    return (
+        llm.config.max_input_tokens
+        >= max_tokens_for_selection + _EVIDENCE_SELECTION_PROMPT_MARGIN_TOKENS
+    )
+
+
+def _pick_section_selection_llm(
+    evidence_llm: LLM, chat_llm: LLM, base_budget: int
+) -> tuple[LLM, int]:
+    """Model + token budget for the list-selection call.
+
+    The budget is the chat budget times EVIDENCE_SELECTION_BUDGET_MULTIPLIER. A
+    separately configured evidence model whose context window is too small is
+    not used for this call (chat model instead) - nothing is trimmed silently.
+    On the chat model, a too-small window keeps the previous (x1) budget.
+    """
+    budget = base_budget * EVIDENCE_SELECTION_BUDGET_MULTIPLIER
+    if evidence_llm is not chat_llm:
+        if _fits_evidence_selection_window(evidence_llm, budget):
+            return evidence_llm, budget
+        logger.debug(
+            f"Evidence selection model {evidence_llm.config.model_name} context "
+            f"({evidence_llm.config.max_input_tokens}) is below the selection "
+            f"payload ({budget}); using the chat model for this call"
+        )
+    if budget != base_budget and not _fits_evidence_selection_window(chat_llm, budget):
+        return chat_llm, base_budget
+    return chat_llm, budget
+
+
 class SearchTool(Tool[SearchToolOverrideKwargs]):
     NAME = "internal_search"
     DISPLAY_NAME = "Knowledge Search"
@@ -262,6 +303,13 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
         self._session_factory = sessionmaker(bind=self._session_bind)
 
         self._id = tool_id
+
+    @cached_property
+    def evidence_selection_llm(self) -> LLM:
+        """Model for evidence selection (section selection + relevance
+        classification); the chat model unless EVIDENCE_SELECTION_LLM_* is set.
+        Resolved once per tool instance."""
+        return resolve_evidence_selection_llm(self.llm)
 
     def _get_thread_safe_session(self) -> Session:
         """Create a new database session for the current thread. Note this is only safe for the ORM caches/identity maps,
@@ -758,9 +806,21 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
             # This is to account for very short chunks flooding the search context
             # Only consider MAX_CHUNKS_FOR_RELEVANCE chunks per section to avoid flooding from
             # documents with many matching sections
-            max_tokens_for_selection = (
-                override_kwargs.max_llm_chunks or MAX_CHUNKS_FED_TO_CHAT
-            ) * DOC_EMBEDDING_CONTEXT_SIZE
+            # Query expansion and the reranker stay on self.llm / Cortex; only the
+            # selection steps use evidence_selection_llm.
+            section_selection_llm, max_tokens_for_selection = (
+                _pick_section_selection_llm(
+                    # Nothing to select from -> don't resolve (no DB lookup)
+                    evidence_llm=(
+                        self.evidence_selection_llm if top_sections else self.llm
+                    ),
+                    chat_llm=self.llm,
+                    base_budget=(
+                        override_kwargs.max_llm_chunks or MAX_CHUNKS_FED_TO_CHAT
+                    )
+                    * DOC_EMBEDDING_CONTEXT_SIZE,
+                )
+            )
 
             # This is approximate since it doesn't build the exact string of the call below
             # Some things are estimated and may be under (like the metadata tokens)
@@ -778,7 +838,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
             selected_sections, best_doc_ids = select_sections_for_expansion(
                 sections=sections_for_selection,
                 user_query=secondary_flows_user_query,
-                llm=self.llm,
+                llm=section_selection_llm,
                 max_chunks_per_section=MAX_CHUNKS_FOR_RELEVANCE,
             )
 
@@ -852,7 +912,7 @@ class SearchTool(Tool[SearchToolOverrideKwargs]):
                     (
                         section,
                         secondary_flows_user_query,
-                        self.llm,
+                        self.evidence_selection_llm,
                         self.document_index,
                         section.center_chunk.document_id in best_doc_ids_set,
                     ),

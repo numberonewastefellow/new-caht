@@ -24,8 +24,12 @@ import {
   BedrockFetchParams,
   OllamaFetchParams,
   OpenRouterFetchParams,
+  LMStudioFetchParams,
+  LMStudioModelResponse,
+  OpenAICompatibleFetchParams,
+  OpenAICompatibleModelResponse,
 } from "./interfaces";
-import { SvgAws, SvgOpenrouter } from "@opal/icons";
+import { SvgAws, SvgCpu, SvgOpenrouter, SvgServer } from "@opal/icons";
 
 // Aggregator providers that host models from multiple vendors
 export const AGGREGATOR_PROVIDERS = new Set([
@@ -33,6 +37,8 @@ export const AGGREGATOR_PROVIDERS = new Set([
   "bedrock_converse",
   "openrouter",
   "ollama_chat",
+  "lm_studio",
+  "openai_compatible",
   "vertex_ai",
 ]);
 
@@ -69,6 +75,9 @@ export const getProviderIcon = (
     bedrock_converse: SvgAws,
     openrouter: SvgOpenrouter,
     vertex_ai: GeminiIcon,
+    // Local servers have no brand icon; generic hardware/server glyphs
+    lm_studio: SvgCpu,
+    openai_compatible: SvgServer,
   };
 
   const lowerProviderName = providerName.toLowerCase();
@@ -183,6 +192,8 @@ export const fetchOllamaModels = async (
       },
       body: JSON.stringify({
         api_base: apiBase,
+        api_key: params.api_key || undefined,
+        api_key_changed: params.api_key_changed ?? true,
         provider_name: params.provider_name,
       }),
     });
@@ -214,6 +225,75 @@ export const fetchOllamaModels = async (
     return { models: [], error: errorMessage };
   }
 };
+
+/**
+ * Shared POST for the local-server model endpoints (LM Studio,
+ * OpenAI-compatible). Both return the same response shape.
+ */
+const fetchLocalServerModels = async (
+  endpoint: string,
+  params: LMStudioFetchParams | OpenAICompatibleFetchParams
+): Promise<{ models: ModelConfiguration[]; error?: string }> => {
+  if (!params.api_base) {
+    return { models: [], error: "API Base is required" };
+  }
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        api_base: params.api_base,
+        api_key: params.api_key || undefined,
+        api_key_changed: params.api_key_changed ?? true,
+        provider_name: params.provider_name,
+      }),
+    });
+
+    if (!response.ok) {
+      let errorMessage = "Failed to fetch models";
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.detail || errorMessage;
+      } catch {
+        // ignore JSON parsing errors
+      }
+      return { models: [], error: errorMessage };
+    }
+
+    const data: (LMStudioModelResponse | OpenAICompatibleModelResponse)[] =
+      await response.json();
+    const models: ModelConfiguration[] = data.map((modelData) => ({
+      name: modelData.name,
+      display_name: modelData.display_name,
+      is_visible: true,
+      max_input_tokens: modelData.max_input_tokens,
+      supports_image_input: modelData.supports_image_input,
+      supports_reasoning: modelData.supports_reasoning,
+    }));
+
+    return { models };
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return { models: [], error: errorMessage };
+  }
+};
+
+/** Fetches models from an LM Studio server (native /api/v1/models). */
+export const fetchLMStudioModels = (params: LMStudioFetchParams) =>
+  fetchLocalServerModels("/api/admin/llm/lm-studio/available-models", params);
+
+/** Fetches models from any OpenAI-compatible server's /v1/models. */
+export const fetchOpenAICompatibleModels = (
+  params: OpenAICompatibleFetchParams
+) =>
+  fetchLocalServerModels(
+    "/api/admin/llm/openai-compatible/available-models",
+    params
+  );
 
 /**
  * Fetches OpenRouter models directly without any form state dependencies.
@@ -300,6 +380,19 @@ export const fetchModels = async (
     case LLMProviderName.OLLAMA_CHAT:
       return fetchOllamaModels({
         api_base: formValues.api_base,
+        api_key: customConfig.OLLAMA_API_KEY,
+        provider_name: formValues.name,
+      });
+    case LLMProviderName.LM_STUDIO:
+      return fetchLMStudioModels({
+        api_base: formValues.api_base,
+        api_key: customConfig.LM_STUDIO_API_KEY,
+        provider_name: formValues.name,
+      });
+    case LLMProviderName.OPENAI_COMPATIBLE:
+      return fetchOpenAICompatibleModels({
+        api_base: formValues.api_base,
+        api_key: formValues.api_key,
         provider_name: formValues.name,
       });
     case LLMProviderName.OPENROUTER:
@@ -318,6 +411,8 @@ export function canProviderFetchModels(providerName?: string) {
   switch (providerName) {
     case LLMProviderName.BEDROCK:
     case LLMProviderName.OLLAMA_CHAT:
+    case LLMProviderName.LM_STUDIO:
+    case LLMProviderName.OPENAI_COMPATIBLE:
     case LLMProviderName.OPENROUTER:
       return true;
     default:

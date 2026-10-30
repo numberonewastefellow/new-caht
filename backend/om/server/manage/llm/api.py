@@ -1,5 +1,6 @@
 import os
 from collections import defaultdict
+from collections.abc import Callable
 from datetime import datetime
 from datetime import timezone
 from typing import Any
@@ -38,12 +39,19 @@ from om.db.agent import user_can_access_agent
 from om.llm.factory import get_default_llm
 from om.llm.factory import get_llm
 from om.llm.factory import get_max_input_tokens_from_llm_provider
+from om.llm.local_providers import is_non_chat_model_id
+from om.llm.local_providers import normalize_openai_v1_base
+from om.llm.local_providers import strip_openai_v1_suffix
 from om.llm.utils import get_bedrock_token_limit
 from om.llm.utils import get_llm_contextual_cost
+from om.llm.utils import model_is_reasoning_model
 from om.llm.utils import test_llm
 from om.llm.well_known_providers.auto_update_service import (
     fetch_llm_recommendations_from_github,
 )
+from om.llm.well_known_providers.constants import LM_STUDIO_API_KEY_CONFIG_KEY
+from om.llm.well_known_providers.constants import OLLAMA_API_KEY_CONFIG_KEY
+from om.llm.well_known_providers.constants import OPENAI_COMPATIBLE_PROVIDER_NAME
 from om.llm.well_known_providers.llm_provider_options import (
     fetch_available_well_known_llms,
 )
@@ -56,10 +64,14 @@ from om.server.manage.llm.models import LLMCost
 from om.server.manage.llm.models import LLMProviderDescriptor
 from om.server.manage.llm.models import LLMProviderUpsertRequest
 from om.server.manage.llm.models import LLMProviderView
+from om.server.manage.llm.models import LMStudioFinalModelResponse
+from om.server.manage.llm.models import LMStudioModelsRequest
 from om.server.manage.llm.models import ModelConfigurationUpsertRequest
 from om.server.manage.llm.models import OllamaFinalModelResponse
 from om.server.manage.llm.models import OllamaModelDetails
 from om.server.manage.llm.models import OllamaModelsRequest
+from om.server.manage.llm.models import OpenAICompatibleFinalModelResponse
+from om.server.manage.llm.models import OpenAICompatibleModelsRequest
 from om.server.manage.llm.models import OpenRouterFinalModelResponse
 from om.server.manage.llm.models import OpenRouterModelDetails
 from om.server.manage.llm.models import OpenRouterModelsRequest
@@ -68,11 +80,15 @@ from om.server.manage.llm.models import VisionProviderResponse
 from om.server.manage.llm.utils import generate_bedrock_display_name
 from om.server.manage.llm.utils import generate_ollama_display_name
 from om.server.manage.llm.utils import infer_vision_support
+from om.server.manage.llm.utils import is_reasoning_model
 from om.server.manage.llm.utils import is_valid_bedrock_model
 from om.server.manage.llm.utils import ModelMetadata
+from om.server.manage.llm.utils import parse_lm_studio_capability
 from om.server.manage.llm.utils import strip_openrouter_vendor_prefix
 from om.utils.encryption import mask_string as mask_with_ellipsis
 from om.utils.logger import setup_logger
+from om.utils.url import SSRFException
+from om.utils.url import _validate_and_resolve_url as _validate_public_url
 from shared_configs.configs import MULTI_TENANT
 
 logger = setup_logger()
@@ -898,20 +914,133 @@ def get_bedrock_available_models(
         )
 
 
-def _get_ollama_available_model_names(api_base: str) -> set[str]:
-    """Fetch available model names from Ollama server."""
-    tags_url = f"{api_base}/api/tags"
+_LOCAL_FETCH_TIMEOUT_SECONDS = 10.0
+_OLLAMA_FETCH_TIMEOUT_SECONDS = 5.0
+
+
+def _ensure_fetch_target_allowed(url: str, server_label: str) -> None:
+    """In multi-tenant mode, refuse model-fetch URLs that point at private,
+    loopback, link-local or otherwise internal addresses (SSRF guard).
+
+    Single-tenant installs keep accepting any URL: local LLM servers
+    (`host.docker.internal`, LAN hosts) are the whole point there.
+    """
+    if not MULTI_TENANT:
+        return
     try:
-        response = httpx.get(tags_url, timeout=5.0)
+        _validate_public_url(url)
+    except (SSRFException, ValueError) as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{server_label} URL is not allowed: {e}",
+        )
+
+
+def _bearer_headers(api_key: str | None) -> dict[str, str]:
+    cleaned = (api_key or "").strip()
+    if not cleaned:
+        return {}
+    if cleaned.lower().startswith("bearer "):
+        return {"Authorization": cleaned}
+    return {"Authorization": f"Bearer {cleaned}"}
+
+
+def _fetch_models_json(
+    url: str,
+    headers: dict[str, str] | None,
+    timeout: float,
+    server_label: str = "LLM server",
+) -> Any:
+    """GET a model-list endpoint on a local LLM server and return parsed JSON.
+
+    Shared by the Ollama, LM Studio and OpenAI-compatible fetch endpoints.
+    Redirects are not followed (httpx default).
+    """
+    _ensure_fetch_target_allowed(url, server_label)
+    try:
+        response = httpx.get(url, headers=headers or {}, timeout=timeout)
         response.raise_for_status()
-        response_json = response.json()
+        return response.json()
     except Exception as e:
         raise HTTPException(
             status_code=400,
-            detail=f"Failed to fetch Ollama models: {e}",
+            detail=f"Failed to fetch {server_label} models: {e}",
         )
 
-    models = response_json.get("models", [])
+
+def _resolve_stored_api_key_for_fetch(
+    api_key: str | None,
+    api_key_changed: bool,
+    provider_name: str | None,
+    api_base: str,
+    db_session: Session,
+    normalize_api_base: Callable[[str | None], str],
+    custom_config_key: str | None = None,
+) -> str | None:
+    """Key to use for a model fetch.
+
+    When editing, the form sends back a *masked* key (`api_key_changed=False`).
+    Then use the stored key of `provider_name`, but only if the stored api_base
+    matches the requested one, so a stored secret is never sent to a new host.
+    The key lives in `custom_config[custom_config_key]` when given, else in
+    the `api_key` column.
+    """
+    if api_key_changed or not provider_name:
+        return api_key or None
+
+    existing_provider = fetch_existing_llm_provider(
+        name=provider_name, db_session=db_session
+    )
+    if not existing_provider:
+        return None
+    if normalize_api_base(existing_provider.api_base) != normalize_api_base(api_base):
+        return None
+
+    if custom_config_key:
+        stored = (existing_provider.custom_config or {}).get(custom_config_key)
+        return stored or None
+    if existing_provider.api_key:
+        return existing_provider.api_key.get_value(apply_mask=False) or None
+    return None
+
+
+def _clean_api_base(api_base: str | None) -> str:
+    return (api_base or "").strip().rstrip("/")
+
+
+def _sync_fetched_models(
+    db_session: Session,
+    provider_name: str | None,
+    models: list[dict[str, Any]],
+    server_label: str,
+) -> None:
+    if not provider_name:
+        return
+    try:
+        new_count = sync_model_configurations(
+            db_session=db_session,
+            provider_name=provider_name,
+            models=models,
+        )
+        if new_count > 0:
+            logger.info(
+                f"Added {new_count} new {server_label} models to provider '{provider_name}'"
+            )
+    except ValueError as e:
+        logger.warning(f"Failed to sync {server_label} models to DB: {e}")
+
+
+def _get_ollama_available_model_names(
+    api_base: str, headers: dict[str, str] | None = None
+) -> set[str]:
+    """Fetch available model names from Ollama server."""
+    response_json = _fetch_models_json(
+        url=f"{api_base}/api/tags",
+        headers=headers,
+        timeout=_OLLAMA_FETCH_TIMEOUT_SECONDS,
+        server_label="Ollama",
+    )
+    models = response_json.get("models", []) if isinstance(response_json, dict) else []
     return {model.get("name") for model in models if model.get("name")}
 
 
@@ -923,18 +1052,27 @@ def get_ollama_available_models(
 ) -> list[OllamaFinalModelResponse]:
     """Fetch the list of available models from an Ollama server."""
 
-    cleaned_api_base = request.api_base.strip().rstrip("/")
+    cleaned_api_base = _clean_api_base(request.api_base)
     if not cleaned_api_base:
         raise HTTPException(
             status_code=400,
             detail="API base URL is required to fetch Ollama models.",
         )
 
-    # NOTE: most people run Ollama locally, so we don't disallow internal URLs
-    # the only way this could be used for SSRF is if there's another endpoint that
-    # is not protected + exposes sensitive information on the `/api/tags` endpoint
-    # with the same response format
-    model_names = _get_ollama_available_model_names(cleaned_api_base)
+    # NOTE: most people run Ollama locally, so internal URLs are allowed outside
+    # multi-tenant mode (see `_ensure_fetch_target_allowed`).
+    api_key = _resolve_stored_api_key_for_fetch(
+        api_key=request.api_key,
+        api_key_changed=request.api_key_changed,
+        provider_name=request.provider_name,
+        api_base=cleaned_api_base,
+        db_session=db_session,
+        normalize_api_base=_clean_api_base,
+        custom_config_key=OLLAMA_API_KEY_CONFIG_KEY,
+    )
+    headers = _bearer_headers(api_key)
+
+    model_names = _get_ollama_available_model_names(cleaned_api_base, headers)
     if not model_names:
         raise HTTPException(
             status_code=400,
@@ -951,7 +1089,8 @@ def get_ollama_available_models(
             show_response = httpx.post(
                 show_url,
                 json={"model": model_name},
-                timeout=5.0,
+                headers=headers,
+                timeout=_OLLAMA_FETCH_TIMEOUT_SECONDS,
             )
             show_response.raise_for_status()
             show_response_json = show_response.json()
@@ -963,12 +1102,15 @@ def get_ollama_available_models(
             if not ollama_model_details.supports_completion():
                 continue
 
-            # Optimistically access. Context limit is stored as "model_architecture.context" = int
+            # `num_ctx` (the context the server actually runs with) wins over the
+            # architecture's trained maximum "<arch>.context_length".
             architecture = ollama_model_details.model_info.get(
                 "general.architecture", ""
             )
-            context_limit = ollama_model_details.model_info.get(
-                architecture + ".context_length", None
+            context_limit = ollama_model_details.num_ctx() or (
+                ollama_model_details.model_info.get(
+                    architecture + ".context_length", None
+                )
             )
             supports_image_input = ollama_model_details.supports_image_input()
         except ValidationError as e:
@@ -998,29 +1140,218 @@ def get_ollama_available_models(
         key=lambda m: m.name.lower(),
     )
 
-    # Sync new models to DB if provider_name is specified
-    if request.provider_name:
-        try:
-            models_to_sync = [
-                {
-                    "name": r.name,
-                    "display_name": r.display_name,
-                    "max_input_tokens": r.max_input_tokens,
-                    "supports_image_input": r.supports_image_input,
-                }
-                for r in sorted_results
-            ]
-            new_count = sync_model_configurations(
-                db_session=db_session,
-                provider_name=request.provider_name,
-                models=models_to_sync,
+    _sync_fetched_models(
+        db_session=db_session,
+        provider_name=request.provider_name,
+        models=[
+            {
+                "name": r.name,
+                "display_name": r.display_name,
+                "max_input_tokens": r.max_input_tokens,
+                "supports_image_input": r.supports_image_input,
+            }
+            for r in sorted_results
+        ],
+        server_label="Ollama",
+    )
+
+    return sorted_results
+
+
+def _positive_int_or_none(value: Any) -> int | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value if value > 0 else None
+    if isinstance(value, str) and value.strip().isdigit():
+        parsed = int(value.strip())
+        return parsed if parsed > 0 else None
+    return None
+
+
+@admin_router.post("/lm-studio/available-models")
+def get_lm_studio_available_models(
+    request: LMStudioModelsRequest,
+    _: User = Depends(current_admin_user),
+    db_session: Session = Depends(get_session),
+) -> list[LMStudioFinalModelResponse]:
+    """Fetch models from an LM Studio server via its native `/api/v1/models`
+    endpoint (model type, display name, context length, vision/reasoning)."""
+
+    # A base copied from an OpenAI-style config ends in /v1; the native
+    # endpoint lives at <root>/api/v1/models.
+    root_api_base = strip_openai_v1_suffix(request.api_base)
+    if not root_api_base:
+        raise HTTPException(
+            status_code=400,
+            detail="API base URL is required to fetch LM Studio models.",
+        )
+
+    api_key = _resolve_stored_api_key_for_fetch(
+        api_key=request.api_key,
+        api_key_changed=request.api_key_changed,
+        provider_name=request.provider_name,
+        api_base=root_api_base,
+        db_session=db_session,
+        normalize_api_base=strip_openai_v1_suffix,
+        custom_config_key=LM_STUDIO_API_KEY_CONFIG_KEY,
+    )
+
+    response_json = _fetch_models_json(
+        url=f"{root_api_base}/api/v1/models",
+        headers=_bearer_headers(api_key),
+        timeout=_LOCAL_FETCH_TIMEOUT_SECONDS,
+        server_label="LM Studio",
+    )
+
+    models = response_json.get("models") if isinstance(response_json, dict) else None
+    if not isinstance(models, list) or not models:
+        raise HTTPException(
+            status_code=400,
+            detail="No models found from your LM Studio server",
+        )
+
+    results: list[LMStudioFinalModelResponse] = []
+    for item in models:
+        if not isinstance(item, dict) or item.get("type") != "llm":
+            continue  # embeddings and other non-chat models
+        model_key = item.get("key")
+        if not isinstance(model_key, str) or not model_key.strip():
+            continue
+        display_name = item.get("display_name") or model_key
+        capabilities = item.get("capabilities")
+        if not isinstance(capabilities, dict):
+            capabilities = {}
+        results.append(
+            LMStudioFinalModelResponse(
+                name=model_key,
+                display_name=display_name,
+                max_input_tokens=_positive_int_or_none(item.get("max_context_length")),
+                supports_image_input=parse_lm_studio_capability(
+                    capabilities.get("vision")
+                ),
+                supports_reasoning=(
+                    parse_lm_studio_capability(capabilities.get("reasoning"))
+                    if "reasoning" in capabilities
+                    else is_reasoning_model(model_key, display_name)
+                ),
             )
-            if new_count > 0:
-                logger.info(
-                    f"Added {new_count} new Ollama models to provider '{request.provider_name}'"
+        )
+
+    if not results:
+        raise HTTPException(
+            status_code=400,
+            detail="No chat models found from your LM Studio server",
+        )
+
+    sorted_results = sorted(results, key=lambda m: m.name.lower())
+
+    _sync_fetched_models(
+        db_session=db_session,
+        provider_name=request.provider_name,
+        models=[
+            {
+                "name": r.name,
+                "display_name": r.display_name,
+                "max_input_tokens": r.max_input_tokens,
+                "supports_image_input": r.supports_image_input,
+            }
+            for r in sorted_results
+        ],
+        server_label="LM Studio",
+    )
+
+    return sorted_results
+
+
+@admin_router.post("/openai-compatible/available-models")
+def get_openai_compatible_available_models(
+    request: OpenAICompatibleModelsRequest,
+    _: User = Depends(current_admin_user),
+    db_session: Session = Depends(get_session),
+) -> list[OpenAICompatibleFinalModelResponse]:
+    """Fetch models from any OpenAI-compatible server's `/v1/models`
+    (vLLM, llama.cpp server, LocalAI, ...). Non-chat ids are skipped."""
+
+    v1_api_base = normalize_openai_v1_base(request.api_base)
+    if not v1_api_base:
+        raise HTTPException(
+            status_code=400,
+            detail="API base URL is required to fetch models.",
+        )
+
+    api_key = _resolve_stored_api_key_for_fetch(
+        api_key=request.api_key,
+        api_key_changed=request.api_key_changed,
+        provider_name=request.provider_name,
+        api_base=v1_api_base,
+        db_session=db_session,
+        normalize_api_base=normalize_openai_v1_base,
+    )
+
+    response_json = _fetch_models_json(
+        url=f"{v1_api_base}/models",
+        headers=_bearer_headers(api_key),
+        timeout=_LOCAL_FETCH_TIMEOUT_SECONDS,
+        server_label="OpenAI-compatible",
+    )
+
+    data = response_json.get("data") if isinstance(response_json, dict) else None
+    if not isinstance(data, list) or not data:
+        raise HTTPException(
+            status_code=400,
+            detail="No models found from your OpenAI-compatible server",
+        )
+
+    results: list[OpenAICompatibleFinalModelResponse] = []
+    seen_ids: set[str] = set()
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+        model_id = item.get("id")
+        if not isinstance(model_id, str) or not model_id.strip():
+            continue
+        if model_id in seen_ids or is_non_chat_model_id(model_id):
+            continue
+        seen_ids.add(model_id)
+        display_name = item.get("name") or model_id
+        results.append(
+            OpenAICompatibleFinalModelResponse(
+                name=model_id,
+                display_name=display_name,
+                max_input_tokens=_positive_int_or_none(item.get("context_length"))
+                or _positive_int_or_none(item.get("max_model_len")),
+                # Servers don't report vision; the admin can tick it per model.
+                supports_image_input=False,
+                supports_reasoning=model_is_reasoning_model(
+                    model_id, OPENAI_COMPATIBLE_PROVIDER_NAME
                 )
-        except ValueError as e:
-            logger.warning(f"Failed to sync Ollama models to DB: {e}")
+                or is_reasoning_model(model_id, display_name),
+            )
+        )
+
+    if not results:
+        raise HTTPException(
+            status_code=400,
+            detail="No chat models found from your OpenAI-compatible server",
+        )
+
+    sorted_results = sorted(results, key=lambda m: m.name.lower())
+
+    _sync_fetched_models(
+        db_session=db_session,
+        provider_name=request.provider_name,
+        models=[
+            {
+                "name": r.name,
+                "display_name": r.display_name,
+                "max_input_tokens": r.max_input_tokens,
+                "supports_image_input": r.supports_image_input,
+            }
+            for r in sorted_results
+        ],
+        server_label="OpenAI-compatible",
+    )
 
     return sorted_results
 

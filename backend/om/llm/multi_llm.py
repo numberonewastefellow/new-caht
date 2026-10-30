@@ -19,6 +19,8 @@ from om.llm.interfaces import LLMConfig
 from om.llm.interfaces import LLMUserIdentity
 from om.llm.interfaces import ReasoningEffort
 from om.llm.interfaces import ToolChoiceOptions
+from om.llm.local_providers import is_local_provider
+from om.llm.local_providers import resolve_local_provider_routing
 from om.llm.model_response import ModelResponse
 from om.llm.model_response import ModelResponseStream
 from om.llm.models import ANTHROPIC_REASONING_EFFORT_BUDGET
@@ -40,6 +42,7 @@ from om.llm.well_known_providers.constants import AWS_SECRET_ACCESS_KEY_KWARG
 from om.llm.well_known_providers.constants import (
     AWS_SECRET_ACCESS_KEY_KWARG_ENV_VAR_FORMAT,
 )
+from om.llm.well_known_providers.constants import LM_STUDIO_API_KEY_CONFIG_KEY
 from om.llm.well_known_providers.constants import OLLAMA_API_KEY_CONFIG_KEY
 from om.llm.well_known_providers.constants import VERTEX_CREDENTIALS_FILE_KWARG
 from om.llm.well_known_providers.constants import (
@@ -139,6 +142,9 @@ class LitellmLLM(LLM):
         self._custom_llm_provider = custom_llm_provider
         self._max_input_tokens = max_input_tokens
         self._custom_config = custom_config
+        # LiteLLM model-string prefix; differs from the stored provider only for
+        # local providers (see om/llm/local_providers.py).
+        self._litellm_model_prefix = model_provider
 
         # Create a dictionary for model-specific arguments if it's None
         model_kwargs = model_kwargs or {}
@@ -154,6 +160,9 @@ class LitellmLLM(LLM):
                         model_kwargs[k] = v
                 elif model_provider == LlmProviderNames.OLLAMA_CHAT:
                     if k == OLLAMA_API_KEY_CONFIG_KEY:
+                        model_kwargs["api_key"] = v
+                elif model_provider == LlmProviderNames.LM_STUDIO:
+                    if k == LM_STUDIO_API_KEY_CONFIG_KEY and v:
                         model_kwargs["api_key"] = v
                 elif model_provider == LlmProviderNames.BEDROCK:
                     if k == AWS_REGION_NAME_KWARG:
@@ -178,6 +187,23 @@ class LitellmLLM(LLM):
             and VERTEX_LOCATION_KWARG not in model_kwargs
         ):
             model_kwargs[VERTEX_LOCATION_KWARG] = "global"
+
+        # Local OpenAI-style servers: fixed LiteLLM route, `/v1` base, explicit key.
+        if is_local_provider(model_provider):
+            (
+                self._litellm_model_prefix,
+                local_custom_llm_provider,
+                self._api_base,
+                local_api_key,
+            ) = resolve_local_provider_routing(
+                provider=model_provider,
+                api_base=api_base,
+                api_key=model_kwargs.get("api_key") or api_key,
+            )
+            self._custom_llm_provider = custom_llm_provider or local_custom_llm_provider
+            # Always pass the key explicitly (an empty string included) so it
+            # survives the `api_key or None` fallback in `_completion`.
+            model_kwargs["api_key"] = local_api_key
 
         # This is needed for Ollama to do proper function calling
         if model_provider == LlmProviderNames.OLLAMA_CHAT and api_base is not None:
@@ -251,7 +277,7 @@ class LitellmLLM(LLM):
         model_provider = (
             f"{self.config.model_provider}/responses"
             if is_openai_model  # Uses litellm's completions -> responses bridge
-            else self.config.model_provider
+            else self._litellm_model_prefix
         )
         model = (
             f"{model_provider}/{self.config.deployment_name or self.config.model_name}"

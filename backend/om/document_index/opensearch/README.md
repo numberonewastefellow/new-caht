@@ -53,6 +53,25 @@ Because of these limitations, VertualAI in code applies further refinements, boo
 filtering. The impact of time decay and boost should not be so big that we would need orders of magnitude more results back
 from OpenSearch.
 
+### How it is implemented (`hybrid_rescore.py`)
+`OpenSearchDocumentIndex.hybrid_retrieval` applies the boost and the time decay in Python, after OpenSearch has returned the
+normalized hybrid scores. It is off by default (`OPENSEARCH_HYBRID_RESCORE_ENABLED=false`); off means the query, the order
+and the scores are exactly as before. When on:
+- It fetches `ceil(num_to_retrieve x OPENSEARCH_RESCORE_OVERFETCH_FACTOR)` hits (default 2x, capped at
+  `DEFAULT_NUM_HYBRID_SUBQUERY_CANDIDATES`), rescores them, sorts them (stable on ties) and keeps the top `num_to_retrieve`.
+- `adjusted = score x feedback_boost_multiplier(boost) x freshness_multiplier(updated_at)`.
+  - Feedback boost: `boost < 0 -> 0.5 + 1/(1+e^(-boost/3))`, else `2/(1+e^(-boost/3))`. Boost 0 gives 1.0; the range is 0.5 to 2.0.
+  - Freshness: `max(1 / (1 + decay x age_in_years), OPENSEARCH_RESCORE_FRESHNESS_FLOOR)`, floor 0.75 by default. `decay` is
+    `DOC_TIME_DECAY (0.5) x RECENCY_BIAS_MULTIPLIER x` the agent's recency setting (FAVOR_RECENT 2x, NO_DECAY 0, else 1x).
+    Documents with no `updated_at` count as 7,890,000 s (about 91 days) old. Future dates count as age 0.
+- If any score in the batch is negative (z-score pipeline), all scores are shifted up by `-min` first, so a boost always helps.
+- The adjusted scores are then rescaled so the batch maximum equals the original maximum. The order does not change, but the
+  scores stay on the scale OpenSearch returned, so federated results (merged with ours by raw score) are not crowded out.
+- The same factors are applied to the cross-encoder scores when reranking is on (`context/search/rerank.py`).
+- Sub-toggles `OPENSEARCH_RESCORE_FRESHNESS_ENABLED` / `OPENSEARCH_RESCORE_FEEDBACK_BOOST_ENABLED` turn one factor off.
+- Not applied to `keyword_retrieval`, `random_retrieval` (admin explorer), `semantic_retrieval` or ID-based retrieval.
+- Limitation: it can only reorder candidates that OpenSearch returned; the over-fetch makes room for realistic promotions.
+
 ## Other concepts to be aware of
 Within the `Search` phase, there are optional steps like Rescore but these are not useful for the combination/normalization
 work that is relevant for the hybrid search. Since the Rescore happens prior to normalization, it's not able to provide any

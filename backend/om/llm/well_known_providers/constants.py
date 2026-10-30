@@ -35,6 +35,11 @@ def _fallback_bedrock_regions() -> list[str]:
 OLLAMA_PROVIDER_NAME = "ollama_chat"
 OLLAMA_API_KEY_CONFIG_KEY = "OLLAMA_API_KEY"
 
+# Local LLM servers (see om/llm/local_providers.py)
+LM_STUDIO_PROVIDER_NAME = "lm_studio"
+LM_STUDIO_API_KEY_CONFIG_KEY = "LM_STUDIO_API_KEY"
+OPENAI_COMPATIBLE_PROVIDER_NAME = "openai_compatible"
+
 # OpenRouter
 OPENROUTER_PROVIDER_NAME = "openrouter"
 

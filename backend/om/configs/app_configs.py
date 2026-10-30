@@ -767,6 +767,29 @@ MINI_CHUNK_SIZE = 150
 # This is the number of regular chunks per large chunk
 LARGE_CHUNK_RATIO = 4
 
+# --- table-chunking ---
+# Spreadsheets (.xlsx) and CSV/TSV files from the file, blob, folder and
+# workspace sources become TableSections and get a bounded set of chunks
+# (overview, all rows of small sheets, a summary of large ones). "false" makes
+# those connectors emit the old single TextSection again.
+TABLE_CHUNKING_ENABLED = (
+    os.environ.get("TABLE_CHUNKING_ENABLED", "true").lower() != "false"
+)
+# A sheet whose rows fit in this many chunks keeps all its rows verbatim;
+# bigger sheets get a summary instead.
+TABLE_FULL_ROWS_MAX_CHUNKS = max(
+    0, int(os.environ.get("TABLE_FULL_ROWS_MAX_CHUNKS") or 3)
+)
+# Chunks of frequent text values added for each large sheet.
+TABLE_VALUE_CHUNKS_PER_SHEET = max(
+    0, int(os.environ.get("TABLE_VALUE_CHUNKS_PER_SHEET") or 2)
+)
+# Upper bound on the chunks of one spreadsheet or CSV file.
+TABLE_MAX_CHUNKS_PER_FILE = max(
+    1, int(os.environ.get("TABLE_MAX_CHUNKS_PER_FILE") or 24)
+)
+# --- end table-chunking ---
+
 # Include the document level metadata in each chunk. If the metadata is too long, then it is thrown out
 # We don't want the metadata to overwhelm the actual contents of the chunk
 SKIP_METADATA_IN_CHUNK = os.environ.get("SKIP_METADATA_IN_CHUNK", "").lower() == "true"
@@ -829,6 +852,65 @@ RERANK_TIMEOUT_SECONDS = float(os.environ.get("RERANK_TIMEOUT_SECONDS") or 10)
 RERANK_PROTECT_TOP_K = int(os.environ.get("RERANK_PROTECT_TOP_K") or 2)
 # Chunk text is cut to this many characters (cross-encoders have ~512 token limits)
 RERANK_MAX_CHARS_PER_DOC = int(os.environ.get("RERANK_MAX_CHARS_PER_DOC") or 1200)
+
+# --- hybrid-rescore ---
+# App-side rescore of OpenSearch hybrid hits after normalization: the normalized
+# score is multiplied by a feedback-boost factor (0.5x..2x from the document
+# `boost`) and a freshness factor (1.0 down to the floor, from `updated_at`).
+# See om/document_index/opensearch/hybrid_rescore.py. The freshness decay per
+# year is DOC_TIME_DECAY (chat_configs) x RECENCY_BIAS_MULTIPLIER (above) x the
+# per-agent recency setting.
+# Kill switch. Off (default) = ranking identical to before (no over-fetch, no
+# rescore, cross-encoder rerank order unchanged).
+OPENSEARCH_HYBRID_RESCORE_ENABLED = (
+    os.environ.get("OPENSEARCH_HYBRID_RESCORE_ENABLED", "false").lower() == "true"
+)
+# Sub-toggles, only effective when the kill switch is on.
+OPENSEARCH_RESCORE_FRESHNESS_ENABLED = (
+    os.environ.get("OPENSEARCH_RESCORE_FRESHNESS_ENABLED", "true").lower() == "true"
+)
+OPENSEARCH_RESCORE_FEEDBACK_BOOST_ENABLED = (
+    os.environ.get("OPENSEARCH_RESCORE_FEEDBACK_BOOST_ENABLED", "true").lower()
+    == "true"
+)
+# Lowest freshness factor a document can get (clamped to [0, 1]).
+OPENSEARCH_RESCORE_FRESHNESS_FLOOR = float(
+    os.environ.get("OPENSEARCH_RESCORE_FRESHNESS_FLOOR") or 0.75
+)
+# Fetch this many times num_to_retrieve candidates before rescoring and
+# truncating (clamped to [1, 5]).
+OPENSEARCH_RESCORE_OVERFETCH_FACTOR = float(
+    os.environ.get("OPENSEARCH_RESCORE_OVERFETCH_FACTOR") or 2.0
+)
+# --- end hybrid-rescore ---
+
+# --- complete-answer-prompts ---
+# On search-backed turns, tell the model to answer every part of the question,
+# quote exact figures and lay multi-part answers out as a list. Set to "false"
+# for a baseline (A/B) run on the same build.
+ENABLE_COMPLETE_ANSWER_PROMPTS = (
+    os.environ.get("ENABLE_COMPLETE_ANSWER_PROMPTS", "true").lower() != "false"
+)
+# Optional cheaper model for the search tool's evidence selection (which
+# retrieved sections reach the answer model). Provider = the provider NAME shown
+# in Admin -> LLM. Both must be set, otherwise the chat model is used (as before).
+EVIDENCE_SELECTION_LLM_PROVIDER = (
+    os.environ.get("EVIDENCE_SELECTION_LLM_PROVIDER") or ""
+).strip() or None
+EVIDENCE_SELECTION_LLM_NAME = (
+    os.environ.get("EVIDENCE_SELECTION_LLM_NAME") or ""
+).strip() or None
+# Per-call bound for the evidence-selection LLM calls, so a stalled provider
+# falls back fast (keeps the retrieved order) instead of hanging the turn.
+EVIDENCE_SELECTION_LLM_TIMEOUT_S = int(
+    os.environ.get("EVIDENCE_SELECTION_LLM_TIMEOUT_S") or 60
+)
+# Selection sees this many times the chat-context token budget, so relevant
+# sections just below the cut can still be picked. 1 = previous behaviour.
+EVIDENCE_SELECTION_BUDGET_MULTIPLIER = max(
+    1, int(os.environ.get("EVIDENCE_SELECTION_BUDGET_MULTIPLIER") or 2)
+)
+# --- end complete-answer-prompts ---
 
 
 #####
@@ -912,6 +994,21 @@ SCHEDULED_EVAL_PERMISSIONS_EMAIL = os.environ.get(
 )
 # Braintrust project name to use for scheduled evals
 SCHEDULED_EVAL_PROJECT = os.environ.get("SCHEDULED_EVAL_PROJECT", "st-dev")
+
+# --- rag-benchmark ---
+# Read only by the offline RAG benchmark CLI (om/evals/rag_benchmark); the
+# server never uses these. Base URL of the API server under test (scratch stack).
+RAG_BENCHMARK_API_BASE = os.environ.get(
+    "RAG_BENCHMARK_API_BASE", "http://localhost:8080"
+)
+# Admin API key of the stack under test; falls back to the tool-eval key.
+RAG_BENCHMARK_API_KEY = (
+    os.environ.get("RAG_BENCHMARK_API_KEY") or os.environ.get("OM_EVAL_API_KEY") or ""
+)
+# LLM-as-judge for answer mode (called directly via litellm, not via the stack).
+RAG_BENCHMARK_JUDGE_MODEL = os.environ.get("RAG_BENCHMARK_JUDGE_MODEL", "gpt-4.1")
+RAG_BENCHMARK_JUDGE_API_KEY = os.environ.get("RAG_BENCHMARK_JUDGE_API_KEY") or ""
+# --- end rag-benchmark ---
 
 #####
 # Langfuse Configuration
@@ -1259,4 +1356,3 @@ POSTHOG_DEBUG_LOGS_ENABLED = (
 MARKETING_POSTHOG_API_KEY = os.environ.get("MARKETING_POSTHOG_API_KEY")
 
 HUBSPOT_TRACKING_URL = os.environ.get("HUBSPOT_TRACKING_URL")
-

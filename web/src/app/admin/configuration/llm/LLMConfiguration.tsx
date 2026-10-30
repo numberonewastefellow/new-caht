@@ -16,6 +16,8 @@ import { BedrockForm } from "./forms/BedrockForm";
 import { VertexAIForm } from "./forms/VertexAIForm";
 import { OpenRouterForm } from "./forms/OpenRouterForm";
 import { CustomForm } from "./forms/CustomForm";
+import { LMStudioForm } from "./forms/LMStudioForm";
+import { OpenAICompatibleForm } from "./forms/OpenAICompatibleForm";
 import { getFormComponentForProvider } from "./forms/getForm";
 import { SvgPlus, SvgSettings, SvgStar, SvgCpu } from "@opal/icons";
 import { toast } from "@/hooks/useToast";
@@ -47,6 +49,18 @@ const PROVIDER_TILES: ProviderTile[] = [
     displayName: "Ollama",
     providerName: LLMProviderName.OLLAMA_CHAT,
     FormComponent: OllamaForm,
+  },
+  {
+    key: "lm_studio",
+    displayName: "LM Studio",
+    providerName: LLMProviderName.LM_STUDIO,
+    FormComponent: LMStudioForm,
+  },
+  {
+    key: "openai_compatible",
+    displayName: "OpenAI-Compatible",
+    providerName: LLMProviderName.OPENAI_COMPATIBLE,
+    FormComponent: OpenAICompatibleForm,
   },
   {
     key: "azure",

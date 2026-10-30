@@ -1,0 +1,151 @@
+copy_application_no,applicant,district,case_type,copy_fee_rs,issued_on
+HCRB-WGL-00001,Shobha Rao,Warangal,Criminal Petition,860,2025-09-25
+HCRB-NZB-00002,Jyothi Naik,Nizamabad,Second Appeal,790,2025-12-13
+HCRB-NLG-00003,Sujatha Naik,Nalgonda,Civil Revision,2275,2026-02-14
+HCRB-ADB-00004,Ramesh Babu,Adilabad,Civil Revision,945,2026-01-07
+HCRB-HYD-00005,Shobha Varma,Hyderabad,Second Appeal,2145,2025-10-30
+HCRB-KRM-00006,Gopal Rao,Karimnagar,Writ Petition,665,2025-11-17
+HCRB-KRM-00007,Ravi Varma,Karimnagar,Contempt Case,1700,2025-11-01
+HCRB-MDL-00008,Madhavi Babu,Medchal-Malkajgiri,Contempt Case,2305,2025-05-12
+HCRB-KMM-00009,Swathi Naik,Khammam,Second Appeal,1485,2025-06-22
+HCRB-WGL-00010,Padma Yadav,Warangal,Contempt Case,1085,2025-05-15
+HCRB-ADB-00011,Harish Goud,Adilabad,Criminal Petition,1565,2025-10-03
+HCRB-KRM-00012,Sai Babu,Karimnagar,Civil Revision,2580,2026-03-05
+HCRB-HYD-00013,Prakash Yadav,Hyderabad,Contempt Case,65,2025-08-29
+HCRB-ADB-00014,Sarala Reddy,Adilabad,Writ Appeal,1105,2026-02-05
+HCRB-KRM-00015,Srinivas Prasad,Karimnagar,Contempt Case,2050,2025-08-17
+HCRB-KRM-00016,Anil Goud,Karimnagar,Criminal Petition,1380,2026-01-10
+HCRB-NZB-00017,Madhavi Prasad,Nizamabad,Contempt Case,1895,2025-12-13
+HCRB-NZB-00018,Deepa Sharma,Nizamabad,Second Appeal,2485,2025-11-19
+HCRB-WGL-00019,Swathi Murthy,Warangal,Writ Petition,1485,2025-04-21
+HCRB-ADB-00020,Raju Babu,Adilabad,Writ Petition,740,2026-01-06
+HCRB-KRM-00021,Padma Varma,Karimnagar,Contempt Case,2155,2026-01-10
+HCRB-MDL-00022,Usha Naidu,Medchal-Malkajgiri,Writ Petition,2835,2025-06-29
+HCRB-MBN-00023,Srinivas Murthy,Mahabubnagar,Contempt Case,2880,2025-08-20
+HCRB-WGL-00024,Harish Prasad,Warangal,Writ Appeal,380,2026-03-29
+HCRB-RRD-00025,Sarala Kumar,Ranga Reddy,Contempt Case,275,2025-05-28
+HCRB-HYD-00026,Radha Murthy,Hyderabad,Contempt Case,650,2025-09-10
+HCRB-ADB-00027,Deepa Chary,Adilabad,Writ Appeal,1995,2026-02-08
+HCRB-KMM-00028,Prakash Goud,Khammam,Contempt Case,490,2025-05-03
+HCRB-MBN-00029,Mahesh Rao,Mahabubnagar,Contempt Case,1145,2025-05-22
+HCRB-MDL-00030,Kavitha Kumar,Medchal-Malkajgiri,Criminal Petition,940,2026-01-09
+HCRB-NLG-00031,Lakshmi Naik,Nalgonda,Writ Appeal,755,2026-01-13
+HCRB-RRD-00032,Bhavani Reddy,Ranga Reddy,Civil Revision,1525,2025-12-06
+HCRB-MDL-00033,Ravi Rao,Medchal-Malkajgiri,Second Appeal,85,2025-06-24
+HCRB-KRM-00034,Prakash Naidu,Karimnagar,Contempt Case,2705,2025-05-17
+HCRB-RRD-00035,Harish Naik,Ranga Reddy,Civil Revision,925,2026-02-04
+HCRB-NZB-00036,Ravi Yadav,Nizamabad,Criminal Petition,2225,2025-07-27
+HCRB-HYD-00037,Mahesh Devi,Hyderabad,Criminal Petition,1415,2025-09-09
+HCRB-NZB-00038,Suresh Rao,Nizamabad,Criminal Petition,2715,2025-07-05
+HCRB-MBN-00039,Usha Chary,Mahabubnagar,Criminal Petition,2920,2025-04-15
+HCRB-WGL-00040,Venkatesh Naik,Warangal,Contempt Case,1890,2025-07-15
+HCRB-RRD-00041,Deepa Sharma,Ranga Reddy,Civil Revision,635,2025-09-19
+HCRB-HYD-00042,Madhavi Varma,Hyderabad,Criminal Petition,490,2025-06-24
+HCRB-RRD-00043,Ravi Prasad,Ranga Reddy,Second Appeal,2175,2025-04-27
+HCRB-WGL-00044,Usha Varma,Warangal,Writ Appeal,2020,2025-06-18
+HCRB-MDL-00045,Jyothi Reddy,Medchal-Malkajgiri,Civil Revision,935,2025-04-21
+HCRB-KRM-00046,Ravi Chary,Karimnagar,Writ Appeal,2080,2025-08-03
+HCRB-NLG-00047,Swathi Babu,Nalgonda,Civil Revision,1760,2026-03-28
+HCRB-MDL-00048,Anitha Naik,Medchal-Malkajgiri,Second Appeal,2505,2025-04-02
+HCRB-MBN-00049,Lakshmi Yadav,Mahabubnagar,Contempt Case,2920,2025-06-13
+HCRB-HYD-00050,Naresh Naik,Hyderabad,Contempt Case,1760,2025-09-10
+HCRB-MBN-00051,Shobha Rao,Mahabubnagar,Writ Appeal,645,2026-02-25
+HCRB-MDL-00052,Rekha Yadav,Medchal-Malkajgiri,Writ Appeal,1520,2025-12-14
+HCRB-WGL-00053,Prakash Kumar,Warangal,Criminal Petition,295,2025-04-21
+HCRB-WGL-00054,Kiran Goud,Warangal,Second Appeal,1415,2025-05-24
+HCRB-MBN-00055,Vijay Devi,Mahabubnagar,Writ Petition,2155,2025-07-18
+HCRB-WGL-00056,Madhavi Goud,Warangal,Writ Petition,185,2026-02-03
+HCRB-KMM-00057,Sai Patel,Khammam,Contempt Case,255,2026-03-29
+HCRB-HYD-00058,Venkatesh Reddy,Hyderabad,Writ Appeal,1630,2025-12-05
+HCRB-KRM-00059,Naresh Naidu,Karimnagar,Criminal Petition,635,2025-06-29
+HCRB-NLG-00060,Sai Reddy,Nalgonda,Writ Appeal,2230,2026-01-28
+HCRB-ADB-00061,Gopal Chary,Adilabad,Criminal Petition,1290,2025-12-09
+HCRB-HYD-00062,Jyothi Rao,Hyderabad,Criminal Petition,485,2026-03-25
+HCRB-NLG-00063,Vijay Murthy,Nalgonda,Contempt Case,1535,2025-09-23
+HCRB-KRM-00064,Swathi Babu,Karimnagar,Civil Revision,370,2026-01-24
+HCRB-RRD-00065,Sujatha Goud,Ranga Reddy,Contempt Case,1460,2025-08-10
+HCRB-ADB-00066,Jyothi Achari,Adilabad,Writ Appeal,2450,2025-08-28
+HCRB-ADB-00067,Naresh Patel,Adilabad,Civil Revision,360,2025-09-11
+HCRB-KRM-00068,Madhavi Varma,Karimnagar,Civil Revision,2215,2026-03-29
+HCRB-MDL-00069,Rekha Murthy,Medchal-Malkajgiri,Civil Revision,1490,2026-02-01
+HCRB-WGL-00070,Gopal Goud,Warangal,Criminal Petition,1500,2025-10-26
+HCRB-KRM-00071,Naresh Murthy,Karimnagar,Writ Petition,2945,2025-05-01
+HCRB-HYD-00072,Prakash Sharma,Hyderabad,Second Appeal,1930,2025-11-26
+HCRB-ADB-00073,Ramesh Devi,Adilabad,Writ Appeal,180,2026-02-11
+HCRB-ADB-00074,Swathi Babu,Adilabad,Criminal Petition,1380,2025-04-13
+HCRB-KMM-00075,Jyothi Reddy,Khammam,Civil Revision,2015,2025-05-29
+HCRB-ADB-00076,Kavitha Goud,Adilabad,Writ Petition,1985,2025-04-24
+HCRB-ADB-00077,Naresh Reddy,Adilabad,Writ Petition,465,2025-11-01
+HCRB-MBN-00078,Ramesh Varma,Mahabubnagar,Contempt Case,2880,2025-04-16
+HCRB-KMM-00079,Gopal Prasad,Khammam,Civil Revision,165,2025-08-21
+HCRB-ADB-00080,Deepa Reddy,Adilabad,Second Appeal,2225,2025-06-04
+HCRB-NZB-00081,Padma Chary,Nizamabad,Civil Revision,2795,2026-03-23
+HCRB-WGL-00082,Jyothi Sharma,Warangal,Civil Revision,755,2025-06-21
+HCRB-KMM-00083,Venkatesh Naidu,Khammam,Criminal Petition,2755,2026-02-23
+HCRB-HYD-00084,Padma Naik,Hyderabad,Civil Revision,525,2026-02-20
+HCRB-RRD-00085,Venkatesh Naik,Ranga Reddy,Contempt Case,2175,2025-11-04
+HCRB-MBN-00086,Venkatesh Chary,Mahabubnagar,Second Appeal,590,2025-08-17
+HCRB-NLG-00087,Bhavani Patel,Nalgonda,Second Appeal,695,2025-12-22
+HCRB-KRM-00088,Madhavi Babu,Karimnagar,Writ Appeal,720,2025-07-06
+HCRB-ADB-00089,Mahesh Reddy,Adilabad,Writ Appeal,2730,2026-01-26
+HCRB-HYD-00090,Anitha Patel,Hyderabad,Civil Revision,2485,2025-05-07
+HCRB-NZB-00091,Sai Reddy,Nizamabad,Writ Appeal,2510,2025-08-29
+HCRB-KRM-00092,Harish Kumar,Karimnagar,Civil Revision,2905,2025-04-12
+HCRB-HYD-00093,Sujatha Sharma,Hyderabad,Second Appeal,815,2025-06-19
+HCRB-MDL-00094,Mahesh Reddy,Medchal-Malkajgiri,Writ Appeal,1775,2026-01-24
+HCRB-NLG-00095,Swathi Kumar,Nalgonda,Writ Petition,505,2025-09-02
+HCRB-MDL-00096,Radha Patel,Medchal-Malkajgiri,Contempt Case,1250,2025-07-05
+HCRB-HYD-00097,Raju Chary,Hyderabad,Contempt Case,2075,2025-10-02
+HCRB-NZB-00098,Bhavani Sharma,Nizamabad,Writ Appeal,1270,2025-09-17
+HCRB-MBN-00099,Naresh Patel,Mahabubnagar,Writ Petition,2605,2026-03-14
+HCRB-MBN-00100,Usha Yadav,Mahabubnagar,Writ Appeal,530,2026-03-15
+HCRB-MDL-00101,Raju Prasad,Medchal-Malkajgiri,Writ Appeal,2930,2025-04-21
+HCRB-MBN-00102,Vijay Naik,Mahabubnagar,Writ Appeal,2725,2026-02-15
+HCRB-RRD-00103,Venkatesh Yadav,Ranga Reddy,Writ Petition,2685,2025-07-27
+HCRB-HYD-00104,Mahesh Patel,Hyderabad,Writ Appeal,2110,2025-10-05
+HCRB-NZB-00105,Anil Varma,Nizamabad,Second Appeal,1105,2025-05-06
+HCRB-MDL-00106,Anitha Achari,Medchal-Malkajgiri,Writ Appeal,2735,2025-09-12
+HCRB-NLG-00107,Ravi Achari,Nalgonda,Criminal Petition,1990,2025-11-14
+HCRB-ADB-00108,Anil Varma,Adilabad,Criminal Petition,430,2026-03-03
+HCRB-NLG-00109,Lakshmi Varma,Nalgonda,Second Appeal,2930,2026-01-04
+HCRB-WGL-00110,Harish Devi,Warangal,Contempt Case,330,2025-11-23
+HCRB-RRD-00111,Lakshmi Reddy,Ranga Reddy,Civil Revision,1350,2025-08-24
+HCRB-WGL-00112,Gopal Reddy,Warangal,Writ Petition,2685,2025-06-30
+HCRB-RRD-00113,Usha Varma,Ranga Reddy,Contempt Case,2225,2025-10-25
+HCRB-KRM-00114,Vijay Rao,Karimnagar,Writ Petition,1630,2026-01-17
+HCRB-KRM-00115,Usha Chary,Karimnagar,Criminal Petition,1580,2025-05-02
+HCRB-NZB-00116,Bhavani Murthy,Nizamabad,Contempt Case,510,2025-08-28
+HCRB-MDL-00117,Harish Chary,Medchal-Malkajgiri,Second Appeal,1750,2025-05-01
+HCRB-NLG-00118,Anil Yadav,Nalgonda,Civil Revision,2110,2025-07-01
+HCRB-NZB-00119,Ravi Prasad,Nizamabad,Second Appeal,1075,2025-07-19
+HCRB-NZB-00120,Kavitha Naik,Nizamabad,Civil Revision,95,2025-10-05
+HCRB-WGL-00121,Rekha Murthy,Warangal,Contempt Case,1900,2025-04-17
+HCRB-ADB-00122,Sarala Kumar,Adilabad,Civil Revision,830,2025-08-14
+HCRB-HYD-00123,Lakshmi Naik,Hyderabad,Criminal Petition,1910,2026-03-26
+HCRB-NZB-00124,Kavitha Kumar,Nizamabad,Second Appeal,2370,2025-12-11
+HCRB-MBN-00125,Jyothi Kumar,Mahabubnagar,Second Appeal,1770,2025-10-31
+HCRB-RRD-00126,Radha Sharma,Ranga Reddy,Writ Appeal,2350,2025-04-26
+HCRB-NZB-00127,Jyothi Rao,Nizamabad,Civil Revision,2195,2025-11-17
+HCRB-MDL-00128,Anil Naidu,Medchal-Malkajgiri,Second Appeal,2985,2026-01-20
+HCRB-KMM-00129,Harish Sharma,Khammam,Civil Revision,2560,2026-02-26
+HCRB-MBN-00130,Anil Yadav,Mahabubnagar,Criminal Petition,2260,2025-05-16
+HCRB-WGL-00131,Sujatha Goud,Warangal,Second Appeal,330,2026-01-28
+HCRB-HYD-00132,Shobha Rao,Hyderabad,Writ Appeal,615,2026-03-08
+HCRB-RRD-00133,Harish Kumar,Ranga Reddy,Criminal Petition,1335,2025-04-15
+HCRB-NLG-00134,Kiran Rao,Nalgonda,Writ Petition,640,2025-05-19
+HCRB-WGL-00135,Mahesh Devi,Warangal,Contempt Case,1155,2025-09-02
+HCRB-NZB-00136,Vijay Prasad,Nizamabad,Contempt Case,2355,2026-01-22
+HCRB-MDL-00137,Ramesh Varma,Medchal-Malkajgiri,Writ Appeal,1155,2025-11-30
+HCRB-KRM-00138,Lakshmi Goud,Karimnagar,Civil Revision,2550,2025-08-12
+HCRB-MDL-00139,Vijay Achari,Medchal-Malkajgiri,Writ Petition,2605,2026-02-21
+HCRB-RRD-00140,Usha Babu,Ranga Reddy,Criminal Petition,2085,2026-03-17
+HCRB-MDL-00141,Kiran Patel,Medchal-Malkajgiri,Writ Petition,650,2025-09-11
+HCRB-NLG-00142,Mahesh Murthy,Nalgonda,Civil Revision,210,2025-07-19
+HCRB-HYD-00143,Anitha Murthy,Hyderabad,Contempt Case,2845,2026-03-20
+HCRB-NLG-00144,Prakash Sharma,Nalgonda,Writ Appeal,2135,2025-06-29
+HCRB-ADB-00145,Anil Devi,Adilabad,Writ Appeal,2320,2025-12-28
+HCRB-ADB-00146,Lakshmi Reddy,Adilabad,Writ Appeal,2675,2025-06-23
+HCRB-HYD-00147,Anitha Chary,Hyderabad,Writ Appeal,1240,2025-05-24
+HCRB-RRD-00148,Gopal Rao,Ranga Reddy,Writ Petition,2260,2026-03-03
+HCRB-MBN-00149,Suresh Naidu,Mahabubnagar,Criminal Petition,2415,2025-07-27
+HCRB-MBN-00150,Madhavi Goud,Mahabubnagar,Second Appeal,2995,2025-10-07

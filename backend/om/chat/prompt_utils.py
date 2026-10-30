@@ -9,10 +9,12 @@ from om.db.agent import get_default_behavior_agent
 from om.db.knowledge_file import calculate_knowledge_files_token_count
 from om.file_store.models import FileDescriptor
 from om.prompts.chat_prompts import CITATION_REMINDER
+from om.prompts.chat_prompts import COMPLETE_ANSWER_REMINDER
 from om.prompts.chat_prompts import DEFAULT_SYSTEM_PROMPT
 from om.prompts.chat_prompts import FILE_REMINDER
 from om.prompts.chat_prompts import LAST_CYCLE_CITATION_REMINDER
-from om.prompts.chat_prompts import REQUIRE_CITATION_GUIDANCE
+from om.prompts.prompt_utils import build_citation_guidance_block
+from om.prompts.prompt_utils import complete_answer_prompts_enabled
 from om.prompts.prompt_utils import get_company_context
 from om.prompts.prompt_utils import handle_om_date_awareness
 from om.prompts.prompt_utils import replace_citation_guidance_tag
@@ -134,6 +136,8 @@ def build_reminder_message(
         reminder += "\n\n" + LAST_CYCLE_CITATION_REMINDER
     if include_citation_reminder:
         reminder += "\n\n" + CITATION_REMINDER
+        if complete_answer_prompts_enabled():
+            reminder += "\n\n" + COMPLETE_ANSWER_REMINDER
     if include_file_reminder:
         reminder += "\n\n" + FILE_REMINDER
     reminder = reminder.strip()
@@ -225,7 +229,7 @@ def build_system_prompt(
     # Append citation guidance after company context if placeholder was not present
     # This maintains backward compatibility and ensures citations are always enforced when needed
     if should_append_citation_guidance:
-        system_prompt += REQUIRE_CITATION_GUIDANCE
+        system_prompt += build_citation_guidance_block(system_prompt)
 
     if include_all_guidance:
         system_prompt += (

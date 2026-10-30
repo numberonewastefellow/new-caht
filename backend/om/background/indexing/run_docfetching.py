@@ -32,6 +32,7 @@ from om.connectors.models import ConnectorFailure
 from om.connectors.models import ConnectorStopSignal
 from om.connectors.models import Document
 from om.connectors.models import IndexAttemptMetadata
+from om.connectors.models import TableSection
 from om.connectors.models import TextSection
 from om.db.connector import mark_ccpair_with_indexing_trigger
 from om.db.connector_credential_pair import get_connector_credential_pair_from_id
@@ -181,7 +182,10 @@ def strip_null_characters(doc_batch: list[Document]) -> list[Document]:
                 section.link = section.link.replace("\x00", "")
 
             # since text can be longer, just replace to avoid double scan
-            if isinstance(section, TextSection) and section.text is not None:
+            if (
+                isinstance(section, (TextSection, TableSection))
+                and section.text is not None
+            ):
                 section.text = section.text.replace("\x00", "")
 
         cleaned_batch.append(cleaned_doc)
@@ -658,7 +662,7 @@ def connector_document_extraction(
                     doc_size = 0
                     for section in doc.sections:
                         if (
-                            isinstance(section, TextSection)
+                            isinstance(section, (TextSection, TableSection))
                             and section.text is not None
                         ):
                             doc_size += len(section.text)

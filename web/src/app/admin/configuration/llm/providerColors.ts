@@ -21,6 +21,18 @@ export interface ProviderColor {
   tagline: string;
 }
 
+function localServerAccentColor(tagline: string): ProviderColor {
+  return {
+    solid: "bg-[color:var(--virtualai-accent,var(--theme-primary-05))]",
+    bg: "bg-[color:var(--virtualai-accent-subtle)]",
+    text: "text-[color:var(--virtualai-accent,var(--theme-primary-05))]",
+    border: "border-[color:var(--theme-primary-04)]",
+    gradient:
+      "from-[color:var(--theme-primary-06)] to-[color:var(--theme-primary-04)]",
+    tagline,
+  };
+}
+
 const PROVIDER_COLORS: Record<string, ProviderColor> = {
   [LLMProviderName.OPENAI]: {
     solid: "bg-emerald-500",
@@ -78,6 +90,12 @@ const PROVIDER_COLORS: Record<string, ProviderColor> = {
     gradient: "from-violet-500 to-violet-400",
     tagline: "Unified model gateway",
   },
+  // Local servers have no brand colour: follow the user's accent theme
+  // (Default/Ocean/Emerald/Violet × light/dark) via the theme CSS variables.
+  [LLMProviderName.LM_STUDIO]: localServerAccentColor("LM Studio local server"),
+  [LLMProviderName.OPENAI_COMPATIBLE]: localServerAccentColor(
+    "vLLM, llama.cpp, LocalAI and more"
+  ),
   [LLMProviderName.CUSTOM]: {
     solid: "bg-indigo-500",
     bg: "bg-indigo-50 dark:bg-indigo-950/30",

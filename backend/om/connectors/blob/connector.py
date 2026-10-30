@@ -20,12 +20,17 @@ from mypy_boto3_s3 import S3Client
 
 from om.configs.app_configs import BLOB_STORAGE_SIZE_THRESHOLD
 from om.configs.app_configs import INDEX_BATCH_SIZE
+from om.configs.app_configs import TABLE_CHUNKING_ENABLED
 from om.configs.constants import BlobType
 from om.configs.constants import DocumentSource
 from om.configs.constants import FileOrigin
 from om.connectors.cross_connector_utils.miscellaneous_utils import (
     process_om_metadata,
 )
+from om.connectors.cross_connector_utils.table_file_sections import (
+    extract_table_file,
+)
+from om.connectors.cross_connector_utils.table_file_sections import is_table_file
 from om.connectors.exceptions import ConnectorValidationError
 from om.connectors.exceptions import CredentialExpiredError
 from om.connectors.exceptions import InsufficientPermissionsError
@@ -38,8 +43,10 @@ from om.connectors.models import ConnectorMissingCredentialError
 from om.connectors.models import Document
 from om.connectors.models import HierarchyNode
 from om.connectors.models import ImageSection
+from om.connectors.models import TableSection
 from om.connectors.models import TextSection
 from om.file_processing.extract_file_text import extract_text_and_images
+from om.file_processing.extract_file_text import ExtractionResult
 from om.file_processing.extract_file_text import get_file_ext
 from om.file_processing.file_types import OmFileExtensions
 from om.file_processing.image_utils import store_image_and_create_section
@@ -456,9 +463,30 @@ class BlobStorageConnector(LoadConnector, PollConnector):
                     downloaded_file = self._download_object(key)
                     if downloaded_file is None:
                         continue
-                    extraction_result = extract_text_and_images(
-                        BytesIO(downloaded_file), file_name=file_name
-                    )
+
+                    # Spreadsheets and CSV files: one TableSection per sheet;
+                    # on any failure fall back to the text-based approach.
+                    table_sections: list[TableSection] = []
+                    if TABLE_CHUNKING_ENABLED and is_table_file(file_name):
+                        try:
+                            table_extraction = extract_table_file(
+                                BytesIO(downloaded_file), file_name
+                            )
+                        except Exception as e:
+                            logger.warning(
+                                f"Failed to read {key} as a table, indexing it as text: {e}"
+                            )
+                        else:
+                            table_sections = table_extraction.sections
+                            extraction_result = ExtractionResult(
+                                text_content="",
+                                embedded_images=[],
+                                metadata=table_extraction.metadata,
+                            )
+                    if not table_sections:
+                        extraction_result = extract_text_and_images(
+                            BytesIO(downloaded_file), file_name=file_name
+                        )
 
                     om_metadata, custom_tags = process_om_metadata(
                         extraction_result.metadata
@@ -472,8 +500,12 @@ class BlobStorageConnector(LoadConnector, PollConnector):
                         self.bucket_type.value
                     )
 
-                    sections: list[TextSection | ImageSection] = []
-                    if extraction_result.text_content.strip():
+                    sections: list[TextSection | ImageSection | TableSection] = []
+                    if table_sections:
+                        for table_section in table_sections:
+                            table_section.link = link
+                        sections.extend(table_sections)
+                    elif extraction_result.text_content.strip():
                         logger.debug(
                             f"Creating TextSection for {file_name} with link: {link}"
                         )

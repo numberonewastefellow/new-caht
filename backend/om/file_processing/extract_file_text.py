@@ -1,3 +1,4 @@
+import csv
 import gc
 import io
 import json
@@ -467,6 +468,61 @@ def xlsx_to_text(file: IO[Any], file_name: str = "") -> str:
         sheet_str = "\n".join(rows)
         text_content.append(sheet_str)
     return TEXT_SECTION_SEPARATOR.join(text_content)
+
+
+def xlsx_sheets_to_csv(file: IO[Any], file_name: str = "") -> list[tuple[str, str]]:
+    """(sheet name, CSV text) for every non-empty sheet of an xlsx workbook.
+
+    Unlike ``xlsx_to_text`` the CSV is properly quoted (commas, quotes and
+    newlines inside cells survive) and a ``0`` cell stays ``0``. Empty rows are
+    dropped; a sheet stops after more than 100 empty rows in a row.
+    Returns ``[]`` for an unreadable workbook, like ``xlsx_to_text``.
+    """
+    try:
+        workbook = openpyxl.load_workbook(file, read_only=True)
+    except BadZipFile as e:
+        error_str = f"Failed to read sheets of {file_name or 'xlsx file'}: {e}"
+        if file_name.startswith("~"):
+            logger.debug(error_str + " (this is expected for files with ~)")
+        else:
+            logger.warning(error_str)
+        return []
+    except Exception as e:
+        if any(s in str(e) for s in KNOWN_OPENPYXL_BUGS):
+            logger.error(
+                f"Failed to read sheets of {file_name or 'xlsx file'}. This happens due to a bug in openpyxl. {e}"
+            )
+            return []
+        raise e
+
+    sheets: list[tuple[str, str]] = []
+    try:
+        for sheet in workbook.worksheets:
+            out = io.StringIO()
+            writer = csv.writer(out, lineterminator="\n")
+            wrote_rows = False
+            num_empty_consecutive_rows = 0
+            for row in sheet.iter_rows(min_row=1, values_only=True):
+                cells = ["" if cell is None else str(cell) for cell in row]
+                if any(cell.strip() for cell in cells):
+                    writer.writerow(cells)
+                    wrote_rows = True
+                    num_empty_consecutive_rows = 0
+                else:
+                    num_empty_consecutive_rows += 1
+
+                if num_empty_consecutive_rows > 100:
+                    # handle massive excel sheets with mostly empty cells
+                    logger.warning(
+                        f"Found {num_empty_consecutive_rows} empty rows in sheet "
+                        f"{sheet.title!r} of {file_name}, skipping rest of sheet"
+                    )
+                    break
+            if wrote_rows:
+                sheets.append((sheet.title, out.getvalue().rstrip("\n")))
+    finally:
+        workbook.close()
+    return sheets
 
 
 def eml_to_text(file: IO[Any]) -> str:

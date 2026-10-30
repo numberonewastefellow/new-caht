@@ -1,0 +1,764 @@
+{
+  "anthropic_sonnet": {
+    "plain": {
+      "api_key": "ant-key",
+      "api_version": null,
+      "base_url": null,
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "anthropic/claude-sonnet-4-5",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 1,
+      "thinking": {
+        "budget_tokens": 2048,
+        "type": "enabled"
+      },
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": null
+    },
+    "tools": {
+      "api_key": "ant-key",
+      "api_version": null,
+      "base_url": null,
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "anthropic/claude-sonnet-4-5",
+      "parallel_tool_calls": true,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 1,
+      "thinking": {
+        "budget_tokens": 2048,
+        "type": "enabled"
+      },
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": [
+        {
+          "function": {
+            "description": "Look something up",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "q": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "q"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        }
+      ]
+    }
+  },
+  "azure_gpt4o": {
+    "plain": {
+      "allowed_openai_params": [
+        "tool_choice"
+      ],
+      "api_key": "az-key",
+      "api_version": "2024-02-15-preview",
+      "base_url": "https://res.openai.azure.com",
+      "client": "<HTTPHandler>",
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "azure/responses/gpt4o-deploy",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": null
+    },
+    "tools": {
+      "allowed_openai_params": [
+        "tool_choice"
+      ],
+      "api_key": "az-key",
+      "api_version": "2024-02-15-preview",
+      "base_url": "https://res.openai.azure.com",
+      "client": "<HTTPHandler>",
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "azure/responses/gpt4o-deploy",
+      "parallel_tool_calls": true,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": [
+        {
+          "function": {
+            "description": "Look something up",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "q": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "q"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        }
+      ]
+    }
+  },
+  "bedrock_claude": {
+    "plain": {
+      "api_key": null,
+      "api_version": null,
+      "aws_region_name": "us-east-1",
+      "base_url": null,
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "bedrock/anthropic.claude-3-5-sonnet-20241022-v2:0",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": null
+    },
+    "tools": {
+      "api_key": null,
+      "api_version": null,
+      "aws_region_name": "us-east-1",
+      "base_url": null,
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "bedrock/anthropic.claude-3-5-sonnet-20241022-v2:0",
+      "parallel_tool_calls": true,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": [
+        {
+          "function": {
+            "description": "Look something up",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "q": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "q"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        }
+      ]
+    }
+  },
+  "mistral_large": {
+    "plain": {
+      "api_key": "mi-key",
+      "api_version": null,
+      "base_url": null,
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "mistral/mistral-large-latest",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": null
+    },
+    "tools": {
+      "api_key": "mi-key",
+      "api_version": null,
+      "base_url": null,
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "mistral/mistral-large-latest",
+      "parallel_tool_calls": true,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": [
+        {
+          "function": {
+            "description": "Look something up",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "q": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "q"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        }
+      ]
+    }
+  },
+  "ollama_no_key": {
+    "plain": {
+      "api_base": "http://127.0.0.1:11434",
+      "api_key": null,
+      "api_version": null,
+      "base_url": "http://127.0.0.1:11434",
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "ollama_chat/qwen2.5:7b",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": null
+    },
+    "tools": {
+      "api_base": "http://127.0.0.1:11434",
+      "api_key": null,
+      "api_version": null,
+      "base_url": "http://127.0.0.1:11434",
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "ollama_chat/qwen2.5:7b",
+      "parallel_tool_calls": true,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": [
+        {
+          "function": {
+            "description": "Look something up",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "q": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "q"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        }
+      ]
+    }
+  },
+  "ollama_with_key": {
+    "plain": {
+      "api_base": "http://host.docker.internal:11434",
+      "api_key": "olk",
+      "api_version": null,
+      "base_url": "http://host.docker.internal:11434",
+      "client": null,
+      "custom_llm_provider": null,
+      "extra_headers": {
+        "Authorization": "Bearer olk"
+      },
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "ollama_chat/llama3.1:8b",
+      "num_ctx": 8192,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": null
+    },
+    "tools": {
+      "api_base": "http://host.docker.internal:11434",
+      "api_key": "olk",
+      "api_version": null,
+      "base_url": "http://host.docker.internal:11434",
+      "client": null,
+      "custom_llm_provider": null,
+      "extra_headers": {
+        "Authorization": "Bearer olk"
+      },
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "ollama_chat/llama3.1:8b",
+      "num_ctx": 8192,
+      "parallel_tool_calls": true,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": [
+        {
+          "function": {
+            "description": "Look something up",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "q": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "q"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        }
+      ]
+    }
+  },
+  "openai_custom_base": {
+    "plain": {
+      "allowed_openai_params": [
+        "tool_choice"
+      ],
+      "api_key": "local-key",
+      "api_version": null,
+      "base_url": "http://h:8000/v1",
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "openai/llama-3.1-8b",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": null
+    },
+    "tools": {
+      "allowed_openai_params": [
+        "tool_choice"
+      ],
+      "api_key": "local-key",
+      "api_version": null,
+      "base_url": "http://h:8000/v1",
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "openai/llama-3.1-8b",
+      "parallel_tool_calls": true,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": [
+        {
+          "function": {
+            "description": "Look something up",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "q": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "q"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        }
+      ]
+    }
+  },
+  "openai_gpt4o": {
+    "plain": {
+      "allowed_openai_params": [
+        "tool_choice"
+      ],
+      "api_key": "sk-test",
+      "api_version": null,
+      "base_url": null,
+      "client": "<HTTPHandler>",
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "openai/responses/gpt-4o",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": null
+    },
+    "tools": {
+      "allowed_openai_params": [
+        "tool_choice"
+      ],
+      "api_key": "sk-test",
+      "api_version": null,
+      "base_url": null,
+      "client": "<HTTPHandler>",
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "openai/responses/gpt-4o",
+      "parallel_tool_calls": true,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": [
+        {
+          "function": {
+            "description": "Look something up",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "q": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "q"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        }
+      ]
+    }
+  },
+  "openrouter_llama": {
+    "plain": {
+      "allowed_openai_params": [
+        "tool_choice"
+      ],
+      "api_key": "or-key",
+      "api_version": null,
+      "base_url": "https://openrouter.ai/api/v1",
+      "client": null,
+      "custom_llm_provider": null,
+      "extra_headers": {
+        "HTTP-Referer": "https://virtualai.com",
+        "X-Title": "VertualAI"
+      },
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "openrouter/meta-llama/llama-3.1-8b-instruct",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": null
+    },
+    "tools": {
+      "allowed_openai_params": [
+        "tool_choice"
+      ],
+      "api_key": "or-key",
+      "api_version": null,
+      "base_url": "https://openrouter.ai/api/v1",
+      "client": null,
+      "custom_llm_provider": null,
+      "extra_headers": {
+        "HTTP-Referer": "https://virtualai.com",
+        "X-Title": "VertualAI"
+      },
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "openrouter/meta-llama/llama-3.1-8b-instruct",
+      "parallel_tool_calls": true,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": [
+        {
+          "function": {
+            "description": "Look something up",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "q": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "q"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        }
+      ]
+    }
+  },
+  "vertex_gemini": {
+    "plain": {
+      "allowed_openai_params": [
+        "tool_choice"
+      ],
+      "api_key": null,
+      "api_version": null,
+      "base_url": null,
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "vertex_ai/gemini-2.5-flash",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": null,
+      "vertex_location": "us-central1"
+    },
+    "tools": {
+      "allowed_openai_params": [
+        "tool_choice"
+      ],
+      "api_key": null,
+      "api_version": null,
+      "base_url": null,
+      "client": null,
+      "custom_llm_provider": null,
+      "max_tokens": null,
+      "messages": [
+        {
+          "content": "Hi",
+          "role": "user"
+        }
+      ],
+      "mock_response": null,
+      "model": "vertex_ai/gemini-2.5-flash",
+      "parallel_tool_calls": true,
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.5,
+      "timeout": 30,
+      "tool_choice": null,
+      "tools": [
+        {
+          "function": {
+            "description": "Look something up",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "q": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "q"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        }
+      ],
+      "vertex_location": "us-central1"
+    }
+  }
+}

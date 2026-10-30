@@ -1,0 +1,151 @@
+attachment_order_no,owner,district,property_type,attached_value_rs,attached_on
+EOWB-NLG-00001,Shobha Devi,Nalgonda,Gold,21249000,2025-09-22
+EOWB-NZB-00002,Kiran Prasad,Nizamabad,Plot,22209000,2025-06-01
+EOWB-NZB-00003,Sarala Naik,Nizamabad,Vehicle,17422000,2026-02-24
+EOWB-NZB-00004,Padma Varma,Nizamabad,House,15084000,2025-11-26
+EOWB-KRM-00005,Sarala Prasad,Karimnagar,House,7394000,2026-02-03
+EOWB-KMM-00006,Jyothi Achari,Khammam,Bank Deposit,5675000,2025-12-01
+EOWB-KMM-00007,Anil Patel,Khammam,Vehicle,18874000,2026-01-27
+EOWB-HYD-00008,Kiran Goud,Hyderabad,Gold,13227000,2026-03-22
+EOWB-KMM-00009,Sai Patel,Khammam,Vehicle,17435000,2025-06-25
+EOWB-KMM-00010,Sai Murthy,Khammam,Vehicle,9552000,2025-11-15
+EOWB-RRD-00011,Padma Varma,Ranga Reddy,Bank Deposit,18328000,2025-12-20
+EOWB-KMM-00012,Srinivas Goud,Khammam,Gold,2747000,2025-05-06
+EOWB-KMM-00013,Venkatesh Sharma,Khammam,House,5636000,2025-11-28
+EOWB-HYD-00014,Bhavani Chary,Hyderabad,Gold,8024000,2025-11-18
+EOWB-ADB-00015,Gopal Naidu,Adilabad,House,10812000,2025-11-05
+EOWB-HYD-00016,Madhavi Reddy,Hyderabad,Gold,21053000,2025-10-16
+EOWB-KRM-00017,Sarala Rao,Karimnagar,Vehicle,24880000,2025-04-16
+EOWB-NZB-00018,Jyothi Devi,Nizamabad,House,322000,2026-02-03
+EOWB-NZB-00019,Jyothi Achari,Nizamabad,Bank Deposit,6548000,2025-08-04
+EOWB-NZB-00020,Usha Chary,Nizamabad,Bank Deposit,1016000,2026-02-22
+EOWB-RRD-00021,Anitha Murthy,Ranga Reddy,House,7091000,2025-12-03
+EOWB-RRD-00022,Deepa Sharma,Ranga Reddy,Vehicle,12172000,2025-07-14
+EOWB-KMM-00023,Mahesh Varma,Khammam,Vehicle,6443000,2026-01-28
+EOWB-NLG-00024,Anil Patel,Nalgonda,Vehicle,794000,2025-06-27
+EOWB-KRM-00025,Rekha Prasad,Karimnagar,Bank Deposit,4625000,2025-04-27
+EOWB-HYD-00026,Mahesh Achari,Hyderabad,Bank Deposit,1468000,2025-12-13
+EOWB-WGL-00027,Ramesh Babu,Warangal,Plot,10506000,2025-04-22
+EOWB-NZB-00028,Kiran Babu,Nizamabad,Plot,1700000,2025-06-18
+EOWB-WGL-00029,Padma Goud,Warangal,Vehicle,8360000,2025-12-10
+EOWB-HYD-00030,Ramesh Goud,Hyderabad,Gold,10402000,2026-02-22
+EOWB-NZB-00031,Harish Chary,Nizamabad,Plot,12509000,2026-02-24
+EOWB-KRM-00032,Usha Varma,Karimnagar,Bank Deposit,12636000,2026-01-23
+EOWB-NLG-00033,Kiran Rao,Nalgonda,House,8531000,2026-02-11
+EOWB-ADB-00034,Harish Babu,Adilabad,Vehicle,22587000,2025-05-07
+EOWB-WGL-00035,Sarala Reddy,Warangal,House,2862000,2025-04-08
+EOWB-RRD-00036,Bhavani Rao,Ranga Reddy,Plot,6556000,2026-02-14
+EOWB-NZB-00037,Deepa Naik,Nizamabad,Vehicle,13569000,2026-03-07
+EOWB-MBN-00038,Prakash Achari,Mahabubnagar,Vehicle,21950000,2025-06-03
+EOWB-MDL-00039,Suresh Goud,Medchal-Malkajgiri,Gold,6451000,2025-07-12
+EOWB-HYD-00040,Padma Goud,Hyderabad,Plot,7934000,2025-08-28
+EOWB-KMM-00041,Sarala Goud,Khammam,Plot,9437000,2025-10-20
+EOWB-NLG-00042,Padma Devi,Nalgonda,Vehicle,24333000,2026-03-13
+EOWB-ADB-00043,Lakshmi Kumar,Adilabad,Plot,21945000,2025-05-07
+EOWB-NZB-00044,Kiran Naik,Nizamabad,Vehicle,15028000,2026-02-27
+EOWB-KMM-00045,Anil Yadav,Khammam,Gold,20141000,2025-06-30
+EOWB-NLG-00046,Prakash Naidu,Nalgonda,Vehicle,652000,2025-05-13
+EOWB-RRD-00047,Jyothi Patel,Ranga Reddy,Bank Deposit,7418000,2025-10-09
+EOWB-RRD-00048,Suresh Rao,Ranga Reddy,House,21439000,2025-09-06
+EOWB-ADB-00049,Kiran Naidu,Adilabad,Bank Deposit,3376000,2025-08-25
+EOWB-RRD-00050,Rekha Reddy,Ranga Reddy,Bank Deposit,19468000,2025-06-28
+EOWB-NZB-00051,Anitha Patel,Nizamabad,Vehicle,10553000,2025-10-11
+EOWB-WGL-00052,Sujatha Prasad,Warangal,House,18633000,2025-08-27
+EOWB-RRD-00053,Anitha Devi,Ranga Reddy,House,12345000,2025-12-28
+EOWB-RRD-00054,Kiran Naidu,Ranga Reddy,Gold,5654000,2025-11-08
+EOWB-RRD-00055,Padma Babu,Ranga Reddy,Vehicle,21350000,2025-07-02
+EOWB-RRD-00056,Sai Prasad,Ranga Reddy,House,3674000,2026-03-13
+EOWB-NLG-00057,Ramesh Varma,Nalgonda,Gold,18979000,2025-08-08
+EOWB-ADB-00058,Gopal Naidu,Adilabad,Vehicle,24751000,2025-11-11
+EOWB-NZB-00059,Radha Murthy,Nizamabad,Plot,10882000,2025-11-10
+EOWB-MBN-00060,Usha Chary,Mahabubnagar,Bank Deposit,1010000,2026-03-29
+EOWB-NZB-00061,Naresh Varma,Nizamabad,Gold,19104000,2025-04-09
+EOWB-WGL-00062,Gopal Murthy,Warangal,Bank Deposit,14731000,2025-04-03
+EOWB-MDL-00063,Radha Chary,Medchal-Malkajgiri,Gold,24037000,2025-08-17
+EOWB-WGL-00064,Prakash Devi,Warangal,Plot,7150000,2025-08-26
+EOWB-MDL-00065,Prakash Devi,Medchal-Malkajgiri,Vehicle,9417000,2026-02-15
+EOWB-ADB-00066,Sarala Prasad,Adilabad,Vehicle,15431000,2025-07-30
+EOWB-NLG-00067,Padma Babu,Nalgonda,Bank Deposit,1775000,2025-08-30
+EOWB-RRD-00068,Sai Sharma,Ranga Reddy,Bank Deposit,17834000,2025-07-09
+EOWB-WGL-00069,Kavitha Sharma,Warangal,Plot,11536000,2025-10-31
+EOWB-MDL-00070,Usha Devi,Medchal-Malkajgiri,Gold,19805000,2025-06-09
+EOWB-KRM-00071,Sai Kumar,Karimnagar,Bank Deposit,5109000,2026-01-11
+EOWB-NZB-00072,Naresh Naik,Nizamabad,Plot,22133000,2025-09-15
+EOWB-ADB-00073,Gopal Achari,Adilabad,Vehicle,23607000,2025-09-28
+EOWB-HYD-00074,Ravi Reddy,Hyderabad,Gold,20619000,2025-04-13
+EOWB-WGL-00075,Ramesh Patel,Warangal,Vehicle,11243000,2025-04-28
+EOWB-KRM-00076,Sai Sharma,Karimnagar,Vehicle,13289000,2025-11-23
+EOWB-KRM-00077,Radha Goud,Karimnagar,Vehicle,11266000,2025-12-24
+EOWB-NLG-00078,Madhavi Yadav,Nalgonda,Gold,10233000,2025-05-11
+EOWB-MBN-00079,Ramesh Devi,Mahabubnagar,Gold,11157000,2025-04-13
+EOWB-KMM-00080,Raju Murthy,Khammam,Gold,11392000,2025-10-25
+EOWB-KRM-00081,Venkatesh Babu,Karimnagar,Gold,13143000,2025-05-09
+EOWB-MBN-00082,Kavitha Prasad,Mahabubnagar,Bank Deposit,1021000,2025-06-12
+EOWB-RRD-00083,Ramesh Rao,Ranga Reddy,Plot,16009000,2025-07-18
+EOWB-KMM-00084,Sai Babu,Khammam,House,5747000,2026-01-28
+EOWB-MDL-00085,Ramesh Devi,Medchal-Malkajgiri,Bank Deposit,15890000,2025-08-13
+EOWB-HYD-00086,Sai Murthy,Hyderabad,House,10227000,2026-02-21
+EOWB-KMM-00087,Srinivas Devi,Khammam,Plot,2129000,2025-07-27
+EOWB-KMM-00088,Suresh Goud,Khammam,Vehicle,14262000,2025-12-27
+EOWB-ADB-00089,Swathi Prasad,Adilabad,House,19823000,2025-10-20
+EOWB-RRD-00090,Anil Babu,Ranga Reddy,Gold,23765000,2025-06-12
+EOWB-NLG-00091,Naresh Devi,Nalgonda,Plot,17559000,2025-08-05
+EOWB-KMM-00092,Venkatesh Goud,Khammam,Plot,10052000,2025-06-29
+EOWB-MBN-00093,Harish Sharma,Mahabubnagar,Bank Deposit,11284000,2025-12-02
+EOWB-WGL-00094,Raju Reddy,Warangal,Bank Deposit,20591000,2025-08-25
+EOWB-RRD-00095,Lakshmi Naik,Ranga Reddy,Plot,4083000,2025-09-07
+EOWB-NZB-00096,Mahesh Murthy,Nizamabad,Gold,15323000,2025-04-23
+EOWB-MDL-00097,Suresh Yadav,Medchal-Malkajgiri,House,13115000,2025-06-17
+EOWB-WGL-00098,Anil Prasad,Warangal,Gold,3793000,2025-12-02
+EOWB-KMM-00099,Deepa Patel,Khammam,Plot,10357000,2026-02-13
+EOWB-HYD-00100,Shobha Murthy,Hyderabad,Vehicle,7179000,2026-01-12
+EOWB-NLG-00101,Sai Varma,Nalgonda,House,11138000,2026-02-22
+EOWB-MDL-00102,Rekha Kumar,Medchal-Malkajgiri,House,9124000,2025-12-09
+EOWB-HYD-00103,Swathi Devi,Hyderabad,Gold,20653000,2025-06-08
+EOWB-ADB-00104,Ravi Devi,Adilabad,Gold,22205000,2025-07-14
+EOWB-WGL-00105,Vijay Babu,Warangal,Plot,3086000,2025-12-15
+EOWB-KRM-00106,Raju Patel,Karimnagar,House,14410000,2025-09-18
+EOWB-RRD-00107,Prakash Varma,Ranga Reddy,Vehicle,10410000,2026-02-12
+EOWB-HYD-00108,Sai Naidu,Hyderabad,Bank Deposit,20211000,2025-10-22
+EOWB-MDL-00109,Shobha Rao,Medchal-Malkajgiri,Gold,23599000,2025-09-13
+EOWB-MDL-00110,Deepa Achari,Medchal-Malkajgiri,Gold,14915000,2025-11-14
+EOWB-ADB-00111,Srinivas Sharma,Adilabad,Plot,19674000,2025-10-11
+EOWB-NZB-00112,Anitha Kumar,Nizamabad,Gold,9312000,2026-03-12
+EOWB-KRM-00113,Kavitha Varma,Karimnagar,Bank Deposit,3190000,2025-05-20
+EOWB-RRD-00114,Kavitha Varma,Ranga Reddy,Bank Deposit,22370000,2025-05-14
+EOWB-MBN-00115,Radha Kumar,Mahabubnagar,Bank Deposit,23856000,2025-10-06
+EOWB-WGL-00116,Anil Naik,Warangal,House,5210000,2026-03-11
+EOWB-NLG-00117,Raju Murthy,Nalgonda,Bank Deposit,12011000,2025-07-23
+EOWB-KRM-00118,Kiran Varma,Karimnagar,Plot,8494000,2025-07-10
+EOWB-ADB-00119,Lakshmi Naidu,Adilabad,House,6281000,2025-04-20
+EOWB-HYD-00120,Shobha Goud,Hyderabad,Bank Deposit,6699000,2025-10-24
+EOWB-RRD-00121,Suresh Kumar,Ranga Reddy,Vehicle,21927000,2025-11-10
+EOWB-NZB-00122,Raju Reddy,Nizamabad,Plot,8071000,2026-01-24
+EOWB-WGL-00123,Jyothi Achari,Warangal,House,17293000,2025-06-11
+EOWB-WGL-00124,Shobha Sharma,Warangal,Bank Deposit,19994000,2025-04-03
+EOWB-ADB-00125,Sai Prasad,Adilabad,Plot,3437000,2025-08-22
+EOWB-NZB-00126,Jyothi Chary,Nizamabad,Plot,22879000,2025-09-14
+EOWB-HYD-00127,Prakash Murthy,Hyderabad,Vehicle,20383000,2025-07-21
+EOWB-MDL-00128,Mahesh Naik,Medchal-Malkajgiri,Plot,15851000,2025-10-15
+EOWB-MDL-00129,Harish Murthy,Medchal-Malkajgiri,Gold,3236000,2025-10-13
+EOWB-RRD-00130,Jyothi Devi,Ranga Reddy,Bank Deposit,238000,2025-06-11
+EOWB-HYD-00131,Harish Patel,Hyderabad,Vehicle,3597000,2025-08-23
+EOWB-MDL-00132,Srinivas Murthy,Medchal-Malkajgiri,Gold,15090000,2025-06-17
+EOWB-NLG-00133,Sujatha Yadav,Nalgonda,Gold,21847000,2025-04-15
+EOWB-WGL-00134,Sujatha Devi,Warangal,House,14151000,2025-06-06
+EOWB-NLG-00135,Padma Babu,Nalgonda,House,23215000,2025-10-11
+EOWB-MBN-00136,Shobha Babu,Mahabubnagar,Vehicle,23839000,2026-02-19
+EOWB-MDL-00137,Kiran Babu,Medchal-Malkajgiri,Plot,2350000,2025-04-27
+EOWB-MDL-00138,Sarala Reddy,Medchal-Malkajgiri,Plot,14423000,2025-04-05
+EOWB-NLG-00139,Anil Achari,Nalgonda,Gold,19128000,2026-02-12
+EOWB-RRD-00140,Sai Varma,Ranga Reddy,Vehicle,23017000,2026-02-28
+EOWB-RRD-00141,Jyothi Reddy,Ranga Reddy,Plot,6944000,2025-11-10
+EOWB-HYD-00142,Anitha Chary,Hyderabad,Bank Deposit,8117000,2025-05-14
+EOWB-NLG-00143,Anil Prasad,Nalgonda,Vehicle,15089000,2025-12-19
+EOWB-MDL-00144,Kavitha Sharma,Medchal-Malkajgiri,Plot,20224000,2025-07-03
+EOWB-MDL-00145,Srinivas Rao,Medchal-Malkajgiri,Plot,17853000,2025-10-28
+EOWB-KRM-00146,Jyothi Babu,Karimnagar,House,9551000,2025-07-16
+EOWB-HYD-00147,Kavitha Naidu,Hyderabad,Gold,800000,2025-08-27
+EOWB-NLG-00148,Ravi Murthy,Nalgonda,Vehicle,4885000,2025-09-24
+EOWB-KRM-00149,Rekha Sharma,Karimnagar,Vehicle,6163000,2025-08-19
+EOWB-ADB-00150,Bhavani Murthy,Adilabad,Vehicle,21989000,2026-01-18

@@ -2,6 +2,8 @@ export enum LLMProviderName {
   OPENAI = "openai",
   ANTHROPIC = "anthropic",
   OLLAMA_CHAT = "ollama_chat",
+  LM_STUDIO = "lm_studio",
+  OPENAI_COMPATIBLE = "openai_compatible",
   AZURE = "azure",
   OPENROUTER = "openrouter",
   VERTEX_AI = "vertex_ai",
@@ -88,6 +90,22 @@ export interface OllamaModelResponse {
   supports_image_input: boolean;
 }
 
+export interface LMStudioModelResponse {
+  name: string;
+  display_name: string;
+  max_input_tokens: number | null;
+  supports_image_input: boolean;
+  supports_reasoning: boolean;
+}
+
+export interface OpenAICompatibleModelResponse {
+  name: string;
+  display_name: string;
+  max_input_tokens: number | null;
+  supports_image_input: boolean;
+  supports_reasoning: boolean;
+}
+
 export interface OpenRouterModelResponse {
   name: string;
   display_name: string;
@@ -124,6 +142,26 @@ export interface BedrockFetchParams {
 
 export interface OllamaFetchParams {
   api_base?: string;
+  /** Optional key (Ollama behind an auth proxy / Ollama Cloud) */
+  api_key?: string;
+  /** false = api_key is the masked stored value; the backend resolves it */
+  api_key_changed?: boolean;
+  provider_name?: string;
+}
+
+export interface LMStudioFetchParams {
+  api_base?: string;
+  api_key?: string;
+  /** false = api_key is the masked stored value; the backend resolves it */
+  api_key_changed?: boolean;
+  provider_name?: string;
+}
+
+export interface OpenAICompatibleFetchParams {
+  api_base?: string;
+  api_key?: string;
+  /** false = api_key is the masked stored value; the backend resolves it */
+  api_key_changed?: boolean;
   provider_name?: string;
 }
 
@@ -140,5 +178,7 @@ export interface VertexAIFetchParams {
 export type FetchModelsParams =
   | BedrockFetchParams
   | OllamaFetchParams
+  | LMStudioFetchParams
+  | OpenAICompatibleFetchParams
   | OpenRouterFetchParams
   | VertexAIFetchParams;

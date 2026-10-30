@@ -17,8 +17,10 @@ from om.connectors.cross_connector_utils.miscellaneous_utils import (
 )
 from om.connectors.models import IndexingDocument
 from om.connectors.models import Section
+from om.connectors.models import TableSection
 from om.indexing.indexing_heartbeat import IndexingHeartbeatInterface
 from om.indexing.models import DocAwareChunk
+from om.indexing.table_chunking.table_chunker import TableChunker
 from om.llm.utils import MAX_CONTEXT_TOKENS
 from om.natural_language_processing.utils import BaseTokenizer
 from om.utils.logger import setup_logger
@@ -153,6 +155,7 @@ class Chunker:
         )
         self.tokenizer = tokenizer
         self.callback = callback
+        self._table_chunker = TableChunker(tokenizer=tokenizer)
 
         self.max_context = 0
         self.prompt_tokens = 0
@@ -274,7 +277,45 @@ class Chunker:
         link_offsets: dict[int, str] = {}
         chunk_text = ""
 
+        # The sheets of one table file share a link; they are chunked together
+        # at the first of them. A document can carry several files, so group by
+        # link rather than merging unrelated files.
+        table_files: dict[str | None, list[TableSection]] = {}
+        for section in sections:
+            if isinstance(section, TableSection):
+                table_files.setdefault(section.link, []).append(section)
+
         for section_idx, section in enumerate(sections):
+            # CASE 0: the sheets of a spreadsheet or CSV file
+            if isinstance(section, TableSection):
+                file_sections = table_files.pop(section.link, None)
+                if file_sections is None:
+                    continue  # a later sheet of a file already chunked
+                # Finalize any partially built text chunk first
+                if chunk_text.strip():
+                    self._create_chunk(
+                        document,
+                        chunks,
+                        chunk_text,
+                        link_offsets,
+                        is_continuation=False,
+                        title_prefix=title_prefix,
+                        metadata_suffix_semantic=metadata_suffix_semantic,
+                        metadata_suffix_keyword=metadata_suffix_keyword,
+                    )
+                    chunk_text = ""
+                    link_offsets = {}
+                self._chunk_table_sections(
+                    document,
+                    chunks,
+                    file_sections,
+                    title_prefix,
+                    metadata_suffix_semantic,
+                    metadata_suffix_keyword,
+                    content_token_limit,
+                )
+                continue
+
             # Get section text and other attributes
             section_text = clean_text(str(section.text or ""))
             section_link_text = section.link or ""
@@ -415,6 +456,35 @@ class Chunker:
                 metadata_suffix_keyword,
             )
         return chunks
+
+    def _chunk_table_sections(
+        self,
+        document: IndexingDocument,
+        chunks: list[DocAwareChunk],
+        file_sections: list[TableSection],
+        title_prefix: str,
+        metadata_suffix_semantic: str,
+        metadata_suffix_keyword: str,
+        content_token_limit: int,
+    ) -> None:
+        """Appends the chunks of one table file (all its sheets) to ``chunks``."""
+        link = file_sections[0].link or ""
+        chunk_texts = self._table_chunker.chunk_table_file(
+            sections=file_sections,
+            content_token_limit=content_token_limit,
+            file_name=document.semantic_identifier,
+        )
+        for i, text in enumerate(chunk_texts):
+            self._create_chunk(
+                document,
+                chunks,
+                text,
+                {0: link},
+                is_continuation=(i > 0),
+                title_prefix=title_prefix,
+                metadata_suffix_semantic=metadata_suffix_semantic,
+                metadata_suffix_keyword=metadata_suffix_keyword,
+            )
 
     def _handle_single_document(
         self, document: IndexingDocument
