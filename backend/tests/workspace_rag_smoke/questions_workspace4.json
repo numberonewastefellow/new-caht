@@ -1,0 +1,188 @@
+[
+  {
+    "id": "x1_kubecon_cost",
+    "file": "xlsx",
+    "kind": "lookup",
+    "question": "What is the cost for KubeCon + CloudNativeCon Europe 2027?",
+    "expect_all": [
+      [
+        "5000",
+        "5,000"
+      ],
+      [
+        "AED"
+      ]
+    ]
+  },
+  {
+    "id": "x2_dell_index",
+    "file": "xlsx",
+    "kind": "lookup",
+    "question": "What is the Global Index of Dell Technologies World 2027?",
+    "expect_all": [
+      [
+        "8.8"
+      ]
+    ]
+  },
+  {
+    "id": "x3_aiewf_team",
+    "file": "xlsx",
+    "kind": "lookup",
+    "question": "Who are the resources requested for the AI Engineer World's Fair 2027, and which team requested it?",
+    "expect_all": [
+      [
+        "Vikrant"
+      ],
+      [
+        "Abdul"
+      ],
+      [
+        "RnD",
+        "R&D"
+      ]
+    ]
+  },
+  {
+    "id": "x4_germany",
+    "file": "xlsx",
+    "kind": "row_filter",
+    "question": "List all conferences in the spreadsheet that take place in Germany.",
+    "expect_all": [
+      [
+        "Prompt:UX",
+        "Prompt: UX",
+        "PromptUX"
+      ],
+      [
+        "TC World",
+        "tcworld"
+      ],
+      [
+        "APEX Connect"
+      ]
+    ]
+  },
+  {
+    "id": "x5_count",
+    "file": "xlsx",
+    "kind": "aggregate",
+    "question": "How many conferences are listed in the Consolidated IT Conferences 2026-2027 spreadsheet?",
+    "expect_all": [
+      [
+        "16",
+        "sixteen"
+      ]
+    ]
+  },
+  {
+    "id": "x6_tcworld_two_part",
+    "file": "xlsx",
+    "kind": "two_part",
+    "question": "For the TC World Conference 2026, where is it held and what is the early bird price?",
+    "expect_all": [
+      [
+        "Stuttgart"
+      ],
+      [
+        "1,480",
+        "1480"
+      ]
+    ]
+  },
+  {
+    "id": "p1_zstar",
+    "file": "pdf",
+    "kind": "figure",
+    "question": "In the LP assignment, what is the optimal maximum quarterly contribution Z*?",
+    "expect_all": [
+      [
+        "137.95"
+      ]
+    ]
+  },
+  {
+    "id": "p2_devops_hours",
+    "file": "pdf",
+    "kind": "figure",
+    "question": "How many DevOps hours are available in the LP model?",
+    "expect_all": [
+      [
+        "800"
+      ]
+    ]
+  },
+  {
+    "id": "p3_budget",
+    "file": "pdf",
+    "kind": "figure",
+    "question": "What is the non-labour budget limit in the LP model?",
+    "expect_all": [
+      [
+        "36"
+      ],
+      [
+        "lakh"
+      ]
+    ]
+  },
+  {
+    "id": "p4_ceiling_two_part",
+    "file": "pdf",
+    "kind": "two_part",
+    "question": "Which project does the LP model push all the way to its demand ceiling, and how many packages of it are delivered?",
+    "expect_all": [
+      [
+        "Mobile"
+      ],
+      [
+        "15"
+      ]
+    ]
+  },
+  {
+    "id": "p5_minimums_two_part",
+    "file": "pdf",
+    "kind": "two_part",
+    "question": "What are the contract minimums for the Portal and for Migration in the LP model?",
+    "expect_all": [
+      [
+        "Portal"
+      ],
+      [
+        "Migration"
+      ],
+      [
+        "8 packages",
+        "≥ 8",
+        "at least 8",
+        "minimum of 8",
+        "8 package",
+        ">= 8",
+        "\\geq 8",
+        "≥8",
+        ">=8",
+        "min 8"
+      ],
+      [
+        "5 packages",
+        "≥ 5",
+        "at least 5",
+        "minimum of 5",
+        "5 package",
+        ">= 5",
+        "\\geq 5",
+        "≥5",
+        ">=5",
+        "min 5"
+      ]
+    ]
+  },
+  {
+    "id": "n1_absent",
+    "file": "none",
+    "kind": "absent",
+    "question": "What is the venue and date of PyCon 2027 according to these documents?",
+    "expect_absent": true
+  }
+]

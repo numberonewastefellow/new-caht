@@ -776,9 +776,11 @@ TABLE_CHUNKING_ENABLED = (
     os.environ.get("TABLE_CHUNKING_ENABLED", "true").lower() != "false"
 )
 # A sheet whose rows fit in this many chunks keeps all its rows verbatim;
-# bigger sheets get a summary instead.
+# bigger sheets get a summary instead. 12 (not 3) so short sheets with long
+# text cells keep their rows: a summary alone loses which value belongs to
+# which row, and row lookups then fail (live test 2026-10-30).
 TABLE_FULL_ROWS_MAX_CHUNKS = max(
-    0, int(os.environ.get("TABLE_FULL_ROWS_MAX_CHUNKS") or 3)
+    0, int(os.environ.get("TABLE_FULL_ROWS_MAX_CHUNKS") or 12)
 )
 # Chunks of frequent text values added for each large sheet.
 TABLE_VALUE_CHUNKS_PER_SHEET = max(

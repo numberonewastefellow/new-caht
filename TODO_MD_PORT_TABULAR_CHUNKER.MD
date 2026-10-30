@@ -73,7 +73,7 @@
   | Var (ours) | Default | Meaning |
   |---|---|---|
   | `TABLE_CHUNKING_ENABLED` | `true` | Kill switch. `false` makes connectors emit the old single TextSection |
-  | `TABLE_FULL_ROWS_MAX_CHUNKS` | 3 | A sheet whose rows fit in this many chunks keeps all rows verbatim; bigger sheets get a summary |
+  | `TABLE_FULL_ROWS_MAX_CHUNKS` | 12 (reference: 3; raised 2026-10-30 after the live test, see §13) | A sheet whose rows fit in this many chunks keeps all rows verbatim; bigger sheets get a summary |
   | `TABLE_VALUE_CHUNKS_PER_SHEET` | 2 | Chunks of frequent text values per large sheet |
   | `TABLE_MAX_CHUNKS_PER_FILE` | 24 | Hard cap of chunks per spreadsheet or CSV file |
 
@@ -353,6 +353,12 @@ None. Spreadsheets keep showing up as normal search results and citations. Their
 
   (Caps 1/0/5 were also identical in every case.)
 - [x] 2026-10-30 **Cross-verification:** there were no bug rows. Scratch folder deleted.
+- [x] 2026-10-30 **Live test (workspace smoke, `backend/tests/workspace_rag_smoke/`) found a regression with the reference default `TABLE_FULL_ROWS_MAX_CHUNKS=3`.**
+  - A 16-row xlsx (3,310 tokens, long "Notes" cells) counted as "large" and was indexed as 3 summary chunks with no rows.
+  - xlsx row questions went from 10/12 correct (old chunker) to **0/12**. The model said values were "not mentioned", or mixed rows up.
+  - **Fix: the default is now 12.** Sheets up to about 6k tokens keep every row, written as `Column=value` with the header repeated in each chunk (11 chunks here).
+  - The unit tests still pass. A re-test is pending (next item).
+- [ ] Live re-test with default 12 (new workspace, same 12 questions)
 - [ ] User: Docker rebuild + checks A/B (§15)
 - [ ] User: review + commit (run `build_inventory.py --check` first)
 - [ ] Tick item 3 in `TODO_MD_RAG_UPGRADES_FROM_UPSTREAM.MD`; add the deferred rows (staging, re-chunk task, more connectors, python-tool bridge)
