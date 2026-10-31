@@ -54,7 +54,7 @@ import {
   useCurrentChatState,
   useIsReady,
   useDocumentSidebarVisible,
-  useCurrentPulseScheduleId,
+  useCurrentPulseTriggerId,
 } from "@/app/app/stores/useChatSessionStore";
 import ScheduledRunBanner from "@/sections/schedules/ScheduledRunBanner";
 import FederatedOAuthModal from "@/components/chat/FederatedOAuthModal";
@@ -199,9 +199,9 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
     isLoading: isLoadingChatSessions,
   } = useChatSessions();
   // Scheduled-run chats aren't in the sidebar list, so prefer the loaded session.
-  const storePulseScheduleId = useCurrentPulseScheduleId();
-  const pulseScheduleId =
-    storePulseScheduleId ?? currentChatSession?.pulse_schedule_id ?? null;
+  const storePulseTriggerId = useCurrentPulseTriggerId();
+  const pulseTriggerId =
+    storePulseTriggerId ?? currentChatSession?.pulse_trigger_id ?? null;
   const { ccPairs } = useCCPairs();
   const { tags } = useTags();
   const { documentSets } = useDocumentSets();
@@ -896,10 +896,10 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                     }
                     className="h-full w-full flex flex-col items-center"
                   >
-                    {pulseScheduleId != null && (
+                    {pulseTriggerId != null && (
                       <ScheduledRunBanner
                         chatSessionId={currentChatSessionId}
-                        pulseScheduleId={pulseScheduleId}
+                        pulseTriggerId={pulseTriggerId}
                       />
                     )}
                     <ChatScrollContainer

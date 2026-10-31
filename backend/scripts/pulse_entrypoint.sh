@@ -1,7 +1,7 @@
 #!/bin/sh
 # Pulse — scheduled workflow engine entrypoint.
 #   pulse_entrypoint.sh scheduler    -> HA ticker loop (run 2+ replicas)
-#   pulse_entrypoint.sh worker       -> Celery worker for the `pulse` queue (scale horizontally)
+#   pulse_entrypoint.sh worker       -> Celery worker for $PULSE_WORKER_QUEUE (default `pulse`; scale horizontally)
 #   pulse_entrypoint.sh healthcheck  -> liveness probe for either role (uses $PULSE_ROLE)
 # Without an argument, $PULSE_ROLE (default: worker) selects the role.
 set -e
@@ -22,8 +22,8 @@ case "$ROLE" in
       --concurrency="${PULSE_WORKER_CONCURRENCY:-4}" \
       --prefetch-multiplier=1 \
       --loglevel="${PULSE_LOG_LEVEL:-INFO}" \
-      --hostname="pulse@%h" \
-      -Q pulse
+      --hostname="${PULSE_WORKER_QUEUE:-pulse}@%h" \
+      -Q "${PULSE_WORKER_QUEUE:-pulse}"
     ;;
   healthcheck)
     if [ "${PULSE_ROLE:-worker}" = "scheduler" ]; then
@@ -32,9 +32,10 @@ case "$ROLE" in
       [ -f "$HB" ] && [ -n "$(find "$HB" -mmin -2 2>/dev/null)" ] && exit 0
       exit 1
     fi
-    # Celery touches /tmp/<prefix>_k8s_pulse_readiness.txt on worker_ready (app_base);
-    # glob the prefix so the probe survives package renames.
-    for f in /tmp/*_k8s_pulse_readiness.txt; do
+    # Celery touches /tmp/<prefix>_k8s_<queue>_readiness.txt on worker_ready (app_base), with
+    # the queue's underscores removed: pulse or pulsewebhook. Glob the prefix and the queue
+    # so the probe works for both workers and survives package renames.
+    for f in /tmp/*_k8s_pulse*_readiness.txt; do
       [ -f "$f" ] && exit 0
     done
     exit 1

@@ -431,7 +431,7 @@ const ChatButton = memo(
             onClick={handleClick}
             transient={active}
             leftIcon={
-              chatSession.pulse_schedule_id ? ScheduledRunBadgeIcon : undefined
+              chatSession.pulse_trigger_id ? ScheduledRunBadgeIcon : undefined
             }
             rightChildren={rightMenu}
             focused={renaming}

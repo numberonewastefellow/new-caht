@@ -238,7 +238,7 @@ function MessagePreview({
   );
 }
 
-function FieldLabel({
+export function FieldLabel({
   children,
   htmlFor,
 }: {

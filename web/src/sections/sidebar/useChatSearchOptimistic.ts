@@ -41,7 +41,7 @@ function transformApiResponse(response: ChatSearchResponse): FilterableChat[] {
         id: chat.id,
         label: chat.name || UNNAMED_CHAT,
         time: chat.time_created,
-        scheduled: Boolean(chat.pulse_schedule_id),
+        scheduled: Boolean(chat.pulse_trigger_id),
       });
     }
   }
@@ -86,7 +86,7 @@ export function useChatSearchOptimistic(
         id: chat.id,
         label: chat.name || UNNAMED_CHAT,
         time: chat.time_updated || chat.time_created,
-        scheduled: Boolean(chat.pulse_schedule_id),
+        scheduled: Boolean(chat.pulse_trigger_id),
       });
     }
 

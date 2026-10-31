@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { useSchedule, useScheduleRuns } from "@/hooks/useSchedules";
-import { PULSE_RUN_FINISHED_EVENT, scheduleHref } from "@/lib/schedules/api";
+import { usePulseTrigger, usePulseTriggerRuns } from "@/hooks/useWebhooks";
+import { PULSE_RUN_FINISHED_EVENT, triggerHref } from "@/lib/schedules/api";
 import type { PulseRunFinishedDetail } from "@/lib/schedules/api";
 import { useEffect, useRef } from "react";
 import { defaultAskPrompt } from "@/lib/schedules/inputModes";
@@ -18,7 +18,7 @@ import {
 
 export interface ScheduledRunBannerProps {
   chatSessionId: string | null;
-  pulseScheduleId: number | null | undefined;
+  pulseTriggerId: number | null | undefined;
 }
 
 /**
@@ -27,17 +27,18 @@ export interface ScheduledRunBannerProps {
  */
 export default function ScheduledRunBanner({
   chatSessionId,
-  pulseScheduleId,
+  pulseTriggerId,
 }: ScheduledRunBannerProps) {
-  const id = pulseScheduleId ?? null;
-  const { schedule, error } = useSchedule(id);
-  const { runs } = useScheduleRuns(id);
-  if (id == null) return null;
+  const id = pulseTriggerId ?? null;
+  const { trigger, error } = usePulseTrigger(id);
+  const { runs } = usePulseTriggerRuns(id);
 
   const run = chatSessionId
     ? runs.find((r) => r.chat_session_id === chatSessionId)
     : undefined;
-  const deleted = !!error && !schedule;
+  const deleted = !!error && !trigger;
+  const isWebhook = trigger?.kind === "webhook";
+  const noun = isWebhook ? "webhook" : "schedule";
 
   // Reload the open chat when its run finishes (it ran in the background).
   const status = run?.status;
@@ -66,6 +67,9 @@ export default function ScheduledRunBanner({
     const timer = window.setTimeout(announce, prev === undefined ? 2000 : 0);
     return () => window.clearTimeout(timer);
   }, [status, chatSessionId, run?.finished_at]);
+
+  if (id == null) return null;
+
   const suffix =
     run?.duration_ms != null ? formatDurationMs(run.duration_ms) : undefined;
 
@@ -83,26 +87,28 @@ export default function ScheduledRunBanner({
           style={{ stroke: ACCENT }}
         />
         <div className="flex-1 min-w-0 truncate">
-          <span className="font-semibold text-text-05">Scheduled run</span>
-          {schedule ? (
+          <span className="font-semibold text-text-05">
+            {isWebhook ? "Webhook run" : "Scheduled run"}
+          </span>
+          {trigger ? (
             <>
               {" of “"}
-              {schedule.name}
+              {trigger.name}
               {"”"}
             </>
           ) : deleted ? (
-            " · the schedule was deleted"
+            " · the schedule or webhook was deleted"
           ) : null}
           {run && <> · {formatRunTime(run.scheduled_for)}</>}
-          {schedule && (
+          {trigger && (
             <>
               {" · "}
               <Link
-                href={scheduleHref(schedule.id) as Route}
+                href={triggerHref(trigger.kind, trigger.id) as Route}
                 className="inline-flex items-center gap-0.5 font-medium hover:underline"
                 style={{ color: ACCENT }}
               >
-                View schedule
+                View {noun}
                 <SvgArrowRight className="w-3 h-3 stroke-current" />
               </Link>
             </>
@@ -110,7 +116,7 @@ export default function ScheduledRunBanner({
         </div>
         {run && <RunStatusPill status={run.status} suffix={suffix} />}
       </div>
-      {schedule?.input_mode === "ask" && run?.status === "needs_input" && (
+      {trigger?.input_mode === "ask" && run?.status === "needs_input" && (
         <div
           className="mt-1.5 rounded-12 border px-3.5 py-2 text-[13.5px] text-text-04"
           style={{ borderColor: ACCENT_GLOW_STRONG }}
@@ -118,8 +124,8 @@ export default function ScheduledRunBanner({
           <span className="font-semibold text-text-05">This run asks: </span>
           {`“${
             run.output_preview ||
-            schedule.input_prompt ||
-            defaultAskPrompt(schedule.workflow_name ?? "this workflow")
+            trigger.input_prompt ||
+            defaultAskPrompt(trigger.workflow_name ?? "this workflow")
           }”`}
           <span className="text-text-03">
             {" "}

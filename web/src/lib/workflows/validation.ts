@@ -181,6 +181,12 @@ export function validateSteps(
       }
     }
 
+    if (kind === "agent") {
+      for (const message of configProblems(step, name, steps, byKey)) {
+        errors.push({ nodeKey, message });
+      }
+    }
+
     const outputKey = step.output_key.trim();
     if (!outputKey) {
       errors.push({ nodeKey, message: `"${name}" needs an output key` });

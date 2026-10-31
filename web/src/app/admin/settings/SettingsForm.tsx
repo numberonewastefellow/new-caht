@@ -322,6 +322,14 @@ export function SettingsForm() {
               }
             />
           )}
+          <Checkbox
+            label="Allow webhooks"
+            sublabel="Lets outside systems start workflows through webhook URLs. When off, every webhook URL is refused and no new ones can be created. Existing webhooks are kept."
+            checked={settings.webhooks_enabled ?? true}
+            onChange={(e) =>
+              handleToggleSettingsField("webhooks_enabled", e.target.checked)
+            }
+          />
         </div>
         {NEXT_PUBLIC_CLOUD_ENABLED && settings.anonymous_user_enabled && (
           <div className="mt-4">

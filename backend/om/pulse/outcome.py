@@ -1,4 +1,4 @@
-"""Finalising a run: terminal status + schedule failure streak + notifications.
+"""Finalising a run: terminal status + trigger failure streak + notifications.
 
 Shared by the worker (normal completion) and the scheduler's reaper (crashed
 workers). Deliberately light on imports so `pulse_scheduler` stays small.
@@ -7,10 +7,10 @@ workers). Deliberately light on imports so `pulse_scheduler` stays small.
 from sqlalchemy.orm import Session
 
 from om.configs.pulse_configs import PULSE_MAX_CONSECUTIVE_FAILURES
-from om.db.models import PulseSchedule
+from om.db.models import PulseTrigger
 from om.db.pulse import finish_run
 from om.db.pulse import get_pulse_run
-from om.db.pulse import record_schedule_outcome
+from om.db.pulse import record_trigger_outcome
 from om.db.pulse import RUN_FAILED
 from om.db.pulse import RUN_INTERRUPTED
 from om.db.pulse import RUN_MISSED
@@ -28,7 +28,7 @@ logger = setup_logger()
 
 def finalize_run(
     db_session: Session,
-    schedule: PulseSchedule,
+    trigger: PulseTrigger,
     run_id: int,
     *,
     status: str,
@@ -38,7 +38,7 @@ def finalize_run(
     workflow_execution_id: int | None = None,
     from_statuses: tuple[str, ...] = (RUN_RUNNING,),
 ) -> str:
-    """Move the run to `status` (only from `from_statuses`) and update the schedule.
+    """Move the run to `status` (only from `from_statuses`) and update the trigger.
 
     If the run was already finalised elsewhere (e.g. the reaper beat a slow worker),
     nothing is overwritten.
@@ -64,18 +64,18 @@ def finalize_run(
     if run is None:
         return status
 
-    failures, auto_paused = record_schedule_outcome(
+    failures, auto_paused = record_trigger_outcome(
         db_session,
-        schedule.id,
+        trigger.id,
         run_status=status,
         scheduled_for=run.scheduled_for,
         max_consecutive_failures=PULSE_MAX_CONSECUTIVE_FAILURES,
     )
-    db_session.refresh(schedule)
+    db_session.refresh(trigger)
     if status == RUN_NEEDS_INPUT:
-        notify_needs_input(db_session, schedule, run)
+        notify_needs_input(db_session, trigger, run)
     elif status in (RUN_FAILED, RUN_TIMED_OUT, RUN_INTERRUPTED):
-        notify_run_failed(db_session, schedule, run, failures)
+        notify_run_failed(db_session, trigger, run, failures)
     if auto_paused:
-        notify_auto_paused(db_session, schedule, run, failures)
+        notify_auto_paused(db_session, trigger, run, failures)
     return status

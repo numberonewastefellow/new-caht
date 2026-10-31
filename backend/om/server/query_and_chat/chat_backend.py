@@ -180,7 +180,7 @@ def get_user_chat_sessions(
                 shared_status=chat.shared_status,
                 current_alternate_model=chat.current_alternate_model,
                 current_temperature_override=chat.temperature_override,
-                pulse_schedule_id=chat.pulse_schedule_id,
+                pulse_trigger_id=chat.pulse_trigger_id,
             )
             for chat in chat_sessions
         ]
@@ -354,7 +354,7 @@ def get_chat_session(
         owner_name=chat_session.user.personal_name if chat_session.user else None,
         # Packets are now directly serialized as Packet Pydantic models
         packets=replay_packet_lists,
-        pulse_schedule_id=chat_session.pulse_schedule_id,
+        pulse_trigger_id=chat_session.pulse_trigger_id,
     )
 
 
@@ -856,7 +856,7 @@ async def search_chats(
             shared_status=session.shared_status,
             current_alternate_model=session.current_alternate_model,
             current_temperature_override=session.temperature_override,
-            pulse_schedule_id=session.pulse_schedule_id,
+            pulse_trigger_id=session.pulse_trigger_id,
         )
 
         if session_date == today:

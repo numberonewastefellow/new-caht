@@ -16,7 +16,6 @@ from fastapi import HTTPException
 from fastapi import Request
 from fastapi import status
 from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from httpx_oauth.clients.google import GoogleOAuth2
@@ -119,6 +118,9 @@ from om.server.features.workflow.api import admin_router as admin_workflow_route
 from om.server.features.workflow.api import router as workflow_router
 from om.server.features.pulse.api import admin_router as admin_pulse_router
 from om.server.features.pulse.api import router as pulse_router
+from om.server.features.pulse.webhook_api import public_router as public_webhook_router
+from om.server.features.pulse.webhook_api import router as pulse_webhook_router
+from om.server.middleware.cors import CORSExceptWebhooks
 from om.server.federated.api import router as federated_router
 from om.server.kg.api import admin_router as kg_admin_router
 from om.server.manage.administrative import router as admin_router
@@ -163,6 +165,7 @@ from om.setup import setup_multitenant_om
 from om.setup import setup_om
 from om.tracing.setup import setup_tracing
 from om.utils.logger import setup_logger
+from om.utils.logger import scrub_webhook_event
 from om.utils.logger import setup_uvicorn_logger
 from om.utils.middleware import add_endpoint_context_middleware
 from om.utils.middleware import add_om_request_id_middleware
@@ -409,6 +412,8 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
             dsn=SENTRY_DSN,
             integrations=[StarletteIntegration(), FastApiIntegration()],
             traces_sample_rate=0.1,
+            before_send=scrub_webhook_event,
+            before_send_transaction=scrub_webhook_event,
         )
         logger.info("Sentry initialized")
     else:
@@ -481,6 +486,8 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     # Pulse — scheduled workflow runs
     include_router_with_global_prefix_prepended(application, pulse_router)
     include_router_with_global_prefix_prepended(application, admin_pulse_router)
+    include_router_with_global_prefix_prepended(application, pulse_webhook_router)
+    include_router_with_global_prefix_prepended(application, public_webhook_router)
 
     include_router_with_global_prefix_prepended(application, pat_router)
 
@@ -685,7 +692,7 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     application.add_exception_handler(ValueError, value_error_handler)
 
     application.add_middleware(
-        CORSMiddleware,
+        CORSExceptWebhooks,
         allow_origins=CORS_ALLOWED_ORIGIN,  # Configurable via environment variable
         allow_credentials=True,
         allow_methods=["*"],

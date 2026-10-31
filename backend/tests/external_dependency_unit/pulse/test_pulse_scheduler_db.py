@@ -29,11 +29,12 @@ from om.db.models import ChatMessage
 from om.db.models import ChatSession
 from om.db.models import PulseRun
 from om.db.models import PulseSchedule
+from om.db.models import PulseTrigger
 from om.db.pulse import create_manual_run
 from om.db.pulse import create_pulse_schedule
 from om.db.pulse import db_now
 from om.db.pulse import get_sessions_to_expire
-from om.db.pulse import record_schedule_outcome
+from om.db.pulse import record_trigger_outcome
 from om.db.pulse import RUN_FAILED
 from om.db.pulse import RUN_INTERRUPTED
 from om.db.pulse import RUN_MISSED
@@ -54,7 +55,9 @@ def enqueued(monkeypatch: pytest.MonkeyPatch) -> list[tuple[int, int]]:
     calls: list[tuple[int, int]] = []
     lock = threading.Lock()
 
-    def fake_enqueue(run_id: int, tenant_id: str, countdown: int = 0) -> None:  # noqa: ARG001
+    def fake_enqueue(
+        run_id: int, tenant_id: str, countdown: int = 0, webhook: bool = False  # noqa: ARG001
+    ) -> None:
         with lock:
             calls.append((run_id, countdown))
 
@@ -109,9 +112,9 @@ def make_schedule(
     db_session.rollback()
     if created:
         db_session.execute(
-            delete(ChatSession).where(ChatSession.pulse_schedule_id.in_(created))
+            delete(ChatSession).where(ChatSession.pulse_trigger_id.in_(created))
         )
-        db_session.execute(delete(PulseSchedule).where(PulseSchedule.id.in_(created)))
+        db_session.execute(delete(PulseTrigger).where(PulseTrigger.id.in_(created)))
         db_session.commit()
 
 
@@ -119,7 +122,7 @@ def _runs(db_session: Session, schedule_id: int) -> list[PulseRun]:
     db_session.expire_all()
     return list(
         db_session.execute(
-            select(PulseRun).where(PulseRun.schedule_id == schedule_id).order_by(PulseRun.id)
+            select(PulseRun).where(PulseRun.trigger_id == schedule_id).order_by(PulseRun.id)
         ).scalars()
     )
 
@@ -294,9 +297,9 @@ def test_outbox_marks_too_late_scheduled_run_missed(
     old = db_now(db_session) - dt.timedelta(hours=2)
     db_session.add(
         PulseRun(
-            schedule_id=schedule.id,
+            trigger_id=schedule.id,
             scheduled_for=old,
-            trigger="scheduled",
+            fired_by="scheduled",
             status=RUN_PENDING,
             created_at=old,
         )
@@ -350,7 +353,7 @@ def test_auto_pause_after_consecutive_failures(
     schedule = make_schedule()
     slot = db_now(db_session)
     paused_flags = [
-        record_schedule_outcome(
+        record_trigger_outcome(
             db_session,
             schedule.id,
             run_status=RUN_FAILED,
@@ -378,7 +381,7 @@ def test_retention_keeps_newest_and_exempts_engaged_sessions(
         cs = ChatSession(
             user_id=owner_id,
             description=f"run {i}",
-            pulse_schedule_id=schedule.id,
+            pulse_trigger_id=schedule.id,
             time_created=base - dt.timedelta(hours=4 - i),
         )
         db_session.add(cs)
@@ -408,9 +411,9 @@ def test_retention_keeps_newest_and_exempts_engaged_sessions(
     # An unanswered "needs input" run chat is still actionable -> kept
     db_session.add(
         PulseRun(
-            schedule_id=schedule.id,
+            trigger_id=schedule.id,
             scheduled_for=base,
-            trigger="manual",
+            fired_by="manual",
             status="needs_input",
             chat_session_id=oldest.id,
         )

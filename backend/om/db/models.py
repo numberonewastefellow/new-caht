@@ -2378,10 +2378,10 @@ class ChatSession(Base):
         ForeignKey("workspace.id"), nullable=True
     )
 
-    # Set when this session was created by a Pulse scheduled workflow run.
+    # Set when this session was created by a Pulse workflow run.
     # Such sessions are hidden from the regular "Your chats" list by default.
-    pulse_schedule_id: Mapped[int | None] = mapped_column(
-        ForeignKey("pulse_schedule.id", ondelete="SET NULL"),
+    pulse_trigger_id: Mapped[int | None] = mapped_column(
+        ForeignKey("pulse_trigger.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
     )
@@ -5106,21 +5106,21 @@ class WorkflowExecution(Base):
 # ========================
 
 
-class PulseSchedule(Base):
-    """A schedule that runs a workflow automatically (cron / interval / once).
+class PulseTrigger(Base):
+    """Something that starts a workflow automatically, as its owner, without anyone
+    watching. Holds what every kind shares; each kind adds its own table (joined-table
+    inheritance), so querying a kind only ever returns that kind."""
 
-    The row is the source of truth: `pulse_scheduler` replicas claim due rows
-    (`next_run_at <= now()`) with FOR UPDATE SKIP LOCKED and enqueue a run.
-    """
-
-    __tablename__ = "pulse_schedule"
+    __tablename__ = "pulse_trigger"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    # "schedule" | "webhook" (PulseSchedule, PulseWebhook); the discriminator
+    kind: Mapped[str] = mapped_column(String, nullable=False)
     workflow_id: Mapped[int] = mapped_column(
         ForeignKey("agent_workflow.id", ondelete="CASCADE"), nullable=False
     )
     # The owner / creator; every run executes as this user. Never changes, even
-    # when an admin edits the schedule.
+    # when an admin edits the trigger.
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True
     )
@@ -5131,42 +5131,19 @@ class PulseSchedule(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
-    # "cron" | "interval" | "once"
-    schedule_type: Mapped[str] = mapped_column(String, nullable=False)
-    cron_expression: Mapped[str | None] = mapped_column(String, nullable=True)
-    interval_seconds: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    run_at: Mapped[datetime.datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
     # IANA timezone name, used for cron evaluation and template rendering
     timezone: Mapped[str] = mapped_column(String, nullable=False, default="UTC")
-
-    # What each run receives: "fixed" | "window" | "ask" | "list" (see om/pulse/inputs.py)
-    input_mode: Mapped[str] = mapped_column(String, nullable=False, default="fixed")
-    # Message sent to the workflow; supports {{date}} {{now}} {{window_start}} {{window_end}}
-    # (+ {{item}} in list mode). Unused in ask mode.
+    # Message template sent to the workflow; each kind decides what it can substitute
     input_message: Mapped[str] = mapped_column(Text, nullable=False)
-    # ask mode: what the run asks the user for
-    input_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
-    # list mode: items cycled one per run, and the index of the next one
-    input_items: Mapped[list[str] | None] = mapped_column(PGJSONB, nullable=True)
-    input_item_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
-    # Scheduling state
-    next_run_at: Mapped[datetime.datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
     last_run_at: Mapped[datetime.datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
     last_run_status: Mapped[str | None] = mapped_column(String, nullable=True)
-    last_success_scheduled_for: Mapped[datetime.datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
     consecutive_failures: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0
     )
-    # Why the schedule was disabled by the system (None when paused by the user)
+    # Why it was disabled by the system (None when paused by the user)
     disabled_reason: Mapped[str | None] = mapped_column(String, nullable=True)
     # How many run chat sessions to keep (older ones are soft-deleted)
     retention_count: Mapped[int] = mapped_column(Integer, nullable=False, default=50)
@@ -5181,34 +5158,136 @@ class PulseSchedule(Base):
         nullable=False,
     )
 
-    __table_args__ = (
-        Index(
-            "ix_pulse_schedule_due",
-            "next_run_at",
-            postgresql_where=text("enabled"),
-        ),
-    )
+    __mapper_args__ = {"polymorphic_on": "kind"}
 
     workflow: Mapped[AgentWorkflow] = relationship("AgentWorkflow")
     user: Mapped[User] = relationship("User", foreign_keys=[user_id])
     updated_by: Mapped[User | None] = relationship("User", foreign_keys=[updated_by_id])
 
 
+class PulseSchedule(PulseTrigger):
+    """A trigger that fires on a timer (cron / interval / once).
+
+    The row is the source of truth: `pulse_scheduler` replicas claim due rows
+    (`next_run_at <= now()`) with FOR UPDATE SKIP LOCKED and enqueue a run.
+    """
+
+    __tablename__ = "pulse_schedule"
+
+    id: Mapped[int] = mapped_column(
+        ForeignKey("pulse_trigger.id", ondelete="CASCADE"), primary_key=True
+    )
+
+    # "cron" | "interval" | "once"
+    schedule_type: Mapped[str] = mapped_column(String, nullable=False)
+    cron_expression: Mapped[str | None] = mapped_column(String, nullable=True)
+    interval_seconds: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    run_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    # What each run receives: "fixed" | "window" | "ask" | "list" (see om/pulse/inputs.py).
+    # input_message supports {{date}} {{now}} {{window_start}} {{window_end}}
+    # (+ {{item}} in list mode). Unused in ask mode.
+    input_mode: Mapped[str] = mapped_column(String, nullable=False, default="fixed")
+    # ask mode: what the run asks the user for
+    input_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # list mode: items cycled one per run, and the index of the next one
+    input_items: Mapped[list[str] | None] = mapped_column(PGJSONB, nullable=True)
+    input_item_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    # Scheduling state
+    next_run_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    last_success_scheduled_for: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    __table_args__ = (
+        Index(
+            "ix_pulse_schedule_next_run",
+            "next_run_at",
+            postgresql_where=text("next_run_at IS NOT NULL"),
+        ),
+    )
+    __mapper_args__ = {"polymorphic_identity": "schedule"}
+
+
+class PulseWebhook(PulseTrigger):
+    """A trigger that fires when an outside system calls its URL.
+
+    The token only says which webhook is being called and is stored as a hash. The
+    signing secret proves who is calling, so it has to stay readable and is encrypted
+    instead. During a rotation the previous pair keeps working until
+    `previous_valid_until`.
+    """
+
+    __tablename__ = "pulse_webhook"
+
+    id: Mapped[int] = mapped_column(
+        ForeignKey("pulse_trigger.id", ondelete="CASCADE"), primary_key=True
+    )
+
+    token_hash: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    token_last4: Mapped[str] = mapped_column(String, nullable=False)
+    previous_token_hash: Mapped[str | None] = mapped_column(
+        String, nullable=True, unique=True
+    )
+    previous_valid_until: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    # How the sender proves itself: "standard_webhooks" | "header_token" (om/pulse/webhooks/verify.py)
+    auth_mode: Mapped[str] = mapped_column(String, nullable=False)
+    signing_secret: Mapped[SensitiveValue[str]] = mapped_column(
+        EncryptedString(), nullable=False
+    )
+    previous_signing_secret: Mapped[SensitiveValue[str] | None] = mapped_column(
+        EncryptedString(), nullable=True
+    )
+    # header_token mode: the header carrying the secret
+    header_name: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    # Where a call's identity comes from: "webhook_id" | "header" | "json_path" | "none"
+    dedup_source: Mapped[str] = mapped_column(String, nullable=False)
+    # The header name or JSON path, for those two sources
+    dedup_path: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    # Set when the credentials were killed; a rotate issues new ones
+    revoked_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    rotated_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    last_received_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    # Why the latest call was refused, so an owner can see why nothing ran
+    last_rejected_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    last_rejected_reason: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    __mapper_args__ = {"polymorphic_identity": "webhook"}
+
+
 class PulseRun(Base):
-    """One firing of a PulseSchedule (scheduled or manual)."""
+    """One firing of a PulseTrigger."""
 
     __tablename__ = "pulse_run"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    schedule_id: Mapped[int] = mapped_column(
-        ForeignKey("pulse_schedule.id", ondelete="CASCADE"), nullable=False
+    trigger_id: Mapped[int] = mapped_column(
+        ForeignKey("pulse_trigger.id", ondelete="CASCADE"), nullable=False
     )
     # Nominal fire time (without jitter); the idempotency key for scheduled runs
     scheduled_for: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
-    # "scheduled" | "manual"
-    trigger: Mapped[str] = mapped_column(String, nullable=False, default="scheduled")
+    # What fired it: "scheduled" | "manual" | "webhook"
+    fired_by: Mapped[str] = mapped_column(String, nullable=False, default="scheduled")
     # pending -> running -> succeeded | needs_input | failed | timed_out |
     # cancelled | interrupted ; or skipped | missed
     status: Mapped[str] = mapped_column(String, nullable=False, default="pending")
@@ -5247,19 +5326,32 @@ class PulseRun(Base):
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     skip_reason: Mapped[str | None] = mapped_column(String, nullable=True)
 
+    # Webhook runs: the sender's event id, so a repeated call doesn't run twice
+    dedup_key: Mapped[str | None] = mapped_column(String, nullable=True)
+    # Webhook runs: {"body": ..., "headers": ...} with credentials removed. Untrusted,
+    # owner-only, and cleared by retention.
+    trigger_payload: Mapped[dict | None] = mapped_column(PGJSONB, nullable=True)
+
     __table_args__ = (
         Index(
-            "uq_pulse_run_schedule_slot",
-            "schedule_id",
+            "uq_pulse_run_trigger_slot",
+            "trigger_id",
             "scheduled_for",
             unique=True,
-            postgresql_where=text("trigger = 'scheduled'"),
+            postgresql_where=text("fired_by = 'scheduled'"),
         ),
-        Index("ix_pulse_run_schedule_created", "schedule_id", "created_at"),
+        Index(
+            "uq_pulse_run_webhook_dedup",
+            "trigger_id",
+            "dedup_key",
+            unique=True,
+            postgresql_where=text("fired_by = 'webhook' AND dedup_key IS NOT NULL"),
+        ),
+        Index("ix_pulse_run_trigger_created", "trigger_id", "created_at"),
         Index("ix_pulse_run_status_heartbeat", "status", "heartbeat_at"),
     )
 
-    schedule: Mapped[PulseSchedule] = relationship("PulseSchedule")
+    trigger: Mapped[PulseTrigger] = relationship("PulseTrigger")
 
 
 # ============================

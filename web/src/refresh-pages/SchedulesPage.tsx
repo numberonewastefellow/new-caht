@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { useSchedules, usePulseStats } from "@/hooks/useSchedules";
+import { useWebhookConfig } from "@/hooks/useWebhooks";
+import Tabs from "@/refresh-components/Tabs";
+import WebhooksTab from "@/sections/webhooks/WebhooksTab";
 import type { PulseSchedule } from "@/lib/schedules/interfaces";
 import { needsAttention } from "@/lib/schedules/status";
 import { formatAbsolute, formatRelative } from "@/lib/schedules/format";
@@ -75,9 +78,15 @@ type ModalState =
 
 function SchedulesHero({
   onNew,
+  newLabel,
+  newDisabled,
+  tabs,
   children,
 }: {
   onNew: () => void;
+  newLabel: string;
+  newDisabled?: boolean;
+  tabs: React.ReactNode;
   children?: React.ReactNode;
 }) {
   return (
@@ -88,11 +97,11 @@ function SchedulesHero({
             <AccentIconTile icon={SvgClock} />
             <div className="flex flex-col min-w-0">
               <Text as="p" headingH1 className="virtualai-gradient-text">
-                Pulse (Schedules)
+                Pulse
               </Text>
               <div className="flex items-center gap-1 flex-wrap">
                 <Text as="span" secondaryBody text03>
-                  Run workflows automatically — powered by
+                  Run workflows automatically, on a schedule or when another system calls — powered by
                 </Text>
                 <span
                   className="inline-flex items-center gap-0.5 font-semibold text-xs"
@@ -105,11 +114,12 @@ function SchedulesHero({
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Button leftIcon={SvgPlus} onClick={onNew}>
-              New schedule
+            <Button leftIcon={SvgPlus} onClick={onNew} disabled={newDisabled}>
+              {newLabel}
             </Button>
           </div>
         </div>
+        {tabs}
         {children}
       </div>
     </div>
@@ -208,7 +218,49 @@ function LastRunCell({ schedule }: { schedule: PulseSchedule }) {
   );
 }
 
+function PulseTabs({ active }: { active: "schedules" | "webhooks" }) {
+  const router = useRouter();
+  return (
+    <Tabs
+      value={active}
+      onValueChange={(next) =>
+        router.replace(
+          (next === "webhooks" ? "/app/schedules?tab=webhooks" : "/app/schedules") as Route
+        )
+      }
+    >
+      <Tabs.List variant="contained" className="w-fit">
+        <Tabs.Trigger value="schedules">Schedules</Tabs.Trigger>
+        <Tabs.Trigger value="webhooks">Webhooks</Tabs.Trigger>
+      </Tabs.List>
+    </Tabs>
+  );
+}
+
+function WebhooksView() {
+  const [creating, setCreating] = useState(false);
+  const { config } = useWebhookConfig();
+  return (
+    <SettingsLayouts.Root width="lg">
+      <SchedulesHero
+        onNew={() => setCreating(true)}
+        newLabel="New webhook"
+        newDisabled={config?.enabled === false}
+        tabs={<PulseTabs active="webhooks" />}
+      />
+      <SettingsLayouts.Body>
+        <WebhooksTab creating={creating} onCreatingChange={setCreating} />
+      </SettingsLayouts.Body>
+    </SettingsLayouts.Root>
+  );
+}
+
 export default function SchedulesPage() {
+  const searchParams = useSearchParams();
+  return searchParams?.get("tab") === "webhooks" ? <WebhooksView /> : <SchedulesView />;
+}
+
+function SchedulesView() {
   const router = useRouter();
   const { schedules, isLoading, error } = useSchedules();
   const { stats } = usePulseStats();
@@ -281,7 +333,11 @@ export default function SchedulesPage() {
       )}
 
       <SettingsLayouts.Root width="lg">
-        <SchedulesHero onNew={() => setModal({ mode: "create" })}>
+        <SchedulesHero
+          onNew={() => setModal({ mode: "create" })}
+          newLabel="New schedule"
+          tabs={<PulseTabs active="schedules" />}
+        >
           {!isEmpty && (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

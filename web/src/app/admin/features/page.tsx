@@ -12,11 +12,18 @@ import {
   SvgShield,
   SvgBarChart,
   SvgActivity,
+  SvgLink,
 } from "@opal/icons";
 import type { IconProps } from "@opal/types";
 
 import { AdminPageTitle } from "@/components/admin/Title";
 import CardSection from "@/components/admin/CardSection";
+import HelpDialog, { type HelpContent } from "@/components/admin/HelpDialog";
+import {
+  WEBHOOK_FEATURE_HELP,
+  WEBHOOK_SETUP_STEPS,
+  WEBHOOKS_PAGE,
+} from "@/lib/schedules/webhookHelp";
 import Text from "@/refresh-components/texts/Text";
 import { ClipboardIcon } from "@/components/icons/icons";
 
@@ -24,8 +31,8 @@ import { ClipboardIcon } from "@/components/icons/icons";
  * Admin "New Features" overview.
  *
  * A single landing page that showcases every capability delivered by the
- * clean-room EE rewrite (the 9 workstreams) and links straight to each
- * feature's own admin screen. Purely presentational + navigational — it reads
+ * clean-room EE rewrite (the 9 workstreams) and later additions, and links
+ * straight to each feature's own screen. Purely presentational + navigational — it reads
  * no backend state, so it never gates or breaks if a feature is disabled.
  *
  * Design system: icons are tinted with `--virtualai-accent` (never hardcoded);
@@ -39,6 +46,8 @@ interface FeatureItem {
   icon: React.FunctionComponent<IconProps>;
   href?: string; // omitted => platform change with no dedicated screen
   tags?: string[];
+  setup?: string[]; // short steps shown on the card
+  help?: HelpContent; // longer help behind an (i) button
 }
 
 interface FeatureGroup {
@@ -114,6 +123,24 @@ const FEATURE_GROUPS: FeatureGroup[] = [
         icon: SvgSearch,
         href: "/admin/configuration/search",
         tags: ["Expansion", "RRF"],
+      },
+    ],
+  },
+  {
+    id: "automation",
+    title: "Automation",
+    blurb: "Workflows that start by themselves.",
+    items: [
+      {
+        ws: "Pulse",
+        name: "Webhook triggers",
+        description:
+          "Another system calls a private URL when something happens, and Pulse runs your workflow with the data it sent. Each run becomes its own chat.",
+        icon: SvgLink,
+        href: WEBHOOKS_PAGE,
+        tags: ["Pulse", "Signed calls"],
+        setup: WEBHOOK_SETUP_STEPS,
+        help: WEBHOOK_FEATURE_HELP,
       },
     ],
   },
@@ -207,6 +234,23 @@ function FeatureCard({ item }: { item: FeatureItem }) {
         {item.description}
       </Text>
 
+      {item.setup && (
+        <div className="flex flex-col gap-1">
+          <Text mainUiAction text05>
+            How to set it up
+          </Text>
+          <ol className="flex flex-col gap-0.5 list-decimal pl-5 text-text-04">
+            {item.setup.map((step) => (
+              <li key={step}>
+                <Text as="span" mainUiMuted text04>
+                  {step}
+                </Text>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2 mt-auto pt-1">
         {(item.tags ?? []).map((tag) => (
           <span
@@ -232,11 +276,22 @@ function FeatureCard({ item }: { item: FeatureItem }) {
     </CardSection>
   );
 
-  if (!item.href) return body;
-  return (
+  const card = item.href ? (
     <Link href={item.href as Route} className="block h-full no-underline">
       {body}
     </Link>
+  ) : (
+    body
+  );
+  if (!item.help) return card;
+  // Beside the link rather than inside it, so opening help doesn't navigate.
+  return (
+    <div className="relative h-full">
+      {card}
+      <div className="absolute top-3 right-3">
+        <HelpDialog content={item.help} />
+      </div>
+    </div>
   );
 }
 

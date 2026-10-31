@@ -28,6 +28,12 @@ export const runUrl = (runId: number) => `${PULSE_BASE}/runs/${runId}`;
 export const chatHref = (chatSessionId: string) =>
   `/app?chatId=${chatSessionId}`;
 export const scheduleHref = (id: number) => `/app/schedules/${id}`;
+export const pulseTriggerUrl = (id: number) => `${PULSE_BASE}/triggers/${id}`;
+export const pulseTriggerRunsUrl = (id: number, limit = 50) =>
+  `${PULSE_BASE}/triggers/${id}/runs?limit=${limit}`;
+/** Where a trigger of any kind is managed. */
+export const triggerHref = (kind: string, id: number) =>
+  kind === "webhook" ? `/app/schedules/webhooks/${id}` : scheduleHref(id);
 
 export class PulseApiError extends Error {
   status: number;
@@ -37,7 +43,7 @@ export class PulseApiError extends Error {
   }
 }
 
-async function parse<T>(res: Response): Promise<T> {
+export async function parse<T>(res: Response): Promise<T> {
   if (res.ok) {
     if (res.status === 204) return undefined as T;
     const text = await res.text();
@@ -65,7 +71,7 @@ async function parse<T>(res: Response): Promise<T> {
   throw new PulseApiError(detail, res.status);
 }
 
-function jsonInit(method: string, body?: unknown, signal?: AbortSignal) {
+export function jsonInit(method: string, body?: unknown, signal?: AbortSignal) {
   return {
     method,
     headers: { "Content-Type": "application/json" },

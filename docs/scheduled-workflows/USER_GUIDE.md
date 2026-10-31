@@ -67,3 +67,34 @@ you can open it, read the result, and even reply to continue it.
    `Brief for {{date}}. Topics: <your topics>. Only include items newer than {{window_start}}.`
 3. Each morning you get a brief with TL;DR, internal findings (from your files), external news,
    action items and sources.
+
+# Webhooks
+
+A webhook lets another system start a workflow when something happens there, like a new complaint or ticket. Use a schedule when the time is what matters, and a webhook when an event is.
+
+## Create a webhook
+1. Open **Schedules**, then the **Webhooks** tab, and press **New webhook**.
+2. Pick the workflow and give the webhook a name.
+3. Write what the workflow should receive. `{{payload}}` is the whole event, `{{payload.ticket.title}}` or `{{payload.items[0]}}` is one value, and `{{date}}` and `{{now}}` give the time.
+4. Choose how the calling system proves itself:
+   - **Signed (Standard Webhooks):** recommended. The data can't be changed or replayed later.
+   - **Secret in a header:** for systems that can't sign. It doesn't protect the data or stop replays.
+5. Choose what makes an event a repeat. Systems often retry, and a repeat doesn't run again.
+6. **Copy the URL and secret straight away.** They're only shown once. If you lose them, press **Rotate** to get new ones.
+
+## Before you rely on it
+Runs use your access: your documents, files and connected accounts. The data a system sends is marked for the AI as data rather than instructions, but that can't fully prevent an instruction hidden in it from being followed. So check which tools the workflow can use, especially ones that send or change things.
+
+## Test it
+On the webhook's page, press **Listen**, then **Send test event** or call the test URL (`/api/hooks/test/...`). You'll see what arrived and exactly what the workflow would receive. Nothing runs.
+
+## See what happened
+The webhook's page lists each accepted call with its result, its data and a link to its chat. If a call was refused, the page shows why, such as "Signature does not match".
+
+## Stop it
+- **Pause:** switch it off. Calls are refused until you turn it back on. Runs still waiting are skipped when a worker reaches them, and don't come back.
+- **Rotate:** get a new URL and secret. You choose how long the old ones keep working, so you can update the other system first.
+- **Revoke:** use this if the URL or secret may have leaked. They stop working immediately, and runs still waiting won't start.
+- **Delete:** removes the webhook and its run history. Chats from earlier runs stay.
+
+The event data kept with each run is cleared after 7 days. The text the workflow received stays in that run's chat, like any other chat, until the webhook's run limit removes it, so avoid sending data you wouldn't keep in a chat. After 5 failed runs in a row a webhook pauses itself and notifies you.

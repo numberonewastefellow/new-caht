@@ -5,10 +5,10 @@ set COMPOSE_CMD=docker compose -f docker-compose.yml -f docker-compose.dev-windo
 :: NOTE: OpenSearch (the document index) is not listed here; a full `dev up`
 :: starts it (it has no compose profile, so it always runs).
 set INFRA=relational_db cache cortex_embed_vllm minio code-interpreter smartsearch phoenix
-set APP=api_server background pulse_scheduler pulse_worker web_server nginx
-:: Pulse (scheduled workflows): HA scheduler (2 replicas) + run worker. Their image is
+set APP=api_server background pulse_scheduler pulse_worker pulse_webhook_worker web_server nginx
+:: Pulse: HA scheduler (2 replicas) + run worker + webhook run worker. Their image is
 :: built FROM the backend image, so builds always build api_server first (see :build_services).
-set PULSE=pulse_scheduler pulse_worker
+set PULSE=pulse_scheduler pulse_worker pulse_webhook_worker
 
 :: Office MCP server (PPT + DOCX + PDF) runs from a separate compose file
 set OFFICE_DIR=%~dp0..\..\office-mcp-server
@@ -42,9 +42,10 @@ if /i "!_arg!"=="minio" set SERVICES=!SERVICES! minio
 if /i "!_arg!"=="search" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="smartsearch" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="phoenix" set SERVICES=!SERVICES! phoenix
-if /i "!_arg!"=="pulse" set SERVICES=!SERVICES! pulse_scheduler pulse_worker
+if /i "!_arg!"=="pulse" set SERVICES=!SERVICES! pulse_scheduler pulse_worker pulse_webhook_worker
 if /i "!_arg!"=="scheduler" set SERVICES=!SERVICES! pulse_scheduler
 if /i "!_arg!"=="pulse-worker" set SERVICES=!SERVICES! pulse_worker
+if /i "!_arg!"=="webhook-worker" set SERVICES=!SERVICES! pulse_webhook_worker
 if /i "!_arg!"=="office" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="ppt" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="docx" set SERVICES=!SERVICES! __OFFICE__
@@ -279,9 +280,10 @@ if /i "!_arg!"=="minio" set SERVICES=!SERVICES! minio
 if /i "!_arg!"=="search" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="smartsearch" set SERVICES=!SERVICES! smartsearch
 if /i "!_arg!"=="phoenix" set SERVICES=!SERVICES! phoenix
-if /i "!_arg!"=="pulse" set SERVICES=!SERVICES! pulse_scheduler pulse_worker
+if /i "!_arg!"=="pulse" set SERVICES=!SERVICES! pulse_scheduler pulse_worker pulse_webhook_worker
 if /i "!_arg!"=="scheduler" set SERVICES=!SERVICES! pulse_scheduler
 if /i "!_arg!"=="pulse-worker" set SERVICES=!SERVICES! pulse_worker
+if /i "!_arg!"=="webhook-worker" set SERVICES=!SERVICES! pulse_webhook_worker
 if /i "!_arg!"=="office" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="ppt" set SERVICES=!SERVICES! __OFFICE__
 if /i "!_arg!"=="docx" set SERVICES=!SERVICES! __OFFICE__

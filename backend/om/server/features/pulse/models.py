@@ -69,9 +69,9 @@ class PulsePreviewResponse(BaseModel):
 
 class PulseRunResponse(BaseModel):
     id: int
-    schedule_id: int
+    trigger_id: int
     scheduled_for: datetime.datetime
-    trigger: str
+    fired_by: str
     status: str
     chat_session_id: UUID | None
     created_at: datetime.datetime
@@ -86,9 +86,9 @@ class PulseRunResponse(BaseModel):
     def from_model(cls, run: PulseRun) -> "PulseRunResponse":
         return cls(
             id=run.id,
-            schedule_id=run.schedule_id,
+            trigger_id=run.trigger_id,
             scheduled_for=run.scheduled_for,
-            trigger=run.trigger,
+            fired_by=run.fired_by,
             status=run.status,
             chat_session_id=run.chat_session_id,
             created_at=run.created_at,
@@ -188,7 +188,8 @@ class PulseScheduleResponse(BaseModel):
 class PulseSidebarItem(BaseModel):
     """One row in the chat sidebar's "Scheduled" section."""
 
-    schedule_id: int
+    trigger_id: int
+    kind: str
     name: str
     enabled: bool
     disabled_reason: str | None
@@ -205,12 +206,26 @@ class PulseStatsResponse(BaseModel):
     failed_last_24h: int
 
 
+class PulseWebhookHealth(BaseModel):
+    # None means it couldn't be read, which isn't the same as off or zero
+    enabled: bool | None
+    secret_encryption_configured: bool
+    workers_alive: int | None
+    active_webhooks: int
+    pending_runs: int
+    running_runs: int
+    # If this keeps growing, runs are waiting and no worker is taking them
+    oldest_pending_seconds: float | None
+
+
 class PulseHealthResponse(BaseModel):
     scheduler_replicas_alive: int
     scheduler_lag_seconds: float | None
     active_runs: int
     enabled_schedules: int
     runs_last_24h_by_status: dict[str, int]
+    pulse_workers_alive: int | None
+    webhooks: PulseWebhookHealth
 
 
 class PulseConfigResponse(BaseModel):

@@ -70,6 +70,9 @@ PUBLIC_ENDPOINT_SPECS = [
     ("/scim/v2/Schemas", {"GET"}),
     ("/scim/v2/Schemas/{schema_id}", {"GET"}),
     # === end WS-G
+    # Pulse webhooks: authenticated by the URL token and signature, checked in the handler
+    ("/hooks/{token}", {"POST"}),
+    ("/hooks/test/{token}", {"POST"}),
 ]
 
 

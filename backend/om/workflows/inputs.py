@@ -19,9 +19,13 @@ def apply_input_mapping(
 ) -> str:
     """Apply input mapping to resolve context references into a task string.
 
-    Legacy semantics (workflow ``schema_version`` 1): references are replaced
-    by plain substring substitution, so ``$research`` also matches the start
-    of ``$research_notes``. Kept as-is so existing workflows behave the same.
+    Legacy semantics (workflow ``schema_version`` 1): references match as plain
+    prefixes, so ``$research`` also matches the start of ``$research_notes``. Kept
+    so existing workflows behave the same.
+
+    The template is scanned once, so a value is never expanded again: a request or
+    an LLM output containing ``$other`` stays as text. That text can come from
+    outside (a webhook payload), and must not be able to pull in another step's output.
     """
     if not mapping:
         # Default: pass user input + all previous outputs
@@ -51,20 +55,22 @@ def apply_input_mapping(
     result_parts = []
     for key, template in mapping.items():
         if isinstance(template, str):
-            # Replace $user_input with actual user input
-            resolved = template.replace("$user_input", context.user_input)
-            # Replace step output references — support both $key.output and $key
-            # Do longer pattern first to avoid partial matches
-            for output_key, output in context.step_outputs.items():
-                resolved = resolved.replace(f"${output_key}.output", output)
-            for output_key, output in context.step_outputs.items():
-                resolved = resolved.replace(f"${output_key}", output)
-            result_parts.append(f"{key}: {resolved}")
+            result_parts.append(f"{key}: {_substitute_references(template, context)}")
         else:
             result_parts.append(f"{key}: {template}")
     return "\n".join(result_parts)
 
 
+def _substitute_references(template: str, context: WorkflowContext) -> str:
+    # Alternatives are tried in this order at each position, which keeps the order
+    # the references have always resolved in: $user_input, then $key.output, then $key.
+    values: dict[str, str] = {"$user_input": context.user_input}
+    for output_key, output in context.step_outputs.items():
+        values[f"${output_key}.output"] = output
+    for output_key, output in context.step_outputs.items():
+        values[f"${output_key}"] = output
+    pattern = "|".join(re.escape(reference) for reference in values)
+    return re.sub(pattern, lambda match: values[match.group(0)], template)
 def as_text(value: Any) -> str:
     """A resolved value as prompt text; structured values become JSON."""
     if value is None:

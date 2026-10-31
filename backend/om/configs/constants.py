@@ -422,6 +422,7 @@ class OmCeleryQueues:
 
     # Pulse: scheduled workflow runs (consumed only by the pulse_worker service)
     PULSE = "pulse"
+    PULSE_WEBHOOK = "pulse_webhook"
 
 
 class OmRedisLocks:

@@ -343,6 +343,16 @@ services:
     #   # Maps to the CA_CERT_PATH environment variable in the Dockerfile
     #   - ${CA_CERT_PATH:-./custom-ca.crt}:/etc/ssl/certs/custom-ca.crt:ro
 
+  # Runs webhook-triggered workflows, on their own queue, so a burst of outside events
+  # can only delay other webhook runs and never a schedule. Same image and settings as
+  # pulse_worker. Without this service webhook runs wait in the queue.
+  pulse_webhook_worker:
+    extends:
+      service: pulse_worker
+    environment:
+      - PULSE_WORKER_QUEUE=pulse_webhook
+      - PULSE_WORKER_CONCURRENCY=${PULSE_WEBHOOK_WORKER_CONCURRENCY:-2}
+
   web_server:
     image: ${OM_WEB_SERVER_IMAGE:-om/om-web-server:${IMAGE_TAG:-latest}}
     build:

@@ -90,6 +90,21 @@ services:
       # Folder connector test data (must match api_server mount)
       - E:/test_folder_data:/test_folder_data
 
+  pulse_webhook_worker:
+    depends_on:
+      - api_server
+    environment:
+      - DISABLE_TELEMETRY=true
+      - SENTRY_DSN=
+    volumes:
+      - E:/temp/vert/pulse_logs:/var/log/om
+      - E:/temp/vert/file-system:/app/file-system
+      - ../../backend/om:/app/om
+      - ../../backend/ee:/app/ee
+      - ../../backend/shared_configs:/app/shared_configs
+      # Folder connector test data (must match api_server mount)
+      - E:/test_folder_data:/test_folder_data
+
   web_server:
     environment:
       - NEXT_PUBLIC_SENTRY_DSN=

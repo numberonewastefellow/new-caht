@@ -56,6 +56,8 @@ class Settings(BaseModel):
     application_status: ApplicationStatus = ApplicationStatus.ACTIVE
     anonymous_user_enabled: bool | None = None
     invite_only_enabled: bool = False
+    # Lets outside systems start workflows through webhook URLs
+    webhooks_enabled: bool = True
     deep_research_enabled: bool | None = None
 
     temperature_override_enabled: bool | None = False

@@ -244,7 +244,7 @@ def test_user_a_and_user_b_cannot_see_each_others_schedules(admin: Client) -> No
         assert b.patch(f"/pulse/schedules/{sa['id']}", {"name": "x"}).status_code == 404
         assert b.post(f"/pulse/schedules/{sa['id']}/run-now").status_code == 404
         assert b.delete(f"/pulse/schedules/{sa['id']}").status_code == 404
-        assert all(x["schedule_id"] != sa["id"] for x in b.get("/pulse/sidebar").json())
+        assert all(x["trigger_id"] != sa["id"] for x in b.get("/pulse/sidebar").json())
     finally:
         a.delete(f"/pulse/schedules/{sa['id']}")
         b.delete(f"/pulse/schedules/{sb['id']}")
@@ -289,7 +289,7 @@ def test_admin_sees_and_edits_any_schedule_owner_unchanged(admin: Client) -> Non
         notes = a.get("/signals").json()
         assert any(
             n.get("notif_type") == "pulse_schedule_changed_by_admin"
-            and (n.get("additional_data") or {}).get("pulse_schedule_id") == sa["id"]
+            and (n.get("additional_data") or {}).get("pulse_trigger_id") == sa["id"]
             for n in notes
         ), notes
 
@@ -319,7 +319,7 @@ def test_run_now_cooldown(admin: Client, schedules: list[int]) -> None:
 def test_run_now_end_to_end(admin: Client, schedules: list[int]) -> None:
     s = _create(admin, schedules, enabled=False)
     run = admin.post(f"/pulse/schedules/{s['id']}/run-now").json()
-    assert run["trigger"] == "manual" and run["status"] in ("pending", "running")
+    assert run["fired_by"] == "manual" and run["status"] in ("pending", "running")
 
     # a second run-now while the first is active is rejected
     assert admin.post(f"/pulse/schedules/{s['id']}/run-now").status_code == 409
@@ -332,7 +332,7 @@ def test_run_now_end_to_end(admin: Client, schedules: list[int]) -> None:
 
     cs = done["chat_session_id"]
     detail = admin.get(f"/converse/get-chat-session/{cs}").json()
-    assert detail["pulse_schedule_id"] == s["id"]
+    assert detail["pulse_trigger_id"] == s["id"]
     user_msgs = [m for m in detail["messages"] if m["message_type"] == "user"]
     assert user_msgs and "{{date}}" not in user_msgs[0]["message"]  # template rendered
 
@@ -344,7 +344,7 @@ def test_run_now_end_to_end(admin: Client, schedules: list[int]) -> None:
     sched = admin.get(f"/pulse/schedules/{s['id']}").json()
     assert sched["last_run_status"] == "succeeded"
     assert sched["latest_chat_session_id"] == cs
-    side = {x["schedule_id"]: x for x in admin.get("/pulse/sidebar").json()}
+    side = {x["trigger_id"]: x for x in admin.get("/pulse/sidebar").json()}
     assert side[s["id"]]["latest_chat_session_id"] == cs
 
 
@@ -357,7 +357,7 @@ def test_auto_fire_interval_no_duplicates(admin: Client, schedules: list[int]) -
     deadline = time.time() + 300
     runs: list[dict] = []
     while time.time() < deadline:
-        runs = [r for r in admin.get(f"/pulse/schedules/{s['id']}/runs").json() if r["trigger"] == "scheduled"]
+        runs = [r for r in admin.get(f"/pulse/schedules/{s['id']}/runs").json() if r["fired_by"] == "scheduled"]
         if sum(r["status"] in TERMINAL for r in runs) >= 2:
             break
         time.sleep(5)

@@ -46,7 +46,7 @@ export interface ChatSessionSummary {
   current_temperature_override: number | null;
   highlights?: string[];
   /** Set for Pulse scheduled-run sessions (clock badge in search) */
-  pulse_schedule_id?: number | null;
+  pulse_trigger_id?: number | null;
 }
 
 export interface ChatSessionGroup {
@@ -130,7 +130,7 @@ export interface ChatSession {
   current_alternate_model: string;
   current_temperature_override: number | null;
   /** Set when this chat was created by a scheduled (Pulse) run. */
-  pulse_schedule_id?: number | null;
+  pulse_trigger_id?: number | null;
 }
 
 export interface SearchSession {
@@ -193,7 +193,7 @@ export interface BackendChatSession {
   owner_name: string | null;
   packets: Packet[][];
   /** Set when this chat was created by a scheduled (Pulse) run. */
-  pulse_schedule_id?: number | null;
+  pulse_trigger_id?: number | null;
 }
 
 export function toChatSession(backend: BackendChatSession): ChatSession {
@@ -207,7 +207,7 @@ export function toChatSession(backend: BackendChatSession): ChatSession {
     workspace_id: null,
     current_alternate_model: backend.current_alternate_model ?? "",
     current_temperature_override: backend.current_temperature_override,
-    pulse_schedule_id: backend.pulse_schedule_id ?? null,
+    pulse_trigger_id: backend.pulse_trigger_id ?? null,
   };
 }
 

@@ -9,7 +9,7 @@ import IconButton from "@/refresh-components/buttons/IconButton";
 import useAppFocus from "@/hooks/useAppFocus";
 import { usePulseSidebar } from "@/hooks/useSchedules";
 import { noProp } from "@/lib/utils";
-import { chatHref, scheduleHref } from "@/lib/schedules/api";
+import { chatHref, triggerHref } from "@/lib/schedules/api";
 import { formatRelative } from "@/lib/schedules/format";
 import { scheduleDot } from "@/lib/schedules/status";
 import type { PulseSidebarItem } from "@/lib/schedules/interfaces";
@@ -42,7 +42,7 @@ const ScheduledRow = memo(function ScheduledRow({
   const router = useRouter();
   const href = item.latest_chat_session_id
     ? chatHref(item.latest_chat_session_id)
-    : scheduleHref(item.schedule_id);
+    : triggerHref(item.kind, item.trigger_id);
   const ago = compactAgo(item.last_run_at);
 
   return (
@@ -63,7 +63,7 @@ const ScheduledRow = memo(function ScheduledRow({
               tooltip="Open schedule"
               aria-label="Open schedule"
               onClick={noProp(() =>
-                router.push(scheduleHref(item.schedule_id) as Route)
+                router.push(triggerHref(item.kind, item.trigger_id) as Route)
               )}
             />
           </div>
@@ -89,7 +89,7 @@ const ScheduledRow = memo(function ScheduledRow({
   );
 });
 
-/** Collapsible "Scheduled" section listing the user's schedules. */
+/** Collapsible section listing the user's schedules and webhooks. */
 export default function ScheduledSection() {
   const { items } = usePulseSidebar();
   const router = useRouter();
@@ -125,7 +125,7 @@ export default function ScheduledSection() {
 
   return (
     <SidebarSection
-      title="Scheduled"
+      title="Pulse runs"
       collapsible
       collapsed={collapsed}
       onToggle={toggle}
@@ -141,12 +141,12 @@ export default function ScheduledSection() {
     >
       {items.map((item) => (
         <ScheduledRow
-          key={item.schedule_id}
+          key={item.trigger_id}
           item={item}
           active={
             (!!currentChatId &&
               currentChatId === item.latest_chat_session_id) ||
-            pathname === scheduleHref(item.schedule_id)
+            pathname === triggerHref(item.kind, item.trigger_id)
           }
         />
       ))}

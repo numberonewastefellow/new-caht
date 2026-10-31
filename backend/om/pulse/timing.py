@@ -14,6 +14,7 @@ from __future__ import annotations
 import datetime as dt
 import hashlib
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Literal
 from zoneinfo import ZoneInfo
@@ -476,7 +477,7 @@ def describe(spec: ScheduleSpec) -> str:
 # input templating
 # ---------------------------------------------------------------------------
 
-_TEMPLATE_RE = re.compile(r"\{\{\s*([a-zA-Z_]+)\s*\}\}")
+_TEMPLATE_RE = re.compile(r"\{\{\s*([a-zA-Z_][a-zA-Z0-9_.\-\[\]]*)\s*\}\}")
 TEMPLATE_VARIABLES: tuple[str, ...] = ("date", "now", "window_start", "window_end")
 # Only available in list mode
 LIST_TEMPLATE_VARIABLES: tuple[str, ...] = ("item",)
@@ -496,8 +497,13 @@ def render_input_message(
     last_success_scheduled_for: dt.datetime | None,
     period_seconds: int | None,
     item: str | None = None,
+    resolve_extra: Callable[[str], str | None] | None = None,
 ) -> str:
     """Substitute {{date}} {{now}} {{window_start}} {{window_end}} (+ {{item}}).
+
+    `resolve_extra` answers any other placeholder (a webhook's {{payload.x}}). The
+    template is scanned once, so an inserted value is never expanded again, whoever
+    wrote it.
 
     window_start = the previous *successful* run's slot (so a failed run never
     leaves a gap); on the first run it falls back to one period before this slot.
@@ -529,6 +535,9 @@ def render_input_message(
 
     def _sub(match: re.Match[str]) -> str:
         key = match.group(1)
-        return values.get(key, match.group(0))
+        if key in values:
+            return values[key]
+        extra = resolve_extra(key) if resolve_extra else None
+        return match.group(0) if extra is None else extra
 
     return _TEMPLATE_RE.sub(_sub, template)

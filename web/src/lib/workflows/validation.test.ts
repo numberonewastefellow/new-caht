@@ -155,3 +155,31 @@ describe("validateSteps options", () => {
     ).toEqual([]);
   });
 });
+
+describe("agent steps with an expected output", () => {
+  const SCHEMA = { type: "object", properties: { days: { type: "array" } } };
+  const withSchema = (schema: unknown, overrides: Partial<EditorStep> = {}) =>
+    agent("a", { config: { output_schema: schema }, ...overrides });
+
+  it("accepts a good schema in Sequential", () => {
+    expect(messages([withSchema(SCHEMA)])).toEqual([]);
+  });
+
+  it("refuses a schema of the wrong shape", () => {
+    expect(messages([withSchema({ type: "array" })]).join()).toContain(
+      "object with properties"
+    );
+  });
+
+  it("refuses it on a step that can ask questions", () => {
+    expect(
+      messages([withSchema(SCHEMA, { can_request_input: true })]).join()
+    ).toContain("ask the user");
+  });
+
+  it("refuses it in LLM Decision mode", () => {
+    expect(messages([withSchema(SCHEMA)], "llm_decision").join()).toContain(
+      "only Sequential"
+    );
+  });
+});

@@ -1,6 +1,7 @@
 import contextvars
 import logging
 import os
+import re
 from collections.abc import MutableMapping
 from logging.handlers import RotatingFileHandler
 from typing import Any
@@ -54,6 +55,39 @@ class OmRequestIDFilter(logging.Filter):
         from shared_configs.contextvars import OM_REQUEST_ID_CONTEXTVAR
 
         record.request_id = OM_REQUEST_ID_CONTEXTVAR.get() or "-"
+        return True
+
+
+_WEBHOOK_TOKEN_IN_PATH = re.compile(r"(/hooks/(?:test/)?)[^/?\s\"]+")
+
+
+def redact_webhook_token(path: str) -> str:
+    """A webhook URL contains its token, so its path must never reach a log."""
+    return _WEBHOOK_TOKEN_IN_PATH.sub(r"\1[redacted]", path)
+
+
+def scrub_webhook_event(event: Any, _hint: Any = None) -> Any:
+    """For Sentry: a webhook request's URL holds its token, its headers may hold its secret,
+    and its body is an outsider's data, so none of them leave this system."""
+    request = event.get("request") or {}
+    url = request.get("url") or ""
+    if "/hooks/" in url:
+        request["url"] = redact_webhook_token(url)
+        request.pop("headers", None)
+        request.pop("data", None)
+        request.pop("query_string", None)
+    if isinstance(event.get("transaction"), str):
+        event["transaction"] = redact_webhook_token(event["transaction"])
+    return event
+
+
+class WebhookTokenRedactionFilter(logging.Filter):
+    """uvicorn's access log passes (client, method, path, http version, status) as args."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        args = record.args
+        if isinstance(args, tuple) and len(args) >= 3 and isinstance(args[2], str):
+            record.args = (*args[:2], redact_webhook_token(args[2]), *args[3:])
         return True
 
 
@@ -257,6 +291,7 @@ def setup_uvicorn_logger(
     uvicorn_logger.addHandler(handler)
     uvicorn_logger.setLevel(log_level)
     uvicorn_logger.addFilter(OmRequestIDFilter())
+    uvicorn_logger.addFilter(WebhookTokenRedactionFilter())
 
     if shared_file_handlers:
         for fh in shared_file_handlers:

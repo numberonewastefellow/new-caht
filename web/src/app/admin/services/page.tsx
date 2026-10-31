@@ -2,6 +2,11 @@
 
 import { AdminPageTitle } from "@/components/admin/Title";
 import CardSection from "@/components/admin/CardSection";
+import HelpDialog, { type HelpContent } from "@/components/admin/HelpDialog";
+import {
+  PULSE_HEALTH_URL,
+  WEBHOOK_SERVICE_HELP,
+} from "@/lib/schedules/webhookHelp";
 import {
   SvgActivity,
   SvgClock,
@@ -11,6 +16,7 @@ import {
   SvgFileText,
   SvgGlobe,
   SvgHardDrive,
+  SvgLink,
   SvgSearch,
   SvgServer,
   SvgZap,
@@ -28,6 +34,9 @@ interface ServiceCardProps {
   port?: string;
   internal?: boolean;
   credentials?: string;
+  configure?: string;
+  health?: string;
+  help?: HelpContent;
 }
 
 const services: ServiceCardProps[] = [
@@ -167,6 +176,20 @@ const services: ServiceCardProps[] = [
     urlLabel: "Pulse health (JSON)",
     port: "—",
   },
+  {
+    name: "Pulse Webhook Worker",
+    description:
+      "Executes workflow runs started by webhooks (Celery queue \"pulse_webhook\"), so a burst of calls can never delay a schedule. Without it, calls are accepted but their runs wait and never start.",
+    icon: SvgLink,
+    category: "Scheduling",
+    url: PULSE_HEALTH_URL,
+    urlLabel: "Pulse health (JSON)",
+    port: "—",
+    configure:
+      "Service pulse_webhook_worker. Runs at once: PULSE_WEBHOOK_WORKER_CONCURRENCY (default 2).",
+    health: "webhooks.workers_alive should be 1 or more in Pulse health.",
+    help: WEBHOOK_SERVICE_HELP,
+  },
 ];
 
 const categoryColors: Record<string, string> = {
@@ -181,6 +204,17 @@ const categoryColors: Record<string, string> = {
   Scheduling: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
 };
 
+function CardDetail({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="px-2.5 py-1.5 rounded-md bg-background-neutral-02 border border-border-01">
+      <span className="text-2xs text-text-400 uppercase tracking-wider font-medium">
+        {label}
+      </span>
+      <p className="text-xs font-mono text-text-600 mt-0.5 break-words">{value}</p>
+    </div>
+  );
+}
+
 function ServiceCard({
   name,
   description,
@@ -191,6 +225,9 @@ function ServiceCard({
   port,
   internal,
   credentials,
+  configure,
+  health,
+  help,
 }: ServiceCardProps) {
   return (
     <CardSection className="flex flex-col gap-3 h-full">
@@ -214,25 +251,21 @@ function ServiceCard({
             </span>
           </div>
         </div>
-        {port && (
-          <span className="text-xs text-text-500 font-mono shrink-0">
-            :{port}
-          </span>
-        )}
+        <div className="flex items-center gap-1 shrink-0">
+          {port && (
+            <span className="text-xs text-text-500 font-mono">:{port}</span>
+          )}
+          {help && <HelpDialog content={help} />}
+        </div>
       </div>
 
       <p className="text-xs text-text-600 leading-relaxed flex-grow">
         {description}
       </p>
 
-      {credentials && (
-        <div className="px-2.5 py-1.5 rounded-md bg-background-neutral-02 border border-border-01">
-          <span className="text-2xs text-text-400 uppercase tracking-wider font-medium">
-            Credentials
-          </span>
-          <p className="text-xs font-mono text-text-600 mt-0.5">{credentials}</p>
-        </div>
-      )}
+      {credentials && <CardDetail label="Credentials" value={credentials} />}
+      {configure && <CardDetail label="Configure" value={configure} />}
+      {health && <CardDetail label="Health" value={health} />}
 
       <div className="mt-auto pt-2 border-t border-border-light">
         {url && !internal ? (

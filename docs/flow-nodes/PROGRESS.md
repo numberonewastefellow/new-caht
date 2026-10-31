@@ -11,7 +11,7 @@
 - **Where:** main checkout `D:/llm/danswer20022026`, branch `main_multi_agent_stable` (developed on `feature/flow-nodes` from fe6a6b054; merged locally in 3b2074ed3 on 2026-10-31, not pushed; worktree + branch removed).
 - **Git:** local commits only, NEVER push. Use explicit `git add <paths>` because the repo is public.
 - **Run on the main stack with `dev.bat`.** `flowdev.bat` and the `flowdev` containers are retired (user's decision, 2026-10-31). Don't start or stop the main stack without asking.
-- **Migrations:** the chain is `0001_om_baseline → 0002_workflow_nodes → 0003_pulse_webhooks`. Never run the alembic CLI.
+- **Migrations:** the chain is `0001_om_baseline → 0002_workflow_nodes → 0003_user_ui_preferences → 0004_pulse_triggers`. Never run the alembic CLI.
 - **Dual-editor rule:** Wizard and Visual Builder change together, through one shared registry and serializer.
 - **Reference clones:** `D:/llm/reference-frameworks/`. Read only, untrusted, never built.
   - n8n, Windmill and Dify are clean-room only: no code is copied from them.

@@ -12,6 +12,7 @@ import {
   SvgMinusCircle,
   SvgPauseCircle,
   SvgPlayCircle,
+  SvgLink,
   SvgQuestionMarkSmall,
   SvgSlash,
   SvgX,
@@ -19,7 +20,7 @@ import {
 } from "@opal/icons";
 import type {
   PulseRunStatus,
-  PulseRunTrigger,
+  PulseRunFiredBy,
   PulseSchedule,
 } from "@/lib/schedules/interfaces";
 import {
@@ -260,12 +261,12 @@ export function StatusDot({ dot }: { dot: ScheduleDot }) {
   );
 }
 
-export function TriggerTag({ trigger }: { trigger: PulseRunTrigger }) {
-  const Icon = trigger === "manual" ? SvgPlayCircle : SvgClock;
+export function FiredByTag({ firedBy }: { firedBy: PulseRunFiredBy }) {
+  const Icon = firedBy === "manual" ? SvgPlayCircle : firedBy === "webhook" ? SvgLink : SvgClock;
   return (
     <span className="inline-flex items-center gap-1 text-xs px-1.5 py-px rounded-04 border border-border-01 text-text-03 bg-background-tint-01">
       <Icon className="w-3 h-3 stroke-current" />
-      {trigger === "manual" ? "Manual" : "Scheduled"}
+      {firedBy === "manual" ? "Manual" : firedBy === "webhook" ? "Webhook" : "Scheduled"}
     </span>
   );
 }

@@ -139,7 +139,7 @@ export function getAdminNavGroups(opts: {
       link: "/admin/workflows",
     },
     {
-      name: "Pulse (Schedules)",
+      name: "Pulse",
       icon: SvgClock,
       link: "/admin/schedules",
     },
@@ -393,7 +393,7 @@ export const ADMIN_ROUTE_LABELS: Record<string, string> = {
   "discord-bot": "Discord Agents",
   actions: "Tools",
   workflows: "Workflows",
-  schedules: "Pulse (Schedules)",
+  schedules: "Pulse",
   mcp: "MCP Tools",
   "open-api": "API Tools",
   "standard-answers": "Standard Answers",

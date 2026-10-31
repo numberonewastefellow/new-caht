@@ -118,3 +118,67 @@ The scheduler loops over all tenant schemas each tick (fine for self-hosted / a 
 thousands of tenants, add a `public.pulse_schedule_due(tenant_id, schedule_id, next_run_at)` index
 written in the same transaction as the tenant row, and have the scheduler fan out only to tenants
 with due work.
+
+## Webhooks
+Webhook runs need their own service, `pulse_webhook_worker`: the same image as `pulse_worker`, with `PULSE_WORKER_QUEUE=pulse_webhook`. **Without it, accepted events wait in the queue and never run.** Scale it separately with `docker compose up -d --scale pulse_webhook_worker=N`.
+
+**Helm:** the chart doesn't include this worker or the nginx limits below yet. Add both before using webhooks on Kubernetes.
+
+**Upgrading to `0004_pulse_triggers`:** stop `pulse_scheduler` and `pulse_worker` first, because the old code can't read the renamed tables. Back up the database. Recreate nginx too, or the limits below won't apply.
+
+**Turn them off:** Admin > Workspace > General > "Allow webhooks". Every webhook URL then returns 404 and no new ones can be created. Existing webhooks are kept.
+
+**If a URL or secret leaks:** open the webhook and press Revoke. It stops working at once and runs still waiting are skipped. A run already in progress finishes. The owner can then rotate to get new credentials.
+
+### Signing secrets and the encryption key
+Secrets are stored in an `EncryptedString` column, which is only encrypted when `ENCRYPTION_KEY_SECRET` is set. Without it they are plaintext, like every other stored credential, and the create dialog says so. Setting a key on a running system makes existing values unreadable, so it needs a migration of those values first.
+
+### What nginx does
+The `/api/hooks/` location in `app.conf.template`, `.prod` and `.no-letsencrypt`:
+- Rejects bodies over 1 MB before buffering them. Keep this in step with `PULSE_WEBHOOK_MAX_BODY_BYTES`.
+- Logs `/api/hooks/[redacted]` instead of the URL, because the URL contains the token.
+- Sets this path's error log to `crit`, because nginx prints the full URL on warnings and errors. Upstream failures on this path therefore show only as status codes in the access log.
+
+### Settings
+| Variable | Default | Meaning |
+|---|---|---|
+| `PULSE_WEBHOOK_WORKER_CONCURRENCY` | 2 | Runs at once per webhook worker |
+| `PULSE_WEBHOOK_RATE_PER_IP` | 300 | Requests per minute per address |
+| `PULSE_WEBHOOK_RATE_PER_TOKEN` | 120 | Requests per minute per token |
+| `PULSE_WEBHOOK_PROXY_HOPS` | 1 | Proxies appending to `X-Forwarded-For`. Too high lets callers choose their own rate-limit bucket; too low puts all callers in one |
+| `PULSE_WEBHOOK_MAX_PENDING_RUNS` | 20 | Runs waiting per webhook before callers get 429 |
+| `PULSE_WEBHOOK_TENANT_MAX_ACTIVE_RUNS` | 100 | Active webhook runs per tenant. Approximate: calls to different webhooks aren't serialised, so it can overshoot slightly |
+| `PULSE_MAX_WEBHOOKS_PER_USER` | 20 | Webhooks per owner |
+| `PULSE_WEBHOOK_MAX_BODY_BYTES` | 1048576 | Largest body accepted |
+| `PULSE_WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS` | 300 | Allowed clock difference on signatures |
+| `PULSE_WEBHOOK_PAYLOAD_RETENTION_DAYS` | 7 | `trigger_payload` is cleared after this; the run row stays. Rendered values also sit in the run's chat, which follows chat retention, not this setting |
+| `PULSE_WEBHOOK_LISTEN_TTL_SECONDS` | 300 | How long Listen stays open |
+
+### Observe
+`GET /api/admin/pulse/health` (admin only) has a `webhooks` section, and `pulse_workers_alive` for the schedule queue:
+
+| Field | Meaning |
+|---|---|
+| `workers_alive` | Workers taking new runs. 0 means none, so runs wait. A stopping worker stops counting at once; a crashed one takes up to 90 s. `null` means Redis couldn't be read |
+| `pending_runs`, `oldest_pending_seconds` | Runs waiting, and how long the oldest has waited. A growing age means runs are stuck |
+| `running_runs`, `active_webhooks` | Runs in progress; webhooks switched on and not revoked |
+| `enabled` | The "Allow webhooks" switch. `null` means it couldn't be read, and calls get 503 |
+| `secret_encryption_configured` | `false` means `ENCRYPTION_KEY_SECRET` isn't set |
+
+Workers publish a Redis key, `pulse:worker:alive:<queue>:<host>`, every 30 s with a 90 s expiry.
+
+`pulse_webhook_events_total{result}` counts calls by result: `accepted`, `duplicate`, `captured`, or a status code. It's at `/api/metrics`, which needs no login. Each API process keeps its own count and a scrape reaches only one, so use it for trends rather than exact totals. Each webhook also shows its latest refused call and why on its page.
+
+The container healthcheck (`pulse_entrypoint.sh healthcheck`) covers both workers, so `docker compose ps` shows whether each is ready.
+
+### Responses
+| Status | Meaning | Should the caller retry? |
+|---|---|---|
+| 202 | Accepted. Body has `run_id`, and `duplicate: true` for a repeat | No |
+| 400 | Body isn't acceptable JSON | No |
+| 401 | Signature or secret is wrong, or the timestamp is too old | No |
+| 404 | Unknown, paused, revoked, or webhooks are off | No |
+| 409 | Test URL used while Listen is closed | No |
+| 413 | Body over 1 MB | No |
+| 429 | Rate limit or queue full; see `Retry-After` | Yes |
+| 503 | Redis is down; see `Retry-After` | Yes |

@@ -1,5 +1,11 @@
+# A webhook URL contains its token, so the access log must not record it.
+map $request $om_loggable_request {
+    default $request;
+    "~^(?<om_method>\S+) /api/hooks/\S+ (?<om_protocol>\S+)$" "$om_method /api/hooks/[redacted] $om_protocol";
+}
+
 # Log format to include request latency
-log_format custom_main '$remote_addr - $remote_user [$time_local] "$request" '
+log_format custom_main '$remote_addr - $remote_user [$time_local] "$om_loggable_request" '
                 '$status $body_bytes_sent "$http_referer" '
                 '"$http_user_agent" "$http_x_forwarded_for" '
                 'rt=$request_time';
@@ -91,6 +97,18 @@ server {
         # redirects, we set the Host: header above already.
         proxy_redirect off;
         proxy_pass http://api_server;
+
+        # Public webhook URLs: reject oversized bodies here, before nginx buffers them.
+        # Keep in step with PULSE_WEBHOOK_MAX_BODY_BYTES. A nested location inherits the
+        # settings above except for the rewrite and proxy_pass.
+        location ~ ^/api/hooks/ {
+            client_max_body_size 1m;
+            # These paths contain the webhook's token, and nginx prints the full URL on
+            # warnings and errors. The access log above still records every call.
+            error_log /var/log/nginx/error.log crit;
+            rewrite ^/api(/.*)$ $1 break;
+            proxy_pass http://api_server;
+        }
     }
 
     location / {

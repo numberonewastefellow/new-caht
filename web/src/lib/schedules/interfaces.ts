@@ -17,7 +17,7 @@ export type PulseRunStatus =
   | "skipped"
   | "missed";
 
-export type PulseRunTrigger = "scheduled" | "manual";
+export type PulseRunFiredBy = "scheduled" | "manual" | "webhook";
 
 /** Why a schedule is disabled. `null` + `enabled=false` means paused by the user. */
 export type PulseDisabledReason =
@@ -29,9 +29,9 @@ export type PulseDisabledReason =
 
 export interface PulseRun {
   id: number;
-  schedule_id: number;
+  trigger_id: number;
   scheduled_for: string;
-  trigger: PulseRunTrigger;
+  fired_by: PulseRunFiredBy;
   status: PulseRunStatus;
   chat_session_id: string | null;
   created_at: string;
@@ -130,8 +130,20 @@ export interface PulseConfig {
   default_list_message?: string;
 }
 
+/** What a chat needs to know about the trigger behind its run, whatever its kind. */
+export interface PulseTriggerSummary {
+  id: number;
+  kind: string;
+  name: string;
+  workflow_name: string | null;
+  disabled_reason: string | null;
+  input_mode: string | null;
+  input_prompt: string | null;
+}
+
 export interface PulseSidebarItem {
-  schedule_id: number;
+  trigger_id: number;
+  kind: string;
   name: string;
   enabled: boolean;
   disabled_reason: PulseDisabledReason | null;

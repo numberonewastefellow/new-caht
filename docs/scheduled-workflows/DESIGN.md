@@ -354,3 +354,27 @@ racy tenant cap → advisory lock; jitter; DST rules; sidebar flooding; window_s
 UX reviewer: user-side schedules (non-admins can run workflows); sidebar flooding (50-session cap) → Scheduled
 section; presets→single source per type; Save & run now; notifications via existing NotificationType;
 retention required in v1; cut overlap/misfire variants, start/end, file attachments.
+
+## Triggers: schedules and webhooks (added 2026-10-31)
+This section supersedes the data model above where they differ. A schedule and a webhook are two ways to start a workflow, so what they share moved to a parent table. Migration: `0004_pulse_triggers`.
+
+| Table | Holds |
+|---|---|
+| `pulse_trigger` | What every kind shares: `kind`, workflow, owner, name, enabled, timezone, `input_message`, retention, last-run fields, failure streak |
+| `pulse_schedule` | Timing and input modes (same id as its trigger) |
+| `pulse_webhook` | Token hash, signing secret, auth mode, dedup settings, revoke and rotate state, last rejection (same id as its trigger) |
+| `pulse_run` | `trigger_id`, `fired_by` (scheduled, manual, webhook), `dedup_key`, `trigger_payload` |
+
+`chat_session.pulse_schedule_id` became `pulse_trigger_id`.
+
+**In code:** joined-table inheritance. `PulseSchedule` and `PulseWebhook` extend `PulseTrigger`, so `select(PulseSchedule)` only returns schedules. Count with `select(func.count()).select_from(PulseSchedule)`; a bare `func.count(PulseSchedule.id)` reads only the parent table and counts every kind.
+
+**Adding a kind:** a table and model, a module in `om/pulse/triggers/` with an input step, and a line in `INPUT_STEPS`. The runner, history, retention and notifications don't change.
+
+**Why webhooks have their own queue and worker:** events arrive in bursts and every event matters, while a schedule only cares about its next slot. On a shared worker a burst would delay schedules until they were recorded as missed. Webhook runs also don't count toward the capacity schedules and Run now are limited by.
+
+**Request order on `POST /hooks/{token}`, cheapest first:** token shape, `Content-Length`, tenant, rate limits, hashed lookup, then read the body with a hard cap, verify the signature over the raw bytes, parse the JSON, and only then store one run. Everything that can't find an open webhook returns the same 404. See `om/pulse/webhooks/intake.py`.
+
+**Payload safety:** values go into the prompt in tags with a random id made at render time, and templates are scanned once, so a payload can't fake the closing tag or expand a placeholder. `apply_input_mapping` is single-pass for the same reason. This reduces prompt injection but can't eliminate it, because the model still reads the text and runs with the owner's tools.
+
+**Not in v1:** sending the result back to the caller (needs SSRF protection), running as a service identity rather than the owner, filters, debounce, and ready-made integrations.

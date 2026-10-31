@@ -1,6 +1,8 @@
 """Pulse — scheduled workflow engine.
 
-Schedules (cron / interval / once) live in Postgres (`pulse_schedule`). One or more
+Triggers start workflows automatically, and a schedule is one kind (see
+om/pulse/triggers). Schedules (cron / interval / once) live in Postgres
+(`pulse_schedule`, joined to `pulse_trigger`). One or more
 `pulse_scheduler` replicas claim due rows and enqueue runs on the `pulse` Celery queue,
 which `pulse_worker` processes headlessly. Each run becomes its own chat session.
 

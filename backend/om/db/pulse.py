@@ -1,23 +1,26 @@
-"""DB operations for Pulse (scheduled workflow runs).
+"""DB operations for Pulse (triggers and their workflow runs).
 
 Concurrency model (see docs/scheduled-workflows/DESIGN.md):
   * `pulse_scheduler` replicas serialise per tenant with `pg_try_advisory_xact_lock`
     and claim due schedules with `FOR UPDATE SKIP LOCKED`.
   * Scheduled runs are inserted with ON CONFLICT DO NOTHING against the partial unique
-    index (schedule_id, scheduled_for) — a slot can never produce two runs.
+    index (trigger_id, scheduled_for) — a slot can never produce two runs.
   * A worker starts a run with a compare-and-swap (pending -> running); duplicate
     Celery deliveries become no-ops.
 All timestamps written here come from the database clock (`now()`).
 """
 
 import datetime
+from typing import cast as cast_type
 from uuid import UUID
 
 from sqlalchemy import and_
 from sqlalchemy import cast
 from sqlalchemy import func
 from sqlalchemy import Integer
+from sqlalchemy import or_
 from sqlalchemy import select
+from sqlalchemy import Table
 from sqlalchemy import text
 from sqlalchemy import update
 from sqlalchemy.dialects.postgresql import insert
@@ -29,6 +32,7 @@ from om.db.models import ChatMessage
 from om.db.models import ChatSession
 from om.db.models import PulseRun
 from om.db.models import PulseSchedule
+from om.db.models import PulseTrigger
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
@@ -59,8 +63,10 @@ TERMINAL_RUN_STATUSES = (
     RUN_MISSED,
 )
 
-TRIGGER_SCHEDULED = "scheduled"
-TRIGGER_MANUAL = "manual"
+# What fired a run (PulseRun.fired_by)
+FIRED_SCHEDULED = "scheduled"
+FIRED_MANUAL = "manual"
+FIRED_WEBHOOK = "webhook"
 
 # disabled_reason values set by the system
 DISABLED_AUTO_PAUSED = "auto_paused_failures"
@@ -71,6 +77,12 @@ DISABLED_WORKFLOW_DELETED = "workflow_deleted"
 # Advisory lock key namespace for the per-tenant scheduler tick
 _TICK_LOCK_SQL = text("SELECT pg_try_advisory_xact_lock(hashtext(:key))")
 TICK_LOCK_KEY = "om:pulse:scheduler_tick"
+
+
+def _schedule_table() -> Table:
+    """For updates of schedule-only columns, which the ORM's update() can't target on a
+    joined-inheritance class."""
+    return cast_type(Table, PulseSchedule.__table__)
 
 
 def db_now(db_session: Session) -> datetime.datetime:
@@ -132,6 +144,28 @@ def get_pulse_schedule(db_session: Session, schedule_id: int) -> PulseSchedule |
     return db_session.get(PulseSchedule, schedule_id)
 
 
+def get_pulse_trigger(db_session: Session, trigger_id: int) -> PulseTrigger | None:
+    """The trigger of any kind."""
+    return db_session.get(PulseTrigger, trigger_id)
+
+
+def list_pulse_triggers_for_user(db_session: Session, user_id: UUID) -> list[PulseTrigger]:
+    return list(
+        db_session.execute(
+            select(PulseTrigger)
+            .where(PulseTrigger.user_id == user_id)
+            .order_by(PulseTrigger.created_at.desc())
+        )
+        .scalars()
+        .all()
+    )
+
+
+def list_pulse_triggers(db_session: Session) -> list[PulseTrigger]:
+    """Every trigger of any kind (retention, which treats all kinds the same)."""
+    return list(db_session.execute(select(PulseTrigger)).scalars().all())
+
+
 def get_pulse_schedule_for_user(
     db_session: Session,
     schedule_id: int,
@@ -158,27 +192,33 @@ def list_pulse_schedules(
 
 
 def count_enabled_schedules_for_user(db_session: Session, user_id: UUID) -> int:
+    # select_from: a bare count of PulseSchedule.id would read only the parent table
+    # and count every trigger kind.
     return db_session.execute(
-        select(func.count(PulseSchedule.id))
+        select(func.count())
+        .select_from(PulseSchedule)
         .where(PulseSchedule.user_id == user_id)
         .where(PulseSchedule.enabled.is_(True))
     ).scalar_one()
 
 
-def delete_pulse_schedule(db_session: Session, schedule: PulseSchedule) -> None:
-    db_session.delete(schedule)
+def delete_pulse_trigger(db_session: Session, trigger: PulseTrigger) -> None:
+    # Parent row first, the same order as everything that finishes or accepts a run, so
+    # a delete can't deadlock against them.
+    lock_trigger_row(db_session, trigger.id)
+    db_session.delete(trigger)
     db_session.commit()
 
 
-def disable_schedule(
+def disable_trigger(
     db_session: Session,
-    schedule_id: int,
+    trigger_id: int,
     reason: str | None,
     autocommit: bool = True,
 ) -> None:
     db_session.execute(
-        update(PulseSchedule)
-        .where(PulseSchedule.id == schedule_id)
+        update(PulseTrigger)
+        .where(PulseTrigger.id == trigger_id)
         .values(enabled=False, disabled_reason=reason)
     )
     if autocommit:
@@ -194,15 +234,15 @@ def get_pulse_run(db_session: Session, run_id: int) -> PulseRun | None:
     return db_session.get(PulseRun, run_id)
 
 
-def list_runs_for_schedule(
+def list_runs_for_trigger(
     db_session: Session,
-    schedule_id: int,
+    trigger_id: int,
     limit: int = 50,
     before_id: int | None = None,
 ) -> list[PulseRun]:
     stmt = (
         select(PulseRun)
-        .where(PulseRun.schedule_id == schedule_id)
+        .where(PulseRun.trigger_id == trigger_id)
         .order_by(PulseRun.id.desc())
         .limit(limit)
     )
@@ -211,66 +251,69 @@ def list_runs_for_schedule(
     return list(db_session.execute(stmt).scalars().all())
 
 
-def get_latest_runs_by_schedule(
-    db_session: Session, schedule_ids: list[int]
+def get_latest_runs_by_trigger(
+    db_session: Session, trigger_ids: list[int]
 ) -> dict[int, PulseRun]:
-    """Most recent run (by id) for each schedule."""
-    if not schedule_ids:
+    """Most recent run (by id) for each trigger."""
+    if not trigger_ids:
         return {}
     latest_ids = (
         select(func.max(PulseRun.id).label("id"))
-        .where(PulseRun.schedule_id.in_(schedule_ids))
+        .where(PulseRun.trigger_id.in_(trigger_ids))
         .where(PulseRun.status.notin_((RUN_SKIPPED, RUN_MISSED)))
-        .group_by(PulseRun.schedule_id)
+        .group_by(PulseRun.trigger_id)
         .subquery()
     )
     runs = db_session.execute(
         select(PulseRun).where(PulseRun.id.in_(select(latest_ids.c.id)))
     ).scalars()
-    return {run.schedule_id: run for run in runs}
+    return {run.trigger_id: run for run in runs}
 
 
-def get_latest_session_run_by_schedule(
-    db_session: Session, schedule_ids: list[int]
+def get_latest_session_run_by_trigger(
+    db_session: Session, trigger_ids: list[int]
 ) -> dict[int, PulseRun]:
-    """Most recent run that has a chat session, per schedule (sidebar 'Scheduled')."""
-    if not schedule_ids:
+    """Most recent run that has a chat session, per trigger (sidebar 'Scheduled')."""
+    if not trigger_ids:
         return {}
     latest_ids = (
         select(func.max(PulseRun.id).label("id"))
-        .where(PulseRun.schedule_id.in_(schedule_ids))
+        .where(PulseRun.trigger_id.in_(trigger_ids))
         .where(PulseRun.chat_session_id.is_not(None))
-        .group_by(PulseRun.schedule_id)
+        .group_by(PulseRun.trigger_id)
         .subquery()
     )
     runs = db_session.execute(
         select(PulseRun).where(PulseRun.id.in_(select(latest_ids.c.id)))
     ).scalars()
-    return {run.schedule_id: run for run in runs}
+    return {run.trigger_id: run for run in runs}
 
 
 def count_runs_by_status_since(
     db_session: Session,
     since: datetime.datetime,
     user_id: UUID | None = None,
+    include_webhooks: bool = True,
 ) -> dict[str, int]:
     stmt = (
         select(PulseRun.status, func.count(PulseRun.id))
         .where(PulseRun.created_at >= since)
         .group_by(PulseRun.status)
     )
+    if not include_webhooks:
+        stmt = stmt.where(PulseRun.fired_by != FIRED_WEBHOOK)
     if user_id is not None:
-        stmt = stmt.join(PulseSchedule, PulseSchedule.id == PulseRun.schedule_id).where(
-            PulseSchedule.user_id == user_id
+        stmt = stmt.join(PulseTrigger, PulseTrigger.id == PulseRun.trigger_id).where(
+            PulseTrigger.user_id == user_id
         )
     return {status: count for status, count in db_session.execute(stmt).all()}
 
 
-def has_active_run(db_session: Session, schedule_id: int) -> bool:
+def has_active_run(db_session: Session, trigger_id: int) -> bool:
     return (
         db_session.execute(
             select(PulseRun.id)
-            .where(PulseRun.schedule_id == schedule_id)
+            .where(PulseRun.trigger_id == trigger_id)
             .where(PulseRun.status.in_(ACTIVE_RUN_STATUSES))
             .limit(1)
         ).first()
@@ -278,20 +321,21 @@ def has_active_run(db_session: Session, schedule_id: int) -> bool:
     )
 
 
-def count_active_runs(db_session: Session) -> int:
-    return db_session.execute(
-        select(func.count(PulseRun.id)).where(
-            PulseRun.status.in_(ACTIVE_RUN_STATUSES)
-        )
-    ).scalar_one()
+def count_active_runs(db_session: Session, include_webhooks: bool = False) -> int:
+    """Webhook runs have their own queue, worker and caps, so they don't use up the
+    capacity schedules and Run now are limited by."""
+    stmt = select(func.count(PulseRun.id)).where(PulseRun.status.in_(ACTIVE_RUN_STATUSES))
+    if not include_webhooks:
+        stmt = stmt.where(PulseRun.fired_by != FIRED_WEBHOOK)
+    return db_session.execute(stmt).scalar_one()
 
 
-def lock_schedule_row(db_session: Session, schedule_id: int) -> None:
-    """Row-lock a schedule for the rest of the transaction (serialises run-now /
+def lock_trigger_row(db_session: Session, trigger_id: int) -> None:
+    """Row-lock a trigger for the rest of the transaction (serialises run-now /
     edits against each other and against a scheduler tick)."""
     db_session.execute(
-        select(PulseSchedule.id)
-        .where(PulseSchedule.id == schedule_id)
+        select(PulseTrigger.id)
+        .where(PulseTrigger.id == trigger_id)
         .with_for_update()
     )
 
@@ -299,21 +343,22 @@ def lock_schedule_row(db_session: Session, schedule_id: int) -> None:
 def claim_next_item_index(db_session: Session, schedule_id: int) -> int:
     """List mode: atomically take the next item index (each run gets its own item,
     even when runs start concurrently). Returns the index to use."""
+    table = _schedule_table()
     used = db_session.execute(
-        update(PulseSchedule)
-        .where(PulseSchedule.id == schedule_id)
-        .values(input_item_index=PulseSchedule.input_item_index + 1)
-        .returning(PulseSchedule.input_item_index - 1)
+        update(table)
+        .where(table.c.id == schedule_id)
+        .values(input_item_index=table.c.input_item_index + 1)
+        .returning(table.c.input_item_index - 1)
     ).scalar_one()
     db_session.commit()
     return int(used)
 
 
-def create_manual_run(db_session: Session, schedule_id: int) -> PulseRun:
+def create_manual_run(db_session: Session, trigger_id: int) -> PulseRun:
     run = PulseRun(
-        schedule_id=schedule_id,
+        trigger_id=trigger_id,
         scheduled_for=db_now(db_session),
-        trigger=TRIGGER_MANUAL,
+        fired_by=FIRED_MANUAL,
         status=RUN_PENDING,
     )
     db_session.add(run)
@@ -349,26 +394,29 @@ def lock_user_schedules(db_session: Session, user_id: UUID) -> None:
 
 def count_schedules_for_user(db_session: Session, user_id: UUID) -> int:
     return db_session.execute(
-        select(func.count(PulseSchedule.id)).where(PulseSchedule.user_id == user_id)
+        select(func.count())
+        .select_from(PulseSchedule)
+        .where(PulseSchedule.user_id == user_id)
     ).scalar_one()
 
 
 def count_active_runs_for_user(db_session: Session, user_id: UUID) -> int:
     return db_session.execute(
         select(func.count(PulseRun.id))
-        .join(PulseSchedule, PulseSchedule.id == PulseRun.schedule_id)
-        .where(PulseSchedule.user_id == user_id)
+        .join(PulseTrigger, PulseTrigger.id == PulseRun.trigger_id)
+        .where(PulseTrigger.user_id == user_id)
         .where(PulseRun.status.in_(ACTIVE_RUN_STATUSES))
+        .where(PulseRun.fired_by != FIRED_WEBHOOK)
     ).scalar_one()
 
 
 def last_manual_run_created_at(
-    db_session: Session, schedule_id: int
+    db_session: Session, trigger_id: int
 ) -> datetime.datetime | None:
     return db_session.execute(
         select(func.max(PulseRun.created_at))
-        .where(PulseRun.schedule_id == schedule_id)
-        .where(PulseRun.trigger == TRIGGER_MANUAL)
+        .where(PulseRun.trigger_id == trigger_id)
+        .where(PulseRun.fired_by == FIRED_MANUAL)
     ).scalar_one_or_none()
 
 
@@ -400,9 +448,9 @@ def insert_scheduled_run(
     """Idempotent insert of a scheduled slot. Returns the new run id, or None if
     the slot already exists (another replica / previous tick won)."""
     values: dict = {
-        "schedule_id": schedule_id,
+        "trigger_id": schedule_id,
         "scheduled_for": scheduled_for,
-        "trigger": TRIGGER_SCHEDULED,
+        "fired_by": FIRED_SCHEDULED,
         "status": status,
         "skip_reason": skip_reason,
     }
@@ -412,8 +460,8 @@ def insert_scheduled_run(
         insert(PulseRun)
         .values(**values)
         .on_conflict_do_nothing(
-            index_elements=["schedule_id", "scheduled_for"],
-            index_where=text("trigger = 'scheduled'"),
+            index_elements=["trigger_id", "scheduled_for"],
+            index_where=text("fired_by = 'scheduled'"),
         )
         .returning(PulseRun.id)
     )
@@ -570,54 +618,69 @@ def set_run_chat_session(
     db_session.commit()
 
 
-def record_schedule_outcome(
+def record_trigger_outcome(
     db_session: Session,
-    schedule_id: int,
+    trigger_id: int,
     *,
     run_status: str,
     scheduled_for: datetime.datetime,
     max_consecutive_failures: int,
 ) -> tuple[int, bool]:
-    """Update the schedule's last-run fields + failure streak.
+    """Update the trigger's last-run fields + failure streak.
 
     Returns (consecutive_failures, auto_paused_now). Row-locked so concurrent
-    finishes for the same schedule (manual + scheduled) do not lose updates.
+    finishes for the same trigger (e.g. manual + scheduled) do not lose updates.
     """
     # populate_existing: sessions use expire_on_commit=False, so without it the locked
     # SELECT would hand back a stale cached object instead of the row we just locked.
-    schedule = db_session.execute(
-        select(PulseSchedule)
-        .where(PulseSchedule.id == schedule_id)
+    trigger = db_session.execute(
+        select(PulseTrigger)
+        .where(PulseTrigger.id == trigger_id)
         .with_for_update()
         .execution_options(populate_existing=True)
     ).scalar_one_or_none()
-    if schedule is None:
+    if trigger is None:
         db_session.commit()
         return 0, False
 
-    schedule.last_run_at = db_now(db_session)
-    schedule.last_run_status = run_status
+    trigger.last_run_at = db_now(db_session)
+    trigger.last_run_status = run_status
     auto_paused = False
     if run_status == RUN_SUCCEEDED:
-        schedule.consecutive_failures = 0
-        if (
-            schedule.last_success_scheduled_for is None
-            or scheduled_for > schedule.last_success_scheduled_for
-        ):
-            schedule.last_success_scheduled_for = scheduled_for
+        trigger.consecutive_failures = 0
+        _advance_last_success(db_session, trigger_id, scheduled_for)
     elif run_status in FAILURE_RUN_STATUSES:
-        schedule.consecutive_failures = (schedule.consecutive_failures or 0) + 1
+        trigger.consecutive_failures = (trigger.consecutive_failures or 0) + 1
         if (
             max_consecutive_failures > 0
-            and schedule.consecutive_failures >= max_consecutive_failures
-            and schedule.enabled
+            and trigger.consecutive_failures >= max_consecutive_failures
+            and trigger.enabled
         ):
-            schedule.enabled = False
-            schedule.disabled_reason = DISABLED_AUTO_PAUSED
+            trigger.enabled = False
+            trigger.disabled_reason = DISABLED_AUTO_PAUSED
             auto_paused = True
-    failures = schedule.consecutive_failures
+    failures = trigger.consecutive_failures
     db_session.commit()
     return failures, auto_paused
+
+
+def _advance_last_success(
+    db_session: Session, schedule_id: int, scheduled_for: datetime.datetime
+) -> None:
+    """Move a schedule's window start forward, never back. Other kinds have no window,
+    so for them this matches no row."""
+    table = _schedule_table()
+    db_session.execute(
+        update(table)
+        .where(table.c.id == schedule_id)
+        .where(
+            or_(
+                table.c.last_success_scheduled_for.is_(None),
+                table.c.last_success_scheduled_for < scheduled_for,
+            )
+        )
+        .values(last_success_scheduled_for=scheduled_for)
+    )
 
 
 def get_running_runs_for_host(db_session: Session, hostname: str) -> list[PulseRun]:
@@ -671,14 +734,14 @@ def fill_empty_assistant_message(
 
 
 def get_sessions_to_expire(
-    db_session: Session, schedule: PulseSchedule, limit: int = 500
+    db_session: Session, trigger: PulseTrigger, limit: int = 500
 ) -> list[UUID]:
-    """Run chat sessions beyond the schedule's retention_count (newest kept).
+    """Run chat sessions beyond the trigger's retention_count (newest kept).
 
     Exempt: sessions the user replied in (more than one USER message) and shared
     sessions — the user has engaged with those, so they are never auto-deleted.
     """
-    keep = max(1, schedule.retention_count or 1)
+    keep = max(1, trigger.retention_count or 1)
     user_msg_count = (
         select(func.count(ChatMessage.id))
         .where(ChatMessage.chat_session_id == ChatSession.id)
@@ -693,7 +756,7 @@ def get_sessions_to_expire(
             .over(order_by=ChatSession.time_created.desc())
             .label("rn"),
         )
-        .where(ChatSession.pulse_schedule_id == schedule.id)
+        .where(ChatSession.pulse_trigger_id == trigger.id)
         .where(ChatSession.deleted.is_(False))
         .subquery()
     )

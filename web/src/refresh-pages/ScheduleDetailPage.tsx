@@ -61,7 +61,7 @@ import {
   AccentIconTile,
   RunStatusPill,
   ScheduleStateBadge,
-  TriggerTag,
+  FiredByTag,
 } from "@/sections/schedules/StatusPill";
 import {
   duplicateWithToast,
@@ -361,7 +361,7 @@ function RunsTable({
                     </SimpleTooltip>
                   </TableCell>
                   <TableCell className="py-3 px-3.5">
-                    <TriggerTag trigger={r.trigger} />
+                    <FiredByTag firedBy={r.fired_by} />
                   </TableCell>
                   <TableCell className="py-3 px-3.5">
                     <RunStatusPill status={r.status} />

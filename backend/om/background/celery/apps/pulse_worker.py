@@ -14,10 +14,13 @@ from celery.signals import celeryd_init
 from celery.signals import worker_init
 from celery.signals import worker_ready
 from celery.signals import worker_shutdown
+from celery.signals import worker_shutting_down
 
 import om.background.celery.apps.app_base as app_base
 from om.configs.constants import POSTGRES_CELERY_WORKER_PULSE_APP_NAME
+from om.configs.pulse_configs import PULSE_WORKER_QUEUE
 from om.db.engine.sql_engine import SqlEngine
+from om.pulse.worker_presence import WorkerPresence
 from om.utils.logger import setup_logger
 
 logger = setup_logger()
@@ -25,6 +28,8 @@ logger = setup_logger()
 celery_app = Celery(__name__)
 celery_app.config_from_object("om.background.celery.configs.pulse_worker")
 celery_app.Task = app_base.TenantAwareTask  # type: ignore [misc]
+
+_presence: WorkerPresence | None = None
 
 
 @signals.task_prerun.connect
@@ -76,11 +81,24 @@ def on_worker_init(sender: Worker, **kwargs: Any) -> None:
 
 @worker_ready.connect
 def on_worker_ready(sender: Any, **kwargs: Any) -> None:
+    global _presence
     app_base.on_worker_ready(sender, **kwargs)
+    _presence = WorkerPresence(PULSE_WORKER_QUEUE, str(sender.hostname))
+    _presence.start()
+
+
+@worker_shutting_down.connect
+def on_worker_shutting_down(**kwargs: Any) -> None:
+    # A stopping worker takes no new runs, but can spend a long time finishing the ones it
+    # has. It shouldn't count as alive meanwhile: nothing is serving its queue.
+    if _presence is not None:
+        _presence.withdraw()
 
 
 @worker_shutdown.connect
 def on_worker_shutdown(sender: Any, **kwargs: Any) -> None:
+    if _presence is not None:
+        _presence.stop()
     # Fires after the pool stopped. A warm shutdown has already let in-flight runs
     # finish (compose stop_grace_period >= workflow timeout); anything of this node
     # still `running` now was cut off (cold shutdown) — mark it `interrupted` right away

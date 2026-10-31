@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/table";
 import { SvgClock, SvgEdit, SvgTrash } from "@opal/icons";
 import { useSchedules } from "@/hooks/useSchedules";
+import AdminWebhooksTable from "@/sections/webhooks/AdminWebhooksTable";
 import { useUser } from "@/providers/UserProvider";
 import type { PulseSchedule } from "@/lib/schedules/interfaces";
 import { scheduleHref } from "@/lib/schedules/api";
@@ -45,6 +46,7 @@ type Filter = "all" | "active" | "paused" | "attention";
 export default function AdminSchedulesPage() {
   const { user } = useUser();
   const { schedules, isLoading, error } = useSchedules({ allUsers: true });
+  const [section, setSection] = useState<"schedules" | "webhooks">("schedules");
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<PulseSchedule | null>(null);
@@ -87,10 +89,21 @@ export default function AdminSchedulesPage() {
   return (
     <>
       <AdminPageTitle
-        title="Pulse (Schedules)"
+        title="Pulse"
         icon={SvgClock}
-        description="All users' scheduled workflows (Pulse). You can edit, pause, resume and delete any schedule. It stays its creator's: runs keep executing as them, they keep access, and they are notified of your changes."
+        description="All users' schedules and webhooks. You can edit, pause, resume and delete any of them. They stay their creator's: runs keep executing as them, they keep access, and they are notified of your changes."
       />
+
+      <div className="pb-4">
+        <SimpleTabs
+          value={section}
+          onValueChange={(v) => setSection(v as "schedules" | "webhooks")}
+          tabs={{
+            schedules: { name: "Schedules", content: null },
+            webhooks: { name: "Webhooks", content: null },
+          }}
+        />
+      </div>
 
       <deleteModal.Provider>
         {toDelete && (
@@ -119,7 +132,9 @@ export default function AdminSchedulesPage() {
         />
       )}
 
-      <div className="flex flex-col gap-4">
+      {section === "webhooks" && <AdminWebhooksTable />}
+
+      <div className={section === "webhooks" ? "hidden" : "flex flex-col gap-4"}>
         <div className="flex items-center gap-3 flex-wrap">
           <SimpleTabs
             value={filter}

@@ -109,7 +109,7 @@ def get_chat_sessions_by_user(
         stmt = stmt.where(ChatSession.ombot_flow.is_(False))
 
     if not include_pulse_runs:
-        stmt = stmt.where(ChatSession.pulse_schedule_id.is_(None))
+        stmt = stmt.where(ChatSession.pulse_trigger_id.is_(None))
 
     stmt = stmt.order_by(desc(ChatSession.time_updated))
 

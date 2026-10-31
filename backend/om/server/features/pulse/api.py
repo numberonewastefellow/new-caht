@@ -20,6 +20,8 @@ from sqlalchemy.orm import Session
 from om.auth.schemas import UserRole
 from om.auth.users import current_admin_user
 from om.auth.users import current_user
+from om.configs.app_configs import ENCRYPTION_KEY_SECRET
+from om.configs.constants import OmCeleryQueues
 from om.configs.pulse_configs import PULSE_DEFAULT_RETENTION
 from om.configs.pulse_configs import PULSE_MANUAL_RUN_COOLDOWN_SECONDS
 from om.configs.pulse_configs import PULSE_MAX_RETENTION
@@ -31,26 +33,29 @@ from om.configs.pulse_configs import PULSE_USER_MAX_ACTIVE_RUNS
 from om.db.engine.sql_engine import get_session
 from om.db.models import PulseRun
 from om.db.models import PulseSchedule
+from om.db.models import PulseTrigger
 from om.db.models import User
 from om.db.pulse import count_active_runs
 from om.db.pulse import count_active_runs_for_user
 from om.db.pulse import count_enabled_schedules_for_user
 from om.db.pulse import count_schedules_for_user
 from om.db.pulse import last_manual_run_created_at
-from om.db.pulse import lock_schedule_row
+from om.db.pulse import lock_trigger_row
 from om.db.pulse import lock_user_schedules
 from om.db.pulse import count_runs_by_status_since
 from om.db.pulse import create_manual_run
 from om.db.pulse import create_pulse_schedule
 from om.db.pulse import db_now
-from om.db.pulse import delete_pulse_schedule
-from om.db.pulse import get_latest_runs_by_schedule
-from om.db.pulse import get_latest_session_run_by_schedule
+from om.db.pulse import delete_pulse_trigger
+from om.db.pulse import get_latest_runs_by_trigger
+from om.db.pulse import get_latest_session_run_by_trigger
 from om.db.pulse import get_pulse_run
 from om.db.pulse import get_pulse_schedule_for_user
+from om.db.pulse import get_pulse_trigger
 from om.db.pulse import has_active_run
 from om.db.pulse import list_pulse_schedules
-from om.db.pulse import list_runs_for_schedule
+from om.db.pulse import list_pulse_triggers_for_user
+from om.db.pulse import list_runs_for_trigger
 from om.db.pulse import RUN_FAILED
 from om.db.pulse import RUN_INTERRUPTED
 from om.db.pulse import RUN_NEEDS_INPUT
@@ -59,7 +64,10 @@ from om.pulse.access import get_accessible_workflow
 from om.pulse.access import PulseAccessError
 from om.pulse.dispatch import enqueue_pulse_run
 from om.pulse.notifications import notify_owner_of_admin_change
+from om.db.pulse_webhook import get_webhook_run_health
 from om.pulse.scheduler import SCHEDULER_PRESENCE_KEY_PREFIX
+from om.pulse.webhooks.policy import webhooks_allowed
+from om.pulse.worker_presence import count_alive_workers
 from om.pulse.spec import spec_from_schedule
 from om.pulse.timing import describe
 from om.pulse.timing import next_fire_after
@@ -76,6 +84,7 @@ from om.pulse.timing import validate_spec
 from om.redis.redis_pool import get_redis_client
 from om.server.features.pulse.models import PulseConfigResponse
 from om.server.features.pulse.models import PulseHealthResponse
+from om.server.features.pulse.models import PulseWebhookHealth
 from om.server.features.pulse.models import PulsePreviewRequest
 from om.server.features.pulse.models import PulsePreviewResponse
 from om.server.features.pulse.models import PulseRunResponse
@@ -83,6 +92,7 @@ from om.server.features.pulse.models import PulseScheduleCreate
 from om.server.features.pulse.models import PulseScheduleResponse
 from om.server.features.pulse.models import PulseScheduleUpdate
 from om.server.features.pulse.models import PulseSidebarItem
+from om.server.features.pulse.webhook_models import PulseTriggerSummary
 from om.server.features.pulse.models import PulseStatsResponse
 from om.server.rate_limits.dependencies import enforce_rate_limits
 from om.utils.logger import setup_logger
@@ -214,9 +224,9 @@ def _redact_run(run: PulseRunResponse | None) -> PulseRunResponse | None:
     )
 
 
-def _run_response(run: PulseRun, schedule: PulseSchedule, viewer: User) -> PulseRunResponse:
+def _run_response(run: PulseRun, trigger: PulseTrigger, viewer: User) -> PulseRunResponse:
     response = PulseRunResponse.from_model(run)
-    if schedule.user_id != viewer.id:
+    if trigger.user_id != viewer.id:
         return _redact_run(response)  # type: ignore[return-value]
     return response
 
@@ -228,8 +238,8 @@ def _to_responses(
     viewer: User,
 ) -> list[PulseScheduleResponse]:
     ids = [s.id for s in schedules]
-    latest = get_latest_runs_by_schedule(db_session, ids)
-    latest_sessions = get_latest_session_run_by_schedule(db_session, ids)
+    latest = get_latest_runs_by_trigger(db_session, ids)
+    latest_sessions = get_latest_session_run_by_trigger(db_session, ids)
     out = []
     for s in schedules:
         try:
@@ -408,7 +418,7 @@ def update_schedule(
     if changes.get("enabled") is True:
         lock_user_schedules(db_session, owner_id)
     # Lock the row so a concurrent scheduler tick cannot interleave with this edit
-    lock_schedule_row(db_session, schedule.id)
+    lock_trigger_row(db_session, schedule.id)
     db_session.refresh(schedule)
     now = db_now(db_session)
 
@@ -487,14 +497,15 @@ def update_schedule(
             raise HTTPException(status_code=400, detail="This schedule has no future runs")
 
     schedule.updated_by_id = user.id
+    schedule.updated_at = now  # timing lives in the child table, which doesn't bump this
     db_session.commit()
     db_session.refresh(schedule)
     if edited_by_admin and changes:
         notify_owner_of_admin_change(
             db_session,
             owner_id=owner_id,
-            schedule_id=schedule.id,
-            schedule_name=schedule.name,
+            trigger_id=schedule.id,
+            trigger_name=schedule.name,
             admin_email=user.email,
             action="paused"
             if set(changes) == {"enabled"} and changes["enabled"] is False
@@ -512,13 +523,13 @@ def delete_schedule(
     """Deletes the schedule and its run history. Run chats stay in chat history."""
     schedule = _get_schedule_or_404(db_session, schedule_id, user)
     owner_id, name, sid = schedule.user_id, schedule.name, schedule.id
-    delete_pulse_schedule(db_session, schedule)
+    delete_pulse_trigger(db_session, schedule)
     if owner_id != user.id:
         notify_owner_of_admin_change(
             db_session,
             owner_id=owner_id,
-            schedule_id=sid,
-            schedule_name=name,
+            trigger_id=sid,
+            trigger_name=name,
             admin_email=user.email,
             action="deleted",
         )
@@ -575,7 +586,7 @@ def run_schedule_now(
             status_code=404 if e.workflow_deleted else 403, detail=str(e)
         )
     # Serialise run-now calls for this schedule (no two active runs via a race)
-    lock_schedule_row(db_session, schedule.id)
+    lock_trigger_row(db_session, schedule.id)
     if has_active_run(db_session, schedule.id):
         raise HTTPException(
             status_code=409, detail="A run of this schedule is already in progress"
@@ -614,7 +625,7 @@ def list_schedule_runs(
     db_session: Session = Depends(get_session),
 ) -> list[PulseRunResponse]:
     schedule = _get_schedule_or_404(db_session, schedule_id, user)
-    runs = list_runs_for_schedule(db_session, schedule.id, limit=limit, before_id=before_id)
+    runs = list_runs_for_trigger(db_session, schedule.id, limit=limit, before_id=before_id)
     return [_run_response(r, schedule, user) for r in runs]
 
 
@@ -627,8 +638,53 @@ def get_run(
     run = get_pulse_run(db_session, run_id)
     if run is None:
         raise HTTPException(status_code=404, detail="Run not found")
-    schedule = _get_schedule_or_404(db_session, run.schedule_id, user)
-    return _run_response(run, schedule, user)
+    trigger = get_pulse_trigger(db_session, run.trigger_id)
+    if trigger is None or (trigger.user_id != user.id and not _is_admin(user)):
+        raise HTTPException(status_code=404, detail="Run not found")
+    return _run_response(run, trigger, user)
+
+
+# ========================
+# Any trigger kind
+# ========================
+
+
+def _get_trigger_or_404(db_session: Session, trigger_id: int, user: User) -> PulseTrigger:
+    trigger = get_pulse_trigger(db_session, trigger_id)
+    if trigger is None or (trigger.user_id != user.id and not _is_admin(user)):
+        raise HTTPException(status_code=404, detail="Trigger not found")
+    return trigger
+
+
+@router.get("/triggers/{trigger_id}")
+def get_trigger(
+    trigger_id: int,
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> PulseTriggerSummary:
+    trigger = _get_trigger_or_404(db_session, trigger_id, user)
+    schedule = trigger if isinstance(trigger, PulseSchedule) else None
+    return PulseTriggerSummary(
+        id=trigger.id,
+        kind=trigger.kind,
+        name=trigger.name,
+        workflow_name=trigger.workflow.name if trigger.workflow else None,
+        disabled_reason=trigger.disabled_reason,
+        input_mode=schedule.input_mode if schedule else None,
+        input_prompt=schedule.input_prompt if schedule else None,
+    )
+
+
+@router.get("/triggers/{trigger_id}/runs")
+def list_trigger_runs(
+    trigger_id: int,
+    limit: int = Query(default=50, ge=1, le=200),
+    user: User = Depends(current_user),
+    db_session: Session = Depends(get_session),
+) -> list[PulseRunResponse]:
+    trigger = _get_trigger_or_404(db_session, trigger_id, user)
+    runs = list_runs_for_trigger(db_session, trigger.id, limit=limit)
+    return [_run_response(r, trigger, user) for r in runs]
 
 
 # ========================
@@ -641,14 +697,15 @@ def get_sidebar_items(
     user: User = Depends(current_user),
     db_session: Session = Depends(get_session),
 ) -> list[PulseSidebarItem]:
-    """The chat sidebar's "Scheduled" section: one row per schedule (never per run)."""
-    schedules = list_pulse_schedules(db_session, user.id)
-    latest_sessions = get_latest_session_run_by_schedule(
+    """The chat sidebar's "Scheduled" section: one row per trigger (never per run)."""
+    schedules = list_pulse_triggers_for_user(db_session, user.id)
+    latest_sessions = get_latest_session_run_by_trigger(
         db_session, [s.id for s in schedules]
     )
     items = [
         PulseSidebarItem(
-            schedule_id=s.id,
+            trigger_id=s.id,
+            kind=s.kind,
             name=s.name,
             enabled=s.enabled,
             disabled_reason=s.disabled_reason,
@@ -674,7 +731,9 @@ def get_stats(
 ) -> PulseStatsResponse:
     schedules = list_pulse_schedules(db_session, user.id)
     since = db_now(db_session) - timedelta(hours=24)
-    by_status = count_runs_by_status_since(db_session, since, user_id=user.id)
+    by_status = count_runs_by_status_since(
+        db_session, since, user_id=user.id, include_webhooks=False
+    )
     attention_statuses = {RUN_FAILED, RUN_TIMED_OUT, RUN_INTERRUPTED, RUN_NEEDS_INPUT}
     return PulseStatsResponse(
         active_schedules=sum(1 for s in schedules if s.enabled),
@@ -698,20 +757,39 @@ def get_stats(
 # ========================
 
 
+def _workers_alive(queue: str) -> int | None:
+    try:
+        return count_alive_workers(queue)
+    except Exception:
+        logger.exception(f"Pulse: could not read worker presence for {queue}")
+        return None
+
+
+def _webhooks_switch() -> bool | None:
+    try:
+        return webhooks_allowed()
+    except Exception:
+        logger.exception("Pulse: could not read the webhooks switch")
+        return None
+
+
 @admin_router.get("/health")
 def get_pulse_health(
     _: User = Depends(current_admin_user),
     db_session: Session = Depends(get_session),
 ) -> PulseHealthResponse:
-    """Operational health: live scheduler replicas, scheduler lag, run counts."""
+    """Operational health: live schedulers and workers, scheduler lag, run counts."""
     now = db_now(db_session)
     lag = db_session.execute(
         select(func.max(func.extract("epoch", now - PulseSchedule.next_run_at)))
+        .select_from(PulseSchedule)
         .where(PulseSchedule.enabled.is_(True))
         .where(PulseSchedule.next_run_at <= now)
     ).scalar_one_or_none()
     enabled = db_session.execute(
-        select(func.count(PulseSchedule.id)).where(PulseSchedule.enabled.is_(True))
+        select(func.count())
+        .select_from(PulseSchedule)
+        .where(PulseSchedule.enabled.is_(True))
     ).scalar_one()
 
     replicas = 0
@@ -725,13 +803,24 @@ def get_pulse_health(
     except Exception:
         logger.exception("Pulse: could not read scheduler presence keys")
 
+    webhook_runs = get_webhook_run_health(db_session)
     return PulseHealthResponse(
         scheduler_replicas_alive=replicas,
         scheduler_lag_seconds=float(lag) if lag is not None else 0.0,
-        active_runs=count_active_runs(db_session),
+        active_runs=count_active_runs(db_session, include_webhooks=True),
         enabled_schedules=enabled,
         runs_last_24h_by_status=count_runs_by_status_since(
             db_session, now - timedelta(hours=24)
+        ),
+        pulse_workers_alive=_workers_alive(OmCeleryQueues.PULSE),
+        webhooks=PulseWebhookHealth(
+            enabled=_webhooks_switch(),
+            secret_encryption_configured=bool(ENCRYPTION_KEY_SECRET),
+            workers_alive=_workers_alive(OmCeleryQueues.PULSE_WEBHOOK),
+            active_webhooks=webhook_runs.active_webhooks,
+            pending_runs=webhook_runs.pending_runs,
+            running_runs=webhook_runs.running_runs,
+            oldest_pending_seconds=webhook_runs.oldest_pending_seconds,
         ),
     )
 

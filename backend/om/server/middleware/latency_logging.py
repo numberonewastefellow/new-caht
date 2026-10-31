@@ -7,6 +7,8 @@ from fastapi import FastAPI
 from fastapi import Request
 from fastapi import Response
 
+from om.utils.logger import redact_webhook_token
+
 
 def add_latency_logging_middleware(app: FastAPI, logger: logging.LoggerAdapter) -> None:
     @app.middleware("http")
@@ -17,7 +19,7 @@ def add_latency_logging_middleware(app: FastAPI, logger: logging.LoggerAdapter) 
         response = await call_next(request)
         process_time = time.monotonic() - start_time
         logger.debug(
-            f"Path: {request.url.path} - Method: {request.method} - "
+            f"Path: {redact_webhook_token(request.url.path)} - Method: {request.method} - "
             f"Status Code: {response.status_code} - Time: {process_time:.4f} secs"
         )
         return response

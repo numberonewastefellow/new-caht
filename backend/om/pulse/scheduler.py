@@ -38,6 +38,7 @@ from om.configs.pulse_configs import PULSE_RUN_HISTORY_DAYS
 from om.configs.pulse_configs import PULSE_SCHEDULER_HEARTBEAT_FILE
 from om.configs.pulse_configs import PULSE_TENANT_MAX_CONCURRENT_RUNS
 from om.configs.pulse_configs import PULSE_TICK_SECONDS
+from om.configs.pulse_configs import PULSE_WEBHOOK_PAYLOAD_RETENTION_DAYS
 from om.db.engine.sql_engine import get_session_with_tenant
 from om.db.engine.sql_engine import SqlEngine
 from om.db.engine.tenant_utils import get_all_tenant_ids
@@ -47,13 +48,13 @@ from om.db.pulse import count_active_runs
 from om.db.pulse import db_now
 from om.db.pulse import DISABLED_COMPLETED_ONCE
 from om.db.pulse import fill_empty_assistant_message
-from om.db.pulse import get_pulse_schedule
+from om.db.pulse import get_pulse_trigger
 from om.db.pulse import get_sessions_to_expire
 from om.db.pulse import claim_stale_pending_runs
 from om.db.pulse import get_stale_running_runs
 from om.db.pulse import has_active_run
 from om.db.pulse import insert_scheduled_run
-from om.db.pulse import list_pulse_schedules
+from om.db.pulse import list_pulse_triggers
 from om.db.pulse import prune_old_runs
 from om.db.pulse import RUN_INTERRUPTED
 from om.db.pulse import RUN_MISSED
@@ -61,8 +62,10 @@ from om.db.pulse import RUN_PENDING
 from om.db.pulse import RUN_RUNNING
 from om.db.pulse import RUN_SKIPPED
 from om.db.pulse import soft_delete_sessions
-from om.db.pulse import TRIGGER_SCHEDULED
+from om.db.pulse import FIRED_SCHEDULED
+from om.db.pulse import FIRED_WEBHOOK
 from om.db.pulse import try_acquire_tick_lock
+from om.db.pulse_webhook import clear_old_payloads
 from om.db.workflow import get_latest_execution_by_chat_session
 from om.pulse.dispatch import enqueue_pulse_run
 from om.pulse.outcome import finalize_run
@@ -218,39 +221,39 @@ def _resend_stale_pending(tenant_id: str) -> int:
     """Outbox sweeper: re-send runs whose enqueue was lost (or that still wait in the
     queue), at most once per PULSE_PENDING_RESEND_SECONDS per run. Scheduled runs
     that are already too late to start are recorded as `missed` instead."""
-    ids: list[int] = []
+    ids: list[tuple[int, bool]] = []  # (run_id, is it a webhook run)
     expired: list[tuple[int, int]] = []
     with get_session_with_tenant(tenant_id=tenant_id) as db_session:
         now = db_now(db_session)
         cutoff = now - timedelta(seconds=PULSE_PENDING_RESEND_SECONDS)
         for run in claim_stale_pending_runs(db_session, cutoff):
-            schedule = run.schedule
-            if run.trigger == TRIGGER_SCHEDULED and schedule is not None:
+            trigger = run.trigger
+            if run.fired_by == FIRED_SCHEDULED and isinstance(trigger, PulseSchedule):
                 limit = max_start_delay_seconds(
-                    spec_from_schedule(schedule),
+                    spec_from_schedule(trigger),
                     misfire_grace_seconds=PULSE_MISFIRE_GRACE_SECONDS,
                     now=now,
                 )
                 if (now - run.scheduled_for).total_seconds() > limit:
-                    expired.append((run.id, schedule.id))
+                    expired.append((run.id, trigger.id))
                     continue
-            ids.append(run.id)
+            ids.append((run.id, run.fired_by == FIRED_WEBHOOK))
         db_session.commit()  # persists last_enqueued_at before sending (outbox)
 
-        for run_id, schedule_id in expired:
-            schedule = get_pulse_schedule(db_session, schedule_id)
-            if schedule is not None:
+        for run_id, trigger_id in expired:
+            expired_trigger = get_pulse_trigger(db_session, trigger_id)
+            if expired_trigger is not None:
                 finalize_run(
                     db_session,
-                    schedule,
+                    expired_trigger,
                     run_id,
                     status=RUN_MISSED,
                     skip_reason="no worker picked it up in time",
                     from_statuses=(RUN_PENDING,),
                 )
-    for run_id in ids:
+    for run_id, is_webhook in ids:
         try:
-            enqueue_pulse_run(run_id, tenant_id)
+            enqueue_pulse_run(run_id, tenant_id, webhook=is_webhook)
         except Exception:
             logger.exception(f"Pulse: re-enqueue failed for run {run_id}")
     if ids:
@@ -263,19 +266,19 @@ def interrupt_run(
     tenant_id: str,
     *,
     run_id: int,
-    schedule_id: int,
+    trigger_id: int,
     chat_session_id: UUID | None,
     error: str,
 ) -> bool:
     """Finalise a run whose worker died: `interrupted` (never replayed), failure
     streak + notifications, failed workflow_execution, an explanation in the chat,
     and the chat's stale "processing" flag cleared. Returns True if this call did it."""
-    schedule = get_pulse_schedule(db_session, schedule_id)
-    if schedule is None:
+    trigger = get_pulse_trigger(db_session, trigger_id)
+    if trigger is None:
         return False
     status = finalize_run(
         db_session,
-        schedule,
+        trigger,
         run_id,
         status=RUN_INTERRUPTED,
         error=error,
@@ -306,15 +309,15 @@ def _reap_stale_running(tenant_id: str) -> int:
     with get_session_with_tenant(tenant_id=tenant_id) as db_session:
         cutoff = db_now(db_session) - timedelta(seconds=PULSE_REAP_AFTER_SECONDS)
         stale = get_stale_running_runs(db_session, cutoff)
-        stale_info = [(r.id, r.schedule_id, r.chat_session_id) for r in stale]
+        stale_info = [(r.id, r.trigger_id, r.chat_session_id) for r in stale]
         db_session.commit()  # release row locks; finalize_run re-checks status
 
-        for run_id, schedule_id, chat_session_id in stale_info:
+        for run_id, trigger_id, chat_session_id in stale_info:
             if interrupt_run(
                 db_session,
                 tenant_id,
                 run_id=run_id,
-                schedule_id=schedule_id,
+                trigger_id=trigger_id,
                 chat_session_id=chat_session_id,
                 error="Worker stopped responding (no heartbeat); run was not retried",
             ):
@@ -332,11 +335,15 @@ def _reap_stale_running(tenant_id: str) -> int:
 def run_retention(tenant_id: str) -> tuple[int, int]:
     deleted_sessions = 0
     with get_session_with_tenant(tenant_id=tenant_id) as db_session:
-        for schedule in list_pulse_schedules(db_session, None, include_all_users=True):
-            ids = get_sessions_to_expire(db_session, schedule)
+        for trigger in list_pulse_triggers(db_session):
+            ids = get_sessions_to_expire(db_session, trigger)
             deleted_sessions += soft_delete_sessions(db_session, ids)
-        cutoff = db_now(db_session) - timedelta(days=PULSE_RUN_HISTORY_DAYS)
+        now = db_now(db_session)
+        cutoff = now - timedelta(days=PULSE_RUN_HISTORY_DAYS)
         pruned_runs = prune_old_runs(db_session, cutoff)
+        clear_old_payloads(
+            db_session, now - timedelta(days=PULSE_WEBHOOK_PAYLOAD_RETENTION_DAYS)
+        )
     if deleted_sessions or pruned_runs:
         logger.info(
             f"Pulse retention ({tenant_id}): soft-deleted {deleted_sessions} run "
